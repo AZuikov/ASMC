@@ -135,7 +135,7 @@
     <Folder Include="ViewModel\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ce91c577bcf0a799e275968ebe599d0e.png" />
+    <Resource Include="Resources\ce91c577bcf0a799e275968ebe599d0e.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
