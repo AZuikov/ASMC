@@ -12,7 +12,6 @@ namespace ASMC
       
         protected override  void OnStartup(StartupEventArgs e)
         {
-            /*Картинка загрузки*/
             var  splashScreen = new SplashScreen("Resources/ce91c577bcf0a799e275968ebe599d0e.png");
             splashScreen.Show(true,true);
             base.OnStartup(e);

@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMC.Automation.Mechanical"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AP.Utils", "AP.Utils\AP.Utils.csproj", "{FF877F85-43B8-4779-A822-A2904ADC1100}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest.AP.Reports", "UnitTest.AP.Reports\UnitTest.AP.Reports.csproj", "{3DE7363D-99C9-4C1D-BA1F-D7B2632E471A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{FF877F85-43B8-4779-A822-A2904ADC1100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF877F85-43B8-4779-A822-A2904ADC1100}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF877F85-43B8-4779-A822-A2904ADC1100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DE7363D-99C9-4C1D-BA1F-D7B2632E471A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE7363D-99C9-4C1D-BA1F-D7B2632E471A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE7363D-99C9-4C1D-BA1F-D7B2632E471A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE7363D-99C9-4C1D-BA1F-D7B2632E471A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
