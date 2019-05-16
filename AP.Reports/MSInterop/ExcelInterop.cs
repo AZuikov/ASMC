@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Aspose.Cells;
-using Microsoft.Office.Interop;
+using AP.Reports.Interface;
 using Microsoft.Office.Interop.Excel;
 using Range = Microsoft.Office.Interop.Excel.Range;
 using Workbook = Microsoft.Office.Interop.Excel.Workbook;
@@ -58,11 +51,7 @@ namespace AP.Reports.MSInterop
         {
             get
             {
-                if (_workbook==null)
-                {
-                    _workbook = Workbooks.Count == 0 ? Workbooks.Add() : Application.ActiveWorkbook;
-                }
-                return _workbook;
+                return _workbook ?? (_workbook = Workbooks.Count == 0 ? Workbooks.Add() : Application.ActiveWorkbook);
             }
             set
             {
@@ -79,7 +68,7 @@ namespace AP.Reports.MSInterop
                 }
                 if (_workbook!= value)
                 {
-                    _workbook= _application.Workbooks.Add(value);
+                    if (_application.Workbooks != null) _workbook = _application.Workbooks.Add(value);
                 }
             }
         }
@@ -107,7 +96,6 @@ namespace AP.Reports.MSInterop
                 new NotImplementedException();
             }
         }
-
         /// <summary>
         /// Диапазон
         /// </summary>

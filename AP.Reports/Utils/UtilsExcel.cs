@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
-namespace AP.Reports
+namespace AP.Reports.Utils
 {
-    public static class UtilsExcel
+    public abstract class UtilsExcel
     {
         /// <summary>
-        /// Расчет буквенного символа, соотвутствующему столцу в Excel
+        /// Возвращает буквенный символ столбца Microsoft Excel, соответствующий заданному порядковому номеру.
         /// </summary>
         /// <param name="number">Порядковый номер столбца.</param>
-        /// <returns>Возвращает буквенный символ столбца Microsoft Excel, соответствующий заданному порядковому номеру, при условии, что он больше 0. Иначе Null</returns>
-        public static string NumberToLetters(int number)
+        /// <returns></returns>
+        protected static string NumberToLetters(int number)
         {
             string result;
             if (number > 0)
@@ -26,11 +27,11 @@ namespace AP.Reports
             return result;
         }
         /// <summary>
-        /// Расчет порядкого номера столца Excel на основе буквенного обозначения
+        /// Возвращает порядковый номер столбца Microsoft Excel, соответствующий заданному буквенному символу.
         /// </summary>
         /// <param name="letters">Буквенный символ столбца.</param>
-        /// <returns>Возвращает порядковый номер столбца Microsoft Excel, соответствующий заданному буквенному символу.</returns>
-        public static int LettersToNumber(string letters)
+        /// <returns></returns>
+        protected static int LettersToNumber(string letters)
         {
             var result = 0;
             if (letters.Length > 0 && letters.All(a => (a >= 'A' && a <= 'Z')))
