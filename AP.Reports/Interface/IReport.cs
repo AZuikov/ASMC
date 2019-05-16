@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using AP.Reports.Utils;
 
@@ -63,21 +64,23 @@ namespace AP.Reports.Interface
         /// Вставляет таблицу текущий диапазон
         /// </summary>
         /// <param name="dt">Талица для вставки</param>
-        void InsertTable(DataTable dt);
+        /// <param name="cf">Перечень условий для форматирования(цветовыделения)</param>
+        void InsertTable(DataTable dt, IEnumerable<ConditionalFormatting> cf = default(IEnumerable<ConditionalFormatting>);
         /// <summary>
         /// Заполняет таблицу на закладку(Именованный диапазон)
         /// </summary>
         /// <param name="dt">Таблица с данными</param>
         /// <param name="bm">Наименование закладки</param>
         /// <param name="del">Признак удаления таблицы, если нет данных</param>
-        void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting));
+        /// <param name="cf">Перечень условий для форматирования(цветовыделения)</param>
+        void FillsTableToBookmark(DataTable dt, string bm, bool del = false, IEnumerable<ConditionalFormatting> cf = default(IEnumerable<ConditionalFormatting>));
         /// <summary>
         /// Создает новую таблицу на указанной закладке
         /// </summary>
         /// <param name="dt">Таблица с данными</param>
         /// <param name="bm">Наименование закладки</param>
-        /// <param name="cf">Условия форматирования</param>
-        void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting));
+        /// <param name="cf">Перечень условий для форматирования(цветовыделения)</param>
+        void InsertNewTableToBookmark(DataTable dt, string bm, IEnumerable<ConditionalFormatting> cf = default(IEnumerable<ConditionalFormatting>));
         /// <summary>
         /// Вставляет текст на закладку
         /// </summary>
