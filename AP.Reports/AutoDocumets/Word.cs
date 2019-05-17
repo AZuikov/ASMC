@@ -7,11 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Word:IReport
+    public class Word:IGrapsReport
     {
+        public Word()
+        {
+            WordprocessingDocument wordDocument = WordprocessingDocument.Create();
+        }
 
         #region IReport
         public void SaveAs(string pathToSave)

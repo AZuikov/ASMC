@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoDocumets\Word.cs" />
+    <Compile Include="Interface\IGrapsReport.cs" />
     <Compile Include="Interface\IReport.cs" />
     <Compile Include="MSInterop\ExcelInterop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
