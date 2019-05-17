@@ -18,13 +18,12 @@ namespace AP.Reports.AutoDocumets
             WordprocessingDocument wordDocument = WordprocessingDocument.Create();
         }
 
-        #region IReport
-        public void SaveAs(string pathToSave)
+        public void Close()
         {
             throw new NotImplementedException();
         }
 
-        public void Close()
+        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
@@ -49,6 +48,41 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
+        public void InsertImage(Bitmap image)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertImageToBookmark(Bitmap image, string bm)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting))
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertTable(DataTable dt, IEnumerable<ConditionalFormatting> cf = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertText(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertTextToBookmark(string text, string bm)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MergeDocuments(string pathdoc)
+        {
+            throw new NotImplementedException();
+        }
+
         public void NewDocument()
         {
             throw new NotImplementedException();
@@ -69,46 +103,13 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void InsertTable(DataTable dt)
+        public void SaveAs(string pathToSave)
         {
             throw new NotImplementedException();
         }
 
-        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false,
-            ConditionalFormatting cf = default(ConditionalFormatting))
-        {
-            throw new NotImplementedException();
-        }
+        #region IGrapsReport
 
-        public void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting))
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertTextToBookmark(string text, string bm)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertText(string text)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertImageToBookmark(Bitmap image, string bm)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertImage(Bitmap image)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MergeDocuments(string pathdoc)
-        {
-            throw new NotImplementedException();
-        }
         #endregion
     }
 }
