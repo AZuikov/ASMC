@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -42,11 +41,7 @@ namespace AP.Reports.Interface
         /// Сохраняет текущий документ
         /// </summary>
         void Save();
-        /// <summary>
-        /// Вставляет таблицу на текущий диапазон
-        /// </summary>
-        /// <param name="dt">Талица для вставки</param>
-        void InsertTable(DataTable dt);
+        
         /// <summary>
         /// Втавка текста в выделенный диапазон
         /// </summary>

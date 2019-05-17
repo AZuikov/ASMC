@@ -22,15 +22,11 @@ namespace AP.Reports.Interface
         /// <param name="image">Заменить</param>
         /// <param name="invert">Указывает направление</param>
         void FindStringAndReplacImage(string sFind, string image, bool invert = true);
-
-
         /// <summary>
         /// Создает новый документ по указанному шаблону
         /// </summary>
         /// <param name="templatePath">Путь к шаблону</param>
         void NewDocumentTemp(string templatePath);
-
-      
         /// <summary>
         /// Заполняет таблицу на закладку(Именованный диапазон)
         /// </summary>
