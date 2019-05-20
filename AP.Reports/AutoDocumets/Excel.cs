@@ -1,25 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
-using DocumentFormat.OpenXml.Packaging;
+using ClosedXML.Excel;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Word:IGrapsReport
+    class Excel : IGraphsReport, IDisposable
     {
-        public Word()
+        private XLWorkbook _workbook;
+
+        #region ctors
+        public Excel()
         {
-            WordprocessingDocument wordDocument = WordprocessingDocument.Create();
+            _workbook = new XLWorkbook();
         }
+        #endregion
+
+        #region IGraphsReport
 
         public void Close()
         {
+            _workbook.Dispose();
         }
 
         public void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
@@ -62,11 +71,6 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void InsertTable(DataTable dt, IEnumerable<ConditionalFormatting> cf = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public void InsertText(string text)
         {
             throw new NotImplementedException();
@@ -82,12 +86,12 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void NewDocument()
+        public void NewDocument()   //???
         {
             throw new NotImplementedException();
         }
 
-        public void NewDocumentTemp(string templatePath)
+        public void NewDocumentTemp(string templatePath)   //??
         {
             throw new NotImplementedException();
         }
@@ -99,15 +103,26 @@ namespace AP.Reports.AutoDocumets
 
         public void Save()
         {
-            throw new NotImplementedException();
+            var deal = new FolderBrowserDialog();
+            var result = deal.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                _workbook.SaveAs(deal.SelectedPath);
+                Process.Start(deal.SelectedPath);
+            }
         }
 
         public void SaveAs(string pathToSave)
         {
-            throw new NotImplementedException();
+            _workbook.SaveAs(pathToSave);
+        }
+        #endregion
+
+        public void Dispose()
+        {
+            _workbook.Dispose();
         }
 
-
-        #endregion
+      
     }
 }
