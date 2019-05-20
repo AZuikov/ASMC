@@ -67,19 +67,19 @@ namespace AP.Reports.AutoDocumets
             _document?.Close();
             _stream?.Close();
         }
-        public void FindStringAndAllReplac(string sFind, string sReplac)
+        public void FindStringAndAllReplac(string sFind, string sReplace)
         {
-            FindStringAndReplac(sFind, sReplac);
+            FindStringAndReplac(sFind, sReplace);
             throw new NotImplementedException();
         }
-        public void FindStringAndReplac(string sFind, string sReplac, bool invert = true)
+        public void FindStringAndReplac(string sFind, string sReplace, bool invert = true)
         {
             var document = _document.MainDocumentPart.Document;
             foreach (var text in document.Descendants<Text>())
             {
                 if (text.Text.Contains(sFind))
                 {
-                    text.Text= text.Text.Replace(sFind, sReplac);
+                    text.Text= text.Text.Replace(sFind, sReplace);
                 }
             }
             throw new NotImplementedException();
@@ -141,7 +141,7 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FindStringAndAllReplacImage(string sFind, Bitmap image)
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
         {
             throw new NotImplementedException();
         }
@@ -182,7 +182,7 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FindStringAndReplaceImage(string sFind, string image)
+        public void FindStringAndReplaceImage(string sFind, Bitmap image)
         {
             throw new NotImplementedException();
         }
@@ -193,6 +193,11 @@ namespace AP.Reports.AutoDocumets
         }
 
         public void FindStringAndReplace(string sFind, string sReplac, bool invert = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FindStringAndReplace(string sFind, string sReplac)
         {
             throw new NotImplementedException();
         }

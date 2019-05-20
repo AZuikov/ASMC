@@ -3,26 +3,43 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace AP.Reports.AutoDocumets
 {
-    class Excel : IGraphsReport, IDisposable
+    public class Excel : ITextGraphicsReport, IDisposable
     {
         private XLWorkbook _workbook;
+        private string _filePath;
+
+        private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
         #region ctors
         public Excel()
+            : this(new string[] { "Лист1" })
+        {
+        }
+
+        public Excel(string[] sheets)
         {
             _workbook = new XLWorkbook();
+            for (int i = 0; i < sheets.Length; i++)
+            {
+                _workbook.Worksheets.Add(sheets[i]);
+            }
         }
         #endregion
+
 
         #region IGraphsReport
 
@@ -36,24 +53,120 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FindStringAndAllReplac(string sFind, string sReplac)
+        public void FindStringAndAllReplace(string sFind, string sReplace) //ok
         {
-            throw new NotImplementedException();
+            FindCellAndDo(
+                sFind,
+                (cell, worksheet) => { cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace); },
+                true);
+
+            //if (_workbook != null)
+            //{
+            //    var worksheets = _workbook.Worksheets.ToArray();
+            //    for (int i = 0; i < worksheets.Length; i++)
+            //    {
+            //        foreach (var cell in worksheets[i].Cells())
+            //        {
+            //            cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
+            //        }
+            //    }
+            //}
         }
 
-        public void FindStringAndAllReplacImage(string sFind, Bitmap image)
+        public void FindStringAndReplace(string sFind, string sReplace) //ok
         {
-            throw new NotImplementedException();
+            FindCellAndDo(
+                sFind,
+                (cell, worksheet) => { cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace); },
+                false);
+
+            //if (_workbook != null)
+            //{
+            //    var worksheets = _workbook.Worksheets.ToArray();
+            //    bool isReplacedAlready = false;
+            //    for (int i = 0; i < worksheets.Length; i++)
+            //    {
+            //        foreach (var cell in worksheets[i].Cells())
+            //        {
+            //            if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
+            //            {
+            //                cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
+            //                isReplacedAlready = true;
+            //                break;
+            //            }
+            //        }
+
+            //        if (isReplacedAlready == true)
+            //        {
+            //            break;
+            //        }
+            //    }
+            //}
         }
 
-        public void FindStringAndReplac(string sFind, string sReplac, bool invert = true)
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image) //ok
         {
-            throw new NotImplementedException();
+            FindCellAndDo(
+                sFind,
+                (cell, worksheet) => 
+                    {
+                        cell.Value = "";
+                        worksheet.AddPicture(image).MoveTo(cell);
+                    },
+                true);
+
+
+            //if (_workbook != null)
+            //{
+            //    var worksheets = _workbook.Worksheets.ToArray();
+            //    for (int i = 0; i < worksheets.Length; i++)
+            //    {
+            //        foreach (var cell in worksheets[i].Cells())
+            //        {
+            //            if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
+            //            {
+            //                cell.Value = "";
+            //                worksheets[i].AddPicture(image).MoveTo(cell);
+            //            }
+            //        }
+            //    }
+            //}
         }
 
-        public void FindStringAndReplacImage(string sFind, string image, bool invert = true)
+        public void FindStringAndReplaceImage(string sFind, Bitmap image) //ok
         {
-            throw new NotImplementedException();
+            FindCellAndDo(
+                sFind,
+                (cell, worksheet) =>
+                {
+                    cell.Value = "";
+                    worksheet.AddPicture(image).MoveTo(cell);
+                },
+                false);
+
+            //if (_workbook != null)
+            //{
+            //    var worksheets = _workbook.Worksheets.ToArray();
+            //    bool isReplacedAlready = false;
+            //    for (int i = 0; i < worksheets.Length; i++)
+            //    {
+            //        foreach (var cell in worksheets[i].Cells())
+            //        {
+            //            if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
+            //            {
+            //                cell.Value = "";
+            //                worksheets[i].AddPicture(image).MoveTo(cell);
+            //                isReplacedAlready = true;
+            //                break;
+            //            }
+            //        }
+
+            //        if (isReplacedAlready == true)
+            //        {
+            //            break;
+            //        }
+            //    }
+            //}
         }
 
         public void InsertImage(Bitmap image)
@@ -98,31 +211,97 @@ namespace AP.Reports.AutoDocumets
 
         public void OpenDocument(string sPath)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _workbook = new XLWorkbook(sPath);
+                _filePath = sPath;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void Test()
+        {
+            //_worksheet.Cell("A1").Value = "Testing";
         }
 
         public void Save()
         {
-            var deal = new FolderBrowserDialog();
-            var result = deal.ShowDialog();
-            if (result == DialogResult.OK)
+            if (_filePath == null)
             {
-                _workbook.SaveAs(deal.SelectedPath);
-                Process.Start(deal.SelectedPath);
+                var deal = new FolderBrowserDialog();
+                var result = deal.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    _workbook.SaveAs(deal.SelectedPath);
+                    //Process.Start(deal.SelectedPath);
+                }
+            }
+            else
+            {
+                _workbook.SaveAs(_filePath);
+                //Process.Start(_filePath);
             }
         }
 
         public void SaveAs(string pathToSave)
         {
             _workbook.SaveAs(pathToSave);
+            _filePath = pathToSave;
         }
+
+        public void MergeDocuments(IEnumerable<string> pathdoc)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveEnd()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveHome()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
+
+        private void FindCellAndDo(string sFind, CellOperator cellOperator, bool forAll)
+        {
+            if (_workbook != null)
+            {
+                var worksheets = _workbook.Worksheets.ToArray();
+                bool isOperatedAlready = false;
+                for (int i = 0; i < worksheets.Length; i++)
+                {
+                    foreach (var cell in worksheets[i].Cells())
+                    {
+                        if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
+                        {
+                            cellOperator(cell, worksheets[i]);
+                            isOperatedAlready = true;
+                            if (forAll == false)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (forAll == false && isOperatedAlready == true)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
 
         public void Dispose()
         {
             _workbook.Dispose();
         }
 
-      
     }
 }
