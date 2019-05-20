@@ -19,14 +19,14 @@ namespace AP.Reports.Interface
         /// <summary>
         /// Заменяет в документе все вхождения на указаную строку
         /// </summary>
-        void FindStringAndAllReplac(string sFind, string sReplac);
+        void FindStringAndAllReplace(string sFind, string sReplac);
         /// <summary>
         /// Заменяет первое вхождение на указанную строку
         /// </summary>
         /// <param name="sFind">Найти</param>
         /// <param name="sReplac">Заменить</param>
         /// <param name="invert">Указывает направление вхождения. По умолчания поиск с начала документа</param>
-        void FindStringAndReplac(string sFind, string sReplac, bool invert = true);
+        void FindStringAndReplace(string sFind, string sReplac, bool invert = true);
 
         /// <summary>
         /// Создает новый документ
@@ -53,5 +53,18 @@ namespace AP.Reports.Interface
         /// </summary>
         /// <param name="pathdoc">Путь к объеденяемому документу</param>
         void MergeDocuments(string pathdoc);
+        /// <summary>
+        /// Обеденяет множество документов
+        /// </summary>
+        /// <param name="pathdoc">Путь к объеденяемому документу</param>
+        void MergeDocuments(IEnumerable<string> pathdoc);
+        /// <summary>
+        /// Установка курсора в конец документа
+        /// </summary>
+        void MoveEnd();
+        /// <summary>
+        /// Установка курсора в начало документа
+        /// </summary>
+        void MoveHome();
     }
 }

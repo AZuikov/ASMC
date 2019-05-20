@@ -11,16 +11,15 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Word:IGraphsReport
+    public class Word:IGrapsReport
     {
         public Word()
         {
-            //WordprocessingDocument wordDocument = WordprocessingDocument.Create();
+            WordprocessingDocument wordDocument = WordprocessingDocument.Create();
         }
 
         public void Close()
         {
-            throw new NotImplementedException();
         }
 
         public void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
@@ -108,7 +107,6 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        #region IGrapsReport
 
         #endregion
     }
