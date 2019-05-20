@@ -7,7 +7,7 @@ namespace AP.Reports.Interface
     /// <summary>
     /// Интерфейс обеспечивающий основыные функции для создания отчетов Word, Excel
     /// </summary>
-    public interface IGrapsReport:IReport
+    public interface ITextGraphicsReport:IReport
     {
        
         /// <summary>
@@ -21,7 +21,7 @@ namespace AP.Reports.Interface
         /// <param name="sFind">Найти</param>
         /// <param name="image">Заменить</param>
         /// <param name="invert">Указывает направление</param>
-        void FindStringAndReplacImage(string sFind, string image, bool invert = true);
+        void FindStringAndReplaceImage(string sFind, string image);
         /// <summary>
         /// Создает новый документ по указанному шаблону
         /// </summary>
