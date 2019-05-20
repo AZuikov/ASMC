@@ -19,7 +19,7 @@ namespace AP.Reports.Interface
         /// <summary>
         /// Заменяет в документе все вхождения на указаную строку
         /// </summary>
-        void FindStringAndAllReplace(string sFind, string sReplac);
+        void FindStringAndAllReplace(string sFind, string sReplace);
         /// <summary>
         /// Заменяет первое вхождение на указанную строку
         /// </summary>
