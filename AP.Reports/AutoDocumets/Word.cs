@@ -67,19 +67,19 @@ namespace AP.Reports.AutoDocumets
             _document?.Close();
             _stream?.Close();
         }
-        public void FindStringAndAllReplac(string sFind, string sReplac)
+        public void FindStringAndAllReplace(string sFind, string sReplac)
         {
-            FindStringAndReplac(sFind, sReplac);
+            FindStringAndReplace(sFind, sReplac);
             throw new NotImplementedException();
         }
-        public void FindStringAndReplac(string sFind, string sReplac, bool invert = true)
+        public void FindStringAndReplace(string sFind, string sReplace)
         {
             var document = _document.MainDocumentPart.Document;
             foreach (var text in document.Descendants<Text>())
             {
                 if (text.Text.Contains(sFind))
                 {
-                    text.Text= text.Text.Replace(sFind, sReplac);
+                    text.Text= text.Text.Replace(sFind, sReplace);
                 }
             }
             throw new NotImplementedException();
@@ -92,15 +92,6 @@ namespace AP.Reports.AutoDocumets
         {
             Path = sPath;
             Init();
-        }
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertText(string text)
-        {
-            throw new NotImplementedException();
         }
 
         public void MergeDocuments(string pathdoc)
@@ -131,22 +122,12 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
-        public void MoveEnd()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MoveHome()
-        {
-            throw new NotImplementedException();
-        }
-
         public void FindStringAndAllReplacImage(string sFind, Bitmap image)
         {
             throw new NotImplementedException();
         }
 
-        public void FindStringAndReplacImage(string sFind, string image, bool invert = true)
+        public void FindStringAndReplaceImage(string sFind, string image)
         {
             throw new NotImplementedException();
         }
@@ -156,8 +137,7 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false,
-            ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
@@ -181,6 +161,27 @@ namespace AP.Reports.AutoDocumets
         {
             throw new NotImplementedException();
         }
+
+        public void Save()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertText(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveEnd()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveHome()
+        {
+            throw new NotImplementedException();
+        }
+
 
 
         #endregion

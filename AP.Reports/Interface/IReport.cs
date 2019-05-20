@@ -19,14 +19,14 @@ namespace AP.Reports.Interface
         /// <summary>
         /// Заменяет в документе все вхождения на указаную строку
         /// </summary>
-        void FindStringAndAllReplace(string sFind, string sReplac);
+        void FindStringAndAllReplace(string sFind, string sReplace);
         /// <summary>
         /// Заменяет первое вхождение на указанную строку
         /// </summary>
         /// <param name="sFind">Найти</param>
         /// <param name="sReplac">Заменить</param>
         /// <param name="invert">Указывает направление вхождения. По умолчания поиск с начала документа</param>
-        void FindStringAndReplace(string sFind, string sReplac, bool invert = true);
+        void FindStringAndReplace(string sFind, string sReplac);
 
         /// <summary>
         /// Создает новый документ
