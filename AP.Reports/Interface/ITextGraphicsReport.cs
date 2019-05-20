@@ -13,7 +13,7 @@ namespace AP.Reports.Interface
         /// <summary>
         /// Заменяет в документе все вхождения на указанное изображение
         /// </summary>
-        void FindStringAndAllReplacImage(string sFind, Bitmap image);
+        void FindStringAndAllReplaceImage(string sFind, Bitmap image);
         
         /// <summary>
         /// Заменяет первое вхождение на указанное изображение
