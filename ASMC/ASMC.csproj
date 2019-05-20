@@ -34,22 +34,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Data.v17.2">
-      <HintPath>..\..\packages\DevExpress.v17.2\DevExpress.Data.v17.2.dll</HintPath>
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Data.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v17.2">
-      <HintPath>..\..\packages\DevExpress.v17.2\DevExpress.Mvvm.v17.2.dll</HintPath>
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Printing.v17.2.Core">
-      <HintPath>..\..\packages\DevExpress.v17.2\DevExpress.Printing.v17.2.Core.dll</HintPath>
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Printing.v17.2.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Core.v17.2">
-      <HintPath>..\..\packages\DevExpress.v17.2\DevExpress.Xpf.Core.v17.2.dll</HintPath>
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Core.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.2">
-      <HintPath>..\..\packages\DevExpress.v17.2\DevExpress.Xpf.Grid.v17.2.dll</HintPath>
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Grid.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.2">
-      <HintPath>..\..\packages\DevExpress.v17.2\DevExpress.Xpf.Themes.Office2016White.v17.2.dll</HintPath>
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Themes.Office2016White.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
