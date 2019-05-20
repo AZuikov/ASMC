@@ -59,18 +59,6 @@ namespace AP.Reports.AutoDocumets
                 sFind,
                 (cell, worksheet) => { cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace); },
                 true);
-
-            //if (_workbook != null)
-            //{
-            //    var worksheets = _workbook.Worksheets.ToArray();
-            //    for (int i = 0; i < worksheets.Length; i++)
-            //    {
-            //        foreach (var cell in worksheets[i].Cells())
-            //        {
-            //            cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
-            //        }
-            //    }
-            //}
         }
 
         public void FindStringAndReplace(string sFind, string sReplace) //ok
@@ -79,29 +67,6 @@ namespace AP.Reports.AutoDocumets
                 sFind,
                 (cell, worksheet) => { cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace); },
                 false);
-
-            //if (_workbook != null)
-            //{
-            //    var worksheets = _workbook.Worksheets.ToArray();
-            //    bool isReplacedAlready = false;
-            //    for (int i = 0; i < worksheets.Length; i++)
-            //    {
-            //        foreach (var cell in worksheets[i].Cells())
-            //        {
-            //            if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
-            //            {
-            //                cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
-            //                isReplacedAlready = true;
-            //                break;
-            //            }
-            //        }
-
-            //        if (isReplacedAlready == true)
-            //        {
-            //            break;
-            //        }
-            //    }
-            //}
         }
 
         public void FindStringAndAllReplaceImage(string sFind, Bitmap image) //ok
@@ -114,23 +79,6 @@ namespace AP.Reports.AutoDocumets
                         worksheet.AddPicture(image).MoveTo(cell);
                     },
                 true);
-
-
-            //if (_workbook != null)
-            //{
-            //    var worksheets = _workbook.Worksheets.ToArray();
-            //    for (int i = 0; i < worksheets.Length; i++)
-            //    {
-            //        foreach (var cell in worksheets[i].Cells())
-            //        {
-            //            if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
-            //            {
-            //                cell.Value = "";
-            //                worksheets[i].AddPicture(image).MoveTo(cell);
-            //            }
-            //        }
-            //    }
-            //}
         }
 
         public void FindStringAndReplaceImage(string sFind, Bitmap image) //ok
@@ -143,30 +91,6 @@ namespace AP.Reports.AutoDocumets
                     worksheet.AddPicture(image).MoveTo(cell);
                 },
                 false);
-
-            //if (_workbook != null)
-            //{
-            //    var worksheets = _workbook.Worksheets.ToArray();
-            //    bool isReplacedAlready = false;
-            //    for (int i = 0; i < worksheets.Length; i++)
-            //    {
-            //        foreach (var cell in worksheets[i].Cells())
-            //        {
-            //            if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
-            //            {
-            //                cell.Value = "";
-            //                worksheets[i].AddPicture(image).MoveTo(cell);
-            //                isReplacedAlready = true;
-            //                break;
-            //            }
-            //        }
-
-            //        if (isReplacedAlready == true)
-            //        {
-            //            break;
-            //        }
-            //    }
-            //}
         }
 
         public void InsertImage(Bitmap image)
@@ -236,13 +160,11 @@ namespace AP.Reports.AutoDocumets
                 if (result == DialogResult.OK)
                 {
                     _workbook.SaveAs(deal.SelectedPath);
-                    //Process.Start(deal.SelectedPath);
                 }
             }
             else
             {
                 _workbook.SaveAs(_filePath);
-                //Process.Start(_filePath);
             }
         }
 
