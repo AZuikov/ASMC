@@ -7,21 +7,21 @@ namespace AP.Reports.Interface
     /// <summary>
     /// Интерфейс обеспечивающий основыные функции для создания отчетов Word, Excel
     /// </summary>
-    public interface IGrapsReport:IReport
+    public interface ITextGraphicsReport : IReport
     {
-       
+
         /// <summary>
         /// Заменяет в документе все вхождения на указанное изображение
         /// </summary>
         void FindStringAndAllReplaceImage(string sFind, Bitmap image);
-        
+
         /// <summary>
         /// Заменяет первое вхождение на указанное изображение
         /// </summary>
         /// <param name="sFind">Найти</param>
         /// <param name="image">Заменить</param>
         /// <param name="invert">Указывает направление</param>
-        void FindStringAndReplacImage(string sFind, string image, bool invert = true);
+        void FindStringAndReplaceImage(string sFind, string image);
         /// <summary>
         /// Создает новый документ по указанному шаблону
         /// </summary>
@@ -47,7 +47,7 @@ namespace AP.Reports.Interface
         /// <param name="text">Текст</param>
         /// <param name="bm">Наименование закладки</param>
         void InsertTextToBookmark(string text, string bm);
-        
+
         /// <summary>
         /// Вставка картинки на закладку
         /// </summary>

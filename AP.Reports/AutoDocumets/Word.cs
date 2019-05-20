@@ -113,16 +113,7 @@ namespace AP.Reports.AutoDocumets
                 mainPart.Document.Body.Elements<Paragraph>().Last());
         }
 
-        public void MergeDocuments(IEnumerable<string> pathdoc)
-        {
-            throw new NotImplementedException();
-            foreach (var path in pathdoc)
-            {
-                MergeDocuments(path);
-            }
-        }
-
-        public void FindStringAndAllReplacImage(string sFind, Bitmap image)
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
         {
             throw new NotImplementedException();
         }
@@ -172,6 +163,11 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
+        public void MergeDocuments(IEnumerable<string> pathdoc)
+        {
+            throw new NotImplementedException();
+        }
+
         public void MoveEnd()
         {
             throw new NotImplementedException();
@@ -181,6 +177,7 @@ namespace AP.Reports.AutoDocumets
         {
             throw new NotImplementedException();
         }
+
 
 
 
