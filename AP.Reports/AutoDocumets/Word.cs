@@ -182,6 +182,21 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
+        public void FindStringAndReplaceImage(string sFind, string image)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FindStringAndAllReplace(string sFind, string sReplac)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FindStringAndReplace(string sFind, string sReplac, bool invert = true)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
 
