@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoDocumets\Excel.cs" />
     <Compile Include="AutoDocumets\Word.cs" />
     <Compile Include="Interface\ITextGraphicsReport.cs" />
     <Compile Include="Interface\IReport.cs" />
