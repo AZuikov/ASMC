@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,7 +70,7 @@ namespace AP.Reports.Utils
         /// <summary>
         /// Цвет заливки
         /// </summary>
-        public Color Color { get; set; }
+        public object Clolour { get; set; }
         /// <summary>
         /// Область заливки
         /// </summary>

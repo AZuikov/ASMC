@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
+using System.Threading.Tasks;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Office.Interop.Word;
 using DataTable = System.Data.DataTable;
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 
@@ -49,7 +52,7 @@ namespace AP.Reports.AutoDocumets
                 _document = WordprocessingDocument.Create(_stream, WordprocessingDocumentType.Document, false);
                 MainDocumentPart mainPart = _document.AddMainDocumentPart();
                 mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
-                mainPart.Document.AppendChild(new Body());
+                Body body = mainPart.Document.AppendChild(new Body());
             }
         }
 
@@ -64,20 +67,22 @@ namespace AP.Reports.AutoDocumets
             _document?.Close();
             _stream?.Close();
         }
-        public void FindStringAndAllReplace(string sFind, string sReplace)
+        public void FindStringAndAllReplace(string sFind, string sReplac)
         {
-            FindStringAndReplace(sFind, sReplace);
+            FindStringAndReplace(sFind, sReplac);
+            throw new NotImplementedException();
         }
         public void FindStringAndReplace(string sFind, string sReplace)
         {
             var document = _document.MainDocumentPart.Document;
             foreach (var text in document.Descendants<Text>())
             {
-                if (Regex.IsMatch(sFind, @"(^|\s)" + sFind + "(^|$)"))
+                if (text.Text.Contains(sFind))
                 {
                     text.Text= text.Text.Replace(sFind, sReplace);
                 }
             }
+            throw new NotImplementedException();
         }
         public void NewDocument()
         {
@@ -91,8 +96,6 @@ namespace AP.Reports.AutoDocumets
 
         public void MergeDocuments(string pathdoc)
         {
-
-            throw new NotImplementedException();
             if (_document==null) return;
            var altChunId = "alt"+ pathdoc.GetHashCode().ToString();
             MainDocumentPart mainPart = _document.MainDocumentPart;
@@ -115,7 +118,7 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FindStringAndReplaceImage(string sFind, Bitmap image)
+        public void FindStringAndReplaceImage(string sFind, string image)
         {
             throw new NotImplementedException();
         }
@@ -125,22 +128,22 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
 
-        public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
 
-        public void InsertTextToBookmark(string bm, string text)
+        public void InsertTextToBookmark(string text, string bm)
         {
             throw new NotImplementedException();
         }
 
-        public void InsertImageToBookmark(string bm, Bitmap image)
+        public void InsertImageToBookmark(Bitmap image, string bm)
         {
             throw new NotImplementedException();
         }
@@ -174,6 +177,8 @@ namespace AP.Reports.AutoDocumets
         {
             throw new NotImplementedException();
         }
+
+
 
 
         #endregion
