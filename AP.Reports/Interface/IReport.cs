@@ -25,7 +25,6 @@ namespace AP.Reports.Interface
         /// </summary>
         /// <param name="sFind">Найти</param>
         /// <param name="sReplace">Заменить</param>
-        /// <param name="invert">Указывает направление вхождения. По умолчания поиск с начала документа</param>
         void FindStringAndReplace(string sFind, string sReplace);
 
         /// <summary>
