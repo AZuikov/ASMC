@@ -38,7 +38,7 @@ namespace UnitTest.AP.Reports
             };
             dsaas = new Word();
             dsaas.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
-            dsaas.FindStringAndAllReplace("Тест1", "Тест66");
+            dsaas.MergeDocuments(test);
             dsaas.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             dsaas.Close();
         }
