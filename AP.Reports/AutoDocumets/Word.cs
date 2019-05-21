@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.Office.Interop.Word;
 using DataTable = System.Data.DataTable;
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 
@@ -129,22 +125,22 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
 
-        public void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
 
-        public void InsertTextToBookmark(string text, string bm)
+        public void InsertTextToBookmark(string bm, string text)
         {
             throw new NotImplementedException();
         }
 
-        public void InsertImageToBookmark(Bitmap image, string bm)
+        public void InsertImageToBookmark(string bm, Bitmap image)
         {
             throw new NotImplementedException();
         }
@@ -178,10 +174,6 @@ namespace AP.Reports.AutoDocumets
         {
             throw new NotImplementedException();
         }
-
-
-
-
 
 
         #endregion
