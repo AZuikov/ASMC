@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using Microsoft.Office.Interop.Word;
+using System = Microsoft.Office.Interop.Word.System;
 
 namespace UnitTest.AP.Reports
 {
@@ -13,16 +15,6 @@ namespace UnitTest.AP.Reports
     public class UtExcel
     {
         private Excel _excel;
-
-        [TestMethod]
-        public void TestMethodCreateTable()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.Test();
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\Test.xlsx");
-            }
-        }
 
         [TestMethod]
         public void TestMethodReplaceAll()
@@ -41,7 +33,6 @@ namespace UnitTest.AP.Reports
         {
             using (_excel = new Excel())
             {
-                _excel = new Excel();
                 _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\TestReplace.xlsx");
                 _excel.FindStringAndReplace("Слово", "Воробей");
                 _excel.FindStringAndReplaceImage("Картинка", new Bitmap(@"C:\Users\02ias01\Documents\Tests\Image.jpg"));
@@ -49,5 +40,17 @@ namespace UnitTest.AP.Reports
             }
         }
 
+        [TestMethod]
+        public void TestMethodReplaceByBookmark()
+        {
+            using (_excel = new  Excel())
+            {
+                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\TestReplace.xlsx");
+                _excel.InsertImageToBookmark("диапазон_для_картинки", new Bitmap(@"C:\Users\02ias01\Documents\Tests\Image.jpg"));
+                _excel.InsertTextToBookmark("диапазон_для_текста", "Текст, вставленный из программы");
+                //_excel.FillsTableToBookmark("диапазон_для_текста", new DataTable());
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceByBookMarkResult.xlsx");
+            }
+        }
     }
 }

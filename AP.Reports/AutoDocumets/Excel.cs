@@ -48,7 +48,7 @@ namespace AP.Reports.AutoDocumets
             _workbook.Dispose();
         }
 
-        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
@@ -98,14 +98,25 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void InsertImageToBookmark(Bitmap image, string bm)
+        public void InsertImageToBookmark(string bm, Bitmap image) //ok
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                IXLCell cell =_workbook.Cell(bm);
+                cell.Value = "";
+                cell.Worksheet.AddPicture(image).MoveTo(cell);
+            }
         }
 
-        public void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                IXLCell cell = _workbook.Cell(bm);
+                cell.Value = "";
+                var range = cell.InsertData(dt.AsEnumerable());
+                //range.Con
+            }
         }
 
         public void InsertText(string text)
@@ -113,9 +124,13 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void InsertTextToBookmark(string text, string bm)
+        public void InsertTextToBookmark(string bm, string text) //ok
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                IXLCell cell = _workbook.Cell(bm);
+                cell.Value = text;
+            }
         }
 
         public void MergeDocuments(string pathdoc)
@@ -144,11 +159,6 @@ namespace AP.Reports.AutoDocumets
             {
                 MessageBox.Show(ex.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        public void Test()
-        {
-            //_worksheet.Cell("A1").Value = "Testing";
         }
 
         public void Save()

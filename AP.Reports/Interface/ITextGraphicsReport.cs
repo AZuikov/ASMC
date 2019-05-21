@@ -34,7 +34,7 @@ namespace AP.Reports.Interface
         /// <param name="dt">Таблица с данными</param>
         /// <param name="bm">Наименование закладки</param>
         /// <param name="del">Признак удаления таблицы, если нет данных</param>
-        void FillsTableToBookmark(DataTable dt, string bm, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting));
+        void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting));
 
         /// <summary>
         /// Создает новую таблицу на указанной закладке
@@ -42,21 +42,21 @@ namespace AP.Reports.Interface
         /// <param name="dt">Таблица с данными</param>
         /// <param name="bm">Наименование закладки</param>
         /// <param name="cf">Условия форматирования</param>
-        void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting));
+        void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting));
 
         /// <summary>
         /// Вставляет текст на закладку
         /// </summary>
         /// <param name="text">Текст</param>
         /// <param name="bm">Наименование закладки</param>
-        void InsertTextToBookmark(string text, string bm);
+        void InsertTextToBookmark(string bm, string text);
         
         /// <summary>
         /// Вставка картинки на закладку
         /// </summary>
         /// <param name="image">Картинка</param>
         /// <param name="bm">Имя закладки</param>
-        void InsertImageToBookmark(Bitmap image, string bm);
+        void InsertImageToBookmark(string bm, Bitmap image);
 
         /// <summary>
         /// Вставка картинки в выделенный диапазон

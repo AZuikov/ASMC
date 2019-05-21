@@ -156,13 +156,13 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void FillsTableToBookmark(DataTable dt, string bm, bool del = false,
+        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
 
-        public void InsertNewTableToBookmark(DataTable dt, string bm, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void InsertNewTableToBookmark(string bm, DataTable dt,ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
@@ -172,7 +172,7 @@ namespace AP.Reports.AutoDocumets
             throw new NotImplementedException();
         }
 
-        public void InsertImageToBookmark(Bitmap image, string bm)
+        public void InsertImageToBookmark(string bm, Bitmap image)
         {
             throw new NotImplementedException();
         }
