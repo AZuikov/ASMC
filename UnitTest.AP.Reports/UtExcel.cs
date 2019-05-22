@@ -98,6 +98,40 @@ namespace UnitTest.AP.Reports
             }
         }
 
+        [TestMethod]
+        public void TestMethodFillsTableByBookmark()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
+                DataTable dt = new DataTable();
+                for (int i = 0; i < 10; i++)
+                {
+                    dt.Columns.Add(new DataColumn("col" + i.ToString(), i.GetType()));
+                }
+                for (int i = 0; i < 15; i++)
+                {
+                    dt.Rows.Add(dt.NewRow());
+                }
+                Random rnd = new Random();
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        dt.Rows[i][j] = rnd.Next(10);
+                    }
+                }
+                ConditionalFormatting cf = new ConditionalFormatting();
+                cf.Value = "3";
+                cf.Color = Color.MediumTurquoise;
+                cf.NameColumn = "col3";
+                cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
+                cf.Region = ConditionalFormatting.RegionAction.Row;
+
+                _excel.FillsTableToBookmark("диапазон_для_таблицы", dt, false, cf);
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestFillsTableByBookmark.xlsx");
+            }
+        }
 
         [TestMethod]
         public void TestMethodMergeDocs()

@@ -49,10 +49,37 @@ namespace AP.Reports.AutoDocumets
             _workbook.Dispose();
         }
 
-        //=========================================================
         public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                IXLCell cell = _workbook.Cell(bm);
+                if (cell != null)
+                {
+                    for (int i = 0; i< dt.Rows.Count; i++)
+                    {
+                        for (int j = 0; j < dt.Columns.Count; j++)
+                        {
+                            //Если ячейка пуста или разрешено удалять данные
+                            if (cell.Worksheet.Cell(
+                                    cell.Address.RowNumber + i,
+                                    cell.Address.ColumnNumber + j).Value.ToString() == "" || del == true)
+                            {
+                                cell.Worksheet.Cell(
+                                    cell.Address.RowNumber + i,
+                                    cell.Address.ColumnNumber + j).Value = dt.Rows[i].ItemArray[j];
+                            }
+                        }
+                    }
+
+                    var endOfRange = cell.Worksheet.Cell(
+                        cell.Address.RowNumber + dt.Rows.Count,
+                        cell.Address.ColumnNumber + dt.Columns.Count);
+                    var range = cell.Worksheet.Range(cell, endOfRange);
+                    SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
+                }
+                else throw new NullReferenceException();
+            }
         }
 
         public void FindStringAndAllReplace(string sFind, string sReplace)
@@ -99,7 +126,11 @@ namespace AP.Reports.AutoDocumets
         {
             if (_workbook != null)
             {
-                _currentCell?.Worksheet.AddPicture(image).MoveTo(_currentCell);
+                if (_currentCell == null)
+                {
+                    MoveEnd();
+                }
+                _currentCell.Worksheet.AddPicture(image).MoveTo(_currentCell);
             }
         }
 
@@ -124,8 +155,8 @@ namespace AP.Reports.AutoDocumets
                 IXLCell cell = _workbook.Cell(bm);
                 if (cell != null)
                 {
-                    cell.Value = "";
-                    var range = cell.InsertData(dt);
+                    //var range = cell.InsertData(dt);
+                    var range = cell.InsertTable(dt, dt.TableName);
                     range.Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
                     range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Medium);
 
@@ -137,13 +168,27 @@ namespace AP.Reports.AutoDocumets
 
         public void InsertTable(DataTable dt)
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                if (_currentCell == null)
+                {
+                    MoveEnd();
+                }
+
+                var range = _currentCell.InsertTable(dt, dt.TableName);
+                range.Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
+                range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Medium);
+            }
         }
 
         public void InsertText(string text)
         {
-            if (_workbook != null && _currentCell != null)
+            if (_workbook != null)
             {
+                if (_currentCell == null)
+                {
+                    MoveEnd();
+                }
                 _currentCell.Value = text;
             }
         }
@@ -179,28 +224,28 @@ namespace AP.Reports.AutoDocumets
                 var mergeSoursesWorksheets = mergeSourse.Worksheets.ToList();
                 while (mergeSoursesWorksheets.Count != 0)
                 {
+                    //объявляем область для переноса
                     var rangeToCopy = mergeSoursesWorksheets.First().Range(
                             mergeSoursesWorksheets.First().Cell(1, 1),
                             mergeSoursesWorksheets.First().LastCellUsed()
                             );
+                    //Определяем ячейку для вставки
                     IXLCell targetCell;
+                    //Если лист с таким именем уже есть в документе
                     if (_workbook.Worksheets.Contains(mergeSoursesWorksheets.First().Name))
                     {
                         targetCell = _workbook.Worksheets
                             .Worksheet(mergeSoursesWorksheets.First().Name)
                             .LastRowUsed().RowBelow(1).Cell(1);
                     }
+                    //Если листа с таким же именем нет - создаем новый лист
                     else
                     {
                         targetCell = _workbook.AddWorksheet(mergeSoursesWorksheets.First().Name).Cell(1, 1);
                     }
-
-                    if (targetCell == null || rangeToCopy == null)
-                    {
-                        MessageBox.Show("???");
-                    }
-
+                    //копируем данные
                     targetCell.Value = rangeToCopy;
+                    //удаляем лист из списка листов, подготовленных к копированию
                     mergeSoursesWorksheets.Remove(mergeSoursesWorksheets.First());
                 }
             }
