@@ -83,15 +83,15 @@ namespace UnitTest.AP.Reports
                 {
                     for (int j = 0; j < dt.Columns.Count; j++)
                     {
-                        dt.Rows[i][j] = rnd.Next(100);
+                        dt.Rows[i][j] = rnd.Next(10);
                     }
                 }
                 ConditionalFormatting cf = new ConditionalFormatting();
-                cf.Value = "50";
-                cf.Color = Color.Green;
+                cf.Value = "3";
+                cf.Color = Color.MediumTurquoise;
                 cf.NameColumn = "col3";
                 cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
-                cf.Region = ConditionalFormatting.RegionAction.Cell;
+                cf.Region = ConditionalFormatting.RegionAction.Row;
 
                 _excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, cf);
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceByBookMarkResult.xlsx");

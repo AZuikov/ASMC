@@ -115,7 +115,6 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
-        //=========================================================
         public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (_workbook != null)
@@ -124,21 +123,11 @@ namespace AP.Reports.AutoDocumets
                 if (cell != null)
                 {
                     cell.Value = "";
+                    var range = cell.InsertData(dt);
+                    range.Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
+                    range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Medium);
 
-                    //определяем индекс столбца к которому нужно применить условия
-                    var columnToFormating = cell.Address.ColumnNumber + dt.Columns.IndexOf(cf.NameColumn);
-                    //определяем начало и конец таблицы
-                    cell.Worksheet.Cell(cell.Address.ColumnNumber + dt.Columns.Count,
-                        cell.Address.RowNumber + dt.Rows.Count);
-
-                    IXLCell endingOfRange = 
-                        cell.Worksheet.Cell(cell.Address.ColumnNumber + dt.Columns.Count,
-                        cell.Address.RowNumber + dt.Rows.Count);
-
-                    //Создаем диапазон
-                    IXLRange range = cell.Worksheet.Range(cell, endingOfRange);
-
-                    SetCondition(range, columnToFormating, cf);
+                    SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
                 }
                 else throw new NullReferenceException();
             }
@@ -181,12 +170,12 @@ namespace AP.Reports.AutoDocumets
             if (_workbook != null)
             {
                 var mergeSoursesWorksheets = mergeSourse.Worksheets.ToList();
-                mergeSoursesWorksheets.Reverse();
                 while (mergeSoursesWorksheets.Count != 0)
                 {
-                    IXLCell firstCell = mergeSoursesWorksheets.First().Cell(1, 1);
-                    IXLCell lastCell = mergeSoursesWorksheets.First().LastCellUsed();
-                    var rangeToCopy = mergeSoursesWorksheets.First().Range(firstCell, lastCell);
+                    var rangeToCopy = mergeSoursesWorksheets.First().Range(
+                            mergeSoursesWorksheets.First().Cell(1, 1),
+                            mergeSoursesWorksheets.First().LastCellUsed()
+                            );
                     IXLCell targetCell;
                     if (_workbook.Worksheets.Contains(mergeSoursesWorksheets.First().Name))
                     {
@@ -337,15 +326,98 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <summary>
+        /// Устанавливает заливку таблицы по набору правил
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="formatingColumn"></param>
+        /// <param name="conditional"></param>
         private void SetCondition(IXLRange range, int formatingColumn, ConditionalFormatting conditional)
         {
-            //for (int i = 0; i < range.RowCount(); i++)
-            //{
-            //    if (range.Cell(i, formatingColumn).Value.ToString() > conditional.Value)
-            //    {
-            //        range.Cell(i, formatingColumn).AddConditionalFormat()
-            //    }
-            //}
+            for (int i = 1; i <= range.RowCount(); i++)
+            {
+                double conditionValue;
+                double tableValue;
+                //Если оба данных - числа
+                if(double.TryParse(conditional.Value, out conditionValue) 
+                        && double.TryParse(range.Cell(i, formatingColumn).Value.ToString(), out tableValue))
+                {
+                    switch (conditional.Condition)
+                    {
+                        case ConditionalFormatting.Conditions.Equal:
+                            if (tableValue == conditionValue)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+                            break;
+                        case ConditionalFormatting.Conditions.Less:
+                            if (tableValue < conditionValue)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+                            break;
+                        case ConditionalFormatting.Conditions.LessOrEqual:
+                            if (tableValue <= conditionValue)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+                            break;
+                        case ConditionalFormatting.Conditions.More:
+                            if (tableValue > conditionValue)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+                            break;
+                        case ConditionalFormatting.Conditions.MoreOrEqual:
+                            if (tableValue >= conditionValue)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+                            break;
+                        case ConditionalFormatting.Conditions.NotEqual:
+                            if (tableValue != conditionValue)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+                            break;
+                    }
+                }
+                //Если не числа - сравниваем как строки
+                else
+                {
+                    switch (conditional.Condition)
+                    {
+                        case ConditionalFormatting.Conditions.Equal:
+                            if (range.Cell(i, formatingColumn).ToString() == conditional.Value)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+
+                            break;
+                        case ConditionalFormatting.Conditions.NotEqual:
+                            if (range.Cell(i, formatingColumn).ToString() != conditional.Value)
+                            {
+                                SetConditionToRegion(range, i, formatingColumn, conditional);
+                            }
+
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void SetConditionToRegion(IXLRange range, int row, int formatingColumn, ConditionalFormatting conditional)
+        {
+            IXLRange rangeToFormating;
+            if (conditional.Region == ConditionalFormatting.RegionAction.Cell)
+            {
+                rangeToFormating = range.Range(row, formatingColumn, row, formatingColumn);
+            }
+            else
+            {
+                rangeToFormating = range.Range(row, 1, row, range.ColumnCount());
+            }
+            rangeToFormating.Style.Fill.BackgroundColor = XLColor.FromColor(conditional.Color);
         }
 
         /// <summary>
