@@ -135,6 +135,11 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        public void InsertTable(DataTable dt)
+        {
+            throw new NotImplementedException();
+        }
+
         public void InsertText(string text)
         {
             if (_workbook != null && _currentCell != null)
@@ -470,109 +475,5 @@ namespace AP.Reports.AutoDocumets
             _workbook.Dispose();
         }
 
-        void ITextGraphicsReport.FindStringAndAllReplaceImage(string sFind, Bitmap image)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ITextGraphicsReport.FindStringAndReplaceImage(string sFind, Bitmap image)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ITextGraphicsReport.NewDocumentTemp(string templatePath)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ITextGraphicsReport.FillsTableToBookmark(string bm, DataTable dt, bool del, ConditionalFormatting cf)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ITextGraphicsReport.InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ITextGraphicsReport.InsertTextToBookmark(string bm, string text)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ITextGraphicsReport.InsertImageToBookmark(string bm, Bitmap image)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ITextGraphicsReport.InsertImage(Bitmap image)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.SaveAs(string pathToSave)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.Close()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.FindStringAndAllReplace(string sFind, string sReplace)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.FindStringAndReplace(string sFind, string sReplace)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.NewDocument()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.OpenDocument(string sPath)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.InsertText(string text)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.MergeDocuments(string pathdoc)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.MergeDocuments(IEnumerable<string> pathdoc)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.MoveEnd()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IReport.MoveHome()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertTable(DataTable dt)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

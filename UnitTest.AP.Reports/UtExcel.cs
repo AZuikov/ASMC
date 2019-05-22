@@ -27,7 +27,7 @@ namespace UnitTest.AP.Reports
                 _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
                 _excel.FindStringAndAllReplace("Слово", "Воробей");
                 _excel.FindStringAndAllReplaceImage("Картинка", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\~TestReplaceAllResult.xlsx");
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceAllResult.xlsx");
             }
         }
 
@@ -39,7 +39,7 @@ namespace UnitTest.AP.Reports
                 _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
                 _excel.FindStringAndReplace("Слово", "Воробей");
                 _excel.FindStringAndReplaceImage("Картинка", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\~TestReplaceResult.xlsx");
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceResult.xlsx");
             }
         }
 
@@ -57,7 +57,7 @@ namespace UnitTest.AP.Reports
                 _excel.InsertText("5 - 5");
                 _excel.MoveToCell("D6","Лист1");
                 _excel.InsertText("D6");
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\~TestReplaceAndCurcorMove.xlsx");
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceAndCurcorMove.xlsx");
             }
         }
 
