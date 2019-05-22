@@ -424,31 +424,6 @@ namespace ASMC.Core
                     _connection.Close();
             }
         }
-
-        public bool TestConnection(bool throwOnException)
-        {
-            DbConnection connection = null;
-            try
-            {
-                connection = GetConnection();
-                connection.Open();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                if (!throwOnException)
-                    return false;
-
-                throw;
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
-        }
-
         public void OpenConnection()
         {
             if (_connection == null)
