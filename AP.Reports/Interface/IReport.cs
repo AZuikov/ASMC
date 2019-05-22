@@ -9,6 +9,10 @@ namespace AP.Reports.Interface
     public interface IReport
     {
         /// <summary>
+        /// Путь к файлу
+        /// </summary>
+        string Path { get; }
+        /// <summary>
         /// Сохраняет текущий документ по указаному пути
         /// </summary>
         void SaveAs(string pathToSave);
@@ -35,6 +39,7 @@ namespace AP.Reports.Interface
         /// Открыть существующий документ
         /// </summary>
         /// <param name="sPath">Путь к открываемому документу</param>
+        /// <exception cref="System.IO.IOException">Не удается открыть файл</exception>
         void OpenDocument(string sPath);
         /// <summary>
         /// Сохраняет текущий документ

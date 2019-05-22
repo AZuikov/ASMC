@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AP.Reports.AutoDocumets;
-using Microsoft.Office.Interop.Word;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTest.AP.Reports
@@ -14,8 +13,9 @@ namespace UnitTest.AP.Reports
         public void TestMethod1()
         {
             dsaas=new Word();
-            dsaas.NewDocument();
-            dsaas.SaveAs(@"C:\Users\02tav01\Pictures\График.docx");
+            dsaas.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
+            dsaas.InsertTextToBookmark("bm1","dsadsadsadsdads");
+            dsaas.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             dsaas.Close();
         }
         [TestMethod]
@@ -23,7 +23,7 @@ namespace UnitTest.AP.Reports
         {
             dsaas = new Word();
             dsaas.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
-            dsaas.MergeDocuments(@"C:\Users\02tav01\Documents\Документ Microsoft Word2.docx");
+            dsaas.InsertText("Съешь булок");
             dsaas.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             dsaas.Close();
         }
@@ -38,8 +38,8 @@ namespace UnitTest.AP.Reports
             };
             dsaas = new Word();
             dsaas.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
-            dsaas.FindStringAndAllReplace("Тест1", "Тест66");
-            dsaas.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
+            dsaas.MergeDocuments(test);
+            //saas.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             dsaas.Close();
         }
     }

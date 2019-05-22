@@ -58,5 +58,10 @@ namespace AP.Reports.Interface
         /// Вставка картинки в выделенный диапазон
         /// </summary>
         void InsertImage(Bitmap image);
+        /// <summary>
+        /// Создает и вставляет таблицу
+        /// </summary>
+        /// <param name="dt">Таблица для вставки</param>
+        void InsertTable(DataTable dt);
     }
 }
