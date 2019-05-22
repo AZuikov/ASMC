@@ -21,22 +21,21 @@ namespace AP.Reports.AutoDocumets
     {
         private XLWorkbook _workbook;
         private string _filePath;
+        private IXLCell _currentCell;
 
         private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
         #region ctors
         public Excel()
-            : this(new string[] { "Лист1" })
         {
+            _workbook = null;
+            _filePath = null;
+            _currentCell = null;
         }
 
-        public Excel(string[] sheets)
+        public Excel(IEnumerable<string> sheets)
         {
-            _workbook = new XLWorkbook();
-            for (int i = 0; i < sheets.Length; i++)
-            {
-                _workbook.Worksheets.Add(sheets[i]);
-            }
+            NewDocument(sheets);
         }
         #endregion
 
@@ -48,12 +47,13 @@ namespace AP.Reports.AutoDocumets
             _workbook.Dispose();
         }
 
+        //=========================================================
         public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }
 
-        public void FindStringAndAllReplace(string sFind, string sReplace) //ok
+        public void FindStringAndAllReplace(string sFind, string sReplace)
         {
             FindCellAndDo(
                 sFind,
@@ -61,7 +61,7 @@ namespace AP.Reports.AutoDocumets
                 true);
         }
 
-        public void FindStringAndReplace(string sFind, string sReplace) //ok
+        public void FindStringAndReplace(string sFind, string sReplace)
         {
             FindCellAndDo(
                 sFind,
@@ -69,7 +69,7 @@ namespace AP.Reports.AutoDocumets
                 false);
         }
 
-        public void FindStringAndAllReplaceImage(string sFind, Bitmap image) //ok
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
         {
             FindCellAndDo(
                 sFind,
@@ -81,7 +81,7 @@ namespace AP.Reports.AutoDocumets
                 true);
         }
 
-        public void FindStringAndReplaceImage(string sFind, Bitmap image) //ok
+        public void FindStringAndReplaceImage(string sFind, Bitmap image)
         {
             FindCellAndDo(
                 sFind,
@@ -95,84 +95,157 @@ namespace AP.Reports.AutoDocumets
 
         public void InsertImage(Bitmap image)
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                _currentCell?.Worksheet.AddPicture(image).MoveTo(_currentCell);
+            }
         }
 
-        public void InsertImageToBookmark(string bm, Bitmap image) //ok
+        public void InsertImageToBookmark(string bm, Bitmap image)
         {
             if (_workbook != null)
             {
                 IXLCell cell =_workbook.Cell(bm);
-                cell.Value = "";
-                cell.Worksheet.AddPicture(image).MoveTo(cell);
+                if (cell != null)
+                {
+                    cell.Value = "";
+                    cell.Worksheet.AddPicture(image).MoveTo(cell);
+                }
+                else throw new NullReferenceException();
             }
         }
 
+        //=========================================================
         public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (_workbook != null)
             {
                 IXLCell cell = _workbook.Cell(bm);
-                cell.Value = "";
-                var range = cell.InsertData(dt.AsEnumerable());
-                //range.Con
+                if (cell != null)
+                {
+                    cell.Value = "";
+
+                    //определяем индекс столбца к которому нужно применить условия
+                    var columnToFormating = cell.Address.ColumnNumber + dt.Columns.IndexOf(cf.NameColumn);
+                    //определяем начало и конец таблицы
+                    cell.Worksheet.Cell(cell.Address.ColumnNumber + dt.Columns.Count,
+                        cell.Address.RowNumber + dt.Rows.Count);
+
+                    IXLCell endingOfRange = 
+                        cell.Worksheet.Cell(cell.Address.ColumnNumber + dt.Columns.Count,
+                        cell.Address.RowNumber + dt.Rows.Count);
+
+                    //Создаем диапазон
+                    IXLRange range = cell.Worksheet.Range(cell, endingOfRange);
+
+                    SetCondition(range, columnToFormating, cf);
+                }
+                else throw new NullReferenceException();
             }
         }
 
         public void InsertText(string text)
         {
-            throw new NotImplementedException();
+            if (_workbook != null && _currentCell != null)
+            {
+                _currentCell.Value = text;
+            }
         }
 
-        public void InsertTextToBookmark(string bm, string text) //ok
+        public void InsertTextToBookmark(string bm, string text)
         {
             if (_workbook != null)
             {
                 IXLCell cell = _workbook.Cell(bm);
-                cell.Value = text;
+                if (cell != null)
+                {
+                    cell.Value = text;
+                }
+                else throw new NullReferenceException();
             }
         }
 
+        //??????????????????????????????????????????????????????????????????????
         public void MergeDocuments(string pathdoc)
         {
-            throw new NotImplementedException();
+            XLWorkbook mergeSourse;
+            try
+            {
+                mergeSourse = new XLWorkbook(pathdoc);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            if (_workbook != null)
+            {
+                var mergeSoursesWorksheets = mergeSourse.Worksheets.ToList();
+                mergeSoursesWorksheets.Reverse();
+                while (mergeSoursesWorksheets.Count != 0)
+                {
+                    IXLCell firstCell = mergeSoursesWorksheets.First().Cell(1, 1);
+                    IXLCell lastCell = mergeSoursesWorksheets.First().LastCellUsed();
+                    var rangeToCopy = mergeSoursesWorksheets.First().Range(firstCell, lastCell);
+                    IXLCell targetCell;
+                    if (_workbook.Worksheets.Contains(mergeSoursesWorksheets.First().Name))
+                    {
+                        targetCell = _workbook.Worksheets
+                            .Worksheet(mergeSoursesWorksheets.First().Name)
+                            .LastRowUsed().RowBelow(1).Cell(1);
+                    }
+                    else
+                    {
+                        targetCell = _workbook.AddWorksheet(mergeSoursesWorksheets.First().Name).Cell(1, 1);
+                    }
+
+                    if (targetCell == null || rangeToCopy == null)
+                    {
+                        MessageBox.Show("???");
+                    }
+
+                    targetCell.Value = rangeToCopy;
+                    mergeSoursesWorksheets.Remove(mergeSoursesWorksheets.First());
+                }
+            }
         }
 
-        public void NewDocument()   //???
+        public void NewDocument()
         {
-            throw new NotImplementedException();
+            NewDocument(new string[] { "Лист1" });
         }
 
-        public void NewDocumentTemp(string templatePath)   //??
+        public void NewDocumentTemp(string templatePath)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _filePath = null;
+                _workbook = new XLWorkbook(templatePath);
+                MoveEnd();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public void OpenDocument(string sPath)
         {
             try
             {
-                _workbook = new XLWorkbook(sPath);
                 _filePath = sPath;
+                _workbook = new XLWorkbook(sPath);
+                MoveEnd();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw ex;
             }
         }
 
         public void Save()
         {
-            if (_filePath == null)
-            {
-                var deal = new FolderBrowserDialog();
-                var result = deal.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    _workbook.SaveAs(deal.SelectedPath);
-                }
-            }
-            else
+            if (_filePath != null && _workbook != null)
             {
                 _workbook.SaveAs(_filePath);
             }
@@ -180,23 +253,35 @@ namespace AP.Reports.AutoDocumets
 
         public void SaveAs(string pathToSave)
         {
-            _workbook.SaveAs(pathToSave);
-            _filePath = pathToSave;
+            if (_workbook != null)
+            {
+                _filePath = pathToSave;
+                _workbook.SaveAs(pathToSave);
+            }
         }
 
         public void MergeDocuments(IEnumerable<string> pathdoc)
         {
-            throw new NotImplementedException();
+            foreach (var str in pathdoc)
+            {
+                MergeDocuments(str);
+            }
         }
 
         public void MoveEnd()
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                _currentCell = _workbook.Worksheets.Last().LastRowUsed().RowBelow(1).FirstCell();
+            }
         }
 
         public void MoveHome()
         {
-            throw new NotImplementedException();
+            if (_workbook != null)
+            {
+                _currentCell = _workbook.Worksheets.First().FirstCell();
+            }
         }
 
         #endregion
@@ -228,6 +313,82 @@ namespace AP.Reports.AutoDocumets
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Переместиться в конец листа
+        /// </summary>
+        public void MoveSheetEnd()
+        {
+            if (_workbook != null)
+            {
+                _currentCell = _currentCell?.Worksheet.LastRowUsed().RowBelow(1).FirstCell();
+            }
+        }
+
+        /// <summary>
+        /// Переместиться в начало листа
+        /// </summary>
+        public void MoveSheetHome()
+        {
+            if (_workbook != null)
+            {
+                _currentCell = _currentCell?.Worksheet.FirstCell();
+            }
+        }
+
+        private void SetCondition(IXLRange range, int formatingColumn, ConditionalFormatting conditional)
+        {
+            //for (int i = 0; i < range.RowCount(); i++)
+            //{
+            //    if (range.Cell(i, formatingColumn).Value.ToString() > conditional.Value)
+            //    {
+            //        range.Cell(i, formatingColumn).AddConditionalFormat()
+            //    }
+            //}
+        }
+
+        /// <summary>
+        /// Устанавливает курсор на ячейку
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        /// <param name="workSheet"></param>
+        public void MoveToCell(int row, int column, string workSheet)
+        {
+            IXLWorksheet currentWorkSheet = _workbook.Worksheet(workSheet);
+            if (currentWorkSheet != null)
+            {
+                _currentCell = currentWorkSheet.Cell(row, column);
+            }
+        }
+
+        /// <summary>
+        /// Устанавливает курсор на ячейку
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="workSheet"></param>
+        public void MoveToCell(string cell, string workSheet)
+        {
+            IXLWorksheet currentWorkSheet = _workbook.Worksheet(workSheet);
+            if (currentWorkSheet != null)
+            {
+                _currentCell = currentWorkSheet.Cell(cell);
+            }
+        }
+
+        /// <summary>
+        /// Создает новый документ с заданными названиями страниц
+        /// </summary>
+        /// <param name="sheets"></param>
+        public void NewDocument(IEnumerable<string> sheets)
+        {
+            _workbook = new XLWorkbook();
+            foreach (var sheet in sheets)
+            {
+                _workbook.Worksheets.Add(sheet);
+            }
+            MoveEnd();
         }
 
         public void Dispose()

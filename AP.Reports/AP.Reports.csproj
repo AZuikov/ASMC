@@ -78,7 +78,6 @@
     <Compile Include="Interface\IReport.cs" />
     <Compile Include="MSInterop\ExcelInterop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UtilsExcel.cs" />
     <Compile Include="Utils\ConditionalFormatting.cs" />
     <Compile Include="Utils\UtilsExcel.cs" />
   </ItemGroup>
