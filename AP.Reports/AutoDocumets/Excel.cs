@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
 using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 
@@ -155,18 +156,13 @@ namespace AP.Reports.AutoDocumets
                 IXLCell cell = _workbook.Cell(bm);
                 if (cell != null)
                 {
-                    //var range = cell.InsertData(dt);
-                    var range = cell.InsertTable(dt, dt.TableName);
-                    range.Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
-                    range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Medium);
-
-                    SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
+                    InsertTableToCell(cell, dt, cf);
                 }
                 else throw new NullReferenceException();
             }
         }
 
-        public void InsertTable(DataTable dt)
+        public void InsertTable(DataTable dt, ConditionalFormatting cf)
         {
             if (_workbook != null)
             {
@@ -174,10 +170,8 @@ namespace AP.Reports.AutoDocumets
                 {
                     MoveEnd();
                 }
-
-                var range = _currentCell.InsertTable(dt, dt.TableName);
-                range.Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
-                range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Medium);
+                InsertTableToCell(_currentCell, dt, cf);
+                _currentCell = _currentCell.Worksheet.LastRowUsed().RowBelow().FirstCell();
             }
         }
 
@@ -190,6 +184,7 @@ namespace AP.Reports.AutoDocumets
                     MoveEnd();
                 }
                 _currentCell.Value = text;
+                _currentCell = _currentCell.Worksheet.LastRowUsed().RowBelow().FirstCell();
             }
         }
 
@@ -243,8 +238,57 @@ namespace AP.Reports.AutoDocumets
                     {
                         targetCell = _workbook.AddWorksheet(mergeSoursesWorksheets.First().Name).Cell(1, 1);
                     }
-                    //копируем данные
+                    ////копируем данные
+
+
+                    //Копируем "Проверка данных"
+                    foreach (var dataValidation in mergeSoursesWorksheets.First().DataValidations.ToList())
+                    {
+                        //добавляем условие в на лист
+                        targetCell.Worksheet.DataValidations.Add(dataValidation);
+                        var newRanges = targetCell.Worksheet.DataValidations.Last().Ranges.ToList();
+
+
+                        //IXLRange range2 = targetCell.Worksheet.Range()
+                        ////смещаем условие
+                        //for (int i = 0; i < newRanges.Count; i++)
+                        //{
+                        //    newRanges[i] = targetCell.Worksheet.Range(
+                        //        targetCell.Worksheet.Cell(
+                        //            newRanges[i].FirstCell().Address.RowNumber + targetCell.Address.RowNumber - 1,
+                        //            newRanges[i].FirstCell().Address.ColumnNumber
+                        //            ),
+                        //        targetCell.Worksheet.Cell(
+                        //            newRanges[i].LastCell().Address.RowNumber + targetCell.Address.RowNumber - 1,
+                        //            newRanges[i].LastCell().Address.ColumnNumber
+                        //            )
+                        //    );
+                        //}
+                    }
+
+                    //Картинки
+                    Random rnd = new Random();
+                    foreach (var pic in mergeSoursesWorksheets.First().Pictures.ToList())
+                    {
+                        var insertedPic = pic.Duplicate();
+                        //обходим запрет на одинаковые имена
+                        while (targetCell.Worksheet.Pictures.Contains(insertedPic.Name))
+                        {
+                            insertedPic.Name = "Picture" + rnd.Next(1000).ToString();
+                        }
+                        insertedPic = insertedPic.CopyTo(targetCell.Worksheet);
+                        //вычисляем смещение
+                        IXLCell moveTo = targetCell.Worksheet.Cell(
+                            pic.TopLeftCell.Address.RowNumber + targetCell.Address.RowNumber - 1,
+                            pic.TopLeftCell.Address.ColumnNumber
+                            );
+                        //смещаем
+                        insertedPic.MoveTo(moveTo);
+                    }
+
+                    //Ячейки
                     targetCell.Value = rangeToCopy;
+
                     //удаляем лист из списка листов, подготовленных к копированию
                     mergeSoursesWorksheets.Remove(mergeSoursesWorksheets.First());
                 }
@@ -313,7 +357,14 @@ namespace AP.Reports.AutoDocumets
         {
             if (_workbook != null)
             {
-                _currentCell = _workbook.Worksheets.Last().LastRowUsed().RowBelow(1).FirstCell();
+                if (_workbook.Worksheets.Last().LastRowUsed() != null)
+                {
+                    _currentCell = _workbook.Worksheets.Last().LastRowUsed().RowBelow(1).FirstCell();
+                }
+                else
+                {
+                    _currentCell = _workbook.Worksheets.Last().FirstCell();
+                }
             }
         }
 
@@ -326,6 +377,26 @@ namespace AP.Reports.AutoDocumets
         }
 
         #endregion
+
+        private void InsertTableToCell(IXLCell cell, DataTable dt, ConditionalFormatting cf)
+        {
+            //Обходим запрет одинаковых и пустых имен
+            int tableNumber = 1;
+            while (dt.TableName == "" || cell.Worksheet.NamedRanges.Contains(dt.TableName))
+            {
+                dt.TableName = "Table" + (tableNumber++).ToString();
+            }
+
+            //var range = cell.InsertTable(dt, dt.TableName)
+            var range = cell.InsertData(dt);
+            cell.Worksheet.NamedRanges.Add(dt.TableName, range);
+            range.Style.Fill.BackgroundColor = XLColor.White;
+            range.Style.Font.FontColor = XLColor.Black;
+            range.Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
+            range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Medium);
+
+            SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
+        }
 
         private void FindCellAndDo(string sFind, CellOperator cellOperator, bool forAll)
         {

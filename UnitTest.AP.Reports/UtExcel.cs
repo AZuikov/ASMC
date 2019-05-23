@@ -69,31 +69,7 @@ namespace UnitTest.AP.Reports
                 _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
                 _excel.InsertImageToBookmark("диапазон_для_картинки", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
                 _excel.InsertTextToBookmark("диапазон_для_текста", "Текст, вставленный из программы");
-                DataTable dt = new DataTable();
-                for (int i = 0; i < 10; i++)
-                {
-                    dt.Columns.Add(new DataColumn("col" + i.ToString(), i.GetType()));
-                }
-                for (int i = 0; i < 15; i++)
-                {
-                    dt.Rows.Add(dt.NewRow());
-                }
-                Random rnd = new Random();
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    for (int j = 0; j < dt.Columns.Count; j++)
-                    {
-                        dt.Rows[i][j] = rnd.Next(10);
-                    }
-                }
-                ConditionalFormatting cf = new ConditionalFormatting();
-                cf.Value = "3";
-                cf.Color = Color.MediumTurquoise;
-                cf.NameColumn = "col3";
-                cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
-                cf.Region = ConditionalFormatting.RegionAction.Row;
-
-                _excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, cf);
+                _excel.InsertNewTableToBookmark("диапазон_для_таблицы", GetRandomDataTable(), GetCondition());
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceByBookMarkResult.xlsx");
             }
         }
@@ -104,31 +80,7 @@ namespace UnitTest.AP.Reports
             using (_excel = new Excel())
             {
                 _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
-                DataTable dt = new DataTable();
-                for (int i = 0; i < 10; i++)
-                {
-                    dt.Columns.Add(new DataColumn("col" + i.ToString(), i.GetType()));
-                }
-                for (int i = 0; i < 15; i++)
-                {
-                    dt.Rows.Add(dt.NewRow());
-                }
-                Random rnd = new Random();
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    for (int j = 0; j < dt.Columns.Count; j++)
-                    {
-                        dt.Rows[i][j] = rnd.Next(10);
-                    }
-                }
-                ConditionalFormatting cf = new ConditionalFormatting();
-                cf.Value = "3";
-                cf.Color = Color.MediumTurquoise;
-                cf.NameColumn = "col3";
-                cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
-                cf.Region = ConditionalFormatting.RegionAction.Row;
-
-                _excel.FillsTableToBookmark("диапазон_для_таблицы", dt, false, cf);
+                _excel.FillsTableToBookmark("диапазон_для_таблицы", GetRandomDataTable(), false, GetCondition());
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestFillsTableByBookmark.xlsx");
             }
         }
@@ -144,12 +96,79 @@ namespace UnitTest.AP.Reports
                 pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
                 pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge1.xlsx");
                 pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
+                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge1.xlsx");
+                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
+                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge1.xlsx");
+                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
 
                 _excel.MergeDocuments(pathsList);
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestMergeDocs.xlsx");
             }
         }
 
+        [TestMethod]
+        public void TestMethodMultyTabs()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.NewDocument(new string[] {"Таблицы"});
+                _excel.InsertTable(GetRandomDataTable(), GetCondition());
+                _excel.InsertText(" ");
+                _excel.InsertTable(GetRandomDataTable(), GetCondition());
+                _excel.InsertText(" ");
+                _excel.InsertTable(GetRandomDataTable(), GetCondition());
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestMultyTabs.xlsx");
+            }
+        }
 
+        [TestMethod]
+        public void TestMethodMultyTabs2()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\TestMultyTabs.xlsx");
+                _excel.MoveEnd();
+                _excel.InsertTable(GetRandomDataTable(), GetCondition());
+                _excel.InsertText(" ");
+                _excel.InsertTable(GetRandomDataTable(), GetCondition());
+                _excel.InsertText(" ");
+                _excel.InsertTable(GetRandomDataTable(), GetCondition());
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestMultyTabs.xlsx");
+            }
+        }
+
+
+        private DataTable GetRandomDataTable()
+        {
+            DataTable dt = new DataTable();
+            for (int i = 0; i < 10; i++)
+            {
+                dt.Columns.Add(new DataColumn("col" + i.ToString(), i.GetType()));
+            }
+            for (int i = 0; i < 15; i++)
+            {
+                dt.Rows.Add(dt.NewRow());
+            }
+            Random rnd = new Random();
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                for (int j = 0; j < dt.Columns.Count; j++)
+                {
+                    dt.Rows[i][j] = rnd.Next(10);
+                }
+            }
+            return dt;
+        }
+
+        private ConditionalFormatting GetCondition()
+        {
+            ConditionalFormatting cf = new ConditionalFormatting();
+            cf.Value = "3";
+            cf.Color = Color.MediumTurquoise;
+            cf.NameColumn = "col3";
+            cf.Condition = ConditionalFormatting.Conditions.LessOrEqual;
+            cf.Region = ConditionalFormatting.RegionAction.Row;
+            return cf;
+        }
     }
 }

@@ -21,11 +21,13 @@ namespace AP.Reports.Interface
         /// <param name="sFind">Найти</param>
         /// <param name="image">Заменить</param>
         void FindStringAndReplaceImage(string sFind, Bitmap image);
+
         /// <summary>
         /// Создает новый документ по указанному шаблону
         /// </summary>
         /// <param name="templatePath">Путь к шаблону</param>
         void NewDocumentTemp(string templatePath);
+
         /// <summary>
         /// Заполняет таблицу на закладку(Именованный диапазон)
         /// </summary>
@@ -62,10 +64,11 @@ namespace AP.Reports.Interface
         /// Вставка картинки в выделенный диапазон
         /// </summary>
         void InsertImage(Bitmap image);
+
         /// <summary>
         /// Создает и вставляет таблицу
         /// </summary>
         /// <param name="dt">Таблица для вставки</param>
-        void InsertTable(DataTable dt);
+        void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting));
     }
 }

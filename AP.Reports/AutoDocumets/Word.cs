@@ -271,7 +271,7 @@ namespace AP.Reports.AutoDocumets
           
         }
 
-        public void InsertTable(DataTable dt)
+        public void InsertTable(DataTable dt, ConditionalFormatting cf)
         {
             var table = GenerateTable(5, 2);
             _document?.MainDocumentPart.Document.Body.Append(table);
