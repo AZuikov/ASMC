@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -240,30 +241,34 @@ namespace AP.Reports.AutoDocumets
                     }
                     ////копируем данные
 
-
                     //Копируем "Проверка данных"
                     foreach (var dataValidation in mergeSoursesWorksheets.First().DataValidations.ToList())
                     {
                         //добавляем условие в на лист
                         targetCell.Worksheet.DataValidations.Add(dataValidation);
-                        var newRanges = targetCell.Worksheet.DataValidations.Last().Ranges.ToList();
+                        MatchCollection matchs =
+                            Regex.Matches(targetCell.Worksheet.DataValidations.Last().Value, @"[0-9]+");
+                        //Сохраняем только уникальные числа
+                        //Hashtable uniqMathes = new Hashtable();
+                        Dictionary<string, string> uniqMathes = new Dictionary<string, string>();
+                        for (int i = 0; i < matchs.Count; i++)
+                        {
+                            uniqMathes.Add(matchs[i].Value.ToString(), matchs[i].Value.ToString());
+                        }
+                        //Упорядочиваем по убыванию
+                        List<string> uniqMathesList = uniqMathes.Values.ToList();
+                        uniqMathesList.Sort();
+                        uniqMathesList.Reverse();
 
+                        foreach (var match in uniqMathesList)
+                        {
+                            string replaceFrom = match;
+                            string replaceTo = (Int32.Parse(match) + targetCell.Address.RowNumber - 1).ToString();
 
-                        //IXLRange range2 = targetCell.Worksheet.Range()
-                        ////смещаем условие
-                        //for (int i = 0; i < newRanges.Count; i++)
-                        //{
-                        //    newRanges[i] = targetCell.Worksheet.Range(
-                        //        targetCell.Worksheet.Cell(
-                        //            newRanges[i].FirstCell().Address.RowNumber + targetCell.Address.RowNumber - 1,
-                        //            newRanges[i].FirstCell().Address.ColumnNumber
-                        //            ),
-                        //        targetCell.Worksheet.Cell(
-                        //            newRanges[i].LastCell().Address.RowNumber + targetCell.Address.RowNumber - 1,
-                        //            newRanges[i].LastCell().Address.ColumnNumber
-                        //            )
-                        //    );
-                        //}
+                            targetCell.Worksheet.DataValidations.Last().Value = 
+                                Regex.Replace(targetCell.Worksheet.DataValidations.Last().Value,
+                                    replaceFrom, replaceTo);
+                        }
                     }
 
                     //Картинки

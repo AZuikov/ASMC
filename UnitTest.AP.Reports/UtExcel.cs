@@ -127,7 +127,7 @@ namespace UnitTest.AP.Reports
             using (_excel = new Excel())
             {
                 _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\TestMultyTabs.xlsx");
-                _excel.MoveEnd();
+                _excel.MoveHome();
                 _excel.InsertTable(GetRandomDataTable(), GetCondition());
                 _excel.InsertText(" ");
                 _excel.InsertTable(GetRandomDataTable(), GetCondition());
