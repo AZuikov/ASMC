@@ -100,14 +100,7 @@ namespace AP.Reports.AutoDocumets
 
         public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
         {
-            FindCellAndDo(
-                sFind,
-                (cell, worksheet) =>
-                    {
-                        cell.Value = "";
-                        worksheet.AddPicture(image).MoveTo(cell);
-                    },
-                true);
+            FindStringAndAllReplaceImage(sFind, image, 1, true);
         }
 
         public void FindStringAndReplaceImage(string sFind, Bitmap image)
@@ -124,14 +117,7 @@ namespace AP.Reports.AutoDocumets
 
         public void InsertImage(Bitmap image)
         {
-            if (_workbook != null)
-            {
-                if (_currentCell == null)
-                {
-                    MoveEnd();
-                }
-                _currentCell.Worksheet.AddPicture(image).MoveTo(_currentCell);
-            }
+            InsertImage(image, 1, true);
         }
 
         public void InsertImageToBookmark(string bm, Bitmap image)
@@ -206,7 +192,6 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
-        //??????????????????????????????????????????????????????????????????????
         public void MergeDocuments(string pathdoc)
         {
             XLWorkbook mergeSourse;
@@ -499,6 +484,46 @@ namespace AP.Reports.AutoDocumets
             {
                 _currentCell = currentWorkSheet.Cell(cell);
             }
+        }
+
+        /// <summary>
+        /// Вставляет изображение и масштабирует его
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="factor"></param>
+        /// <param name="relativeToOriginal"></param>
+        public void InsertImage(Bitmap image, double factor, bool relativeToOriginal)
+        {
+            if (_workbook != null)
+            {
+                if (_currentCell == null)
+                {
+                    MoveEnd();
+                }
+                var insertedPicture = _currentCell.Worksheet.AddPicture(image);
+                insertedPicture.MoveTo(_currentCell);
+                insertedPicture.Scale(factor, relativeToOriginal);
+            }
+        }
+
+        /// <summary>
+        /// Вставляет изображение на метку и масштабирует его
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="factor"></param>
+        /// <param name="relativeToOriginal"></param>
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image, double factor, bool relativeToOriginal)
+        {
+            FindCellAndDo(
+                sFind,
+                (cell, worksheet) =>
+                {
+                    cell.Value = "";
+                    var insertedPicture = worksheet.AddPicture(image);
+                    insertedPicture.MoveTo(cell);
+                    insertedPicture.Scale(factor, relativeToOriginal);
+                },
+                true);
         }
 
         /// <summary>
