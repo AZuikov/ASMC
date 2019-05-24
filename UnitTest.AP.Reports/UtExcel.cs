@@ -18,6 +18,73 @@ namespace UnitTest.AP.Reports
     public class UtExcel
     {
         private Excel _excel;
+        private string _pathToTestFolder = @"C:\Users\02ias01\Documents\Tests\";
+        private string[] _pages = new[] {"Bookmark", "Insert", "Replase"};
+
+        #region True tests
+        [TestMethod]
+        public void TestMethodCreateTestFile()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.NewDocument(_pages);
+                _excel.MoveToCell(2, 2, _pages[0]);
+                _excel.AddBookmarkToCell("AddTable");
+                _excel.MoveToCell(5, 2, _pages[0]);
+                _excel.AddBookmarkToCell("AddImage");
+                _excel.MoveToCell(8, 2, _pages[0]);
+                _excel.AddBookmarkToCell("FillTable");
+                _excel.MoveToCell(11, 10, _pages[0]);
+                _excel.AddBookmarkToCell("AddImageWithScale");
+                _excel.MoveToCell(10, 4, _pages[0]);
+                _excel.InsertText("Этот текст должен остаться");
+                _excel.MoveToCell(11, 6, _pages[0]);
+                _excel.InsertText("Этот текст должен остаться");
+                //=======================================
+                _excel.NewDocument(_pages);
+                _excel.MoveToCell(2, 2, _pages[0]);
+                _excel.InsertText("ЗаменитьНаТаблицуОдинРаз");
+                _excel.MoveToCell(3, 2, _pages[0]);
+                _excel.InsertText("ЗаменитьНаТаблицуОдинРаз");
+
+                _excel.MoveToCell(5, 2, _pages[0]);
+                _excel.AddBookmarkToCell("ЗаменитьНаИзображениеОдинРаз");
+                _excel.MoveToCell(6, 2, _pages[0]);
+                _excel.AddBookmarkToCell("ЗаменитьНаИзображениеОдинРаз");
+
+                _excel.MoveToCell(13, 10, _pages[0]);
+                _excel.AddBookmarkToCell("AddImageWithScale");
+                _excel.MoveToCell(10, 4, _pages[0]);
+                _excel.InsertText("Этот текст должен остаться");
+                _excel.MoveToCell(11, 6, _pages[0]);
+                _excel.InsertText("Этот текст должен остаться");
+            }
+        }
+
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         [TestMethod]
         public void TestMethodReplaceAll()
@@ -70,7 +137,7 @@ namespace UnitTest.AP.Reports
                 _excel.InsertImageToBookmark("диапазон_для_картинки", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
                 _excel.InsertTextToBookmark("диапазон_для_текста", "Текст, вставленный из программы");
                 DataTable dt = GetRandomDataTable();
-                //_excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, GetCondition());
+                _excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, GetCondition());
                 _excel.MoveToCell(24,13, "Лист2");
                 _excel.InsertTable(dt, GetCondition());
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceByBookMarkResult.xlsx");
@@ -146,25 +213,17 @@ namespace UnitTest.AP.Reports
             using (_excel = new Excel())
             {
                 _excel.NewDocument();
-                _excel.MoveHome();
-                _excel.InsertText("First");
-                _excel.MoveHome();
-                _excel.InsertText("Second");
-                _excel.MoveHome();
-                _excel.InsertText("Third");
-                _excel.MoveHome();
-                _excel.InsertText("4-th");
-                _excel.MoveHome();
-                _excel.InsertText("5-th");
-                _excel.MoveHome();
-                _excel.InsertText("6-th");
-                _excel.MoveHome();
-                _excel.InsertText("7-th");
-                _excel.MoveHome();
-                _excel.InsertText("8-th");
-                _excel.MoveHome();
-                _excel.InsertText("9-th");
-
+                for (int i = 0; i < 10; i++)
+                {
+                    _excel.MoveHome();
+                    _excel.InsertText("Text" + i.ToString());
+                    DataTable dt = GetRandomDataTable();
+                    _excel.MoveHome();
+                    _excel.InsertText("");
+                    dt.TableName = "Table" + i.ToString();
+                    _excel.MoveHome();
+                    _excel.InsertTable(dt, GetCondition());
+                }
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestInsert.xlsx");
             }
         }
@@ -186,11 +245,10 @@ namespace UnitTest.AP.Reports
             {
                 for (int j = 0; j < dt.Columns.Count; j++)
                 {
-                    dt.Rows[i][j] = rnd.Next(1);
+                    dt.Rows[i][j] = rnd.Next(10);
                 }
             }
 
-            dt.Rows[3][2] = 2;
             dt.TableName = "Table" + rnd.Next(100) + "_CreatedByRandom";
             return dt;
         }
@@ -198,10 +256,10 @@ namespace UnitTest.AP.Reports
         private ConditionalFormatting GetCondition()
         {
             ConditionalFormatting cf = new ConditionalFormatting();
-            cf.Value = "2";
+            cf.Value = "6";
             cf.Color = Color.MediumTurquoise;
             cf.NameColumn = "col3";
-            cf.Condition = ConditionalFormatting.Conditions.Equal;
+            cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
             cf.Region = ConditionalFormatting.RegionAction.Row;
             return cf;
         }

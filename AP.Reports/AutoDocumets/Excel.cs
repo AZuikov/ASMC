@@ -153,6 +153,7 @@ namespace AP.Reports.AutoDocumets
                 IXLCell cell = _workbook.Cell(bm);
                 if (cell != null)
                 {
+                    cell.Value = "";
                     InsertTableToCell(cell, dt, cf);
                 }
                 else throw new NullReferenceException();
@@ -185,7 +186,7 @@ namespace AP.Reports.AutoDocumets
                 if (_currentCell.Value.ToString() != "")
                 {
                     var savedAdress = _currentCell.Address;
-                    _currentCell.Worksheet.Range(_currentCell.Worksheet.Cell(1, 1), _currentCell.Worksheet.Cell(1,10)).InsertRowsAbove(1);
+                    _currentCell.Worksheet.Row(_currentCell.Address.RowNumber).AsRange().InsertRowsAbove(1);
                     _currentCell = _currentCell.Worksheet.Cell(savedAdress);
                 }
 
@@ -440,7 +441,7 @@ namespace AP.Reports.AutoDocumets
                 string oldName = dt.TableName;
                 while (cell.Worksheet.NamedRanges.Contains(dt.TableName))
                 {
-                    dt.TableName = oldName + (tableNumber++).ToString();
+                    dt.TableName = oldName + "(" + (tableNumber++).ToString() + ")";
                 }
             }
             range.Style.Fill.BackgroundColor = XLColor.White;
@@ -700,6 +701,8 @@ namespace AP.Reports.AutoDocumets
                 true);
         }
 
+        
+
         /// <summary>
         /// Сдвигает строки для вставки таблицы
         /// </summary>
@@ -707,14 +710,11 @@ namespace AP.Reports.AutoDocumets
         /// <param name="cell"></param>
         private void ShiftForATable(DataTable dt, ref IXLCell cell)
         {
-            bool isRegionEmpty;
-            int emptyRowsNumber;
-            if (cell.Value.ToString() != "")
+            if (cell.Worksheet.Row(cell.Address.RowNumber).IsEmpty())
             {
                 var savedAdress = cell.Address;
-                cell.Worksheet.Range(cell.Worksheet.Cell(1, 1), cell.Worksheet.Cell(1, 10))
-                    .InsertRowsAbove(dt.Rows.Count);
-                cell =cell.Worksheet.Cell(savedAdress);
+                cell.Worksheet.Row(cell.Address.RowNumber).AsRange().InsertRowsAbove(dt.Rows.Count - 1);
+                cell = cell.Worksheet.Cell(savedAdress);
             }
         }
 
@@ -730,6 +730,17 @@ namespace AP.Reports.AutoDocumets
                 _workbook.Worksheets.Add(sheet);
             }
             MoveEnd();
+        }
+
+        /// <summary>
+        /// Добавляет закладку на текущую клетку
+        /// </summary>
+        public void AddBookmarkToCell(string name)
+        {
+            if (_workbook != null && _currentCell != null)
+            {
+                _currentCell.AsRange().AddToNamed(name);
+            }
         }
 
         public void Dispose()
