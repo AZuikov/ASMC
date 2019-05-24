@@ -1,8 +1,4 @@
 ﻿using System.IO;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
-using DevExpress.Mvvm;
 
 namespace ASMC.Core.View
 {

@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Packaging;
 
 namespace AP.Reports.AutoDocumets
 {
@@ -23,6 +17,12 @@ namespace AP.Reports.AutoDocumets
         private string _filePath;
 
         public string Path => throw new NotImplementedException();
+
+        string IReport.Path
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
         private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
@@ -328,6 +328,11 @@ namespace AP.Reports.AutoDocumets
         }
 
         public void InsertTable(DataTable dt)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }

@@ -62,6 +62,7 @@ namespace AP.Reports.Interface
         /// Создает и вставляет таблицу
         /// </summary>
         /// <param name="dt">Таблица для вставки</param>
-        void InsertTable(DataTable dt);
+        /// <param name="cf">Условия форматирования</param>
+        void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting));
     }
 }
