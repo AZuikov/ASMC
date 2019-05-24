@@ -69,7 +69,10 @@ namespace UnitTest.AP.Reports
                 _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
                 _excel.InsertImageToBookmark("диапазон_для_картинки", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
                 _excel.InsertTextToBookmark("диапазон_для_текста", "Текст, вставленный из программы");
-                _excel.InsertNewTableToBookmark("диапазон_для_таблицы", GetRandomDataTable(), GetCondition());
+                DataTable dt = GetRandomDataTable();
+                _excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, GetCondition());
+                _excel.MoveToCell(24,13, "Лист2");
+                _excel.InsertTable(dt, GetCondition());
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceByBookMarkResult.xlsx");
             }
         }
@@ -137,6 +140,35 @@ namespace UnitTest.AP.Reports
             }
         }
 
+        [TestMethod]
+        public void TestMethodInsert()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.NewDocument();
+                _excel.MoveHome();
+                _excel.InsertText("First");
+                _excel.MoveHome();
+                _excel.InsertText("Second");
+                _excel.MoveHome();
+                _excel.InsertText("Third");
+                _excel.MoveHome();
+                _excel.InsertText("4-th");
+                _excel.MoveHome();
+                _excel.InsertText("5-th");
+                _excel.MoveHome();
+                _excel.InsertText("6-th");
+                _excel.MoveHome();
+                _excel.InsertText("7-th");
+                _excel.MoveHome();
+                _excel.InsertText("8-th");
+                _excel.MoveHome();
+                _excel.InsertText("9-th");
+
+                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestInsert.xlsx");
+            }
+        }
+
 
         private DataTable GetRandomDataTable()
         {
@@ -154,19 +186,21 @@ namespace UnitTest.AP.Reports
             {
                 for (int j = 0; j < dt.Columns.Count; j++)
                 {
-                    dt.Rows[i][j] = rnd.Next(10);
+                    dt.Rows[i][j] = rnd.Next(3);
                 }
             }
+
+            dt.TableName = "Table" + rnd.Next(100) + "_CreatedByRandom";
             return dt;
         }
 
         private ConditionalFormatting GetCondition()
         {
             ConditionalFormatting cf = new ConditionalFormatting();
-            cf.Value = "3";
+            cf.Value = "2";
             cf.Color = Color.MediumTurquoise;
             cf.NameColumn = "col3";
-            cf.Condition = ConditionalFormatting.Conditions.LessOrEqual;
+            cf.Condition = ConditionalFormatting.Conditions.Equal;
             cf.Region = ConditionalFormatting.RegionAction.Row;
             return cf;
         }

@@ -30,6 +30,7 @@ namespace AP.Reports.AutoDocumets
         private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
         #region ctors
+
         public Excel()
         {
             _workbook = null;
@@ -41,6 +42,7 @@ namespace AP.Reports.AutoDocumets
         {
             NewDocument(sheets);
         }
+
         #endregion
 
 
@@ -51,14 +53,15 @@ namespace AP.Reports.AutoDocumets
             _workbook.Dispose();
         }
 
-        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false,
+            ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (_workbook != null)
             {
                 IXLCell cell = _workbook.Cell(bm);
                 if (cell != null)
                 {
-                    for (int i = 0; i< dt.Rows.Count; i++)
+                    for (int i = 0; i < dt.Rows.Count; i++)
                     {
                         for (int j = 0; j < dt.Columns.Count; j++)
                         {
@@ -88,7 +91,10 @@ namespace AP.Reports.AutoDocumets
         {
             FindCellAndDo(
                 sFind,
-                (cell, worksheet) => { cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace); },
+                (cell, worksheet) =>
+                {
+                    cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
+                },
                 true);
         }
 
@@ -96,7 +102,10 @@ namespace AP.Reports.AutoDocumets
         {
             FindCellAndDo(
                 sFind,
-                (cell, worksheet) => { cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace); },
+                (cell, worksheet) =>
+                {
+                    cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
+                },
                 false);
         }
 
@@ -126,7 +135,7 @@ namespace AP.Reports.AutoDocumets
         {
             if (_workbook != null)
             {
-                IXLCell cell =_workbook.Cell(bm);
+                IXLCell cell = _workbook.Cell(bm);
                 if (cell != null)
                 {
                     cell.Value = "";
@@ -136,7 +145,8 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
-        public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void InsertNewTableToBookmark(string bm, DataTable dt,
+            ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (_workbook != null)
             {
@@ -157,6 +167,7 @@ namespace AP.Reports.AutoDocumets
                 {
                     MoveEnd();
                 }
+
                 InsertTableToCell(_currentCell, dt, cf);
                 _currentCell = _currentCell.Worksheet.LastRowUsed().RowBelow().FirstCell();
             }
@@ -170,8 +181,15 @@ namespace AP.Reports.AutoDocumets
                 {
                     MoveEnd();
                 }
+
+                if (_currentCell.Value.ToString() != "")
+                {
+                    var savedAdress = _currentCell.Address;
+                    _currentCell.Worksheet.Range(_currentCell.Worksheet.Cell(1, 1), _currentCell.Worksheet.Cell(1,10)).InsertRowsAbove(1);
+                    _currentCell = _currentCell.Worksheet.Cell(savedAdress);
+                }
+
                 _currentCell.Value = text;
-                _currentCell = _currentCell.Worksheet.LastRowUsed().RowBelow().FirstCell();
             }
         }
 
@@ -190,6 +208,16 @@ namespace AP.Reports.AutoDocumets
 
         public void MergeDocuments(string pathdoc)
         {
+            if (pathdoc == null)
+            {
+                throw new FileNotFoundException("Путь к файлу не указан.");
+            }
+
+            if (!System.IO.Path.GetExtension(pathdoc).Equals(@".xlsx"))
+            {
+                throw new FormatException("Формат файла не .xlsx");
+            }
+
             XLWorkbook mergeSourse;
             try
             {
@@ -207,9 +235,9 @@ namespace AP.Reports.AutoDocumets
                 {
                     //объявляем область для переноса
                     var rangeToCopy = mergeSoursesWorksheets.First().Range(
-                            mergeSoursesWorksheets.First().Cell(1, 1),
-                            mergeSoursesWorksheets.First().LastCellUsed()
-                            );
+                        mergeSoursesWorksheets.First().Cell(1, 1),
+                        mergeSoursesWorksheets.First().LastCellUsed()
+                    );
                     //Определяем ячейку для вставки
                     IXLCell targetCell;
                     //Если лист с таким именем уже есть в документе
@@ -240,6 +268,7 @@ namespace AP.Reports.AutoDocumets
                         {
                             uniqMathes.Add(matchs[i].Value.ToString(), matchs[i].Value.ToString());
                         }
+
                         //Упорядочиваем по убыванию
                         List<string> uniqMathesList = uniqMathes.Values.ToList();
                         uniqMathesList.Sort();
@@ -250,7 +279,7 @@ namespace AP.Reports.AutoDocumets
                             string replaceFrom = match;
                             string replaceTo = (Int32.Parse(match) + targetCell.Address.RowNumber - 1).ToString();
 
-                            targetCell.Worksheet.DataValidations.Last().Value = 
+                            targetCell.Worksheet.DataValidations.Last().Value =
                                 Regex.Replace(targetCell.Worksheet.DataValidations.Last().Value,
                                     replaceFrom, replaceTo);
                         }
@@ -266,12 +295,13 @@ namespace AP.Reports.AutoDocumets
                         {
                             insertedPic.Name = "Picture" + rnd.Next(1000).ToString();
                         }
+
                         insertedPic = insertedPic.CopyTo(targetCell.Worksheet);
                         //вычисляем смещение
                         IXLCell moveTo = targetCell.Worksheet.Cell(
                             pic.TopLeftCell.Address.RowNumber + targetCell.Address.RowNumber - 1,
                             pic.TopLeftCell.Address.ColumnNumber
-                            );
+                        );
                         //смещаем
                         insertedPic.MoveTo(moveTo);
                     }
@@ -287,11 +317,21 @@ namespace AP.Reports.AutoDocumets
 
         public void NewDocument()
         {
-            NewDocument(new string[] { "Лист1" });
+            NewDocument(new string[] {"Лист1"});
         }
 
         public void NewDocumentTemp(string templatePath)
         {
+            if (templatePath == null)
+            {
+                throw new FileNotFoundException("Путь к файлу не указан.");
+            }
+
+            if (!System.IO.Path.GetExtension(templatePath).Equals(@".xltx"))
+            {
+                throw new FormatException("Формат файла не .xltx");
+            }
+
             try
             {
                 _filePath = null;
@@ -306,6 +346,16 @@ namespace AP.Reports.AutoDocumets
 
         public void OpenDocument(string sPath)
         {
+            if (sPath == null)
+            {
+                throw new FileNotFoundException("Путь к файлу не указан.");
+            }
+
+            if (!System.IO.Path.GetExtension(sPath).Equals(@".xlsx"))
+            {
+                throw new FormatException("Формат файла не .xlsx");
+            }
+
             try
             {
                 _filePath = sPath;
@@ -328,6 +378,15 @@ namespace AP.Reports.AutoDocumets
 
         public void SaveAs(string pathToSave)
         {
+            if (pathToSave == null)
+            {
+                throw new FileNotFoundException("Путь к файлу не указан.");
+            }
+
+            if (!System.IO.Path.GetExtension(pathToSave).Equals(@".xlsx"))
+            {
+                throw new FormatException("Формат файла не .xlsx");
+            }
             if (_workbook != null)
             {
                 _filePath = pathToSave;
@@ -370,16 +429,20 @@ namespace AP.Reports.AutoDocumets
 
         private void InsertTableToCell(IXLCell cell, DataTable dt, ConditionalFormatting cf)
         {
-            //Обходим запрет одинаковых и пустых имен
-            int tableNumber = 1;
-            while (dt.TableName == "" || cell.Worksheet.NamedRanges.Contains(dt.TableName))
-            {
-                dt.TableName = "Table" + (tableNumber++).ToString();
-            }
-
-            //var range = cell.InsertTable(dt, dt.TableName)
+            ShiftForATable(dt, ref cell); //Сдвигает строки
             var range = cell.InsertData(dt);
-            cell.Worksheet.NamedRanges.Add(dt.TableName, range);
+            if (dt.TableName != "")
+            {
+                cell.Worksheet.NamedRanges.Add(dt.TableName, range);
+
+                //обходим запрет на одинаковые имена
+                int tableNumber = 1;
+                string oldName = dt.TableName;
+                while (cell.Worksheet.NamedRanges.Contains(dt.TableName))
+                {
+                    dt.TableName = oldName + (tableNumber++).ToString();
+                }
+            }
             range.Style.Fill.BackgroundColor = XLColor.White;
             range.Style.Font.FontColor = XLColor.Black;
             range.Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
@@ -388,6 +451,12 @@ namespace AP.Reports.AutoDocumets
             SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
         }
 
+        /// <summary>
+        /// Ищет клетку с ключевым словом и вызывает делегат
+        /// </summary>
+        /// <param name="sFind"></param>
+        /// <param name="cellOperator"></param>
+        /// <param name="forAll"></param>
         private void FindCellAndDo(string sFind, CellOperator cellOperator, bool forAll)
         {
             if (_workbook != null)
@@ -449,11 +518,19 @@ namespace AP.Reports.AutoDocumets
         {
             for (int i = 1; i <= range.RowCount(); i++)
             {
+                //если ячейка внутри мердж-региона, но НЕ является первой в нем
+                if (range.Cell(i, formatingColumn).IsMerged()
+                        && range.Cell(i, formatingColumn) != 
+                        range.Cell(i, formatingColumn).MergedRange().FirstCell())
+                {
+                    continue;
+                }
+
                 double conditionValue;
                 double tableValue;
-                //Если оба данных - числа
-                if(double.TryParse(conditional.Value, out conditionValue) 
-                        && double.TryParse(range.Cell(i, formatingColumn).Value.ToString(), out tableValue))
+                //Если оба данных - числа, то сравниваем их как числа
+                if (double.TryParse(conditional.Value, out conditionValue)
+                    && double.TryParse(range.Cell(i, formatingColumn).Value.ToString(), out tableValue))
                 {
                     switch (conditional.Condition)
                     {
@@ -462,36 +539,42 @@ namespace AP.Reports.AutoDocumets
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
+
                             break;
                         case ConditionalFormatting.Conditions.Less:
                             if (tableValue < conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
+
                             break;
                         case ConditionalFormatting.Conditions.LessOrEqual:
                             if (tableValue <= conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
+
                             break;
                         case ConditionalFormatting.Conditions.More:
                             if (tableValue > conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
+
                             break;
                         case ConditionalFormatting.Conditions.MoreOrEqual:
                             if (tableValue >= conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
+
                             break;
                         case ConditionalFormatting.Conditions.NotEqual:
                             if (tableValue != conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
+
                             break;
                     }
                 }
@@ -519,17 +602,32 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
-        private void SetConditionToRegion(IXLRange range, int row, int formatingColumn, ConditionalFormatting conditional)
+        /// <summary>
+        /// Заливает строку или ячейку цветом выделения
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="row"></param>
+        /// <param name="formatingColumn"></param>
+        /// <param name="conditional"></param>
+        private void SetConditionToRegion(IXLRange range, int row, int formatingColumn,
+            ConditionalFormatting conditional)
         {
             IXLRange rangeToFormating;
+            int rowCount = 1;
+            if (range.Worksheet.Cell(row, formatingColumn).IsMerged())
+            {
+                rowCount = range.Worksheet.Cell(row, formatingColumn).MergedRange().RowCount();
+            }
+
             if (conditional.Region == ConditionalFormatting.RegionAction.Cell)
             {
                 rangeToFormating = range.Range(row, formatingColumn, row, formatingColumn);
             }
             else
             {
-                rangeToFormating = range.Range(row, 1, row, range.ColumnCount());
+                rangeToFormating = range.Range(row, 1, row + rowCount - 1, range.ColumnCount());
             }
+
             rangeToFormating.Style.Fill.BackgroundColor = XLColor.FromColor(conditional.Color);
         }
 
@@ -576,6 +674,7 @@ namespace AP.Reports.AutoDocumets
                 {
                     MoveEnd();
                 }
+
                 var insertedPicture = _currentCell.Worksheet.AddPicture(image);
                 insertedPicture.MoveTo(_currentCell);
                 insertedPicture.Scale(factor, relativeToOriginal);
@@ -600,6 +699,24 @@ namespace AP.Reports.AutoDocumets
                     insertedPicture.Scale(factor, relativeToOriginal);
                 },
                 true);
+        }
+
+        /// <summary>
+        /// Сдвигает строки для вставки таблицы
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="cell"></param>
+        private void ShiftForATable(DataTable dt, ref IXLCell cell)
+        {
+            bool isRegionEmpty;
+            int emptyRowsNumber;
+            if (cell.Value.ToString() != "")
+            {
+                var savedAdress = cell.Address;
+                cell.Worksheet.Range(cell.Worksheet.Cell(1, 1), cell.Worksheet.Cell(1, 10))
+                    .InsertRowsAbove(dt.Rows.Count);
+                cell =cell.Worksheet.Cell(savedAdress);
+            }
         }
 
         /// <summary>
