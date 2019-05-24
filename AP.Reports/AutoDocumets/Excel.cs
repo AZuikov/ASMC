@@ -518,19 +518,11 @@ namespace AP.Reports.AutoDocumets
         {
             for (int i = 1; i <= range.RowCount(); i++)
             {
-                //если ячейка внутри мердж-региона, но НЕ является первой в нем
-                if (range.Cell(i, formatingColumn).IsMerged()
-                        && range.Cell(i, formatingColumn) != 
-                        range.Cell(i, formatingColumn).MergedRange().FirstCell())
-                {
-                    continue;
-                }
-
                 double conditionValue;
                 double tableValue;
                 //Если оба данных - числа, то сравниваем их как числа
                 if (double.TryParse(conditional.Value, out conditionValue)
-                    && double.TryParse(range.Cell(i, formatingColumn).Value.ToString(), out tableValue))
+                    && double.TryParse(GetMargedCellValue(range.Cell(i, formatingColumn)), out tableValue))
                 {
                     switch (conditional.Condition)
                     {
@@ -539,42 +531,36 @@ namespace AP.Reports.AutoDocumets
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                         case ConditionalFormatting.Conditions.Less:
                             if (tableValue < conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                         case ConditionalFormatting.Conditions.LessOrEqual:
                             if (tableValue <= conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                         case ConditionalFormatting.Conditions.More:
                             if (tableValue > conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                         case ConditionalFormatting.Conditions.MoreOrEqual:
                             if (tableValue >= conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                         case ConditionalFormatting.Conditions.NotEqual:
                             if (tableValue != conditionValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                     }
                 }
@@ -584,18 +570,16 @@ namespace AP.Reports.AutoDocumets
                     switch (conditional.Condition)
                     {
                         case ConditionalFormatting.Conditions.Equal:
-                            if (range.Cell(i, formatingColumn).ToString() == conditional.Value)
+                            if ( GetMargedCellValue(range.Cell(i, formatingColumn)) == conditional.Value)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                         case ConditionalFormatting.Conditions.NotEqual:
-                            if (range.Cell(i, formatingColumn).ToString() != conditional.Value)
+                            if (GetMargedCellValue(range.Cell(i, formatingColumn)) != conditional.Value)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
-
                             break;
                     }
                 }
@@ -613,22 +597,37 @@ namespace AP.Reports.AutoDocumets
             ConditionalFormatting conditional)
         {
             IXLRange rangeToFormating;
-            int rowCount = 1;
-            if (range.Worksheet.Cell(row, formatingColumn).IsMerged())
-            {
-                rowCount = range.Worksheet.Cell(row, formatingColumn).MergedRange().RowCount();
-            }
-
             if (conditional.Region == ConditionalFormatting.RegionAction.Cell)
             {
                 rangeToFormating = range.Range(row, formatingColumn, row, formatingColumn);
             }
             else
             {
-                rangeToFormating = range.Range(row, 1, row + rowCount - 1, range.ColumnCount());
+                rangeToFormating = range.Range(row, 1, row, range.ColumnCount());
             }
 
             rangeToFormating.Style.Fill.BackgroundColor = XLColor.FromColor(conditional.Color);
+        }
+
+        /// <summary>
+        /// Если клетка входит в объединение - возвращает значение первой клетки объединения
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private string GetMargedCellValue(IXLCell cell)
+        {
+            if (cell.IsMerged() == false)
+            {
+                return cell.Value.ToString();
+            }
+            foreach (var margedRange in cell.Worksheet.MergedRanges)
+            {
+                if (margedRange.Contains(cell))
+                {
+                    return margedRange.FirstCell().Value.ToString();
+                }
+            }
+            return "";
         }
 
         /// <summary>

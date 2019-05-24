@@ -70,7 +70,7 @@ namespace UnitTest.AP.Reports
                 _excel.InsertImageToBookmark("диапазон_для_картинки", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
                 _excel.InsertTextToBookmark("диапазон_для_текста", "Текст, вставленный из программы");
                 DataTable dt = GetRandomDataTable();
-                _excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, GetCondition());
+                //_excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, GetCondition());
                 _excel.MoveToCell(24,13, "Лист2");
                 _excel.InsertTable(dt, GetCondition());
                 _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceByBookMarkResult.xlsx");
@@ -186,10 +186,11 @@ namespace UnitTest.AP.Reports
             {
                 for (int j = 0; j < dt.Columns.Count; j++)
                 {
-                    dt.Rows[i][j] = rnd.Next(3);
+                    dt.Rows[i][j] = rnd.Next(1);
                 }
             }
 
+            dt.Rows[3][2] = 2;
             dt.TableName = "Table" + rnd.Next(100) + "_CreatedByRandom";
             return dt;
         }
