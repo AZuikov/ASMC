@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Data;
+using System.Drawing.Imaging;
 using System.Resources;
 using Microsoft.Office.Interop.Word;
 using SystemOffice = Microsoft.Office.Interop.Word.System;
@@ -31,11 +32,11 @@ namespace UnitTest.AP.Reports
                 _excel.NewDocument(_pages);
                 _excel.MoveToCell(2, 2, _pages[0]);
                 _excel.AddBookmarkToCell("AddTable");
-                _excel.MoveToCell(5, 13, _pages[0]);
+                _excel.MoveToCell(3, 13, _pages[0]);
                 _excel.AddBookmarkToCell("AddImage");
                 _excel.MoveToCell(8, 2, _pages[0]);
                 _excel.AddBookmarkToCell("FillTable");
-                _excel.MoveToCell(13, 13, _pages[0]);
+                _excel.MoveToCell(15, 13, _pages[0]);
                 _excel.AddBookmarkToCell("AddImageWithScale");
                 _excel.MoveToCell(10, 4, _pages[0]);
                 _excel.InsertText("Этот текст должен остаться");
@@ -97,7 +98,7 @@ namespace UnitTest.AP.Reports
                 _excel.OpenDocument(_pathToTestFolder + "Test.xlsx");
 
                 _excel.MoveToCell(1,1,_pages[1]);
-                Bitmap image = new Bitmap(_pathToTestFolder + "~star.jpg");
+                Bitmap image = GetBitmapImage();
                 DataTable dt = GetRandomDataTable();
                 dt.TableName = "TestTable";
 
@@ -127,7 +128,7 @@ namespace UnitTest.AP.Reports
                 }
                 _excel.OpenDocument(_pathToTestFolder + "Test.xlsx");
                 DataTable dt = GetRandomDataTable();
-                Bitmap image = new Bitmap(_pathToTestFolder + "~star.jpg");
+                Bitmap image = GetBitmapImage();
                 _excel.InsertNewTableToBookmark("AddTable", dt, GetCondition());
                 _excel.InsertImageToBookmark("AddImage", image);
                 _excel.InsertImageToBookmark("AddImageWithScale",image, 0.5, true);
@@ -148,7 +149,7 @@ namespace UnitTest.AP.Reports
                 }
                 _excel.OpenDocument(_pathToTestFolder + "Test.xlsx");
                 DataTable dt = GetRandomDataTable();
-                Bitmap image = new Bitmap(_pathToTestFolder + "~star.jpg");
+                Bitmap image = GetBitmapImage();
                 _excel.FindStringAndReplace("ЗаменитьНаТекстОдинРаз", "ЗамененоНаТекстОдинРаз");
                 _excel.FindStringAndReplaceImage("ЗаменитьНаИзображениеОдинРаз", image);
                 _excel.FindStringAndReplaceImage("ЗаменитьНаИзображениеСМасштабомОдинРаз", image, 0.5, true);
@@ -193,17 +194,6 @@ namespace UnitTest.AP.Reports
                 _excel.SaveAs(_pathToTestFolder + "TestMerge.xlsx");
             }
         }
-
-        [TestMethod]
-        public void TestMethodAllMethods()
-        {
-            TestMethodCreateTestFile();
-            TestMethodAllInsertFunctoins();
-            TestMethodAllReplaceByBookmark();
-            TestMethodFindStringAndReplase();
-            TestMethodMerge();
-        }
-
         #endregion
 
         private DataTable GetRandomDataTable()
@@ -239,6 +229,25 @@ namespace UnitTest.AP.Reports
             cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
             cf.Region = ConditionalFormatting.RegionAction.Row;
             return cf;
+        }
+
+        private Bitmap GetBitmapImage()
+        {
+            Bitmap image;
+            if (!System.IO.File.Exists(_pathToTestFolder + "TestImage.bmp"))
+            {
+                int x = 200;
+                int y = 200;
+                image = new Bitmap(x, y);
+                for (int i = 0; i < x; i++)
+                for (int j = 0; j < y; j++)
+                {
+                    image.SetPixel(i, j, Color.CadetBlue);
+                }
+                image.Save(_pathToTestFolder + "TestImage.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+            }
+            image = new Bitmap(_pathToTestFolder + "TestImage.bmp");
+            return image;
         }
     }
 }
