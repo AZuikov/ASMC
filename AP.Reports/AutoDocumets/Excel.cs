@@ -24,6 +24,12 @@ namespace AP.Reports.AutoDocumets
 
         public string Path => throw new NotImplementedException();
 
+        string IReport.Path
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
         private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
         #region ctors
@@ -328,6 +334,11 @@ namespace AP.Reports.AutoDocumets
         }
 
         public void InsertTable(DataTable dt)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }

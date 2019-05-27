@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
 using AP.Reports.AutoDocumets;
 using AP.Reports.MSInterop;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -67,23 +69,39 @@ namespace UnitTest.AP.Reports
         {
             word = new Word();
             word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
-            var dataTable = new DataTable();
-            for(var i = 0; i < 6; i++)
-            {
-                dataTable.Columns.Add("a" + i);
-            }
-            DataRow[] dataRow = new DataRow[10];
-            for(var i = 0; i < 10; i++)
-            {
-                dataRow[i] = dataTable.NewRow();
-                for(var j = 0; j < 6; j++)
-                {
-                    dataRow[i][j] = i + j.ToString();
-                }
-                dataTable.Rows.Add(dataRow[i]);
-            }
-            word.FillsTableToBookmark("test1",dataTable);
-          
+            //var dataTable = new DataTable();
+            //for(var i = 0; i < 6; i++)
+            //{
+            //    dataTable.Columns.Add("a" + i);
+            //}
+            //DataRow[] dataRow = new DataRow[10];
+            //for(var i = 0; i < 10; i++)
+            //{
+            //    dataRow[i] = dataTable.NewRow();
+            //    for(var j = 0; j < 6; j++)
+            //    {
+            //        dataRow[i][j] = i + j.ToString();
+            //    }
+            //    dataTable.Rows.Add(dataRow[i]);
+            //}
+            //word.FillsTableToBookmark("test1",dataTable);
+            word.InsertImage(new Bitmap(@"C:\Users\02tav01\Pictures\График.JPG"));
+            word.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
+            word.Close();
+        }
+        [TestMethod]
+        public void TestMethod3()
+        {
+            word = new Word();
+            word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
+            Bitmap mb = new Bitmap(100,100);
+            Graphics graphics = Graphics.FromImage(mb);
+            Rectangle rectangle = new Rectangle(0, 0, mb.Width, mb.Height);
+            System.Drawing.Imaging.BitmapData bitmapData =
+                mb.LockBits(rectangle, ImageLockMode.ReadOnly, mb.PixelFormat);
+            mb.UnlockBits(bitmapData);
+            //word.InsertImage(mb);   
+            word.InsertImage(new Bitmap(@"C:\Users\02tav01\Pictures\График.JPG"));
             word.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             word.Close();
         }

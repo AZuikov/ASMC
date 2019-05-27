@@ -9,14 +9,26 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using OpenXmlPowerTools;
 using BottomBorder = DocumentFormat.OpenXml.Wordprocessing.BottomBorder;
 using ConditionalFormatting = AP.Reports.Utils.ConditionalFormatting;
 using DataTable = System.Data.DataTable;
+using GridColumn = DocumentFormat.OpenXml.Wordprocessing.GridColumn;
+using InsideHorizontalBorder = DocumentFormat.OpenXml.Wordprocessing.InsideHorizontalBorder;
+using InsideVerticalBorder = DocumentFormat.OpenXml.Wordprocessing.InsideVerticalBorder;
 using LeftBorder = DocumentFormat.OpenXml.Wordprocessing.LeftBorder;
+using NonVisualGraphicFrameDrawingProperties = DocumentFormat.OpenXml.Drawing.Wordprocessing.NonVisualGraphicFrameDrawingProperties;
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 using RightBorder = DocumentFormat.OpenXml.Wordprocessing.RightBorder;
 using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
 using Table = DocumentFormat.OpenXml.Wordprocessing.Table;
+using TableCell = DocumentFormat.OpenXml.Wordprocessing.TableCell;
+using TableCellProperties = DocumentFormat.OpenXml.Wordprocessing.TableCellProperties;
+using TableGrid = DocumentFormat.OpenXml.Wordprocessing.TableGrid;
+using TableProperties = DocumentFormat.OpenXml.Wordprocessing.TableProperties;
+using TableRow = DocumentFormat.OpenXml.Wordprocessing.TableRow;
 using TableStyle = DocumentFormat.OpenXml.Wordprocessing.TableStyle;
 using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 using TopBorder = DocumentFormat.OpenXml.Wordprocessing.TopBorder;
@@ -93,6 +105,7 @@ namespace AP.Reports.AutoDocumets
             Docm
         }
         #endregion
+
         public Word()
         {
 
@@ -101,7 +114,7 @@ namespace AP.Reports.AutoDocumets
         {
             _stream = stream;
             Init();
-        }
+        } 
 
         #region IGrapsReport   
         public void SaveAs(string pathToSave)
@@ -209,10 +222,10 @@ namespace AP.Reports.AutoDocumets
         public void InsertImage(Bitmap image)
         {
           var ms = new MemoryStream();
-          image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);      
-          ImagePart imagePart = _document.MainDocumentPart.AddImagePart(ImagePartType.Png);
-
-          throw new NotImplementedException();
+          image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);      
+          var imagePart = _document.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);  
+          AddImage(_document.MainDocumentPart.GetIdOfPart(imagePart)); 
+          //throw new NotImplementedException();
         }
         public void NewDocumentTemp(string templatePath)
         {
@@ -309,7 +322,7 @@ namespace AP.Reports.AutoDocumets
             SetElement = SetElement.Descendants<Paragraph>().First();
             //throw new NotImplementedException();
         }
-        #endregion
+        #endregion  
 
         #region public methods
         /// <summary>
@@ -360,9 +373,83 @@ namespace AP.Reports.AutoDocumets
             }
             throw new NotImplementedException();
         }
-        #endregion  
+        #endregion
 
         #region private methods
+        private void AddImage(string relationshipId)
+        {
+            var element =
+            new Drawing(
+                new Inline(
+                    new Extent() { Cx = 990000L, Cy = 792000L },
+                    new EffectExtent()
+                    {
+                        LeftEdge = 0L,
+                        TopEdge = 0L,
+                        RightEdge = 0L,
+                        BottomEdge = 0L
+                    },
+                    new DocProperties()
+                    {
+                        Id = (UInt32Value)1U,
+                        Name = "Picture 1"
+                    },
+                    new NonVisualGraphicFrameDrawingProperties(
+                        new GraphicFrameLocks() { NoChangeAspect = true }),
+                    new Graphic(
+                        new GraphicData(
+                            new DocumentFormat.OpenXml.Drawing.Picture(
+                                new NonVisualPictureProperties(
+                                    new NonVisualDrawingProperties()
+                                    {
+                                        Id = (UInt32)relationshipId.GetHashCode(), //(UInt32Value)0U,
+                                        Name = relationshipId.GetHashCode()+"New Bitmap Image.jpg"
+                                    },
+                                    new NonVisualPictureDrawingProperties()),
+                                new BlipFill(
+                                    new Blip(
+                                        new BlipExtensionList(
+                                            new BlipExtension()
+                                            {
+                                                Uri = relationshipId.GetHashCode().ToString()
+                                                 //  "{28A0092B-C50C-407E-A947-70E740481C1C}"
+                                            })
+                                    )
+                                    {
+                                        Embed = relationshipId,
+                                        CompressionState =
+                                        BlipCompressionValues.Print
+                                    },
+                                    new Stretch(
+                                        new FillRectangle())),
+                                new ShapeProperties(
+                                    new Transform2D(
+                                        new Offset() { X = 0L, Y = 0L },
+                                        new Extents() { Cx = 990000L, Cy = 792000L }),
+                                    new PresetGeometry(
+                                        new AdjustValueList()
+                                    )
+                                    {
+                                        Preset = ShapeTypeValues.Rectangle
+                                    }))
+                        )
+                        {
+                            Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
+                        })
+                )
+                {
+                    DistanceFromTop = (UInt32Value)0U,
+                    DistanceFromBottom = (UInt32Value)0U,
+                    DistanceFromLeft = (UInt32Value)0U,
+                    DistanceFromRight = (UInt32Value)0U,
+                    EditId = "50D07946"
+                });
+          SetElement.AppendChild(new Paragraph(new Run(element)));
+
+
+        }
+
+
         /// <summary>
         /// Инициализация документа
         /// </summary>
