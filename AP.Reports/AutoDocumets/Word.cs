@@ -11,16 +11,15 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Wordprocessing;
-using OpenXmlPowerTools;
 using BottomBorder = DocumentFormat.OpenXml.Wordprocessing.BottomBorder;
 using ConditionalFormatting = AP.Reports.Utils.ConditionalFormatting;
-using DataTable = System.Data.DataTable;
 using GridColumn = DocumentFormat.OpenXml.Wordprocessing.GridColumn;
 using InsideHorizontalBorder = DocumentFormat.OpenXml.Wordprocessing.InsideHorizontalBorder;
 using InsideVerticalBorder = DocumentFormat.OpenXml.Wordprocessing.InsideVerticalBorder;
 using LeftBorder = DocumentFormat.OpenXml.Wordprocessing.LeftBorder;
 using NonVisualGraphicFrameDrawingProperties = DocumentFormat.OpenXml.Drawing.Wordprocessing.NonVisualGraphicFrameDrawingProperties;
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using Picture = DocumentFormat.OpenXml.Drawing.Picture;
 using RightBorder = DocumentFormat.OpenXml.Wordprocessing.RightBorder;
 using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
 using Table = DocumentFormat.OpenXml.Wordprocessing.Table;
@@ -32,6 +31,8 @@ using TableRow = DocumentFormat.OpenXml.Wordprocessing.TableRow;
 using TableStyle = DocumentFormat.OpenXml.Wordprocessing.TableStyle;
 using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 using TopBorder = DocumentFormat.OpenXml.Wordprocessing.TopBorder;
+using AP.Reports.Utils;
+using System.Data;
 
 namespace AP.Reports.AutoDocumets
 {
@@ -115,7 +116,6 @@ namespace AP.Reports.AutoDocumets
             _stream = stream;
             Init();
         } 
-
         #region IGrapsReport   
         public void SaveAs(string pathToSave)
         {
@@ -165,12 +165,10 @@ namespace AP.Reports.AutoDocumets
             {
                 return;
             }
-
             if(!ValidPath(pathdoc))
             {
                 throw new FormatException("Не допустимый формат файла.", new Exception());
             }
-
             var altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
             var mainPart = _document.MainDocumentPart;
             AlternativeFormatImportPart chumk;
@@ -294,7 +292,7 @@ namespace AP.Reports.AutoDocumets
                 SetElement.AppendChild((new Run(new Text(text))));
             }
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         public void InsertTable(DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
@@ -306,7 +304,7 @@ namespace AP.Reports.AutoDocumets
             SetElement.AppendChild((new Run(GenerateTable(dt.Columns.Count, dt.Rows.Count))));
             var table = SetElement.Parent.Descendants<Table>().Last();
             FillingTable(table, dt);
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         public void MoveEnd()
         {
@@ -376,75 +374,154 @@ namespace AP.Reports.AutoDocumets
         #endregion
 
         #region private methods
+        private Drawing GenerateDrawing()
+        {
+            Drawing drawing1 = new Drawing();
+
+            Inline inline1 = new Inline() { DistanceFromTop = (UInt32Value)0U, DistanceFromBottom = (UInt32Value)0U, DistanceFromLeft = (UInt32Value)0U, DistanceFromRight = (UInt32Value)0U, AnchorId = "0F911AAD", EditId = "746B09E5" };
+            Extent extent1 = new Extent() { Cx = 1885950L, Cy = 2790825L };
+            EffectExtent effectExtent1 = new EffectExtent() { LeftEdge = 0L, TopEdge = 0L, RightEdge = 0L, BottomEdge = 9525L };
+            DocProperties docProperties1 = new DocProperties() { Id = (UInt32Value)1U, Name = "Рисунок 1" };
+
+            NonVisualGraphicFrameDrawingProperties nonVisualGraphicFrameDrawingProperties1 = new NonVisualGraphicFrameDrawingProperties();
+
+            GraphicFrameLocks graphicFrameLocks1 = new GraphicFrameLocks() { NoChangeAspect = true };
+            graphicFrameLocks1.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
+
+            nonVisualGraphicFrameDrawingProperties1.Append(graphicFrameLocks1);
+
+            Graphic graphic1 = new Graphic();
+            graphic1.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
+
+            GraphicData graphicData1 = new GraphicData() { Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture" };
+
+            Picture picture1 = new Picture();
+            picture1.AddNamespaceDeclaration("pic", "http://schemas.openxmlformats.org/drawingml/2006/picture");
+
+            NonVisualPictureProperties nonVisualPictureProperties1 = new NonVisualPictureProperties();
+            NonVisualDrawingProperties nonVisualDrawingProperties1 = new NonVisualDrawingProperties() { Id = (UInt32Value)0U, Name = "" };
+            NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new NonVisualPictureDrawingProperties();
+
+            nonVisualPictureProperties1.Append(nonVisualDrawingProperties1);
+            nonVisualPictureProperties1.Append(nonVisualPictureDrawingProperties1);
+
+            BlipFill blipFill1 = new BlipFill();
+            Blip blip1 = new Blip() { Embed = "rId5" };
+
+            Stretch stretch1 = new Stretch();
+            FillRectangle fillRectangle1 = new FillRectangle();
+
+            stretch1.Append(fillRectangle1);
+
+            blipFill1.Append(blip1);
+            blipFill1.Append(stretch1);
+
+            ShapeProperties shapeProperties1 = new ShapeProperties();
+
+            Transform2D transform2D1 = new Transform2D();
+            Offset offset1 = new Offset() { X = 0L, Y = 0L };
+            Extents extents1 = new Extents() { Cx = 1885950L, Cy = 2790825L };
+
+            transform2D1.Append(offset1);
+            transform2D1.Append(extents1);
+
+            PresetGeometry presetGeometry1 = new PresetGeometry() { Preset = ShapeTypeValues.Rectangle };
+            AdjustValueList adjustValueList1 = new AdjustValueList();
+
+            presetGeometry1.Append(adjustValueList1);
+
+            shapeProperties1.Append(transform2D1);
+            shapeProperties1.Append(presetGeometry1);
+
+            picture1.Append(nonVisualPictureProperties1);
+            picture1.Append(blipFill1);
+            picture1.Append(shapeProperties1);
+
+            graphicData1.Append(picture1);
+
+            graphic1.Append(graphicData1);
+
+            inline1.Append(extent1);
+            inline1.Append(effectExtent1);
+            inline1.Append(docProperties1);
+            inline1.Append(nonVisualGraphicFrameDrawingProperties1);
+            inline1.Append(graphic1);
+
+            drawing1.Append(inline1);
+            return drawing1;
+
+        }
         private void AddImage(string relationshipId)
         {
-            var element =
-            new Drawing(
-                new Inline(
-                    new Extent() { Cx = 990000L, Cy = 792000L },
-                    new EffectExtent()
-                    {
-                        LeftEdge = 0L,
-                        TopEdge = 0L,
-                        RightEdge = 0L,
-                        BottomEdge = 0L
-                    },
-                    new DocProperties()
-                    {
-                        Id = (UInt32Value)1U,
-                        Name = "Picture 1"
-                    },
-                    new NonVisualGraphicFrameDrawingProperties(
-                        new GraphicFrameLocks() { NoChangeAspect = true }),
-                    new Graphic(
-                        new GraphicData(
-                            new DocumentFormat.OpenXml.Drawing.Picture(
-                                new NonVisualPictureProperties(
-                                    new NonVisualDrawingProperties()
-                                    {
-                                        Id = (UInt32)relationshipId.GetHashCode(), //(UInt32Value)0U,
-                                        Name = relationshipId.GetHashCode()+"New Bitmap Image.jpg"
-                                    },
-                                    new NonVisualPictureDrawingProperties()),
-                                new BlipFill(
-                                    new Blip(
-                                        new BlipExtensionList(
-                                            new BlipExtension()
-                                            {
-                                                Uri = relationshipId.GetHashCode().ToString()
-                                                 //  "{28A0092B-C50C-407E-A947-70E740481C1C}"
-                                            })
-                                    )
-                                    {
-                                        Embed = relationshipId,
-                                        CompressionState =
-                                        BlipCompressionValues.Print
-                                    },
-                                    new Stretch(
-                                        new FillRectangle())),
-                                new ShapeProperties(
-                                    new Transform2D(
-                                        new Offset() { X = 0L, Y = 0L },
-                                        new Extents() { Cx = 990000L, Cy = 792000L }),
-                                    new PresetGeometry(
-                                        new AdjustValueList()
-                                    )
-                                    {
-                                        Preset = ShapeTypeValues.Rectangle
-                                    }))
-                        )
-                        {
-                            Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
-                        })
-                )
-                {
-                    DistanceFromTop = (UInt32Value)0U,
-                    DistanceFromBottom = (UInt32Value)0U,
-                    DistanceFromLeft = (UInt32Value)0U,
-                    DistanceFromRight = (UInt32Value)0U,
-                    EditId = "50D07946"
-                });
-          SetElement.AppendChild(new Paragraph(new Run(element)));
+          SetElement.AppendChild(new Run(GenerateDrawing()));
+
+
+            //  var element =
+            //  new Drawing(
+            //      new Inline(
+            //          new Extent() { Cx = 990000L, Cy = 792000L },
+            //          new EffectExtent()
+            //          {
+            //              LeftEdge = 0L,
+            //              TopEdge = 0L,
+            //              RightEdge = 0L,
+            //              BottomEdge = 0L
+            //          },
+            //          new DocProperties()
+            //          {
+            //              Id = (UInt32Value)1U,
+            //              Name = "Picture 1"
+            //          },
+            //          new NonVisualGraphicFrameDrawingProperties(
+            //              new GraphicFrameLocks() { NoChangeAspect = true }),
+            //          new Graphic(
+            //              new GraphicData(
+            //                  new DocumentFormat.OpenXml.Drawing.Picture(
+            //                      new NonVisualPictureProperties(
+            //                          new NonVisualDrawingProperties()
+            //                          {
+            //                              Id = (uint)relationshipId.GetHashCode(),
+            //                              Name = relationshipId.GetHashCode().ToString()
+            //                          },
+            //                          new NonVisualPictureDrawingProperties()),
+            //                      new BlipFill(
+            //                          new Blip(
+            //                              new BlipExtensionList(
+            //                                  new BlipExtension()
+            //                                  {
+            //                                      Uri = relationshipId.GetHashCode().ToString()
+            //                                  })
+            //                          )
+            //                          {
+            //                              Embed = relationshipId,
+            //                              CompressionState =
+            //                              BlipCompressionValues.Print
+            //                          },
+            //                          new Stretch(
+            //                              new FillRectangle())),
+            //                      new ShapeProperties(
+            //                          new Transform2D(
+            //                              new Offset() { X = 0L, Y = 0L },
+            //                              new Extents() { Cx = 990000L, Cy = 792000L }),
+            //                          new PresetGeometry(
+            //                              new AdjustValueList()
+            //                          )
+            //                          {
+            //                              Preset = ShapeTypeValues.Rectangle
+            //                          }))
+            //              )
+            //              {
+            //                  Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
+            //              })
+            //      )
+            //      {
+            //          DistanceFromTop = (UInt32Value)0U,
+            //          DistanceFromBottom = (UInt32Value)0U,
+            //          DistanceFromLeft = (UInt32Value)0U,
+            //          DistanceFromRight = (UInt32Value)0U,
+            //          EditId = "50D07946"
+            //      });
+            //SetElement.AppendChild(new Paragraph(new Run(element)));
 
 
         }
@@ -656,6 +733,8 @@ namespace AP.Reports.AutoDocumets
             }
             return false;
         }
+
+      
         #endregion
 
     }
