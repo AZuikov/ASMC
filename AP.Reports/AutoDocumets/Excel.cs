@@ -111,7 +111,13 @@ namespace AP.Reports.AutoDocumets
 
         public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
         {
-            FindStringAndAllReplaceImage(sFind, image, 1, true);
+            FindCellAndDo(
+                sFind,
+                (cell, worksheet) =>
+                {
+                    InsertImageToCell(cell, image, 1, true);
+                },
+                true);
         }
 
         public void FindStringAndReplaceImage(string sFind, Bitmap image)
@@ -120,8 +126,7 @@ namespace AP.Reports.AutoDocumets
                 sFind,
                 (cell, worksheet) =>
                 {
-                    cell.Value = "";
-                    worksheet.AddPicture(image).MoveTo(cell);
+                    InsertImageToCell(cell, image, 1, true);
                 },
                 false);
         }
@@ -138,8 +143,7 @@ namespace AP.Reports.AutoDocumets
                 IXLCell cell = _workbook.Cell(bm);
                 if (cell != null)
                 {
-                    cell.Value = "";
-                    cell.Worksheet.AddPicture(image).MoveTo(cell);
+                    InsertImageToCell(cell, image, 1, true);
                 }
                 else throw new NullReferenceException();
             }
@@ -235,80 +239,91 @@ namespace AP.Reports.AutoDocumets
                 while (mergeSoursesWorksheets.Count != 0)
                 {
                     //объявляем область для переноса
-                    var rangeToCopy = mergeSoursesWorksheets.First().Range(
-                        mergeSoursesWorksheets.First().Cell(1, 1),
-                        mergeSoursesWorksheets.First().LastCellUsed()
-                    );
-                    //Определяем ячейку для вставки
-                    IXLCell targetCell;
-                    //Если лист с таким именем уже есть в документе
-                    if (_workbook.Worksheets.Contains(mergeSoursesWorksheets.First().Name))
+                    if (mergeSoursesWorksheets.First().LastCellUsed() != null)
                     {
-                        targetCell = _workbook.Worksheets
-                            .Worksheet(mergeSoursesWorksheets.First().Name)
-                            .LastRowUsed().RowBelow(1).Cell(1);
-                    }
-                    //Если листа с таким же именем нет - создаем новый лист
-                    else
-                    {
-                        targetCell = _workbook.AddWorksheet(mergeSoursesWorksheets.First().Name).Cell(1, 1);
-                    }
-                    ////копируем данные
-
-                    //Копируем "Проверка данных"
-                    foreach (var dataValidation in mergeSoursesWorksheets.First().DataValidations.ToList())
-                    {
-                        //добавляем условие в на лист
-                        targetCell.Worksheet.DataValidations.Add(dataValidation);
-                        MatchCollection matchs =
-                            Regex.Matches(targetCell.Worksheet.DataValidations.Last().Value, @"[0-9]+");
-                        //Сохраняем только уникальные числа
-                        //Hashtable uniqMathes = new Hashtable();
-                        Dictionary<string, string> uniqMathes = new Dictionary<string, string>();
-                        for (int i = 0; i < matchs.Count; i++)
-                        {
-                            uniqMathes.Add(matchs[i].Value.ToString(), matchs[i].Value.ToString());
-                        }
-
-                        //Упорядочиваем по убыванию
-                        List<string> uniqMathesList = uniqMathes.Values.ToList();
-                        uniqMathesList.Sort();
-                        uniqMathesList.Reverse();
-
-                        foreach (var match in uniqMathesList)
-                        {
-                            string replaceFrom = match;
-                            string replaceTo = (Int32.Parse(match) + targetCell.Address.RowNumber - 1).ToString();
-
-                            targetCell.Worksheet.DataValidations.Last().Value =
-                                Regex.Replace(targetCell.Worksheet.DataValidations.Last().Value,
-                                    replaceFrom, replaceTo);
-                        }
-                    }
-
-                    //Картинки
-                    Random rnd = new Random();
-                    foreach (var pic in mergeSoursesWorksheets.First().Pictures.ToList())
-                    {
-                        var insertedPic = pic.Duplicate();
-                        //обходим запрет на одинаковые имена
-                        while (targetCell.Worksheet.Pictures.Contains(insertedPic.Name))
-                        {
-                            insertedPic.Name = "Picture" + rnd.Next(1000).ToString();
-                        }
-
-                        insertedPic = insertedPic.CopyTo(targetCell.Worksheet);
-                        //вычисляем смещение
-                        IXLCell moveTo = targetCell.Worksheet.Cell(
-                            pic.TopLeftCell.Address.RowNumber + targetCell.Address.RowNumber - 1,
-                            pic.TopLeftCell.Address.ColumnNumber
+                        var rangeToCopy = mergeSoursesWorksheets.First().Range(
+                            mergeSoursesWorksheets.First().Cell(1, 1),
+                            mergeSoursesWorksheets.First().LastCellUsed()
                         );
-                        //смещаем
-                        insertedPic.MoveTo(moveTo);
-                    }
 
-                    //Ячейки
-                    targetCell.Value = rangeToCopy;
+                        //Определяем ячейку для вставки
+                        IXLCell targetCell;
+                        //Если лист с таким именем уже есть в документе
+                        if (_workbook.Worksheets.Contains(mergeSoursesWorksheets.First().Name))
+                        {
+                            var currenlSheet = _workbook.Worksheets.Worksheet(mergeSoursesWorksheets.First().Name);
+                            if (currenlSheet.LastRowUsed() != null)
+                            {
+                                targetCell = currenlSheet.LastRowUsed().RowBelow(1).Cell(1);
+                            }
+                            else
+                            {
+                                targetCell = currenlSheet.Cell(1, 1);
+                            }
+                        }
+                        //Если листа с таким же именем нет - создаем новый лист
+                        else
+                        {
+                            targetCell = _workbook.AddWorksheet(mergeSoursesWorksheets.First().Name).Cell(1, 1);
+                        }
+                        ////копируем данные
+
+                        //Копируем "Проверка данных"
+                        foreach (var dataValidation in mergeSoursesWorksheets.First().DataValidations.ToList())
+                        {
+                            //добавляем условие в на лист
+                            targetCell.Worksheet.DataValidations.Add(dataValidation);
+                            MatchCollection matchs =
+                                Regex.Matches(targetCell.Worksheet.DataValidations.Last().Value, @"[0-9]+");
+                            //Сохраняем только уникальные числа
+                            //Hashtable uniqMathes = new Hashtable();
+                            Dictionary<string, string> uniqMathes = new Dictionary<string, string>();
+                            for (int i = 0; i < matchs.Count; i++)
+                            {
+                                uniqMathes.Add(matchs[i].Value.ToString(), matchs[i].Value.ToString());
+                            }
+
+                            //Упорядочиваем по убыванию
+                            List<string> uniqMathesList = uniqMathes.Values.ToList();
+                            uniqMathesList.Sort();
+                            uniqMathesList.Reverse();
+
+                            foreach (var match in uniqMathesList)
+                            {
+                                string replaceFrom = match;
+                                string replaceTo = (Int32.Parse(match) + targetCell.Address.RowNumber - 1).ToString();
+
+                                targetCell.Worksheet.DataValidations.Last().Value =
+                                    Regex.Replace(targetCell.Worksheet.DataValidations.Last().Value,
+                                        replaceFrom, replaceTo);
+                            }
+                        }
+
+                        //Картинки
+                        Random rnd = new Random();
+                        foreach (var pic in mergeSoursesWorksheets.First().Pictures.ToList())
+                        {
+                            var insertedPic = pic.Duplicate();
+                            //обходим запрет на одинаковые имена
+                            while (targetCell.Worksheet.Pictures.Contains(insertedPic.Name))
+                            {
+                                insertedPic.Name = "Picture" + rnd.Next(1000).ToString();
+                            }
+
+                            insertedPic = insertedPic.CopyTo(targetCell.Worksheet);
+                            //вычисляем смещение
+                            IXLCell moveTo = targetCell.Worksheet.Cell(
+                                pic.TopLeftCell.Address.RowNumber + targetCell.Address.RowNumber - 1,
+                                pic.TopLeftCell.Address.ColumnNumber
+                            );
+                            //смещаем
+                            insertedPic.MoveTo(moveTo);
+                        }
+
+                        //Ячейки
+                        targetCell.Value = rangeToCopy;
+
+                    }
 
                     //удаляем лист из списка листов, подготовленных к копированию
                     mergeSoursesWorksheets.Remove(mergeSoursesWorksheets.First());
@@ -434,15 +449,15 @@ namespace AP.Reports.AutoDocumets
             var range = cell.InsertData(dt);
             if (dt.TableName != "")
             {
-                cell.Worksheet.NamedRanges.Add(dt.TableName, range);
-
                 //обходим запрет на одинаковые имена
                 int tableNumber = 1;
-                string oldName = dt.TableName;
-                while (cell.Worksheet.NamedRanges.Contains(dt.TableName))
+                string uniqName = string.Copy(dt.TableName);
+                while (cell.Worksheet.NamedRanges.Contains(uniqName))
                 {
-                    dt.TableName = oldName + "(" + (tableNumber++).ToString() + ")";
+                    uniqName = dt.TableName + "_" + (tableNumber++).ToString();
                 }
+
+                cell.Worksheet.NamedRanges.Add(uniqName, range);
             }
             range.Style.Fill.BackgroundColor = XLColor.White;
             range.Style.Font.FontColor = XLColor.Black;
@@ -649,6 +664,20 @@ namespace AP.Reports.AutoDocumets
         /// <summary>
         /// Устанавливает курсор на ячейку
         /// </summary>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        /// <param name="workSheet"></param>
+        public void MoveToCell(int row, int column)
+        {
+            if (_workbook != null && _currentCell != null)
+            {
+                _currentCell = _currentCell.Worksheet.Cell(row, column);
+            }
+        }
+
+        /// <summary>
+        /// Устанавливает курсор на ячейку
+        /// </summary>
         /// <param name="cell"></param>
         /// <param name="workSheet"></param>
         public void MoveToCell(string cell, string workSheet)
@@ -674,10 +703,7 @@ namespace AP.Reports.AutoDocumets
                 {
                     MoveEnd();
                 }
-
-                var insertedPicture = _currentCell.Worksheet.AddPicture(image);
-                insertedPicture.MoveTo(_currentCell);
-                insertedPicture.Scale(factor, relativeToOriginal);
+                InsertImageToCell(_currentCell, image, factor, relativeToOriginal);
             }
         }
 
@@ -693,15 +719,59 @@ namespace AP.Reports.AutoDocumets
                 sFind,
                 (cell, worksheet) =>
                 {
-                    cell.Value = "";
-                    var insertedPicture = worksheet.AddPicture(image);
-                    insertedPicture.MoveTo(cell);
-                    insertedPicture.Scale(factor, relativeToOriginal);
+                    InsertImageToCell(cell, image, factor, relativeToOriginal);
                 },
                 true);
         }
 
-        
+        /// <summary>
+        /// Вставляет изображение на клетку
+        /// </summary>
+        private void InsertImageToCell(IXLCell cell, Bitmap image, double factor, bool relativeToOriginal)
+        {
+            cell.Value = "";
+            var insertedPicture = cell.Worksheet.AddPicture(image);
+            insertedPicture.MoveTo(cell);
+            insertedPicture.Scale(factor, relativeToOriginal);
+        }
+
+        /// <summary>
+        /// Вставляет изображение с масштабом
+        /// </summary>
+        /// <param name="bm"></param>
+        /// <param name="image"></param>
+        /// <param name="factor"></param>
+        /// <param name="relativeToOriginal"></param>
+        public void InsertImageToBookmark(string bm, Bitmap image, double factor, bool relativeToOriginal)
+        {
+            if (_workbook != null)
+            {
+                IXLCell cell = _workbook.Cell(bm);
+                if (cell != null)
+                {
+                    InsertImageToCell(cell, image, factor, relativeToOriginal);
+                }
+                else throw new NullReferenceException();
+            }
+        }
+
+        /// <summary>
+        /// Вставляет изображение с масштабом
+        /// </summary>
+        /// <param name="sFind"></param>
+        /// <param name="image"></param>
+        /// <param name="factor"></param>
+        /// <param name="relativeToOriginal"></param>
+        public void FindStringAndReplaceImage(string sFind, Bitmap image, double factor, bool relativeToOriginal)
+        {
+            FindCellAndDo(
+                sFind,
+                (cell, worksheet) =>
+                {
+                    InsertImageToCell(cell, image, factor, relativeToOriginal);
+                },
+                false);
+        }
 
         /// <summary>
         /// Сдвигает строки для вставки таблицы
@@ -739,13 +809,14 @@ namespace AP.Reports.AutoDocumets
         {
             if (_workbook != null && _currentCell != null)
             {
-                _currentCell.AsRange().AddToNamed(name);
+                _currentCell.Worksheet.Workbook.NamedRanges.Add(name, _currentCell.AsRange());
             }
         }
 
+
         public void Dispose()
         {
-            _workbook.Dispose();
+            _workbook?.Dispose();
         }
 
     }

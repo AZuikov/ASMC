@@ -7,8 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Data;
+using System.Resources;
 using Microsoft.Office.Interop.Word;
-using System = Microsoft.Office.Interop.Word.System;
+using SystemOffice = Microsoft.Office.Interop.Word.System;
 using DataTable = System.Data.DataTable;
 using AP.Reports.Utils;
 
@@ -30,204 +31,180 @@ namespace UnitTest.AP.Reports
                 _excel.NewDocument(_pages);
                 _excel.MoveToCell(2, 2, _pages[0]);
                 _excel.AddBookmarkToCell("AddTable");
-                _excel.MoveToCell(5, 2, _pages[0]);
+                _excel.MoveToCell(5, 13, _pages[0]);
                 _excel.AddBookmarkToCell("AddImage");
                 _excel.MoveToCell(8, 2, _pages[0]);
                 _excel.AddBookmarkToCell("FillTable");
-                _excel.MoveToCell(11, 10, _pages[0]);
+                _excel.MoveToCell(13, 13, _pages[0]);
                 _excel.AddBookmarkToCell("AddImageWithScale");
                 _excel.MoveToCell(10, 4, _pages[0]);
                 _excel.InsertText("Этот текст должен остаться");
                 _excel.MoveToCell(11, 6, _pages[0]);
                 _excel.InsertText("Этот текст должен остаться");
+
+                _excel.SaveAs(_pathToTestFolder + "Test.xlsx");
                 //=======================================
-                _excel.NewDocument(_pages);
-                _excel.MoveToCell(2, 2, _pages[0]);
-                _excel.InsertText("ЗаменитьНаТаблицуОдинРаз");
-                _excel.MoveToCell(3, 2, _pages[0]);
-                _excel.InsertText("ЗаменитьНаТаблицуОдинРаз");
 
-                _excel.MoveToCell(5, 2, _pages[0]);
-                _excel.AddBookmarkToCell("ЗаменитьНаИзображениеОдинРаз");
-                _excel.MoveToCell(6, 2, _pages[0]);
-                _excel.AddBookmarkToCell("ЗаменитьНаИзображениеОдинРаз");
+                _excel.MoveToCell(5, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеОдинРаз");
+                _excel.MoveToCell(6, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеОдинРаз");
 
-                _excel.MoveToCell(13, 10, _pages[0]);
-                _excel.AddBookmarkToCell("AddImageWithScale");
-                _excel.MoveToCell(10, 4, _pages[0]);
-                _excel.InsertText("Этот текст должен остаться");
-                _excel.MoveToCell(11, 6, _pages[0]);
-                _excel.InsertText("Этот текст должен остаться");
+                _excel.MoveToCell(8, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеСМасштабомОдинРаз");
+                _excel.MoveToCell(9, 10, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеСМасштабомОдинРаз");
+
+                _excel.MoveToCell(12, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаТекстОдинРаз");
+                _excel.MoveToCell(14, 10, _pages[2]);
+                _excel.InsertText("ЗаменитьНаТекстОдинРаз");
+
+                _excel.MoveToCell(22, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеВсе");
+                _excel.MoveToCell(24, 10, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеВсе");
+                _excel.MoveToCell(26, 15, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеВсе");
+
+                _excel.MoveToCell(28, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеСМасштабомВсе");
+                _excel.MoveToCell(30, 10, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеСМасштабомВсе");
+                _excel.MoveToCell(32, 15, _pages[2]);
+                _excel.InsertText("ЗаменитьНаИзображениеСМасштабомВсе");
+
+                _excel.MoveToCell(34, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаТекстВсе");
+                _excel.MoveToCell(36, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаТекстВсе");
+                _excel.MoveToCell(38, 2, _pages[2]);
+                _excel.InsertText("ЗаменитьНаТекстВсе");
+                //==============================================
+                _excel.Save();
             }
         }
 
-
-        #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [TestMethod]
-        public void TestMethodReplaceAll()
+        public void TestMethodAllInsertFunctoins()
         {
             using (_excel = new Excel())
             {
-                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
-                _excel.FindStringAndAllReplace("Слово", "Воробей");
-                _excel.FindStringAndAllReplaceImage("Картинка", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceAllResult.xlsx");
-            }
-        }
+                if (!System.IO.File.Exists(_pathToTestFolder + "Test.xlsx"))
+                {
+                    TestMethodCreateTestFile();
+                }
+                _excel.OpenDocument(_pathToTestFolder + "Test.xlsx");
 
-        [TestMethod]
-        public void TestMethodReplace()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
-                _excel.FindStringAndReplace("Слово", "Воробей");
-                _excel.FindStringAndReplaceImage("Картинка", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceResult.xlsx");
-            }
-        }
-
-        [TestMethod]
-        public void TestMethodReplaceAndCurcorMove()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
-                _excel.MoveEnd();
-                _excel.InsertText("Последняя ячейка");
-                _excel.MoveHome();
-                _excel.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
-                _excel.MoveToCell(5,5,"Лист1");
-                _excel.InsertText("5 - 5");
-                _excel.MoveToCell("D6","Лист1");
-                _excel.InsertText("D6");
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceAndCurcorMove.xlsx");
-            }
-        }
-
-        [TestMethod]
-        public void TestMethodReplaceByBookmark()
-        {
-            using (_excel = new  Excel())
-            {
-                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
-                _excel.InsertImageToBookmark("диапазон_для_картинки", new Bitmap(@"C:\Users\02ias01\Documents\Tests\~Image.jpg"));
-                _excel.InsertTextToBookmark("диапазон_для_текста", "Текст, вставленный из программы");
+                _excel.MoveToCell(1,1,_pages[1]);
+                Bitmap image = new Bitmap(_pathToTestFolder + "~star.jpg");
                 DataTable dt = GetRandomDataTable();
-                _excel.InsertNewTableToBookmark("диапазон_для_таблицы", dt, GetCondition());
-                _excel.MoveToCell(24,13, "Лист2");
-                _excel.InsertTable(dt, GetCondition());
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestReplaceByBookMarkResult.xlsx");
-            }
-        }
+                dt.TableName = "TestTable";
 
-        [TestMethod]
-        public void TestMethodFillsTableByBookmark()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~TestReplace.xlsx");
-                _excel.FillsTableToBookmark("диапазон_для_таблицы", GetRandomDataTable(), false, GetCondition());
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestFillsTableByBookmark.xlsx");
-            }
-        }
-
-        [TestMethod]
-        public void TestMethodMergeDocs()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\~DocToMerge1.xlsx");
-
-                List<string> pathsList = new List<string>();
-                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
-                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge1.xlsx");
-                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
-                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge1.xlsx");
-                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
-                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge1.xlsx");
-                pathsList.Add(@"C:\Users\02ias01\Documents\Tests\~DocToMerge2.xlsx");
-
-                _excel.MergeDocuments(pathsList);
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestMergeDocs.xlsx");
-            }
-        }
-
-        [TestMethod]
-        public void TestMethodMultyTabs()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.NewDocument(new string[] {"Таблицы"});
-                _excel.InsertTable(GetRandomDataTable(), GetCondition());
-                _excel.InsertText(" ");
-                _excel.InsertTable(GetRandomDataTable(), GetCondition());
-                _excel.InsertText(" ");
-                _excel.InsertTable(GetRandomDataTable(), GetCondition());
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestMultyTabs.xlsx");
-            }
-        }
-
-        [TestMethod]
-        public void TestMethodMultyTabs2()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.OpenDocument(@"C:\Users\02ias01\Documents\Tests\TestMultyTabs.xlsx");
-                _excel.MoveHome();
-                _excel.InsertTable(GetRandomDataTable(), GetCondition());
-                _excel.InsertText(" ");
-                _excel.InsertTable(GetRandomDataTable(), GetCondition());
-                _excel.InsertText(" ");
-                _excel.InsertTable(GetRandomDataTable(), GetCondition());
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestMultyTabs.xlsx");
-            }
-        }
-
-        [TestMethod]
-        public void TestMethodInsert()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.NewDocument();
                 for (int i = 0; i < 10; i++)
                 {
-                    _excel.MoveHome();
+                    _excel.MoveSheetHome();
                     _excel.InsertText("Text" + i.ToString());
-                    DataTable dt = GetRandomDataTable();
-                    _excel.MoveHome();
+                    _excel.MoveSheetHome();
                     _excel.InsertText("");
-                    dt.TableName = "Table" + i.ToString();
-                    _excel.MoveHome();
+                    _excel.MoveSheetHome();
                     _excel.InsertTable(dt, GetCondition());
+                    _excel.MoveToCell(i + 5, 12);
+                    _excel.InsertImage(image);
                 }
-                _excel.SaveAs(@"C:\Users\02ias01\Documents\Tests\TestInsert.xlsx");
+                _excel.SaveAs(_pathToTestFolder + "TestInserted.xlsx");
             }
         }
 
+        [TestMethod]
+        public void TestMethodAllReplaceByBookmark()
+        {
+            using (_excel = new Excel())
+            {
+                if (!System.IO.File.Exists(_pathToTestFolder + "Test.xlsx"))
+                {
+                    TestMethodCreateTestFile();
+                }
+                _excel.OpenDocument(_pathToTestFolder + "Test.xlsx");
+                DataTable dt = GetRandomDataTable();
+                Bitmap image = new Bitmap(_pathToTestFolder + "~star.jpg");
+                _excel.InsertNewTableToBookmark("AddTable", dt, GetCondition());
+                _excel.InsertImageToBookmark("AddImage", image);
+                _excel.InsertImageToBookmark("AddImageWithScale",image, 0.5, true);
+                _excel.FillsTableToBookmark("FillTable", dt, false, GetCondition());
+                _excel.SaveAs(_pathToTestFolder + "TestBmReplased.xlsx");
+            }
+        }
+
+        [TestMethod]
+        public void TestMethodFindStringAndReplase()
+        {
+            TestMethodCreateTestFile();
+            using (_excel = new Excel())
+            {
+                if (!System.IO.File.Exists(_pathToTestFolder + "Test.xlsx"))
+                {
+                    TestMethodCreateTestFile();
+                }
+                _excel.OpenDocument(_pathToTestFolder + "Test.xlsx");
+                DataTable dt = GetRandomDataTable();
+                Bitmap image = new Bitmap(_pathToTestFolder + "~star.jpg");
+                _excel.FindStringAndReplace("ЗаменитьНаТекстОдинРаз", "ЗамененоНаТекстОдинРаз");
+                _excel.FindStringAndReplaceImage("ЗаменитьНаИзображениеОдинРаз", image);
+                _excel.FindStringAndReplaceImage("ЗаменитьНаИзображениеСМасштабомОдинРаз", image, 0.5, true);
+
+                _excel.FindStringAndAllReplace("ЗаменитьНаТекстВсе", "ЗамененоНаТекстВсе");
+                _excel.FindStringAndAllReplaceImage("ЗаменитьНаИзображениеВсе", image);
+                _excel.FindStringAndAllReplaceImage("ЗаменитьНаИзображениеСМасштабомВсе", image, 0.5, true);
+                _excel.SaveAs(_pathToTestFolder + "TestStrReplased.xlsx");
+            }
+        }
+
+        [TestMethod]
+        public void TestMethodMerge()
+        {
+            using (_excel = new Excel())
+            {
+                if (!System.IO.File.Exists(_pathToTestFolder + "TestInserted.xlsx"))
+                {
+                    TestMethodAllInsertFunctoins();
+                }
+                if (!System.IO.File.Exists(_pathToTestFolder + "TestStrReplased.xlsx"))
+                {
+                    TestMethodFindStringAndReplase();
+                }
+                _excel.OpenDocument(_pathToTestFolder + "TestStrReplased.xlsx");
+
+                List<string> pathsList = new List<string>();
+                pathsList.Add(_pathToTestFolder + "TestInserted.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestStrReplased.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestInserted.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestStrReplased.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestInserted.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestStrReplased.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestInserted.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestStrReplased.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestInserted.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestStrReplased.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestInserted.xlsx");
+                pathsList.Add(_pathToTestFolder + "TestStrReplased.xlsx");
+
+                _excel.MergeDocuments(pathsList);
+                _excel.SaveAs(_pathToTestFolder + "TestMerge.xlsx");
+            }
+        }
+
+        [TestMethod]
+        public void TestMethodAllMethods()
+        {
+            TestMethodCreateTestFile();
+            TestMethodAllInsertFunctoins();
+            TestMethodAllReplaceByBookmark();
+            TestMethodFindStringAndReplase();
+            TestMethodMerge();
+        }
+
+        #endregion
 
         private DataTable GetRandomDataTable()
         {
@@ -256,7 +233,7 @@ namespace UnitTest.AP.Reports
         private ConditionalFormatting GetCondition()
         {
             ConditionalFormatting cf = new ConditionalFormatting();
-            cf.Value = "6";
+            cf.Value = "10";
             cf.Color = Color.MediumTurquoise;
             cf.NameColumn = "col3";
             cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
