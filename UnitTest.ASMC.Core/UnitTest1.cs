@@ -1,9 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using AP.Reports.MSInterop;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTest.ASMC.Core
 {

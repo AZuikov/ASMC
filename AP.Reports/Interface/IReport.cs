@@ -1,8 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AP.Reports.Interface
 {
@@ -11,7 +7,7 @@ namespace AP.Reports.Interface
         /// <summary>
         /// Путь к файлу
         /// </summary>
-        string Path { get; }
+        string Path { get; set; }
         /// <summary>
         /// Сохраняет текущий документ по указаному пути
         /// </summary>
