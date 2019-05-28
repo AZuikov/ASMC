@@ -27,7 +27,7 @@ namespace AP.Reports.AutoDocumets
             get { return _path;}
             private set
             {
-                if (validPath(value))
+                if (ValidPath(value))
                 {
                     _path = value;
                 }
@@ -35,7 +35,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
-        private bool validPath(string path)
+        private bool ValidPath(string path)
         {
             if (path == null)
             {
@@ -132,44 +132,49 @@ namespace AP.Reports.AutoDocumets
 
         public void NewDocument()
         {
+            _document = null;
+            _path = null;
+            _stream = null;
             Init();
+            //Фактически Init() не создает новый документ (если путь не равен null то программа откроет
+            //ранее открытый документ).т.е. при
+            //    OpenDocument(@"C:\example.docx");
+            //    Save();
+            //    NewDocument();
+            //функция не приведет к созданию документа.
+            //Поэтому добавил обнуление 
         }
 
         public void OpenDocument(string sPath)
         {
             Path = sPath;
-            try
-            {
-                Init();
-            }
-            catch (FileNotFoundException ex)
-            {
-                throw new FileNotFoundException(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.ToString());
-            }
+            Init();
         }
 
         public void MergeDocuments(string pathdoc)
         {
             if (_document == null) return;
-            if (!validPath(pathdoc)) return;
-            var altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
+            if (!ValidPath(pathdoc)) return;
+            string altChunId = null;
             var mainPart = _document.MainDocumentPart;
-            AlternativeFormatImportPart chumk;
-            try
+
+            AlternativeFormatImportPart chumk = null;
+            bool idIsUnique = false;
+            while (!idIsUnique)
             {
-                 chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunId);
+                try
+                {
+                    altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
+                    chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML,
+                        altChunId);
+                    idIsUnique = true;
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(100);
+                }
             }
-            catch (Exception)
-            {
-                Thread.Sleep(100);
-                altChunId= "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
-                chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunId);
-            }
-           
+
             try
             {
                 using (var fileStream = File.Open(pathdoc, FileMode.Open))
