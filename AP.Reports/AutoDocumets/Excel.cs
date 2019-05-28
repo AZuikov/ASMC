@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
 using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Packaging;
 
 namespace AP.Reports.AutoDocumets
 {
@@ -68,7 +60,7 @@ namespace AP.Reports.AutoDocumets
                             //Если ячейка пуста или разрешено удалять данные
                             if (cell.Worksheet.Cell(
                                     cell.Address.RowNumber + i,
-                                    cell.Address.ColumnNumber + j).Value.ToString() == "" || del == true)
+                                    cell.Address.ColumnNumber + j).Value.ToString() == "" || del)
                             {
                                 cell.Worksheet.Cell(
                                     cell.Address.RowNumber + i,
@@ -223,117 +215,107 @@ namespace AP.Reports.AutoDocumets
                 throw new FormatException("Формат файла не .xlsx");
             }
 
-            XLWorkbook mergeSourse;
-            try
+            using (XLWorkbook mergeSourse = new XLWorkbook(pathdoc))
             {
-                mergeSourse = new XLWorkbook(pathdoc);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
 
-            if (_workbook != null)
-            {
-                var mergeSoursesWorksheets = mergeSourse.Worksheets.ToList();
-                while (mergeSoursesWorksheets.Count != 0)
+                if (_workbook != null)
                 {
-                    //объявляем область для переноса
-                    if (mergeSoursesWorksheets.First().LastCellUsed() != null)
+                    var mergeSoursesWorksheets = mergeSourse.Worksheets.ToList();
+                    while (mergeSoursesWorksheets.Count != 0)
                     {
-                        var rangeToCopy = mergeSoursesWorksheets.First().Range(
-                            mergeSoursesWorksheets.First().Cell(1, 1),
-                            mergeSoursesWorksheets.First().LastCellUsed()
-                        );
-
-                        //Определяем ячейку для вставки
-                        IXLCell targetCell;
-                        //Если лист с таким именем уже есть в документе
-                        if (_workbook.Worksheets.Contains(mergeSoursesWorksheets.First().Name))
+                        //объявляем область для переноса
+                        if (mergeSoursesWorksheets.First().LastCellUsed() != null)
                         {
-                            var currenlSheet = _workbook.Worksheets.Worksheet(mergeSoursesWorksheets.First().Name);
-                            if (currenlSheet.LastRowUsed() != null)
+                            var rangeToCopy = mergeSoursesWorksheets.First().Range(
+                                mergeSoursesWorksheets.First().Cell(1, 1),
+                                mergeSoursesWorksheets.First().LastCellUsed()
+                            );
+
+                            //Определяем ячейку для вставки
+                            IXLCell targetCell;
+                            //Если лист с таким именем уже есть в документе
+                            if (_workbook.Worksheets.Contains(mergeSoursesWorksheets.First().Name))
                             {
-                                targetCell = currenlSheet.LastRowUsed().RowBelow(1).Cell(1);
+                                var currenlSheet = _workbook.Worksheets.Worksheet(mergeSoursesWorksheets.First().Name);
+                                targetCell = (currenlSheet.LastRowUsed() != null)
+                                    ? currenlSheet.LastRowUsed().RowBelow(1).Cell(1)
+                                    : currenlSheet.Cell(1, 1);
                             }
+                            //Если листа с таким же именем нет - создаем новый лист
                             else
                             {
-                                targetCell = currenlSheet.Cell(1, 1);
+                                targetCell = _workbook.AddWorksheet(mergeSoursesWorksheets.First().Name).Cell(1, 1);
                             }
-                        }
-                        //Если листа с таким же именем нет - создаем новый лист
-                        else
-                        {
-                            targetCell = _workbook.AddWorksheet(mergeSoursesWorksheets.First().Name).Cell(1, 1);
-                        }
-                        ////копируем данные
+                            ////копируем данные
 
-                        //Копируем "Проверка данных"
-                        foreach (var dataValidation in mergeSoursesWorksheets.First().DataValidations.ToList())
-                        {
-                            //добавляем условие в на лист
-                            targetCell.Worksheet.DataValidations.Add(dataValidation);
-                            MatchCollection matchs =
-                                Regex.Matches(targetCell.Worksheet.DataValidations.Last().Value, @"[0-9]+");
-                            //Сохраняем только уникальные числа
-                            //Hashtable uniqMathes = new Hashtable();
-                            Dictionary<string, string> uniqMathes = new Dictionary<string, string>();
-                            for (int i = 0; i < matchs.Count; i++)
+                            //Копируем "Проверка данных"
+                            foreach (var dataValidation in mergeSoursesWorksheets.First().DataValidations.ToList())
                             {
-                                uniqMathes.Add(matchs[i].Value.ToString(), matchs[i].Value.ToString());
+                                //добавляем условие в на лист
+                                targetCell.Worksheet.DataValidations.Add(dataValidation);
+                                MatchCollection matchs =
+                                    Regex.Matches(targetCell.Worksheet.DataValidations.Last().Value, @"[0-9]+");
+                                //Сохраняем только уникальные числа
+                                //Hashtable uniqMathes = new Hashtable();
+                                Dictionary<string, string> uniqMathes = new Dictionary<string, string>();
+                                for (int i = 0; i < matchs.Count; i++)
+                                {
+                                    uniqMathes.Add(matchs[i].Value, matchs[i].Value);
+                                }
+
+                                //Упорядочиваем по убыванию
+                                List<string> uniqMathesList = uniqMathes.Values.ToList();
+                                uniqMathesList.Sort();
+                                uniqMathesList.Reverse();
+
+                                foreach (var match in uniqMathesList)
+                                {
+                                    string replaceFrom = match;
+                                    string replaceTo =
+                                        (Int32.Parse(match) + targetCell.Address.RowNumber - 1).ToString();
+
+                                    targetCell.Worksheet.DataValidations.Last().Value =
+                                        Regex.Replace(targetCell.Worksheet.DataValidations.Last().Value,
+                                            replaceFrom, replaceTo);
+                                }
                             }
 
-                            //Упорядочиваем по убыванию
-                            List<string> uniqMathesList = uniqMathes.Values.ToList();
-                            uniqMathesList.Sort();
-                            uniqMathesList.Reverse();
-
-                            foreach (var match in uniqMathesList)
+                            //Картинки
+                            Random rnd = new Random();
+                            foreach (var pic in mergeSoursesWorksheets.First().Pictures.ToList())
                             {
-                                string replaceFrom = match;
-                                string replaceTo = (Int32.Parse(match) + targetCell.Address.RowNumber - 1).ToString();
+                                var insertedPic = pic.Duplicate();
+                                //обходим запрет на одинаковые имена
+                                while (targetCell.Worksheet.Pictures.Contains(insertedPic.Name))
+                                {
+                                    insertedPic.Name = "Picture" + rnd.Next(1000).ToString();
+                                }
 
-                                targetCell.Worksheet.DataValidations.Last().Value =
-                                    Regex.Replace(targetCell.Worksheet.DataValidations.Last().Value,
-                                        replaceFrom, replaceTo);
+                                insertedPic = insertedPic.CopyTo(targetCell.Worksheet);
+                                //вычисляем смещение
+                                IXLCell moveTo = targetCell.Worksheet.Cell(
+                                    pic.TopLeftCell.Address.RowNumber + targetCell.Address.RowNumber - 1,
+                                    pic.TopLeftCell.Address.ColumnNumber
+                                );
+                                //смещаем
+                                insertedPic.MoveTo(moveTo);
                             }
+
+                            //Ячейки
+                            targetCell.Value = rangeToCopy;
+
                         }
 
-                        //Картинки
-                        Random rnd = new Random();
-                        foreach (var pic in mergeSoursesWorksheets.First().Pictures.ToList())
-                        {
-                            var insertedPic = pic.Duplicate();
-                            //обходим запрет на одинаковые имена
-                            while (targetCell.Worksheet.Pictures.Contains(insertedPic.Name))
-                            {
-                                insertedPic.Name = "Picture" + rnd.Next(1000).ToString();
-                            }
-
-                            insertedPic = insertedPic.CopyTo(targetCell.Worksheet);
-                            //вычисляем смещение
-                            IXLCell moveTo = targetCell.Worksheet.Cell(
-                                pic.TopLeftCell.Address.RowNumber + targetCell.Address.RowNumber - 1,
-                                pic.TopLeftCell.Address.ColumnNumber
-                            );
-                            //смещаем
-                            insertedPic.MoveTo(moveTo);
-                        }
-
-                        //Ячейки
-                        targetCell.Value = rangeToCopy;
-
+                        //удаляем лист из списка листов, подготовленных к копированию
+                        mergeSoursesWorksheets.Remove(mergeSoursesWorksheets.First());
                     }
-
-                    //удаляем лист из списка листов, подготовленных к копированию
-                    mergeSoursesWorksheets.Remove(mergeSoursesWorksheets.First());
                 }
             }
         }
 
         public void NewDocument()
         {
-            NewDocument(new string[] {"Лист1"});
+            NewDocument(new [] {"Лист1"});
         }
 
         public void NewDocumentTemp(string templatePath)
@@ -348,16 +330,9 @@ namespace AP.Reports.AutoDocumets
                 throw new FormatException("Формат файла не .xltx");
             }
 
-            try
-            {
-                _filePath = null;
-                _workbook = new XLWorkbook(templatePath);
-                MoveEnd();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            _filePath = null;
+            _workbook = new XLWorkbook(templatePath);
+            MoveEnd();
         }
 
         public void OpenDocument(string sPath)
@@ -372,23 +347,16 @@ namespace AP.Reports.AutoDocumets
                 throw new FormatException("Формат файла не .xlsx");
             }
 
-            try
-            {
-                _filePath = sPath;
-                _workbook = new XLWorkbook(sPath);
-                MoveEnd();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            _filePath = sPath;
+            _workbook = new XLWorkbook(sPath);
+            MoveEnd();
         }
 
         public void Save()
         {
-            if (_filePath != null && _workbook != null)
+            if (_filePath != null)
             {
-                _workbook.SaveAs(_filePath);
+                _workbook?.SaveAs(_filePath);
             }
         }
 
@@ -422,14 +390,9 @@ namespace AP.Reports.AutoDocumets
         {
             if (_workbook != null)
             {
-                if (_workbook.Worksheets.Last().LastRowUsed() != null)
-                {
-                    _currentCell = _workbook.Worksheets.Last().LastRowUsed().RowBelow(1).FirstCell();
-                }
-                else
-                {
+                _currentCell = (_workbook.Worksheets.Last().LastRowUsed() != null)?
+                   _workbook.Worksheets.Last().LastRowUsed().RowBelow(1).FirstCell():
                     _currentCell = _workbook.Worksheets.Last().FirstCell();
-                }
             }
         }
 
@@ -479,13 +442,17 @@ namespace AP.Reports.AutoDocumets
             {
                 var worksheets = _workbook.Worksheets.ToArray();
                 bool isOperatedAlready = false;
-                for (int i = 0; i < worksheets.Length; i++)
+                //for (int i = 0; i < worksheets.Length; i++)
+                //{
+                //    foreach (var cell in worksheets[i].Cells())
+                foreach (var worsheet in worksheets)
                 {
-                    foreach (var cell in worksheets[i].Cells())
+                    foreach (var cell in worsheet.Cells())
+
                     {
                         if (Regex.IsMatch(cell.Value.ToString(), @"\b" + sFind + @"\b"))
                         {
-                            cellOperator(cell, worksheets[i]);
+                            cellOperator(cell, worsheet);
                             isOperatedAlready = true;
                             if (forAll == false)
                             {
@@ -494,7 +461,7 @@ namespace AP.Reports.AutoDocumets
                         }
                     }
 
-                    if (forAll == false && isOperatedAlready == true)
+                    if (forAll == false && isOperatedAlready)
                     {
                         break;
                     }
@@ -534,16 +501,14 @@ namespace AP.Reports.AutoDocumets
         {
             for (int i = 1; i <= range.RowCount(); i++)
             {
-                double conditionValue;
-                double tableValue;
                 //Если оба данных - числа, то сравниваем их как числа
-                if (double.TryParse(conditional.Value, out conditionValue)
-                    && double.TryParse(GetMargedCellValue(range.Cell(i, formatingColumn)), out tableValue))
+                if (double.TryParse(conditional.Value, out var conditionValue)
+                    && double.TryParse(GetMargedCellValue(range.Cell(i, formatingColumn)), out var tableValue))
                 {
                     switch (conditional.Condition)
                     {
                         case ConditionalFormatting.Conditions.Equal:
-                            if (tableValue == conditionValue)
+                            if ( Math.Abs(tableValue - conditionValue)<float.MinValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
@@ -573,7 +538,7 @@ namespace AP.Reports.AutoDocumets
                             }
                             break;
                         case ConditionalFormatting.Conditions.NotEqual:
-                            if (tableValue != conditionValue)
+                            if (Math.Abs(tableValue - conditionValue) > float.MinValue)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
@@ -612,16 +577,11 @@ namespace AP.Reports.AutoDocumets
         private void SetConditionToRegion(IXLRange range, int row, int formatingColumn,
             ConditionalFormatting conditional)
         {
-            IXLRange rangeToFormating;
-            if (conditional.Region == ConditionalFormatting.RegionAction.Cell)
-            {
-                rangeToFormating = range.Range(row, formatingColumn, row, formatingColumn);
-            }
-            else
-            {
-                rangeToFormating = range.Range(row, 1, row, range.ColumnCount());
-            }
-
+            IXLRange rangeToFormating = 
+                (conditional.Region == ConditionalFormatting.RegionAction.Cell)?
+                range.Range(row, formatingColumn, row, formatingColumn):
+                range.Range(row, 1, row, range.ColumnCount());
+            
             rangeToFormating.Style.Fill.BackgroundColor = XLColor.FromColor(conditional.Color);
         }
 
@@ -666,12 +626,11 @@ namespace AP.Reports.AutoDocumets
         /// </summary>
         /// <param name="row"></param>
         /// <param name="column"></param>
-        /// <param name="workSheet"></param>
         public void MoveToCell(int row, int column)
         {
-            if (_workbook != null && _currentCell != null)
+            if (_workbook != null)
             {
-                _currentCell = _currentCell.Worksheet.Cell(row, column);
+                _currentCell = _currentCell?.Worksheet.Cell(row, column);
             }
         }
 
@@ -710,6 +669,7 @@ namespace AP.Reports.AutoDocumets
         /// <summary>
         /// Вставляет изображение на метку и масштабирует его
         /// </summary>
+        /// <param name="sFind"></param>
         /// <param name="image"></param>
         /// <param name="factor"></param>
         /// <param name="relativeToOriginal"></param>
@@ -807,9 +767,18 @@ namespace AP.Reports.AutoDocumets
         /// </summary>
         public void AddBookmarkToCell(string name)
         {
-            if (_workbook != null && _currentCell != null)
+            if (_workbook != null)
             {
-                _currentCell.Worksheet.Workbook.NamedRanges.Add(name, _currentCell.AsRange());
+                string pattern = @"[_, a-z, а-я][_,a-z,а-я,0-9]*";
+                if (Regex.IsMatch(name, pattern, RegexOptions.IgnoreCase) && name.Length<254)
+                {
+                    _currentCell?.Worksheet.Workbook.NamedRanges.Add(name, _currentCell.AsRange());
+                }
+                else
+                {
+                    throw new ArgumentException("Имя метки должно начинаться с буквы или символа подчеркивания,"
+                    + " и может содержать только буквы, цифры и символы подчеркивания");
+                }
             }
         }
 
