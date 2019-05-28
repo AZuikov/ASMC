@@ -79,6 +79,7 @@
     <Compile Include="UtExcel.cs" />
     <Compile Include="UtExcelInterop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UtOpenExcel.cs" />
     <Compile Include="UtWord.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -20,7 +20,7 @@ namespace UnitTest.AP.Reports
     public class UtExcel
     {
         private Excel _excel;
-        private string _pathToTestFolder = @"C:\Users\02ias01\Documents\Tests\";
+        private string _pathToTestFolder = @"C:\Tests\";
         private string[] _pages = new[] {"Bookmark", "Insert", "Replase"};
 
         #region True tests
@@ -195,6 +195,7 @@ namespace UnitTest.AP.Reports
             }
         }
 
+<<<<<<< HEAD
 
         public enum FileFormat
         {
@@ -216,6 +217,16 @@ namespace UnitTest.AP.Reports
         public void SomeTest()
         {
 
+=======
+        [TestMethod]
+        public void AddBookmark()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.NewDocument();
+                _excel.SaveAs(_pathToTestFolder + "@@@@");
+            }
+>>>>>>> -В Библлиотеке Excel исправлены ошибки, показываемые РеШарпером
         }
 
         #endregion
