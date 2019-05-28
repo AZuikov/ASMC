@@ -25,7 +25,19 @@ namespace AP.Reports.AutoDocumets
         private string _filePath;
         private IXLCell _currentCell;
 
-        public string Path => throw new NotImplementedException();
+        public string Path
+        {
+            get { return _filePath; }
+
+            set
+            {
+                if (!System.IO.Path.GetExtension(value).Equals(@".xlsx"))
+                {
+                    throw new FormatException("Формат файла не .xlsx");
+                }
+                _filePath = value;
+            }
+        }
 
         private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
