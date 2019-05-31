@@ -229,23 +229,23 @@ namespace AP.Reports.AutoDocumets
                 MergeDocuments(path);
             }
         }
-        public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             throw new NotImplementedException();
         }
-        public void FindStringAndReplaceImage(string sFind, Bitmap image)
+        public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             throw new NotImplementedException();
         }
-        public void InsertImageToBookmark(string bm, Bitmap image)
+        public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
             throw new NotImplementedException();
         }
-        public void InsertImage(Bitmap image)
+        public void InsertImage(Bitmap image, float scale = 1)
         {
             var imagePart = _document.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);
             image.Save(imagePart.GetStream(FileMode.Open), System.Drawing.Imaging.ImageFormat.Jpeg);
-            AddImage(_document.MainDocumentPart.GetIdOfPart(imagePart));
+            AddImage(_document.MainDocumentPart.GetIdOfPart(imagePart), scale);
         }
 
         public void NewDocumentTemp(string templatePath)
@@ -406,13 +406,27 @@ namespace AP.Reports.AutoDocumets
 
 
         #region private methods
-        
-        private Drawing GenerateDrawing(string relationshipId)
+        /// <summary>
+        /// Добавляет изображение
+        /// </summary>
+        /// <param name="relationshipId">ID ImagePart, содержащей рисунок</param>
+        /// <param name="scale">Масштаб отрисовки</param>
+        /// <returns></returns>
+        private void AddImage(string relationshipId, float scale = 1)
         {
-           var element = 
+            //Получаем Часть с изображением
+            ImagePart imagePart = (ImagePart) _document.MainDocumentPart.GetPartById(relationshipId);
+            //Получаем изображение из части
+            Bitmap image = new Bitmap(imagePart.GetStream());
+            //Масштабируем
+            int coef = 9524; //Получено империческим пересчетом с реальных примеров
+            Int64Value ImageX = (Int64Value)(image.Width * scale * coef);
+            Int64Value ImageY = (Int64Value)(image.Height * scale * coef);
+
+            var element = 
                new Drawing(
                    new DW.Inline(
-                       new DW.Extent() { Cx = 990000L, Cy = 792000L},
+                       new DW.Extent() { Cx = ImageX, Cy = ImageY },
                        new DW.EffectExtent()
                            {
                                LeftEdge = 0L,
@@ -456,7 +470,7 @@ namespace AP.Reports.AutoDocumets
                                new Pic.ShapeProperties(
                                    new A.Transform2D(
                                        new A.Offset() { X = 0L, Y = 0L},
-                                       new A.Extents() { Cx = 990000L, Cy = 792000L}
+                                       new A.Extents() { Cx = ImageX, Cy = ImageY }
                                        ),
                                    new A.PresetGeometry(
                                        new A.AdjustValueList()
@@ -474,12 +488,7 @@ namespace AP.Reports.AutoDocumets
                    EditId = "50D07946"
                });
 
-            return element;
-        }
-
-        private void AddImage(string relationshipId)
-        {
-            _document?.MainDocumentPart.Document.Body.AppendChild(new Paragraph(new Run(GenerateDrawing(relationshipId))));
+            _document?.MainDocumentPart.Document.Body.AppendChild(new Paragraph(new Run(element)));
         }
 
 

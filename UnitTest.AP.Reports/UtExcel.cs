@@ -131,7 +131,7 @@ namespace UnitTest.AP.Reports
                 Bitmap image = GetBitmapImage();
                 _excel.InsertNewTableToBookmark("AddTable", dt, GetCondition());
                 _excel.InsertImageToBookmark("AddImage", image);
-                _excel.InsertImageToBookmark("AddImageWithScale",image, 0.5, true);
+                _excel.InsertImageToBookmark("AddImageWithScale",image, (float)0.5);
                 _excel.FillsTableToBookmark("FillTable", dt, false, GetCondition());
                 _excel.SaveAs(_pathToTestFolder + "TestBmReplased.xlsx");
             }
@@ -152,11 +152,11 @@ namespace UnitTest.AP.Reports
                 Bitmap image = GetBitmapImage();
                 _excel.FindStringAndReplace("ЗаменитьНаТекстОдинРаз", "ЗамененоНаТекстОдинРаз");
                 _excel.FindStringAndReplaceImage("ЗаменитьНаИзображениеОдинРаз", image);
-                _excel.FindStringAndReplaceImage("ЗаменитьНаИзображениеСМасштабомОдинРаз", image, 0.5, true);
+                _excel.FindStringAndReplaceImage("ЗаменитьНаИзображениеСМасштабомОдинРаз", image, (float)0.5);
 
                 _excel.FindStringAndAllReplace("ЗаменитьНаТекстВсе", "ЗамененоНаТекстВсе");
                 _excel.FindStringAndAllReplaceImage("ЗаменитьНаИзображениеВсе", image);
-                _excel.FindStringAndAllReplaceImage("ЗаменитьНаИзображениеСМасштабомВсе", image, 0.5, true);
+                _excel.FindStringAndAllReplaceImage("ЗаменитьНаИзображениеСМасштабомВсе", image, (float)0.5);
                 _excel.SaveAs(_pathToTestFolder + "TestStrReplased.xlsx");
             }
         }

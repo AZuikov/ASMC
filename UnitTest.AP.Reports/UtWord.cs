@@ -99,10 +99,10 @@ namespace UnitTest.AP.Reports
         {
             word = new Word();
             word.NewDocument();
-            //word.InsertText("222");
             word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"));
-            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"));
-            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"));
+            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage2.jpg"));
+            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"), (float)0.5);
+            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage2.jpg"), (float)0.5);
             word.SaveAs(@"C:\Users\02ias01\Documents\Tests\222.docx");
             word.Save();
             word.Close();
