@@ -194,6 +194,30 @@ namespace UnitTest.AP.Reports
                 _excel.SaveAs(_pathToTestFolder + "TestMerge.xlsx");
             }
         }
+
+
+        public enum FileFormat
+        {
+            /// <summary>
+            /// Документ
+            /// </summary>
+            Docx,
+            /// <summary>
+            /// Шаблон
+            /// </summary>
+            Dotx,
+            /// <summary>
+            /// С поддержкой макросов
+            /// </summary>
+            Docm
+        }
+
+        [TestMethod]
+        public void SomeTest()
+        {
+
+        }
+
         #endregion
 
         private DataTable GetRandomDataTable()

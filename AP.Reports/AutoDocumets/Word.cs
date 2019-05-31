@@ -9,8 +9,10 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using A = DocumentFormat.OpenXml.Drawing;
+using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using Pic = DocumentFormat.OpenXml.Drawing.Pictures;
+using DocumentFormat.OpenXml.Office2010.Word.DrawingShape;
 using BottomBorder = DocumentFormat.OpenXml.Wordprocessing.BottomBorder;
 using ConditionalFormatting = AP.Reports.Utils.ConditionalFormatting;
 using GridColumn = DocumentFormat.OpenXml.Wordprocessing.GridColumn;
@@ -33,6 +35,10 @@ using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 using TopBorder = DocumentFormat.OpenXml.Wordprocessing.TopBorder;
 using AP.Reports.Utils;
 using System.Data;
+using DocumentFormat.OpenXml.Presentation;
+using BlipFill = DocumentFormat.OpenXml.Drawing.BlipFill;
+using NonVisualDrawingProperties = DocumentFormat.OpenXml.Drawing.NonVisualDrawingProperties;
+using ShapeProperties = DocumentFormat.OpenXml.Drawing.ShapeProperties;
 
 namespace AP.Reports.AutoDocumets
 {
@@ -152,13 +158,25 @@ namespace AP.Reports.AutoDocumets
         }
         public void NewDocument()
         {
+            _document = null;
+            _path = null;
+            _stream = null;
             Init();
+            //Фактически Init() не создает новый документ (если путь не равен null то программа откроет
+            //ранее открытый документ).т.е. при
+            //    OpenDocument(@"C:\example.docx");
+            //    Save();
+            //    NewDocument();
+            //функция не приведет к созданию документа.
+            //Поэтому добавил обнуление 
         }
+
         public void OpenDocument(string sPath)
         {
             Path = sPath;
             Init();
         }
+
         public void MergeDocuments(string pathdoc)
         {
             if(_document == null)
@@ -169,18 +187,24 @@ namespace AP.Reports.AutoDocumets
             {
                 throw new FormatException("Не допустимый формат файла.", new Exception());
             }
-            var altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
+            string altChunId = null;
             var mainPart = _document.MainDocumentPart;
-            AlternativeFormatImportPart chumk;
-            try
+
+            AlternativeFormatImportPart chumk = null;
+            bool idIsUnique = false;
+            while (!idIsUnique)
             {
-                chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunId);
-            }
-            catch(Exception)
-            {
-                Thread.Sleep(100);
-                altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
-                chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunId);
+                try
+                {
+                    altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
+                    chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML,
+                        altChunId);
+                    idIsUnique = true;
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(100);
+                }
             }
             try
             {
@@ -219,16 +243,16 @@ namespace AP.Reports.AutoDocumets
         }
         public void InsertImage(Bitmap image)
         {
-          var ms = new MemoryStream();
-          image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);      
-          var imagePart = _document.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);  
-          AddImage(_document.MainDocumentPart.GetIdOfPart(imagePart)); 
-          //throw new NotImplementedException();
+            var imagePart = _document.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);
+            image.Save(imagePart.GetStream(FileMode.Open), System.Drawing.Imaging.ImageFormat.Jpeg);
+            AddImage(_document.MainDocumentPart.GetIdOfPart(imagePart));
         }
+
         public void NewDocumentTemp(string templatePath)
         {
             throw new NotImplementedException();
         }
+
         public void FillsTableToBookmark(string bm, DataTable dt, bool del = false,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -244,6 +268,7 @@ namespace AP.Reports.AutoDocumets
                 break;
             }
         }
+
         public void InsertNewTableToBookmark(string bm, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -261,6 +286,7 @@ namespace AP.Reports.AutoDocumets
                 break;
             }
         }
+
         public void InsertTextToBookmark(string bm, string text)
         {
             var bookMarks = FindBookmarks();
@@ -277,10 +303,12 @@ namespace AP.Reports.AutoDocumets
                 break;
             }
         }
+
         public void Save()
         {
             _document.Save();
         }
+
         public void InsertText(string text)
         {
             //if(_homeDocument)
@@ -294,6 +322,7 @@ namespace AP.Reports.AutoDocumets
 
             //throw new NotImplementedException();
         }
+
         public void InsertTable(DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -306,14 +335,15 @@ namespace AP.Reports.AutoDocumets
             FillingTable(table, dt);
             //throw new NotImplementedException();
         }
+
         public void MoveEnd()
         {
-
             MoveToDocument();
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             SetElement.Append(new Paragraph());
             SetElement = SetElement.Descendants<Paragraph>().Last();
         }
+
         public void MoveHome()
         {
             MoveToDocument();
@@ -330,6 +360,7 @@ namespace AP.Reports.AutoDocumets
         {
             return FindBookmarks(_document.MainDocumentPart.Document);
         }
+
         /// <summary>
         /// Заполняет таблицу
         /// </summary>
@@ -373,157 +404,82 @@ namespace AP.Reports.AutoDocumets
         }
         #endregion
 
+
         #region private methods
-        private Drawing GenerateDrawing()
+        
+        private Drawing GenerateDrawing(string relationshipId)
         {
-            Drawing drawing1 = new Drawing();
+           var element = 
+               new Drawing(
+                   new DW.Inline(
+                       new DW.Extent() { Cx = 990000L, Cy = 792000L},
+                       new DW.EffectExtent()
+                           {
+                               LeftEdge = 0L,
+                               TopEdge = 0L,
+                               RightEdge = 0L,
+                               BottomEdge = 0L
+                           },
+                       new DW.DocProperties()
+                       {
+                           Id = (UInt32Value)1U,
+                           Name = "Picture 1"
+                       },
+                       new NonVisualGraphicFrameDrawingProperties(
+                           new A.GraphicFrameLocks() { NoChangeAspect = true}
+                           ),
+                       new A.Graphic(
+                           new A.GraphicData(
+                               new Pic.Picture(
+                                   new Pic.NonVisualPictureProperties(
+                                       new Pic.NonVisualDrawingProperties()
+                                       {
+                                           Id = (UInt32Value)1U,
+                                           Name = "New Image.Jpg"
+                                       },
+                                       new Pic.NonVisualPictureDrawingProperties()
+                                       ),
+                                   new Pic.BlipFill(
+                                       new A.Blip(
+                                           new A.BlipExtensionList(
+                                               new A.BlipExtension()
+                                               {
+                                                   Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}"
 
-            Inline inline1 = new Inline() { DistanceFromTop = (UInt32Value)0U, DistanceFromBottom = (UInt32Value)0U, DistanceFromLeft = (UInt32Value)0U, DistanceFromRight = (UInt32Value)0U, AnchorId = "0F911AAD", EditId = "746B09E5" };
-            Extent extent1 = new Extent() { Cx = 1885950L, Cy = 2790825L };
-            EffectExtent effectExtent1 = new EffectExtent() { LeftEdge = 0L, TopEdge = 0L, RightEdge = 0L, BottomEdge = 9525L };
-            DocProperties docProperties1 = new DocProperties() { Id = (UInt32Value)1U, Name = "Рисунок 1" };
+                                               }))
+                                   {
+                                       Embed = relationshipId,
+                                       CompressionState = A.BlipCompressionValues.Print
 
-            NonVisualGraphicFrameDrawingProperties nonVisualGraphicFrameDrawingProperties1 = new NonVisualGraphicFrameDrawingProperties();
+                                   },
+                                   new A.Stretch(new A.FillRectangle())),
+                               new Pic.ShapeProperties(
+                                   new A.Transform2D(
+                                       new A.Offset() { X = 0L, Y = 0L},
+                                       new A.Extents() { Cx = 990000L, Cy = 792000L}
+                                       ),
+                                   new A.PresetGeometry(
+                                       new A.AdjustValueList()
+                                       )
+                                   { Preset = A.ShapeTypeValues.Rectangle}
+                                   )))
+                       {
+                           Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
+                       }))
+               {
+                   DistanceFromTop = (UInt32Value)0U,
+                   DistanceFromBottom = (UInt32Value)0U,
+                   DistanceFromLeft = (UInt32Value)0U,
+                   DistanceFromRight = (UInt32Value)0U,
+                   EditId = "50D07946"
+               });
 
-            GraphicFrameLocks graphicFrameLocks1 = new GraphicFrameLocks() { NoChangeAspect = true };
-            graphicFrameLocks1.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
-
-            nonVisualGraphicFrameDrawingProperties1.Append(graphicFrameLocks1);
-
-            Graphic graphic1 = new Graphic();
-            graphic1.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
-
-            GraphicData graphicData1 = new GraphicData() { Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture" };
-
-            Picture picture1 = new Picture();
-            picture1.AddNamespaceDeclaration("pic", "http://schemas.openxmlformats.org/drawingml/2006/picture");
-
-            NonVisualPictureProperties nonVisualPictureProperties1 = new NonVisualPictureProperties();
-            NonVisualDrawingProperties nonVisualDrawingProperties1 = new NonVisualDrawingProperties() { Id = (UInt32Value)0U, Name = "" };
-            NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new NonVisualPictureDrawingProperties();
-
-            nonVisualPictureProperties1.Append(nonVisualDrawingProperties1);
-            nonVisualPictureProperties1.Append(nonVisualPictureDrawingProperties1);
-
-            BlipFill blipFill1 = new BlipFill();
-            Blip blip1 = new Blip() { Embed = "rId5" };
-
-            Stretch stretch1 = new Stretch();
-            FillRectangle fillRectangle1 = new FillRectangle();
-
-            stretch1.Append(fillRectangle1);
-
-            blipFill1.Append(blip1);
-            blipFill1.Append(stretch1);
-
-            ShapeProperties shapeProperties1 = new ShapeProperties();
-
-            Transform2D transform2D1 = new Transform2D();
-            Offset offset1 = new Offset() { X = 0L, Y = 0L };
-            Extents extents1 = new Extents() { Cx = 1885950L, Cy = 2790825L };
-
-            transform2D1.Append(offset1);
-            transform2D1.Append(extents1);
-
-            PresetGeometry presetGeometry1 = new PresetGeometry() { Preset = ShapeTypeValues.Rectangle };
-            AdjustValueList adjustValueList1 = new AdjustValueList();
-
-            presetGeometry1.Append(adjustValueList1);
-
-            shapeProperties1.Append(transform2D1);
-            shapeProperties1.Append(presetGeometry1);
-
-            picture1.Append(nonVisualPictureProperties1);
-            picture1.Append(blipFill1);
-            picture1.Append(shapeProperties1);
-
-            graphicData1.Append(picture1);
-
-            graphic1.Append(graphicData1);
-
-            inline1.Append(extent1);
-            inline1.Append(effectExtent1);
-            inline1.Append(docProperties1);
-            inline1.Append(nonVisualGraphicFrameDrawingProperties1);
-            inline1.Append(graphic1);
-
-            drawing1.Append(inline1);
-            return drawing1;
-
+            return element;
         }
+
         private void AddImage(string relationshipId)
         {
-          SetElement.AppendChild(new Run(GenerateDrawing()));
-
-
-            //  var element =
-            //  new Drawing(
-            //      new Inline(
-            //          new Extent() { Cx = 990000L, Cy = 792000L },
-            //          new EffectExtent()
-            //          {
-            //              LeftEdge = 0L,
-            //              TopEdge = 0L,
-            //              RightEdge = 0L,
-            //              BottomEdge = 0L
-            //          },
-            //          new DocProperties()
-            //          {
-            //              Id = (UInt32Value)1U,
-            //              Name = "Picture 1"
-            //          },
-            //          new NonVisualGraphicFrameDrawingProperties(
-            //              new GraphicFrameLocks() { NoChangeAspect = true }),
-            //          new Graphic(
-            //              new GraphicData(
-            //                  new DocumentFormat.OpenXml.Drawing.Picture(
-            //                      new NonVisualPictureProperties(
-            //                          new NonVisualDrawingProperties()
-            //                          {
-            //                              Id = (uint)relationshipId.GetHashCode(),
-            //                              Name = relationshipId.GetHashCode().ToString()
-            //                          },
-            //                          new NonVisualPictureDrawingProperties()),
-            //                      new BlipFill(
-            //                          new Blip(
-            //                              new BlipExtensionList(
-            //                                  new BlipExtension()
-            //                                  {
-            //                                      Uri = relationshipId.GetHashCode().ToString()
-            //                                  })
-            //                          )
-            //                          {
-            //                              Embed = relationshipId,
-            //                              CompressionState =
-            //                              BlipCompressionValues.Print
-            //                          },
-            //                          new Stretch(
-            //                              new FillRectangle())),
-            //                      new ShapeProperties(
-            //                          new Transform2D(
-            //                              new Offset() { X = 0L, Y = 0L },
-            //                              new Extents() { Cx = 990000L, Cy = 792000L }),
-            //                          new PresetGeometry(
-            //                              new AdjustValueList()
-            //                          )
-            //                          {
-            //                              Preset = ShapeTypeValues.Rectangle
-            //                          }))
-            //              )
-            //              {
-            //                  Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
-            //              })
-            //      )
-            //      {
-            //          DistanceFromTop = (UInt32Value)0U,
-            //          DistanceFromBottom = (UInt32Value)0U,
-            //          DistanceFromLeft = (UInt32Value)0U,
-            //          DistanceFromRight = (UInt32Value)0U,
-            //          EditId = "50D07946"
-            //      });
-            //SetElement.AppendChild(new Paragraph(new Run(element)));
-
-
+            _document?.MainDocumentPart.Document.Body.AppendChild(new Paragraph(new Run(GenerateDrawing(relationshipId))));
         }
 
 
@@ -559,7 +515,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
         /// <summary>
-        /// Переходить на Document (самый верхний элемент документа)
+        /// Переходит на Document (самый верхний элемент документа)
         /// </summary>
         private void MoveToDocument()
         {
@@ -645,7 +601,7 @@ namespace AP.Reports.AutoDocumets
         }
 
         /// <summary>
-        /// Возвращает сгенерированную яцейку для талицы
+        /// Возвращает сгенерированную ячейку для талицы
         /// </summary>
         /// <returns></returns>
         private static TableCell GenerateTableCell()
@@ -663,6 +619,7 @@ namespace AP.Reports.AutoDocumets
             tableCell1.Append(paragraph1);
             return tableCell1;
         }
+
         /// <summary>
         /// Возращает сгенерированный TableGrid
         /// </summary>
@@ -678,6 +635,7 @@ namespace AP.Reports.AutoDocumets
             }
             return tableGrid1;
         }
+
         /// <summary>
         /// Возвращает сгенерированые свойства для таблицы
         /// </summary>
@@ -716,6 +674,7 @@ namespace AP.Reports.AutoDocumets
             tableProperties1.Append(tableLook1);
             return tableProperties1;
         }
+
         /// <summary>
         /// Возвращает результат проверки пути к файлу
         /// </summary>
@@ -723,7 +682,8 @@ namespace AP.Reports.AutoDocumets
         /// <returns>Возвращает true если путь и формат файла допустимы</returns>
         private bool ValidPath(string path)
         {
-            var extension = System.IO.Path.GetExtension(path) ?? throw new FileNotFoundException("Путь к файлу не указан.");
+            var extension = System.IO.Path.GetExtension(path);
+            if (extension == "") throw new FileNotFoundException("Путь к файлу не указан.");
             foreach(var ff in Enum.GetValues(typeof(FileFormat)))
             {
                 if(extension.Equals("." + ff.ToString().ToLower()))

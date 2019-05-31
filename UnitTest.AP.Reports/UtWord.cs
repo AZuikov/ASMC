@@ -28,6 +28,7 @@ namespace UnitTest.AP.Reports
             word.InsertText($"{value}");
             Assert.AreEqual(word.SetElement.LastChild.InnerText, $"{value}");
         }
+
         [TestMethod]
         [DataRow(@"C:\Документ Microsoft Word1.docx")]
         [DataRow(@"C:\Документ Microsoft Word1.dotx")]
@@ -37,6 +38,7 @@ namespace UnitTest.AP.Reports
         {
             word = new Word {Path = $"{path}"};
         }  
+
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
         [DataRow(@"C:\Документ Microsoft Word1.Docx")]
@@ -47,6 +49,7 @@ namespace UnitTest.AP.Reports
         {
             word = new Word { Path = $"{path}" };
         }    
+
         [TestMethod]
         public void SetMoveHome()
         {
@@ -55,6 +58,7 @@ namespace UnitTest.AP.Reports
             word.MoveHome();
             Assert.IsTrue(word.SetElement.Parent is Body); 
         }
+
         [TestMethod]
         public void SetMoveEnd()
         {
@@ -89,6 +93,21 @@ namespace UnitTest.AP.Reports
             word.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             word.Close();
         }
+
+        [TestMethod]
+        public void TestMethod2Isaev()
+        {
+            word = new Word();
+            word.NewDocument();
+            //word.InsertText("222");
+            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"));
+            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"));
+            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"));
+            word.SaveAs(@"C:\Users\02ias01\Documents\Tests\222.docx");
+            word.Save();
+            word.Close();
+        }
+
         [TestMethod]
         public void TestMethod3()
         {
