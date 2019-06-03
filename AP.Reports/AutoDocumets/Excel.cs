@@ -562,7 +562,7 @@ namespace AP.Reports.AutoDocumets
                     switch (conditional.Condition)
                     {
                         case ConditionalFormatting.Conditions.Equal:
-                            if (tableValue == conditionValue)
+                            if (Math.Abs(tableValue - conditionValue) < float.Epsilon)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
@@ -592,7 +592,7 @@ namespace AP.Reports.AutoDocumets
                             }
                             break;
                         case ConditionalFormatting.Conditions.NotEqual:
-                            if (tableValue != conditionValue)
+                            if (Math.Abs(tableValue - conditionValue) > float.Epsilon)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }

@@ -336,7 +336,7 @@ namespace AP.Reports.AutoDocumets
             SetElement.AppendChild((new Run(GenerateTable(dt.Columns.Count, dt.Rows.Count))));
             var table = SetElement.Parent.Descendants<Table>().Last();
             FillingTable(table, dt, cf);
-            //SetConditionalFormatting(table, dt, cf);
+            SetConditionalFormatting(table, dt, cf);
             //throw new NotImplementedException();
         }
 
@@ -412,6 +412,12 @@ namespace AP.Reports.AutoDocumets
 
         #region private methods
 
+        /// <summary>
+        /// Устанавливает заливку ячеек таблицы по правилу ConditionalFormatting
+        /// </summary>
+        /// <param name="tab">Таблица Word</param>
+        /// <param name="dt">Таблица DataTable</param>
+        /// <param name="cf">Правила</param>
         private void SetConditionalFormatting(Table tab, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -419,29 +425,25 @@ namespace AP.Reports.AutoDocumets
 
             var allRows = tab.Descendants<TableRow>();
 
-            string columnList = null;
+            //string columnList = null;
             foreach (var row in allRows)
             {
                 var cellArray = row.Descendants<TableCell>().ToArray();
-                Int32.TryParse(cellArray[formatingColumn].InnerText, out int cellValue);
-                if (cellValue > 5)
+                if (DoesItNeedToSetCondition(cellArray[formatingColumn].InnerText, cf))
                 {
-                    Paragraph paragraph1 = new Paragraph() { RsidParagraphMarkRevision = "00604232", RsidParagraphAddition = "00604232", RsidRunAdditionDefault = "00604232" };
-                    Run run1 = new Run() { RsidRunProperties = "00604232" };
-                    A.RunProperties runProperties1 = new A.RunProperties();
-                    Highlight highlight1 = new Highlight() { Val = HighlightColorValues.Cyan };
-
-                    runProperties1.Append(highlight1);
-                    run1.Append(runProperties1);
-                    paragraph1.Append(run1);
-                    cellArray[formatingColumn].Append(paragraph1);
+                    if (cf.Region == ConditionalFormatting.RegionAction.Cell)
+                    {
+                        SetBackgroungColorToCell(cellArray[formatingColumn], GetColorRrggbbString(cf.Color));
+                    }
+                    if (cf.Region == ConditionalFormatting.RegionAction.Row)
+                    {
+                        foreach (var cell in cellArray)
+                        {
+                            SetBackgroungColorToCell(cell, GetColorRrggbbString(cf.Color));
+                        }
+                    }
                 }
-
-                //columnList += cellArray[formatingColumn].InnerText + "\n";
             }
-
-
-            //MessageBox.Show(columnList);
         }
 
 
@@ -530,6 +532,16 @@ namespace AP.Reports.AutoDocumets
             _document?.MainDocumentPart.Document.Body.AppendChild(new Paragraph(new Run(element)));
         }
 
+        /// <summary>
+        /// Преобразует цвет в строку типа RRGGBB
+        /// </summary>
+        /// <param name="color">Цвет</param>
+        /// <returns></returns>
+        private string GetColorRrggbbString(System.Drawing.Color color)
+        {
+            return color.R.ToString("x2") + color.G.ToString("x2") + color.B.ToString("x2");
+
+        }
 
         /// <summary>
         /// Инициализация документа
@@ -615,6 +627,7 @@ namespace AP.Reports.AutoDocumets
             }
             return outs;
         }
+
         /// <summary>
         /// Возвращает сренерированию талицу
         /// </summary>
@@ -759,7 +772,96 @@ namespace AP.Reports.AutoDocumets
             return false;
         }
 
-      
+
+        /// <summary>
+        /// Определяет, соответствует ли ячейка таблицы условию из набора правил ConditionalFormatting
+        /// </summary>
+        /// <param name="cellValue">Значение для сравнения</param>
+        /// <param name="conditional">Правила сравнения</param>
+        private bool DoesItNeedToSetCondition(string cellValue, ConditionalFormatting conditional)
+        {
+            double conditionValue;//Значение value из conditional, перепарсенное в double
+            double tableValue;//Сравниваемое значение из таблицы, перепарсенное в double
+            //Если оба данных - числа, то сравниваем их как числа
+            if (double.TryParse(conditional.Value, out conditionValue)
+                && double.TryParse(cellValue, out tableValue))
+            {
+                switch (conditional.Condition)
+                {
+                    case ConditionalFormatting.Conditions.Equal:
+                        if (Math.Abs(tableValue - conditionValue) < float.Epsilon)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.Less:
+                        if (tableValue < conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.LessOrEqual:
+                        if (tableValue <= conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.More:
+                        if (tableValue > conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.MoreOrEqual:
+                        if (tableValue >= conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.NotEqual:
+                        if (Math.Abs(tableValue - conditionValue) > float.Epsilon)
+                        {
+                            return true;
+                        }
+                        return false;
+                }
+            }
+            //Если не числа - сравниваем как строки
+            else
+            {
+                switch (conditional.Condition)
+                {
+                    case ConditionalFormatting.Conditions.Equal:
+                        if (cellValue == conditional.Value)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.NotEqual:
+                        if (cellValue != conditional.Value)
+                        {
+                            return true;
+                        }
+                        return false;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Устанавливает заливку ячейки
+        /// </summary>
+        /// <param name="cell">Ячейка таблицы</param>
+        /// <param name="color">Цвет в формате RRGGBB</param>
+        private void SetBackgroungColorToCell(TableCell cell, string color)
+        {
+            var tableCellProperties = cell.Descendants<TableCellProperties>().First();
+            var shading1 = new Shading()
+                { Val = ShadingPatternValues.Clear, Color = "auto", Fill = color};
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            tableCellProperties.Append(shading1);
+        }
+
         #endregion
 
     }
