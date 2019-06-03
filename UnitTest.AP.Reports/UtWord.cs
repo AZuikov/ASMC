@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using AP.Reports.AutoDocumets;
 using AP.Reports.MSInterop;
+using AP.Reports.Utils;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -15,6 +16,8 @@ namespace UnitTest.AP.Reports
     [TestClass]
     public class UtWord
     {
+        string _pathToTestFolder = @"C:\Users\02ias01\Documents\Tests\";
+
         private Word word;
         [DataRow(@"321321")]
         [DataRow(@"вфывфыdsadasDac")]
@@ -95,15 +98,31 @@ namespace UnitTest.AP.Reports
         }
 
         [TestMethod]
-        public void TestMethod2Isaev()
+        public void TestMethodTableIsaev()
         {
             word = new Word();
             word.NewDocument();
-            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"));
-            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage2.jpg"));
-            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage.bmp"), (float)0.5);
-            word.InsertImage(new Bitmap(@"C:\Users\02ias01\Documents\Tests\TestImage2.jpg"), (float)0.5);
-            word.SaveAs(@"C:\Users\02ias01\Documents\Tests\222.docx");
+            var dt = GetRandomDataTable();
+            word.InsertTable(dt, GetCondition());
+
+            word.SaveAs(_pathToTestFolder + "TableTestResult.docx");
+            word.Save();
+            word.Close();
+        }
+
+        [TestMethod]
+        public void TestMethodImageIsaev()
+        {
+            word = new Word();
+            word.NewDocument();
+            CreateBitmapImage("TestImage.bmp", System.Drawing.Color.DarkSeaGreen, 200, 200);
+            CreateBitmapImage("TestImage2.bmp", System.Drawing.Color.LightSkyBlue, 300, 100);
+
+            word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage.bmp"));
+            word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"));
+            word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage.bmp"), (float)0.5);
+            word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"), (float)0.5);
+            word.SaveAs(_pathToTestFolder + "ImageTest.docx");
             word.Save();
             word.Close();
         }
@@ -123,6 +142,56 @@ namespace UnitTest.AP.Reports
             word.InsertImage(new Bitmap(@"C:\Users\02tav01\Pictures\График.JPG"));
             word.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             word.Close();
+        }
+
+        private ConditionalFormatting GetCondition()
+        {
+            ConditionalFormatting cf = new ConditionalFormatting();
+            cf.Value = "5";
+            cf.Color = System.Drawing.Color.MediumTurquoise;
+            cf.NameColumn = "col3";
+            cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
+            cf.Region = ConditionalFormatting.RegionAction.Row;
+            return cf;
+        }
+
+        private void CreateBitmapImage(string name, System.Drawing.Color color, int x, int y)
+        {
+            Bitmap image;
+            if (!System.IO.File.Exists(_pathToTestFolder + name))
+            {
+                image = new Bitmap(x, y);
+                for (int i = 0; i < x; i++)
+                for (int j = 0; j < y; j++)
+                {
+                    image.SetPixel(i, j, color);
+                }
+                image.Save(_pathToTestFolder + name, System.Drawing.Imaging.ImageFormat.Bmp);
+            }
+        }
+
+        private DataTable GetRandomDataTable()
+        {
+            DataTable dt = new DataTable();
+            for (int i = 0; i < 10; i++)
+            {
+                dt.Columns.Add(new DataColumn("col" + i.ToString(), i.GetType()));
+            }
+            for (int i = 0; i < 15; i++)
+            {
+                dt.Rows.Add(dt.NewRow());
+            }
+            Random rnd = new Random();
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                for (int j = 0; j < dt.Columns.Count; j++)
+                {
+                    dt.Rows[i][j] = rnd.Next(10);
+                }
+            }
+
+            dt.TableName = "Table" + rnd.Next(100) + "_CreatedByRandom";
+            return dt;
         }
     }
 

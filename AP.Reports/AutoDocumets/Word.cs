@@ -35,8 +35,11 @@ using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 using TopBorder = DocumentFormat.OpenXml.Wordprocessing.TopBorder;
 using AP.Reports.Utils;
 using System.Data;
+using System.Windows.Forms;
 using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.Spreadsheet;
 using BlipFill = DocumentFormat.OpenXml.Drawing.BlipFill;
+using Drawing = DocumentFormat.OpenXml.Wordprocessing.Drawing;
 using NonVisualDrawingProperties = DocumentFormat.OpenXml.Drawing.NonVisualDrawingProperties;
 using ShapeProperties = DocumentFormat.OpenXml.Drawing.ShapeProperties;
 
@@ -89,7 +92,7 @@ namespace AP.Reports.AutoDocumets
                 }
                 else
                 {
-                    throw new FormatException("Не допустимый формат файла.");
+                    throw new FormatException("Недопустимый формат файла.");
                 }
             }
         }
@@ -185,7 +188,7 @@ namespace AP.Reports.AutoDocumets
             }
             if(!ValidPath(pathdoc))
             {
-                throw new FormatException("Не допустимый формат файла.", new Exception());
+                throw new FormatException("Недопустимый формат файла.", new Exception());
             }
             string altChunId = null;
             var mainPart = _document.MainDocumentPart;
@@ -215,7 +218,7 @@ namespace AP.Reports.AutoDocumets
             }
             catch(IOException ex)
             {
-                throw new IOException("Не возможно открыть файл для объеденения", ex);
+                throw new IOException("Невозможно открыть файл для объединения", ex);
             }
             var altChunk = new AltChunk { Id = altChunId };
             mainPart.Document.Body.InsertAfter(altChunk,
@@ -264,7 +267,7 @@ namespace AP.Reports.AutoDocumets
                     continue;
                 }
                 SetElement = bookMark.Value.Parent;
-                FillingTable((Table)SetElement, dt);
+                FillingTable((Table)SetElement, dt, cf);
                 break;
             }
         }
@@ -282,7 +285,7 @@ namespace AP.Reports.AutoDocumets
                 var runElement = new Run();
                 bookMark.Value.InsertAfterSelf(runElement);
                 SetElement = bookMark.Value.Parent.Descendants<Run>().First();
-                InsertTable(dt);
+                InsertTable(dt, cf);
                 break;
             }
         }
@@ -332,7 +335,8 @@ namespace AP.Reports.AutoDocumets
             //}
             SetElement.AppendChild((new Run(GenerateTable(dt.Columns.Count, dt.Rows.Count))));
             var table = SetElement.Parent.Descendants<Table>().Last();
-            FillingTable(table, dt);
+            FillingTable(table, dt, cf);
+            //SetConditionalFormatting(table, dt, cf);
             //throw new NotImplementedException();
         }
 
@@ -366,7 +370,8 @@ namespace AP.Reports.AutoDocumets
         /// </summary>
         /// <param name="tab">Принемает заполняемую таблицу</param>
         /// <param name="dt">Принимает таблицу с данными</param>
-        public void FillingTable(Table tab, DataTable dt)
+        public void FillingTable(Table tab, DataTable dt, 
+            ConditionalFormatting cf = default(ConditionalFormatting))
         {
             var rowsRef = tab.Descendants<TableRow>().Count();
             //if(columsRef < dt.Columns.Count)
@@ -400,12 +405,46 @@ namespace AP.Reports.AutoDocumets
                     a++;
                 }
             }
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         #endregion
 
 
         #region private methods
+
+        private void SetConditionalFormatting(Table tab, DataTable dt,
+            ConditionalFormatting cf = default(ConditionalFormatting))
+        {
+            int formatingColumn =  dt.Columns.IndexOf(cf.NameColumn);
+
+            var allRows = tab.Descendants<TableRow>();
+
+            string columnList = null;
+            foreach (var row in allRows)
+            {
+                var cellArray = row.Descendants<TableCell>().ToArray();
+                Int32.TryParse(cellArray[formatingColumn].InnerText, out int cellValue);
+                if (cellValue > 5)
+                {
+                    Paragraph paragraph1 = new Paragraph() { RsidParagraphMarkRevision = "00604232", RsidParagraphAddition = "00604232", RsidRunAdditionDefault = "00604232" };
+                    Run run1 = new Run() { RsidRunProperties = "00604232" };
+                    A.RunProperties runProperties1 = new A.RunProperties();
+                    Highlight highlight1 = new Highlight() { Val = HighlightColorValues.Cyan };
+
+                    runProperties1.Append(highlight1);
+                    run1.Append(runProperties1);
+                    paragraph1.Append(run1);
+                    cellArray[formatingColumn].Append(paragraph1);
+                }
+
+                //columnList += cellArray[formatingColumn].InnerText + "\n";
+            }
+
+
+            //MessageBox.Show(columnList);
+        }
+
+
         /// <summary>
         /// Добавляет изображение
         /// </summary>
@@ -506,7 +545,7 @@ namespace AP.Reports.AutoDocumets
                 }
                 catch(FileFormatException e)
                 {
-                    throw new FileFormatException("Файл пустой", e);
+                    throw new FileFormatException("Файл пуст", e);
                 }
             }
             else if(_stream != null)
@@ -618,12 +657,26 @@ namespace AP.Reports.AutoDocumets
             var tableCell1 = new TableCell();
 
             var tableCellProperties1 = new TableCellProperties();
+
             var tableCellWidth1 = new TableCellWidth() { Type = TableWidthUnitValues.Auto };
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableCellProperties1.Append(tableCellWidth1);
             var paragraph1 = new Paragraph() { RsidParagraphAddition = "00763B81", RsidRunAdditionDefault = "00763B81" };
+            var paragraphProperties1 = new ParagraphProperties();
+            var spacingBetweenLines1 = new SpacingBetweenLines() { After = "0" };
+            var justification1 = new Justification() { Val = JustificationValues.Center };
+            var tableCellVerticalAlignment1 = new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center };
+
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraphProperties1.Append(spacingBetweenLines1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraphProperties1.Append(justification1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraphProperties1.Append(tableCellVerticalAlignment1);
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableCell1.Append(tableCellProperties1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraph1.Append(paragraphProperties1);
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableCell1.Append(paragraph1);
             return tableCell1;
@@ -640,7 +693,7 @@ namespace AP.Reports.AutoDocumets
             for(int i = 0; i < columns; i++)
             {
                 // ReSharper disable once PossiblyMistakenUseOfParamsMethod
-                tableGrid1.Append(new GridColumn() { Width = "222" });
+                tableGrid1.Append(new GridColumn() /*{ Width = ((int)(4000 / columns)).ToString() }*/);
             }
             return tableGrid1;
         }
@@ -654,7 +707,8 @@ namespace AP.Reports.AutoDocumets
         {
             var tableProperties1 = new TableProperties();
             var tableStyle1 = new TableStyle() { Val = "a3", };
-            var tableWidth1 = new TableWidth() { Type = TableWidthUnitValues.Auto };
+            var tableWidth1 = new TableWidth() { Width = "5000", Type = TableWidthUnitValues.Pct };
+            var tableJustification1 = new TableJustification() { Val = TableRowAlignmentValues.Center };
             var tableLook1 = new TableLook()
             {
                 Val = "04A0",
@@ -681,6 +735,8 @@ namespace AP.Reports.AutoDocumets
             tableProperties1.Append(tableStyle1);
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableProperties1.Append(tableLook1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            tableProperties1.Append(tableJustification1);
             return tableProperties1;
         }
 
