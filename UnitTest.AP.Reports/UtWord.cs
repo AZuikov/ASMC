@@ -102,13 +102,18 @@ namespace UnitTest.AP.Reports
         {
             word = new Word();
             word.NewDocument();
-            word.InsertText("Таблица 1");
+            //word.InsertText("Таблица 1");
+            word.MoveHome();
             var dt = GetRandomDataTable();
-            //word.InsertTable(dt, GetCondition());
+            word.InsertTable(dt, GetCondition());
 
-            word.InsertText("Таблица 2");
+            //word.InsertText("Таблица 2");
+            word.MoveHome();
+            //word.InsertText("Таблица 3");
             dt = GetRandomDataTable();
-            //word.InsertTable(dt, GetCondition());
+            word.InsertTable(dt, GetCondition());
+            dt = GetRandomDataTable();
+            word.InsertTable(dt, GetCondition());
 
             word.SaveAs(_pathToTestFolder + "TableTestResult.docx");
             word.Save();

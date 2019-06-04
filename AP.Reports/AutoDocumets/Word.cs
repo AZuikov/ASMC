@@ -318,10 +318,10 @@ namespace AP.Reports.AutoDocumets
             //{
             //    SetElement.FirstChild.InsertAfterSelf((new Run(new Text(text))));
             //}
-            if(SetElement.Descendants<Text>()?.Count() <= 0)
-            {
+            //if(SetElement.Descendants<Text>()?.Count() <= 0)
+            //{
                 SetElement.AppendChild((new Run(new Text(text))));
-            }
+            //}
 
             //throw new NotImplementedException();
         }
@@ -329,14 +329,17 @@ namespace AP.Reports.AutoDocumets
         public void InsertTable(DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            //if(_homeDocument)
-            //{
-            //    SetElement.FirstChild.InsertAfterSelf((new Run(GenerateTable(dt.Columns.Count, dt.Rows.Count))));
-            //}
-            SetElement.AppendChild((new Run(GenerateTable(dt.Columns.Count, dt.Rows.Count))));
-            var table = SetElement.Parent.Descendants<Table>().Last();
+            var table = GenerateTable(dt.Columns.Count, dt.Rows.Count);
+
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            _document.MainDocumentPart.Document.Body.Append(table);
             FillingTable(table, dt, cf);
             SetConditionalFormatting(table, dt, cf);
+            //Добавляем пустой параграф, чтобы таблицы не "слипались"
+            var paragraph1 = new Paragraph()
+                { RsidParagraphAddition = "00252BDD", RsidRunAdditionDefault = "00252BDD" };
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            _document.MainDocumentPart.Document.Body.Append(paragraph1);
             //throw new NotImplementedException();
         }
 
@@ -411,6 +414,8 @@ namespace AP.Reports.AutoDocumets
 
 
         #region private methods
+
+
 
         /// <summary>
         /// Устанавливает заливку ячеек таблицы по правилу ConditionalFormatting
