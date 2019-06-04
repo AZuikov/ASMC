@@ -23,7 +23,7 @@ namespace AP.Reports.Utils
             /// <summary>
             /// Равно
             /// </summary>
-           Equelly,
+           Equal,
             /// <summary>
             /// МЕньше или равно
             /// </summary>
