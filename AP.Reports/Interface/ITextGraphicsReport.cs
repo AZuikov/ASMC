@@ -13,15 +13,19 @@ namespace AP.Reports.Interface
         /// <summary>
         /// Заменяет в документе все вхождения на указанное изображение
         /// </summary>
-        void FindStringAndAllReplaceImage(string sFind, Bitmap image);
+        /// <param name="sFind">Заменяемая строка</param>
+        /// <param name="image">Изображение</param>
+        /// <param name="scale">Масштаб изображения</param>
+        void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale =1);
 
         /// <summary>
         /// Заменяет первое вхождение на указанное изображение
         /// </summary>
-        /// <param name="sFind">Найти</param>
-        /// <param name="image">Заменить</param>
-        /// <param name="invert">Указывает направление</param>
-        void FindStringAndReplaceImage(string sFind, Bitmap image);
+        /// <param name="sFind">Заменяемая строка</param>
+        /// <param name="image">Изображение</param>
+        /// <param name="scale">Масштаб изображения</param>
+        void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1);
+
         /// <summary>
         /// Создает новый документ по указанному шаблону
         /// </summary>
@@ -52,12 +56,17 @@ namespace AP.Reports.Interface
         /// Вставка картинки на закладку
         /// </summary>
         /// <param name="bm">Имя закладки</param>
-        /// <param name="image">Картинка</param>
-        void InsertImageToBookmark(string bm, Bitmap image);
+        /// <param name="image">Изображение</param>
+        /// <param name="scale">Масштаб</param>
+        void InsertImageToBookmark(string bm, Bitmap image, float scale = 1);
+
         /// <summary>
         /// Вставка картинки в выделенный диапазон
         /// </summary>
-        void InsertImage(Bitmap image);
+        /// <param name="image">Изображение</param>
+        /// <param name="scale">Масштаб</param>
+        void InsertImage(Bitmap image, float scale = 1);
+
         /// <summary>
         /// Создает и вставляет таблицу
         /// </summary>

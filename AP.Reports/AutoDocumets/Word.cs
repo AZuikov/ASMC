@@ -9,8 +9,10 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using A = DocumentFormat.OpenXml.Drawing;
+using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using Pic = DocumentFormat.OpenXml.Drawing.Pictures;
+using DocumentFormat.OpenXml.Office2010.Word.DrawingShape;
 using BottomBorder = DocumentFormat.OpenXml.Wordprocessing.BottomBorder;
 using ConditionalFormatting = AP.Reports.Utils.ConditionalFormatting;
 using GridColumn = DocumentFormat.OpenXml.Wordprocessing.GridColumn;
@@ -33,6 +35,13 @@ using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 using TopBorder = DocumentFormat.OpenXml.Wordprocessing.TopBorder;
 using AP.Reports.Utils;
 using System.Data;
+using System.Windows.Forms;
+using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.Spreadsheet;
+using BlipFill = DocumentFormat.OpenXml.Drawing.BlipFill;
+using Drawing = DocumentFormat.OpenXml.Wordprocessing.Drawing;
+using NonVisualDrawingProperties = DocumentFormat.OpenXml.Drawing.NonVisualDrawingProperties;
+using ShapeProperties = DocumentFormat.OpenXml.Drawing.ShapeProperties;
 
 namespace AP.Reports.AutoDocumets
 {
@@ -83,7 +92,7 @@ namespace AP.Reports.AutoDocumets
                 }
                 else
                 {
-                    throw new FormatException("Не допустимый формат файла.");
+                    throw new FormatException("Недопустимый формат файла.");
                 }
             }
         }
@@ -152,13 +161,25 @@ namespace AP.Reports.AutoDocumets
         }
         public void NewDocument()
         {
+            _document = null;
+            _path = null;
+            _stream = null;
             Init();
+            //Фактически Init() не создает новый документ (если путь не равен null то программа откроет
+            //ранее открытый документ).т.е. при
+            //    OpenDocument(@"C:\example.docx");
+            //    Save();
+            //    NewDocument();
+            //функция не приведет к созданию документа.
+            //Поэтому добавил обнуление 
         }
+
         public void OpenDocument(string sPath)
         {
             Path = sPath;
             Init();
         }
+
         public void MergeDocuments(string pathdoc)
         {
             if(_document == null)
@@ -167,20 +188,26 @@ namespace AP.Reports.AutoDocumets
             }
             if(!ValidPath(pathdoc))
             {
-                throw new FormatException("Не допустимый формат файла.", new Exception());
+                throw new FormatException("Недопустимый формат файла.", new Exception());
             }
-            var altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
+            string altChunId = null;
             var mainPart = _document.MainDocumentPart;
-            AlternativeFormatImportPart chumk;
-            try
+
+            AlternativeFormatImportPart chumk = null;
+            bool idIsUnique = false;
+            while (!idIsUnique)
             {
-                chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunId);
-            }
-            catch(Exception)
-            {
-                Thread.Sleep(100);
-                altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
-                chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunId);
+                try
+                {
+                    altChunId = "alt" + (pathdoc.GetHashCode() ^ new Random().Next());
+                    chumk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML,
+                        altChunId);
+                    idIsUnique = true;
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(100);
+                }
             }
             try
             {
@@ -191,7 +218,7 @@ namespace AP.Reports.AutoDocumets
             }
             catch(IOException ex)
             {
-                throw new IOException("Не возможно открыть файл для объеденения", ex);
+                throw new IOException("Невозможно открыть файл для объединения", ex);
             }
             var altChunk = new AltChunk { Id = altChunId };
             mainPart.Document.Body.InsertAfter(altChunk,
@@ -205,30 +232,30 @@ namespace AP.Reports.AutoDocumets
                 MergeDocuments(path);
             }
         }
-        public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             throw new NotImplementedException();
         }
-        public void FindStringAndReplaceImage(string sFind, Bitmap image)
+        public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             throw new NotImplementedException();
         }
-        public void InsertImageToBookmark(string bm, Bitmap image)
+        public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
             throw new NotImplementedException();
         }
-        public void InsertImage(Bitmap image)
+        public void InsertImage(Bitmap image, float scale = 1)
         {
-          var ms = new MemoryStream();
-          image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);      
-          var imagePart = _document.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);  
-          AddImage(_document.MainDocumentPart.GetIdOfPart(imagePart)); 
-          //throw new NotImplementedException();
+            var imagePart = _document.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);
+            image.Save(imagePart.GetStream(FileMode.Open), System.Drawing.Imaging.ImageFormat.Jpeg);
+            AddImage(_document.MainDocumentPart.GetIdOfPart(imagePart), scale);
         }
+
         public void NewDocumentTemp(string templatePath)
         {
             throw new NotImplementedException();
         }
+
         public void FillsTableToBookmark(string bm, DataTable dt, bool del = false,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -240,10 +267,11 @@ namespace AP.Reports.AutoDocumets
                     continue;
                 }
                 SetElement = bookMark.Value.Parent;
-                FillingTable((Table)SetElement, dt);
+                FillingTable((Table)SetElement, dt, cf);
                 break;
             }
         }
+
         public void InsertNewTableToBookmark(string bm, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -257,10 +285,11 @@ namespace AP.Reports.AutoDocumets
                 var runElement = new Run();
                 bookMark.Value.InsertAfterSelf(runElement);
                 SetElement = bookMark.Value.Parent.Descendants<Run>().First();
-                InsertTable(dt);
+                InsertTable(dt, cf);
                 break;
             }
         }
+
         public void InsertTextToBookmark(string bm, string text)
         {
             var bookMarks = FindBookmarks();
@@ -277,43 +306,51 @@ namespace AP.Reports.AutoDocumets
                 break;
             }
         }
+
         public void Save()
         {
             _document.Save();
         }
+
         public void InsertText(string text)
         {
             //if(_homeDocument)
             //{
             //    SetElement.FirstChild.InsertAfterSelf((new Run(new Text(text))));
             //}
-            if(SetElement.Descendants<Text>()?.Count() <= 0)
-            {
+            //if(SetElement.Descendants<Text>()?.Count() <= 0)
+            //{
                 SetElement.AppendChild((new Run(new Text(text))));
-            }
+            //}
 
             //throw new NotImplementedException();
         }
+
         public void InsertTable(DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            //if(_homeDocument)
-            //{
-            //    SetElement.FirstChild.InsertAfterSelf((new Run(GenerateTable(dt.Columns.Count, dt.Rows.Count))));
-            //}
-            SetElement.AppendChild((new Run(GenerateTable(dt.Columns.Count, dt.Rows.Count))));
-            var table = SetElement.Parent.Descendants<Table>().Last();
-            FillingTable(table, dt);
+            var table = GenerateTable(dt.Columns.Count, dt.Rows.Count);
+
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            _document.MainDocumentPart.Document.Body.Append(table);
+            FillingTable(table, dt, cf);
+            SetConditionalFormatting(table, dt, cf);
+            //Добавляем пустой параграф, чтобы таблицы не "слипались"
+            var paragraph1 = new Paragraph()
+                { RsidParagraphAddition = "00252BDD", RsidRunAdditionDefault = "00252BDD" };
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            _document.MainDocumentPart.Document.Body.Append(paragraph1);
             //throw new NotImplementedException();
         }
+
         public void MoveEnd()
         {
-
             MoveToDocument();
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             SetElement.Append(new Paragraph());
             SetElement = SetElement.Descendants<Paragraph>().Last();
         }
+
         public void MoveHome()
         {
             MoveToDocument();
@@ -330,12 +367,14 @@ namespace AP.Reports.AutoDocumets
         {
             return FindBookmarks(_document.MainDocumentPart.Document);
         }
+
         /// <summary>
         /// Заполняет таблицу
         /// </summary>
         /// <param name="tab">Принемает заполняемую таблицу</param>
         /// <param name="dt">Принимает таблицу с данными</param>
-        public void FillingTable(Table tab, DataTable dt)
+        public void FillingTable(Table tab, DataTable dt, 
+            ConditionalFormatting cf = default(ConditionalFormatting))
         {
             var rowsRef = tab.Descendants<TableRow>().Count();
             //if(columsRef < dt.Columns.Count)
@@ -369,163 +408,145 @@ namespace AP.Reports.AutoDocumets
                     a++;
                 }
             }
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         #endregion
 
+
         #region private methods
-        private Drawing GenerateDrawing()
+
+
+
+        /// <summary>
+        /// Устанавливает заливку ячеек таблицы по правилу ConditionalFormatting
+        /// </summary>
+        /// <param name="tab">Таблица Word</param>
+        /// <param name="dt">Таблица DataTable</param>
+        /// <param name="cf">Правила</param>
+        private void SetConditionalFormatting(Table tab, DataTable dt,
+            ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            Drawing drawing1 = new Drawing();
+            int formatingColumn =  dt.Columns.IndexOf(cf.NameColumn);
 
-            Inline inline1 = new Inline() { DistanceFromTop = (UInt32Value)0U, DistanceFromBottom = (UInt32Value)0U, DistanceFromLeft = (UInt32Value)0U, DistanceFromRight = (UInt32Value)0U, AnchorId = "0F911AAD", EditId = "746B09E5" };
-            Extent extent1 = new Extent() { Cx = 1885950L, Cy = 2790825L };
-            EffectExtent effectExtent1 = new EffectExtent() { LeftEdge = 0L, TopEdge = 0L, RightEdge = 0L, BottomEdge = 9525L };
-            DocProperties docProperties1 = new DocProperties() { Id = (UInt32Value)1U, Name = "Рисунок 1" };
+            var allRows = tab.Descendants<TableRow>();
 
-            NonVisualGraphicFrameDrawingProperties nonVisualGraphicFrameDrawingProperties1 = new NonVisualGraphicFrameDrawingProperties();
-
-            GraphicFrameLocks graphicFrameLocks1 = new GraphicFrameLocks() { NoChangeAspect = true };
-            graphicFrameLocks1.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
-
-            nonVisualGraphicFrameDrawingProperties1.Append(graphicFrameLocks1);
-
-            Graphic graphic1 = new Graphic();
-            graphic1.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
-
-            GraphicData graphicData1 = new GraphicData() { Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture" };
-
-            Picture picture1 = new Picture();
-            picture1.AddNamespaceDeclaration("pic", "http://schemas.openxmlformats.org/drawingml/2006/picture");
-
-            NonVisualPictureProperties nonVisualPictureProperties1 = new NonVisualPictureProperties();
-            NonVisualDrawingProperties nonVisualDrawingProperties1 = new NonVisualDrawingProperties() { Id = (UInt32Value)0U, Name = "" };
-            NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new NonVisualPictureDrawingProperties();
-
-            nonVisualPictureProperties1.Append(nonVisualDrawingProperties1);
-            nonVisualPictureProperties1.Append(nonVisualPictureDrawingProperties1);
-
-            BlipFill blipFill1 = new BlipFill();
-            Blip blip1 = new Blip() { Embed = "rId5" };
-
-            Stretch stretch1 = new Stretch();
-            FillRectangle fillRectangle1 = new FillRectangle();
-
-            stretch1.Append(fillRectangle1);
-
-            blipFill1.Append(blip1);
-            blipFill1.Append(stretch1);
-
-            ShapeProperties shapeProperties1 = new ShapeProperties();
-
-            Transform2D transform2D1 = new Transform2D();
-            Offset offset1 = new Offset() { X = 0L, Y = 0L };
-            Extents extents1 = new Extents() { Cx = 1885950L, Cy = 2790825L };
-
-            transform2D1.Append(offset1);
-            transform2D1.Append(extents1);
-
-            PresetGeometry presetGeometry1 = new PresetGeometry() { Preset = ShapeTypeValues.Rectangle };
-            AdjustValueList adjustValueList1 = new AdjustValueList();
-
-            presetGeometry1.Append(adjustValueList1);
-
-            shapeProperties1.Append(transform2D1);
-            shapeProperties1.Append(presetGeometry1);
-
-            picture1.Append(nonVisualPictureProperties1);
-            picture1.Append(blipFill1);
-            picture1.Append(shapeProperties1);
-
-            graphicData1.Append(picture1);
-
-            graphic1.Append(graphicData1);
-
-            inline1.Append(extent1);
-            inline1.Append(effectExtent1);
-            inline1.Append(docProperties1);
-            inline1.Append(nonVisualGraphicFrameDrawingProperties1);
-            inline1.Append(graphic1);
-
-            drawing1.Append(inline1);
-            return drawing1;
-
-        }
-        private void AddImage(string relationshipId)
-        {
-          SetElement.AppendChild(new Run(GenerateDrawing()));
-
-
-            //  var element =
-            //  new Drawing(
-            //      new Inline(
-            //          new Extent() { Cx = 990000L, Cy = 792000L },
-            //          new EffectExtent()
-            //          {
-            //              LeftEdge = 0L,
-            //              TopEdge = 0L,
-            //              RightEdge = 0L,
-            //              BottomEdge = 0L
-            //          },
-            //          new DocProperties()
-            //          {
-            //              Id = (UInt32Value)1U,
-            //              Name = "Picture 1"
-            //          },
-            //          new NonVisualGraphicFrameDrawingProperties(
-            //              new GraphicFrameLocks() { NoChangeAspect = true }),
-            //          new Graphic(
-            //              new GraphicData(
-            //                  new DocumentFormat.OpenXml.Drawing.Picture(
-            //                      new NonVisualPictureProperties(
-            //                          new NonVisualDrawingProperties()
-            //                          {
-            //                              Id = (uint)relationshipId.GetHashCode(),
-            //                              Name = relationshipId.GetHashCode().ToString()
-            //                          },
-            //                          new NonVisualPictureDrawingProperties()),
-            //                      new BlipFill(
-            //                          new Blip(
-            //                              new BlipExtensionList(
-            //                                  new BlipExtension()
-            //                                  {
-            //                                      Uri = relationshipId.GetHashCode().ToString()
-            //                                  })
-            //                          )
-            //                          {
-            //                              Embed = relationshipId,
-            //                              CompressionState =
-            //                              BlipCompressionValues.Print
-            //                          },
-            //                          new Stretch(
-            //                              new FillRectangle())),
-            //                      new ShapeProperties(
-            //                          new Transform2D(
-            //                              new Offset() { X = 0L, Y = 0L },
-            //                              new Extents() { Cx = 990000L, Cy = 792000L }),
-            //                          new PresetGeometry(
-            //                              new AdjustValueList()
-            //                          )
-            //                          {
-            //                              Preset = ShapeTypeValues.Rectangle
-            //                          }))
-            //              )
-            //              {
-            //                  Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
-            //              })
-            //      )
-            //      {
-            //          DistanceFromTop = (UInt32Value)0U,
-            //          DistanceFromBottom = (UInt32Value)0U,
-            //          DistanceFromLeft = (UInt32Value)0U,
-            //          DistanceFromRight = (UInt32Value)0U,
-            //          EditId = "50D07946"
-            //      });
-            //SetElement.AppendChild(new Paragraph(new Run(element)));
-
-
+            //string columnList = null;
+            foreach (var row in allRows)
+            {
+                var cellArray = row.Descendants<TableCell>().ToArray();
+                if (DoesItNeedToSetCondition(cellArray[formatingColumn].InnerText, cf))
+                {
+                    if (cf.Region == ConditionalFormatting.RegionAction.Cell)
+                    {
+                        SetBackgroungColorToCell(cellArray[formatingColumn], GetColorRrggbbString(cf.Color));
+                    }
+                    if (cf.Region == ConditionalFormatting.RegionAction.Row)
+                    {
+                        foreach (var cell in cellArray)
+                        {
+                            SetBackgroungColorToCell(cell, GetColorRrggbbString(cf.Color));
+                        }
+                    }
+                }
+            }
         }
 
+
+        /// <summary>
+        /// Добавляет изображение
+        /// </summary>
+        /// <param name="relationshipId">ID ImagePart, содержащей рисунок</param>
+        /// <param name="scale">Масштаб отрисовки</param>
+        /// <returns></returns>
+        private void AddImage(string relationshipId, float scale = 1)
+        {
+            //Получаем Часть с изображением
+            ImagePart imagePart = (ImagePart) _document.MainDocumentPart.GetPartById(relationshipId);
+            //Получаем изображение из части
+            Bitmap image = new Bitmap(imagePart.GetStream());
+            //Масштабируем
+            int coef = 9524; //Получено империческим пересчетом с реальных примеров
+            Int64Value ImageX = (Int64Value)(image.Width * scale * coef);
+            Int64Value ImageY = (Int64Value)(image.Height * scale * coef);
+
+            var element = 
+               new Drawing(
+                   new DW.Inline(
+                       new DW.Extent() { Cx = ImageX, Cy = ImageY },
+                       new DW.EffectExtent()
+                           {
+                               LeftEdge = 0L,
+                               TopEdge = 0L,
+                               RightEdge = 0L,
+                               BottomEdge = 0L
+                           },
+                       new DW.DocProperties()
+                       {
+                           Id = (UInt32Value)1U,
+                           Name = "Picture 1"
+                       },
+                       new NonVisualGraphicFrameDrawingProperties(
+                           new A.GraphicFrameLocks() { NoChangeAspect = true}
+                           ),
+                       new A.Graphic(
+                           new A.GraphicData(
+                               new Pic.Picture(
+                                   new Pic.NonVisualPictureProperties(
+                                       new Pic.NonVisualDrawingProperties()
+                                       {
+                                           Id = (UInt32Value)1U,
+                                           Name = "New Image.Jpg"
+                                       },
+                                       new Pic.NonVisualPictureDrawingProperties()
+                                       ),
+                                   new Pic.BlipFill(
+                                       new A.Blip(
+                                           new A.BlipExtensionList(
+                                               new A.BlipExtension()
+                                               {
+                                                   Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}"
+
+                                               }))
+                                   {
+                                       Embed = relationshipId,
+                                       CompressionState = A.BlipCompressionValues.Print
+
+                                   },
+                                   new A.Stretch(new A.FillRectangle())),
+                               new Pic.ShapeProperties(
+                                   new A.Transform2D(
+                                       new A.Offset() { X = 0L, Y = 0L},
+                                       new A.Extents() { Cx = ImageX, Cy = ImageY }
+                                       ),
+                                   new A.PresetGeometry(
+                                       new A.AdjustValueList()
+                                       )
+                                   { Preset = A.ShapeTypeValues.Rectangle}
+                                   )))
+                       {
+                           Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
+                       }))
+               {
+                   DistanceFromTop = (UInt32Value)0U,
+                   DistanceFromBottom = (UInt32Value)0U,
+                   DistanceFromLeft = (UInt32Value)0U,
+                   DistanceFromRight = (UInt32Value)0U,
+                   EditId = "50D07946"
+               });
+
+            _document?.MainDocumentPart.Document.Body.AppendChild(new Paragraph(new Run(element)));
+        }
+
+        /// <summary>
+        /// Преобразует цвет в строку типа RRGGBB
+        /// </summary>
+        /// <param name="color">Цвет</param>
+        /// <returns></returns>
+        private string GetColorRrggbbString(System.Drawing.Color color)
+        {
+            return color.R.ToString("x2") + color.G.ToString("x2") + color.B.ToString("x2");
+
+        }
 
         /// <summary>
         /// Инициализация документа
@@ -541,7 +562,7 @@ namespace AP.Reports.AutoDocumets
                 }
                 catch(FileFormatException e)
                 {
-                    throw new FileFormatException("Файл пустой", e);
+                    throw new FileFormatException("Файл пуст", e);
                 }
             }
             else if(_stream != null)
@@ -559,7 +580,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
         /// <summary>
-        /// Переходить на Document (самый верхний элемент документа)
+        /// Переходит на Document (самый верхний элемент документа)
         /// </summary>
         private void MoveToDocument()
         {
@@ -611,6 +632,7 @@ namespace AP.Reports.AutoDocumets
             }
             return outs;
         }
+
         /// <summary>
         /// Возвращает сренерированию талицу
         /// </summary>
@@ -645,7 +667,7 @@ namespace AP.Reports.AutoDocumets
         }
 
         /// <summary>
-        /// Возвращает сгенерированную яцейку для талицы
+        /// Возвращает сгенерированную ячейку для талицы
         /// </summary>
         /// <returns></returns>
         private static TableCell GenerateTableCell()
@@ -653,16 +675,31 @@ namespace AP.Reports.AutoDocumets
             var tableCell1 = new TableCell();
 
             var tableCellProperties1 = new TableCellProperties();
+
             var tableCellWidth1 = new TableCellWidth() { Type = TableWidthUnitValues.Auto };
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableCellProperties1.Append(tableCellWidth1);
             var paragraph1 = new Paragraph() { RsidParagraphAddition = "00763B81", RsidRunAdditionDefault = "00763B81" };
+            var paragraphProperties1 = new ParagraphProperties();
+            var spacingBetweenLines1 = new SpacingBetweenLines() { After = "0" };
+            var justification1 = new Justification() { Val = JustificationValues.Center };
+            var tableCellVerticalAlignment1 = new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center };
+
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraphProperties1.Append(spacingBetweenLines1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraphProperties1.Append(justification1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraphProperties1.Append(tableCellVerticalAlignment1);
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableCell1.Append(tableCellProperties1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            paragraph1.Append(paragraphProperties1);
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableCell1.Append(paragraph1);
             return tableCell1;
         }
+
         /// <summary>
         /// Возращает сгенерированный TableGrid
         /// </summary>
@@ -674,10 +711,11 @@ namespace AP.Reports.AutoDocumets
             for(int i = 0; i < columns; i++)
             {
                 // ReSharper disable once PossiblyMistakenUseOfParamsMethod
-                tableGrid1.Append(new GridColumn() { Width = "222" });
+                tableGrid1.Append(new GridColumn() /*{ Width = ((int)(4000 / columns)).ToString() }*/);
             }
             return tableGrid1;
         }
+
         /// <summary>
         /// Возвращает сгенерированые свойства для таблицы
         /// </summary>
@@ -687,7 +725,8 @@ namespace AP.Reports.AutoDocumets
         {
             var tableProperties1 = new TableProperties();
             var tableStyle1 = new TableStyle() { Val = "a3", };
-            var tableWidth1 = new TableWidth() { Type = TableWidthUnitValues.Auto };
+            var tableWidth1 = new TableWidth() { Width = "5000", Type = TableWidthUnitValues.Pct };
+            var tableJustification1 = new TableJustification() { Val = TableRowAlignmentValues.Center };
             var tableLook1 = new TableLook()
             {
                 Val = "04A0",
@@ -714,8 +753,11 @@ namespace AP.Reports.AutoDocumets
             tableProperties1.Append(tableStyle1);
             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
             tableProperties1.Append(tableLook1);
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            tableProperties1.Append(tableJustification1);
             return tableProperties1;
         }
+
         /// <summary>
         /// Возвращает результат проверки пути к файлу
         /// </summary>
@@ -723,7 +765,8 @@ namespace AP.Reports.AutoDocumets
         /// <returns>Возвращает true если путь и формат файла допустимы</returns>
         private bool ValidPath(string path)
         {
-            var extension = System.IO.Path.GetExtension(path) ?? throw new FileNotFoundException("Путь к файлу не указан.");
+            var extension = System.IO.Path.GetExtension(path);
+            if (extension == "") throw new FileNotFoundException("Путь к файлу не указан.");
             foreach(var ff in Enum.GetValues(typeof(FileFormat)))
             {
                 if(extension.Equals("." + ff.ToString().ToLower()))
@@ -734,7 +777,96 @@ namespace AP.Reports.AutoDocumets
             return false;
         }
 
-      
+
+        /// <summary>
+        /// Определяет, соответствует ли ячейка таблицы условию из набора правил ConditionalFormatting
+        /// </summary>
+        /// <param name="cellValue">Значение для сравнения</param>
+        /// <param name="conditional">Правила сравнения</param>
+        private bool DoesItNeedToSetCondition(string cellValue, ConditionalFormatting conditional)
+        {
+            double conditionValue;//Значение value из conditional, перепарсенное в double
+            double tableValue;//Сравниваемое значение из таблицы, перепарсенное в double
+            //Если оба данных - числа, то сравниваем их как числа
+            if (double.TryParse(conditional.Value, out conditionValue)
+                && double.TryParse(cellValue, out tableValue))
+            {
+                switch (conditional.Condition)
+                {
+                    case ConditionalFormatting.Conditions.Equal:
+                        if (Math.Abs(tableValue - conditionValue) < float.Epsilon)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.Less:
+                        if (tableValue < conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.LessOrEqual:
+                        if (tableValue <= conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.More:
+                        if (tableValue > conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.MoreOrEqual:
+                        if (tableValue >= conditionValue)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.NotEqual:
+                        if (Math.Abs(tableValue - conditionValue) > float.Epsilon)
+                        {
+                            return true;
+                        }
+                        return false;
+                }
+            }
+            //Если не числа - сравниваем как строки
+            else
+            {
+                switch (conditional.Condition)
+                {
+                    case ConditionalFormatting.Conditions.Equal:
+                        if (cellValue == conditional.Value)
+                        {
+                            return true;
+                        }
+                        return false;
+                    case ConditionalFormatting.Conditions.NotEqual:
+                        if (cellValue != conditional.Value)
+                        {
+                            return true;
+                        }
+                        return false;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Устанавливает заливку ячейки
+        /// </summary>
+        /// <param name="cell">Ячейка таблицы</param>
+        /// <param name="color">Цвет в формате RRGGBB</param>
+        private void SetBackgroungColorToCell(TableCell cell, string color)
+        {
+            var tableCellProperties = cell.Descendants<TableCellProperties>().First();
+            var shading1 = new Shading()
+                { Val = ShadingPatternValues.Clear, Color = "auto", Fill = color};
+            // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+            tableCellProperties.Append(shading1);
+        }
+
         #endregion
 
     }
