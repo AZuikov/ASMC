@@ -3,7 +3,7 @@
 namespace ASMC.Data.Model.Interface
 {
     /// <summary>
-    /// Описывает помещениея
+    /// Описывает помещения
     /// </summary>
     public interface IRoom
     {
@@ -35,7 +35,7 @@ namespace ASMC.Data.Model.Interface
         /// </value>
         string SensorName { get; set; }
         /// <summary>
-        /// Перечень параметров измеряемых датчиком
+        /// Перечень параметров, измеряемых датчиком
         /// </summary>
         /// <value>
         /// The parametrs.
@@ -59,7 +59,7 @@ namespace ASMC.Data.Model.Interface
         /// Получение значение параметра
         /// </summary>
         /// <returns></returns>
-        double GetValue { get; }
+        double GetValue(object param);
 
         /// <summary>
         /// Наименование измеряемого параметра
