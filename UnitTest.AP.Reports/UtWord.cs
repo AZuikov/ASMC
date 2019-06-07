@@ -132,6 +132,8 @@ namespace UnitTest.AP.Reports
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"));
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage.bmp"), (float)0.5);
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"), (float)0.5);
+            word.InsertImage(new Bitmap(_pathToTestFolder + "Безымянный.jpg"), (float)2);
+            
             word.SaveAs(_pathToTestFolder + "ImageTest.docx");
             word.Save();
             word.Close();

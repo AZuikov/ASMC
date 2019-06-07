@@ -32,7 +32,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,6 +46,25 @@
     <Compile Include="Interface\IEmployees.cs" />
     <Compile Include="Interface\IMainWindow.cs" />
     <Compile Include="Interface\IParameters.cs" />
+    <Compile Include="Metr\ApplicationAreaMi.cs" />
+    <Compile Include="Metr\CategoryMi.cs" />
+    <Compile Include="Metr\CharacteristicsAdditionalClass1.cs" />
+    <Compile Include="Metr\CharacteristicsAdditionalClass2.cs" />
+    <Compile Include="Metr\CharacteristicsAdditionalClass3.cs" />
+    <Compile Include="Metr\CodeMa.cs" />
+    <Compile Include="Metr\CompletenessMi.cs" />
+    <Compile Include="Metr\Design.cs" />
+    <Compile Include="Metr\Ekz.cs" />
+    <Compile Include="Metr\Installationlocation.cs" />
+    <Compile Include="Metr\NameTypeMi.cs" />
+    <Compile Include="Metr\NormalState.cs" />
+    <Compile Include="Metr\OrganizationsDivision.cs" />
+    <Compile Include="Metr\Person.cs" />
+    <Compile Include="Metr\Resolution250.cs" />
+    <Compile Include="Metr\Ssreum.cs" />
+    <Compile Include="Metr\StandardSizeMi.cs" />
+    <Compile Include="Metr\TechnicalCondition.cs" />
+    <Compile Include="Metr\TypeMi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
