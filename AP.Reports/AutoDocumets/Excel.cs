@@ -17,7 +17,19 @@ namespace AP.Reports.AutoDocumets
         private string _filePath;
         private IXLCell _currentCell;
 
-        public string Path => throw new NotImplementedException();
+        public string Path
+        {
+            get { return _filePath; }
+
+            set
+            {
+                if (!System.IO.Path.GetExtension(value).Equals(@".xlsx"))
+                {
+                    throw new FormatException("Формат файла не .xlsx");
+                }
+                _filePath = value;
+            }
+        }
 
         private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
@@ -101,41 +113,48 @@ namespace AP.Reports.AutoDocumets
                 false);
         }
 
-        public void FindStringAndAllReplaceImage(string sFind, Bitmap image)
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             FindCellAndDo(
                 sFind,
                 (cell, worksheet) =>
                 {
-                    InsertImageToCell(cell, image, 1, true);
+                    InsertImageToCell(cell, image, scale, true);
                 },
                 true);
         }
 
-        public void FindStringAndReplaceImage(string sFind, Bitmap image)
+        public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             FindCellAndDo(
                 sFind,
                 (cell, worksheet) =>
                 {
-                    InsertImageToCell(cell, image, 1, true);
+                    InsertImageToCell(cell, image, scale, true);
                 },
                 false);
         }
 
-        public void InsertImage(Bitmap image)
+        public void InsertImage(Bitmap image, float scale = 1)
         {
-            InsertImage(image, 1, true);
+            if (_workbook != null)
+            {
+                if (_currentCell == null)
+                {
+                    MoveEnd();
+                }
+                InsertImageToCell(_currentCell, image, scale, true);
+            }
         }
 
-        public void InsertImageToBookmark(string bm, Bitmap image)
+        public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
             if (_workbook != null)
             {
                 IXLCell cell = _workbook.Cell(bm);
                 if (cell != null)
                 {
-                    InsertImageToCell(cell, image, 1, true);
+                    InsertImageToCell(cell, image, scale, true);
                 }
                 else throw new NullReferenceException();
             }
@@ -508,7 +527,7 @@ namespace AP.Reports.AutoDocumets
                     switch (conditional.Condition)
                     {
                         case ConditionalFormatting.Conditions.Equal:
-                            if ( Math.Abs(tableValue - conditionValue)<float.MinValue)
+                            if (Math.Abs(tableValue - conditionValue) < float.Epsilon)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
@@ -538,7 +557,7 @@ namespace AP.Reports.AutoDocumets
                             }
                             break;
                         case ConditionalFormatting.Conditions.NotEqual:
-                            if (Math.Abs(tableValue - conditionValue) > float.MinValue)
+                            if (Math.Abs(tableValue - conditionValue) > float.Epsilon)
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
@@ -649,42 +668,6 @@ namespace AP.Reports.AutoDocumets
         }
 
         /// <summary>
-        /// Вставляет изображение и масштабирует его
-        /// </summary>
-        /// <param name="image"></param>
-        /// <param name="factor"></param>
-        /// <param name="relativeToOriginal"></param>
-        public void InsertImage(Bitmap image, double factor, bool relativeToOriginal)
-        {
-            if (_workbook != null)
-            {
-                if (_currentCell == null)
-                {
-                    MoveEnd();
-                }
-                InsertImageToCell(_currentCell, image, factor, relativeToOriginal);
-            }
-        }
-
-        /// <summary>
-        /// Вставляет изображение на метку и масштабирует его
-        /// </summary>
-        /// <param name="sFind"></param>
-        /// <param name="image"></param>
-        /// <param name="factor"></param>
-        /// <param name="relativeToOriginal"></param>
-        public void FindStringAndAllReplaceImage(string sFind, Bitmap image, double factor, bool relativeToOriginal)
-        {
-            FindCellAndDo(
-                sFind,
-                (cell, worksheet) =>
-                {
-                    InsertImageToCell(cell, image, factor, relativeToOriginal);
-                },
-                true);
-        }
-
-        /// <summary>
         /// Вставляет изображение на клетку
         /// </summary>
         private void InsertImageToCell(IXLCell cell, Bitmap image, double factor, bool relativeToOriginal)
@@ -693,44 +676,6 @@ namespace AP.Reports.AutoDocumets
             var insertedPicture = cell.Worksheet.AddPicture(image);
             insertedPicture.MoveTo(cell);
             insertedPicture.Scale(factor, relativeToOriginal);
-        }
-
-        /// <summary>
-        /// Вставляет изображение с масштабом
-        /// </summary>
-        /// <param name="bm"></param>
-        /// <param name="image"></param>
-        /// <param name="factor"></param>
-        /// <param name="relativeToOriginal"></param>
-        public void InsertImageToBookmark(string bm, Bitmap image, double factor, bool relativeToOriginal)
-        {
-            if (_workbook != null)
-            {
-                IXLCell cell = _workbook.Cell(bm);
-                if (cell != null)
-                {
-                    InsertImageToCell(cell, image, factor, relativeToOriginal);
-                }
-                else throw new NullReferenceException();
-            }
-        }
-
-        /// <summary>
-        /// Вставляет изображение с масштабом
-        /// </summary>
-        /// <param name="sFind"></param>
-        /// <param name="image"></param>
-        /// <param name="factor"></param>
-        /// <param name="relativeToOriginal"></param>
-        public void FindStringAndReplaceImage(string sFind, Bitmap image, double factor, bool relativeToOriginal)
-        {
-            FindCellAndDo(
-                sFind,
-                (cell, worksheet) =>
-                {
-                    InsertImageToCell(cell, image, factor, relativeToOriginal);
-                },
-                false);
         }
 
         /// <summary>
@@ -781,7 +726,6 @@ namespace AP.Reports.AutoDocumets
                 }
             }
         }
-
 
         public void Dispose()
         {
