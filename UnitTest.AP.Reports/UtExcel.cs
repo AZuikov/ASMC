@@ -140,13 +140,12 @@ namespace UnitTest.AP.Reports
         [TestMethod]
         public void TestMethodFindStringAndReplase()
         {
-            TestMethodCreateTestFile();
             using (_excel = new Excel())
             {
-                if (!System.IO.File.Exists(_pathToTestFolder + "Test.xlsx"))
-                {
-                    TestMethodCreateTestFile();
-                }
+                //if (!System.IO.File.Exists(_pathToTestFolder + "Test.xlsx"))
+                //{
+                //    TestMethodCreateTestFile();
+                //}
                 _excel.OpenDocument(_pathToTestFolder + "Test.xlsx");
                 DataTable dt = GetRandomDataTable();
                 Bitmap image = GetBitmapImage();

@@ -15,6 +15,8 @@ namespace AP.Reports.AutoDocumets
 
         public string Path => throw new NotImplementedException();
 
+        string IReport.Path { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         #region ITextGraphicsReport methods
 
         #region File manipulation (Open, close, save, etc.)
@@ -144,6 +146,26 @@ namespace AP.Reports.AutoDocumets
         #region  IDisposable method
 
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale = 1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertImage(Bitmap image, float scale = 1)
         {
             throw new NotImplementedException();
         }
