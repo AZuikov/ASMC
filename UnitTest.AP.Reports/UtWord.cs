@@ -1,35 +1,68 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using AP.Reports.AutoDocumets;
-using AP.Reports.MSInterop;
 using AP.Reports.Utils;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace UnitTest.AP.Reports
 {
     [TestClass]
     public class UtWord
     {
-        string _pathToTestFolder = @"C:\Users\02ias01\Documents\Tests\";
+        string _pathToTestFolder = @"C:\Users\02tav01\Documents";
 
         private Word word;
         [DataRow(@"321321")]
-        [DataRow(@"вфывфыdsadasDac")]
-        [DataRow(@"≥®")]
-        [DataRow(@"C°")]
+        //[DataRow(@"вфывфыdsadasDac")]
+        //[DataRow(@"≥®")]
+        //[DataRow(@"C°")]
         [TestMethod]
         public void InsertText(string value)
         {
             word=new Word();
-            word.NewDocument();
-            word.InsertText($"{value}");
-            Assert.AreEqual(word.SetElement.LastChild.InnerText, $"{value}");
+           // word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1 — копия — копия.docx");
+            //word.MoveEnd();
+            word.NewDocumentTemp(@"C:\Users\02tav01\Documents\Документ Microsoft Word.dotx");
+            word.MergeDocuments(@"C:\Users\02tav01\Documents\Документ Microsoft Word1 — копия — копия.docx");
+            
+          
+            ////word.InsertText("Таблица 1");
+            //word.MoveEnd();
+            //var dt = GetRandomDataTable();
+            //word.InsertTable(dt, GetCondition());
+            //word.MoveEnd();
+            //word.InsertText("fdsfs");
+           // word.InsertTable(dt, GetCondition());
+
+            //word.InsertText("Таблица 2");
+            //word.MoveHome();
+            //word.InsertText("Таблица 3");
+            //dt = GetRandomDataTable();
+            //word.InsertTable(dt, GetCondition());
+            //dt = GetRandomDataTable();
+            //word.InsertTable(dt, GetCondition());
+
+            word.SaveAs("hghfhfg");
+            //word.Close();
+
+
+
+
+
+
+
+
+            // word.NewDocument();
+            //for (int i = 0; i < 5; i++)
+            //{   
+            //    word.InsertText($"{value}");
+            //}
+            //word.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft WorD шаблон.docx");
+            //word.Close();
+            // Assert.AreEqual(word.SetElement.LastChild.InnerText, $"{value}");
         }
 
         [TestMethod]
@@ -53,23 +86,23 @@ namespace UnitTest.AP.Reports
             word = new Word { Path = $"{path}" };
         }    
 
-        [TestMethod]
-        public void SetMoveHome()
-        {
-            word = new Word(); 
-            word.NewDocument();
-            word.MoveHome();
-            Assert.IsTrue(word.SetElement.Parent is Body); 
-        }
+        //[TestMethod]
+        //public void SetMoveHome()
+        //{
+        //    word = new Word(); 
+        //    word.NewDocument();
+        //    word.MoveHome();
+        //    Assert.IsTrue(word.SetElement.Parent is Body); 
+        //}
 
-        [TestMethod]
-        public void SetMoveEnd()
-        {
-            word = new Word();
-            word.NewDocument();
-            word.MoveEnd();
-            Assert.IsTrue(word.SetElement is Paragraph);
-        }
+        //[TestMethod]
+        //public void SetMoveEnd()
+        //{
+        //    word = new Word();
+        //    word.NewDocument();
+        //    word.MoveEnd();
+        //    Assert.IsTrue(word.SetElement is Paragraph);
+        //}
 
         [TestMethod]
         public void TestMethod2()
@@ -101,42 +134,52 @@ namespace UnitTest.AP.Reports
         public void TestMethodTableIsaev()
         {
             word = new Word();
-            word.NewDocument();
+            word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1 — копия — копия.docx");
+            // word.NewDocument();
             //word.InsertText("Таблица 1");
-            word.MoveHome();
+            word.MoveEnd();
             var dt = GetRandomDataTable();
             word.InsertTable(dt, GetCondition());
 
             //word.InsertText("Таблица 2");
-            word.MoveHome();
-            //word.InsertText("Таблица 3");
-            dt = GetRandomDataTable();
-            word.InsertTable(dt, GetCondition());
-            dt = GetRandomDataTable();
-            word.InsertTable(dt, GetCondition());
+            //word.MoveEnd();
+            ////word.InsertText("Таблица 3");
+            //dt = GetRandomDataTable();
+            //word.InsertTable(dt, GetCondition());
+            //word.MoveEnd();
+            //dt = GetRandomDataTable();
+            //word.InsertTable(dt, GetCondition());
 
             word.SaveAs(_pathToTestFolder + "TableTestResult.docx");
-            word.Save();
-            word.Close();
+            //word.Save();
+            //word.Close();
         }
 
         [TestMethod]
         public void TestMethodImageIsaev()
         {
             word = new Word();
-            word.NewDocument();
+            word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
             CreateBitmapImage("TestImage.bmp", System.Drawing.Color.DarkSeaGreen, 200, 200);
             CreateBitmapImage("TestImage2.bmp", System.Drawing.Color.LightSkyBlue, 300, 100);
 
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage.bmp"));
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"));
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage.bmp"), (float)0.5);
-            word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"), (float)0.5);
+            word.InsertImage(new Bitmap(@"C:\Users\02tav01\Pictures\График.JPG"), (float)0.5);
             word.SaveAs(_pathToTestFolder + "ImageTest.docx");
             word.Save();
             word.Close();
         }
-
+        [TestMethod]
+        public void FindStringAndAllReplaceImage()
+        {
+            word = new Word();
+            word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");  
+            word.FindStringAndAllReplaceImage("#dasdas#", new Bitmap(@"C:\Users\02tav01\Pictures\График.JPG"), (float)0.1);
+            word.Save();
+            word.Close();
+        }
         [TestMethod]
         public void TestMethod3()
         {
@@ -160,8 +203,8 @@ namespace UnitTest.AP.Reports
             cf.Value = "5";
             cf.Color = System.Drawing.Color.MediumTurquoise;
             cf.NameColumn = "col3";
-            cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
-            cf.Region = ConditionalFormatting.RegionAction.Row;
+            cf.Condition = ConditionalFormatting.Conditions.Less;
+            cf.Region = ConditionalFormatting.RegionAction.Cell;
             return cf;
         }
 
