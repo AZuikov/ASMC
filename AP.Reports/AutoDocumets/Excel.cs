@@ -527,11 +527,11 @@ namespace AP.Reports.AutoDocumets
                     switch (conditional.Condition)
                     {
                         case ConditionalFormatting.Conditions.Equal:
-<<<<<<< HEAD
+
                             if (Math.Abs(tableValue - conditionValue) < float.Epsilon)
-=======
+
                             if ( Math.Abs(tableValue - conditionValue)<float.MinValue)
->>>>>>> -В Библлиотеке Excel исправлены ошибки, показываемые РеШарпером
+
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
@@ -561,11 +561,11 @@ namespace AP.Reports.AutoDocumets
                             }
                             break;
                         case ConditionalFormatting.Conditions.NotEqual:
-<<<<<<< HEAD
+
                             if (Math.Abs(tableValue - conditionValue) > float.Epsilon)
-=======
+
                             if (Math.Abs(tableValue - conditionValue) > float.MinValue)
->>>>>>> -В Библлиотеке Excel исправлены ошибки, показываемые РеШарпером
+
                             {
                                 SetConditionToRegion(range, i, formatingColumn, conditional);
                             }
@@ -676,8 +676,7 @@ namespace AP.Reports.AutoDocumets
         }
 
         /// <summary>
-<<<<<<< HEAD
-=======
+
         /// Вставляет изображение и масштабирует его
         /// </summary>
         /// <param name="image"></param>
@@ -713,8 +712,7 @@ namespace AP.Reports.AutoDocumets
                 true);
         }
 
-        /// <summary>
->>>>>>> -В Библлиотеке Excel исправлены ошибки, показываемые РеШарпером
+        /// <summary>     
         /// Вставляет изображение на клетку
         /// </summary>
         private void InsertImageToCell(IXLCell cell, Bitmap image, double factor, bool relativeToOriginal)
