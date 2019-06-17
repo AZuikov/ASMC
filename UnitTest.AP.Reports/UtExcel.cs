@@ -229,6 +229,16 @@ namespace UnitTest.AP.Reports
 >>>>>>> -В Библлиотеке Excel исправлены ошибки, показываемые РеШарпером
         }
 
+        [TestMethod]
+        public void AddBookmark()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.NewDocument();
+                _excel.SaveAs(_pathToTestFolder + "@@@@");
+            }
+        }
+
         #endregion
 
         private DataTable GetRandomDataTable()
