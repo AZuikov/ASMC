@@ -15,7 +15,8 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPKT", TypeName = "int")]
-        public int IdСategoryMi { get; }
+        public int IdСategoryMi { get; private set;
+        }
         /// <summary>
         /// Наименование категории СИ
         /// </summary>

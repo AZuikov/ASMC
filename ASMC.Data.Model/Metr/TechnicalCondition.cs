@@ -14,7 +14,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPTS", TypeName = "int")]
-        public int TechnicalConditionId { get; }
+        public int TechnicalConditionId { get; private set;  }
         /// <summary>
         /// Наименование технического состояния
         /// </summary>

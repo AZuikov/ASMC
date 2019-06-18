@@ -19,7 +19,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDFRPD", TypeName = "int")]
-        public int OrganizationsUnitsId { get; }
+        public int OrganizationsUnitsId { get; private set; }
         [Column("IDFRPDR", TypeName = "int")]
         public int NONAME { get; set; }
         /// <summary>

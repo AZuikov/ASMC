@@ -14,7 +14,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPSS", TypeName = "int")]
-        public int NormalStateId { get; }
+        public int NormalStateId { get; private set;}
         /// <summary>
         /// Наименование шатного состояния
         /// </summary>

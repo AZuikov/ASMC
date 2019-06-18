@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AP.Utils.Data;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,7 +7,11 @@ namespace ASMC.Data.Model.Metr
 {
     /// <summary>
     /// Представляет модель экземпляра СИ.
-    /// </summary>
+    /// </summary>                               
+    [Procedure("dbo.up_gr_EkzEdit_ls", Operation = StoredProcedureOp.Update)]
+    [Procedure("dbo.up_gr_EkzSelect", Operation =  StoredProcedureOp.SelectMany)]
+    [Procedure("dbo.up_gr_EkzCardSelect", KeyName = "vbr", KeyFormat = "ekz.idekz={0}")]
+
     public class Ekz: IEquatable<Ekz>, ICloneable
 
     {
@@ -16,7 +21,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDEKZ", TypeName = "int")]
-        public int PassportId { get; }
+        public int PassportId { get; private set; }
         /// <summary>
         /// Id Типоразмера
         /// </summary>

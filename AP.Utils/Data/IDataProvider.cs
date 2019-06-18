@@ -15,48 +15,68 @@ namespace AP.Utils.Data
         /// экземпляра источника данных, с
         /// которым устанавливается соединение.
         /// </summary>
-        string DataSource { get; set; }
+        string DataSource
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Возвращает или задает имя базы
         /// на источнике данных, с которой
         /// устанавливается соединение.
         /// </summary>
-        string Catalog { get; set; }
+        string Catalog
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Возвращает или задает имя входа,
         /// используемое при авторизации на
         /// источнике данных.
         /// </summary>
-        string User { get; set; }
+        string User
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Возвращает или задает пароль,
         /// используемый при авторизации
         /// на источнике данных.
         /// </summary>
-        string Password { get; set; }
+        string Password
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Возвращает или задает использование
         /// проверки подлинности Windows при
         /// авторизации на источнике данных.
         /// </summary>
-        bool IntegratedSecurity { get; set; }
+        bool IntegratedSecurity
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Возвращает форматированную строку
         /// подключения для используемого
         /// источника данных.
         /// </summary>
-        string ConnectionString { get; }
+        string ConnectionString
+        {
+            get;
+        }
 
         /// <summary>
         /// Устанавливает новое соединение
         /// с текущим источником данных.
         /// </summary>
-        void OpenConnection();
+        /// <returns>Возвращает подключение
+        /// с источником данных.</returns>
+        IDbConnection OpenConnection();
 
         /// <summary>
         /// Разрывает активное соединение

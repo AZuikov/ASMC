@@ -14,7 +14,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPKMMK", TypeName = "int")]
-        public int CompletenessMiId { get; }
+        public int CompletenessMiId { get; private set;}
         /// <summary>
         /// Наименование комплектности СИ
         /// </summary>

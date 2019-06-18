@@ -36,7 +36,7 @@ namespace AP.Utils.Data
             get => _dataSource;
             set
             {
-                if (_dataSource != value)
+                if(_dataSource != value)
                 {
                     _dataSource = value;
                     ClearConnection();
@@ -50,7 +50,7 @@ namespace AP.Utils.Data
             get => _catalog;
             set
             {
-                if (_catalog != value)
+                if(_catalog != value)
                 {
                     _catalog = value;
                     ClearConnection();
@@ -64,7 +64,7 @@ namespace AP.Utils.Data
             get => _user;
             set
             {
-                if (_user != value)
+                if(_user != value)
                 {
                     _user = value;
                     ClearConnection();
@@ -78,10 +78,10 @@ namespace AP.Utils.Data
             get => _integratedSecurity;
             set
             {
-                if (_integratedSecurity != value)
+                if(_integratedSecurity != value)
                 {
                     _integratedSecurity = value;
-                    if (_integratedSecurity)
+                    if(_integratedSecurity)
                     {
                         User = $"{Environment.UserDomainName}\\{Environment.UserName}";
                         Password = "";
@@ -110,12 +110,12 @@ namespace AP.Utils.Data
             }
             set
             {
-                if (Equals(Password, value))
+                if(Equals(Password, value))
                     return;
 
                 _password.Clear();
-                if (!string.IsNullOrEmpty(value))
-                    foreach (var c in value.ToCharArray())
+                if(!string.IsNullOrEmpty(value))
+                    foreach(var c in value.ToCharArray())
                         _password.AppendChar(c);
             }
         }
@@ -156,9 +156,9 @@ namespace AP.Utils.Data
 
                 return true;
             }
-            catch (Exception)
+            catch(Exception)
             {
-                if (!throwOnException)
+                if(!throwOnException)
                     return false;
 
                 throw;
@@ -170,21 +170,24 @@ namespace AP.Utils.Data
         }
 
         /// <inheritdoc />
-        public void OpenConnection()
+        public IDbConnection OpenConnection()
         {
-            if (_connection == null)
+            if(_connection == null)
                 _connection = GetConnection();
 
-            if (_connection.State != ConnectionState.Open)
+            if(_connection.State != ConnectionState.Open)
                 _connection.Open();
+
+            return _connection;
         }
 
         /// <inheritdoc />
         public void CloseConnection()
         {
-            if (_connection != null && _connection.State == ConnectionState.Open)
+            if(_connection != null && _connection.State == ConnectionState.Open)
                 _connection.Close();
         }
+
         /// <inheritdoc />
         public int ExecuteNonQuery(string commandText, bool storedProcedure = false, params DbParameter[] parameters)
         {
@@ -193,13 +196,13 @@ namespace AP.Utils.Data
             {
                 connectionOpened = EnsureConnection(ref _connection);
 
-                using (var cmd = CreateCommand(commandText, null,
+                using(var cmd = CreateCommand(commandText, null,
                     storedProcedure ? CommandType.StoredProcedure : CommandType.Text, parameters))
                     return cmd.ExecuteNonQuery();
             }
             finally
             {
-                if (_connection != null && !connectionOpened)
+                if(_connection != null && !connectionOpened)
                     _connection.Close();
             }
         }
@@ -212,13 +215,13 @@ namespace AP.Utils.Data
             {
                 connectionOpened = EnsureConnection(ref _connection);
 
-                using (var cmd = CreateCommand(commandText, null,
+                using(var cmd = CreateCommand(commandText, null,
                     storedProcedure ? CommandType.StoredProcedure : CommandType.Text, parameters))
                     return cmd.ExecuteScalar();
             }
             finally
             {
-                if (_connection != null && !connectionOpened)
+                if(_connection != null && !connectionOpened)
                     _connection.Close();
             }
         }
@@ -240,7 +243,7 @@ namespace AP.Utils.Data
             }
             finally
             {
-                if (_connection != null && !connectionOpened)
+                if(_connection != null && !connectionOpened)
                     _connection.Close();
             }
         }
@@ -249,7 +252,7 @@ namespace AP.Utils.Data
         public DbParameter GetParameter(string name, object value)
         {
             var param = new SqlParameter(name, value ?? DBNull.Value);
-            if (value is Array array)
+            if(value is Array array)
                 param.Size = Buffer.ByteLength(array);
 
             return param;
@@ -317,7 +320,7 @@ namespace AP.Utils.Data
         protected DbCommand CreateCommand(string commandText, DbTransaction transaction,
             CommandType commandType = CommandType.Text, params DbParameter[] parameters)
         {
-            if (_connection == null || _connection.State != ConnectionState.Open)
+            if(_connection == null || _connection.State != ConnectionState.Open)
                 throw new InvalidOperationException();
 
             var command = _connection.CreateCommand();
@@ -327,7 +330,7 @@ namespace AP.Utils.Data
             command.CommandType = commandType;
             command.Transaction = transaction;
 
-            if (parameters.Any())
+            if(parameters.Any())
                 command.Parameters.AddRange(parameters);
 
             return command;
@@ -346,10 +349,10 @@ namespace AP.Utils.Data
         private IDataAdapter GetDataAdapter(string selectCommandText, CommandType commandType = CommandType.Text,
             params DbParameter[] parameters)
         {
-            if (_connection == null || _connection.State != ConnectionState.Open)
+            if(_connection == null || _connection.State != ConnectionState.Open)
                 throw new InvalidOperationException();
 
-            using (var cmd = CreateCommand(selectCommandText, null, commandType, parameters))
+            using(var cmd = CreateCommand(selectCommandText, null, commandType, parameters))
             {
                 return new SqlDataAdapter((SqlCommand)cmd);
             }
@@ -357,10 +360,10 @@ namespace AP.Utils.Data
 
         private bool EnsureConnection(ref DbConnection connection)
         {
-            if (connection == null)
+            if(connection == null)
                 connection = GetConnection();
 
-            if (connection.State != ConnectionState.Open)
+            if(connection.State != ConnectionState.Open)
                 connection.Open();
             else
                 return true;

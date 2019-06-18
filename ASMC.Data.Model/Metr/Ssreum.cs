@@ -14,7 +14,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPSHMK", TypeName = "int")]
-        public  int SsreumId { get; }
+        public  int SsreumId { get; private set;}
         /// <summary>
         /// Cфера ГРОЕИ
         /// </summary>

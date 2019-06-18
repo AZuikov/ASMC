@@ -6,6 +6,10 @@ using System.Text.RegularExpressions;
 
 namespace AP.Utils.Data
 {
+    /// <summary>
+    /// Представляет контейнер для работы с файлами
+    /// универсальной связи с данными (UDL).
+    /// </summary>
     public class UdlBuilder
     {
         private static readonly string Default = "[oledb]" + Environment.NewLine +
@@ -14,6 +18,11 @@ namespace AP.Utils.Data
 
         #region Properties
 
+        /// <summary>
+        /// Возвращает или задает имя базы
+        /// на источнике данных, с которой
+        /// устанавливается соединение.
+        /// </summary>
         public string Catalog
         {
             get
@@ -25,6 +34,11 @@ namespace AP.Utils.Data
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает сетевой адрес
+        /// экземпляра источника данных, с
+        /// которым устанавливается соединение.
+        /// </summary>
         public string DataSource
         {
             get
@@ -36,21 +50,26 @@ namespace AP.Utils.Data
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает пароль,
+        /// используемый при авторизации
+        /// на источнике данных.
+        /// </summary>
         public string Password
         {
             get
             {
                 var rex = new Regex(@"Password=([^\r\n;]*)", RegexOptions.IgnoreCase);
                 var m = rex.Match(ConnectionString);
-                if (m.Success)
+                if(m.Success)
                 {
                     var password = m.Groups[1].ToString();
 
-                    if (password.StartsWith("\""))
+                    if(password.StartsWith("\""))
                     {
                         rex = new Regex("Password=\"(.*)\"");
                         m = rex.Match(ConnectionString);
-                        if (m.Success)
+                        if(m.Success)
                         {
                             password = m.Groups[1].ToString();
                             password = password.Replace("\"\"", "\"");
@@ -63,8 +82,16 @@ namespace AP.Utils.Data
             }
         }
 
-        public string Provider { get; set; }
+        public string Provider
+        {
+            get; set;
+        }
 
+        /// <summary>
+        /// Возвращает или задает имя входа,
+        /// используемое при авторизации на
+        /// источнике данных.
+        /// </summary>
         public string Username
         {
             get
@@ -72,14 +99,14 @@ namespace AP.Utils.Data
                 var rex = new Regex(@"User ID=([^\r\n;]*)", RegexOptions.IgnoreCase);
 
                 var m = rex.Match(ConnectionString);
-                if (m.Success)
+                if(m.Success)
                 {
                     var userId = m.Groups[1].ToString();
-                    if (userId.StartsWith("\""))
+                    if(userId.StartsWith("\""))
                     {
                         rex = new Regex("\"(.*)\"");
                         m = rex.Match(userId);
-                        if (m.Success)
+                        if(m.Success)
                             userId = m.Groups[1].ToString().Replace("\"\"", "\"");
 
                     }
@@ -90,6 +117,11 @@ namespace AP.Utils.Data
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает использование
+        /// проверки подлинности Windows при
+        /// авторизации на источнике данных.
+        /// </summary>
         public bool IntegratedSecurity
         {
             get
@@ -97,7 +129,12 @@ namespace AP.Utils.Data
                 var rex = new Regex(@"Integrated Security=([^\r\n;]*)", RegexOptions.IgnoreCase);
                 var m = rex.Match(ConnectionString);
 
-                return m.Success && m.Groups[1].Value.Trim().Equals("sspi", StringComparison.CurrentCultureIgnoreCase);
+                if(!m.Success)
+                    return false;
+
+                var value = m.Groups[1].Value.Trim();
+                return value.Equals("sspi", StringComparison.OrdinalIgnoreCase) ||
+                       value.Equals("true", StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -112,11 +149,54 @@ namespace AP.Utils.Data
             }
         }
 
-        private string ConnectionString { get; set; }
+        private string ConnectionString
+        {
+            get; set;
+        }
 
         #endregion
 
+        /// <summary>
+        /// Инициализирует новый экземпляр
+        /// класса <see cref="UdlBuilder"/>.
+        /// </summary>
+        public UdlBuilder()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Инициализирует новый экземпляр
+        /// класса <see cref="UdlBuilder"/>.
+        /// </summary>
+        /// <param name="connectionString">Строка подключения для
+        /// инициализации.</param>
+        public UdlBuilder(string connectionString)
+        {
+            ConnectionString = connectionString ?? string.Empty;
+        }
+
         #region Methods
+
+        public void Save(Stream stream)
+        {
+            using(var sw = new StreamWriter(stream, Encoding.Unicode, 1, true))
+                sw.Write(Default + ConnectionString);
+        }
+
+        public void SaveFile(string fileName)
+        {
+            using(var stream = new MemoryStream())
+            {
+                Save(stream);
+
+                using(var file = File.Create(fileName))
+                {
+                    stream.Position = 0;
+                    stream.CopyTo(file);
+                }
+            }
+        }
 
         public SqlConnectionStringBuilder ToSqlConnectionStringBuilder()
         {
@@ -132,19 +212,25 @@ namespace AP.Utils.Data
             return csb;
         }
 
-        public static Stream CreateDefaultFile()
+        public static void CreateDefaultFile(string fileName)
         {
-            var stream = new MemoryStream();
-            var sw = new StreamWriter(stream, Encoding.Unicode);
-            sw.Write(Default);
+            using(var stream = new MemoryStream())
+            {
+                using(var sw = new StreamWriter(stream, Encoding.Unicode))
+                {
+                    sw.Write(Default);
+                    sw.Flush();
+                    stream.Position = 0;
 
-            stream.Position = 0;
-            return stream;
+                    using(var file = File.Create(fileName))
+                        stream.CopyTo(file);
+                }
+            }
         }
 
         public static UdlBuilder ParseFile(string fileName)
         {
-            if (fileName == null)
+            if(fileName == null)
                 throw new ArgumentNullException(nameof(fileName));
 
             var str = File.ReadAllText(fileName, Encoding.Unicode);
@@ -153,7 +239,7 @@ namespace AP.Utils.Data
             var udl = new UdlBuilder();
 
             var match = regex.Match(str);
-            if (match.Success)
+            if(match.Success)
             {
                 udl.Provider = match.Groups[1].ToString();
                 udl.ConnectionString = match.Groups[2].ToString();
@@ -163,4 +249,4 @@ namespace AP.Utils.Data
 
         #endregion
     }
-}
+} 

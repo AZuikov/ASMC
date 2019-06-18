@@ -15,7 +15,7 @@ namespace ASMC.Data.Model.Metr
         [Key]
         [Required]
         [Column("IDSPMU", TypeName = "int")]
-        public int InstallationlocationId{ get; set; }
+        public int InstallationlocationId{ get; private set;}
         [Column("IDSPMUR", TypeName = "int")]
         public int NONAME{ get; set; }
         /// <summary>

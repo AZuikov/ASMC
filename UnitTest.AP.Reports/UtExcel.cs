@@ -194,7 +194,7 @@ namespace UnitTest.AP.Reports
             }
         }
 
-<<<<<<< HEAD
+
 
         public enum FileFormat
         {
@@ -212,21 +212,8 @@ namespace UnitTest.AP.Reports
             Docm
         }
 
-        [TestMethod]
-        public void SomeTest()
-        {
 
-=======
-        [TestMethod]
-        public void AddBookmark()
-        {
-            using (_excel = new Excel())
-            {
-                _excel.NewDocument();
-                _excel.SaveAs(_pathToTestFolder + "@@@@");
-            }
->>>>>>> -В Библлиотеке Excel исправлены ошибки, показываемые РеШарпером
-        }
+    
 
         [TestMethod]
         public void AddBookmark()
