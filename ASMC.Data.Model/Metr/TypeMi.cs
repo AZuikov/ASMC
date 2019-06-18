@@ -15,7 +15,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDTIPS", TypeName = "int")]
-        public int TypeMiId { get; }
+        public int TypeMiId { get; private set;  }
         /// <summary>
         ///  Id Код области измерения СИ
         /// </summary>

@@ -14,7 +14,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDPRSN", TypeName = "int")]
-        public int PersonsId { get; }
+        public int PersonsId { get; private set;}
         /// <summary>
         /// ФИО
         /// </summary>

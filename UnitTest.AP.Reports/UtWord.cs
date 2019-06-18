@@ -166,13 +166,13 @@ namespace UnitTest.AP.Reports
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage.bmp"));
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"));
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage.bmp"), (float)0.5);
-<<<<<<< HEAD
+
             word.InsertImage(new Bitmap(@"C:\Users\02tav01\Pictures\График.JPG"), (float)0.5);
-=======
+
             word.InsertImage(new Bitmap(_pathToTestFolder + "TestImage2.bmp"), (float)0.5);
             word.InsertImage(new Bitmap(_pathToTestFolder + "Безымянный.jpg"), (float)2);
             
->>>>>>> -Добавлены библиотеки с моделями Екземпляров и всех вложенных классов
+
             word.SaveAs(_pathToTestFolder + "ImageTest.docx");
             word.Save();
             word.Close();

@@ -14,7 +14,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPNMTP", TypeName = "int")]
-        public int NameTypeMiId { get; }
+        public int NameTypeMiId { get; private set;}
         /// <summary>
         /// Наименование типа
         /// </summary>

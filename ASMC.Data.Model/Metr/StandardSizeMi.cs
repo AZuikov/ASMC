@@ -15,7 +15,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDTPRZ", TypeName = "int")]
-        public int StandardSizeMiId { get; }
+        public int StandardSizeMiId { get; private set;  }
         /// <summary>
         /// Id Тип СИ
         /// </summary>

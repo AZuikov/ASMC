@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 using DevExpress.Mvvm;
-using DevExpress.Mvvm.UI;
+using DevExpress.Utils.MVVM.Services;
 
 namespace ASMC.Core.UI
 {

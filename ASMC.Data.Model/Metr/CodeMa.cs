@@ -26,7 +26,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPOI", TypeName = "int")]
-        public  int CodeMaId { get; }
+        public  int CodeMaId { get; private set;}
         /// <summary>
         /// Код области измерений
         /// </summary>

@@ -14,7 +14,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPOP", TypeName = "int")]
-        public int ApplicationAreaMiId { get;  }
+        public int ApplicationAreaMiId { get; private set; }
         /// <summary>
         /// Область применения СИ
         /// </summary>

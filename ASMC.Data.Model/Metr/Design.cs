@@ -15,7 +15,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPKI", TypeName = "int")]
-        public int DesignId { get; }
+        public int DesignId { get; private set; }
         /// <summary>
         /// Наименование исполнения
         /// </summary>

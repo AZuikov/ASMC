@@ -18,7 +18,8 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPDPKL1", TypeName = "int")]
-        public int CharacteristicsAdditionalClass1Id { get; }
+        public int CharacteristicsAdditionalClass1Id { get; private set;
+        }
         /// <summary>
         /// Код
         /// </summary>

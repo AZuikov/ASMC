@@ -21,7 +21,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Key]
         [Column("IDSPPP250", TypeName = "int")]
-        public int Resolution250Id { get; }
+        public int Resolution250Id { get; private set; }
         /// <summary>
         /// Позиция по Постановлению №250
         /// </summary>
