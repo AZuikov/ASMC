@@ -108,7 +108,7 @@ namespace UnitTest.AP.Reports
         public void TestMethod2()
         {
             word = new Word();
-            word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1.docx");
+            word.OpenDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1 — копия — копия.docx");
             //var dataTable = new DataTable();
             //for(var i = 0; i < 6; i++)
             //{
@@ -125,7 +125,7 @@ namespace UnitTest.AP.Reports
             //    dataTable.Rows.Add(dataRow[i]);
             //}
             //word.FillsTableToBookmark("test1",dataTable);
-            word.InsertImage(new Bitmap(@"C:\Users\02tav01\Pictures\График.JPG"));
+            word.FillsTableToBookmark("test", new DataTable());
             word.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             word.Close();
         }

@@ -16,7 +16,7 @@ namespace AP.Utils.Data
     /// Представляет контекст
     /// данных сущности.
     /// </summary>
-    public sealed class EntityContext : IEntityContext
+    public sealed class EntityContext
     {
         private static IList<Type> _mapperInitialized;
 

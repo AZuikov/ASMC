@@ -51,7 +51,6 @@
     <Compile Include="Data\EntityContext.cs" />
     <Compile Include="Data\EntityMapper.cs" />
     <Compile Include="Data\FallbackTypeMapper.cs" />
-    <Compile Include="Data\IEntityContext.cs" />
     <Compile Include="Data\ProcedureAttribute.cs" />
     <Compile Include="Data\UdlBuilder.cs" />
     <Compile Include="Data\IDataProvider.cs" />
