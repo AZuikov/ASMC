@@ -107,10 +107,11 @@ namespace AP.Utils
         private static TripleDESCryptoServiceProvider GetCryptoProvider(ref string password)
         {
             var tripleDes = new TripleDESCryptoServiceProvider();
-            var pdb = new PasswordDeriveBytes(password, Encoding.Unicode.GetBytes(password.Length.ToString()));
-            tripleDes.IV = new Byte[tripleDes.BlockSize >> 3];
-            tripleDes.Key = pdb.CryptDeriveKey("TripleDES", "SHA1", 192, tripleDes.IV);
-
+            using (var pdb = new PasswordDeriveBytes(password, Encoding.Unicode.GetBytes(password.Length.ToString())))
+            {
+                tripleDes.IV = new byte[tripleDes.BlockSize >> 3];
+                tripleDes.Key = pdb.CryptDeriveKey("TripleDES", "SHA1", 192, tripleDes.IV);
+            }
             return tripleDes;
         }
     }

@@ -145,7 +145,7 @@ namespace AP.Utils.Data
         /// данных.
         /// </summary>
         /// <param name="dataProvider">Экземпляр <see cref="IDataProvider"/>.</param>
-        public static IEntityContext GetEntityContext(this IDataProvider dataProvider)
+        public static EntityContext GetEntityContext(this IDataProvider dataProvider)
         {
             return new EntityContext(dataProvider);
         }

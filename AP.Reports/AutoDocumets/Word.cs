@@ -9,25 +9,20 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
-using System.Threading;
 using DevExpress.XtraRichEdit;
 using DevExpress.XtraRichEdit.API.Native;
-using DevExpress.XtraRichEdit.API.Native.Implementation;
-using DevExpress.XtraRichEdit.Internal;
 
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Word : ITextGraphicsReport
+    public class Word : ITextGraphicsReport, IDisposable
     {    
-        private Stream _stream;
         private RichEditDocumentServer _documentServer;
         private DocumentPosition _documentPosition;
         private DocumentRange _documentRange;
         private Document _document;
-        // <summary>
+        /// <summary>
         /// форматы файлов
         /// </summary>
         public enum FileFormat
@@ -45,18 +40,9 @@ namespace AP.Reports.AutoDocumets
             /// </summary>
             Docm
         }
-
-        private FileFormat _fileFormat;
         public DocumentRange DocumentRange
         {
-            get
-            {
-                if(_documentRange == null)
-                {
-                    _documentRange = _document?.Range;
-                }
-                return _documentRange;
-            }
+            get { return _documentRange ?? (_documentRange = _document?.Range); }
             private set
             {
                 _documentRange = value;
@@ -132,7 +118,17 @@ namespace AP.Reports.AutoDocumets
 
         public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            throw new NotImplementedException();
+            DocumentRange = _document.Bookmarks[bm]?.Range;
+            var table = _document.Tables.Get(DocumentRange)?.First();
+            if(dt.Rows.Count < 1)
+            {   
+                _document.BeginUpdate();
+                _document.Tables.Remove(table);
+                _document.EndUpdate();
+                return;
+            }   
+            FillingTable(table, dt, cf);
+            SetConditionalFormatting(table, dt, cf);
         }
 
         public void FindStringAndAllReplace(string sFind, string sReplace)
@@ -156,7 +152,7 @@ namespace AP.Reports.AutoDocumets
             }    
             _document.EndUpdate();
         }
-        private int FindStringSetDocumentPosition(string sFind, bool one=false)
+        private int FindStringSetDocumentPosition(string sFind)
         {
 
             var foundTotal = _document.FindAll(new Regex(@"(\W|^)" + sFind + @"(\b|\W)"), _document.Range);
@@ -170,7 +166,7 @@ namespace AP.Reports.AutoDocumets
         public void FindStringAndReplace(string sFind, string sReplace)
         {
             _document.BeginUpdate();
-            if(FindStringSetDocumentPosition(sFind, true) > 0)
+            if(FindStringSetDocumentPosition(sFind) > 0)
             {
                 _document.InsertText(DocumentPosition, sReplace);
                 _document.Delete(DocumentRange);
@@ -182,7 +178,7 @@ namespace AP.Reports.AutoDocumets
         public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             _document.BeginUpdate();
-            if(FindStringSetDocumentPosition(sFind, true) > 0)
+            if(FindStringSetDocumentPosition(sFind) > 0)
             {
                 InsertImage(image, scale);
                _document.Delete(DocumentRange);
@@ -199,8 +195,8 @@ namespace AP.Reports.AutoDocumets
 
         public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
-           
-            DocumentPosition = _document.Bookmarks[bm].Range.Start;
+
+            DocumentPosition = _document.Bookmarks[bm]?.Range.Start;
             InsertImage(image, scale);
         }
 
@@ -219,11 +215,13 @@ namespace AP.Reports.AutoDocumets
 
             //  throw new NotImplementedException();
         }
+
         /// <summary>
         /// Заполняет таблицу
         /// </summary>
         /// <param name="tab">Принемает заполняемую таблицу</param>
         /// <param name="dt">Принимает таблицу с данными</param>
+        /// <param name="cf">Форматирование таблицы</param>
         public void FillingTable(Table tab, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -240,10 +238,6 @@ namespace AP.Reports.AutoDocumets
                     if (cell.ColumnSpan<2)
                     {   
                         InsertText(dt.Rows[row.Index][cell.Index].ToString());
-                    }
-                    else
-                    {
-                        continue;
                     }
                 }
             }
@@ -292,11 +286,9 @@ namespace AP.Reports.AutoDocumets
         /// <param name="conditional">Правила сравнения</param>
         private bool DoesItNeedToSetCondition(string cellValue, ConditionalFormatting conditional)
         {
-            double conditionValue;//Значение value из conditional, перепарсенное в double
-            double tableValue;//Сравниваемое значение из таблицы, перепарсенное в double
-                              //Если оба данных - числа, то сравниваем их как числа
-            if(double.TryParse(conditional.Value, out conditionValue)
-                && double.TryParse(cellValue, out tableValue))
+            //Если оба данных - числа, то сравниваем их как числа
+            if(double.TryParse(conditional.Value, out var conditionValue)
+                && double.TryParse(cellValue, out var tableValue))
             {
                 switch(conditional.Condition)
                 {
@@ -372,8 +364,7 @@ namespace AP.Reports.AutoDocumets
                 throw new ArgumentException(bm +" закладка не существует");
             }
             DocumentPosition = _document.Bookmarks[bm].Range.Start;
-            _document.InsertText(DocumentPosition, text);
-            _document.SaveDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1 — копия — копия1.docx", DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+        
         }
 
         public void MergeDocuments(string pathdoc)
@@ -382,9 +373,12 @@ namespace AP.Reports.AutoDocumets
             {
                return;
             }
-            var reds = new RichEditDocumentServer();
-            reds.LoadDocument(pathdoc, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
-            _document.AppendDocumentContent(reds.Document.Range);
+
+            using(var reds = new RichEditDocumentServer())
+            {
+                reds.LoadDocument(pathdoc, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+                _document.AppendDocumentContent(reds.Document.Range);
+            }
         }
 
         public void MergeDocuments(IEnumerable<string> pathdoc)
@@ -442,8 +436,13 @@ namespace AP.Reports.AutoDocumets
         {
             if (!string.IsNullOrEmpty(pathToSave))
             {
-                _document?.SaveDocument(@"C:\Users\02tav01\Documents\Документ Microsoft Word1 — копия — копия1.docx", DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+                _document?.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             }
+        }
+
+        public void Dispose()
+        {
+            _documentServer?.Dispose();
         }
     }
 
