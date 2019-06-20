@@ -65,7 +65,7 @@ namespace ASMC.Core.ViewModel
         /// Возвращает контекст доступа к
         /// данным объектных сущностей.
         /// </summary>
-        protected IEntityContext EntityContext => DataProvider?.GetEntityContext();
+        protected EntityContext EntityContext => DataProvider?.GetEntityContext();
 
         #endregion
 

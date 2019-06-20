@@ -5,12 +5,12 @@ namespace ASMC.Core.View
     /// <summary>
     /// Логика взаимодействия для ReadAndWriteText.xaml
     /// </summary>
-    public partial class ReadAndWriteText
+    public partial class ProgressWindow 
     {
      
-        public ReadAndWriteText()
+        public ProgressWindow()
         {
-            //InitializeComponent();
+            InitializeComponent();
            // Send = new DelegateCommand(SendMetod, () => Data != null);
             using (FileStream fs = new FileStream(@"\\zrto.int\ogmetr\AutoMeas\AutoMeas\PatchInfo.rtf", FileMode.Open))
             {

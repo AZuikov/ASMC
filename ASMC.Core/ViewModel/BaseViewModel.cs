@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using AP.Utils.Data;
@@ -123,10 +118,18 @@ namespace ASMC.Core.ViewModel
                "Ошибка",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
-
             return true;
         }
 
+        protected bool Form( object content)
+        {
+            var service = GetService<IWindowService>(ServiceSearchMode.PreferLocal);
+            if(service == null)
+                return false;
+
+           service.Show(content);
+            return true;
+        }
         /// <summary>
         /// Инициирует пользовательский запрос
         /// на подтверждение операции в модели
@@ -163,7 +166,6 @@ namespace ASMC.Core.ViewModel
                     return null;
             }
         }
-
         /// <summary>
         /// Вызывает событие <see cref="Initialized"/>.
         /// </summary>
