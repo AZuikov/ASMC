@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using AP.Utils.Data;
+using ASMC.Core.Interface;
 using DevExpress.Mvvm;
 
 namespace ASMC.Core.ViewModel
@@ -18,7 +21,9 @@ namespace ASMC.Core.ViewModel
         private IDataProvider _dataProvider;
 
         private readonly object _syncRoot = new object();
-        private readonly WeakEvent<EventHandler, EventArgs> _dataProviderChanged = new WeakEvent<EventHandler, EventArgs>();
+
+        private readonly WeakEvent<EventHandler, EventArgs> _dataProviderChanged =
+            new WeakEvent<EventHandler, EventArgs>();
 
         #endregion
 
@@ -58,9 +63,9 @@ namespace ASMC.Core.ViewModel
             get => _isBusy;
             protected set
             {
-                lock(_syncRoot)
+                lock (_syncRoot)
                 {
-                    if(SetProperty(ref _isBusy, value, nameof(IsBusy)))
+                    if (SetProperty(ref _isBusy, value, nameof(IsBusy)))
                         CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -85,7 +90,7 @@ namespace ASMC.Core.ViewModel
         /// </summary>
         public void Initialize()
         {
-            if(_isInitialized)
+            if (_isInitialized)
                 return;
 
             IsInitialized = true;
@@ -106,57 +111,61 @@ namespace ASMC.Core.ViewModel
         protected bool Alert(Exception e, IMessageBoxService messageService = null)
         {
             var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return false;
 
             var msg = e.Message;
-            if(e.InnerException != null)
+            if (e.InnerException != null)
                 msg += Environment.NewLine + e.InnerException.Message;
 
             service.Show(
                 msg,
-               "Ошибка",
+                "Ошибка",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             return true;
         }
 
-        protected bool Form( object content)
+        protected bool Form(object content)
         {
             var service = GetService<IWindowService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return false;
 
-           service.Show(content);
+            service.Show(content);
             return true;
         }
+
         /// <summary>
         /// Инициирует пользовательский запрос
         /// на подтверждение операции в модели
         /// представления.
         /// </summary>
         /// <param name="message">Строка, содержащая текст
-        /// выполняемой операции для пользователя.</param>
-        /// <param name="allowsCancel">Задает состояние
-        /// возможности выбора опции Отмена.</param>
+        ///     выполняемой операции для пользователя.</param>
+        /// <param name="defaultResult">Задает кнопку на которую по умолчанию устанавливается фокус</param>
         /// <param name="criticalState">Задает состояние
-        /// критичного решения.</param>
+        ///     критичного решения.</param>
+        /// <param name="allowsCancel">Задает состояние
+        ///     возможности выбора опции Отмена.</param>
         /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>, отвечающий за
-        /// вывод сообщений.</param>
-        protected bool? Confirm(string message, bool allowsCancel = true, bool criticalState = false, IMessageBoxService messageService = null)
+        ///     <see cref="IMessageBoxService"/>, отвечающий за
+        ///     вывод сообщений.</param>
+        protected bool? Confirm(string message, bool criticalState = false,
+            MessageBoxResult defaultResult = MessageBoxResult.No, bool allowsCancel = false,
+            IMessageBoxService messageService = null)
         {
             var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return true;
 
             var result = service.Show(
                 message,
-               "Вопрос",
+                "Вопрос",
                 allowsCancel ? MessageBoxButton.YesNoCancel : MessageBoxButton.YesNo,
-                criticalState ? MessageBoxImage.Warning : MessageBoxImage.Asterisk);
+                criticalState ? MessageBoxImage.Warning : MessageBoxImage.Asterisk, defaultResult);
 
-            switch(result)
+            switch (result)
             {
                 case MessageBoxResult.Yes:
                     return true;
@@ -166,6 +175,31 @@ namespace ASMC.Core.ViewModel
                     return null;
             }
         }
+
+        /// <summary>
+        /// Инициирует запуск задачи
+        /// и запускает отображение выполнения процеса 
+        /// представления.е
+        /// </summary>
+        /// <param name="message">Строка, содержащая текст сообщения.</param>
+        /// <param name="caption"></param>
+        /// <param name="taskToRun"></param>
+        /// <param name="tokenSource">Задает состояние
+        /// возможности выбора источника Отмена.</param>
+        /// <param name="messageService">>Сервис
+        /// <see cref="IProgressService"/>, отвечающий за
+        /// отображение длительного процесса.</param> 
+        /// <returns>Возвращает истинно, если задача была завершена  иначе ложно.</returns>
+        protected bool StartTaskAndShowProgressService(string message, string caption, Task taskToRun,
+            CancellationTokenSource tokenSource = null, IProgressService messageService = null)
+        {
+            var service = messageService ?? GetService<IProgressService>(ServiceSearchMode.PreferLocal);
+            if (service == null)
+                return false;
+            service.Show(message, caption, taskToRun, tokenSource);
+            return true;
+        }
+
         /// <summary>
         /// Вызывает событие <see cref="Initialized"/>.
         /// </summary>
@@ -187,7 +221,7 @@ namespace ASMC.Core.ViewModel
         /// <inheritdoc />
         protected override void OnParentViewModelChanged(object parentViewModel)
         {
-            if(parentViewModel is BaseViewModel baseViewModel)
+            if (parentViewModel is BaseViewModel baseViewModel)
             {
                 UpdateDataProvider(baseViewModel);
                 baseViewModel.DataProviderChanged += ParentDataProviderChanged;
@@ -203,8 +237,8 @@ namespace ASMC.Core.ViewModel
 
         private void UpdateDataProvider(BaseViewModel baseViewModel)
         {
-            if(baseViewModel != null)
-                DataProvider = (IDataProvider)baseViewModel.DataProvider?.Clone();
+            if (baseViewModel != null)
+                DataProvider = (IDataProvider) baseViewModel.DataProvider?.Clone();
         }
 
         #endregion

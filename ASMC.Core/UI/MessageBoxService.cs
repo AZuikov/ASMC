@@ -2,6 +2,7 @@
 using System.Windows;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
+using DevExpress.XtraEditors.ButtonPanel;
 
 namespace ASMC.Core.UI
 {
