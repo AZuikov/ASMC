@@ -134,7 +134,7 @@ namespace ASMC.Core.UI
             if(currentProgress <= 0)
                 return timeString;
 
-            var duration = TimeSpan.FromMilliseconds(_sw.ElapsedMilliseconds / currentProgress * (100 - currentProgress));
+            var duration = TimeSpan.FromMilliseconds((double)_sw.ElapsedMilliseconds / currentProgress * (100 - currentProgress));
 
             if (duration.Hours > 0)
                 timeString = duration.Hours+":" + duration.Minutes;
