@@ -1,5 +1,8 @@
 ﻿using System.Windows;
+using ASMC.Core.UI;
 using ASMC.View;
+using ASMC.ViewModel;
+using DevExpress.Mvvm;
 
 namespace ASMC
 {
@@ -26,11 +29,8 @@ namespace ASMC
         /// </summary>
         private void InvokeMainWindow()
         {
-            var mainWindow = new MainWindow()
-            {
-                DataContext = new LoginWindow(),
-            };
-            mainWindow.Show();
+            var service = new WindowService();  
+            service.Show(new LoginWindow().GetType().Name, new MainViewModel(), null, this);
         }
 
     }

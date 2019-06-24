@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
@@ -7,6 +8,8 @@ namespace ASMC.Data.Model.Metr
     /// справочник "Персон"
     /// </summary>
     [Table("PRSN")]
+    [Procedure("dbo.up_gr_PRSNSelect_dk", Operation =  StoredProcedureOp.SelectMany)]
+    [Procedure("dbo.up_gr_PRSNSelect_dk", KeyName = "@fltr", KeyFormat = "prsn.idprsn={0}")]
     public class Person
     {
         /// <summary>

@@ -62,12 +62,14 @@
     <Compile Include="Metr\CompletenessMi.cs" />
     <Compile Include="Metr\Design.cs" />
     <Compile Include="Metr\Ekz.cs" />
+    <Compile Include="Metr\EventMc.cs" />
     <Compile Include="Metr\Installationlocation.cs" />
     <Compile Include="Metr\NameTypeMi.cs" />
     <Compile Include="Metr\NormalState.cs" />
     <Compile Include="Metr\OrganizationsDivision.cs" />
     <Compile Include="Metr\Person.cs" />
     <Compile Include="Metr\Resolution250.cs" />
+    <Compile Include="Metr\ServicePlace.cs" />
     <Compile Include="Metr\Ssreum.cs" />
     <Compile Include="Metr\StandardSizeMi.cs" />
     <Compile Include="Metr\TechnicalCondition.cs" />

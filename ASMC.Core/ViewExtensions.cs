@@ -43,7 +43,6 @@ namespace ASMC.Core
         {
             //if (d.ReadLocalValue(SettingsProperty) == DependencyProperty.UnsetValue)
             //    d.SetCurrentValue(SettingsProperty, GetSettingsSelector(d)?.SelectSettings(d, d));
-
         }
     }
 }

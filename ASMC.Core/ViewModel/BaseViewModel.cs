@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using AP.Utils.Data;
 using ASMC.Core.Interface;
+using ASMC.Core.UI;
 using DevExpress.Mvvm;
+using NLog;
 
 namespace ASMC.Core.ViewModel
 {
@@ -25,6 +30,7 @@ namespace ASMC.Core.ViewModel
         private readonly WeakEvent<EventHandler, EventArgs> _dataProviderChanged =
             new WeakEvent<EventHandler, EventArgs>();
 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         /// <summary>
@@ -90,9 +96,9 @@ namespace ASMC.Core.ViewModel
         /// </summary>
         public void Initialize()
         {
+            Logger.Debug("dsadad");
             if (_isInitialized)
                 return;
-
             IsInitialized = true;
             OnInitialized();
         }
@@ -114,10 +120,13 @@ namespace ASMC.Core.ViewModel
             if (service == null)
                 return false;
 
+            var metod = e.TargetSite.Name;
+            var _class = e.TargetSite.DeclaringType?.Assembly.FullName;
             var msg = e.Message;
             if (e.InnerException != null)
                 msg += Environment.NewLine + e.InnerException.Message;
-
+            msg += Environment.NewLine + $"Сборка: {_class}. Метод: {metod}";
+            Logger.Error(e);
             service.Show(
                 msg,
                 "Ошибка",
@@ -125,14 +134,36 @@ namespace ASMC.Core.ViewModel
                 MessageBoxImage.Error);
             return true;
         }
-
-        protected bool Form(object content)
+        
+        /// <summary>
+        /// Инициализирует сервис и отображает окно
+        /// </summary>
+        /// <param name="view">Принимает наименования представления View(Page)</param>
+        /// <param name="content">Принимает объект контента ViewModel</param>
+        /// <param name="key">Принимает имя формы, по умолчению имеет значение NULL</param>
+        /// <param name="windowService">Сервис <see cref="IWindowService"/>, отвечающий за формирование окна.</param>
+        protected bool FormShow(string view, object content, string key = null, IWindowService windowService = null)
         {
-            var service = GetService<IWindowService>(ServiceSearchMode.PreferLocal);
+            var service = windowService ?? GetService<IWindowService>(key, ServiceSearchMode.PreferLocal);
             if (service == null)
                 return false;
-
-            service.Show(content);
+            service.Show(view, null, this);
+            return true;
+        }
+        /// <summary>
+        /// Закрывает окно 
+        /// </summary>
+        /// <param name="key">Принимает имя формы, по умолчению имеет значение NULL</param>  
+        /// <param name="windowService">Сервис <see cref="IWindowService"/>, отвечающий за формирование окна.</param>
+        protected bool FormClosed(string key = null, IWindowService windowService = null)
+        {
+            var service = windowService ?? GetService<IWindowService>(key, ServiceSearchMode.PreferLocal);
+            if(service == null)
+                return false;
+            if(service.IsWindowAlive)
+            {
+                service.Close();
+            }
             return true;
         }
 
@@ -175,7 +206,23 @@ namespace ASMC.Core.ViewModel
                     return null;
             }
         }
-
+        /// <summary>
+        /// Инициирует пользовательское предупреждение
+        /// </summary>
+        /// <param name="message">Строка, содержащая текст
+        ///     предупреждения для пользователя.</param>
+        /// <param name="messageService">Сервис
+        ///     <see cref="IMessageBoxService"/>, отвечающий за
+        ///     вывод сообщений.</param>
+        /// <returns></returns>
+        protected bool Warning(string message, IMessageBoxService messageService = null)
+        {
+            var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
+            if(service == null)
+                return false; 
+            service.Show(message,"Предупреждение.", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return true;
+        }
         /// <summary>
         /// Инициирует запуск задачи
         /// и запускает отображение выполнения процеса 
