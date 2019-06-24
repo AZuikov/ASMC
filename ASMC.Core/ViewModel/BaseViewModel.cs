@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -119,16 +120,24 @@ namespace ASMC.Core.ViewModel
             var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
             if (service == null)
                 return false;
-
-            var metod = e.TargetSite.Name;
-            var _class = e.TargetSite.DeclaringType?.Assembly.FullName;
-            var msg = e.Message;
+            var msg = new StringBuilder();
+            msg.AppendLine(e.Message);
+            if (e.TargetSite!=null)
+            {
+                var metod = e.TargetSite.Name;
+                var _class = e.TargetSite.ReflectedType?.Name;
+                var dll = e.TargetSite.DeclaringType?.Assembly.FullName;
+                msg.AppendLine($"Сборка: {dll}");
+                msg.AppendLine($"Класс: {_class}");
+                msg.AppendLine($"Метод: {metod}");
+            }
+           
             if (e.InnerException != null)
-                msg += Environment.NewLine + e.InnerException.Message;
-            msg += Environment.NewLine + $"Сборка: {_class}. Метод: {metod}";
+                msg.AppendLine(e.InnerException.Message);
+           
             Logger.Error(e);
             service.Show(
-                msg,
+                msg.ToString(),
                 "Ошибка",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

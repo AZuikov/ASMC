@@ -17,9 +17,12 @@ namespace ASMC.Data.Model.Metr
 
         /// <summary>
         /// № паспорта
-        /// </summary>
+        /// </summary>                  
+        [ForeignKey(nameof(Ekz))]
         [Column("IDEKZ", TypeName = "int")]
         public int PassportId { get; set; }
+
+        public Ekz Ekz { get; set; }
 
         /// <summary>
         ///  Место установки
