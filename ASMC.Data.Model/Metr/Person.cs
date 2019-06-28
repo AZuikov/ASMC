@@ -1,69 +1,78 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    /// справочник "Персон"
+    /// Сущность персоны.
     /// </summary>
     [Table("PRSN")]
-    [Procedure("dbo.up_gr_PRSNSelect_dk", Operation =  StoredProcedureOp.SelectMany)]
-    [Procedure("dbo.up_gr_PRSNSelect_dk", KeyName = "@fltr", KeyFormat = "prsn.idprsn={0}")]
+    [StoredProcedure("dbo.up_gr_PRSNSelect_dk", Operation =  StoredProcedureOp.SelectMany)]
+    [StoredProcedure("dbo.up_gr_PRSNSelect_dk", KeyName = "@fltr", KeyFormat = "prsn.idprsn={0}")]
     public class Person
     {
         /// <summary>
-        /// Индификатор
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
+        [Browsable(false)]
         [Column("IDPRSN", TypeName = "int")]
-        public int PersonsId { get; private set;}
+        public int? Id { get; set;}
         /// <summary>
-        /// ФИО
+        /// Возвращает или задает ФИО.
         /// </summary>
         [Required]
-        [Column("PRFIO", TypeName = "varchar(max)")]
+        [Column("PRFIO", TypeName = "varchar(35)")]
         public string FullName { get; set; }
         /// <summary>
-        /// Фамилия
+        /// Возвращает или задает фамилию.
         /// </summary>
-        [Column("PRFM", TypeName = "varchar(max)")]
+        [Column("PRFM", TypeName = "varchar(30)")]
         public string Surname { get; set; }
         /// <summary>
-        /// Имя
+        /// Возвращает или задает имя.
         /// </summary>
-        [Column("PRNM", TypeName = "varchar(max)")]
+        [Column("PRNM", TypeName = "varchar(25)")]
         public string Name { get; set; }
         /// <summary>
-        /// Отчество
+        /// Возвращает или задает отчество.
         /// </summary>
-        [Column("PROT", TypeName = "varchar(max)")]
+        [Column("PROT", TypeName = "varchar(25)")]
         public string MiddleName { get; set; }
         /// <summary>
-        /// Телефон
+        /// Возвращает или задает телефон.
         /// </summary>
-        [Column("TEL", TypeName = "varchar(max)")]
+        [Column("TEL", TypeName = "varchar(50)")]
         public string Phone { get; set; }
         /// <summary>
-        /// E-mail
+        /// Возвращает или задает e-mail.
         /// </summary>
-        [Column("EMAIL", TypeName = "varchar(max)")]
-        public string Email{ get; set; }
+        [Column("EMAIL", TypeName = "varchar(50)")]
+        public string Email{ get; set;
+        }
         /// <summary>
-        /// Дополнительный идентификатор персоны
+        /// Возвращает или задает дополнительные сведения о персоне.
         /// </summary>
-        [Column("PRDPID", TypeName = "varchar(max)")]
-        public string AdditionalPersonIdentifier{ get; set; }
+        [Column("DSPRSN", TypeName = "varchar(2000)")]
+        public string AdditionalInformationAboutPerson
+        {
+            get; set;
+        }
         /// <summary>
-        /// Дополнительные сведения о персоне
-        /// </summary>
-        [Column("DSPRSN", TypeName = "varchar(max)")]
-        public string AdditionalInformationAboutPerson{ get; set; }
-        /// <summary>
-        /// Глобальный идентификатор персоны
+        /// Возвращает или задает глобальный идентификатор персоны.
         /// </summary>
         /// 
-        [Column("GUIDPRSN", TypeName = "varchar(max)")]
-        public string GUID { get; set; }
+        [Column("GUIDPRSN", TypeName = "varchar(50)")]
+        public string Guid { get; set; }
+        /// <summary>
+        /// Возвращает или задает дополнительный идентификатор персоны.
+        /// </summary>
+        [Column("PRDPID", TypeName = "varchar(50)")]
+        public string AdditionalPersonIdentifier
+        {
+            get; set;
+        }
     }
 }

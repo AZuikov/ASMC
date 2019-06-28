@@ -17,22 +17,18 @@ namespace AP.Utils.Data
         /// Задает операцию вставки записи.
         /// </summary>
         Insert,
-
         /// <summary>
         /// Задает операцию обновления записи.
         /// </summary>
         Update,
-
         /// <summary>
         /// Задает операцию удаления записи.
         /// </summary>
         Delete,
-
         /// <summary>
         /// Задает операцию выборки записи.
         /// </summary>
         Select,
-
         /// <summary>
         /// Задает операцию выборки множества записей.
         /// </summary>
@@ -45,12 +41,15 @@ namespace AP.Utils.Data
     /// проецируемой сущности.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class ProcedureAttribute : Attribute
+    public class StoredProcedureAttribute : Attribute
     {
         /// <summary>
         /// Возвращает имя хранимой процедуры.
         /// </summary>
-        public string Name { get; }
+        public string Name
+        {
+            get;
+        }
 
         /// <summary>
         /// Возвращает или задает операцию,
@@ -64,7 +63,10 @@ namespace AP.Utils.Data
         /// уникальное идентификационное
         /// свойство сущности.
         /// </summary>
-        public string KeyName { get; set; }
+        public string KeyName
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Возвращает или задает строку
@@ -73,15 +75,18 @@ namespace AP.Utils.Data
         /// идентификационного свойства
         /// сущности.
         /// </summary>
-        public string KeyFormat { get; set; }
+        public string KeyFormat
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Инициализирует новый экземпляр класса
-        /// <see cref="ProcedureAttribute"/>.
+        /// <see cref="StoredProcedureAttribute"/>.
         /// </summary>
         /// <param name="procedureName">Имя хранимой
         /// процедуры в базе данных.</param>
-        public ProcedureAttribute(string procedureName)
+        public StoredProcedureAttribute(string procedureName)
         {
             Name = procedureName ?? throw new ArgumentNullException(nameof(procedureName));
         }

@@ -89,6 +89,7 @@
     <Compile Include="UI\ProgressService.cs" />
     <Compile Include="UI\WindowAttachedProperties.cs" />
     <Compile Include="UI\WindowService.cs" />
+    <Compile Include="ValidationRules\Rules.cs" />
     <Compile Include="ViewExtensions.cs" />
     <Compile Include="ViewModel\BaseSelectorViewModel.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />

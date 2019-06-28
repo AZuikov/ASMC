@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Runtime.Remoting.Channels;
+using System.Threading;
 using System.Windows;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
@@ -8,12 +10,29 @@ namespace ASMC.Core.UI
 {
     public class MessageBoxService : ServiceBase, IMessageBoxService
     {
-        public MessageResult Show(string messageBoxText, string caption, MessageButton button, MessageIcon icon, MessageResult defaultResult)
+        public MessageResult Show(string messageBoxText, string caption, MessageButton button, MessageIcon icon,
+            MessageResult defaultResult)
         {
+            Window owner = null;
             if (!CheckAccess())
-                return MessageResult.None;
+            {
+                // return MessageResult.None; 
+                Dispatcher.InvokeAsync(() =>
+                    owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive));
+            }
+            else
+            {
+                try
+                {
+                    owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive);
+                }
+                catch
+            {
+                Dispatcher.InvokeAsync(() =>
+                    owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive));
+            }
+        }
 
-            var owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive);
             var title = caption ?? owner?.Title;
 
             return (owner != null

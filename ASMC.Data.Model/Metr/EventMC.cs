@@ -1,219 +1,231 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
-    [Procedure("dbo.up_gr_EkzMkSelect", Operation = StoredProcedureOp.SelectMany)]
+    /// <summary>
+    /// Сущность события МК.
+    /// </summary>
+    [Table("EKZMK")]
+    [StoredProcedure("dbo.up_gr_EkzMkSelect", Operation = StoredProcedureOp.SelectMany)]
     public class EventMc
     {
         /// <summary>
-        /// № карточки МК
+        /// Возвращает или задает ключ сущности.
         /// </summary>  
         [Key]
         [Column("IDEKZMK", TypeName = "int")]
-        public int EventMcId { get; private set; }
+        public int? Id { get; set; }
 
         /// <summary>
-        /// № паспорта
-        /// </summary>                  
-        [ForeignKey(nameof(Ekz))]
-        [Column("IDEKZ", TypeName = "int")]
-        public int PassportId { get; set; }
-
+        /// Возвращает или задает № паспорта <see cref="Metr.Ekz"/>.
+        /// </summary>              
+        [ForeignKey("IDEKZ")]
         public Ekz Ekz { get; set; }
 
         /// <summary>
-        ///  Место установки
+        /// Возвращает или задает место установки <see cref="Metr.InstallationLocation"/>.
         /// </summary> 
-        [ForeignKey(nameof(Installationlocation))]
-        [Column("IDSPMU", TypeName = "int")]
-        public int InstallationlocationId { get; set; }
-
-        public Installationlocation Installationlocation { get; set; }
-
-        [Column("IDGRSI", TypeName = "int")] public int id1 { get; set; }
-
-        [Column("IDKSPRL", TypeName = "int")] public int id2 { get; set; }
-        [Column("IDSPVDMK", TypeName = "int")] public int id3 { get; set; }
+        [ForeignKey("IDSPMU")]
+        public InstallationLocation InstallationLocation { get; set; }
 
         /// <summary>
-        /// Цикл МК
+        /// Возвращает или задает группу СИ <see cref="Metr.GroupMi"/>.
+        /// </summary>
+        [ForeignKey("IDGRSI")]
+        public GroupMi GroupsMi { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает реализацию КСП <see cref="Metr.KspRealization"/>.
+        /// </summary>
+        [ForeignKey("IDKSPRL")]
+        public KspRealization KspRealization { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает вид очередного МК <see cref="Metr.TypeMc"/>.
+        /// </summary>
+        [ForeignKey("IDSPVDMK")]
+        public TypeMc TypeMc { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает цикл МК <see cref="Metr.TypeCycleMc"/>.
+        ///  </summary>
+        [ForeignKey("IDSPVDMC")]
+        public TypeCycleMc TypeCycleMc { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает пов./ калибр.организацию / подразделение, факт <see cref="Metr.Organization"/>.
+        ///  </summary>          
+        [ForeignKey("IDFRPD")]
+        public Organization OrganizationPerformingWork { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает место МК <see cref="Metr.ServicePlace"/>.
         ///  </summary> 
-        [Column("IDSPVDMC", TypeName = "int")]
-        public int id4 { get; set; }
-
-        /// <summary>
-        /// Пов./ калибр.организация / подразделение, факт
-        ///  </summary>                   
-        [ForeignKey(nameof(OrgPerformingWork))]
-        [Column("IDFRPD", TypeName = "int")]
-        public int OrgPerformingWorkId { get; set; }
-
-        public OrganizationsDivision OrgPerformingWork { get; set; }
-
-        /// <summary>
-        ///Место МК
-        ///  </summary> 
-        [ForeignKey(nameof(ServicePlace))]
-        [Column("IDSPMPOB", TypeName = "int")]
-        public int ServicePlaceId { get; set; }
-
+        [ForeignKey("IDSPMPOB")]
         public ServicePlace ServicePlace { get; set; }
 
         /// <summary>
-        /// Поверитель
+        /// Возвращает или задает поверителя <see cref="Metr.Person"/>.
         /// </summary> 
-        [ForeignKey(nameof(Virefier))]
-        [Column("IDPRSN", TypeName = "int")]
-        public int VirefierId { get; set; }
-
-        public Person Virefier { get; set; }
-
-        [Column("IDSPKMMK", TypeName = "int")] public int id5 { get; set; }
-        [Column("IDEKZRM", TypeName = "int")] public int id6 { get; set; }
+        [ForeignKey("IDPRSN")]
+        public Person PersonExecutor { get; set; }
 
         /// <summary>
-        /// Вид клейма
+        /// Возвращает или задает комплексность МК <see cref="Metr.CompletenessMi"/>.
+        /// </summary>
+        [ForeignKey("IDSPKMMK")]
+        public CompletenessMi CompletenessMi { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает событие ремонта <see cref="Metr.EventRm"/>.
+        /// </summary> 
+        [ForeignKey("IDEKZRM")]
+        public EventRm EventRm { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает вид клейма <see cref="Metr.Stamp"/>.
         ///  </summary> 
         [Column("IDSPVDKL", TypeName = "int")]
-        public int id7 { get; set; }
+        [ForeignKey("IDSPVDKL")]
+        public Stamp Stamp { get; set; }
 
         /// <summary>
-        ///Получил
-        ///  </summary>   
-        [ForeignKey(nameof(Recipient))]
-        [Column("IDPRSNVD", TypeName = "int")]
-        public int RecipientId { get; set; }
-
-        public Person Recipient { get; set; }
-
-        [Column("IDEKZTO", TypeName = "int")] public int id8 { get; set; }
-        [Column("IDEKZOT", TypeName = "int")] public int id9 { get; set; }
+        /// Возвращает или задает получателя  <see cref="Metr.Person"/>.
+        ///  </summary> 
+        [ForeignKey("IDPRSNVD")]
+        public Person PersonRecipient { get; set; }
 
         /// <summary>
-        /// Номер заявки на МК
+        /// Возвращает или задает событие ТО <see cref="Metr.EventMa"/>.
+        /// </summary>  
+        [ForeignKey("IDEKZTO")]
+        public EventMa EventMa
+        { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает собитие отказа <see cref="Metr.EventFault"/>.
+        ///  </summary> 
+        [ForeignKey("IDEKZOT")]
+        public EventFault EventFault
+        { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает номер заявки на МК.
         ///  </summary> 
         [Column("NNZVPV", TypeName = "int")]
-        public int id10 { get; set; }
+        public int? NumberRequest { get; set; }
 
         /// <summary>
-        ///  Шифр клейма
+        /// Возвращает или задает шифр клейма.
         ///  </summary> 
         [Column("SHFKL", TypeName = "varchar(20)")]
-        public int id11 { get; set; }
+        public string StampCipher { get; set; }
 
         /// <summary>
-        ///  Номер наклейки
+        /// Возвращает или задает номер наклейки.
         ///  </summary> 
         [Column("NNNKL", TypeName = "int")]
-        public int id12 { get; set; }
+        public int? StickerNumber { get; set; }
 
         /// <summary>
-        /// Период МК, мес.
+        /// Возвращает или задает период МК, мес.
         ///  </summary> 
         [Column("PRMK", TypeName = "int")]
-        public int IntertestingInterval { get; set; }
+        public int? IntertestingInterval { get; set; }
 
         /// <summary>
-        /// Фактическая дата МК
+        /// Возвращает или задает дату МК.
         ///  </summary> 
         [Column("DTMKFK", TypeName = "datetime")]
-        public DateTime DateMcFk { get; set; }
+        public DateTime Date { get; set; }
 
         /// <summary>
-        /// Плановая дата
+        /// Возвращает или задает плановую дату МК.
         ///  </summary> 
         [Column("DTMKPL", TypeName = "datetime")]
-        public DateTime DateMcPlanned { get; set; }
+        public DateTime DatePlanned { get; set; }
 
         /// <summary>
-        /// Дата приемки
+        /// Возвращает или задает дату приемки.
         ///  </summary> 
         [Column("DTPRM", TypeName = "datetime")]
         public DateTime DateAcceptance { get; set; }
 
         /// <summary>
-        /// Дата выдачи
+        /// Возвращает или задает дату выдачи.
         ///  </summary> 
         [Column("DTVDM", TypeName = "datetime")]
         public DateTime DateIssue { get; set; }
 
         /// <summary>
-        /// Годен: да / нет
+        /// Возвращает или задает результат МК (Годен: да / нет).
         ///  </summary> 
         [Column("GDN", TypeName = "bit")]
-        public bool Fitness { get; set; }
+        public bool? Fitness { get; set; }
 
         /// <summary>
-        /// Позиция в цикле
+        /// Возвращает или задает позицию в цикле.
         ///  </summary> 
         [Column("PZMC", TypeName = "int")]
-        public int id13 { get; set; }
+        public int? PositionQueue { get; set; }
 
         /// <summary>
-        /// Стоимость
+        /// Возвращает или задает стоимость.
         ///  </summary> 
         [Column("STMK", TypeName = "money")]
-        public decimal Cost { get; set; }
+        public decimal? Cost { get; set; }
 
         /// <summary>
-        /// Стоимость доп.
+        /// Возвращает или задает дополнительную стоимость.
         ///  </summary> 
         [Column("STMKDP", TypeName = "money")]
-        public decimal CostAdditional { get; set; }
+        public decimal? CostAdditional { get; set; }
 
         /// <summary>
-        ///  Наценка за срочность
+        /// Возвращает или задает наценку за срочность.
         ///  </summary> 
         [Column("NCSRMK", TypeName = "money")]
-        public decimal CostUrgency { get; set; }
+        public decimal? CostUrgency { get; set; }
 
         /// <summary>
-        /// Сдал
+        /// Возвращает или задает сдавшего  <see cref="Metr.Person"/>.
         ///  </summary>
-        [ForeignKey(nameof(PersonPassed))]
-        [Column("idprsnsd", TypeName = "int")]
-        public int PersonPassedId { get; set; }
-
+        [ForeignKey("idprsnsd")]
         public Person PersonPassed { get; set; }
 
         /// <summary>
-        /// Принял
-        ///  </summary>    
-        [ForeignKey(nameof(PersonAccepted))]
-        [Column("idprsnpr", TypeName = "int")]
-        public int PersonAcceptedId { get; set; }
-
+        /// Возвращает или задает принявшего  <see cref="Metr.Person"/>.
+        ///  </summary> 
+        [ForeignKey("idprsnpr")]
         public Person PersonAccepted { get; set; }
 
         /// <summary>
-        /// Выдал
-        ///  </summary>                  
-        [ForeignKey(nameof(GiveOutPerson))]
-        [Column("idprsnvy", TypeName = "int")]
-        public int GiveOutPersonId { get; set; }
-
-        public Person GiveOutPerson { get; set; }
+        /// Возвращает или задает выдавшего  <see cref="Metr.Person"/>.
+        ///  </summary> 
+        [ForeignKey("idprsnvy")]
+        public Person PersonGiveOut { get; set; }
 
         /// <summary>
-        /// Техническое состояние в момент приёмки
-        ///  </summary> 
-        [Column("idsptsmp", TypeName = "int")]
-        [ForeignKey(nameof(SnapshotTechnicalCondition))]
-        public int SnapshotTechnicalConditionId { get; set; }
-
-        public TechnicalCondition SnapshotTechnicalCondition { get; set; }
+        /// Возвращает или задает техническое состояние в момент приёмки <see cref="Metr.ConditionTechnical"/>.
+        ///  </summary>
+        [ForeignKey("idsptsmp")]
+        public ConditionTechnical SnapshotConditionTechnical { get; set; }
 
         /// <summary>
-        ///  Штатное состояние в момент приёмки
-        ///  </summary> 
-        [Column("idspssmp", TypeName = "int")]
-        [ForeignKey(nameof(SnapshotNormalState))]
-        public int SnapshotNormalStateId { get; set; }
+        /// Возвращает или задает штатное состояние в момент приёмки  <see cref="Metr.ConditionStandart"/>.
+        ///  </summary>
+        [ForeignKey("idspssmp")]
+        public ConditionStandart SnapshotConditionStandart { get; set; }
 
-        public NormalState SnapshotNormalState { get; set; }
-        // [Column("DTMAXM", TypeName = "")]
+        /// <summary>
+        /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).
+        /// </summary>
+        [Browsable(false)]
+        [Column("DTMAXM", TypeName = "int")]
+        public int? _Filed { get; set; }
     }
 }

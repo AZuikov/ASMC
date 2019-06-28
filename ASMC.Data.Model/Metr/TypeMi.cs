@@ -1,101 +1,90 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    /// Тип СИ
+    /// Сущность вида СИ
     /// </summary>
-    [Table("TIPS")] 
+    [Table("TIPS")]
     public class TypeMi
     {
-        #region Properties
+      
+
         /// <summary>
-        /// Id типа СИ
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
+        [Browsable(false)]
         [Column("IDTIPS", TypeName = "int")]
-        public int TypeMiId { get; private set;  }
+        public int? Id { get; set; }
         /// <summary>
-        ///  Id Код области измерения СИ
+        /// Возвращает или задает код области измерения СИ <see cref="Metr.MeasuringType"/>.
         /// </summary>
-        [ForeignKey(nameof(CodeMa))]
-        [Column("IDSPOI", TypeName = "int")]
-        public int CodeMaId { get; set; }
+        [ForeignKey("IDSPOI")]
+        public MeasuringType MeasuringType { get; set; }
         /// <summary>
-        /// Код области измерения СИ
-        /// </summary>
-        public CodeMa CodeMa { get; set; }
+        /// Возвращает или задает наименование типа СИ <see cref="Metr.NameTypeMi"/>.
+        /// </summary>      
+        [ForeignKey("IDSPNMTP")]
+        public NameTypeMi NameTypeMi { get; set; }
+
         /// <summary>
-        /// Id Наименование типа СИ
+        /// Возвращает или задает категорию СИ <see cref="Metr.CategoryMi"/>.
         /// </summary>
-        [ForeignKey(nameof(NameType))]
-        [Column("IDSPNMTP", TypeName = "int")]
-        public int NameTypeId { get; set; }
-        /// <summary>
-        /// Наименование типа СИ
-        /// </summary>
-        public NameTypeMi NameType { get; set; }
-        /// <summary>
-        /// Id Категория СИ
-        /// </summary>
-        [ForeignKey(nameof(Сategory))]
         [Required]
-        [Column("IDSPKT", TypeName = "int")]
-        public int СategoryMiId { get; set; }
+        [ForeignKey("IDSPKT")]
+        public CategoryMi CategoryMi
+        { get; set;
+        }
         /// <summary>
-        /// Категория СИ
+        /// Возвращает или задает конструктивное исполнение <see cref="Metr.Design"/>.
         /// </summary>
-        public СategoryMi Сategory { get; set; }
-        /// <summary>
-        /// Id Конструктивное исполнение
-        /// </summary>
-        [ForeignKey(nameof(Design))]
-        [Column("IDSPKI", TypeName = "int")]
-        public int DesignId { get; set; }
-        /// <summary>
-        /// Конструктивное исполнение
-        /// </summary>
+        [ForeignKey("IDSPKI")]
         public Design Design { get; set; }
+
         /// <summary>
-        /// Тип(обоначение) СИ
+        /// Возвращает или задает тип(обоначение).
         /// </summary>
         [Required]
-        [Column("TP", TypeName = "nvarchar(max)")]
+        [Column("TP", TypeName = "nvarchar(35)")]
         public string Type { get; set; }
+
         /// <summary>
-        /// Срок службы
+        /// Возвращает или задает срок службы.
         /// </summary>
         [Column("SRSL", TypeName = "int")]
-        public int LifeTime { get; set; }
+        public int? LifeTime { get; set; }
+
         /// <summary>
-        /// Межповерочный интервал
+        /// Возвращает или задает межповерочный интервал.
         /// </summary>
         [Column("PRMKGR", TypeName = "int")]
-        public int IntertestingInterval { get; set; }
+        public int? IntertestingInterval { get; set; }
+
         /// <summary>
-        /// Номер гасреестра типа
+        /// Возвращает или задает номер госреестра типа
         /// </summary>
-        [Column("NNTPGR", TypeName = "nvarchar(max)")]
+        [Column("NNTPGR", TypeName = "nvarchar(8)")]
         public string RegisterNumber { get; set; }
+
         /// <summary>
-        /// Код ВНИИМС типа
+        /// Возвращает или задает код ВНИИМС типа
         /// </summary>
-        [Column("KDTPVNMS", TypeName = "nvarchar(max)")]
-        public string VniimsCode { get; set; }
+        [Column("KDTPVNMS", TypeName = "int")]
+        public int? CodeTypeVniims { get; set; }
+
         /// <summary>
-        /// Автоматизированная информационная система «Метрконтроль». Уникальный общероссийский номер (штрих-код)
+        /// Возвращает или задает уникальный общероссийский номер (штрих-код) АИС.
         /// </summary>
-        [Column("KDKMETR", TypeName = "nvarchar(max)")]
-        public string AisMetrkontrol { get; set; }
+        [Column("KDKMETR", TypeName = "nvarchar(11)")]
+        public string Ais { get; set; }
+
         /// <summary>
-        /// Дополнительные сведения
+        /// Возвращает или задает дополнительные сведения.
         /// </summary>
         [Column("DSTP", TypeName = "text")]
         public string AddInformation { get; set; }
-
-
-        #endregion
-
     }
 }

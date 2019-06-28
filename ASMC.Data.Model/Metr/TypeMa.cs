@@ -5,26 +5,28 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    ///  Сущность конструктивного исполнения.
+    /// Сущность вида ТО
     /// </summary>
-    [Table("SPKI")]
-    public class Design
+    [Table("SPVDTO")]
+   public class TypeMa
     {
-        #region Properties
         /// <summary>
         /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
         [Browsable(false)]
-        [Column("IDSPKI", TypeName = "int")]
+        [Column("IDSPVDTO", TypeName = "int")]
         public int? Id { get; set; }
-        /// <summary>
-        /// Возвращает или задает наименование исполнения.
-        /// </summary>
-        [Required]
-        [Column("NMKI", TypeName = "nvarchar(30)")]
-        public string Name { get; set; }
-        #endregion
 
+        /// <summary>
+        /// Возвращает или задает вид ТО
+        /// </summary>
+        [Column("NMVDTO", TypeName = "varchar(50)")]
+        public string Name { get; set; }
+        /// <summary>
+        /// Возвращает или задает период ТО, мес.
+        /// </summary>
+        [Column("PRTO", TypeName = "int")]
+        public int? Periode { get; set; }
     }
 }

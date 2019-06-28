@@ -5,26 +5,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    ///  Сущность конструктивного исполнения.
+    /// Сущность вида цикла MK
     /// </summary>
-    [Table("SPKI")]
-    public class Design
+    [Table("SPVDMC")]
+   public class TypeCycleMc
     {
-        #region Properties
         /// <summary>
         /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
         [Browsable(false)]
-        [Column("IDSPKI", TypeName = "int")]
+        [Column("IDSPVDMC", TypeName = "int")]
         public int? Id { get; set; }
         /// <summary>
-        /// Возвращает или задает наименование исполнения.
+        /// Возвращает или задает наименование цикла МК
         /// </summary>
-        [Required]
-        [Column("NMKI", TypeName = "nvarchar(30)")]
+        [Column("NMVDMC", TypeName = "varchar(30)")]
         public string Name { get; set; }
-        #endregion
-
     }
 }

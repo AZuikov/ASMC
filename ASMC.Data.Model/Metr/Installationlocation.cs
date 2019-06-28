@@ -1,51 +1,56 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    /// Справочник "Мест установки"
+    ///  Сущность места установки.
     /// </summary>
     [Table("SPMU")]
-    public class Installationlocation
+    public class InstallationLocation
     {
         /// <summary>
-        /// Индификатор
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
+        [Browsable(false)]
         [Required]
         [Column("IDSPMU", TypeName = "int")]
-        public int InstallationlocationId{ get; private set;}
-        [Column("IDSPMUR", TypeName = "int")]
-        public int NONAME{ get; set; }
+        public int? Id{ get; set;}
         /// <summary>
-        /// Номер уровня
+        /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).
+        /// </summary>
+        [Column("IDSPMUR", TypeName = "int")]
+        public int? _Filed{ get; set; }
+        /// <summary>
+        /// Возвращает или задает номер уровня.
         /// </summary>
         [Required]
         [Column("NNUR", TypeName = "int")]
-        public int LevelNumber{ get; set; }
+        public int? LevelNumber{ get; set; }
         /// <summary>
-        /// Тип ветви
+        /// Возвращает или задает тип ветви (НЕ ЯСНО, ОТ КУДА ДАННЫЕ).
         /// </summary>
         [Required]
         [Column("TPVT", TypeName = "int")]
-        public int BranchType{ get; set; }
+        public int? TypeBranch{ get; set; }
         /// <summary>
-        /// Место установки
+        /// Возвращает или задает наименование места установки.
         /// </summary>
-        [Column("NMMU", TypeName = "varchar(max)")]
-        public string InstallationLocation { get; set; }
+        [Column("NMMU", TypeName = "varchar(50)")]
+        public string Name { get; set; }
         /// <summary>
-        /// Полное наименование места установки
-        /// </summary>
-        [Required]
-        [Column("NMMUP", TypeName = "varchar(max)")]
-        public string FullInstallationLocation { get; set; }
-        /// <summary>
-        /// Дополнительные сведения
+        /// Возвращает или задает полное наименование места установки.
         /// </summary>
         [Required]
-        [Column("DPSV", TypeName = "varchar(max)")]
+        [Column("NMMUP", TypeName = "varchar(80)")]
+        public string FullName { get; set; }
+        /// <summary>
+        /// Возвращает или задает дополнительные сведения.
+        /// </summary>
+        [Required]
+        [Column("DPSV", TypeName = "varchar(100)")]
         public string AdditionalInformation { get; set; }
     }
 }

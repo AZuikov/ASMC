@@ -1,78 +1,62 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASMC.Data.Model.Metr
-{ 
+{
     /// <summary>
-    /// Карточка типоразмера СИ
+    /// Сущность типоразмера СИ.
     /// </summary>
     [Table("TPRZ")]
     public class StandardSizeMi
     {
         #region Properties
         /// <summary>
-        /// Id
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
+        [Browsable(false)]
         [Column("IDTPRZ", TypeName = "int")]
-        public int StandardSizeMiId { get; private set;  }
+        public int? Id { get; set;  }
+
         /// <summary>
-        /// Id Тип СИ
+        /// Возвращает или задает тип СИ <see cref="Metr.TypeMi"/>.   
         /// </summary>
-        [ForeignKey(nameof(TypeMi))]
-        [Column("IDTIPS", TypeName = "int")]
-        public int TypeMiId { get; set; }
-        /// <summary>
-        /// Тип СИ
-        /// </summary>
+        [ForeignKey("IDTIPS")]
         public TypeMi TypeMi { get; set; }
         /// <summary>
-        /// Id Комплексность МК
+        /// Возвращает или задает комплексность МК <see cref="Metr.CompletenessMi"/>.
         /// </summary>
-        [ForeignKey(nameof(CompletenessMi))]
-        [Column("IDSPKMMK", TypeName = "int")]
-        public int CompletenessMiId { get; set; }
-        /// <summary>
-        /// Комплектность СИ
-        /// </summary>
+        [ForeignKey("IDSPKMMK")]
         public  CompletenessMi CompletenessMi { get; set; }
         /// <summary>
-        /// Диапазон
+        /// Возвращает или задает диапазон.
         /// </summary>
         [Required]
-        [Column("DPZN", TypeName = "varchar(max)")]
+        [Column("DPZN", TypeName = "varchar(50)")]
         public string Range { get; set; }
         /// <summary>
-        /// Характеристика точности
+        /// Возвращает или задает характеристику точности.
         /// </summary>
         [Required]
-        [Column("HRTC", TypeName = "varchar(max)")]
+        [Column("HRTC", TypeName = "varchar(40)")]
         public string Accuracy { get; set; }
         /// <summary>
-        /// Код ВНИИМС типа 
+        /// Возвращает или задает код ВНИИМС типа. 
         /// </summary>
-        [Column("KDTRVNMS", TypeName = "varchar(max)")]
-        public string VniimsCode { get; set; }
+        [Column("KDTRVNMS", TypeName = "int")]
+        public int? CodeTypeVniims
+        { get; set; }
         /// <summary>
-        /// Номер госреестра типоразмера
+        /// Возвращает или задает номер госреестра типоразмера.
         /// </summary>
-        [Column("NNGSRS", TypeName = "varchar(max)")]
+        [Column("NNGSRS", TypeName = "varchar(8)")]
         public string RegisterNumber { get; set; }
         /// <summary>
-        /// Служебный код
+        /// Возвращает или задает служебный код.
         /// </summary>
-        [Column("KDSL", TypeName = "varchar(max)")]
+        [Column("KDSL", TypeName = "varchar(10)")]
         public string ServiceСode { get; set; }
-
-
-
-
-       
-       
-       
-        
-      
-        
         #endregion
     }
 }

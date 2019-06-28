@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AP.Utils.Data
 {
-   /// <summary>
+    /// <summary>
     /// Представляет контекст
     /// данных сущности.
     /// </summary>
@@ -26,7 +26,10 @@ namespace AP.Utils.Data
         /// Возвращает или задает интерфейс
         /// доступа к источнику данных.
         /// </summary>
-        public IDataProvider DataProvider { get; set; }
+        public IDataProvider DataProvider
+        {
+            get; set;
+        }
 
         #endregion
 
@@ -44,13 +47,13 @@ namespace AP.Utils.Data
         #region Methods
 
         /// <inheritdoc />
-        public T[] LoadMany<T>(object param = null)
+        public T[] LoadMany<T>(object param = null) where T : new()
         {
             var t = typeof(T);
 
-            var proc = t.GetCustomAttributes<ProcedureAttribute>()
+            var proc = t.GetCustomAttributes<StoredProcedureAttribute>()
                 .FirstOrDefault(p => p.Operation == StoredProcedureOp.SelectMany)?.Name;
-            if (string.IsNullOrEmpty(proc))
+            if(string.IsNullOrEmpty(proc))
                 throw new InvalidOperationException(proc);
 
             try
@@ -65,23 +68,23 @@ namespace AP.Utils.Data
         }
 
         /// <inheritdoc />
-        public T LoadSingle<T>(object entityKey, object param = null)
+        public T LoadSingle<T>(object entityKey, object param = null) where T : new()
         {
-            return (T) Load(typeof(T), entityKey, param);
+            return (T)Load(typeof(T), entityKey, param);
         }
 
         /// <inheritdoc />
         public bool Load(object entity, object param = null)
         {
-            if (entity == null)
+            if(entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
             var key = GetEntityKey(entity, out var columnName);
-            if (string.IsNullOrEmpty(columnName))
+            if(string.IsNullOrEmpty(columnName))
                 throw new InvalidOperationException(entity.GetType().ToString());
 
             var src = Load(entity.GetType(), key, param);
-            if (src == null)
+            if(src == null)
                 return false;
 
             Copy(src, entity);
@@ -91,14 +94,16 @@ namespace AP.Utils.Data
         /// <inheritdoc />
         public void Save(object entity)
         {
-            if (entity == null)
+            if(entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
             var t = entity.GetType();
-            var proc = t.GetCustomAttributes<ProcedureAttribute>()
+            var proc = t.GetCustomAttributes<StoredProcedureAttribute>()
                 .FirstOrDefault(p => p.Operation == StoredProcedureOp.Update)?.Name;
-            if (string.IsNullOrEmpty(proc))
+            if(string.IsNullOrEmpty(proc))
                 throw new InvalidOperationException();
+
+            //var param = ListSqlParams(DataProvider, proc);
 
             throw new NotImplementedException();
         }
@@ -106,20 +111,20 @@ namespace AP.Utils.Data
         /// <inheritdoc />
         public void Delete(object entity)
         {
-            if (entity == null)
+            if(entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
             var t = entity.GetType();
-            var proc = t.GetCustomAttributes<ProcedureAttribute>()
+            var proc = t.GetCustomAttributes<StoredProcedureAttribute>()
                 .FirstOrDefault(p => p.Operation == StoredProcedureOp.Delete)?.Name;
-            if (string.IsNullOrEmpty(proc))
+            if(string.IsNullOrEmpty(proc))
                 throw new InvalidOperationException(t.ToString());
 
             var id = GetEntityKey(entity, out var columnName);
-            if (string.IsNullOrEmpty(columnName))
+            if(string.IsNullOrEmpty(columnName))
                 throw new InvalidOperationException(t.ToString());
 
-            if (id != null)
+            if(id != null)
                 DataProvider.ExecuteNonQuery(proc, true, DataProvider.GetParameter(columnName, id));
         }
 
@@ -127,18 +132,18 @@ namespace AP.Utils.Data
         public DataTable LoadData<T>(object param = null)
         {
             var t = typeof(T);
-            var proc = t.GetCustomAttributes<ProcedureAttribute>()
+            var proc = t.GetCustomAttributes<StoredProcedureAttribute>()
                 .FirstOrDefault(p => p.Operation == StoredProcedureOp.SelectMany)?.Name;
-            if (string.IsNullOrEmpty(proc))
+            if(string.IsNullOrEmpty(proc))
                 throw new InvalidOperationException(proc);
 
             var data = DataProvider.Execute(proc, true, GetSqlParameters(param));
-            if (data != null)
+            if(data != null)
             {
                 var prop = t.GetProperties().FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>() != null);
                 var key = prop?.GetCustomAttribute<ColumnAttribute>()?.Name ?? prop?.Name;
 
-                if (key != null)
+                if(key != null)
                     data.PrimaryKey = new[] { data.Columns[key] };
             }
 
@@ -148,28 +153,28 @@ namespace AP.Utils.Data
         /// <inheritdoc />
         public T Parse<T>(DataRow dataRow) where T : new()
         {
-            var mapper = new EntityMapper<T>();
-            return mapper.Map(dataRow);
+            var mapper = new EntityMapper();
+            return mapper.Map<T>(dataRow);
         }
 
         /// <inheritdoc />
         public T[] Parse<T>(DataTable dataTable) where T : new()
         {
-            var mapper = new EntityMapper<T>();
-            return mapper.Map(dataTable).ToArray();
+            var mapper = new EntityMapper();
+            return mapper.Map<T>(dataTable).ToArray();
         }
 
         /// <inheritdoc />
         public DataRow Find(DataTable dataTable, object entity)
         {
-            if (dataTable == null)
+            if(dataTable == null)
                 throw new ArgumentNullException(nameof(dataTable));
-            if (entity == null)
+            if(entity == null)
                 return null;
 
             var t = entity.GetType();
             var key = GetEntityKey(entity, out var columnName);
-            if (string.IsNullOrEmpty(columnName))
+            if(string.IsNullOrEmpty(columnName))
                 throw new InvalidOperationException(t.ToString());
 
             return dataTable.Rows.Find(key);
@@ -177,38 +182,35 @@ namespace AP.Utils.Data
 
         private object Load(Type entityType, object entityKey, object param = null)
         {
-            if (entityType == null)
+            if(entityType == null)
                 throw new ArgumentNullException(nameof(entityType));
 
-            var proc = entityType.GetCustomAttributes<ProcedureAttribute>()
+            var proc = entityType.GetCustomAttributes<StoredProcedureAttribute>()
                 .FirstOrDefault(p => p.Operation == StoredProcedureOp.Select);
-            if (string.IsNullOrEmpty(proc?.Name))
+            if(string.IsNullOrEmpty(proc?.Name))
                 throw new InvalidOperationException(entityType.ToString());
 
             var paramName = proc.KeyName ?? GetEntityKey(entityType);
-            if (string.IsNullOrEmpty(paramName))
+            if(string.IsNullOrEmpty(paramName))
                 throw new InvalidOperationException(entityType.ToString());
 
-            var parameter = new DynamicParameters();
+         
 
-            parameter.Add($"@{paramName}", proc.KeyFormat != null ? string.Format(proc.KeyFormat, entityKey) : entityKey);
-            parameter.AddDynamicParams(param);
+            var parameter = GetSqlParameters(param).Concat(new[]
+            {
+                DataProvider.GetParameter($"@{paramName}",
+                    proc.KeyFormat != null ? string.Format(proc.KeyFormat, entityKey) : entityKey)
+            });
 
-            try
-            {
-                InitializeSqlMapper(entityType);
-                return DataProvider.OpenConnection()
-                    .Query(entityType, proc.Name, parameter, commandType: CommandType.StoredProcedure).FirstOrDefault();
-            }
-            finally
-            {
-                DataProvider.CloseConnection();
-            }
+            var row = DataProvider.Execute(proc.Name, true, parameter.ToArray())?.Rows.Cast<DataRow>().FirstOrDefault();
+            return row != null ? new EntityMapper().Map(row, entityType) : null;
+
+           
         }
 
         private DbParameter[] GetSqlParameters(object param)
         {
-            if (param == null)
+            if(param == null)
                 return new DbParameter[0];
 
             return param.GetType().GetProperties().Select(prop => DataProvider.GetParameter(prop.Name, prop.GetValue(param))).ToArray();
@@ -231,41 +233,45 @@ namespace AP.Utils.Data
 
         private static void InitializeSqlMapper(Type entityType)
         {
-            if (_mapperInitialized == null)
+            if(_mapperInitialized == null)
                 _mapperInitialized = new List<Type>();
-            else if (_mapperInitialized.Contains(entityType))
+            else if(_mapperInitialized.Contains(entityType))
                 return;
 
-            SqlMapper.SetTypeMap(entityType, new ColumnAttributeTypeMapper(entityType));
+            SqlMapper.SetTypeMap(entityType, new ForeignKeyAttributeTypeMapper(entityType));
             _mapperInitialized.Add(entityType);
         }
 
+      
+
         private static void Copy(object source, object destination)
         {
-            if (source == null)
+            if(source == null)
                 throw new ArgumentNullException(nameof(source));
-            if (destination == null)
+            if(destination == null)
                 throw new ArgumentNullException(nameof(destination));
 
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
 
             var dest = destination.GetType().GetProperties(flags).Where(p => p.CanWrite).ToArray();
-            foreach (var prop in source.GetType().GetProperties(flags).Where(p => p.CanRead))
+            foreach(var prop in source.GetType().GetProperties(flags).Where(p => p.CanRead))
             {
                 var targetProp = dest.FirstOrDefault(p => p.Name == prop.Name);
-                if (targetProp == null)
+                if(targetProp == null)
                     continue;
 
-                if (!targetProp.PropertyType.IsAssignableFrom(prop.PropertyType))
+                if(!targetProp.PropertyType.IsAssignableFrom(prop.PropertyType))
                     continue;
 
                 var setMethod = targetProp.GetSetMethod(true);
-                if (setMethod != null && setMethod.IsPrivate)
+                if(setMethod != null && setMethod.IsPrivate)
                     continue;
 
                 targetProp.SetValue(destination, prop.GetValue(source, null), null);
             }
         }
+
+
 
         #endregion
     }

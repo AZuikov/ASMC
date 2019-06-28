@@ -6,313 +6,201 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    /// Представляет модель экземпляра СИ.
+    /// Сущность экземпляра СИ.
     /// </summary> 
-
     [Table("EKZ")]
-    [Procedure("dbo.up_gr_EkzEdit_ls", Operation = StoredProcedureOp.Update)]
-    [Procedure("dbo.up_gr_EkzSelect", Operation =  StoredProcedureOp.SelectMany)]
-    [Procedure("dbo.up_gr_EkzCardSelect", KeyName = "vbr", KeyFormat = "ekz.idekz={0}")]
-    public class Ekz: IEquatable<Ekz>, ICloneable
+    [StoredProcedure("dbo.up_gr_EkzEdit_ls", Operation = StoredProcedureOp.Update)]
+    [StoredProcedure("dbo.up_gr_EkzSelect", Operation = StoredProcedureOp.SelectMany)]
+    [StoredProcedure("dbo.up_gr_EkzCardSelect", KeyName = "vbr", KeyFormat = "ekz.idekz={0}")]
+    public class Ekz
 
     {
         #region Properties
+
         /// <summary>
-        /// id экземпляра (№ паспорта)
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
         [Column("IDEKZ", TypeName = "int")]
-        public int PassportId { get; private set; }
+        public int? Id { get; set; }
+
         /// <summary>
-        /// Id Типоразмера
-        /// </summary>
+        /// Возвращает или задает типоразмер <see cref="Metr.StandardSizeMi"/>.
+        /// </summary>         
         [Required]
-        [ForeignKey(nameof(StandardSizeMi))]
-        [Column("IDTPRZ", TypeName = "int")]
-        public int StandardSizeMiId { get; set; }
+        [ForeignKey("IDTPRZ")] public StandardSizeMi StandardSizeMi { get; set; }
+
         /// <summary>
-        /// Типоразмер
+        /// Возвращает или задает категорию СИ <see cref="Metr.CategoryMi"/>. 
+        /// </summary>   
+        [ForeignKey("IDSPKT")]
+        public CategoryMi CategoryMi { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает место установки <see cref="Metr.InstallationLocation"/>.
         /// </summary>
-        public StandardSizeMi StandardSizeMi { get; set; }
+        [ForeignKey("IDSPMU")]
+        public InstallationLocation Installationlocation { get; set; }
+
         /// <summary>
-        /// Id Категории СИ
+        /// Возвращает или задает штатное состояние (текущее) <see cref="Metr.ConditionStandart"/>.
         /// </summary>
-        [ForeignKey(nameof(СategoryMi))]
-        [Column("IDSPKT", TypeName = "int")]
-        public int СategoryMiId { get; set; }
+        [ForeignKey("IDSPSS")]
+        public ConditionStandart NormalState { get; set; }
+
         /// <summary>
-        /// Категория СИ
+        /// Возвращает или задает техническое состояние (текущее) <see cref="Metr.ConditionTechnical"/>.
         /// </summary>
-        public СategoryMi СategoryMi { get; set; }
+        [ForeignKey("IDSPTS")]
+        public ConditionTechnical TechnicalCondition { get; set; }
+
         /// <summary>
-        /// id  Места установки
+        /// Возвращает или задает сферу государственного
+        /// регулирования обеспечения единства измерений <see cref="Metr.AreasMetrologicalControl"/>.
         /// </summary>
-        [ForeignKey(nameof(Installationlocation))]
-        [Column("IDSPMU", TypeName = "int")]
-        public int InstallationlocationId{ get; set; }
+        [ForeignKey("IDSPSHMK")]
+        public AreasMetrologicalControl AreasMetrologicalControl { get; set; }
+
         /// <summary>
-        /// Место установки
+        /// Возвращает или задает области применения СИ <see cref="Metr.AreaApplication"/>.
         /// </summary>
-        public Installationlocation Installationlocation { get; set; }
+        [ForeignKey("IDSPOP")]
+        public AreaApplication AreaApplication { get; set; }
+
         /// <summary>
-        /// Id Штатное состояние (текущее)
+        /// Возвращает или задает ответственного за МО <see cref="Metr.Person"/>.
         /// </summary>
-        [ForeignKey(nameof(NormalState))]
-        [Column("IDSPSS", TypeName = "int")]
-        public int NormalStateId { get; set; }
+        [ForeignKey("IDPRSN")]
+        public Person PersonResponsibleMs { get; set; }
+
         /// <summary>
-        /// Штатное состояние (текущее)
+        /// Возвращает или задает владелеца <see cref="Metr.Organization"/>.
         /// </summary>
-        public NormalState NormalState { get; set; }
+        [ForeignKey("IDFRPDV")]
+        public Organization OrganizatioOwner { get; set; }
+
         /// <summary>
-        /// Id Техническое состояние (текущее)
+        /// Возвращает или задает изготовителя <see cref="Metr.Organization"/>.
         /// </summary>
-        [Column("IDSPTS", TypeName = "int")]
-        public int TechnicalConditionId { get; set; }
+
+        [ForeignKey("IDFRPDIZ")]
+        public Organization OrganizationManufacturer { get; set; }
+
         /// <summary>
-        /// Техническое состояние (текущее)
+        /// Возвращает или задает подразделение ответственное за МО <see cref="Metr.Organization"/>.
         /// </summary>
-        public TechnicalCondition TechnicalCondition { get; set; }
+        [ForeignKey("IDFRPDMO")]
+        public Organization OrganizationResponsibleMs { get; set; }
+
         /// <summary>
-        /// id сферы государственного регулирования обеспечения единства измерений
-        /// </summary>
-        [ForeignKey(nameof(Ssreum))]
-        [Column("IDSPSHMK", TypeName = "int")]
-        public int SsreumId { get; set; }
-        /// <summary>
-        /// сфера государственного регулирования обеспечения единства измерений
-        /// </summary>
-        public Ssreum Ssreum { get; set; }
-        /// <summary>
-        /// id области применения СИ
-        /// </summary>
-        [ForeignKey(nameof(ApplicationAreaMi))]
-        [Column("IDSPOP", TypeName = "int")]
-        public int ApplicationAreaMiId { get; set; }
-        /// <summary>
-        /// области применения СИ
-        /// </summary>
-        public ApplicationAreaMi ApplicationAreaMi { get; set; }
-        /// <summary>
-        /// id персоны ответственного за МО
-        /// </summary>
-        [ForeignKey(nameof(PersonResponsibleMa))]
-        [Column("IDPRSN", TypeName = "int")]
-        public int PersonResponsibleMaId { get; set; }
-        /// <summary>
-        /// Oтветственный за МО
-        /// </summary>
-        public Person PersonResponsibleMa { get; set; }
-        /// <summary>
-        /// id владелеца
-        /// </summary>
-        [ForeignKey(nameof(Owner))]
-        [Column("IDFRPDV", TypeName = "int")]
-        public int OwnerId { get; set; }
-        /// <summary>
-        /// Владелец
-        /// </summary>
-        public OrganizationsDivision Owner { get; set; }
-        /// <summary>
-        /// id Изготовителя
-        /// </summary>
-        [ForeignKey(nameof(Manufacturer))]
-        [Column("IDFRPDIZ", TypeName = "int")]
-        public int ManufacturerId { get; set; }
-        /// <summary>
-        /// Изготовитель
-        /// </summary>
-        public OrganizationsDivision Manufacturer { get; set; }
-        /// <summary>
-        /// id подразделения ответственного за МО
-        /// </summary>
-        [ForeignKey(nameof(UnitResponsibleMi))]
-        [Column("IDFRPDMO", TypeName = "int")]
-        public int UnitResponsibleMiId{ get; set; }
-        /// <summary>
-        /// подразделения ответственное за МО
-        /// </summary>
-        public OrganizationsDivision UnitResponsibleMi { get; set; }
-        /// <summary>
-        /// Кол-во СИ
+        /// Возвращает или задает кол-во СИ.
         /// </summary>
         [Required]
         [Column("KLSIPR", TypeName = "int")]
-        public int MiNumber{ get; set; }
+        public int? MiNumber { get; set; }
+
         /// <summary>
-        /// Заводской №
+        /// Возвращает или задает заводской №.
         /// </summary>
         [Required]
-        [Column("NNZV", TypeName = "varchar(max)")]
+        [Column("NNZV", TypeName = "varchar(30)")]
         public string SerialNumber { get; set; }
+
         /// <summary>
-        /// Инвентарный №
+        /// Возвращает или задает инвентарный №.
         /// </summary>
-        [Column("NNIN", TypeName = "varchar(max)")]
+        [Column("NNIN", TypeName = "varchar(30)")]
         public string InventoryNumber { get; set; }
+
         /// <summary>
-        /// Дата выпуска
+        /// Возвращает или задает дату выпуска.
         /// </summary>
         [Column("DTVP", TypeName = "datetime")]
         public DateTime DateIssue { get; set; }
+
         /// <summary>
-        /// Дата ввода в эксплуатацию
+        /// Возвращает или задает дату ввода в эксплуатацию.
         /// </summary>
         [Column("DTVVEK", TypeName = "datetime")]
         public DateTime CommissioningDate { get; set; }
+
         /// <summary>
-        /// Дата сдачи драгметаллов
+        /// Возвращает или задает дату сдачи драгметаллов.
         /// </summary>
         [Column("DTSDDR", TypeName = "datetime")]
         public DateTime SubmissionDatePreciousMetals { get; set; }
+
         /// <summary>
-        /// Дата списания
+        /// Возвращает или задает дату списания.
         /// </summary>
         [Column("DTSPS", TypeName = "datetime")]
         public DateTime DateWriteOff { get; set; }
+
         /// <summary>
-        /// Первоначальная стоимость
+        /// Возвращает или задает первоначальную стоимость.
         /// </summary>
         [Column("PNCHST", TypeName = "money")]
         public decimal InitialCost { get; set; }
+
         /// <summary>
-        /// Состояние при покупке
+        /// Возвращает или задает состояние при покупке.
         /// </summary>
-        [Column("SSPK", TypeName = "varchar(max)")]
+        [Column("SSPK", TypeName = "varchar(7)")]
         public string PurchaseCondition { get; set; }
+
+
         /// <summary>
-        /// id по постановлению №250
+        /// Возвращает или задает соответстие по простоновлению №250 <see cref="Metr.Resolution250"/>.
         /// </summary>
-        [ForeignKey(nameof(Resolution250))]
-        [Column("IDSPPP250", TypeName = "int")]
-        public int Resolution250Id { get; set; }
-        /// <summary>
-        /// Соответстие по простоновлению №250
-        /// </summary>
+        [ForeignKey("IDSPPP250")]
         public Resolution250 Resolution250 { get; set; }
+
+
         /// <summary>
-        /// id характеристики по доп. класс. 1
+        /// Возвращает или задает характеристики по доп. класс. 1 <see cref="Metr.AdditionalClassification1"/>.
         /// </summary>
-        [ForeignKey(nameof(CharacteristicsAdditionalClass1))]
-        [Column("IDSPDPKL1", TypeName = "int")]
-         public int CharacteristicsAdditionalClass1Id { get; set; }
+        [ForeignKey("IDSPDPKL1")]
+        public AdditionalClassification1 CharacteristicsAdditionalClass1 { get; set; }
+
         /// <summary>
-        /// Характеристики по доп. класс. 1
+        /// Возвращает или задает характеристики по доп. класс. 2 <see cref="Metr.AdditionalClassification2"/>.
         /// </summary>
-        public CharacteristicsAdditionalClass1 CharacteristicsAdditionalClass1 { get; set; }
+        [ForeignKey("IDSPDPKL2")]
+        public AdditionalClassification2 CharacteristicsAdditionalClass2 { get; set; }
+
+
         /// <summary>
-        /// id характеристики по доп. класс. 2
+        /// Возвращает или задает характеристики по доп. класс. 3 <see cref="Metr.AdditionalClassification3"/>.
         /// </summary>
-        [ForeignKey(nameof(CharacteristicsAdditionalClass2))]
-        [Column("IDSPDPKL2", TypeName = "int")]
-        public int CharacteristicsAdditionalClass2Id { get; set; }
+
+        [ForeignKey("IDSPDPKL3")]
+
+        public AdditionalClassification3 CharacteristicsAdditionalClass3 { get; set; }
+
         /// <summary>
-        /// Характеристики по доп. класс. 2
+        /// Возвращает или задает доп. поле.
         /// </summary>
-        public CharacteristicsAdditionalClass2 CharacteristicsAdditionalClass2 { get; set; }
+        [Column("DPPLEKZ", TypeName = "varchar(50)")]
+        public string AdditionalField { get; set; }
+
         /// <summary>
-        /// id характеристики по доп. класс. 3
+        /// Возвращает или задает дополнительные сведения.
         /// </summary>
-        [ForeignKey(nameof(CharacteristicsAdditionalClass3))]
-        [Column("IDSPDPKL3", TypeName = "int")]
-        public int CharacteristicsAdditionalClass3Id { get; set; }
-        /// <summary>
-        /// Характеристики по доп. класс. 3
-        /// </summary>
-        public CharacteristicsAdditionalClass3 CharacteristicsAdditionalClass3 { get; set; }
-        /// <summary>
-        /// Доп. поле
-        /// </summary>
-        [Column("DPPLEKZ", TypeName = "varchar(max)")]
-        public string AdditionalField{ get; set; }
-        /// <summary>
-        /// Дополнительные сведения
-        /// </summary>
-        [Column("DSEKZ", TypeName = "varchar(max)")]
+        [Column("DSEKZ", TypeName = "varchar(8000)")]
         public string AdditionalInformation { get; set; }
+
         /// <summary>
-        /// Внесено в Госреестр
+        /// Возвращает или задает флаг внесен в Госреестр экземпляр или нет.
         /// </summary>
         [Column("GRVN", TypeName = "bit")]
-        public bool StateRegistry { get; set; }
+        public bool? StateRegistry { get; set; }
+
         /// <summary>
-        /// Номер госреестра 
+        /// Возвращает или задает номер госреестра. 
         /// </summary>
-        [Column("NNEKZGR", TypeName = "varchar(max)")]
+        [Column("NNEKZGR", TypeName = "varchar(8)")]
         public string RegisterNumber { get; set; }
 
-
         #endregion
-
-        #region IEquatable
-
-        public bool Equals(Ekz other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return string.Equals(AdditionalField, other.AdditionalField) && string.Equals(AdditionalInformation, other.AdditionalInformation) && ApplicationAreaMiId == other.ApplicationAreaMiId && CharacteristicsAdditionalClass1 == other.CharacteristicsAdditionalClass1 && CharacteristicsAdditionalClass2 == other.CharacteristicsAdditionalClass2 && CharacteristicsAdditionalClass3 == other.CharacteristicsAdditionalClass3 && CommissioningDate.Equals(other.CommissioningDate) && DateIssue.Equals(other.DateIssue) && DateWriteOff.Equals(other.DateWriteOff) && InitialCost == other.InitialCost && InstallationlocationId == other.InstallationlocationId && string.Equals(InventoryNumber, other.InventoryNumber) && ManufacturerId == other.ManufacturerId && MiNumber == other.MiNumber && NormalStateId == other.NormalStateId && OwnerId == other.OwnerId && PassportId == other.PassportId && PersonResponsibleMaId == other.PersonResponsibleMaId && string.Equals(PurchaseCondition, other.PurchaseCondition) && string.Equals(RegisterNumber, other.RegisterNumber) && Resolution250Id == other.Resolution250Id && string.Equals(SerialNumber, other.SerialNumber) && SsreumId == other.SsreumId && StandardSizeMiId == other.StandardSizeMiId && StateRegistry == other.StateRegistry && SubmissionDatePreciousMetals.Equals(other.SubmissionDatePreciousMetals) && TechnicalConditionId == other.TechnicalConditionId && UnitResponsibleMiId == other.UnitResponsibleMiId && СategoryMiId == other.СategoryMiId;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Ekz) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = PassportId; 
-                hashCode = (hashCode * 397) ^ (AdditionalInformation != null ? AdditionalInformation.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ ApplicationAreaMiId;
-                hashCode = (hashCode * 397) ^ CharacteristicsAdditionalClass1Id;
-                hashCode = (hashCode * 397) ^ CharacteristicsAdditionalClass2Id;
-                hashCode = (hashCode * 397) ^ CharacteristicsAdditionalClass3Id;
-                hashCode = (hashCode * 397) ^ CommissioningDate.GetHashCode();
-                hashCode = (hashCode * 397) ^ DateIssue.GetHashCode();
-                hashCode = (hashCode * 397) ^ DateWriteOff.GetHashCode();
-                hashCode = (hashCode * 397) ^ InitialCost.GetHashCode();
-                hashCode = (hashCode * 397) ^ InstallationlocationId;
-                hashCode = (hashCode * 397) ^ (InventoryNumber != null ? InventoryNumber.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ ManufacturerId;
-                hashCode = (hashCode * 397) ^ MiNumber;
-                hashCode = (hashCode * 397) ^ NormalStateId;
-                hashCode = (hashCode * 397) ^ OwnerId;
-                hashCode = (hashCode * 397) ^ PassportId;
-                hashCode = (hashCode * 397) ^ PersonResponsibleMaId;
-                hashCode = (hashCode * 397) ^ (PurchaseCondition != null ? PurchaseCondition.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (RegisterNumber != null ? RegisterNumber.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Resolution250Id;
-                hashCode = (hashCode * 397) ^ (SerialNumber != null ? SerialNumber.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ SsreumId;
-                hashCode = (hashCode * 397) ^ StandardSizeMiId;
-                hashCode = (hashCode * 397) ^ StateRegistry.GetHashCode();
-                hashCode = (hashCode * 397) ^ SubmissionDatePreciousMetals.GetHashCode();
-                hashCode = (hashCode * 397) ^ TechnicalConditionId;
-                hashCode = (hashCode * 397) ^ UnitResponsibleMiId;
-                hashCode = (hashCode * 397) ^ СategoryMiId;
-                return hashCode;
-            }
-        }
-
-        public object Clone()
-        {
-            return this.MemberwiseClone();
-        }
-
-        #endregion
-
-        public Ekz(int passportId)
-        {
-            PassportId = passportId;
-        }
-
-        public Ekz()
-        {
-
-        }
     }
 }

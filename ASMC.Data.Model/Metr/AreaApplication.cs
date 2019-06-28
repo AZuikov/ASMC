@@ -5,26 +5,24 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    ///  Сущность конструктивного исполнения.
+    /// Сущность области применения. 
     /// </summary>
-    [Table("SPKI")]
-    public class Design
+    [Table("SPOP")]
+    public class AreaApplication
     {
-        #region Properties
         /// <summary>
         /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
         [Browsable(false)]
-        [Column("IDSPKI", TypeName = "int")]
+        [Column("IDSPOP", TypeName = "int")]
         public int? Id { get; set; }
         /// <summary>
-        /// Возвращает или задает наименование исполнения.
+        /// Возвращает или задает область применения СИ.
         /// </summary>
         [Required]
-        [Column("NMKI", TypeName = "nvarchar(30)")]
+        [Column("NMOP", TypeName = "varchar(50)")]
         public string Name { get; set; }
-        #endregion
-
+        
     }
 }

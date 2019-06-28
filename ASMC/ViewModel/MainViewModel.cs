@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using ASMC.Core.UI;
 using NLog;
 
 namespace ASMC.ViewModel
@@ -14,7 +16,20 @@ namespace ASMC.ViewModel
         {
             
             this.Initialize();
-            Alert(new Exception("test"));
+            var dsadas = new MessageBoxService();
+            Task loadingTask = new Task(() =>
+            {
+
+                Confirm("У выбранного экземпляра отсутствуют события МК.\n" +
+                        "Пожалуйста, создайте событие МК и повторите попытку.\n" +
+                        "Приложение будет закрыто.", true, MessageBoxResult.No, false, new MessageBoxService());
+            });
+
+            StartTaskAndShowProgressService("Идет загрузка данных из базы",
+                "Подождите...", loadingTask, null, new ProgressService());
+
+
         }
+
     }
 }

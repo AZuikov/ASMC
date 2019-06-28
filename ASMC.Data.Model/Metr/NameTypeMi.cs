@@ -1,30 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    /// Справочник "наименование типа СИ"
+    /// Сущность наименования типа СИ.
     /// </summary>
     [Table("SPNMTP")]
     public class NameTypeMi
     {
         /// <summary>
-        /// Id наименовани типа СИ
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
+        [Browsable(false)]
         [Column("IDSPNMTP", TypeName = "int")]
-        public int NameTypeMiId { get; private set;}
+        public int? Id { get; set;}
         /// <summary>
-        /// Наименование типа
+        /// Возвращает или задает наименование.
         /// </summary>
         [Required]
-        [Column("NMTP", TypeName = "varchar(max)")]
+        [Column("NMTP", TypeName = "varchar(80)")]
         public string Name { get; set; }
         /// <summary>
-        /// Специальное наименование типа СИ
+        /// Возвращает или задает специальное наименование.
         /// </summary>
-        [Column("NMTPSP", TypeName = "varchar(max)")]
+        [Column("NMTPSP", TypeName = "varchar(150)")]
         public string SpecialName { get; set; }
     }
 }
