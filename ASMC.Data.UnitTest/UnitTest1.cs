@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Net.Configuration;
+using AP.Reports;
 using AP.Utils.Data;
+using ASMC.Core.ValidationRules;
 using ASMC.Data.Model.Metr;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,10 +17,14 @@ namespace ASMC.Data.UnitTest
         {
             var dp = new SqlDataProvider();
             dp.LoadFromUdl(@"C:\Users\02tav01\Documents\Palitra_System\Metr6\UDL\Metr6.udl");
-           var  ekz = new Ekz();
-         //   var test = new AP.Utils.Data.EntityMapper<Data.Model.Metr.Ekz>();
-         //  EntityContext dsada = new EntityContext(dp);
-         //var  teest =dsada.Load(ekz);
+            var ekz = new Ekz
+            {
+                Id = 3838
+            };
+            Barcode выфв = new Barcode();
+            //var dsdsa = new EntityContext(dp);
+            //dsdsa.Load(ekz);
+
         }
     }
 }

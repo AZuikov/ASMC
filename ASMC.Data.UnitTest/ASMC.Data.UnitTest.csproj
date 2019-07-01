@@ -58,9 +58,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
+      <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
+      <Name>AP.Reports</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
+      <Name>ASMC.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
       <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
