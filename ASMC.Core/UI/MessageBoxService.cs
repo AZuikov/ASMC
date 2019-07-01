@@ -24,14 +24,14 @@ namespace ASMC.Core.UI
             {
                 try
                 {
-                    owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive);
+                    Dispatcher.InvokeAsync(() =>
+                        owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive));
                 }
                 catch
-            {
-                Dispatcher.InvokeAsync(() =>
-                    owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive));
+                {
+                    owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive);
+                }
             }
-        }
 
             var title = caption ?? owner?.Title;
 
