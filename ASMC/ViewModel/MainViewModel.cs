@@ -17,12 +17,15 @@ namespace ASMC.ViewModel
             
             this.Initialize();
             var dsadas = new MessageBoxService();
+            Confirm("У выбранного экземпляра отсутствуют события МК.\n" +
+                    "Пожалуйста, создайте событие МК и повторите попытку.\n" +
+                    "Приложение будет закрыто.", true, MessageBoxResult.No, false, dsadas);
             Task loadingTask = new Task(() =>
             {
 
                 Confirm("У выбранного экземпляра отсутствуют события МК.\n" +
                         "Пожалуйста, создайте событие МК и повторите попытку.\n" +
-                        "Приложение будет закрыто.", true, MessageBoxResult.No, false, new MessageBoxService());
+                        "Приложение будет закрыто.", true, MessageBoxResult.No, false, dsadas);
             });
 
             StartTaskAndShowProgressService("Идет загрузка данных из базы",

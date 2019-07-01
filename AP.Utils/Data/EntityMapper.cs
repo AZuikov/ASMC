@@ -127,8 +127,8 @@ namespace AP.Utils.Data
                 return destinationType.IsValueType ? Activator.CreateInstance(destinationType) : null;
             if(destinationType == typeof(bool))
                 return (value is byte b) && b == 1;
-
-            return Convert.ChangeType(value, destinationType);
+            var nullableType = Nullable.GetUnderlyingType(destinationType);
+            return Convert.ChangeType(value, nullableType?? destinationType);
         }
 
         private static string GetEntityKey(Type entityType)

@@ -99,6 +99,7 @@
     <Compile Include="AutoDocumets\Excel.cs" />
     <Compile Include="AutoDocumets\OpenExcel.cs" />
     <Compile Include="AutoDocumets\Word.cs" />
+    <Compile Include="Barcode.cs" />
     <Compile Include="Interface\ITextGraphicsReport.cs" />
     <Compile Include="Interface\IReport.cs" />
     <Compile Include="MSInterop\ExcelInterop.cs" />
