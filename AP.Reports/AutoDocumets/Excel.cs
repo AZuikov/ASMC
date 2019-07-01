@@ -175,7 +175,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
-        public void InsertTable(DataTable dt, ConditionalFormatting cf)
+        public void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (_workbook != null)
             {
@@ -721,6 +721,7 @@ namespace AP.Reports.AutoDocumets
             var insertedPicture = cell.Worksheet.AddPicture(image);
             insertedPicture.MoveTo(cell);
             insertedPicture.Scale(factor, relativeToOriginal);
+
         }
 
         /// <summary>
