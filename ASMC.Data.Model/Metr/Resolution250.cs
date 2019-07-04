@@ -1,39 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    /// Справочник по Постановлению №250 “О перечне средств измерений, 
+    /// Сущность по Постановлению №250 “О перечне средств измерений, 
     /// поверка которых осуществляется только аккредитованными в установленном 
-    /// порядке в области обеспечения единства измерений государственными региональными центрами метрологии”
+    /// порядке в области обеспечения единства измерений государственными региональными центрами метрологии”.
     /// </summary>
     [Table("SPPP250")]
     public class Resolution250
     {
         /// <summary>
-        /// Индификатор
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
+        [Browsable(false)]
         [Column("IDSPPP250", TypeName = "int")]
-        public int Resolution250Id { get; private set; }
+        public int? Id { get; set; }
         /// <summary>
-        /// Позиция по Постановлению №250
+        /// Возвращает или задает позицию по Постановлению №250.
         /// </summary>
         [Required]
-        [Column("NMPP250", TypeName = "varchar(max)")]
+        [Column("NMPP250", TypeName = "varchar(450)")]
         public string Position { get; set; }
         /// <summary>
-        /// Код П № 250
+        /// Возвращает или задает код П. № 250.
         /// </summary>
         [Required]
-        [Column("KDPP250", TypeName = "varchar(max)")]
-        public  string Code { get; set; }
+        [Column("KDPP250", TypeName = "varchar(3)")]
+        public string Code { get; set; }
 
     }
 }

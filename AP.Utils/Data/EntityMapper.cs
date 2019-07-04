@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq;
@@ -10,12 +12,12 @@ namespace AP.Utils.Data
     /// <summary>
     /// Представляет вспомогательный класс для проецирования
     /// <see cref="DataTable"/>, <see cref="DataRow"/> в
-    /// экземпляр <see cref="T:TEntity"/>.
+    /// объект.
     /// </summary>
-    /// <typeparam name="TEntity">Тип объекта, на который
-    /// будет производиться проецирование.</typeparam>
-    public class EntityMapper<TEntity> where TEntity : new()
+    public class EntityMapper
     {
+        private static IDictionary<Type, string> _keyCache;
+
         #region Methods
 
         /// <summary>
@@ -24,12 +26,9 @@ namespace AP.Utils.Data
         /// </summary>
         /// <param name="dataRow">Экземпляр <see cref="DataRow"/>
         /// для проецирования.</param>
-        public TEntity Map(DataRow dataRow)
+        public TEntity Map<TEntity>(DataRow dataRow) where TEntity : new()
         {
-            var entity = Activator.CreateInstance<TEntity>();
-            Map(dataRow, entity);
-
-            return entity;
+            return (TEntity)Map(dataRow, typeof(TEntity));
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace AP.Utils.Data
         /// </summary>
         /// <param name="dataTable">Экземпляр <see cref="DataTable"/>
         /// для проецирования.</param>
-        public IEnumerable<TEntity> Map(DataTable dataTable)
+        public IEnumerable<TEntity> Map<TEntity>(DataTable dataTable) where TEntity : new()
         {
             var properties = (typeof(TEntity)).GetProperties().ToList();
 
@@ -53,6 +52,22 @@ namespace AP.Utils.Data
             }
 
             return list.ToArray();
+        }
+
+        /// <summary>
+        /// Проецирует <see cref="DataRow"/>
+        /// в объект.
+        /// </summary>
+        /// <param name="dataRow">Экземпляр <see cref="DataRow"/>
+        /// для проецирования.</param>
+        /// <param name="entityType">Тип объекта, в который
+        /// производится проецирование.</param>
+        public object Map(DataRow dataRow, Type entityType)
+        {
+            var entity = Activator.CreateInstance(entityType);
+            Map(dataRow, entity);
+
+            return entity;
         }
 
         private static void Map(DataRow dataRow, object entity)
@@ -81,6 +96,9 @@ namespace AP.Utils.Data
 
             if(dataRow.Table.Columns.Contains(foreignKey))
             {
+                if(dataRow[foreignKey] == DBNull.Value)
+                    return;
+
                 var child = Activator.CreateInstance(prop.PropertyType);
                 Map(dataRow, child);
 
@@ -90,6 +108,10 @@ namespace AP.Utils.Data
             {
                 var foreignProp = entity.GetType().GetProperty(foreignKey);
                 if(foreignProp == null || !foreignProp.CanWrite)
+                    return;
+
+                var key = GetEntityKey(foreignProp.PropertyType);
+                if(key == null || !dataRow.Table.Columns.Contains(key) || dataRow[key] == DBNull.Value)
                     return;
 
                 var child = Activator.CreateInstance(foreignProp.PropertyType);
@@ -105,8 +127,19 @@ namespace AP.Utils.Data
                 return destinationType.IsValueType ? Activator.CreateInstance(destinationType) : null;
             if(destinationType == typeof(bool))
                 return (value is byte b) && b == 1;
+            var nullableType = Nullable.GetUnderlyingType(destinationType);
+            return Convert.ChangeType(value, nullableType?? destinationType);
+        }
 
-            return Convert.ChangeType(value, destinationType);
+        private static string GetEntityKey(Type entityType)
+        {
+            if(_keyCache == null)
+                _keyCache = new ConcurrentDictionary<Type, string>();
+            else if(_keyCache.ContainsKey(entityType))
+                return _keyCache[entityType];
+
+            var prop = entityType.GetProperties().FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>() != null);
+            return _keyCache[entityType] = prop?.GetCustomAttribute<ColumnAttribute>()?.Name ?? prop?.Name;
         }
 
         #endregion

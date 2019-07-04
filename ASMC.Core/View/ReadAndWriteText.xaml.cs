@@ -10,7 +10,7 @@ namespace ASMC.Core.View
      
         public ReadAndWriteText()
         {
-            InitializeComponent();
+            //InitializeComponent();
            // Send = new DelegateCommand(SendMetod, () => Data != null);
             using (FileStream fs = new FileStream(@"\\zrto.int\ogmetr\AutoMeas\AutoMeas\PatchInfo.rtf", FileMode.Open))
             {

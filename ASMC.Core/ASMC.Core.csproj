@@ -35,27 +35,36 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
+    <Reference Include="DevExpress.Data.v17.2">
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Data.v17.2.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Mvvm.v17.2">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Utils.v17.2">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Utils.v17.2.dll</HintPath>
     </Reference>
+    <Reference Include="DevExpress.Xpf.Core.v17.2">
+      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Core.v17.2.dll</HintPath>
+    </Reference>
     <Reference Include="Fluent, Version=6.1.0.326, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.6.1.0.326\lib\net45\Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.6.2\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.6.5\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -69,14 +78,27 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataProvider.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Interface\IProgressService.cs" />
+    <Compile Include="Interface\ISupportClose.cs" />
+    <Compile Include="Interface\ISupportDialog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\IWindowSettings.cs" />
+    <Compile Include="Settings\SettingsSelector.cs" />
+    <Compile Include="Settings\WindowSettingsBase.cs" />
+    <Compile Include="UI\MessageBoxService.cs" />
+    <Compile Include="UI\ProgressService.cs" />
+    <Compile Include="UI\WindowAttachedProperties.cs" />
     <Compile Include="UI\WindowService.cs" />
+    <Compile Include="ValidationRules\Rules.cs" />
+    <Compile Include="ViewExtensions.cs" />
     <Compile Include="ViewModel\BaseSelectorViewModel.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\DataPageContent.cs" />
     <Compile Include="ViewModel\ReadAndWriteTextVM.cs" />
+    <Compile Include="View\ProgressWindow.xaml.cs">
+      <DependentUpon>ProgressWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ReadAndWriteText.xaml.cs">
       <DependentUpon>ReadAndWriteText.xaml</DependentUpon>
     </Compile>
@@ -106,6 +128,10 @@
     <Resource Include="Image\ListNumbering.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\ProgressWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\ReadAndWriteText.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -115,10 +141,14 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Interface\" />
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -126,9 +156,6 @@
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

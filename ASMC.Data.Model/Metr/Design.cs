@@ -1,26 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
-    /// Спраочник "Конструктивное исполнение"
+    ///  Сущность конструктивного исполнения.
     /// </summary>
     [Table("SPKI")]
     public class Design
     {
         #region Properties
         /// <summary>
-        /// Id
+        /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
+        [Browsable(false)]
         [Column("IDSPKI", TypeName = "int")]
-        public int DesignId { get; private set; }
+        public int? Id { get; set; }
         /// <summary>
-        /// Наименование исполнения
+        /// Возвращает или задает наименование исполнения.
         /// </summary>
         [Required]
-        [Column("NMKI", TypeName = "nvarchar(max)")]
+        [Column("NMKI", TypeName = "nvarchar(30)")]
         public string Name { get; set; }
         #endregion
 

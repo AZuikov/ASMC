@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using AP.Utils.Data;
+using ASMC.Core.Interface;
+using ASMC.Core.UI;
 using DevExpress.Mvvm;
+using NLog;
 
 namespace ASMC.Core.ViewModel
 {
@@ -23,8 +27,11 @@ namespace ASMC.Core.ViewModel
         private IDataProvider _dataProvider;
 
         private readonly object _syncRoot = new object();
-        private readonly WeakEvent<EventHandler, EventArgs> _dataProviderChanged = new WeakEvent<EventHandler, EventArgs>();
 
+        private readonly WeakEvent<EventHandler, EventArgs> _dataProviderChanged =
+            new WeakEvent<EventHandler, EventArgs>();
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         /// <summary>
@@ -63,9 +70,9 @@ namespace ASMC.Core.ViewModel
             get => _isBusy;
             protected set
             {
-                lock(_syncRoot)
+                lock (_syncRoot)
                 {
-                    if(SetProperty(ref _isBusy, value, nameof(IsBusy)))
+                    if (SetProperty(ref _isBusy, value, nameof(IsBusy)))
                         CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -90,9 +97,9 @@ namespace ASMC.Core.ViewModel
         /// </summary>
         public void Initialize()
         {
-            if(_isInitialized)
+            Logger.Debug("dsadad");
+            if (_isInitialized)
                 return;
-
             IsInitialized = true;
             OnInitialized();
         }
@@ -111,19 +118,61 @@ namespace ASMC.Core.ViewModel
         protected bool Alert(Exception e, IMessageBoxService messageService = null)
         {
             var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return false;
-
-            var msg = e.Message;
-            if(e.InnerException != null)
-                msg += Environment.NewLine + e.InnerException.Message;
-
+            var msg = new StringBuilder();
+            msg.AppendLine(e.Message);
+            if (e.TargetSite!=null)
+            {
+                var metod = e.TargetSite.Name;
+                var _class = e.TargetSite.ReflectedType?.Name;
+                var dll = e.TargetSite.DeclaringType?.Assembly.FullName;
+                msg.AppendLine($"Сборка: {dll}");
+                msg.AppendLine($"Класс: {_class}");
+                msg.AppendLine($"Метод: {metod}");
+            }
+           
+            if (e.InnerException != null)
+                msg.AppendLine(e.InnerException.Message);
+           
+            Logger.Error(e);
             service.Show(
-                msg,
-               "Ошибка",
+                msg.ToString(),
+                "Ошибка",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
-
+            return true;
+        }
+        
+        /// <summary>
+        /// Инициализирует сервис и отображает окно
+        /// </summary>
+        /// <param name="view">Принимает наименования представления View(Page)</param>
+        /// <param name="content">Принимает объект контента ViewModel</param>
+        /// <param name="key">Принимает имя формы, по умолчению имеет значение NULL</param>
+        /// <param name="windowService">Сервис <see cref="IWindowService"/>, отвечающий за формирование окна.</param>
+        protected bool FormShow(string view, object content, string key = null, IWindowService windowService = null)
+        {
+            var service = windowService ?? GetService<IWindowService>(key, ServiceSearchMode.PreferLocal);
+            if (service == null)
+                return false;
+            service.Show(view, null, this);
+            return true;
+        }
+        /// <summary>
+        /// Закрывает окно 
+        /// </summary>
+        /// <param name="key">Принимает имя формы, по умолчению имеет значение NULL</param>  
+        /// <param name="windowService">Сервис <see cref="IWindowService"/>, отвечающий за формирование окна.</param>
+        protected bool FormClosed(string key = null, IWindowService windowService = null)
+        {
+            var service = windowService ?? GetService<IWindowService>(key, ServiceSearchMode.PreferLocal);
+            if(service == null)
+                return false;
+            if(service.IsWindowAlive)
+            {
+                service.Close();
+            }
             return true;
         }
 
@@ -133,27 +182,30 @@ namespace ASMC.Core.ViewModel
         /// представления.
         /// </summary>
         /// <param name="message">Строка, содержащая текст
-        /// выполняемой операции для пользователя.</param>
-        /// <param name="allowsCancel">Задает состояние
-        /// возможности выбора опции Отмена.</param>
+        ///     выполняемой операции для пользователя.</param>
+        /// <param name="defaultResult">Задает кнопку на которую по умолчанию устанавливается фокус</param>
         /// <param name="criticalState">Задает состояние
-        /// критичного решения.</param>
+        ///     критичного решения.</param>
+        /// <param name="allowsCancel">Задает состояние
+        ///     возможности выбора опции Отмена.</param>
         /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>, отвечающий за
-        /// вывод сообщений.</param>
-        protected bool? Confirm(string message, bool allowsCancel = true, bool criticalState = false, IMessageBoxService messageService = null)
+        ///     <see cref="IMessageBoxService"/>, отвечающий за
+        ///     вывод сообщений.</param>
+        protected bool? Confirm(string message, bool criticalState = false,
+            MessageBoxResult defaultResult = MessageBoxResult.No, bool allowsCancel = false,
+            IMessageBoxService messageService = null)
         {
             var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return true;
 
             var result = service.Show(
                 message,
-               "Вопрос",
+                "Вопрос",
                 allowsCancel ? MessageBoxButton.YesNoCancel : MessageBoxButton.YesNo,
-                criticalState ? MessageBoxImage.Warning : MessageBoxImage.Asterisk);
+                criticalState ? MessageBoxImage.Warning : MessageBoxImage.Asterisk, defaultResult);
 
-            switch(result)
+            switch (result)
             {
                 case MessageBoxResult.Yes:
                     return true;
@@ -162,6 +214,46 @@ namespace ASMC.Core.ViewModel
                 default:
                     return null;
             }
+        }
+        /// <summary>
+        /// Инициирует пользовательское предупреждение
+        /// </summary>
+        /// <param name="message">Строка, содержащая текст
+        ///     предупреждения для пользователя.</param>
+        /// <param name="messageService">Сервис
+        ///     <see cref="IMessageBoxService"/>, отвечающий за
+        ///     вывод сообщений.</param>
+        /// <returns></returns>
+        protected bool Warning(string message, IMessageBoxService messageService = null)
+        {
+            var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
+            if(service == null)
+                return false; 
+            service.Show(message,"Предупреждение.", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return true;
+        }
+        /// <summary>
+        /// Инициирует запуск задачи
+        /// и запускает отображение выполнения процеса 
+        /// представления.е
+        /// </summary>
+        /// <param name="message">Строка, содержащая текст сообщения.</param>
+        /// <param name="caption"></param>
+        /// <param name="taskToRun"></param>
+        /// <param name="tokenSource">Задает состояние
+        /// возможности выбора источника Отмена.</param>
+        /// <param name="messageService">>Сервис
+        /// <see cref="IProgressService"/>, отвечающий за
+        /// отображение длительного процесса.</param> 
+        /// <returns>Возвращает истинно, если задача была завершена  иначе ложно.</returns>
+        protected bool StartTaskAndShowProgressService(string message, string caption, Task taskToRun,
+            CancellationTokenSource tokenSource = null, IProgressService messageService = null)
+        {
+            var service = messageService ?? GetService<IProgressService>(ServiceSearchMode.PreferLocal);
+            if (service == null)
+                return false;
+            service.Show(message, caption, taskToRun, tokenSource);
+            return true;
         }
 
         /// <summary>
@@ -185,7 +277,7 @@ namespace ASMC.Core.ViewModel
         /// <inheritdoc />
         protected override void OnParentViewModelChanged(object parentViewModel)
         {
-            if(parentViewModel is BaseViewModel baseViewModel)
+            if (parentViewModel is BaseViewModel baseViewModel)
             {
                 UpdateDataProvider(baseViewModel);
                 baseViewModel.DataProviderChanged += ParentDataProviderChanged;
@@ -201,8 +293,8 @@ namespace ASMC.Core.ViewModel
 
         private void UpdateDataProvider(BaseViewModel baseViewModel)
         {
-            if(baseViewModel != null)
-                DataProvider = (IDataProvider)baseViewModel.DataProvider?.Clone();
+            if (baseViewModel != null)
+                DataProvider = (IDataProvider) baseViewModel.DataProvider?.Clone();
         }
 
         #endregion

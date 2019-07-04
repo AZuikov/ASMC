@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace AP.Utils.Data
 {
-    public class ColumnAttributeTypeMapper : FallBackTypeMapper
+    public class ForeignKeyAttributeTypeMapper : FallBackTypeMapper
     {
-        public ColumnAttributeTypeMapper(Type sourceType)
+        public ForeignKeyAttributeTypeMapper(Type sourceType)
             : base(new SqlMapper.ITypeMap[]
             {
                 new CustomPropertyTypeMap(sourceType,
