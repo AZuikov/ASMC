@@ -6,6 +6,7 @@ using AP.Reports.AutoDocumets;
 using AP.Reports.Utils;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Document = AP.Reports.AutoDocumets.Document;
 
 namespace UnitTest.AP.Reports
 {
@@ -203,14 +204,14 @@ namespace UnitTest.AP.Reports
             word.Close();
         }
 
-        private ConditionalFormatting GetCondition()
+        private Document.ConditionalFormatting GetCondition()
         {
-            ConditionalFormatting cf = new ConditionalFormatting();
+            Document.ConditionalFormatting cf = new Document.ConditionalFormatting();
             cf.Value = "5";
             cf.Color = System.Drawing.Color.MediumTurquoise;
             cf.NameColumn = "col3";
-            cf.Condition = ConditionalFormatting.Conditions.Less;
-            cf.Region = ConditionalFormatting.RegionAction.Cell;
+            cf.Condition = Document.ConditionalFormatting.Conditions.Less;
+            cf.Region = Document.ConditionalFormatting.RegionAction.Cell;
             return cf;
         }
 

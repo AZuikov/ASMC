@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ASMC.Data.Model.Metr
-{     
+{
     /// <summary>
     ///  Сущность цикла периода ремонта.
     /// </summary>
@@ -21,50 +21,36 @@ namespace ASMC.Data.Model.Metr
         [Key]
         [Browsable(false)]
         [Column("IDTPRRCP", TypeName = "int")]
-        public int? Id
-        {
-            get; set;
-        }
+        public int? Id { get; set; }
+
         /// <summary>
         /// Возвращает или задает типоразмер <see cref="Metr.StandardSizeMi"/>.
         /// </summary>
         [ForeignKey("IDTPRZ")]
-        public StandardSizeMi StandardSizeMi
-        {
-            get; set;
-        }
+        public StandardSizeMi StandardSizeMi { get; set; }
+
         /// <summary>
         /// Возвращает или задает ремонтный цикл <see cref="Metr.TypeCycleRm"/>.
         /// </summary>
         [ForeignKey("IDSPVDRC")]
-        public TypeCycleRm TypeCycleRm
-        {
-            get; set;
-        }
+        public TypeCycleRm TypeCycleRm { get; set; }
+
         /// <summary>
         /// Возвращает или задает группу СИ <see cref="Metr.GroupMi"/>.
         /// </summary>
         [ForeignKey("IDGRSI")]
-        public GroupMi GroupsMi
-        {
-            get; set;
-        }
+        public GroupMi GroupsMi { get; set; }
+
         /// <summary>
         /// Возвращает или задает период ремонта, мес.
         /// </summary>
         [Column("PRRM", TypeName = "int")]
-        public int? Period
-        {
-            get; set;
-        }
+        public int? Period { get; set; }
+
         /// <summary>
         /// Возвращает или задает комментарий.
         /// </summary>
         [Column("KM", TypeName = "text")]
-        public string Comment
-        {
-            get; set;
-        }
-
+        public string Comment { get; set; }
     }
 }

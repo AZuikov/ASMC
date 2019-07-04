@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
@@ -9,8 +8,8 @@ namespace ASMC.Data.Model.Metr
     /// Сущность персоны.
     /// </summary>
     [Table("PRSN")]
-    [StoredProcedure("dbo.up_gr_PRSNSelect_dk", Operation =  StoredProcedureOp.SelectMany)]
-    [StoredProcedure("dbo.up_gr_PRSNSelect_dk", KeyName = "@fltr", KeyFormat = "prsn.idprsn={0}")]
+    //[Procedure("dbo.up_gr_PRSNSelect_dk", Operation =  StoredProcedureOp.SelectMany)]
+    //[Procedure("dbo.up_gr_PRSNSelect_dk", KeyName = "@fltr", KeyFormat = "prsn.idprsn={0}")]
     public class Person
     {
         /// <summary>
@@ -56,7 +55,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дополнительные сведения о персоне.
         /// </summary>
         [Column("DSPRSN", TypeName = "varchar(2000)")]
-        public string AdditionalInformationAboutPerson
+        public string AdditionalInformationAbout
         {
             get; set;
         }
@@ -70,7 +69,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дополнительный идентификатор персоны.
         /// </summary>
         [Column("PRDPID", TypeName = "varchar(50)")]
-        public string AdditionalPersonIdentifier
+        public string AdditionalIdentifier
         {
             get; set;
         }

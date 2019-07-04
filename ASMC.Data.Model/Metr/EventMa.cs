@@ -94,25 +94,25 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дату.
         /// </summary>
         [Column("DTTO", TypeName = "datetime")]
-        public DateTime DateFk { get; set; }
+        public DateTime? DateFk { get; set; }
 
         /// <summary>
         /// Возвращает или задает плановая дату.
         /// </summary>
         [Column("DTPLTO", TypeName = "datetime")]
-        public DateTime DatePlanned { get; set; }
+        public DateTime? DatePlanned { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату приёмки.
         /// </summary>
         [Column("DTPRTO", TypeName = "datetime")]
-        public DateTime DateAcceptance { get; set; }
+        public DateTime? DateAcceptance { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату выдачи из ТО.
         /// </summary>
         [Column("DTVDTO", TypeName = "datetime")]
-        public DateTime DateIssue { get; set; }
+        public DateTime? DateIssue { get; set; }
 
         /// <summary>
         /// Возвращает или задает стоимость.
@@ -162,7 +162,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).
         /// </summary>   
         [Browsable(false)]
-        [Column("DTMAXTO", TypeName = "int")]
-        public int? _Filed { get; set; }
+        [Column("DTMAXTO", TypeName = "datetime")]
+        public DateTime? _Filed { get; set; }
     }
 }

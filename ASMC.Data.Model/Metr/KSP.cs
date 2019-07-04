@@ -16,33 +16,26 @@ namespace ASMC.Data.Model.Metr
         [Key]
         [Browsable(false)]
         [Column("IDKSP", TypeName = "int")]
-        public int? Id
-        {
-            get; set;
-        }
+        public int? Id { get; set; }
+
         /// <summary>
         /// Возвращает или задает наименование
         /// </summary>
         [Column("NMKSP", TypeName = "varchar(80)")]
         public string Name { get; set; }
+
         /// <summary>
         /// Возвращает или задает код
         /// </summary>
         [Column("KDKSP", TypeName = "int")]
-        public int? Code
-        {
-            get; set;
-        }
+        public int? Code { get; set; }
+
         /// <summary>
         /// Возвращает или задает количество поверителей
         /// </summary>
         [Column("KLPV", TypeName = "int")]
-        public int? 
-            
-            ExecutorNumber
-        {
-            get; set;
-        }
+        public int?
 
-}
+            ExecutorNumber { get; set; }
+    }
 }

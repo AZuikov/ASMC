@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -51,14 +52,14 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дату обнаружения.
         /// </summary>
         [Column("DTOBOT", TypeName = "datetime")]
-        public DateTime DateDetection { get; set; }
+        public DateTime? DateDetection { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату устранения.
         /// </summary>
         [Column("DTYSOT", TypeName = "datetime")]
 
-        public DateTime DateElimination { get; set; }
+        public DateTime? DateElimination { get; set; }
 
         /// <summary>
         /// Возвращает или задает наработку на отказ, час.
@@ -87,8 +88,8 @@ namespace ASMC.Data.Model.Metr
         /// <summary>
         /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).
         /// </summary>   
-        /// [Browsable(false)]
-        [Column("DTMAXOT", TypeName = "int")]
-        public int? _Filed { get; set; }
+         [Browsable(false)]
+        [Column("DTMAXOT", TypeName = "datetime")]
+        public DateTime? _Filed { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
@@ -8,6 +9,7 @@ namespace ASMC.Data.Model.Metr
     /// Сущность типоразмера СИ.
     /// </summary>
     [Table("TPRZ")]
+    [StoredProcedure("dbo.up_gr_TprzSelect", KeyName = "vbr", KeyFormat = "IDTPRZ={0}")]
     public class StandardSizeMi
     {
         #region Properties

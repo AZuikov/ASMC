@@ -96,6 +96,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoDocumets\Document.cs" />
     <Compile Include="AutoDocumets\Excel.cs" />
     <Compile Include="AutoDocumets\OpenExcel.cs" />
     <Compile Include="AutoDocumets\Word.cs" />

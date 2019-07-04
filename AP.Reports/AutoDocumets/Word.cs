@@ -16,12 +16,12 @@ using DevExpress.XtraRichEdit.API.Native;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Word : ITextGraphicsReport, IDisposable
+    public class Word : Document, ITextGraphicsReport, IDisposable
     {    
         private RichEditDocumentServer _documentServer;
         private DocumentPosition _documentPosition;
         private DocumentRange _documentRange;
-        private Document _document;
+        private DevExpress.XtraRichEdit.API.Native.Document _document;
         /// <summary>
         /// форматы файлов
         /// </summary>
@@ -155,7 +155,7 @@ namespace AP.Reports.AutoDocumets
         private int FindStringSetDocumentPosition(string sFind)
         {
 
-            var foundTotal = _document.FindAll(new Regex(@"(\W|^)" + sFind + @"(\b|\W)"), _document.Range);
+            var foundTotal = _document.FindAll(new Regex(PatternFindText(sFind)), _document.Range);
             if(foundTotal.Length > 0)
             {
                 DocumentRange = foundTotal.First();

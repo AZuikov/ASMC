@@ -11,7 +11,7 @@ using ClosedXML.Excel;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Excel : ITextGraphicsReport, IDisposable
+    public class Excel : Document, ITextGraphicsReport, IDisposable
     {
         private XLWorkbook _workbook;
         private string _filePath;
@@ -97,7 +97,7 @@ namespace AP.Reports.AutoDocumets
                 sFind,
                 (cell, worksheet) =>
                 {
-                    cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
+                    cell.Value = Regex.Replace(cell.Value.ToString(), PatternFindText(sFind), sReplace);
                 },
                 true);
         }
@@ -108,7 +108,7 @@ namespace AP.Reports.AutoDocumets
                 sFind,
                 (cell, worksheet) =>
                 {
-                    cell.Value = Regex.Replace(cell.Value.ToString(), @"\b" + sFind + @"\b", sReplace);
+                    cell.Value = Regex.Replace(cell.Value.ToString(), PatternFindText(sFind), sReplace);
                 },
                 false);
         }
@@ -425,7 +425,7 @@ namespace AP.Reports.AutoDocumets
 
         #endregion
 
-        private void InsertTableToCell(IXLCell cell, DataTable dt, ConditionalFormatting cf)
+        private void InsertTableToCell(IXLCell cell, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             ShiftForATable(dt, ref cell); //Сдвигает строки
             var range = cell.InsertData(dt);
@@ -760,8 +760,7 @@ namespace AP.Reports.AutoDocumets
         {
             if (_workbook != null)
             {
-                string pattern = @"[_, a-z, а-я][_,a-z,а-я,0-9]*";
-                if (Regex.IsMatch(name, pattern, RegexOptions.IgnoreCase) && name.Length<254)
+                if (Regex.IsMatch(name, PatternBookmark, RegexOptions.IgnoreCase) && name.Length<254)
                 {
                     _currentCell?.Worksheet.Workbook.NamedRanges.Add(name, _currentCell.AsRange());
                 }

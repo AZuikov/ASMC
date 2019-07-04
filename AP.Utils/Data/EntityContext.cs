@@ -90,7 +90,7 @@ namespace AP.Utils.Data
             Copy(src, entity);
             return true;
         }
-
+       
         /// <inheritdoc />
         public void Save(object entity)
         {

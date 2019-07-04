@@ -141,25 +141,25 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дату МК.
         ///  </summary> 
         [Column("DTMKFK", TypeName = "datetime")]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         /// <summary>
         /// Возвращает или задает плановую дату МК.
         ///  </summary> 
         [Column("DTMKPL", TypeName = "datetime")]
-        public DateTime DatePlanned { get; set; }
+        public DateTime? DatePlanned { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату приемки.
         ///  </summary> 
         [Column("DTPRM", TypeName = "datetime")]
-        public DateTime DateAcceptance { get; set; }
+        public DateTime? DateAcceptance { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату выдачи.
         ///  </summary> 
         [Column("DTVDM", TypeName = "datetime")]
-        public DateTime DateIssue { get; set; }
+        public DateTime? DateIssue { get; set; }
 
         /// <summary>
         /// Возвращает или задает результат МК (Годен: да / нет).
@@ -225,7 +225,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).
         /// </summary>
         [Browsable(false)]
-        [Column("DTMAXM", TypeName = "int")]
-        public int? _Filed { get; set; }
+        [Column("DTMAXM", TypeName = "datetime")]
+        public DateTime? _Filed { get; set; }
     }
 }
