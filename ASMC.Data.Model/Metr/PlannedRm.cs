@@ -40,7 +40,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дата очередного ремонта.
         /// </summary>
         [Column("DTRMPLO", TypeName = "datetime")]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         /// <summary>
         /// Возвращает или задает позиция в цикле очер. ремонта.

@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Drawing;
+using AP.Reports.AutoDocumets;
 using AP.Reports.Utils;
 
 namespace AP.Reports.Interface
@@ -31,20 +32,22 @@ namespace AP.Reports.Interface
         /// </summary>
         /// <param name="templatePath">Путь к шаблону</param>
         void NewDocumentTemp(string templatePath);
+
         /// <summary>
         /// Заполняет таблицу на закладку(Именованный диапазон)
         /// </summary>
         /// <param name="bm">Наименование закладки</param>
         /// <param name="dt">Таблица с данными</param>
         /// <param name="del">Признак удаления таблицы, если нет данных</param>
-        void FillsTableToBookmark(string bm, DataTable dt,  bool del = false, ConditionalFormatting cf = default(ConditionalFormatting));
+        /// <param name="cf">Условия форматирования</param>
+        void FillsTableToBookmark(string bm, DataTable dt,  bool del = false, Document.ConditionalFormatting cf = default(Document.ConditionalFormatting));
         /// <summary>
         /// Создает новую таблицу на указанной закладке
         /// </summary>
         /// <param name="bm">Наименование закладки</param>
         /// <param name="dt">Таблица с данными</param>
         /// <param name="cf">Условия форматирования</param>
-        void InsertNewTableToBookmark(string bm, DataTable dt,  ConditionalFormatting cf = default(ConditionalFormatting));
+        void InsertNewTableToBookmark(string bm, DataTable dt,  Document.ConditionalFormatting cf = default(Document.ConditionalFormatting));
         /// <summary>
         /// Вставляет текст на закладку
         /// </summary>
@@ -72,6 +75,6 @@ namespace AP.Reports.Interface
         /// </summary>
         /// <param name="dt">Таблица для вставки</param>
         /// <param name="cf">Условия форматирования</param>
-        void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting));
+        void InsertTable(DataTable dt, Document.ConditionalFormatting cf = default(Document.ConditionalFormatting));
     }
 }

@@ -1,7 +1,8 @@
-﻿using AP.Utils.Data;
+﻿
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
@@ -46,13 +47,13 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает штатное состояние (текущее) <see cref="Metr.ConditionStandart"/>.
         /// </summary>
         [ForeignKey("IDSPSS")]
-        public ConditionStandart NormalState { get; set; }
+        public ConditionStandart ConditionStandart { get; set; }
 
         /// <summary>
         /// Возвращает или задает техническое состояние (текущее) <see cref="Metr.ConditionTechnical"/>.
         /// </summary>
         [ForeignKey("IDSPTS")]
-        public ConditionTechnical TechnicalCondition { get; set; }
+        public ConditionTechnical ConditionTechnical { get; set; }
 
         /// <summary>
         /// Возвращает или задает сферу государственного
@@ -104,43 +105,43 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Required]
         [Column("NNZV", TypeName = "varchar(30)")]
-        public string SerialNumber { get; set; }
+        public string NumberSerial { get; set; }
 
         /// <summary>
         /// Возвращает или задает инвентарный №.
         /// </summary>
         [Column("NNIN", TypeName = "varchar(30)")]
-        public string InventoryNumber { get; set; }
+        public string NumberInventory { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату выпуска.
         /// </summary>
         [Column("DTVP", TypeName = "datetime")]
-        public DateTime DateIssue { get; set; }
+        public DateTime? DateIssue { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату ввода в эксплуатацию.
         /// </summary>
         [Column("DTVVEK", TypeName = "datetime")]
-        public DateTime CommissioningDate { get; set; }
+        public DateTime? DateCommissioning { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату сдачи драгметаллов.
         /// </summary>
         [Column("DTSDDR", TypeName = "datetime")]
-        public DateTime SubmissionDatePreciousMetals { get; set; }
+        public DateTime? DateSubmissionPreciousMetals { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату списания.
         /// </summary>
         [Column("DTSPS", TypeName = "datetime")]
-        public DateTime DateWriteOff { get; set; }
+        public DateTime? DateWriteOff { get; set; }
 
         /// <summary>
         /// Возвращает или задает первоначальную стоимость.
         /// </summary>
         [Column("PNCHST", TypeName = "money")]
-        public decimal InitialCost { get; set; }
+        public decimal? CostInitial { get; set; }
 
         /// <summary>
         /// Возвращает или задает состояние при покупке.
@@ -160,13 +161,13 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает характеристики по доп. класс. 1 <see cref="Metr.AdditionalClassification1"/>.
         /// </summary>
         [ForeignKey("IDSPDPKL1")]
-        public AdditionalClassification1 CharacteristicsAdditionalClass1 { get; set; }
+        public AdditionalClassification1 AdditionalClassification1 { get; set; }
 
         /// <summary>
         /// Возвращает или задает характеристики по доп. класс. 2 <see cref="Metr.AdditionalClassification2"/>.
         /// </summary>
         [ForeignKey("IDSPDPKL2")]
-        public AdditionalClassification2 CharacteristicsAdditionalClass2 { get; set; }
+        public AdditionalClassification2 AdditionalClassification2 { get; set; }
 
 
         /// <summary>
@@ -174,8 +175,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
 
         [ForeignKey("IDSPDPKL3")]
-
-        public AdditionalClassification3 CharacteristicsAdditionalClass3 { get; set; }
+        public AdditionalClassification3 AdditionalClassification3 { get; set; }
 
         /// <summary>
         /// Возвращает или задает доп. поле.

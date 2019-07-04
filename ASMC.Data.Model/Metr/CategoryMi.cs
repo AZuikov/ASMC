@@ -11,21 +11,22 @@ namespace ASMC.Data.Model.Metr
     public class CategoryMi
     {
         #region Properties
+
         /// <summary>
         /// Возвращает или задает ключ сущности.
         /// </summary>
         [Key]
         [Browsable(false)]
         [Column("IDSPKT", TypeName = "int")]
-        public int? Id
-        { get; set;
-        }
+        public int? Id { get; set; }
+
         /// <summary>
         /// Возвращает или задает наименование категории СИ.
         /// </summary>
         [Required]
         [Column("NMKT", TypeName = "nvarchar(30)")]
         public string Name { get; set; }
+
         #endregion
     }
 }

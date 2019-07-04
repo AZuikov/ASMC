@@ -100,25 +100,25 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дату окончания ремонта.
         /// </summary>
         [Column("DTORM", TypeName = "datetime")]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         /// <summary>
         /// Возвращает или задает плановую дату ремонта.
         /// </summary>
         [Column("DTRMPL", TypeName = "datetime")]
-        public DateTime DatePlanned { get; set; }
+        public DateTime? DatePlanned { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату приемки.
         /// </summary>
         [Column("DTPRR", TypeName = "datetime")]
-        public DateTime DateAcceptance { get; set; }
+        public DateTime? DateAcceptance { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату выдачи.
         /// </summary>
         [Column("DTVDR", TypeName = "datetime")]
-        public DateTime DateIssue { get; set; }
+        public DateTime? DateIssue { get; set; }
 
         /// <summary>
         /// Возвращает или задает позицию в цикле.
@@ -184,7 +184,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).
         /// </summary>
         [Browsable(false)]
-        [Column("DTMAXR", TypeName = "int")]
-        public int? _Filed { get; set; }
+        [Column("DTMAXR", TypeName = "datetime")]
+        public DateTime? _Filed { get; set; }
     }
 }

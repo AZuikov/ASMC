@@ -15,15 +15,18 @@ namespace ASMC.Data.UnitTest
         [TestMethod]
         public void TestMethod1()
         {
-            var dp = new SqlDataProvider();
-            dp.LoadFromUdl(@"C:\Users\02tav01\Documents\Palitra_System\Metr6\UDL\Metr6.udl");
-            var ekz = new Ekz
+            using(var dp = new SqlDataProvider())
             {
-                Id = 3838
-            };
-            Barcode выфв = new Barcode();
-            //var dsdsa = new EntityContext(dp);
-            //dsdsa.Load(ekz);
+                var Query = $"up_gr_EkzmkSelect  @fltr = 'ekzmk.idekzmk = 72701'";
+                dp.LoadFromUdl(@"C:\Users\" + Environment.UserName + @"\Documents\Palitra_System\Metr6\UDL\Metr6.udl");
+                var EventMc = (new EntityMapper()).Map<EventMc>(dp.Execute(Query).Rows[0]);
+                dp.CloseConnection();
+                var fdfsdnew = new EntityContext(dp);
+                fdfsdnew.Load(EventMc.Ekz);
+                var fdfsdnew1 = new EntityContext(dp);
+                fdfsdnew1.Load(EventMc.Ekz.StandardSizeMi);
+            }
+         
 
         }
     }

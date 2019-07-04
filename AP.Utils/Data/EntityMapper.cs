@@ -85,9 +85,11 @@ namespace AP.Utils.Data
 
             if(dataRow.Table.Columns.Contains(columnName))
             {
-                var value = ConvertValue(dataRow[columnName], prop.PropertyType);
-                if(value != null)
-                    prop.SetValue(entity, value);
+                    var value = ConvertValue(dataRow[columnName], prop.PropertyType);
+                    if(value != null)
+                        prop.SetValue(entity, value);
+           
+              
             }
 
             var foreignKey = prop.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
@@ -127,8 +129,8 @@ namespace AP.Utils.Data
                 return destinationType.IsValueType ? Activator.CreateInstance(destinationType) : null;
             if(destinationType == typeof(bool))
                 return (value is byte b) && b == 1;
-            var nullableType = Nullable.GetUnderlyingType(destinationType);
-            return Convert.ChangeType(value, nullableType?? destinationType);
+            var nullableType = Nullable.GetUnderlyingType(destinationType);      
+                return Convert.ChangeType(value, nullableType ?? destinationType);
         }
 
         private static string GetEntityKey(Type entityType)

@@ -22,7 +22,7 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Required]
         [Column("NMTS", TypeName = "varchar(30)")]
-        public string NameTechnicalCondition { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// Возвращает или задает флаг на разришение операции на запись
         /// </summary>

@@ -13,6 +13,7 @@ using Microsoft.Office.Interop.Word;
 using SystemOffice = Microsoft.Office.Interop.Word.System;
 using DataTable = System.Data.DataTable;
 using AP.Reports.Utils;
+using Document = AP.Reports.AutoDocumets.Document;
 
 namespace UnitTest.AP.Reports
 {
@@ -251,14 +252,14 @@ namespace UnitTest.AP.Reports
             return dt;
         }
 
-        private ConditionalFormatting GetCondition()
+        private Document.ConditionalFormatting GetCondition()
         {
-            ConditionalFormatting cf = new ConditionalFormatting();
+            Document.ConditionalFormatting cf = new Document.ConditionalFormatting();
             cf.Value = "10";
             cf.Color = Color.MediumTurquoise;
             cf.NameColumn = "col3";
-            cf.Condition = ConditionalFormatting.Conditions.MoreOrEqual;
-            cf.Region = ConditionalFormatting.RegionAction.Row;
+            cf.Condition = Document.ConditionalFormatting.Conditions.MoreOrEqual;
+            cf.Region = Document.ConditionalFormatting.RegionAction.Row;
             return cf;
         }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AP.Reports.Utils;
 using System.Data;
 using System.Drawing;
+using static AP.Reports.AutoDocumets.Document;
 
 namespace AP.Reports.AutoDocumets
 {

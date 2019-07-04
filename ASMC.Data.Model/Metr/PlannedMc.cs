@@ -34,7 +34,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дату МК.
         /// </summary>
         [Column("DTMKPLO", TypeName = "datetime")]
-        public DateTime Date{ get; set; }
+        public DateTime? Date{ get; set; }
         /// <summary>
         /// Возвращает или задает позицию очер. МК в цикле.
         /// </summary>
