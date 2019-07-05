@@ -133,7 +133,7 @@ namespace UnitTest.AP.Reports
                 _excel.InsertNewTableToBookmark("AddTable", dt, GetCondition());
                 _excel.InsertImageToBookmark("AddImage", image);
                 _excel.InsertImageToBookmark("AddImageWithScale",image, (float)0.5);
-                _excel.FillsTableToBookmark("FillTable", dt, false, GetCondition());
+                _excel.FillTableToBookmark("FillTable", dt, false, GetCondition());
                 _excel.SaveAs(_pathToTestFolder + "TestBmReplased.xlsx");
             }
         }
