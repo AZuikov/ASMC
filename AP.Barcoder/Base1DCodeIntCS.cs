@@ -4,7 +4,7 @@ namespace AP.Barcoder
 {
     public class Base1DCodeIntCS : Base1DCode, IBarcodeIntCS
     {
-        internal Base1DCodeIntCS(BitList bitList, string kind, string content, int checksum)
+        internal Base1DCodeIntCS(BitList bitList, BarcodeType kind, string content, int checksum)
             : base(bitList, kind, content)
         {
             Checksum = checksum;
