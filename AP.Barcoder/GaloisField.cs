@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Barcoder.Utils
+namespace AP.Barcoder.Utils
 {
     internal struct GaloisField
     {

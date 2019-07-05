@@ -1,6 +1,6 @@
-﻿using Barcoder.Utils;
+﻿using AP.Barcoder.Utils;
 
-namespace Barcoder
+namespace AP.Barcoder
 {
     public class Base1DCodeIntCS : Base1DCode, IBarcodeIntCS
     {

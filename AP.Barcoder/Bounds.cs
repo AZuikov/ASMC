@@ -1,4 +1,4 @@
-﻿namespace Barcoder
+﻿namespace AP.Barcoder
 {
     public struct Bounds
     {

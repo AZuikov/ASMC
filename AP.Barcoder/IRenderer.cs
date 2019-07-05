@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Barcoder.Renderers
+namespace AP.Barcoder.Renderers
 {
     public interface IRenderer
     {

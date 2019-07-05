@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Barcoder.Utils
+namespace AP.Barcoder.Utils
 {
     internal class ReedSolomonEncoder
     {
