@@ -40,7 +40,7 @@ namespace AP.Reports.Interface
         /// <param name="dt">Таблица с данными</param>
         /// <param name="del">Признак удаления таблицы, если нет данных</param>
         /// <param name="cf">Условия форматирования</param>
-        void FillsTableToBookmark(string bm, DataTable dt,  bool del = false, Document.ConditionalFormatting cf = default(Document.ConditionalFormatting));
+        void FillTableToBookmark(string bm, DataTable dt,  bool del = false, Document.ConditionalFormatting cf = default(Document.ConditionalFormatting));
         /// <summary>
         /// Создает новую таблицу на указанной закладке
         /// </summary>

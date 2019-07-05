@@ -125,8 +125,8 @@ namespace UnitTest.AP.Reports
             //    }
             //    dataTable.Rows.Add(dataRow[i]);
             //}
-            //word.FillsTableToBookmark("test1",dataTable);
-            word.FillsTableToBookmark("test", new DataTable());
+            //word.FillTableToBookmark("test1",dataTable);
+            word.FillTableToBookmark("test", new DataTable());
             word.SaveAs(@"C:\Users\02tav01\Documents\Документ Microsoft Word3.docx");
             word.Close();
         }

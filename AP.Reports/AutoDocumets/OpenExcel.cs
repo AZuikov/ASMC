@@ -63,7 +63,7 @@ namespace AP.Reports.AutoDocumets
         #endregion
 
         #region  Inserts by bookmark
-        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             throw new NotImplementedException();
         }

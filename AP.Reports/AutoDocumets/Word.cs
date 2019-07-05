@@ -12,7 +12,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DevExpress.XtraRichEdit;
 using DevExpress.XtraRichEdit.API.Native;
-
+using AP.Utils.Data;
+using Enum = System.Enum;
 
 namespace AP.Reports.AutoDocumets
 {
@@ -30,6 +31,7 @@ namespace AP.Reports.AutoDocumets
             /// <summary>
             /// Документ
             /// </summary>
+            /// 
             Docx,
             /// <summary>
             /// Шаблон
@@ -65,13 +67,12 @@ namespace AP.Reports.AutoDocumets
         }
 
         private string _path;
-        /// <summary>
-        /// Путь к файлу
-        /// </summary>
+        /// <inheritdoc />
         public string Path
         {
+
             get
-            {
+            {  
                 return _path;
             }
             set
@@ -86,6 +87,12 @@ namespace AP.Reports.AutoDocumets
                 }
             }
         }
+
+        public Array Formats
+        {
+            get { return Enum.GetValues(typeof(FileFormat)); }
+        }
+
         /// <summary>
         /// Возвращает результат проверки пути к файлу
         /// </summary>
@@ -93,7 +100,6 @@ namespace AP.Reports.AutoDocumets
         /// <returns>Возвращает true если путь и формат файла допустимы</returns>
         private bool ValidPath(string path)
         {
-           
             if(string.IsNullOrEmpty(path))
             {
                 throw new FileNotFoundException("Путь к файлу не указан.");
@@ -117,10 +123,14 @@ namespace AP.Reports.AutoDocumets
             _documentRange = null;
         }
         /// <inheritdoc />
-        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             DocumentRange = _document.Bookmarks[bm]?.Range;
-            var table = _document.Tables.Get(DocumentRange)?.First();
+            var table = _document.Tables?.Get(DocumentRange)?.First();
+            if (table==null)
+            {
+              return;
+            }
             if(dt.Rows.Count < 1)
             {   
                 _document.BeginUpdate();
@@ -238,13 +248,13 @@ namespace AP.Reports.AutoDocumets
                 {
                     DocumentPosition = cell.Range.Start;
                     if (cell.ColumnSpan<2)
-                    {   
+                    {
+                        if(_document.GetText(cell.Range).Length==0) 
                         InsertText(dt.Rows[row.Index][cell.Index].ToString());
                     }
                 }
             }
            
-            //throw new NotImplementedException();
         }
         /// <summary>
         /// Устанавливает заливку ячеек таблицы по правилу ConditionalFormatting

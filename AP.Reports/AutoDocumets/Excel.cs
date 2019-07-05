@@ -57,7 +57,7 @@ namespace AP.Reports.AutoDocumets
             _workbook.Dispose();
         }
 
-        public void FillsTableToBookmark(string bm, DataTable dt, bool del = false,
+        public void FillTableToBookmark(string bm, DataTable dt, bool del = false,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (_workbook != null)
