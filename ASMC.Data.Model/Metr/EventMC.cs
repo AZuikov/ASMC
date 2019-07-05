@@ -60,13 +60,13 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает пов./ калибр.организацию / подразделение, факт <see cref="Metr.Organization"/>.
         ///  </summary>          
         [ForeignKey("IDFRPD")]
-        public Organization OrganizationPerformingWork { get; set; }
+        public Organization OrganizationOfPerformingWork { get; set; }
 
         /// <summary>
         /// Возвращает или задает место МК <see cref="Metr.ServicePlace"/>.
         ///  </summary> 
         [ForeignKey("IDSPMPOB")]
-        public ServicePlace ServicePlace { get; set; }
+        public ServicePlace ServiceOfPlace { get; set; }
 
         /// <summary>
         /// Возвращает или задает поверителя <see cref="Metr.Person"/>.
@@ -117,19 +117,19 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает номер заявки на МК.
         ///  </summary> 
         [Column("NNZVPV", TypeName = "int")]
-        public int? NumberRequest { get; set; }
+        public int? NumberOfRequest { get; set; }
 
         /// <summary>
         /// Возвращает или задает шифр клейма.
         ///  </summary> 
         [Column("SHFKL", TypeName = "varchar(20)")]
-        public string StampCipher { get; set; }
+        public string StampOfCipher { get; set; }
 
         /// <summary>
         /// Возвращает или задает номер наклейки.
         ///  </summary> 
         [Column("NNNKL", TypeName = "int")]
-        public int? StickerNumber { get; set; }
+        public int? StickerOfNumber { get; set; }
 
         /// <summary>
         /// Возвращает или задает период МК, мес.
@@ -147,19 +147,19 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает плановую дату МК.
         ///  </summary> 
         [Column("DTMKPL", TypeName = "datetime")]
-        public DateTime? DatePlanned { get; set; }
+        public DateTime? DateOfPlanned { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату приемки.
         ///  </summary> 
         [Column("DTPRM", TypeName = "datetime")]
-        public DateTime? DateAcceptance { get; set; }
+        public DateTime? DateOfAcceptance { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату выдачи.
         ///  </summary> 
         [Column("DTVDM", TypeName = "datetime")]
-        public DateTime? DateIssue { get; set; }
+        public DateTime? DateOfIssue { get; set; }
 
         /// <summary>
         /// Возвращает или задает результат МК (Годен: да / нет).
@@ -171,7 +171,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает позицию в цикле.
         ///  </summary> 
         [Column("PZMC", TypeName = "int")]
-        public int? PositionQueue { get; set; }
+        public int? PositionOfQueue { get; set; }
 
         /// <summary>
         /// Возвращает или задает стоимость.
@@ -213,13 +213,13 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает техническое состояние в момент приёмки <see cref="Metr.ConditionTechnical"/>.
         ///  </summary>
         [ForeignKey("idsptsmp")]
-        public ConditionTechnical SnapshotConditionTechnical { get; set; }
+        public ConditionTechnical SnapshotConditionOfTechnical { get; set; }
 
         /// <summary>
         /// Возвращает или задает штатное состояние в момент приёмки  <see cref="Metr.ConditionStandart"/>.
         ///  </summary>
         [ForeignKey("idspssmp")]
-        public ConditionStandart SnapshotConditionStandart { get; set; }
+        public ConditionStandart SnapshotConditionOfStandart { get; set; }
 
         /// <summary>
         /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).
