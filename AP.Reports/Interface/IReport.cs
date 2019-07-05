@@ -4,6 +4,7 @@ namespace AP.Reports.Interface
 {
     public interface IReport
     {
+
         /// <summary>
         /// Путь к файлу
         /// </summary>

@@ -108,6 +108,7 @@ namespace AP.Reports.AutoDocumets
             }
             return false;
         }
+        /// <inheritdoc />
         public void Close()
         {
             _documentServer = null;
@@ -115,7 +116,7 @@ namespace AP.Reports.AutoDocumets
             _documentPosition = null;
             _documentRange = null;
         }
-
+        /// <inheritdoc />
         public void FillsTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             DocumentRange = _document.Bookmarks[bm]?.Range;
@@ -130,7 +131,7 @@ namespace AP.Reports.AutoDocumets
             FillingTable(table, dt, cf);
             SetConditionalFormatting(table, dt, cf);
         }
-
+        /// <inheritdoc />
         public void FindStringAndAllReplace(string sFind, string sReplace)
         {
             _document.BeginUpdate();
@@ -141,7 +142,7 @@ namespace AP.Reports.AutoDocumets
             }  
             _document.EndUpdate();
         }
-
+        /// <inheritdoc />
         public void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             _document.BeginUpdate();
@@ -163,6 +164,7 @@ namespace AP.Reports.AutoDocumets
             }    
             return foundTotal.Length;
         }
+        /// <inheritdoc />
         public void FindStringAndReplace(string sFind, string sReplace)
         {
             _document.BeginUpdate();
@@ -174,7 +176,7 @@ namespace AP.Reports.AutoDocumets
             _document.EndUpdate();
         }
 
-
+        /// <inheritdoc />
         public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             _document.BeginUpdate();
@@ -185,27 +187,27 @@ namespace AP.Reports.AutoDocumets
             }
             _document.EndUpdate();
         }
-
+        /// <inheritdoc />
         public void InsertImage(Bitmap image, float scale = 1)
         {
             var shapes=_document.Images.Insert(DocumentPosition, image);
             shapes.ScaleX = scale;
             shapes.ScaleY = scale;
         }
-
+        /// <inheritdoc />
         public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
 
             DocumentPosition = _document.Bookmarks[bm]?.Range.Start;
             InsertImage(image, scale);
         }
-
+        /// <inheritdoc />
         public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {    
             DocumentPosition = _document.Bookmarks[bm]?.Range.Start;
             InsertTable(dt, cf);
         }
-
+        /// <inheritdoc />
         public void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             var table= _document.Tables.Create(DocumentPosition, dt.Rows.Count, dt.Columns.Count);
@@ -354,11 +356,12 @@ namespace AP.Reports.AutoDocumets
             }
             return false;
         }
+        /// <inheritdoc />
         public void InsertText(string text)
         {     
             _document.InsertText(DocumentPosition, text);
         }
-
+        /// <inheritdoc />
         public void InsertTextToBookmark(string bm, string text)
         {
             var bookmarks = _document.Bookmarks[bm];
@@ -369,7 +372,7 @@ namespace AP.Reports.AutoDocumets
             DocumentPosition = _document.Bookmarks[bm].Range.Start;
         
         }
-
+        /// <inheritdoc />
         public void MergeDocuments(string pathdoc)
         {
             if (_documentServer?.Document == null)
@@ -383,7 +386,7 @@ namespace AP.Reports.AutoDocumets
                 _document.AppendDocumentContent(reds.Document.Range);
             }
         }
-
+        /// <inheritdoc />
         public void MergeDocuments(IEnumerable<string> pathdoc)
         {
             foreach (var doc in pathdoc)
@@ -391,23 +394,23 @@ namespace AP.Reports.AutoDocumets
                 MergeDocuments(doc);
             }
         }
-
+        /// <inheritdoc />
         public void MoveEnd()
         {
             _documentPosition = _document?.Range.End;
         }
-
+        /// <inheritdoc />
         public void MoveHome()
         {   
             _documentPosition = _document?.Range.Start;
         }
-
+        /// <inheritdoc />
         public void NewDocument()
         {
             _documentServer = new RichEditDocumentServer();
             _document = _documentServer.Document; 
         }
-
+        /// <inheritdoc />
         public void NewDocumentTemp(string templatePath)
         {
             if(ValidPath(templatePath))
@@ -417,7 +420,7 @@ namespace AP.Reports.AutoDocumets
                 _document = _documentServer.Document;
             }
         }
-
+        /// <inheritdoc />
         public void OpenDocument(string sPath)
         {
             Path = sPath;
@@ -425,7 +428,7 @@ namespace AP.Reports.AutoDocumets
             _documentServer.LoadDocument(Path, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             _document = _documentServer.Document;
         }
-
+        /// <inheritdoc />
         public void Save()
         {
             if (string.IsNullOrEmpty(Path))
@@ -434,7 +437,7 @@ namespace AP.Reports.AutoDocumets
             }
            
         }
-
+        /// <inheritdoc />
         public void SaveAs(string pathToSave)
         {
             if (!string.IsNullOrEmpty(pathToSave))
@@ -442,7 +445,7 @@ namespace AP.Reports.AutoDocumets
                 _document?.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             }
         }
-
+        /// <inheritdoc />
         public void Dispose()
         {
             _documentServer?.Dispose();
