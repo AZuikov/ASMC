@@ -58,6 +58,7 @@
     <Compile Include="Data\DataProviderExtensions.cs" />
     <Compile Include="Data\EntityContext.cs" />
     <Compile Include="Data\EntityMapper.cs" />
+    <Compile Include="Data\EnumAttribute.cs" />
     <Compile Include="Data\FallbackTypeMapper.cs" />
     <Compile Include="Data\ProcedureAttribute.cs" />
     <Compile Include="Data\UdlBuilder.cs" />

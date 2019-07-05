@@ -1,6 +1,7 @@
-﻿using Barcoder.Utils;
+﻿using AP.Barcoder.Utils;
+using AP.Utils.Data;
 
-namespace Barcoder.DataMatrix
+namespace AP.Barcoder.DataMatrix
 {
     public sealed class DataMatrixCode : IBarcode
     {
@@ -11,7 +12,7 @@ namespace Barcoder.DataMatrix
         {
             _size = size;
             Bounds = new Bounds(size.Columns, size.Rows);
-            Metadata = new Metadata(BarcodeType.DataMatrix, 2);
+            Metadata = new Metadata(BarcodeType.DataMatrix.GetStringValue(), 2);
             _data = new BitList(size.Rows * size.Columns);
         }
 

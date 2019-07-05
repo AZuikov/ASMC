@@ -41,7 +41,7 @@ namespace AP.Utils.Data
     /// проецируемой сущности.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class StoredProcedureAttribute : Attribute
+    public class StoredProcedureAttribute : System.Attribute
     {
         /// <summary>
         /// Возвращает имя хранимой процедуры.

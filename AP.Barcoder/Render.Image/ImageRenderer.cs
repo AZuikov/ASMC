@@ -3,10 +3,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Numerics;
-using Barcoder.Renderers;
+using AP.Barcoder.Renderers;
 
 
-namespace Barcoder.Renderer.Image
+namespace AP.Barcoder.Renderer.Image
 {
     public sealed class ImageRenderer : IRenderer
     {

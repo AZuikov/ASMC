@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Barcoder.Utils;
+using AP.Barcoder.Utils;
 
-namespace Barcoder.Code128
+namespace AP.Barcoder.Code128
 {
     public static class Code128Encoder
     {
@@ -39,7 +39,7 @@ namespace Barcoder.Code128
             if (includeChecksum)
                 result.AddBit(Constants.EncodingTable[sum]);
             result.AddBit(Constants.EncodingTable[Constants.StopSymbol]);
-            return new Base1DCodeIntCS(result, BarcodeType.Code128, content, sum);
+            return new Base1DCodeIntCS(result,BarcodeType.Code128, content, sum);
         }
 
         internal static bool ShouldUseCTable(char[] nextChars, byte currentEncoding)

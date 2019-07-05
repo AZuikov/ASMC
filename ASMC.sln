@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest.AP.Utils", "UnitTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMC.Data.UnitTest", "ASMC.Data.UnitTest\ASMC.Data.UnitTest.csproj", "{5F5E3980-00EB-45D1-8C28-8B23CFEB01C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Barcoder", "AP.Barcoder\Barcoder.csproj", "{81B5A006-AAB3-43B0-B7C1-2E290B87F1BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AP.Barcoder", "AP.Barcoder\AP.Barcoder.csproj", "{81B5A006-AAB3-43B0-B7C1-2E290B87F1BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

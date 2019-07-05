@@ -1,4 +1,4 @@
-﻿namespace Barcoder.DataMatrix
+﻿namespace AP.Barcoder.DataMatrix
 {
     internal sealed class CodeSize
     {

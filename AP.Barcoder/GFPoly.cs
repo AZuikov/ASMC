@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Barcoder.Utils
+namespace AP.Barcoder.Utils
 {
     internal struct GFPoly
     {

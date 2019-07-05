@@ -1,7 +1,7 @@
 ﻿using System;
-using Barcoder.Utils;
+using AP.Barcoder.Utils;
 
-namespace Barcoder.DataMatrix
+namespace AP.Barcoder.DataMatrix
 {
     internal sealed class CodeLayout
     {

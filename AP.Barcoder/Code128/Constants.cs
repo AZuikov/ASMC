@@ -1,4 +1,4 @@
-﻿namespace Barcoder.Code128
+﻿namespace AP.Barcoder.Code128
 {
     internal static class Constants
     {

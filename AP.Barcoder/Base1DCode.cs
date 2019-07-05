@@ -1,19 +1,21 @@
 ﻿using System;
-using Barcoder.Utils;
+using AP.Barcoder.Utils;
+using AP.Barcoder;
+using AP.Utils.Data;
 
-namespace Barcoder
+namespace AP.Barcoder
 {
     public class Base1DCode : IBarcode
     {
         private readonly BitList _bitList;
 
         internal Base1DCode(
-            BitList bitList, string kind, string content)
+            BitList bitList, BarcodeType kind, string content)
         {
             _bitList = bitList;
             Content = content;
             Bounds = new Bounds(_bitList.Length, 1);
-            Metadata = new Metadata(kind, 1);
+            Metadata = new Metadata(kind.GetStringValue(), 1);
         }
 
         public string Content { get; }
