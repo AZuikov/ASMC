@@ -40,7 +40,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает ремонтир./ калибр.организацию / подразделение, факт <see cref="Metr.Organization"/>.
         ///  </summary>          
         [ForeignKey("IDFRPD")]
-        public Organization OrganizationPerformingWork { get; set; }
+        public Organization OrganizationOfPerformingWork { get; set; }
 
         /// <summary>
         /// Возвращает или задает место ремонта <see cref="Metr.ServicePlace"/>.
@@ -106,25 +106,25 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает плановую дату ремонта.
         /// </summary>
         [Column("DTRMPL", TypeName = "datetime")]
-        public DateTime? DatePlanned { get; set; }
+        public DateTime? DateOfPlanned { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату приемки.
         /// </summary>
         [Column("DTPRR", TypeName = "datetime")]
-        public DateTime? DateAcceptance { get; set; }
+        public DateTime? DateOfAcceptance { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату выдачи.
         /// </summary>
         [Column("DTVDR", TypeName = "datetime")]
-        public DateTime? DateIssue { get; set; }
+        public DateTime? DateOfIssue { get; set; }
 
         /// <summary>
         /// Возвращает или задает позицию в цикле.
         /// </summary>
         [Column("PZRC", TypeName = "int")]
-        public int? PositionQueue { get; set; }
+        public int? PositionOfQueue { get; set; }
 
         /// <summary>
         /// Возвращает или задает характеристика ремонта
@@ -172,13 +172,13 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает техническое состояние в момент приемки <see cref="Metr.ConditionTechnical"/>.
         ///  </summary> 
         [ForeignKey("idsptsmp")]
-        public ConditionTechnical SnapshotConditionTechnical { get; set; }
+        public ConditionTechnical SnapshotConditionOfTechnical { get; set; }
 
         /// <summary>
         /// Возвращает или задает штатное состояние в момент приемки <see cref="Metr.ConditionStandart"/>.
         ///  </summary> 
         [ForeignKey("idspssmp")]
-        public ConditionStandart SnapshotConditionStandart { get; set; }
+        public ConditionStandart SnapshotConditionOfStandart { get; set; }
 
         /// <summary>
         /// Возвращает или задает (НЕ ЯСНО, ЧТО ЭТО).

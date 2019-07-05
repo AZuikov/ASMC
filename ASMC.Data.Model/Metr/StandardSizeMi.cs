@@ -53,7 +53,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает номер госреестра типоразмера.
         /// </summary>
         [Column("NNGSRS", TypeName = "varchar(8)")]
-        public string RegisterNumber { get; set; }
+        public string NumberRegister { get; set; }
         /// <summary>
         /// Возвращает или задает служебный код.
         /// </summary>

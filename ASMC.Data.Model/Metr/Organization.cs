@@ -44,12 +44,12 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дату создания
         /// </summary>
         [Column("DTSZFRPD", TypeName = "datetime")]
-        public DateTime? DateСreation { get; set; }
+        public DateTime? DateOfСreation { get; set; }
         /// <summary>
         /// Возвращает или задает дату ликвидации
         /// </summary>
         [Column("DTLKFRPD", TypeName = "datetime")]
-        public DateTime? DataLiquidation { get; set; }
+        public DateTime? DataOfLiquidation { get; set; }
 
     }
 }

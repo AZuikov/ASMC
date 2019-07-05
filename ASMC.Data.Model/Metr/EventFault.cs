@@ -52,14 +52,14 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает дату обнаружения.
         /// </summary>
         [Column("DTOBOT", TypeName = "datetime")]
-        public DateTime? DateDetection { get; set; }
+        public DateTime? DateOfDetection { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату устранения.
         /// </summary>
         [Column("DTYSOT", TypeName = "datetime")]
 
-        public DateTime? DateElimination { get; set; }
+        public DateTime? DateOfElimination { get; set; }
 
         /// <summary>
         /// Возвращает или задает наработку на отказ, час.
@@ -71,13 +71,13 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает время устранения, час.
         /// </summary>
         [Column("VRYSOT", TypeName = "int")]
-        public int? TimeElimination { get; set; }
+        public int? TimeOfElimination { get; set; }
 
         /// <summary>
         /// Возвращает или задает сущность дефекта.
         /// </summary>
         [Column("SSDF", TypeName = "varchar(200)")]
-        public string DefectDescription { get; set; }
+        public string DefectOfDescription { get; set; }
 
         /// <summary>
         /// Возвращает или задает причину отказа.

@@ -36,6 +36,7 @@ namespace ASMC.Data.Model.Metr
         [Column("KLPV", TypeName = "int")]
         public int?
 
-            ExecutorNumber { get; set; }
+            NumberOfExecutor
+        { get; set; }
     }
 }

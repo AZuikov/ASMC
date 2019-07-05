@@ -148,14 +148,14 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает техническое состояние в момент приемки <see cref="Metr.ConditionTechnical"/>.
         /// </summary>
         [ForeignKey("idsptsmp")]
-        public ConditionTechnical SnapshotConditionTechnical
+        public ConditionTechnical SnapshotConditionOfTechnical
         { get; set; }
 
         /// <summary>
         /// Возвращает или задает штатное состояние в момент приемки <see cref="Metr.ConditionStandart"/>.
         /// </summary>
         [ForeignKey("idspssmp")]
-        public ConditionStandart SnapshotConditionStandart
+        public ConditionStandart SnapshotConditionOfStandart
         { get; set; }
 
         /// <summary>

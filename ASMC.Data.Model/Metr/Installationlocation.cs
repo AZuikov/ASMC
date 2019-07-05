@@ -28,13 +28,13 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Required]
         [Column("NNUR", TypeName = "int")]
-        public int? LevelNumber{ get; set; }
+        public int? LevelOfNumber{ get; set; }
         /// <summary>
         /// Возвращает или задает тип ветви (НЕ ЯСНО, ОТ КУДА ДАННЫЕ).
         /// </summary>
         [Required]
         [Column("TPVT", TypeName = "int")]
-        public int? TypeBranch{ get; set; }
+        public int? TypeOfBranch{ get; set; }
         /// <summary>
         /// Возвращает или задает наименование места установки.
         /// </summary>

@@ -47,20 +47,20 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает штатное состояние (текущее) <see cref="Metr.ConditionStandart"/>.
         /// </summary>
         [ForeignKey("IDSPSS")]
-        public ConditionStandart ConditionStandart { get; set; }
+        public ConditionStandart ConditionOfStandart { get; set; }
 
         /// <summary>
         /// Возвращает или задает техническое состояние (текущее) <see cref="Metr.ConditionTechnical"/>.
         /// </summary>
         [ForeignKey("IDSPTS")]
-        public ConditionTechnical ConditionTechnical { get; set; }
+        public ConditionTechnical ConditionOfTechnical { get; set; }
 
         /// <summary>
         /// Возвращает или задает сферу государственного
         /// регулирования обеспечения единства измерений <see cref="Metr.AreasMetrologicalControl"/>.
         /// </summary>
         [ForeignKey("IDSPSHMK")]
-        public AreasMetrologicalControl AreasMetrologicalControl { get; set; }
+        public AreasMetrologicalControl AreasOfMetrologicalControl { get; set; }
 
         /// <summary>
         /// Возвращает или задает области применения СИ <see cref="Metr.AreaApplication"/>.
@@ -78,76 +78,84 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает владелеца <see cref="Metr.Organization"/>.
         /// </summary>
         [ForeignKey("IDFRPDV")]
-        public Organization OrganizatioOwner { get; set; }
+        public Organization OrganizationOfOwner { get; set; }
 
         /// <summary>
         /// Возвращает или задает изготовителя <see cref="Metr.Organization"/>.
         /// </summary>
 
         [ForeignKey("IDFRPDIZ")]
-        public Organization OrganizationManufacturer { get; set; }
+        public Organization OrganizationOfManufacturer { get; set; }
 
         /// <summary>
         /// Возвращает или задает подразделение ответственное за МО <see cref="Metr.Organization"/>.
         /// </summary>
         [ForeignKey("IDFRPDMO")]
-        public Organization OrganizationResponsibleMs { get; set; }
+        public Organization OrganizationOfResponsibleMs { get; set; }
 
         /// <summary>
         /// Возвращает или задает кол-во СИ.
         /// </summary>
         [Required]
         [Column("KLSIPR", TypeName = "int")]
-        public int? MiNumber { get; set; }
+        public int? NumberOfMi { get; set; }
 
         /// <summary>
         /// Возвращает или задает заводской №.
         /// </summary>
         [Required]
         [Column("NNZV", TypeName = "varchar(30)")]
-        public string NumberSerial { get; set; }
+        public string NumberOfSerial
+        { get; set; }
 
         /// <summary>
         /// Возвращает или задает инвентарный №.
         /// </summary>
         [Column("NNIN", TypeName = "varchar(30)")]
-        public string NumberInventory { get; set; }
+        public string NumberOfInventory
+        { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату выпуска.
         /// </summary>
         [Column("DTVP", TypeName = "datetime")]
-        public DateTime? DateIssue { get; set; }
+        public DateTime? DateOfIssue
+        { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату ввода в эксплуатацию.
         /// </summary>
         [Column("DTVVEK", TypeName = "datetime")]
-        public DateTime? DateCommissioning { get; set; }
+        public DateTime? DateOfCommissioning
+        { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату сдачи драгметаллов.
         /// </summary>
         [Column("DTSDDR", TypeName = "datetime")]
-        public DateTime? DateSubmissionPreciousMetals { get; set; }
+        public DateTime? DateOfSubmissionPreciousMetals
+        { get; set; }
 
         /// <summary>
         /// Возвращает или задает дату списания.
         /// </summary>
         [Column("DTSPS", TypeName = "datetime")]
-        public DateTime? DateWriteOff { get; set; }
+        public DateTime? DateOfWriteOff
+        { get; set; }
 
         /// <summary>
         /// Возвращает или задает первоначальную стоимость.
         /// </summary>
         [Column("PNCHST", TypeName = "money")]
-        public decimal? CostInitial { get; set; }
+        public decimal? CostOfInitial
+        { get; set; }
 
         /// <summary>
         /// Возвращает или задает состояние при покупке.
         /// </summary>
         [Column("SSPK", TypeName = "varchar(7)")]
-        public string PurchaseCondition { get; set; }
+        public string ConditionOfPurchase
+        { get; set; }
 
 
         /// <summary>
@@ -193,13 +201,14 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает флаг внесен в Госреестр экземпляр или нет.
         /// </summary>
         [Column("GRVN", TypeName = "bit")]
-        public bool? StateRegistry { get; set; }
+        public bool? StateOfRegistry { get; set; }
 
         /// <summary>
         /// Возвращает или задает номер госреестра. 
         /// </summary>
         [Column("NNEKZGR", TypeName = "varchar(8)")]
-        public string RegisterNumber { get; set; }
+        public string NumberOfRegister
+        { get; set; }
 
         #endregion
     }

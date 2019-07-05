@@ -36,7 +36,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает НД на поверочную схему.
         /// </summary>
         [Column("NDPVSH", TypeName = "varchar(150)")]
-        public string DocumentVerifScheme { get; set; }
+        public string DocumentOfVerifScheme { get; set; }
         /// <summary>
         /// Возвращает или задает НД на методику поверки.
         /// </summary>

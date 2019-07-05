@@ -39,7 +39,7 @@ namespace ASMC.Data.Model.Metr
         /// Возвращает или задает позицию очер. МК в цикле.
         /// </summary>
         [Column("PZMCO", TypeName = "int")]
-        public int? PositionQueue { get; set; }
+        public int? PositionOfQueue { get; set; }
         /// <summary>
         /// Возвращает или задает вид очередного МК <see cref="Metr.TypeMc"/>.
         /// </summary>      
