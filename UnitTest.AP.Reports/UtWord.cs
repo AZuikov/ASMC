@@ -204,6 +204,35 @@ namespace UnitTest.AP.Reports
             word.Close();
         }
 
+        [TestMethod]
+        public void TestMethodError()
+        {
+            word = new Word();
+            word.OpenDocument(@"Z:\ОГМетр\Внутренние\Документы - Общие\AutoMeas\Протоколы\ProtocolCreatorTemplates\HeaderAlbum.dotx");
+
+            DataTable weatherDataTable = new DataTable();
+            weatherDataTable.Columns.Add(new DataColumn("Контролируемые параметры", typeof(string)));
+            weatherDataTable.Columns.Add(new DataColumn("Требования НД", typeof(string)));
+            weatherDataTable.Columns.Add(new DataColumn("Измеренные значения", typeof(string)));
+            int rowsNum = 0;
+            for (int i=0; i<3; i++)
+            {
+
+                    weatherDataTable.Rows.Add(weatherDataTable.NewRow());
+                    weatherDataTable.Rows[rowsNum][0] = i.ToString();
+                    weatherDataTable.Rows[rowsNum][2] = i.ToString();
+                rowsNum++;
+            }
+
+
+            word.FillsTableToBookmark("weatherTable", weatherDataTable);
+            word.MoveEnd();
+
+            //word.InsertImage(mb);   
+            word.SaveAs(@"C:\\Users\\02ias01\\Desktop\\111\\1488.docx");
+            word.Close();
+        }
+
         private Document.ConditionalFormatting GetCondition()
         {
             Document.ConditionalFormatting cf = new Document.ConditionalFormatting();
@@ -253,6 +282,9 @@ namespace UnitTest.AP.Reports
             dt.TableName = "Table" + rnd.Next(100) + "_CreatedByRandom";
             return dt;
         }
+
+
+
     }
 
 }

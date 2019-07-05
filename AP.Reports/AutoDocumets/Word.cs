@@ -254,27 +254,30 @@ namespace AP.Reports.AutoDocumets
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
             int formatingColumn = dt.Columns.IndexOf(cf.NameColumn);
-            //string columnList = null;
-            foreach(var row in tab.Rows)
+            if (cf.NameColumn != null)
             {
-                
-                if(!DoesItNeedToSetCondition (_document.GetText(row.Cells[formatingColumn].ContentRange), cf))
+                foreach (var row in tab.Rows)
                 {
-                    continue;
-                }
 
-                if(cf.Region == ConditionalFormatting.RegionAction.Cell)
-                {
-                    row[formatingColumn].BackgroundColor = cf.Color;
-                }
-                if(cf.Region != ConditionalFormatting.RegionAction.Row)
-                {
-                    continue;
-                }
+                    if (!DoesItNeedToSetCondition(_document.GetText(row.Cells[formatingColumn].ContentRange), cf))
+                    {
+                        continue;
+                    }
 
-                foreach(var cell in row.Cells)
-                {
-                    cell.BackgroundColor = cf.Color;  
+                    if (cf.Region == ConditionalFormatting.RegionAction.Cell)
+                    {
+                        row[formatingColumn].BackgroundColor = cf.Color;
+                    }
+
+                    if (cf.Region != ConditionalFormatting.RegionAction.Row)
+                    {
+                        continue;
+                    }
+
+                    foreach (var cell in row.Cells)
+                    {
+                        cell.BackgroundColor = cf.Color;
+                    }
                 }
             }
         }
