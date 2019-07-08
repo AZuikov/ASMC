@@ -3,8 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using AP.Reports.AutoDocumets;
-using AP.Reports.Utils;
-using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Win32;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Document = AP.Reports.AutoDocumets.Document;
 
