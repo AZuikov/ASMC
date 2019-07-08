@@ -141,7 +141,7 @@ namespace AP.Reports.AutoDocumets
         /// <inheritdoc />
         public void FindStringAndAllReplace(string sFind, string sReplace)
         {
-            if (string.IsNullOrEmpty(sFind) || string.IsNullOrEmpty(sReplace)) return;
+            if (string.IsNullOrEmpty(sFind) ||sReplace==null ) return;
             _document.BeginUpdate();
             while (FindStringSetDocumentPosition(sFind) > 0)
             {
