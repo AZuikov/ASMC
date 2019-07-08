@@ -11,8 +11,8 @@ namespace AP.Reports
     {
         public Barcode()
         {
-            IronBarCode.License.LicenseKey = "IRONBARCODE-MYLICENSE-KEY-1EF01";
-            var dfsadsa= IronBarCode.BarcodeWriter. CreateBarcode("Щоце токе", BarcodeEncoding.Code128);
+            License.LicenseKey = "IRONBARCODE-MYLICENSE-KEY-1EF01";
+            var dfsadsa= BarcodeWriter. CreateBarcode("Щоце токе", BarcodeEncoding.Code128);
             dfsadsa.SaveAsJpeg(@"C:\Users\02tav01\Pictures\Ошибка связи1.JPG");
         }
     }

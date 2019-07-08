@@ -42,7 +42,7 @@ namespace AP.Utils.Data
     /// <summary>
     /// Класс расширяющий <see cref="System.Enum"/>
     /// </summary>
-    public static class Enum
+    public static class EnumExpanded
 
     {
         private static readonly Hashtable StringValues = new Hashtable();
