@@ -124,6 +124,7 @@ namespace AP.Reports.AutoDocumets
             if (string.IsNullOrEmpty(bm) || dt == null) return;
             DocumentRange = _document.Bookmarks[bm]?.Range;
             if (_document?.Tables == null || _document.Tables.Get(DocumentRange).Count <= 0) return;
+
             var table = _document.Tables.Get(DocumentRange).First();
             if (dt.Rows.Count < 1)
             {
@@ -253,6 +254,7 @@ namespace AP.Reports.AutoDocumets
             AppenedRow(tab, dt);
             var insertDataToRow = false;
             var rowInsertCount = 0;
+            _document.BeginUpdate();
             foreach (var row in tab.Rows)
             {
                 foreach (var cell in row.Cells)
@@ -272,10 +274,12 @@ namespace AP.Reports.AutoDocumets
                     rowInsertCount++;
                 } 
                 insertDataToRow = false;
-            }
+            } 
+            _document.EndUpdate();
         }
         private void AppenedRow(Table tab, DataTable dt)
         {
+            _document.BeginUpdate();
             while(tab.Rows.Count < dt.Rows.Count)
             {
                 tab.Rows.Append();
@@ -293,7 +297,8 @@ namespace AP.Reports.AutoDocumets
                     tab.Rows.Append();
                     break;
                 }
-            }
+            }  
+            _document.EndUpdate();
         }
 
         /// <summary>
@@ -504,8 +509,8 @@ namespace AP.Reports.AutoDocumets
         public void SaveAs(string pathToSave)
         {
             if (!string.IsNullOrEmpty(pathToSave))
-            {
-                _document?.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+            {      
+              _documentServer.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             }
         }
 
