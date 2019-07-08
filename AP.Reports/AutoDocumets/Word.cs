@@ -1,8 +1,4 @@
 ﻿using AP.Reports.Interface;
-using AP.Reports.Utils;
-//using DocumentFormat.OpenXml;
-//using DocumentFormat.OpenXml.Packaging;
-//using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,16 +9,16 @@ using System.Text.RegularExpressions;
 using DevExpress.XtraRichEdit;
 using DevExpress.XtraRichEdit.API.Native;
 using AP.Utils.Data;
-using Enum = System.Enum;
 
 namespace AP.Reports.AutoDocumets
 {
     public class Word : Document, ITextGraphicsReport, IDisposable
-    {    
+    {
         private RichEditDocumentServer _documentServer;
         private DocumentPosition _documentPosition;
         private DocumentRange _documentRange;
         private DevExpress.XtraRichEdit.API.Native.Document _document;
+
         /// <summary>
         /// форматы файлов
         /// </summary>
@@ -31,25 +27,26 @@ namespace AP.Reports.AutoDocumets
             /// <summary>
             /// Документ
             /// </summary>
-            /// 
-            Docx,
+            [StringValue("docx")]
+            Docx,   
             /// <summary>
             /// Шаблон
             /// </summary>
-            Dotx,
+            [StringValue("dotx")]
+            Dotx,    
             /// <summary>
             /// С поддержкой макросов
             /// </summary>
+            [StringValue("docm")]
             Docm
         }
+
         public DocumentRange DocumentRange
         {
             get { return _documentRange ?? (_documentRange = _document?.Range); }
-            private set
-            {
-                _documentRange = value;
-            }
+            private set { _documentRange = value; }
         }
+
         public DocumentPosition DocumentPosition
         {
             get
@@ -57,27 +54,22 @@ namespace AP.Reports.AutoDocumets
                 if (_documentPosition == null)
                 {
                     _documentPosition = _document?.Selection.End;
-                } 
+                }
+
                 return _documentPosition;
             }
-            private set
-            {
-                _documentPosition = value;
-            }
+            private set { _documentPosition = value; }
         }
 
         private string _path;
+
         /// <inheritdoc />
         public string Path
         {
-
-            get
-            {  
-                return _path;
-            }
+            get { return _path; }
             set
             {
-                if(ValidPath(value))
+                if (ValidPath(value))
                 {
                     _path = value;
                 }
@@ -100,20 +92,22 @@ namespace AP.Reports.AutoDocumets
         /// <returns>Возвращает true если путь и формат файла допустимы</returns>
         private bool ValidPath(string path)
         {
-            if(string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 throw new FileNotFoundException("Путь к файлу не указан.");
             }
+
             var extension = System.IO.Path.GetExtension(path);
-            foreach(var ff in Enum.GetValues(typeof(FileFormat)))
+            foreach (var ff in Enum.GetValues(typeof(FileFormat)))
             {
-                if(extension.Equals("." + ff.ToString().ToLower()))
+                if (extension.Equals("." + ((Enum)ff).GetStringValue()))
                 {
                     return true;
                 }
-            }
+            }  
             return false;
         }
+
         /// <inheritdoc />
         public void Close()
         {
@@ -122,105 +116,123 @@ namespace AP.Reports.AutoDocumets
             _documentPosition = null;
             _documentRange = null;
         }
+
         /// <inheritdoc />
-        public void FillTableToBookmark(string bm, DataTable dt, bool del = false, ConditionalFormatting cf = default(ConditionalFormatting))
+        public void FillTableToBookmark(string bm, DataTable dt, bool del = false,
+            ConditionalFormatting cf = default(ConditionalFormatting))
         {
+            if (string.IsNullOrEmpty(bm) || dt == null) return;
             DocumentRange = _document.Bookmarks[bm]?.Range;
-            var table = _document.Tables?.Get(DocumentRange)?.First();
-            if (table==null)
+            if (_document?.Tables == null || _document.Tables.Get(DocumentRange).Count <= 0) return;
+            var table = _document.Tables.Get(DocumentRange).First();
+            if (dt.Rows.Count < 1)
             {
-              return;
-            }
-            if(dt.Rows.Count < 1)
-            {   
                 _document.BeginUpdate();
                 _document.Tables.Remove(table);
                 _document.EndUpdate();
                 return;
-            }   
+            }
+
             FillingTable(table, dt, cf);
             SetConditionalFormatting(table, dt, cf);
         }
+
         /// <inheritdoc />
         public void FindStringAndAllReplace(string sFind, string sReplace)
         {
+            if (string.IsNullOrEmpty(sFind) || string.IsNullOrEmpty(sReplace)) return;
             _document.BeginUpdate();
             while (FindStringSetDocumentPosition(sFind) > 0)
             {
                 InsertText(sReplace);
                 _document.Delete(DocumentRange);
-            }  
+            }
+
             _document.EndUpdate();
         }
+
         /// <inheritdoc />
         public void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
+            if (string.IsNullOrEmpty(sFind) || image == null) return;
             _document.BeginUpdate();
-            while(FindStringSetDocumentPosition(sFind) > 0)
+            while (FindStringSetDocumentPosition(sFind) > 0)
             {
                 InsertImage(image, scale);
                 _document.Delete(DocumentRange);
-            }    
+            }
+
             _document.EndUpdate();
         }
+
         private int FindStringSetDocumentPosition(string sFind)
         {
-
             var foundTotal = _document.FindAll(new Regex(PatternFindText(sFind)), _document.Range);
-            if(foundTotal.Length > 0)
-            {
-                DocumentRange = foundTotal.First();
-                DocumentPosition = DocumentRange.Start;
-            }    
+            if (foundTotal.Length <= 0) return foundTotal.Length;
+            DocumentRange = foundTotal.First();
+            DocumentPosition = DocumentRange.Start;
             return foundTotal.Length;
         }
+
         /// <inheritdoc />
         public void FindStringAndReplace(string sFind, string sReplace)
         {
+            if (string.IsNullOrEmpty(sFind) || sReplace == null) return;
             _document.BeginUpdate();
-            if(FindStringSetDocumentPosition(sFind) > 0)
+            if (FindStringSetDocumentPosition(sFind) > 0)
             {
                 _document.InsertText(DocumentPosition, sReplace);
                 _document.Delete(DocumentRange);
             }
+
             _document.EndUpdate();
         }
 
         /// <inheritdoc />
         public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
+            if (string.IsNullOrEmpty(sFind) || image == null)
+                return;
             _document.BeginUpdate();
-            if(FindStringSetDocumentPosition(sFind) > 0)
+            if (FindStringSetDocumentPosition(sFind) > 0)
             {
                 InsertImage(image, scale);
-               _document.Delete(DocumentRange);
+                _document.Delete(DocumentRange);
             }
+
             _document.EndUpdate();
         }
+
         /// <inheritdoc />
         public void InsertImage(Bitmap image, float scale = 1)
         {
-            var shapes=_document.Images.Insert(DocumentPosition, image);
+            var shapes = _document.Images.Insert(DocumentPosition, image);
             shapes.ScaleX = scale;
             shapes.ScaleY = scale;
         }
+
         /// <inheritdoc />
         public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
-
+            if (string.IsNullOrEmpty(bm)|| image == null) return;
             DocumentPosition = _document.Bookmarks[bm]?.Range.Start;
             InsertImage(image, scale);
         }
+
         /// <inheritdoc />
-        public void InsertNewTableToBookmark(string bm, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
-        {    
+        public void InsertNewTableToBookmark(string bm, DataTable dt,
+            ConditionalFormatting cf = default(ConditionalFormatting))
+        {
+            if (string.IsNullOrEmpty(bm)||dt==null) return;
             DocumentPosition = _document.Bookmarks[bm]?.Range.Start;
             InsertTable(dt, cf);
         }
+
         /// <inheritdoc />
         public void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            var table= _document.Tables.Create(DocumentPosition, dt.Rows.Count, dt.Columns.Count);
+            if (dt == null) return;
+            var table = _document.Tables.Create(DocumentPosition, dt.Rows.Count, dt.Columns.Count);
             table.PreferredWidthType = WidthType.Auto;
             FillingTable(table, dt, cf);
             SetConditionalFormatting(table, dt, cf);
@@ -237,7 +249,8 @@ namespace AP.Reports.AutoDocumets
         public void FillingTable(Table tab, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            while(tab.Rows.Count < dt.Rows.Count)
+            if (tab == null || dt == null) return;
+            while (tab.Rows.Count < dt.Rows.Count)
             {
                 tab.Rows.Append();
             }
@@ -247,15 +260,13 @@ namespace AP.Reports.AutoDocumets
                 foreach (var cell in row.Cells)
                 {
                     DocumentPosition = cell.Range.Start;
-                    if (cell.ColumnSpan<2)
-                    {
-                        if(_document.GetText(cell.Range).Length==0) 
+                    if (cell.ColumnSpan >= 2) continue;
+                    if (_document.GetText(cell.Range).Length == 0)
                         InsertText(dt.Rows[row.Index][cell.Index].ToString());
-                    }
                 }
             }
-           
         }
+
         /// <summary>
         /// Устанавливает заливку ячеек таблицы по правилу ConditionalFormatting
         /// </summary>
@@ -265,35 +276,32 @@ namespace AP.Reports.AutoDocumets
         private void SetConditionalFormatting(Table tab, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            int formatingColumn = dt.Columns.IndexOf(cf.NameColumn);
-            if (cf.NameColumn != null)
+            var formatingColumn = dt.Columns.IndexOf(cf.NameColumn);
+            if (cf.NameColumn == null) return;
+            foreach (var row in tab.Rows)
             {
-                foreach (var row in tab.Rows)
+                if (!DoesItNeedToSetCondition(_document.GetText(row.Cells[formatingColumn].ContentRange), cf))
                 {
+                    continue;
+                }
 
-                    if (!DoesItNeedToSetCondition(_document.GetText(row.Cells[formatingColumn].ContentRange), cf))
-                    {
-                        continue;
-                    }
+                if (cf.Region == ConditionalFormatting.RegionAction.Cell)
+                {
+                    row[formatingColumn].BackgroundColor = cf.Color;
+                }
 
-                    if (cf.Region == ConditionalFormatting.RegionAction.Cell)
-                    {
-                        row[formatingColumn].BackgroundColor = cf.Color;
-                    }
+                if (cf.Region != ConditionalFormatting.RegionAction.Row)
+                {
+                    continue;
+                }
 
-                    if (cf.Region != ConditionalFormatting.RegionAction.Row)
-                    {
-                        continue;
-                    }
-
-                    foreach (var cell in row.Cells)
-                    {
-                        cell.BackgroundColor = cf.Color;
-                    }
+                foreach (var cell in row.Cells)
+                {
+                    cell.BackgroundColor = cf.Color;
                 }
             }
         }
- 
+
         /// <summary>
         /// Определяет, соответствует ли ячейка таблицы условию из набора правил ConditionalFormatting
         /// </summary>
@@ -302,100 +310,110 @@ namespace AP.Reports.AutoDocumets
         private bool DoesItNeedToSetCondition(string cellValue, ConditionalFormatting conditional)
         {
             //Если оба данных - числа, то сравниваем их как числа
-            if(double.TryParse(conditional.Value, out var conditionValue)
+            if (double.TryParse(conditional.Value, out var conditionValue)
                 && double.TryParse(cellValue, out var tableValue))
             {
-                switch(conditional.Condition)
+                switch (conditional.Condition)
                 {
                     case ConditionalFormatting.Conditions.Equal:
-                        if(Math.Abs(tableValue - conditionValue) < float.Epsilon)
+                        if (Math.Abs(tableValue - conditionValue) < float.Epsilon)
                         {
                             return true;
                         }
+
                         return false;
                     case ConditionalFormatting.Conditions.Less:
-                        if(tableValue < conditionValue)
+                        if (tableValue < conditionValue)
                         {
                             return true;
                         }
+
                         return false;
                     case ConditionalFormatting.Conditions.LessOrEqual:
-                        if(tableValue <= conditionValue)
+                        if (tableValue <= conditionValue)
                         {
                             return true;
                         }
+
                         return false;
                     case ConditionalFormatting.Conditions.More:
-                        if(tableValue > conditionValue)
+                        if (tableValue > conditionValue)
                         {
                             return true;
                         }
+
                         return false;
                     case ConditionalFormatting.Conditions.MoreOrEqual:
-                        if(tableValue >= conditionValue)
+                        if (tableValue >= conditionValue)
                         {
                             return true;
                         }
+
                         return false;
                     case ConditionalFormatting.Conditions.NotEqual:
-                        if(Math.Abs(tableValue - conditionValue) > float.Epsilon)
+                        if (Math.Abs(tableValue - conditionValue) > float.Epsilon)
                         {
                             return true;
                         }
+
                         return false;
                 }
             }
             //Если не числа - сравниваем как строки
             else
             {
-                switch(conditional.Condition)
+                switch (conditional.Condition)
                 {
                     case ConditionalFormatting.Conditions.Equal:
-                        if(cellValue == conditional.Value)
+                        if (cellValue == conditional.Value)
                         {
                             return true;
                         }
+
                         return false;
                     case ConditionalFormatting.Conditions.NotEqual:
-                        if(cellValue != conditional.Value)
+                        if (cellValue != conditional.Value)
                         {
                             return true;
                         }
+
                         return false;
                 }
             }
+
             return false;
         }
+
         /// <inheritdoc />
         public void InsertText(string text)
-        {     
+        {
             _document.InsertText(DocumentPosition, text);
         }
+
         /// <inheritdoc />
         public void InsertTextToBookmark(string bm, string text)
         {
             var bookmarks = _document.Bookmarks[bm];
             if (bookmarks == null)
             {
-                throw new ArgumentException(bm +" закладка не существует");
+                throw new ArgumentException(bm + " закладка не существует");
             }
+
             DocumentPosition = _document.Bookmarks[bm].Range.Start;
-        
         }
+
         /// <inheritdoc />
         public void MergeDocuments(string pathdoc)
         {
-            if (_documentServer?.Document == null)
-            {
-               return;
-            }
+            if (_documentServer?.Document == null || string.IsNullOrEmpty(pathdoc)) return;
 
-            using(var reds = new RichEditDocumentServer())
+            using (var reds = new RichEditDocumentServer())
             {
                 reds.LoadDocument(pathdoc, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
                 _document.AppendDocumentContent(reds.Document.Range);
             }
         }
+
         /// <inheritdoc />
         public void MergeDocuments(IEnumerable<string> pathdoc)
         {
@@ -404,40 +422,46 @@ namespace AP.Reports.AutoDocumets
                 MergeDocuments(doc);
             }
         }
+
         /// <inheritdoc />
         public void MoveEnd()
         {
             _documentPosition = _document?.Range.End;
         }
+
         /// <inheritdoc />
         public void MoveHome()
-        {   
+        {
             _documentPosition = _document?.Range.Start;
         }
+
         /// <inheritdoc />
         public void NewDocument()
         {
             _documentServer = new RichEditDocumentServer();
-            _document = _documentServer.Document; 
+            _document = _documentServer.Document;
         }
+
         /// <inheritdoc />
         public void NewDocumentTemp(string templatePath)
         {
-            if(ValidPath(templatePath))
+            if (ValidPath(templatePath))
             {
                 _documentServer = new RichEditDocumentServer();
                 _documentServer.LoadDocumentTemplate(templatePath, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
                 _document = _documentServer.Document;
             }
         }
+
         /// <inheritdoc />
         public void OpenDocument(string sPath)
         {
             Path = sPath;
-            _documentServer = new RichEditDocumentServer(); 
+            _documentServer = new RichEditDocumentServer();
             _documentServer.LoadDocument(Path, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             _document = _documentServer.Document;
         }
+
         /// <inheritdoc />
         public void Save()
         {
@@ -445,7 +469,6 @@ namespace AP.Reports.AutoDocumets
             {
                 _document.SaveDocument(Path, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             }
-           
         }
 
         /// <inheritdoc />
@@ -463,5 +486,4 @@ namespace AP.Reports.AutoDocumets
             _documentServer?.Dispose();
         }
     }
-
 }
