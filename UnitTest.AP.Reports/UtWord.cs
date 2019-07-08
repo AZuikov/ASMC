@@ -3,8 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using AP.Reports.AutoDocumets;
-using AP.Reports.Utils;
-using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Win32;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Document = AP.Reports.AutoDocumets.Document;
 
@@ -225,11 +224,12 @@ namespace UnitTest.AP.Reports
             }
 
 
-            word.FillsTableToBookmark("weatherTable", weatherDataTable);
+            word.FillTableToBookmark("weatherTable", weatherDataTable);
             word.MoveEnd();
 
-            //word.InsertImage(mb);   
-            word.SaveAs(@"C:\\Users\\02ias01\\Desktop\\111\\1488.docx");
+            //Сохраняем то, что получилось
+            word.SaveAs("C:\\Users\\02ias01\\Desktop\\111\\ПрП-157936-12.11.18.docx");
+
             word.Close();
         }
 

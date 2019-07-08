@@ -447,6 +447,7 @@ namespace AP.Reports.AutoDocumets
             }
            
         }
+
         /// <inheritdoc />
         public void SaveAs(string pathToSave)
         {
@@ -455,6 +456,7 @@ namespace AP.Reports.AutoDocumets
                 _document?.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             }
         }
+
         /// <inheritdoc />
         public void Dispose()
         {

@@ -31,6 +31,8 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        public Array Formats => throw new NotImplementedException();
+
         private delegate void CellOperator(IXLCell cell, IXLWorksheet worksheet);
 
         #region ctors

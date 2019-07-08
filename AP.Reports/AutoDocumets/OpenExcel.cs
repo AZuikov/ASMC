@@ -18,6 +18,8 @@ namespace AP.Reports.AutoDocumets
 
         string IReport.Path { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public Array Formats => throw new NotImplementedException();
+
         #region ITextGraphicsReport methods
 
         #region File manipulation (Open, close, save, etc.)
