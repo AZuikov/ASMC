@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
+using AP.Utils.Data;
 using ClosedXML.Excel;
 
 namespace AP.Reports.AutoDocumets
@@ -17,17 +18,63 @@ namespace AP.Reports.AutoDocumets
         private string _filePath;
         private IXLCell _currentCell;
 
+        public Array Formats
+        {
+            get
+            {
+                return Enum.GetValues(typeof(FileFormat));
+            }
+        }
+         public enum FileFormat
+        {
+            /// <summary>
+            /// Документ
+            /// </summary>
+            [StringValue(".xlsx")]
+            Xlsx,
+        }
+
+
+
+        /// <summary>
+        /// Возвращает результат проверки пути к файлу
+        /// </summary>
+        /// <param name="path">Проверяемый путь</param>
+        /// <returns>Возвращает true если путь и формат файла допустимы</returns>
+        private bool ValidPath(string path)
+        {
+            if(string.IsNullOrEmpty(path))
+            {
+                throw new FileNotFoundException("Путь к файлу не указан.");
+            }
+
+            var extension = System.IO.Path.GetExtension(path);
+            foreach(var ff in Enum.GetValues(typeof(FileFormat)))
+            {
+                if(extension.Equals("." + ((Enum)ff).GetStringValue()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <inheritdoc />
         public string Path
         {
-            get { return _filePath; }
-
+            get
+            {
+                return _filePath;
+            }
             set
             {
-                if (!System.IO.Path.GetExtension(value).Equals(@".xlsx"))
+                if(ValidPath(value))
                 {
-                    throw new FormatException("Формат файла не .xlsx");
+                    _filePath = value;
                 }
-                _filePath = value;
+                else
+                {
+                    throw new FormatException("Недопустимый формат файла.");
+                }
             }
         }
 
@@ -60,35 +107,33 @@ namespace AP.Reports.AutoDocumets
         public void FillTableToBookmark(string bm, DataTable dt, bool del = false,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            if (_workbook != null)
+            if (_workbook == null) return;
+            var cell = _workbook.Cell(bm);
+            if (cell != null)
             {
-                IXLCell cell = _workbook.Cell(bm);
-                if (cell != null)
+                for (var i = 0; i < dt.Rows.Count; i++)
                 {
-                    for (int i = 0; i < dt.Rows.Count; i++)
+                    for (var j = 0; j < dt.Columns.Count; j++)
                     {
-                        for (int j = 0; j < dt.Columns.Count; j++)
+                        //Если ячейка пуста или разрешено удалять данные
+                        if (cell.Worksheet.Cell(
+                                cell.Address.RowNumber + i,
+                                cell.Address.ColumnNumber + j).Value.ToString() == "" || del)
                         {
-                            //Если ячейка пуста или разрешено удалять данные
-                            if (cell.Worksheet.Cell(
-                                    cell.Address.RowNumber + i,
-                                    cell.Address.ColumnNumber + j).Value.ToString() == "" || del)
-                            {
-                                cell.Worksheet.Cell(
-                                    cell.Address.RowNumber + i,
-                                    cell.Address.ColumnNumber + j).Value = dt.Rows[i].ItemArray[j];
-                            }
+                            cell.Worksheet.Cell(
+                                cell.Address.RowNumber + i,
+                                cell.Address.ColumnNumber + j).Value = dt.Rows[i].ItemArray[j];
                         }
                     }
-
-                    var endOfRange = cell.Worksheet.Cell(
-                        cell.Address.RowNumber + dt.Rows.Count,
-                        cell.Address.ColumnNumber + dt.Columns.Count);
-                    var range = cell.Worksheet.Range(cell, endOfRange);
-                    SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
                 }
-                else throw new NullReferenceException();
+
+                var endOfRange = cell.Worksheet.Cell(
+                    cell.Address.RowNumber + dt.Rows.Count,
+                    cell.Address.ColumnNumber + dt.Columns.Count);
+                var range = cell.Worksheet.Range(cell, endOfRange);
+                SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
             }
+            else throw new NullReferenceException();
         }
 
         public void FindStringAndAllReplace(string sFind, string sReplace)

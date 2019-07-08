@@ -79,7 +79,7 @@ namespace AP.Reports.AutoDocumets
                 }
             }
         }
-
+        /// <inheritdoc />
         public Array Formats
         {
             get { return Enum.GetValues(typeof(FileFormat)); }
@@ -250,19 +250,48 @@ namespace AP.Reports.AutoDocumets
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (tab == null || dt == null) return;
-            while (tab.Rows.Count < dt.Rows.Count)
-            {
-                tab.Rows.Append();
-            }
-
+            AppenedRow(tab, dt);
+            var insertDataToRow = false;
+            var rowInsertCount = 0;
             foreach (var row in tab.Rows)
             {
                 foreach (var cell in row.Cells)
                 {
-                    DocumentPosition = cell.Range.Start;
-                    if (cell.ColumnSpan >= 2) continue;
-                    if (_document.GetText(cell.Range).Length == 0)
-                        InsertText(dt.Rows[row.Index][cell.Index].ToString());
+                    DocumentRange = cell.Range;
+                    DocumentPosition = DocumentRange.Start;
+                    if (cell.ColumnSpan >1) continue;
+                    if (_document.GetText(DocumentRange).Length > 2) continue;
+                    insertDataToRow = true;
+                    if (cell.Index<dt.Columns.Count)
+                    {
+                        InsertText(dt.Rows[rowInsertCount][cell.Index].ToString());
+                    }  
+                }  
+                if (insertDataToRow)
+                {
+                    rowInsertCount++;
+                } 
+                insertDataToRow = false;
+            }
+        }
+        private void AppenedRow(Table tab, DataTable dt)
+        {
+            while(tab.Rows.Count < dt.Rows.Count)
+            {
+                tab.Rows.Append();
+            }
+            var rows = tab.Rows.Count;
+            for (var index = 0; index < rows; index++)
+            {
+                var row = tab.Rows[index];
+                foreach (var cell in row.Cells)
+                {
+                    DocumentRange = cell.Range;
+                    if (cell.ColumnSpan > 1)
+                        continue;
+                    if (_document.GetText(DocumentRange).Length <= 2) continue;
+                    tab.Rows.Append();
+                    break;
                 }
             }
         }

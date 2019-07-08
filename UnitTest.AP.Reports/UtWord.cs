@@ -225,11 +225,11 @@ namespace UnitTest.AP.Reports
             }
 
 
-            word.FillsTableToBookmark("weatherTable", weatherDataTable);
+            word.FillTableToBookmark("weatherTable", weatherDataTable);
             word.MoveEnd();
 
             //word.InsertImage(mb);   
-            word.SaveAs(@"C:\\Users\\02ias01\\Desktop\\111\\1488.docx");
+            word.SaveAs(@"C: \Users\02tav01\Documents\1488.docx");
             word.Close();
         }
 
