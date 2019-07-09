@@ -257,11 +257,14 @@ namespace AP.Reports.AutoDocumets
             _document.BeginUpdate();
             foreach (var row in tab.Rows)
             {
+                if (rowInsertCount== dt.Rows.Count)
+                {
+                      break;
+                }
                 foreach (var cell in row.Cells)
                 {
                     DocumentRange = cell.Range;
                     DocumentPosition = DocumentRange.Start;
-                    if (cell.ColumnSpan >1) continue;
                     if (_document.GetText(DocumentRange).Length > 2) continue;
                     insertDataToRow = true;
                     if (cell.Index<dt.Columns.Count)
