@@ -9,6 +9,9 @@ using AP.Reports.Interface;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ClosedXML.Excel;
+using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Word;
+using DataTable = System.Data.DataTable;
 
 namespace AP.Reports.AutoDocumets
 {
@@ -470,11 +473,18 @@ namespace AP.Reports.AutoDocumets
         }
 
         #endregion
-
+        /// <summary>
+        /// Вставляет таблицу в клетку
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="dt"></param>
+        /// <param name="cf"></param>
         private void InsertTableToCell(IXLCell cell, DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             ShiftForATable(dt, ref cell); //Сдвигает строки
-            var range = cell.InsertData(dt);
+            MergeForATable(ref dt, cell); //Повторяет мердж, который был в первой строке
+            //var range = cell.InsertData(dt);
+            var range = InsertDataWithMerge(cell, dt);
             if (dt.TableName != "")
             {
                 //обходим запрет на одинаковые имена
@@ -493,6 +503,31 @@ namespace AP.Reports.AutoDocumets
             range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Medium);
 
             SetCondition(range, dt.Columns.IndexOf(cf.NameColumn), cf);
+        }
+
+        /// <summary>
+        /// Вставляет таблицу в область со смерженными ячейками
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        private IXLRange InsertDataWithMerge(IXLCell cell, DataTable dt)
+        {
+            var firstCell = cell;
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                for (int j = 0; j < dt.Columns.Count; j++)
+                {
+                    cell.Value = dt.Rows[i][j];
+                    if(j != dt.Columns.Count - 1) {cell = GetRightCell(cell);}
+                }
+                if (i != dt.Rows.Count - 1)
+                {
+                    cell = cell.Worksheet.Cell(firstCell.Address.RowNumber + i + 1, firstCell.Address.ColumnNumber);
+                } 
+            }
+            var lastCell = GetMergeRange(cell).LastCell();
+            return cell.Worksheet.Range(firstCell, lastCell);
         }
 
         /// <summary>
@@ -679,6 +714,8 @@ namespace AP.Reports.AutoDocumets
             return "";
         }
 
+
+
         /// <summary>
         /// Устанавливает курсор на ячейку
         /// </summary>
@@ -777,11 +814,90 @@ namespace AP.Reports.AutoDocumets
         /// <param name="cell"></param>
         private void ShiftForATable(DataTable dt, ref IXLCell cell)
         {
-            if (cell.Worksheet.Row(cell.Address.RowNumber).IsEmpty())
+            var savedAdress = cell.Address;
+            cell.Worksheet.Row(cell.Address.RowNumber).AsRange().InsertRowsBelow(dt.Rows.Count - 1);
+            cell = cell.Worksheet.Cell(savedAdress);
+        }
+
+        /// <summary>
+        /// Возвращает регион, соответствующий смерженной области клетки
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private IXLRange GetMergeRange(IXLCell cell)
+        {
+            foreach (var margedRange in cell.Worksheet.MergedRanges)
             {
-                var savedAdress = cell.Address;
-                cell.Worksheet.Row(cell.Address.RowNumber).AsRange().InsertRowsAbove(dt.Rows.Count - 1);
-                cell = cell.Worksheet.Cell(savedAdress);
+                if (margedRange.Contains(cell))
+                {
+                    return margedRange;
+                }
+            }
+            return cell.AsRange();
+        }
+
+        /// <summary>
+        /// Возвращает ячейку, находящуюся справа от заданной
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private IXLCell GetRightCell(IXLCell cell)
+        {
+            return cell.Worksheet.Cell(
+                cell.Address.RowNumber,
+                GetMergeRange(cell).LastCell().Address.ColumnNumber + 1);
+        }
+
+        /// <summary>
+        /// Является ли ячека первой в своем мердж-регионе?
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private bool IsItFirstCellOfMergedRange(IXLCell cell)
+        {
+            return (cell.Address == GetMergeRange(cell).FirstCell().Address);
+        }
+
+        /// <summary>
+        /// Мержит клетки по аналогии с первой строкой
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="cell"></param>
+        private void MergeForATable(ref DataTable dt, IXLCell cell)
+        {
+            var savedAdress = cell.Address;
+            var correctedColumnsCount = dt.Columns.Count;
+            for (int i = 0; i < correctedColumnsCount; i++)
+            {
+                if(cell.IsMerged() == false) continue;
+                else
+                {
+                    int startColumn = 0;
+                    int endColumn = 0;
+                    //Находим, в какой мерж входит клетка
+                    foreach (var margedRange in cell.Worksheet.MergedRanges)
+                    {
+                        if (margedRange.Contains(cell))
+                        {
+                            startColumn = margedRange.RangeAddress.FirstAddress.ColumnNumber;
+                            endColumn = margedRange.RangeAddress.LastAddress.ColumnNumber;
+                            break;
+                        }
+                    }
+
+                    //Во всех строках таблицы мержим соответствующий столбец
+                    for (int currentRow = cell.Address.RowNumber; currentRow < cell.Address.RowNumber + dt.Rows.Count; currentRow++)
+                    {
+                        var range = cell.Worksheet.Range(
+                            cell.Worksheet.Cell(currentRow, startColumn),
+                            cell.Worksheet.Cell(currentRow, endColumn)
+                            ).Merge();
+                    }
+                    //Добавляем в таблицу пустые столбцы
+                    i += endColumn - startColumn;
+                    correctedColumnsCount += endColumn - startColumn;
+                    cell = GetRightCell(cell);
+                }
             }
         }
 

@@ -12,13 +12,19 @@ namespace AP.Barcoder.Renderer.Image
     {
         //private readonly PngEncoder _pngEncoder = new PngEncoder();
         private int _pixelSize;
-        private readonly int _barHeightFor1DBarcode;
+        private int _barHeightFor1DBarcode;
         private int MarginXLeft { get ; set; }
         private int MarginXRight { get; set; }
         private int MarginYTop { get; set; }
         private int MarginYBottom { get; set; }
 
         public bool DrawString;
+
+        public int BarHeightFor1DBarcode
+        {
+            get { return _barHeightFor1DBarcode; }
+            set { if (value > 1) _barHeightFor1DBarcode = value; }
+        }
 
         public ImageRenderer(int pixelSize = 10, int barHeightFor1DBarcode = 40)
         {
@@ -88,13 +94,13 @@ namespace AP.Barcoder.Renderer.Image
                 if (DrawString)
                 {
                     int k = 0;
-                    Font font = new Font("Courier", _pixelSize * 7);
+                    Font font = new Font("Courier", _pixelSize * 7, FontStyle.Bold);
                     g.DrawString(barcode.Content, font, Brushes.Black,
                         new Point((int)((MarginXLeft + (barcode.Bounds.X - barcode.Content.Length*5.8)/2) * _pixelSize) ,
                             (MarginYTop + _barHeightFor1DBarcode) * _pixelSize));
                 }
 
-                image.Save(outputStream, ImageFormat.Png);
+                image.Save(outputStream, ImageFormat.Jpeg);
             }
         }
 
@@ -124,7 +130,7 @@ namespace AP.Barcoder.Renderer.Image
                     }
                 }
 
-                image.Save(outputStream, ImageFormat.Png);
+                image.Save(outputStream, ImageFormat.Jpeg);
             }
         }
     }

@@ -216,19 +216,16 @@ namespace UnitTest.AP.Reports
             int rowsNum = 0;
             for (int i=0; i<3; i++)
             {
-
-                    weatherDataTable.Rows.Add(weatherDataTable.NewRow());
-                    weatherDataTable.Rows[rowsNum][0] = i.ToString();
-                    weatherDataTable.Rows[rowsNum][2] = i.ToString();
+                weatherDataTable.Rows.Add(weatherDataTable.NewRow());
+                weatherDataTable.Rows[rowsNum][0] = i.ToString();
+                weatherDataTable.Rows[rowsNum][2] = i.ToString();
                 rowsNum++;
             }
-
 
             word.FillTableToBookmark("weatherTable", weatherDataTable);
             word.MoveEnd();
 
-            //word.InsertImage(mb);   
-            word.SaveAs(@"C: \Users\02tav01\Documents\1488.docx");
+            word.SaveAs($"C:\\Users\\{System.Environment.UserName}\\Desktop\\111\\1488.docx");
             word.Close();
         }
 
