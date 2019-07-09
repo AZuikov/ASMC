@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
@@ -8,6 +9,7 @@ namespace ASMC.Data.Model.Metr
     /// Сущность вида СИ
     /// </summary>
     [Table("TIPS")]
+    [StoredProcedure("dbo.up_gr_TipsSelect", KeyName = "vbr", KeyFormat = "tips.idtips={0}")]
     public class TypeMi
     {
         /// <summary>

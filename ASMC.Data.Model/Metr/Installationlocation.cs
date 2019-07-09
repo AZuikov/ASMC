@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
@@ -8,6 +9,7 @@ namespace ASMC.Data.Model.Metr
     ///  Сущность места установки.
     /// </summary>
     [Table("SPMU")]
+    [StoredProcedure("dbo.up_lc_SpmuSelect", KeyName = "vbr", KeyFormat = "idspmur={0}")]
     public class InstallationLocation
     {
         /// <summary>

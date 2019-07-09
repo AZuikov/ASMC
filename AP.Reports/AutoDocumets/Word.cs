@@ -124,6 +124,7 @@ namespace AP.Reports.AutoDocumets
             if (string.IsNullOrEmpty(bm) || dt == null) return;
             DocumentRange = _document.Bookmarks[bm]?.Range;
             if (_document?.Tables == null || _document.Tables.Get(DocumentRange).Count <= 0) return;
+
             var table = _document.Tables.Get(DocumentRange).First();
             if (dt.Rows.Count < 1)
             {
@@ -140,7 +141,7 @@ namespace AP.Reports.AutoDocumets
         /// <inheritdoc />
         public void FindStringAndAllReplace(string sFind, string sReplace)
         {
-            if (string.IsNullOrEmpty(sFind) || string.IsNullOrEmpty(sReplace)) return;
+            if (string.IsNullOrEmpty(sFind) ||sReplace==null ) return;
             _document.BeginUpdate();
             while (FindStringSetDocumentPosition(sFind) > 0)
             {
@@ -253,13 +254,17 @@ namespace AP.Reports.AutoDocumets
             AppenedRow(tab, dt);
             var insertDataToRow = false;
             var rowInsertCount = 0;
+            _document.BeginUpdate();
             foreach (var row in tab.Rows)
             {
+                if (rowInsertCount== dt.Rows.Count)
+                {
+                      break;
+                }
                 foreach (var cell in row.Cells)
                 {
                     DocumentRange = cell.Range;
                     DocumentPosition = DocumentRange.Start;
-                    if (cell.ColumnSpan >1) continue;
                     if (_document.GetText(DocumentRange).Length > 2) continue;
                     insertDataToRow = true;
                     if (cell.Index<dt.Columns.Count)
@@ -272,10 +277,12 @@ namespace AP.Reports.AutoDocumets
                     rowInsertCount++;
                 } 
                 insertDataToRow = false;
-            }
+            } 
+            _document.EndUpdate();
         }
         private void AppenedRow(Table tab, DataTable dt)
         {
+            _document.BeginUpdate();
             while(tab.Rows.Count < dt.Rows.Count)
             {
                 tab.Rows.Append();
@@ -293,7 +300,8 @@ namespace AP.Reports.AutoDocumets
                     tab.Rows.Append();
                     break;
                 }
-            }
+            }  
+            _document.EndUpdate();
         }
 
         /// <summary>
@@ -504,8 +512,8 @@ namespace AP.Reports.AutoDocumets
         public void SaveAs(string pathToSave)
         {
             if (!string.IsNullOrEmpty(pathToSave))
-            {
-                _document?.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+            {      
+              _documentServer.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             }
         }
 
