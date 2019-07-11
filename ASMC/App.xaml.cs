@@ -30,7 +30,7 @@ namespace ASMC
         private void InvokeMainWindow()
         {
             var service = new WindowService();  
-            service.Show(new LoginWindow().GetType().Name, new MainViewModel(), null, this);
+            service.Show("LoginWindow", new MainViewModel(), null, this);
         }
 
     }

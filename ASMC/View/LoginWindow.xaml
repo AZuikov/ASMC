@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:view="clr-namespace:ASMC.Core.View;assembly=ASMC.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <dxmvvm:Interaction.Behaviors>
@@ -12,8 +13,9 @@
     <ui:ProgressService/>
     <ui:WindowService Name="Test" WindowShowMode="Default" Title="Test" SizeToContent="WidthAndHeight"></ui:WindowService>
         </dxmvvm:Interaction.Behaviors>
-            <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="161,104,0,0" VerticalAlignment="Top" Width="75"/>
-
+    <Grid>
+        <view:WriteText Documentdsfs="{Binding Path=Document1}"></view:WriteText>
+        <!--<view:UserControl1 Document="{Binding Path=Document321}"></view:UserControl1>-->
     </Grid>
 </Page>
+
