@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AP.Utils.Data
 {
@@ -41,7 +37,7 @@ namespace AP.Utils.Data
     /// проецируемой сущности.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class StoredProcedureAttribute : System.Attribute
+    public class StoredProcedureAttribute : Attribute
     {
         /// <summary>
         /// Возвращает имя хранимой процедуры.
@@ -56,7 +52,7 @@ namespace AP.Utils.Data
         /// выполняемую хранимой процедурой.
         /// </summary>
         public StoredProcedureOp Operation { get; set; } = StoredProcedureOp.Select;
-
+        public bool IsStoredProcedure { get; set; } = true;
         /// <summary>
         /// Возвращает или задает имя параметра
         /// хранимой процедуры, принимающего

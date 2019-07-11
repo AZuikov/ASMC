@@ -6,7 +6,7 @@ using AP.Reports.Utils;
 namespace AP.Reports.Interface
 {
     /// <summary>
-    /// Интерфейс обеспечивающий основыные функции для создания отчетов Word, Excel
+    /// Интерфейс обеспечивающий основыные функции для создания отчетов графический текстовых редакторов
     /// </summary>
     public interface ITextGraphicsReport : IReport
     {

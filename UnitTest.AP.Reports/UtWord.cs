@@ -220,12 +220,12 @@ namespace UnitTest.AP.Reports
                 weatherDataTable.Rows[rowsNum][0] = i.ToString();
                 weatherDataTable.Rows[rowsNum][2] = i.ToString();
                 rowsNum++;
-            }
-
+            } 
+            word.FindStringAndAllReplace("dsffdsfsdfs", "NUMPAGES  \\* Arabic");
             word.FillTableToBookmark("weatherTable", weatherDataTable);
             word.MoveEnd();
 
-            word.SaveAs($"C:\\Users\\{System.Environment.UserName}\\Desktop\\111\\1488.docx");
+            word.SaveAs($"C:\\Users\\{System.Environment.UserName}\\Desktop\\1488.docx");
             word.Close();
         }
 

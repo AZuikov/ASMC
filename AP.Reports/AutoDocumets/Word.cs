@@ -12,12 +12,16 @@ using AP.Utils.Data;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Word : Document, ITextGraphicsReport, IDisposable
+    public class Word : Document, IMsOffice, IDisposable
     {
         private RichEditDocumentServer _documentServer;
         private DocumentPosition _documentPosition;
         private DocumentRange _documentRange;
         private DevExpress.XtraRichEdit.API.Native.Document _document;
+        private SubDocument _subDocument;
+
+        private DocumentPosition _documentPositionHeader;
+        private DocumentRange _documentRangeHeader;
 
         /// <summary>
         /// форматы файлов
@@ -27,24 +31,43 @@ namespace AP.Reports.AutoDocumets
             /// <summary>
             /// Документ
             /// </summary>
-            [StringValue("docx")]
-            Docx,   
+            [StringValue("docx")] Docx,
+
             /// <summary>
             /// Шаблон
             /// </summary>
-            [StringValue("dotx")]
-            Dotx,    
+            [StringValue("dotx")] Dotx,
+
             /// <summary>
             /// С поддержкой макросов
             /// </summary>
-            [StringValue("docm")]
-            Docm
+            [StringValue("docm")] Docm
         }
 
         public DocumentRange DocumentRange
         {
-            get { return _documentRange ?? (_documentRange = _document?.Range); }
+            get { return _documentRange ?? (_documentRange = _subDocument?.Range); }
             private set { _documentRange = value; }
+        }
+
+        public DocumentRange DocumentRangeHeader
+        {
+            get { return _documentRangeHeader ?? (_documentRangeHeader = _subDocument?.Range); }
+            private set { _documentRangeHeader = value; }
+        }
+
+        public DocumentPosition DocumentPositionHeader
+        {
+            get
+            {
+                if (_documentPositionHeader == null)
+                {
+                    _documentPositionHeader = _document?.Selections.First().End;
+                }
+
+                return _documentPositionHeader;
+            }
+            private set { _documentPositionHeader = value; }
         }
 
         public DocumentPosition DocumentPosition
@@ -79,6 +102,7 @@ namespace AP.Reports.AutoDocumets
                 }
             }
         }
+
         /// <inheritdoc />
         public Array Formats
         {
@@ -100,11 +124,12 @@ namespace AP.Reports.AutoDocumets
             var extension = System.IO.Path.GetExtension(path);
             foreach (var ff in Enum.GetValues(typeof(FileFormat)))
             {
-                if (extension.Equals("." + ((Enum)ff).GetStringValue()))
+                if (extension.Equals("." + ((Enum) ff).GetStringValue()))
                 {
                     return true;
                 }
-            }  
+            }
+
             return false;
         }
 
@@ -141,15 +166,61 @@ namespace AP.Reports.AutoDocumets
         /// <inheritdoc />
         public void FindStringAndAllReplace(string sFind, string sReplace)
         {
-            if (string.IsNullOrEmpty(sFind) ||sReplace==null ) return;
-            _document.BeginUpdate();
+            if (string.IsNullOrEmpty(sFind) || sReplace == null)
+                return;
+
             while (FindStringSetDocumentPosition(sFind) > 0)
             {
+                _document.BeginUpdate();
                 InsertText(sReplace);
                 _document.Delete(DocumentRange);
+                _document.EndUpdate();
             }
+        }
 
-            _document.EndUpdate();
+
+        /// <inheritdoc />
+        public void FindStringInHeaderAndAllReplace(string sFind, string sReplace)
+        {
+            if (string.IsNullOrEmpty(sFind) || sReplace == null)
+                return;
+            while (FindStringToHeaderSetDocumentPosition(sFind) > 0)
+            {
+                var section = _document.Sections.First();
+                _subDocument = section.BeginUpdateHeader(HeaderFooterType.First);
+                _subDocument.InsertText(DocumentPositionHeader, sReplace);
+                _subDocument.Delete(DocumentRangeHeader);
+                section.EndUpdateHeader(_subDocument);
+                section.DifferentFirstPage = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void FindStringInHeaderAndAllReplaceFiled(string sFind, string sCode)
+        {
+            if (string.IsNullOrEmpty(sFind) || sCode == null)
+                return;
+            while (FindStringToHeaderSetDocumentPosition(sFind) > 0)
+            {
+                var section = _document.Sections.First();
+                _subDocument = section.BeginUpdateHeader(HeaderFooterType.First);
+                InsertFiled(sCode);
+                _subDocument.Delete(DocumentRangeHeader);
+                section.EndUpdateHeader(_subDocument);
+                section.DifferentFirstPage = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void InsertFiledInHeader(string code)
+        {
+            _subDocument.Fields.Create(DocumentPositionHeader, code);
+        }
+
+        /// <inheritdoc />
+        public void InsertFiled(string code)
+        {
+            _document.Fields.Create(DocumentPosition, code);
         }
 
         /// <inheritdoc />
@@ -169,6 +240,16 @@ namespace AP.Reports.AutoDocumets
         private int FindStringSetDocumentPosition(string sFind)
         {
             var foundTotal = _document.FindAll(new Regex(PatternFindText(sFind)), _document.Range);
+            if (foundTotal.Length <= 0) return foundTotal.Length;
+            DocumentRangeHeader = foundTotal.First();
+            DocumentPositionHeader = DocumentRangeHeader.Start;
+            return foundTotal.Length;
+        }
+
+        private int FindStringToHeaderSetDocumentPosition(string sFind)
+        {
+            _subDocument = _document.Sections.First().BeginUpdateHeader(HeaderFooterType.First);
+            var foundTotal = _subDocument.FindAll(new Regex(PatternFindText(sFind)), _subDocument.Range);
             if (foundTotal.Length <= 0) return foundTotal.Length;
             DocumentRange = foundTotal.First();
             DocumentPosition = DocumentRange.Start;
@@ -215,7 +296,7 @@ namespace AP.Reports.AutoDocumets
         /// <inheritdoc />
         public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
-            if (string.IsNullOrEmpty(bm)|| image == null) return;
+            if (string.IsNullOrEmpty(bm) || image == null) return;
             DocumentPosition = _document.Bookmarks[bm]?.Range.Start;
             InsertImage(image, scale);
         }
@@ -224,7 +305,7 @@ namespace AP.Reports.AutoDocumets
         public void InsertNewTableToBookmark(string bm, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            if (string.IsNullOrEmpty(bm)||dt==null) return;
+            if (string.IsNullOrEmpty(bm) || dt == null) return;
             DocumentPosition = _document.Bookmarks[bm]?.Range.Start;
             InsertTable(dt, cf);
         }
@@ -257,36 +338,42 @@ namespace AP.Reports.AutoDocumets
             _document.BeginUpdate();
             foreach (var row in tab.Rows)
             {
-                if (rowInsertCount== dt.Rows.Count)
+                if (rowInsertCount == dt.Rows.Count)
                 {
-                      break;
+                    break;
                 }
+
                 foreach (var cell in row.Cells)
                 {
                     DocumentRange = cell.Range;
                     DocumentPosition = DocumentRange.Start;
                     if (_document.GetText(DocumentRange).Length > 2) continue;
                     insertDataToRow = true;
-                    if (cell.Index<dt.Columns.Count)
+                    if (cell.Index < dt.Columns.Count)
                     {
                         InsertText(dt.Rows[rowInsertCount][cell.Index].ToString());
-                    }  
-                }  
+                    }
+                }
+
                 if (insertDataToRow)
                 {
                     rowInsertCount++;
-                } 
+                }
+
                 insertDataToRow = false;
-            } 
+            }
+
             _document.EndUpdate();
         }
+
         private void AppenedRow(Table tab, DataTable dt)
         {
             _document.BeginUpdate();
-            while(tab.Rows.Count < dt.Rows.Count)
+            while (tab.Rows.Count < dt.Rows.Count)
             {
                 tab.Rows.Append();
             }
+
             var rows = tab.Rows.Count;
             for (var index = 0; index < rows; index++)
             {
@@ -300,7 +387,8 @@ namespace AP.Reports.AutoDocumets
                     tab.Rows.Append();
                     break;
                 }
-            }  
+            }
+
             _document.EndUpdate();
         }
 
@@ -424,7 +512,9 @@ namespace AP.Reports.AutoDocumets
         /// <inheritdoc />
         public void InsertText(string text)
         {
+            _document.BeginUpdate();
             _document.InsertText(DocumentPosition, text);
+            _document.EndUpdate();
         }
 
         /// <inheritdoc />
@@ -512,8 +602,8 @@ namespace AP.Reports.AutoDocumets
         public void SaveAs(string pathToSave)
         {
             if (!string.IsNullOrEmpty(pathToSave))
-            {      
-              _documentServer.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+            {
+                _documentServer.SaveDocument(pathToSave, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             }
         }
 

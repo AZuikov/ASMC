@@ -19,7 +19,7 @@ namespace AP.Utils.Data
         #region Properties
 
         /// <summary>
-        /// Возвращает или задает имя базы
+        /// Возвращает имя базы
         /// на источнике данных, с которой
         /// устанавливается соединение.
         /// </summary>
@@ -35,7 +35,7 @@ namespace AP.Utils.Data
         }
 
         /// <summary>
-        /// Возвращает или задает сетевой адрес
+        /// Возвращает сетевой адрес
         /// экземпляра источника данных, с
         /// которым устанавливается соединение.
         /// </summary>
@@ -51,7 +51,7 @@ namespace AP.Utils.Data
         }
 
         /// <summary>
-        /// Возвращает или задает пароль,
+        /// Возвращает пароль,
         /// используемый при авторизации
         /// на источнике данных.
         /// </summary>
@@ -82,13 +82,16 @@ namespace AP.Utils.Data
             }
         }
 
+        /// <summary>
+        /// Возвращает выбранного поставщика OLE DB.
+        /// </summary>
         public string Provider
         {
             get; set;
         }
 
         /// <summary>
-        /// Возвращает или задает имя входа,
+        /// Возвращает имя входа,
         /// используемое при авторизации на
         /// источнике данных.
         /// </summary>
@@ -118,7 +121,7 @@ namespace AP.Utils.Data
         }
 
         /// <summary>
-        /// Возвращает или задает использование
+        /// Возвращает использование
         /// проверки подлинности Windows при
         /// авторизации на источнике данных.
         /// </summary>
@@ -138,6 +141,13 @@ namespace AP.Utils.Data
             }
         }
 
+        /// <summary>
+        /// Возвращает значение, которое определяет,
+        /// возвращаются ли сведения, связанные с
+        /// безопасностью, как часть подключения,
+        /// если оно открыто или когда-либо
+        /// находилось в открытом состоянии.
+        /// </summary>
         public bool PersistSecurityInfo
         {
             get
@@ -146,6 +156,21 @@ namespace AP.Utils.Data
                 var m = rex.Match(ConnectionString);
 
                 return m.Success && m.Groups[1].Value.Trim().Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает время ожидания
+        /// соединения с источником данных.
+        /// </summary>
+        public int ConnectionTimeout
+        {
+            get
+            {
+                var rex = new Regex(@"Connection timeout=([^\r\n;]*)", RegexOptions.IgnoreCase);
+                var m = rex.Match(ConnectionString);
+
+                return m.Success ? Convert.ToInt32(m.Groups[1].ToString()) : 1;
             }
         }
 
@@ -207,7 +232,8 @@ namespace AP.Utils.Data
                 DataSource = DataSource,
                 InitialCatalog = Catalog,
                 IntegratedSecurity = IntegratedSecurity,
-                PersistSecurityInfo = PersistSecurityInfo
+                PersistSecurityInfo = PersistSecurityInfo,
+                ConnectTimeout = ConnectionTimeout
             };
             return csb;
         }
@@ -249,4 +275,5 @@ namespace AP.Utils.Data
 
         #endregion
     }
-} 
+
+}

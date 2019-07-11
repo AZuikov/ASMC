@@ -13,6 +13,7 @@ namespace UnitTest.AP.Utils
         {
             IDataProvider dataProvider = new SqlDataProvider();
             dataProvider.LoadFromUdl(@"C:\Users\02tav01\Documents\Palitra_System\Metr6\UDL\Metr6.udl");
+            dataProvider.ConnectionTimeout = 30;
             dataProvider.OpenConnection();
             DataTable dataTable = dataProvider.Execute("[dbo].[up_ds_EkzSelect]", dataProvider.GetParameter("@fltr", DbType.AnsiString, "IDEKZ=8"));
         }

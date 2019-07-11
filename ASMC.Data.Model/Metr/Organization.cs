@@ -2,13 +2,15 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
     /// Сущность организации/подразделения
     /// </summary>
-    [Table("FRPD")]
+    [Table("FRPD")]  
+    [StoredProcedure("dbo.up_gr_FrpdSelect", KeyName = "vbr", KeyFormat = "Frpd.idfrpd={0}")]
     public class Organization
     {
         /// <summary>
