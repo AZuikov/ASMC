@@ -8,9 +8,7 @@ namespace AP.Reports.AutoDocumets
         /// Предоставляет паттерн определяющий допустимое наименование Bookmark
         /// </summary>
         protected static string PatternBookmark
-        {
-            get { return @"[_, a-z, а-я][_,a-z,а-я,0-9]*"; }
-        }
+            => @"[a-z, A-Z, а-я, А-Я][_, a-z, A-Z, а-я, А-Я]*";
 
         /// <summary>
         /// Предостовляет паттерн для поиска текста
@@ -48,7 +46,7 @@ namespace AP.Reports.AutoDocumets
                 Equal,
 
                 /// <summary>
-                /// МЕньше или равно
+                /// Меньше или равно
                 /// </summary>
                 LessOrEqual,
 
