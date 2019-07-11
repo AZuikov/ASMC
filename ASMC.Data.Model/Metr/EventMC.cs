@@ -89,7 +89,6 @@ namespace ASMC.Data.Model.Metr
         /// <summary>
         /// Возвращает или задает вид клейма <see cref="Metr.Stamp"/>.
         ///  </summary> 
-        [Column("IDSPVDKL", TypeName = "int")]
         [ForeignKey("IDSPVDKL")]
         public Stamp Stamp { get; set; }
 
