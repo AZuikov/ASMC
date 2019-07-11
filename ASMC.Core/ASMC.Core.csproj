@@ -96,11 +96,15 @@
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\DataPageContent.cs" />
     <Compile Include="ViewModel\ReadAndWriteTextVM.cs" />
+    <Compile Include="ViewModel\test.cs" />
     <Compile Include="View\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ReadAndWriteText.xaml.cs">
       <DependentUpon>ReadAndWriteText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UserControl1.xaml.cs">
+      <DependentUpon>UserControl1.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\WriteText.xaml.cs">
       <DependentUpon>WriteText.xaml</DependentUpon>
@@ -135,6 +139,10 @@
     <Page Include="View\ReadAndWriteText.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UserControl1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\WriteText.xaml">
       <Generator>MSBuild:Compile</Generator>
