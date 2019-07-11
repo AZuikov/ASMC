@@ -126,7 +126,8 @@ namespace AP.Utils.Data
             get
             {
                 var iss = _integratedSecurity ? ";Integrated Security=SSPI" : null;
-                return $"Data Source={_dataSource};Initial Catalog={_catalog}{iss};User Id={_user};Password={Password}";
+                return $"Data Source={_dataSource};Initial Catalog={_catalog}{iss};User Id={_user};Password={Password};Connection Timeout = 60";
+           
             }
         }
 
@@ -304,7 +305,8 @@ namespace AP.Utils.Data
         /// <returns>Возвращает <see cref="DbConnection"/>.</returns>
         protected DbConnection GetConnection()
         {
-            return new SqlConnection(ConnectionString);
+            var sdsa = new SqlConnection(ConnectionString);
+            return sdsa;
         }
 
         /// <summary>

@@ -70,11 +70,14 @@ namespace AP.Utils.Data
             return entity;
         }
 
-        private static void Map(DataRow dataRow, object entity)
+        private static void Map(DataRow dataRow, object entity, object key = null)
         {
             var properties = entity.GetType().GetProperties().ToList();
             foreach(var prop in properties)
-                Map(dataRow, prop, entity);
+                if(key != null && prop.IsDefined(typeof(KeyAttribute)) && prop.CanWrite)
+                    prop.SetValue(entity, key);
+                else
+                    Map(dataRow, prop, entity);
         }
 
         private static void Map(DataRow dataRow, PropertyInfo prop, object entity)
@@ -102,7 +105,7 @@ namespace AP.Utils.Data
                     return;
 
                 var child = Activator.CreateInstance(prop.PropertyType);
-                Map(dataRow, child);
+                Map(dataRow, child, dataRow[foreignKey]);
 
                 prop.SetValue(entity, child);
             }
@@ -117,7 +120,7 @@ namespace AP.Utils.Data
                     return;
 
                 var child = Activator.CreateInstance(foreignProp.PropertyType);
-                Map(dataRow, child);
+                Map(dataRow, child, dataRow[foreignKey]);
 
                 foreignProp.SetValue(entity, child);
             }
