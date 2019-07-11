@@ -195,6 +195,18 @@ namespace UnitTest.AP.Reports
             }
         }
 
+        [TestMethod]
+        public void TableTests()
+        {
+            using (_excel = new Excel())
+            {
+                _excel.OpenDocument(@"C:\Users\02ias01\Desktop\111\" + "13.xlsx");
+                var dt = GetRegularDataTable();
+                _excel.InsertNewTableToBookmark("addTable", dt);// .FillTableToBookmark("addTable", dt);
+                _excel.SaveAs(@"C:\Users\02ias01\Desktop\111\" + "13result.xlsx");
+            }
+        }
+
 
 
         public enum FileFormat
@@ -248,6 +260,30 @@ namespace UnitTest.AP.Reports
                 }
             }
 
+            dt.TableName = "Table" + rnd.Next(100) + "_CreatedByRandom";
+            return dt;
+        }
+
+        private DataTable GetRegularDataTable()
+        {
+            DataTable dt = new DataTable();
+            for (int i = 0; i < 6; i++)
+            {
+                dt.Columns.Add(new DataColumn("col" + i.ToString(), i.GetType()));
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                dt.Rows.Add(dt.NewRow());
+            }
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                for (int j = 0; j < dt.Columns.Count; j++)
+                {
+                    dt.Rows[i][j] = i * 10 + j;
+                }
+            }
+
+            Random rnd = new Random();
             dt.TableName = "Table" + rnd.Next(100) + "_CreatedByRandom";
             return dt;
         }
