@@ -1,7 +1,7 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Dapper;
 
 namespace AP.Utils.Data
 {

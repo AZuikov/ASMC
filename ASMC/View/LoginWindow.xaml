@@ -14,7 +14,7 @@
     <ui:WindowService Name="Test" WindowShowMode="Default" Title="Test" SizeToContent="WidthAndHeight"></ui:WindowService>
         </dxmvvm:Interaction.Behaviors>
     <Grid>
-        <view:WriteText Documentdsfs="{Binding Path=Document1}"></view:WriteText>
+        <!--<view:WriteText Documentdsfs="{Binding Path=Document1}"></view:WriteText>-->
         <!--<view:UserControl1 Document="{Binding Path=Document321}"></view:UserControl1>-->
     </Grid>
 </Page>

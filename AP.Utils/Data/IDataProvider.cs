@@ -61,6 +61,24 @@ namespace AP.Utils.Data
         }
 
         /// <summary>
+        /// Возвращает или задает время ожидания
+        /// соединения с источником данных.
+        /// </summary>
+        int ConnectionTimeout
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Возвращает или задает время ожидания
+        /// выполнения запроса к источнику данных.
+        /// </summary>
+        int QueryTimeout
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// Возвращает форматированную строку
         /// подключения для используемого
         /// источника данных.
@@ -137,4 +155,5 @@ namespace AP.Utils.Data
         /// <see cref="DbParameter"/>.</returns>
         DbParameter GetParameter(string name, object value);
     }
+
 }

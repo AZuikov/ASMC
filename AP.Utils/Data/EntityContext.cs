@@ -1,5 +1,4 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,8 +6,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Dapper;
 
 namespace AP.Utils.Data
 {
@@ -46,7 +44,14 @@ namespace AP.Utils.Data
 
         #region Methods
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Загружает данные с преобразованием в
+        /// список сущностей указанного типа.
+        /// </summary>
+        /// <typeparam name="T">Тип сущности для отображения данных.</typeparam>
+        /// <returns>Возвращает массив <see cref="T:T"/>.</returns>
+        /// <param name="param">Задает анонимный тип для инициализации
+        /// параметров, передаваемых в запрос при загрузке.</param>
         public T[] LoadMany<T>(object param = null) where T : new()
         {
             var t = typeof(T);
@@ -67,13 +72,28 @@ namespace AP.Utils.Data
             }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Загружает данные с преобразованием
+        /// в сущность указанного типа.
+        /// </summary>
+        /// <typeparam name="T">Тип сущности для отображения данных.</typeparam>
+        /// <param name="enitityKey">Значение уникального ключа записи данных.</param>
+        /// <param name="param">Задает анонимный тип для инициализации
+        /// параметров, передаваемых в запрос при загрузке.</param>
         public T LoadSingle<T>(object entityKey, object param = null) where T : new()
         {
             return (T)Load(typeof(T), entityKey, param);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Загружает данные с проецированием
+        /// в свойства указанной сущности.
+        /// </summary>
+        /// <param name="entity">Сущность для отображения данных.</param>
+        /// <param name="param">Задает анонимный тип для инициализации
+        /// параметров, передаваемых в запрос при загрузке.</param>
+        /// <returns>Возвращает истинно, если данные указанной сущности
+        /// успешно загружены; иначе ложно.</returns>
         public bool Load(object entity, object param = null)
         {
             if(entity == null)
@@ -90,8 +110,11 @@ namespace AP.Utils.Data
             Copy(src, entity);
             return true;
         }
-       
-        /// <inheritdoc />
+
+        /// <summary>
+        /// Сохраняет данные сущности.
+        /// </summary>
+        /// <param name="entity">Сущность, данные которой необходимо записать.</param>
         public void Save(object entity)
         {
             if(entity == null)
@@ -108,7 +131,10 @@ namespace AP.Utils.Data
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Удаляет данные объектной сущности.
+        /// </summary>
+        /// <param name="entity">Сущность, данные которой необходимо удалить</param>
         public void Delete(object entity)
         {
             if(entity == null)
@@ -128,7 +154,13 @@ namespace AP.Utils.Data
                 DataProvider.ExecuteNonQuery(proc, true, DataProvider.GetParameter(columnName, id));
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Загружает данные сущности
+        /// указанного типа.
+        /// </summary>
+        /// <typeparam name="TEntity">Тип сущности для загрузки данных.</typeparam>
+        /// <param name="param">Задает анонимный тип для инициализации
+        /// параметров, передаваемых в запрос при загрузке.</param>
         public DataTable LoadData<T>(object param = null)
         {
             var t = typeof(T);
@@ -150,21 +182,36 @@ namespace AP.Utils.Data
             return data;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Преобразует данные в объектную сущность.
+        /// </summary>
+        /// <typeparam name="T">Тип объектной сущности для отображения данных.</typeparam>
+        /// <param name="dataRow">Запись данных объектной сущности.</param>
+        /// <returns>Возвращает экземпляр <see cref="T:T"/>.</returns>
         public T Parse<T>(DataRow dataRow) where T : new()
         {
             var mapper = new EntityMapper();
             return mapper.Map<T>(dataRow);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Преобразует данные в список объектных сущностей.
+        /// </summary>
+        /// <typeparam name="T">Тип сущности для отображения данных.</typeparam>
+        /// <param name="dataTable">Таблица данных объектных сущностей.</param>
+        /// <returns>Возвращает массив <see cref="T:T"/>.</returns>
         public T[] Parse<T>(DataTable dataTable) where T : new()
         {
             var mapper = new EntityMapper();
             return mapper.Map<T>(dataTable).ToArray();
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Осуществляет поиск данных объектной сущности.
+        /// </summary>
+        /// <param name="dataTable">Таблица данных объектных сущностей.</param>
+        /// <param name="entity">Сущность, данные которой необходимо найти.</param>
+        /// <returns>Возвращает экземпляр <see cref="DataRow"/>.</returns>
         public DataRow Find(DataTable dataTable, object entity)
         {
             if(dataTable == null)

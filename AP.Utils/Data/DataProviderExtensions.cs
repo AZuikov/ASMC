@@ -38,7 +38,7 @@ namespace AP.Utils.Data
             {
                 dataProvider.Password = Utils.Decrypt(encriptedString, key);
             }
-            catch(CryptographicException)
+            catch (CryptographicException)
             {
                 dataProvider.Password = null;
             }
@@ -113,7 +113,7 @@ namespace AP.Utils.Data
         /// <param name="value"></param>
         public static object EscapeQuotes(this IDataProvider dataProvider, object value)
         {
-            if(value is string s)
+            if (value is string s)
                 return s.Replace("'", "''").Replace("\"", "\"\"");
             return value;
         }
@@ -127,7 +127,7 @@ namespace AP.Utils.Data
         /// <param name="fileName">Строка, содержащая путь к файлу UDL.</param>
         public static void LoadFromUdl(this IDataProvider dataProvider, string fileName)
         {
-            if(fileName == null)
+            if (fileName == null)
                 throw new ArgumentNullException(nameof(fileName));
 
             var udl = UdlBuilder.ParseFile(fileName);
@@ -137,6 +137,7 @@ namespace AP.Utils.Data
             dataProvider.User = udl.Username;
             dataProvider.Password = udl.Password;
             dataProvider.IntegratedSecurity = udl.IntegratedSecurity;
+            dataProvider.ConnectionTimeout = udl.ConnectionTimeout;
         }
 
         /// <summary>

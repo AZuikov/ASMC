@@ -15,7 +15,7 @@ using DataTable = System.Data.DataTable;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Excel : Document, ITextGraphicsReport, IDisposable
+    public class Excel : Document, IMsOffice, IDisposable
     {
         private XLWorkbook _workbook;
         private string _filePath;
@@ -938,6 +938,25 @@ namespace AP.Reports.AutoDocumets
         {
             _workbook?.Dispose();
         }
-
+        /// <inheritdoc />
+        public void InsertFiledInHeader(string code)
+        {
+            throw new NotImplementedException();
+        }
+        /// <inheritdoc />
+        public void InsertFiled(string code)
+        {
+            throw new NotImplementedException();
+        }
+        /// <inheritdoc />
+        public void FindStringInHeaderAndAllReplaceFiled(string sFind, string sCode)
+        {
+            throw new NotImplementedException();
+        }
+        /// <inheritdoc />
+        public void FindStringInHeaderAndAllReplace(string sFind, string sReplace)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

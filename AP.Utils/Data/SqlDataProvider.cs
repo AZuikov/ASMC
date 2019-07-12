@@ -22,7 +22,6 @@ namespace AP.Utils.Data
         private string _user;
         private bool _integratedSecurity;
         private DbConnection _connection;
-        private static int _commandTimeout = 300;
 
         private readonly SecureString _password = new SecureString();
 
@@ -120,14 +119,25 @@ namespace AP.Utils.Data
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает время ожидания
+        /// соединения с источником данных.
+        /// </summary>
+        public int ConnectionTimeout { get; set; } = 15;
+
+        /// <summary>
+        /// Возвращает или задает время ожидания
+        /// выполнения запроса к источнику данных.
+        /// </summary>
+        public int QueryTimeout { get; set; } = 300;
+
         /// <inheritdoc />
         public string ConnectionString
         {
             get
             {
                 var iss = _integratedSecurity ? ";Integrated Security=SSPI" : null;
-                return $"Data Source={_dataSource};Initial Catalog={_catalog}{iss};User Id={_user};Password={Password};Connection Timeout = 60";
-           
+                return $"Data Source={_dataSource};Initial Catalog={_catalog}{iss};User Id={_user};Password={Password};Connection Timeout={ConnectionTimeout}";
             }
         }
 
@@ -305,8 +315,7 @@ namespace AP.Utils.Data
         /// <returns>Возвращает <see cref="DbConnection"/>.</returns>
         protected DbConnection GetConnection()
         {
-            var sdsa = new SqlConnection(ConnectionString);
-            return sdsa;
+            return new SqlConnection(ConnectionString);
         }
 
         /// <summary>
@@ -327,7 +336,7 @@ namespace AP.Utils.Data
 
             var command = _connection.CreateCommand();
 
-            command.CommandTimeout = _commandTimeout;
+            command.CommandTimeout = QueryTimeout;
             command.CommandText = commandText;
             command.CommandType = commandType;
             command.Transaction = transaction;
@@ -375,4 +384,5 @@ namespace AP.Utils.Data
 
         #endregion
     }
+
 }

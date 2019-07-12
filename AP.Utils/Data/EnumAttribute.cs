@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AP.Utils.Data
 {
@@ -42,7 +36,7 @@ namespace AP.Utils.Data
     /// <summary>
     /// Класс расширяющий <see cref="System.Enum"/>
     /// </summary>
-    public static class EnumExpanded
+    public static class EnumExtensions
 
     {
         private static readonly Hashtable StringValues = new Hashtable();
@@ -51,7 +45,7 @@ namespace AP.Utils.Data
         /// Предоставляет возможность получить значение аттрибута  <see cref="StringValueAttribute"/>
         /// </summary>
         /// <returns> возвращает строку </returns>
-        public static string GetStringValue(this System.Enum value)
+        public static string GetStringValue(this Enum value)
         {
             string output;
             var type = value.GetType();
@@ -75,7 +69,7 @@ namespace AP.Utils.Data
         /// Предоставляет возможность получить значение аттрибута  <see cref="DoubleValueAttribute"/>
         /// </summary>
         /// <returns> Возвращает значение с плавоющей точкой двойной точности указзанное в аттрибуте </returns>
-        public static double GetDoubleValue(this System.Enum value)
+        public static double GetDoubleValue(this Enum value)
         {
             double output = 0;
             var type = value.GetType();
