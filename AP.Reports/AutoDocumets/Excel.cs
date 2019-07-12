@@ -33,7 +33,7 @@ namespace AP.Reports.AutoDocumets
             /// <summary>
             /// Документ
             /// </summary>
-            [StringValue(".xlsx")]
+            [StringValue("xlsx")]
             Xlsx
         }
 
