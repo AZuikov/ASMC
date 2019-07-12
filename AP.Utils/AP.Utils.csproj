@@ -60,6 +60,7 @@
     <Compile Include="Data\EntityMapper.cs" />
     <Compile Include="Data\EnumAttribute.cs" />
     <Compile Include="Data\FallbackTypeMapper.cs" />
+    <Compile Include="Data\MapColumnAttribute.cs" />
     <Compile Include="Data\ProcedureAttribute.cs" />
     <Compile Include="Data\UdlBuilder.cs" />
     <Compile Include="Data\IDataProvider.cs" />

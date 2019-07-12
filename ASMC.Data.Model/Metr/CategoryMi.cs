@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AP.Utils.Data;
 
 namespace ASMC.Data.Model.Metr
 {
     /// <summary>
     /// Сущность категории СИ.
     /// </summary>
-    [Table("SPKT")]
+    [Table("SPKT")] 
+    [StoredProcedure("dbo.up_gr_NmtbNmfiSelect", Operation = StoredProcedureOp.SelectMany)]
     public class CategoryMi
     {
         #region Properties
@@ -28,5 +30,23 @@ namespace ASMC.Data.Model.Metr
         public string Name { get; set; }
 
         #endregion
+
+        protected bool Equals(CategoryMi other)
+        {
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((CategoryMi) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }

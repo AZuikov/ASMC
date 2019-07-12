@@ -23,6 +23,25 @@ namespace ASMC.Data.Model.Metr
         [Required]
         [Column("KDOI", TypeName = "nvarchar(3)")]
         public string Code { get; set; }
+
+        protected bool Equals(MeasuringType other)
+        {
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MeasuringType) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
         /// <summary>
         /// Возвращает или задает наименование области измерений
         /// </summary>

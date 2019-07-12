@@ -18,6 +18,25 @@ namespace ASMC.Data.Model.Metr
         [Browsable(false)]
         [Column("IDSPKI", TypeName = "int")]
         public int? Id { get; set; }
+
+        protected bool Equals(Design other)
+        {
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Design) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
         /// <summary>
         /// Возвращает или задает наименование исполнения.
         /// </summary>

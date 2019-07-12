@@ -17,6 +17,25 @@ namespace ASMC.Data.Model.Metr
         [Browsable(false)]
         [Column("IDSPDPKL1", TypeName = "int")]
         public int? Id { get; set; }
+
+        protected bool Equals(AdditionalClassification1 other)
+        {
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((AdditionalClassification1) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
         /// <summary>
         /// Возвращает или задает код классификации.
         /// </summary>

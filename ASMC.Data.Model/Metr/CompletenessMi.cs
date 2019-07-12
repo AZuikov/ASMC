@@ -28,5 +28,23 @@ namespace ASMC.Data.Model.Metr
         /// </summary>
         [Column("PRTPRBMETR", TypeName = "nvarchar(3)")]
         public string Ais { get; set; }
+
+        protected bool Equals(CompletenessMi other)
+        {
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((CompletenessMi) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }

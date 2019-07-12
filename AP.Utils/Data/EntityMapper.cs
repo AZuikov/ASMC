@@ -14,7 +14,7 @@ namespace AP.Utils.Data
     /// <see cref="DataTable"/>, <see cref="DataRow"/> в
     /// объект.
     /// </summary>
-    public class EntityMapper
+    public sealed class EntityMapper
     {
         private static IDictionary<Type, string> _keyCache;
 
@@ -39,17 +39,9 @@ namespace AP.Utils.Data
         /// для проецирования.</param>
         public IEnumerable<TEntity> Map<TEntity>(DataTable dataTable) where TEntity : new()
         {
-            var properties = (typeof(TEntity)).GetProperties().ToList();
-
             var list = new List<TEntity>();
             foreach(var row in dataTable.Rows.Cast<DataRow>())
-            {
-                var entity = new TEntity();
-                foreach(var prop in properties)
-                    Map(row, prop, entity);
-
-                list.Add(entity);
-            }
+                list.Add(Map<TEntity>(row));
 
             return list.ToArray();
         }
@@ -70,33 +62,39 @@ namespace AP.Utils.Data
             return entity;
         }
 
-        private static void Map(DataRow dataRow, object entity, object key = null)
+        private static void Map(DataRow dataRow, object entity, object key = null, MapColumnAttribute[] mapColumns = null)
         {
             var properties = entity.GetType().GetProperties().ToList();
             foreach(var prop in properties)
                 if(key != null && prop.IsDefined(typeof(KeyAttribute)) && prop.CanWrite)
                     prop.SetValue(entity, key);
                 else
-                    Map(dataRow, prop, entity);
+                    Map(dataRow, prop, entity, mapColumns);
         }
 
-        private static void Map(DataRow dataRow, PropertyInfo prop, object entity)
+        private static void Map(DataRow dataRow, PropertyInfo prop, object entity, MapColumnAttribute[] mapColumns)
         {
             var columnName = prop.GetCustomAttribute<ColumnAttribute>()?.Name ?? prop.Name;
             if(!prop.CanWrite)
                 return;
 
+            var mappedColumn = mapColumns?.FirstOrDefault(map => string.Equals(map.TargetName, columnName, StringComparison.OrdinalIgnoreCase))?.Name;
+            if(mappedColumn != null)
+                columnName = mappedColumn;
+
             if(dataRow.Table.Columns.Contains(columnName))
             {
-                    var value = ConvertValue(dataRow[columnName], prop.PropertyType);
-                    if(value != null)
-                        prop.SetValue(entity, value);
-           
-              
+                var value = ConvertValue(dataRow[columnName], prop.PropertyType);
+                if(value != null)
+                    prop.SetValue(entity, value);
             }
 
             var foreignKey = prop.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
             if(foreignKey == null)
+                return;
+
+            var nullableType = Nullable.GetUnderlyingType(prop.PropertyType);
+            if(nullableType != null)
                 return;
 
             if(dataRow.Table.Columns.Contains(foreignKey))
@@ -105,7 +103,7 @@ namespace AP.Utils.Data
                     return;
 
                 var child = Activator.CreateInstance(prop.PropertyType);
-                Map(dataRow, child, dataRow[foreignKey]);
+                Map(dataRow, child, dataRow[foreignKey], prop.GetCustomAttributes<MapColumnAttribute>().ToArray());
 
                 prop.SetValue(entity, child);
             }
@@ -120,7 +118,7 @@ namespace AP.Utils.Data
                     return;
 
                 var child = Activator.CreateInstance(foreignProp.PropertyType);
-                Map(dataRow, child, dataRow[foreignKey]);
+                Map(dataRow, child, dataRow[key], foreignProp.GetCustomAttributes<MapColumnAttribute>().ToArray());
 
                 foreignProp.SetValue(entity, child);
             }
@@ -132,8 +130,9 @@ namespace AP.Utils.Data
                 return destinationType.IsValueType ? Activator.CreateInstance(destinationType) : null;
             if(destinationType == typeof(bool))
                 return (value is byte b) && b == 1;
-            var nullableType = Nullable.GetUnderlyingType(destinationType);      
-                return Convert.ChangeType(value, nullableType ?? destinationType);
+
+            var nullableType = Nullable.GetUnderlyingType(destinationType);
+            return Convert.ChangeType(value, nullableType ?? destinationType);
         }
 
         private static string GetEntityKey(Type entityType)
@@ -149,4 +148,5 @@ namespace AP.Utils.Data
 
         #endregion
     }
+
 }
