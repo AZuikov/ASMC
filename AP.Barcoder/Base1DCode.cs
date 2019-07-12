@@ -1,6 +1,5 @@
 ﻿using System;
 using AP.Barcoder.Utils;
-using AP.Barcoder;
 using AP.Utils.Data;
 
 namespace AP.Barcoder

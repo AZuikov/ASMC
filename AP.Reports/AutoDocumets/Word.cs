@@ -46,7 +46,7 @@ namespace AP.Reports.AutoDocumets
 
         public DocumentRange DocumentRange
         {
-            get { return _documentRange ?? (_documentRange = _subDocument?.Range); }
+            get { return _documentRange ?? (_documentRange = _document?.Range); }
             private set { _documentRange = value; }
         }
 
@@ -168,14 +168,13 @@ namespace AP.Reports.AutoDocumets
         {
             if (string.IsNullOrEmpty(sFind) || sReplace == null)
                 return;
-
+            _document.BeginUpdate();
             while (FindStringSetDocumentPosition(sFind) > 0)
-            {
-                _document.BeginUpdate();
+            {    
                 InsertText(sReplace);
-                _document.Delete(DocumentRange);
-                _document.EndUpdate();
+                _document.Delete(DocumentRange);   
             }
+            _document.EndUpdate();
         }
 
 
@@ -241,8 +240,8 @@ namespace AP.Reports.AutoDocumets
         {
             var foundTotal = _document.FindAll(new Regex(PatternFindText(sFind)), _document.Range);
             if (foundTotal.Length <= 0) return foundTotal.Length;
-            DocumentRangeHeader = foundTotal.First();
-            DocumentPositionHeader = DocumentRangeHeader.Start;
+            DocumentRange = foundTotal.First();
+            DocumentPosition = DocumentRange.Start;
             return foundTotal.Length;
         }
 
@@ -251,8 +250,8 @@ namespace AP.Reports.AutoDocumets
             _subDocument = _document.Sections.First().BeginUpdateHeader(HeaderFooterType.First);
             var foundTotal = _subDocument.FindAll(new Regex(PatternFindText(sFind)), _subDocument.Range);
             if (foundTotal.Length <= 0) return foundTotal.Length;
-            DocumentRange = foundTotal.First();
-            DocumentPosition = DocumentRange.Start;
+            DocumentRangeHeader = foundTotal.First();
+            DocumentPositionHeader = DocumentRangeHeader.Start;
             return foundTotal.Length;
         }
 
