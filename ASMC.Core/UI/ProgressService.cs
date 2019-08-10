@@ -51,8 +51,8 @@ namespace ASMC.Core.UI
                 Owner = parent,
                 Title = caption ?? (parent?.Title ?? string.Empty),
                 AllowCancel = (tokenSource != null),
-                PART_Content = { Text = messageText },
-                PART_Progress = { IsIndeterminate = (ProgressCallback == null) }
+                PartContent = { Text = messageText },
+                PartProgress = { IsIndeterminate = (ProgressCallback == null) }
             };
 
             var task = DoAsync(window, taskToRun, tokenSource, ProgressCallback, StatusCallback);
@@ -88,10 +88,10 @@ namespace ASMC.Core.UI
 
             var progressHandler = new EventHandler<int>((s, e) =>
             {
-                window.PART_Progress.Value = e;
+                window.PartProgress.Value = e;
             });
 
-            var statusHandler = new EventHandler<string>((s, e) => window.PART_Status.Text = e);
+            var statusHandler = new EventHandler<string>((s, e) => window.PartStatus.Text = e);
 
             var dpd = DependencyPropertyDescriptor.FromProperty(ProgressWindow.CancellingProperty, typeof(ProgressWindow));
             dpd?.AddValueChanged(window, cancelHandler);
@@ -102,7 +102,7 @@ namespace ASMC.Core.UI
                 status.ProgressChanged += statusHandler;
 
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.ApplicationIdle,
-                (s, e) => window.PART_TimeRemaining.Text = GetTimeRemaining((int)window.PART_Progress.Value), window.Dispatcher);
+                (s, e) => window.PartTimeRemaining.Text = GetTimeRemaining((int)window.PartProgress.Value), window.Dispatcher);
 
             timer.Start();
             _sw.Start();

@@ -9,5 +9,5 @@
     <StackPanel>
         <Label  Content="{Binding Path=Document,Mode=TwoWay, RelativeSource={RelativeSource AncestorType=local:UserControl1}}" HorizontalAlignment="Left" Margin="161,120,0,0" VerticalAlignment="Top"/>
         <Label  Content="{Binding Path=Document1, Mode=TwoWay,RelativeSource={RelativeSource AncestorType=local:UserControl1}}" HorizontalAlignment="Left" Margin="161,120,0,0" VerticalAlignment="Top"/>
-    </StackPanel>
+     </StackPanel>
 </UserControl>

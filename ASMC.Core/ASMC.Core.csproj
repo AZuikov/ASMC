@@ -11,7 +11,7 @@
     <AssemblyName>ASMC.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <Deterministic>false</Deterministic>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -32,20 +32,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
-    </Reference>
     <Reference Include="DevExpress.Data.v17.2">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Data.v17.2.dll</HintPath>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Data.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v17.2">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Mvvm.v17.2.dll</HintPath>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Utils.v17.2">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Utils.v17.2.dll</HintPath>
+    <Reference Include="DevExpress.Xpf.Core.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Xpf.Core.v17.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Core.v17.2">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Core.v17.2.dll</HintPath>
+    <Reference Include="DevExpress.Xpf.Grid.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Xpf.Grid.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="Fluent, Version=6.1.0.326, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.6.1.0.326\lib\net45\Fluent.dll</HintPath>
@@ -75,6 +74,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,7 @@
     <Compile Include="Settings\WindowSettingsBase.cs" />
     <Compile Include="UI\MessageBoxService.cs" />
     <Compile Include="UI\ProgressService.cs" />
+    <Compile Include="UI\ValueContentControl.cs" />
     <Compile Include="UI\WindowAttachedProperties.cs" />
     <Compile Include="UI\WindowService.cs" />
     <Compile Include="ValidationRules\Rules.cs" />
@@ -97,6 +99,12 @@
     <Compile Include="ViewModel\DataPageContent.cs" />
     <Compile Include="ViewModel\ReadAndWriteTextVM.cs" />
     <Compile Include="ViewModel\test.cs" />
+    <Compile Include="View\DataView.xaml.cs">
+      <DependentUpon>DataView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\FindEkzCard.xaml.cs">
+      <DependentUpon>FindEkzCard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
@@ -132,6 +140,22 @@
     <Resource Include="Image\ListNumbering.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ValueContentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\DataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\FindEkzCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ProgressWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -154,6 +178,7 @@
     <EmbeddedResource Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Licenses.licx" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

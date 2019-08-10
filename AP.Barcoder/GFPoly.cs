@@ -44,9 +44,7 @@ namespace AP.Barcoder.Utils
             int[] largeCoefficients = other.Coefficients;
             if (smallCoefficients.Length > largeCoefficients.Length)
             {
-                var toCopy = largeCoefficients;
                 largeCoefficients = smallCoefficients;
-                smallCoefficients = largeCoefficients;
             }
             int[] sumDiff = new int[largeCoefficients.Length];
             int lenDiff = largeCoefficients.Length - smallCoefficients.Length;

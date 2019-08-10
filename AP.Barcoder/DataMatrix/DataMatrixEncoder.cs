@@ -15,8 +15,7 @@ namespace AP.Barcoder.DataMatrix
 
             data = AddPadding(data, size.DataCodewords);
             data = ErrorCorrection.CalculateEcc(data, size);
-            var code = Render(data, size)
-                ?? throw new InvalidOperationException("Unable to render barcode");
+            var code = Render(data, size);
             code.Content = content;
             return code;
         }

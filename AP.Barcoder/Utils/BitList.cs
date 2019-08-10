@@ -86,6 +86,7 @@ namespace AP.Barcoder.Utils
         /// Appends the last (LSB) count bits of b to the end of the list.
         /// </summary>
         /// <param name="b"></param>
+        /// <param name="count"></param>
         public void AddBits(uint b, byte count)
         {
             for (var i = count - 1; i >= 0; i--)
