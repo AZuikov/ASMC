@@ -1,83 +1,114 @@
-﻿using ASMC.Core.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
-using ASMC.Core.UI;
-using NLog;
-using AP.Reports.AutoDocumets;
+using System.Reflection;
+using System.Windows.Input;
+using DevExpress.Mvvm;
+using Palsys.Core.ViewModel;
+using Palsys.Metr.Modules;
+using Palsys.Utils.Localization;
 
 namespace ASMC.ViewModel
 {
-    public class MainViewModel : BaseViewModel
+    public class MainViewModel : ClosableViewModel
     {
-        private FlowDocument _document;
-        public FlowDocument Document1
+        private CultureInfo _currentLanguage;
+        private IEnumerable<IModule> _modules;
+
+        public MenuViewModel Menu { get; } = new MenuViewModel();
+
+        public CultureInfo[] LanguageList
         {
-            get { return _document; }
+            get;
+        }
+
+        public CultureInfo CurrentLanguage
+        {
+            get => _currentLanguage;
+            set => SetProperty(ref _currentLanguage, value, nameof(CurrentLanguage),
+                () => LocalizationManager.Default.CurrentCulture = value);
+        }
+
+        public ICommand SelectLanguageCommand
+        {
+            get;
+        }
+
+        public ICommand ShowCompanyCommand
+        {
+            get;
         }
 
         public MainViewModel()
         {
-          
-            
+            SelectLanguageCommand = new DelegateCommand<CultureInfo>(lang => CurrentLanguage = lang);
+            ShowCompanyCommand = new DelegateCommand(() => OpenSite(LocalizationManager.Default["CompanySiteAddress"]));
 
+            LanguageList = new[]
+            {
+                CultureInfo.GetCultureInfo("ru"),
+                CultureInfo.GetCultureInfo("en")
+            };
+            CurrentLanguage = LocalizationManager.Default.CurrentCulture;
 
-            this.Initialize();
-
-            //var word = new Word();
-            //word.OpenDocument(@"Z:\ОГМетр\Внутренние\Документы - Общие\AutoMeas\Протоколы\ProtocolCreatorTemplates\HeaderAlbum.dotx");
-
-            //DataTable weatherDataTable = new DataTable();
-            //weatherDataTable.Columns.Add(new DataColumn("Контролируемые параметры", typeof(string)));
-            //weatherDataTable.Columns.Add(new DataColumn("Требования НД", typeof(string)));
-            //weatherDataTable.Columns.Add(new DataColumn("Измеренные значения", typeof(string)));
-            //int rowsNum = 0;
-            //for(int i = 0; i < 3; i++)
-            //{
-
-            //    weatherDataTable.Rows.Add(weatherDataTable.NewRow());
-            //    weatherDataTable.Rows[rowsNum][0] = i.ToString();
-            //    weatherDataTable.Rows[rowsNum][2] = i.ToString();
-            //    rowsNum++;
-            //}
-
-
-            //word.FillTableToBookmark("weatherTable", weatherDataTable);
-            //word.MoveEnd();
-            //word.SaveAs(@"C:\Users\02tav01\Documents\1488.docx");
-            //word.Close();
-            //_document = new FlowDocument();
-            //TextRange tr = new TextRange(_document.ContentStart, _document.ContentEnd);
-            //using (var stream = new FileStream(@"\\zrto.int\ogmetr\AutoMeas\AutoMeas\PatchInfo — копия.rtf", FileMode.Open))
-            //{
-            //    tr.Load(stream, DataFormats.Rtf);
-            //    stream.Close();
-            //}
-
-
-            //var dsadas = new MessageBoxService();
-            //Confirm("У выбранного экземпляра отсутствуют события МК.\n" +
-            //        "Пожалуйста, создайте событие МК и повторите попытку.\n" +
-            //        "Приложение будет закрыто.", true, MessageBoxResult.No, false, dsadas);
-            //Task loadingTask = new Task(() =>
-            //{
-
-            //    Confirm("У выбранного экземпляра отсутствуют события МК.\n" +
-            //            "Пожалуйста, создайте событие МК и повторите попытку.\n" +
-            //            "Приложение будет закрыто.", true, MessageBoxResult.No, false, dsadas);
-            //});
-
-            //StartTaskAndShowProgressService("Идет загрузка данных из базы",
-            //    "Подождите...", loadingTask, null, new ProgressService());
-
-
+            LocalizationManager.Default.CurrentCultureChanged += (sender, args) =>
+            {
+                CurrentLanguage = LocalizationManager.Default.CurrentCulture;
+                RebuildItems(_modules);
+            };
         }
 
+        public void RebuildItems(IEnumerable<IModule> modules)
+        {
+            _modules = modules;
+
+            Menu.Items.Clear();
+
+            if(_modules == null)
+                return;
+
+            foreach(var mod in _modules)
+            {
+                var methods = mod.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public).Where(m =>
+                    m.IsDefined(typeof(BrowsableAttribute)) && m.GetParameters().Length == 0);
+
+                foreach(var mi in methods)
+                {
+                    var description = mi.GetCustomAttribute<DescriptionAttribute>()?.Description;
+
+                    var locName = LocalizationManager.Default[mi.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? mi.Name];
+                    var locDescription = description != null ? LocalizationManager.Default[description] : null;
+
+                    Menu.Items.Add(new MenuViewModel.Item(locName, locDescription, () =>
+                    {
+                        try
+                        {
+                            mi.Invoke(mod, null);
+                        }
+                        catch(Exception e)
+                        {
+                            if(!Alert(e.InnerException ?? e))
+                                throw;
+                        }
+                    }));
+                }
+            }
+        }
+
+        private void OpenSite(string uri)
+        {
+            try
+            {
+                Process.Start(uri);
+            }
+            catch(Exception e)
+            {
+                if(!Alert(e))
+                    throw;
+            }
+        }
     }
 }

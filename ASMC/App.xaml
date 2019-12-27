@@ -1,10 +1,26 @@
 ﻿<Application x:Class="ASMC.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ASMC" 
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core">
+          
+             xmlns:asmc="clr-namespace:ASMC"
+             xmlns:ps="http://schemas.palitra-system.ru/winfx/xaml/core">
     <Application.Resources>
-       
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <ps:MessageBoxService x:Key="MessageBoxService" />
+
+            <ps:WindowService x:Key="DefaultWindowService"
+                              WindowStartupLocation="CenterScreen"
+                              WindowShowMode="Default"
+                              Title=""
+                              ResizeMode="CanMinimize">
+                <ps:WindowService.SettingsSelector>
+                    <asmc:ViewSettingsSelector />
+                </ps:WindowService.SettingsSelector>
+            </ps:WindowService>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -9,10 +9,12 @@ using System.Text.RegularExpressions;
 using DevExpress.XtraRichEdit;
 using DevExpress.XtraRichEdit.API.Native;
 using AP.Utils.Data;
+//using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Word : Document, IMsOffice, IDisposable
+    public class Word : Document, IMsOfficeReport, IDisposable
     {
         private RichEditDocumentServer _documentServer;
         private DocumentPosition _documentPosition;
@@ -183,41 +185,57 @@ namespace AP.Reports.AutoDocumets
         {
             if (string.IsNullOrEmpty(sFind) || sReplace == null)
                 return;
-            while (FindStringToHeaderSetDocumentPosition(sFind) > 0)
+            bool findInHeader = true;
+            for (int i = 0; i < 2; i++)
             {
-                var section = _document.Sections.First();
-                _subDocument = section.BeginUpdateHeader(HeaderFooterType.First);
-                _subDocument.InsertText(DocumentPositionHeader, sReplace);
-                _subDocument.Delete(DocumentRangeHeader);
-                section.EndUpdateHeader(_subDocument);
-                section.DifferentFirstPage = true;
+                while (FindStringToHeaderSetDocumentPosition(sFind, findInHeader) > 0)
+                {
+                    var section = _document.Sections.First();
+                    _subDocument = findInHeader ?
+                        section.BeginUpdateHeader(HeaderFooterType.First) 
+                        : section.BeginUpdateFooter(HeaderFooterType.First);
+                    _subDocument.InsertText(DocumentPositionHeader, sReplace);
+                    _subDocument.Delete(DocumentRangeHeader);
+                    if (findInHeader) {section.EndUpdateHeader(_subDocument);}
+                    else {section.EndUpdateFooter(_subDocument);}
+                    section.DifferentFirstPage = true;
+                }
+                findInHeader = false;
             }
         }
 
         /// <inheritdoc />
-        public void FindStringInHeaderAndAllReplaceFiled(string sFind, string sCode)
+        public void FindStringInHeaderAndAllReplaceField(string sFind, string sCode)
         {
             if (string.IsNullOrEmpty(sFind) || sCode == null)
                 return;
-            while (FindStringToHeaderSetDocumentPosition(sFind) > 0)
+            bool findInHeader = true;
+            for (int i = 0; i < 2; i++)
             {
-                var section = _document.Sections.First();
-                _subDocument = section.BeginUpdateHeader(HeaderFooterType.First);
-                InsertFiled(sCode);
-                _subDocument.Delete(DocumentRangeHeader);
-                section.EndUpdateHeader(_subDocument);
-                section.DifferentFirstPage = true;
+                while (FindStringToHeaderSetDocumentPosition(sFind, findInHeader) > 0)
+                {
+                    var section = _document.Sections.First();
+                    _subDocument = findInHeader? 
+                        section.BeginUpdateHeader(HeaderFooterType.First):
+                        section.BeginUpdateFooter(HeaderFooterType.First);
+                    InsertFieldInHeader(sCode);
+                    _subDocument.Delete(DocumentRangeHeader);
+                    if (findInHeader) { section.EndUpdateHeader(_subDocument); }
+                    else { section.EndUpdateFooter(_subDocument); }
+                    section.DifferentFirstPage = true;
+                }
+                findInHeader = false;
             }
         }
 
         /// <inheritdoc />
-        public void InsertFiledInHeader(string code)
+        public void InsertFieldInHeader(string code)
         {
             _subDocument.Fields.Create(DocumentPositionHeader, code);
         }
 
         /// <inheritdoc />
-        public void InsertFiled(string code)
+        public void InsertField(string code)
         {
             _document.Fields.Create(DocumentPosition, code);
         }
@@ -245,15 +263,24 @@ namespace AP.Reports.AutoDocumets
             return foundTotal.Length;
         }
 
-        private int FindStringToHeaderSetDocumentPosition(string sFind)
+        /// <summary>
+        /// Найти строку в колонтитуле
+        /// </summary>
+        /// <param name="sFind">Искомая строка</param>
+        /// <param name="findInHeader">Искать в верхнем колонтитуле, а не в нижнем</param>
+        /// <returns></returns>
+        private int FindStringToHeaderSetDocumentPosition(string sFind, bool findInHeader)
         {
-            _subDocument = _document.Sections.First().BeginUpdateHeader(HeaderFooterType.First);
+            _subDocument = findInHeader ? 
+                _document.Sections.First().BeginUpdateHeader(HeaderFooterType.First) 
+                : _document.Sections.First().BeginUpdateFooter(HeaderFooterType.First);
             var foundTotal = _subDocument.FindAll(new Regex(PatternFindText(sFind)), _subDocument.Range);
             if (foundTotal.Length <= 0) return foundTotal.Length;
             DocumentRangeHeader = foundTotal.First();
             DocumentPositionHeader = DocumentRangeHeader.Start;
             return foundTotal.Length;
         }
+
 
         /// <inheritdoc />
         public void FindStringAndReplace(string sFind, string sReplace)

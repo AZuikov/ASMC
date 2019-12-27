@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ASMC.Core</RootNamespace>
     <AssemblyName>ASMC.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>false</Deterministic>
     <TargetFrameworkProfile />
@@ -49,9 +49,6 @@
     <Reference Include="Fluent, Version=6.1.0.326, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.6.1.0.326\lib\net45\Fluent.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.6.5\lib\net45\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -80,39 +77,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Interface\IProgressService.cs" />
-    <Compile Include="Interface\ISupportClose.cs" />
-    <Compile Include="Interface\ISupportDialog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\IWindowSettings.cs" />
     <Compile Include="Settings\SettingsSelector.cs" />
     <Compile Include="Settings\WindowSettingsBase.cs" />
-    <Compile Include="UI\MessageBoxService.cs" />
-    <Compile Include="UI\ProgressService.cs" />
-    <Compile Include="UI\ValueContentControl.cs" />
-    <Compile Include="UI\WindowAttachedProperties.cs" />
-    <Compile Include="UI\WindowService.cs" />
     <Compile Include="ValidationRules\Rules.cs" />
-    <Compile Include="ViewExtensions.cs" />
-    <Compile Include="ViewModel\BaseSelectorViewModel.cs" />
-    <Compile Include="ViewModel\BaseViewModel.cs" />
-    <Compile Include="ViewModel\DataPageContent.cs" />
     <Compile Include="ViewModel\ReadAndWriteTextVM.cs" />
-    <Compile Include="ViewModel\test.cs" />
+    <Compile Include="ViewModel\WorkViewMOdel.cs" />
     <Compile Include="View\DataView.xaml.cs">
       <DependentUpon>DataView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\FindEkzCard.xaml.cs">
-      <DependentUpon>FindEkzCard.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ProgressWindow.xaml.cs">
-      <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ReadAndWriteText.xaml.cs">
       <DependentUpon>ReadAndWriteText.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\UserControl1.xaml.cs">
-      <DependentUpon>UserControl1.xaml</DependentUpon>
+    <Compile Include="View\WorkView.xaml.cs">
+      <DependentUpon>WorkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\WriteText.xaml.cs">
       <DependentUpon>WriteText.xaml</DependentUpon>
@@ -144,27 +123,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\ValueContentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\DataView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\FindEkzCard.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ProgressWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ReadAndWriteText.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\UserControl1.xaml">
+    <Page Include="View\WorkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -185,6 +152,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Data.Model\Palsys.Data.Model.csproj">
+      <Project>{0ed73fcc-a223-4a57-8089-295f77c5e355}</Project>
+      <Name>Palsys.Data.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>

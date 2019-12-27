@@ -9,13 +9,15 @@ using AP.Reports.Interface;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ClosedXML.Excel;
+using DevExpress.Utils.OAuth.Provider;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Word;
 using DataTable = System.Data.DataTable;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Excel : Document, IMsOffice, IDisposable
+    public class Excel : Document, IMsOfficeReport, IDisposable
     {
         private XLWorkbook _workbook;
         private string _filePath;
@@ -103,11 +105,13 @@ namespace AP.Reports.AutoDocumets
 
         #region IGraphsReport
 
+        /// <inheritdoc />
         public void Close()
         {
             _workbook.Dispose();
         }
 
+        /// <inheritdoc />
         public void FillTableToBookmark(string bm, DataTable dt, bool del = false,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -140,6 +144,7 @@ namespace AP.Reports.AutoDocumets
             else throw new NullReferenceException();
         }
 
+        /// <inheritdoc />
         public void FindStringAndAllReplace(string sFind, string sReplace)
         {
             FindCellAndDo(
@@ -147,10 +152,12 @@ namespace AP.Reports.AutoDocumets
                 (cell, worksheet) =>
                 {
                     cell.Value = Regex.Replace(cell.Value.ToString(), PatternFindText(sFind), sReplace);
+                    AutoHeightToMergedCell(cell);
                 },
                 true);
         }
 
+        /// <inheritdoc />
         public void FindStringAndReplace(string sFind, string sReplace)
         {
             FindCellAndDo(
@@ -162,6 +169,7 @@ namespace AP.Reports.AutoDocumets
                 false);
         }
 
+        /// <inheritdoc />
         public void FindStringAndAllReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             FindCellAndDo(
@@ -173,6 +181,7 @@ namespace AP.Reports.AutoDocumets
                 true);
         }
 
+        /// <inheritdoc />
         public void FindStringAndReplaceImage(string sFind, Bitmap image, float scale = 1)
         {
             FindCellAndDo(
@@ -184,6 +193,7 @@ namespace AP.Reports.AutoDocumets
                 false);
         }
 
+        /// <inheritdoc />
         public void InsertImage(Bitmap image, float scale = 1)
         {
             if (_workbook != null)
@@ -196,6 +206,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void InsertImageToBookmark(string bm, Bitmap image, float scale = 1)
         {
             if (_workbook != null)
@@ -209,6 +220,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void InsertNewTableToBookmark(string bm, DataTable dt,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
@@ -224,6 +236,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void InsertTable(DataTable dt, ConditionalFormatting cf = default(ConditionalFormatting))
         {
             if (_workbook != null)
@@ -238,6 +251,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void InsertText(string text)
         {
             if (_workbook != null)
@@ -258,6 +272,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void InsertTextToBookmark(string bm, string text)
         {
             if (_workbook != null)
@@ -271,6 +286,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void MergeDocuments(string pathdoc)
         {
             if (pathdoc == null)
@@ -326,9 +342,19 @@ namespace AP.Reports.AutoDocumets
                                 //Сохраняем только уникальные числа
                                 //Hashtable uniqMathes = new Hashtable();
                                 Dictionary<string, string> uniqMathes = new Dictionary<string, string>();
-                                for (int i = 0; i < matchs.Count; i++)
+                                try
+                                {    
+                                    for(int i = 0; i < matchs.Count; i++)
+                                    {
+                                        if (!uniqMathes.ContainsKey(matchs[i].Value))
+                                        {    
+                                            uniqMathes.Add(matchs[i].Value, matchs[i].Value);
+                                        }
+                                    }
+                                }
+                                catch (Exception e)
                                 {
-                                    uniqMathes.Add(matchs[i].Value, matchs[i].Value);
+                                   throw;
                                 }
 
                                 //Упорядочиваем по убыванию
@@ -381,11 +407,13 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void NewDocument()
         {
             NewDocument(new [] {"Лист1"});
         }
 
+        /// <inheritdoc />
         public void NewDocumentTemp(string templatePath)
         {
             if (templatePath == null)
@@ -403,6 +431,7 @@ namespace AP.Reports.AutoDocumets
             MoveEnd();
         }
 
+        /// <inheritdoc />
         public void OpenDocument(string sPath)
         {
             if (sPath == null)
@@ -420,6 +449,7 @@ namespace AP.Reports.AutoDocumets
             MoveEnd();
         }
 
+        /// <inheritdoc />
         public void Save()
         {
             if (_filePath != null)
@@ -428,6 +458,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void SaveAs(string pathToSave)
         {
             if (pathToSave == null)
@@ -446,6 +477,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void MergeDocuments(IEnumerable<string> pathdoc)
         {
             foreach (var str in pathdoc)
@@ -454,6 +486,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void MoveEnd()
         {
             if (_workbook != null)
@@ -464,6 +497,7 @@ namespace AP.Reports.AutoDocumets
             }
         }
 
+        /// <inheritdoc />
         public void MoveHome()
         {
             if (_workbook != null)
@@ -814,6 +848,7 @@ namespace AP.Reports.AutoDocumets
         /// <param name="cell"></param>
         private void ShiftForATable(DataTable dt, ref IXLCell cell)
         {
+            if(dt.Rows.Count < 2) return;
             var savedAdress = cell.Address;
             cell.Worksheet.Row(cell.Address.RowNumber).AsRange().InsertRowsBelow(dt.Rows.Count - 1);
             cell = cell.Worksheet.Cell(savedAdress);
@@ -855,7 +890,7 @@ namespace AP.Reports.AutoDocumets
         /// <returns></returns>
         private bool IsItFirstCellOfMergedRange(IXLCell cell)
         {
-            return (cell.Address == GetMergeRange(cell).FirstCell().Address);
+            return (cell.Address.ToString() == GetMergeRange(cell).FirstCell().Address.ToString());
         }
 
         /// <summary>
@@ -939,24 +974,111 @@ namespace AP.Reports.AutoDocumets
             _workbook?.Dispose();
         }
         /// <inheritdoc />
-        public void InsertFiledInHeader(string code)
+        public void InsertFieldInHeader(string code)
         {
             throw new NotImplementedException();
         }
         /// <inheritdoc />
-        public void InsertFiled(string code)
+        public void InsertField(string code)
         {
             throw new NotImplementedException();
         }
+
         /// <inheritdoc />
-        public void FindStringInHeaderAndAllReplaceFiled(string sFind, string sCode)
+        public void FindStringInHeaderAndAllReplaceField(string sFind, string sCode)
         {
-            throw new NotImplementedException();
+            XLHFPredefinedText code;
+            if (XLHFPredefinedText.TryParse(sCode, true, out code))
+            {
+                var headerFooter = _currentCell.Worksheet.PageSetup.Header;
+                ChangeHeaderFooterTextToCode(headerFooter.Left, sFind, code);
+                ChangeHeaderFooterTextToCode(headerFooter.Center, sFind, code);
+                ChangeHeaderFooterTextToCode(headerFooter.Right, sFind, code);
+                headerFooter = _currentCell.Worksheet.PageSetup.Footer;
+                ChangeHeaderFooterTextToCode(headerFooter.Left, sFind, code);
+                ChangeHeaderFooterTextToCode(headerFooter.Center, sFind, code);
+                ChangeHeaderFooterTextToCode(headerFooter.Right, sFind, code);
+                _currentCell.Worksheet.Workbook.RecalculateAllFormulas();
+            }
         }
+
         /// <inheritdoc />
         public void FindStringInHeaderAndAllReplace(string sFind, string sReplace)
         {
-            throw new NotImplementedException();
+            var headerFooter = _currentCell.Worksheet.PageSetup.Header;
+            ChangeHeaderFooterText(headerFooter.Left, sFind, sReplace);
+            ChangeHeaderFooterText(headerFooter.Center, sFind, sReplace);
+            ChangeHeaderFooterText(headerFooter.Right, sFind, sReplace);
+            headerFooter = _currentCell.Worksheet.PageSetup.Footer;
+            ChangeHeaderFooterText(headerFooter.Left, sFind, sReplace);
+            ChangeHeaderFooterText(headerFooter.Center, sFind, sReplace);
+            ChangeHeaderFooterText(headerFooter.Right, sFind, sReplace);
+            _currentCell.Worksheet.Workbook.RecalculateAllFormulas();
+        }
+
+        /// <summary>
+        /// Заменяет текст в переданном объекте колонтитула
+        /// </summary>
+        /// <param name="hf"></param>
+        /// <param name="sFind"></param>
+        /// <param name="sReplace"></param>
+        private void ChangeHeaderFooterText(IXLHFItem hf, string sFind, string sReplace)
+        {
+            string str = hf.GetText(XLHFOccurrence.FirstPage);
+            hf.Clear();
+            hf.AddText(str.Replace(sFind, sReplace));
+        }
+
+        /// <summary>
+        /// Заменяет текст на преустановленный текст в переданном объекте колонтитула
+        /// </summary>
+        /// <param name="hf"></param>
+        /// <param name="sFind"></param>
+        /// <param name="prefText"></param>
+        private void ChangeHeaderFooterTextToCode(IXLHFItem hf, string sFind, XLHFPredefinedText prefText)
+        {
+            string str = hf.GetText(XLHFOccurrence.FirstPage);
+            string[] strs = str.Split( new [] {sFind}, StringSplitOptions.None );
+            hf.Clear();
+            for (int i = 0; i < strs.Length; i++)
+            {
+                hf.AddText(strs[i]);
+                if (i != strs.Length - 1)
+                {
+                    hf.AddText(prefText);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Осуществляет автоподбор высоты ячейки
+        /// </summary>
+        /// <param name="cell"></param>
+        private void AutoHeightToMergedCell(IXLCell cell)
+        {
+            return;
+            //Функция не реализована ввиду бага библиотеки ClosedXML - функция Row.AdjustToContents()
+            //не учитывает свойство Style.Alignment.WrapText = true, то есть 
+            //автоподбор высоты ячейки всегда изменяет высоту для отображения ОДНОЙ строки текста.
+            if (!cell.IsMerged()) return;
+            if(!IsItFirstCellOfMergedRange(cell)) return;
+            if(cell.Address.ToString() != "K15") return;
+            var mergetRegion = GetMergeRange(cell);
+            double savedWidth = cell.Worksheet.Column(cell.Address.ColumnNumber).Width;
+            double widthOfMergedRegion = 0;
+            foreach (var column in mergetRegion.Columns())
+            {
+                widthOfMergedRegion += cell.Worksheet.Column(column.ColumnNumber()).Width;
+            }
+            cell.Worksheet.Column(cell.Address.ColumnNumber).Width = widthOfMergedRegion;
+            mergetRegion.Unmerge();
+            mergetRegion.Style.Alignment.WrapText = true;
+            cell.Worksheet.Row(cell.Address.RowNumber).ClearHeight();
+            double hieght = cell.Worksheet.Row(cell.Address.RowNumber).Height;
+            //cell.Worksheet.Row(cell.Address.RowNumber).AdjustToContents();
+            //mergetRegion.Merge();
+            //cell.Worksheet.Row(cell.Address.RowNumber).Height = hieght;
+            //cell.Worksheet.Column(cell.Address.ColumnNumber).Width = savedWidth;
         }
     }
 }

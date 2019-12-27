@@ -9,9 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ASMC.Data.Model</RootNamespace>
     <AssemblyName>ASMC.Data.Model</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>false</Deterministic>
+    <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -32,13 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DataBase">
-      <HintPath>..\ASMC.Data\DataBase.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,56 +44,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClimateModel\Parametr.cs" />
-    <Compile Include="ClimateModel\Room.cs" />
-    <Compile Include="ClimateModel\Sensor.cs" />
-    <Compile Include="Interface\IEmployees.cs" />
-    <Compile Include="Interface\IMainWindow.cs" />
-    <Compile Include="Interface\IParameters.cs" />
-    <Compile Include="Metr\AdditionalClassification1.cs" />
-    <Compile Include="Metr\AdditionalClassification2.cs" />
-    <Compile Include="Metr\AdditionalClassification3.cs" />
-    <Compile Include="Metr\AreaApplication.cs" />
-    <Compile Include="Metr\CategoryMi.cs" />
-    <Compile Include="Metr\CompletenessMi.cs" />
-    <Compile Include="Metr\CyclePeriodeMc.cs" />
-    <Compile Include="Metr\CyclePeriodeRm.cs" />
-    <Compile Include="Metr\PlannedRm.cs" />
-    <Compile Include="Metr\TypeCycleRm.cs" />
-    <Compile Include="Metr\Design.cs" />
-    <Compile Include="Metr\Ekz.cs" />
-    <Compile Include="Metr\EventFault.cs" />
-    <Compile Include="Metr\EventMc.cs" />
-    <Compile Include="Metr\EventRm.cs" />
-    <Compile Include="Metr\GroupMi.cs" />
-    <Compile Include="Metr\KspRealization.cs" />
-    <Compile Include="Metr\InstallationLocation.cs" />
-    <Compile Include="Metr\Ksp.cs" />
-    <Compile Include="Metr\EventMa.cs" />
-    <Compile Include="Metr\MeasuringType.cs" />
-    <Compile Include="Metr\NameTypeMi.cs" />
-    <Compile Include="Metr\ConditionStandart.cs" />
-    <Compile Include="Metr\Organization.cs" />
-    <Compile Include="Metr\Person.cs" />
-    <Compile Include="Metr\PlannedMc.cs" />
-    <Compile Include="Metr\Resolution250.cs" />
-    <Compile Include="Metr\ServicePlace.cs" />
-    <Compile Include="Metr\AreasMetrologicalControl.cs" />
-    <Compile Include="Metr\Stamp.cs" />
-    <Compile Include="Metr\StandardSizeMi.cs" />
-    <Compile Include="Metr\ConditionTechnical.cs" />
-    <Compile Include="Metr\TypeCycleMc.cs" />
-    <Compile Include="Metr\TypeMa.cs" />
-    <Compile Include="Metr\TypeMc.cs" />
-    <Compile Include="Metr\TypeMi.cs" />
-    <Compile Include="Metr\TypeRm.cs" />
+    <Compile Include="Asumc\Certificate.cs" />
+    <Compile Include="Asumc\InfluencingCondition.cs" />
+    <Compile Include="Asumc\Interface\ReportMc.cs" />
+    <Compile Include="Devises\Parametr\IMeasuredParametr.cs" />
+    <Compile Include="Asumc\VerificationSi.cs" />
+    <Compile Include="CommandArgs.cs" />
+    <Compile Include="Asumc\InformationInCards.cs" />
+    <Compile Include="MapperSetting.cs" />
+    <Compile Include="SettingContext.cs" />
+    <Compile Include="Interface\IParameter.cs" />
+    <Compile Include="Interface\IParametrScada.cs" />
+    <Compile Include="Interface\IProtocol.cs" />
+    <Compile Include="Interface\IRoom.cs" />
+    <Compile Include="Devises\Parametr\Sensor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleScada\Room.cs" />
+    <Compile Include="Asumc\VerificationMi.cs" />
+    <Compile Include="VerificationProtocol.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
-      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
-      <Name>AP.Utils</Name>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Core\Palsys.Core.csproj">
+      <Project>{e0f4f9eb-4de1-427a-85cc-1b70a1840427}</Project>
+      <Name>Palsys.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Data.Model\Palsys.Data.Model.csproj">
+      <Project>{0ed73fcc-a223-4a57-8089-295f77c5e355}</Project>
+      <Name>Palsys.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Utils\Palsys.Utils.csproj">
+      <Project>{40bcc2a6-c578-4970-892e-73a5448ec455}</Project>
+      <Name>Palsys.Utils</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

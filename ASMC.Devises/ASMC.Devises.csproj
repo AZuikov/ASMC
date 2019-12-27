@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ASMC.Devises</RootNamespace>
     <AssemblyName>ASMC.Devises</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -35,16 +35,11 @@
     <Reference Include="Ivi.Visa, Version=5.8.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=MSIL">
       <HintPath>..\packages\Kelary.Ivi.Visa.5.8.908\lib\Ivi.Visa.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.6.5\lib\net45\NLog.dll</HintPath>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,16 +48,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleScada\IvaSensor.cs" />
+    <Compile Include="SimpleScada\Parametr\ChangePerDayScadaParametr.cs" />
+    <Compile Include="SimpleScada\Parametr\ChangePerHourScadaParametr.cs" />
+    <Compile Include="SimpleScada\Parametr\ConverterScadaParametr.cs" />
+    <Compile Include="SimpleScada\Parametr\ScadaParametr.cs" />
+    <Compile Include="SimpleScada\Parametr\ScadaParametrDecorator.cs" />
+    <Compile Include="SimpleScada\Dv2TsSensor.cs" />
+    <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
+    <Compile Include="VirtMeasInst\VirtualSensor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Data.Model\Palsys.Data.Model.csproj">
+      <Project>{0ED73FCC-A223-4A57-8089-295F77C5E355}</Project>
+      <Name>Palsys.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Utils\Palsys.Utils.csproj">
+      <Project>{40BCC2A6-C578-4970-892E-73A5448EC455}</Project>
+      <Name>Palsys.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>ASMC</RootNamespace>
     <AssemblyName>ASMC</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -55,15 +55,15 @@
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.2">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Themes.Office2016White.v17.2.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.6.5\lib\net45\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.Composition.Registration" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Reflection.Context" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
@@ -92,15 +92,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Properties\AssemblySettings.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="View\LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    <Compile Include="ViewModel\MenuViewModel.cs" />
+    <Compile Include="ViewSettingsSelector.cs" />
+    <Compile Include="View\Converters\VersionToStringConverter.cs" />
+    <Compile Include="View\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -119,6 +120,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources.ru.resx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -129,25 +131,41 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
-      <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
-      <Name>AP.Reports</Name>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Core\Palsys.Core.csproj">
+      <Project>{e0f4f9eb-4de1-427a-85cc-1b70a1840427}</Project>
+      <Name>Palsys.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ASMC.Core\ASMC.Core.csproj">
-      <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
-      <Name>ASMC.Core</Name>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Data.Model\Palsys.Data.Model.csproj">
+      <Project>{0ed73fcc-a223-4a57-8089-295f77c5e355}</Project>
+      <Name>Palsys.Data.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
-      <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
-      <Name>ASMC.Data.Model</Name>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Metr.Common\Palsys.Metr.Common.csproj">
+      <Project>{C3BB289E-A8EA-49A0-96CA-B224E27FBC7E}</Project>
+      <Name>Palsys.Metr.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Metr.Module\Palsys.Metr.Modules.csproj">
+      <Project>{b481da5d-535b-4c9d-be99-59ed6b2b2219}</Project>
+      <Name>Palsys.Metr.Modules</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Themes\Palsys.Themes.csproj">
+      <Project>{df0e1523-64e5-438c-ad72-c9474477d73d}</Project>
+      <Name>Palsys.Themes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Utils\Palsys.Utils.csproj">
+      <Project>{40BCC2A6-C578-4970-892E-73A5448EC455}</Project>
+      <Name>Palsys.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\LoginWindow.xaml">
+    <Page Include="Themes\Hyperlink.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
