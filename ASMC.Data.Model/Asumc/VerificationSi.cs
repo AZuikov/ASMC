@@ -36,6 +36,7 @@ namespace ASMC.Data.Model.Asumc
             DecommissioningDate = sets.DecommissioningDate;
             DecommissioningReason = sets.DecommissioningReason;
             AddditionalInformation = new RichTextBox { Rtf = sets.AddditionalInformation }.Text;
+            
         }
 
         public override List<string> Checked()

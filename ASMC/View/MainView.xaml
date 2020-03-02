@@ -8,6 +8,7 @@
              xmlns:metr="clr-namespace:ASMC"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:converters="clr-namespace:ASMC.View.Converters"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -16,8 +17,17 @@
     <dxmvvm:Interaction.Behaviors>
         <ps:MessageBoxService />
     </dxmvvm:Interaction.Behaviors>
-  <DockPanel>
-
-  </DockPanel>
+  <StackPanel>
+    <StackPanel>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="1"></Button>
+      </Grid>
+    </StackPanel>
+    <dxg:GridControl  Height="700"/>
+  </StackPanel>
 
 </UserControl>

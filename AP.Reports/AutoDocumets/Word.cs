@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using AP.Reports.Helps;
 using DevExpress.XtraRichEdit;
 using DevExpress.XtraRichEdit.API.Native;
 using AP.Utils.Data;
@@ -104,6 +105,8 @@ namespace AP.Reports.AutoDocumets
                 }
             }
         }
+
+        public SheetOption SheetOption { get; set; }
 
         /// <inheritdoc />
         public Array Formats
@@ -613,6 +616,11 @@ namespace AP.Reports.AutoDocumets
             _documentServer = new RichEditDocumentServer();
             _documentServer.LoadDocument(Path, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
             _document = _documentServer.Document;
+            SheetOption = new SheetOption
+            {
+                Landscape = _document.AppendSection().Page.Landscape
+            };
+
         }
 
         /// <inheritdoc />
@@ -636,7 +644,9 @@ namespace AP.Reports.AutoDocumets
         /// <inheritdoc />
         public void Dispose()
         {
+            Close();
             _documentServer?.Dispose();
+
         }
     }
 }

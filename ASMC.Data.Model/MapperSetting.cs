@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Palsys.Utils.Data;
 
 namespace ASMC.Data.Model
@@ -72,12 +73,12 @@ namespace ASMC.Data.Model
                 var foreingKeyName = properti.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
                 if (!string.IsNullOrEmpty(foreingKeyName))
                 {
-
                     if (dictionary.ContainsKey(foreingKeyName)) continue;
 
                     if (properti.GetValue(entity) == null)
                     {
-                        properti.SetValue(entity, ConvertValue(properti.GetValue(entity), properti.PropertyType));
+                        var obj = Activator.CreateInstance(properti.PropertyType);
+                        entity.GetType().GetProperty(properti.Name)?.SetValue(entity,obj);
                         ColumnGenerationForEntit(properti.GetValue(entity), table, ref dictionary);
                     }
                     else
@@ -104,6 +105,13 @@ namespace ASMC.Data.Model
                 }
             }
 
+        }
+        public void ColumnGenerationForEntit<TEntity>(TEntity entity, DataTable table) where TEntity : new()
+        {
+            if(table == null || table.AsEnumerable().Any())
+                return;
+            var dic = new Dictionary<string, Type>();
+            ColumnGenerationForEntit(entity, table, ref dic);
         }
         private void InverseMap(DataRow row, object entity)
         {

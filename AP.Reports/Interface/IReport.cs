@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using AP.Reports.Helps;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace AP.Reports.Interface
 {
     public interface IReport
     {
+
+        SheetOption SheetOption   {      get; set;   }
         /// <summary>
         ///  Предоставляет перечнь возможных форматов
         /// </summary>

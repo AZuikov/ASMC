@@ -104,6 +104,7 @@
     <Compile Include="AutoDocumets\Excel.cs" />
     <Compile Include="AutoDocumets\OpenExcel.cs" />
     <Compile Include="AutoDocumets\Word.cs" />
+    <Compile Include="Helps\SheetOption.cs" />
     <Compile Include="Interface\IMsOfficeReport.cs" />
     <Compile Include="Interface\ITextGraphicsReport.cs" />
     <Compile Include="Interface\IReport.cs" />
@@ -127,6 +128,10 @@
     <Content Include="License-LGPL.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Data.Model\Palsys.Data.Model.csproj">
+      <Project>{0ed73fcc-a223-4a57-8089-295f77c5e355}</Project>
+      <Name>Palsys.Data.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>

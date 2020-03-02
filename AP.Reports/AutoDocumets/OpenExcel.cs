@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AP.Reports.Utils;
 using System.Data;
 using System.Drawing;
+using AP.Reports.Helps;
 using static AP.Reports.AutoDocumets.Document;
 
 namespace AP.Reports.AutoDocumets
@@ -18,6 +19,7 @@ namespace AP.Reports.AutoDocumets
 
         string IReport.Path { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public SheetOption SheetOption { get; set; }
         public Array Formats => throw new NotImplementedException();
 
         #region ITextGraphicsReport methods

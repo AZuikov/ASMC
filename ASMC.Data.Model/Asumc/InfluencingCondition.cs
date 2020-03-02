@@ -29,7 +29,7 @@ namespace ASMC.Data.Model.Asumc
         /// Возвращает или задает цикл МК.
         /// </summary>
         [ForeignKey("IDTPRMK")]
-        public CyclePeriodeMc CyclePeriodeMc
+        public CyclePeriodMc CyclePeriodeMc
         {
             get; set;
         }

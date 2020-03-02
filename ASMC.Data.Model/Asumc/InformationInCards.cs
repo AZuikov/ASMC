@@ -8,7 +8,7 @@ using Palsys.Utils.Data;
 
 namespace ASMC.Data.Model.Asumc
 {
-    public abstract class InformationInCards : Ekz
+   public abstract class InformationInCards : Ekz
     {
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace ASMC.Data.Model.Asumc
         /// <summary>
         /// Возвращает или задает плановую дату МК.
         /// </summary>
-        [TableCell("Плановая дата аттестации")]
+        [Column("dtmkpl", TypeName = "datetime")]
         public DateTime? DateOfPlanned
         {
             get; set;
@@ -61,7 +61,7 @@ namespace ASMC.Data.Model.Asumc
         /// <summary>
         ///  Дата атестации 
         /// </summary>
-        [TableCell("Дата атестации ")]
+        [TableCell("Дата атестации")]
         public DateTime? DateCertification
         {
             get;
@@ -81,7 +81,7 @@ namespace ASMC.Data.Model.Asumc
         /// <summary>
         /// № Сведетелдьства
         /// </summary>
-        [TableCell("№ Сведетелдьства")]
+        [TableCell("№ Сведетельства")]
         public string CertificatNumber
         {
             get;
@@ -203,7 +203,8 @@ namespace ASMC.Data.Model.Asumc
         /// <value>
         /// The ranges.
         /// </value>
-        protected string Ranges { get; set; }
+        [TableCell("Диапазон УСПиК")]
+        public string Ranges { get; set; }
 
         /// <summary>
         /// Погрешности из карточки
@@ -211,7 +212,8 @@ namespace ASMC.Data.Model.Asumc
         /// <value>
         /// The errors.
         /// </value>
-        protected string Errors { get; set; }
+        [TableCell("Х-точности УСПиК")]
+        public string Errors { get; set; }
 
 
         /// <summary>
@@ -220,6 +222,7 @@ namespace ASMC.Data.Model.Asumc
         /// <value>
         /// The addditional information.
         /// </value>
+        [TableCell("Доп. иформ. УСПиК")]
         protected string AddditionalInformation { get; set; }
 
         /// <summary>
