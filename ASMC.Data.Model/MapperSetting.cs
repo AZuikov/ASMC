@@ -91,7 +91,7 @@ namespace ASMC.Data.Model
                 else
                 {
                     var name = properti.GetCustomAttribute<ColumnAttribute>()?.Name ??
-                               properti.GetCustomAttribute<TableCellAttribute>()?.Name;
+                               properti.GetCustomAttribute<Palsys.Report.Utils.Data.TableCellAttribute>()?.Name;
                     try
                     {
 
@@ -127,7 +127,7 @@ namespace ASMC.Data.Model
                 else
                 {
                     var name = properti.GetCustomAttribute<ColumnAttribute>()?.Name ??
-                               properti.GetCustomAttribute<TableCellAttribute>()?.Name;
+                               properti.GetCustomAttribute<Palsys.Report.Utils.Data.TableCellAttribute>()?.Name;
 
                     if (string.IsNullOrEmpty(name)) continue;
                     row[name] = properti.GetValue(entity)?.ToString();
@@ -156,20 +156,20 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         protected void Map(DataRow dataRow, PropertyInfo prop, object entity, MapColumnAttribute[] mapColumns = null)
         {
-            var cellName = prop.GetCustomAttribute<TableCellAttribute>()?.Name ?? prop.Name;
+            var cellName = prop.GetCustomAttribute<Palsys.Report.Utils.Data.TableCellAttribute>()?.Name ?? prop.Name;
             if(!prop.CanWrite)
                 return;
             
           var mappedCell = MapAttibuteValue(mapColumns, cellName);
             if(mappedCell != null) cellName = mappedCell;
 
-            if(!string.Equals(dataRow[TableCellAttribute.ColumnName].ToString(), cellName,
+            if(!string.Equals(dataRow[Palsys.Report.Utils.Data.TableCellAttribute.ColumnName].ToString(), cellName,
                 StringComparison.Ordinal))
                 return;
             object value;
             try
             {
-                value = ConvertValue(dataRow[TableCellAttribute.ColumnNameValue], prop.PropertyType);
+                value = ConvertValue(dataRow[Palsys.Report.Utils.Data.TableCellAttribute.ColumnNameValue], prop.PropertyType);
             }
             catch(InvalidCastException)
             {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Palsys.Core.Settings;
 
 namespace ASMC.Properties
 {
@@ -11,12 +10,12 @@ namespace ASMC.Properties
     {
         public MainSettings Main { get; set; } = new MainSettings();
 
-        public class MainSettings : WindowSettingsBase
+        public class MainSettings /*: WindowSettingsBase*/
         {
             public MainSettings()
             {
-                Width = 800;
-                Height = 600;
+            //    Width = 800;
+            //    Height = 600;
             }
         }
     }

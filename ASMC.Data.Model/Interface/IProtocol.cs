@@ -24,7 +24,7 @@ namespace ASMC.Data.Model.Interface
         /// <summary>
         /// Возвращает или задает таблицу со средствами поверки.
         /// </summary>
-        Ekz [] StandartsList
+        MiInstance [] StandartsList
         {
             get;
             set;

@@ -15,7 +15,7 @@ namespace ASMC.Data.Model
 
         public int PagesNumber { get; set; }
         public string Number { get; set; }
-        public Ekz[] StandartsList { get; set; }
+        public MiInstance[] StandartsList { get; set; }
         public DateTime? Date { get; set; }
         public Room Room { get; set; }
     }

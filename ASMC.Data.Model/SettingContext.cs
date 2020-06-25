@@ -174,29 +174,30 @@ namespace ASMC.Data.Model
 
         private object Load(Type settingType, object entityKey, object param = null)
         {
-            if (settingType == null)
-                throw new ArgumentNullException(nameof(settingType));
+            return null;
+            //if (settingType == null)
+            //    throw new ArgumentNullException(nameof(settingType));
 
-            var proc = settingType.GetCustomAttributes<StoredProcedureAttribute>()
-                .FirstOrDefault(p => p.Operation == StoredProcedureOp.Select);
-            if (string.IsNullOrEmpty(proc?.Name))
-                throw new InvalidOperationException(string.Format(
-                    LocalizationManager.Default["EntityContextSelectProcedureUndefinedError"], settingType));
+            //var proc = settingType.GetCustomAttributes<StoredProcedureAttribute>()
+            //    .FirstOrDefault(p => p.Operation == StoredProcedureOp.Select);
+            //if (string.IsNullOrEmpty(proc?.Name))
+            //    throw new InvalidOperationException(string.Format(
+            //        LocalizationManager.Default["EntityContextSelectProcedureUndefinedError"], settingType));
 
-            var paramName = proc.KeyName ?? GetSettingKey(settingType);
-            if (string.IsNullOrEmpty(paramName))
-                throw new InvalidOperationException(
-                    string.Format(LocalizationManager.Default["EntityContextKeyUndefinedError"], settingType));
+            //var paramName = proc.KeyName ?? GetSettingKey(settingType);
+            //if (string.IsNullOrEmpty(paramName))
+            //    throw new InvalidOperationException(
+            //        string.Format(LocalizationManager.Default["EntityContextKeyUndefinedError"], settingType));
 
-            var keyParam = DataProvider.GetParameter($"@{paramName}",
-                proc.KeyFormat != null ? string.Format(proc.KeyFormat, entityKey) : entityKey);
+            //var keyParam = DataProvider.GetParameter($"@{paramName}",
+            //    proc.KeyFormat != null ? string.Format(proc.KeyFormat, entityKey) : entityKey);
 
-            var fixedParams = GetSqlParameters(proc.GetParams()).Concat(new[] {keyParam});
-            var prm = fixedParams.Concat(GetSqlParameters(param)).ToArray(); //TODO Return only distinct params
-            var query = proc.IsStoredProcedure ? proc.Name : ExtendSqlQuery(proc.Name, prm);
+            //var fixedParams = GetSqlParameters(proc.GetParams()).Concat(new[] {keyParam});
+            //var prm = fixedParams.Concat(GetSqlParameters(param)).ToArray(); //TODO Return only distinct params
+            //var query = proc.IsStoredProcedure ? proc.Name : ExtendSqlQuery(proc.Name, prm);
 
-            var row = DataProvider.Execute(query, proc.IsStoredProcedure, prm)?.Rows.Cast<DataRow>().FirstOrDefault();
-            return row != null ? new EntityMapperSetting().Map(row, settingType) : null;
+            //var row = DataProvider.Execute(query, proc.IsStoredProcedure, prm)?.Rows.Cast<DataRow>().FirstOrDefault();
+            //return row != null ? new EntityMapperSetting().Map(row, settingType) : null;
         }
     }
 }

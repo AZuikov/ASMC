@@ -68,6 +68,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -92,13 +93,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\NodeOperation.cs" />
     <Compile Include="Properties\AssemblySettings.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\MenuViewModel.cs" />
+    <Compile Include="ViewModel\WizardViewModel.cs" />
     <Compile Include="ViewSettingsSelector.cs" />
     <Compile Include="View\Converters\VersionToStringConverter.cs" />
-    <Compile Include="View\MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
+    <Compile Include="View\WizardView.xaml.cs">
+      <DependentUpon>WizardView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -131,32 +132,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Core\Palsys.Core.csproj">
-      <Project>{e0f4f9eb-4de1-427a-85cc-1b70a1840427}</Project>
-      <Name>Palsys.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Data.Model\Palsys.Data.Model.csproj">
-      <Project>{0ed73fcc-a223-4a57-8089-295f77c5e355}</Project>
-      <Name>Palsys.Data.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Metr.Common\Palsys.Metr.Common.csproj">
-      <Project>{C3BB289E-A8EA-49A0-96CA-B224E27FBC7E}</Project>
-      <Name>Palsys.Metr.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Metr.Module\Palsys.Metr.Modules.csproj">
-      <Project>{b481da5d-535b-4c9d-be99-59ed6b2b2219}</Project>
-      <Name>Palsys.Metr.Modules</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Themes\Palsys.Themes.csproj">
-      <Project>{df0e1523-64e5-438c-ad72-c9474477d73d}</Project>
-      <Name>Palsys.Themes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Utils\Palsys.Utils.csproj">
-      <Project>{40BCC2A6-C578-4970-892E-73A5448EC455}</Project>
-      <Name>Palsys.Utils</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <Page Include="Resources\Resources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -165,14 +144,44 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainView.xaml">
+    <Page Include="Themes\ValueContentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\WizardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
+      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
+      <Name>AP.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Automation.Linear\ASMC.Automation.Linear.csproj">
+      <Project>{19C251EF-6CB2-4F66-8296-5FEFF6A8B94F}</Project>
+      <Name>ASMC.Automation.Linear</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Automation.Radio\ASMC.Automation.Radio.csproj">
+      <Project>{73947502-8419-482B-BBE6-651B2A170221}</Project>
+      <Name>ASMC.Automation.Radio</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
+      <Name>ASMC.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Interpreter\ASMC.Interpreter.csproj">
+      <Project>{8056D2DD-58E0-4FE8-9FF2-95F11AE8A4AC}</Project>
+      <Name>ASMC.Interpreter</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ce91c577bcf0a799e275968ebe599d0e.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

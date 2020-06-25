@@ -32,6 +32,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Palsys.Data.Model">
+      <HintPath>..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Data.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Palsys.Report, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Report.dll</HintPath>
+    </Reference>
+    <Reference Include="Palsys.Utils, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -47,10 +58,12 @@
     <Compile Include="Asumc\Certificate.cs" />
     <Compile Include="Asumc\InfluencingCondition.cs" />
     <Compile Include="Asumc\Interface\ReportMc.cs" />
+    <Compile Include="BasicOperation.cs" />
     <Compile Include="Devises\Parametr\IMeasuredParametr.cs" />
     <Compile Include="Asumc\VerificationSi.cs" />
     <Compile Include="CommandArgs.cs" />
     <Compile Include="Asumc\InformationInCards.cs" />
+    <Compile Include="Interface\IBasicOperation.cs" />
     <Compile Include="MapperSetting.cs" />
     <Compile Include="SettingContext.cs" />
     <Compile Include="Interface\IParameter.cs" />
@@ -61,22 +74,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleScada\Room.cs" />
     <Compile Include="Asumc\VerificationMi.cs" />
+    <Compile Include="UserItemOperation.cs" />
     <Compile Include="VerificationProtocol.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Core\Palsys.Core.csproj">
-      <Project>{e0f4f9eb-4de1-427a-85cc-1b70a1840427}</Project>
-      <Name>Palsys.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Data.Model\Palsys.Data.Model.csproj">
-      <Project>{0ed73fcc-a223-4a57-8089-295f77c5e355}</Project>
-      <Name>Palsys.Data.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASU MS 7\dev\Palsys.Utils\Palsys.Utils.csproj">
-      <Project>{40bcc2a6-c578-4970-892e-73a5448ec455}</Project>
-      <Name>Palsys.Utils</Name>
+    <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
+      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
+      <Name>AP.Utils</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

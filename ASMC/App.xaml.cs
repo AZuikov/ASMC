@@ -8,15 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevExpress.Mvvm;
 using System.Windows;
+using AP.Utils.Data;
 using ASMC.Properties;
 using ASMC.ViewModel;
 using DevExpress.Mvvm.Native;
 using DevExpress.Mvvm.UI;
 using DevExpress.Xpf.Core;
-using Palsys.Data.Model.Metr.Helpers;
-using Palsys.Utils.Data;
-using Palsys.Utils.Localization;
-using Palsys.Utils.Settings;
 
 namespace ASMC
 {
@@ -40,10 +37,7 @@ namespace ASMC
             get; private set;
         }
 
-        internal static SettingsManager<AssemblySettings> Settings
-        {
-            get; private set;
-        }
+     
 
         #endregion
 
@@ -89,10 +83,10 @@ namespace ASMC
         {
             try
             {
-                if(Settings != null)
-                {
-                    Settings.Save();
-                }
+                //if(Settings != null)
+                //{
+                //    Settings.Save();
+                //}
             }
             catch(Exception error)
             {
@@ -120,7 +114,7 @@ namespace ASMC
 
         private void InitializeSettings()
         {
-            Settings = new SettingsManager<AssemblySettings>(new JsonSettingsProvider());
+            //Settings = new SettingsManager<AssemblySettings>(new JsonSettingsProvider());
         }
 
         private void InitializeDataProvider()
@@ -132,7 +126,7 @@ namespace ASMC
         {
             try
             {
-                var lang = await Task.Factory.StartNew(() => UserContext.GetLang(DataProvider));
+                //var lang = await Task.Factory.StartNew(() => UserContext.GetLang(DataProvider));
 
             }
             catch(Exception error)
@@ -147,16 +141,16 @@ namespace ASMC
             if(!(TryFindResource(serviceKey) is IWindowService windowService))
                 return false;
 
-            windowService.Show("MainView", CreateViewModel());
+            windowService.Show("WizardView", CreateViewModel());
             return true;
         }
 
-        private MainViewModel CreateViewModel()
+        private WizardViewModel CreateViewModel()
         {
-            var viewModel = new MainViewModel();
-            var mainSettings = Settings.UserScope.Main;
+            var viewModel = new WizardViewModel();
+            //var mainSettings = Settings.UserScope.Main;
 
-            viewModel.Menu.DataProvider = (IDataProvider)DataProvider?.Clone(); 
+          
           
 
             return viewModel;

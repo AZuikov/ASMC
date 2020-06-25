@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ASMC.View
 {
     /// <summary>
-    /// Логика взаимодействия для MainView.xaml
+    /// Логика взаимодействия для WizardView1.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class WizardView : UserControl
     {
-        public MainView()
+        public WizardView()
         {
             InitializeComponent();
         }

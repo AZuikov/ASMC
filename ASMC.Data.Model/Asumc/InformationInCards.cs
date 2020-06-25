@@ -8,7 +8,7 @@ using Palsys.Utils.Data;
 
 namespace ASMC.Data.Model.Asumc
 {
-   public abstract class InformationInCards : Ekz
+   public abstract class InformationInCards : MiInstance
     {
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace ASMC.Data.Model.Asumc
         /// <summary>
         ///  Дата атестации 
         /// </summary>
-        [TableCell("Дата атестации")]
+        [Palsys.Report.Utils.Data.TableCell("Дата атестации")]
         public DateTime? DateCertification
         {
             get;
@@ -71,7 +71,7 @@ namespace ASMC.Data.Model.Asumc
         /// <summary>
         ///  Дата следующей атестации 
         /// </summary>
-        [TableCell("Дата следующей атестации")]
+        [Palsys.Report.Utils.Data.TableCell("Дата следующей атестации")]
         public DateTime? DateNextCertification
         {
             get;
@@ -81,7 +81,7 @@ namespace ASMC.Data.Model.Asumc
         /// <summary>
         /// № Сведетелдьства
         /// </summary>
-        [TableCell("№ Сведетельства")]
+        [Palsys.Report.Utils.Data.TableCell("№ Сведетельства")]
         public string CertificatNumber
         {
             get;
@@ -91,7 +91,7 @@ namespace ASMC.Data.Model.Asumc
         /// <summary>
         /// Регистрационный номер
         /// </summary>
-        [TableCell("Рег. номер")]
+        [Palsys.Report.Utils.Data.TableCell("Рег. номер")]
         public string RegNumber
         {
             get;
@@ -203,7 +203,7 @@ namespace ASMC.Data.Model.Asumc
         /// <value>
         /// The ranges.
         /// </value>
-        [TableCell("Диапазон УСПиК")]
+        [Palsys.Report.Utils.Data.TableCell("Диапазон УСПиК")]
         public string Ranges { get; set; }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace ASMC.Data.Model.Asumc
         /// <value>
         /// The errors.
         /// </value>
-        [TableCell("Х-точности УСПиК")]
+        [Palsys.Report.Utils.Data.TableCell("Х-точности УСПиК")]
         public string Errors { get; set; }
 
 
@@ -222,7 +222,7 @@ namespace ASMC.Data.Model.Asumc
         /// <value>
         /// The addditional information.
         /// </value>
-        [TableCell("Доп. иформ. УСПиК")]
+        [Palsys.Report.Utils.Data.TableCell("Доп. иформ. УСПиК")]
         protected string AddditionalInformation { get; set; }
 
         /// <summary>

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AP.Reports.AutoDocumets;
-using AP.Utils.Data;
 
 namespace AP.Reports.Utils
 {

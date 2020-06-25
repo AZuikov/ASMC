@@ -7,9 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AP.Reports.Helps;
+using AP.Reports.Utils;
 using DevExpress.XtraRichEdit;
 using DevExpress.XtraRichEdit.API.Native;
-using AP.Utils.Data;
 //using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using AP.Reports.Helps;
 using AP.Reports.Interface;
-using AP.Utils.Data;
+using AP.Reports.Utils;
 using ClosedXML.Excel;
 
 namespace AP.Reports.AutoDocumets

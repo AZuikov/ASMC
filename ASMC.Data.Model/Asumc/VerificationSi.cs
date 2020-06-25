@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASMC.Data.Model.Interface;
-using Palsys.Data.Model.Metr;
 using Palsys.Data.Model.Report;
 using Palsys.Utils.Data;
 
