@@ -310,5 +310,34 @@ namespace AP.Math
             }
             return result.ToString();
         }
+        /// <summary>
+        /// Производит масштабирование значения
+        /// </summary>
+        /// <param name="input">Входное занчение</param>
+        /// <param name="minInput">Минимальное входное значение </param>
+        /// <param name="maxInput">максимальное входное знаечние</param>
+        /// <param name="minOutput">Минимальное значение выходного диапазона</param>
+        /// <param name="maxOutput">Максимальное знаечние выходного диапазона</param>
+        /// <returns>Возвращет смасштабирование значение в указаном выходном диапазоне</returns>
+        public static decimal Mapping(decimal input,decimal minInput, decimal maxInput, decimal minOutput, decimal maxOutput)
+        {
+            if (minOutput >= maxOutput || minInput >= maxInput || (input < minInput || input > maxInput))  throw new ArgumentOutOfRangeException();
+                return ((maxOutput - minOutput) / (maxInput - minInput)) * input +
+                       (minOutput * maxInput - maxOutput * minInput) / (maxInput - minInput);
+        }
+        /// <summary>
+        /// Производит масштабирование значения
+        /// </summary>
+        /// <param name="input">Входное занчение</param>
+        /// <param name="minInput">Минимальное входное значение </param>
+        /// <param name="maxInput">максимальное входное знаечние</param>
+        /// <param name="minOutput">Минимальное значение выходного диапазона</param>
+        /// <param name="maxOutput">Максимальное знаечние выходного диапазона</param>
+        /// <returns>Возвращет смасштабирование значение в указаном выходном диапазоне</returns>
+        public static double Mapping(double input, double minInput, double maxInput, double minOutput, double maxOutput)
+        {
+            return Mapping(input, minInput, maxInput, minOutput, maxOutput);
+        }
+
     }
 }

@@ -22,10 +22,11 @@ namespace ASMC.ViewModel
     {
         private ViewModelBase _regionOperations;
         private IUserItemOperationBase[] _userItemOperation;
-        private IDevice[] _deviceInterface;
+        private IDevice[] _device;
         private string[] _accessoriesList;
-        private DataView _DataOperation;
-        private IUserItemOperationBase _SelectionItemOperation;
+        private DataView _dataOperation;
+        private IUserItemOperationBase _selectionItemOperation;
+        private AbstraktOperation.TypeOpeation _typeOpertion;
 
         public ViewModelBase RegionOperations { get => _regionOperations;
             set => SetProperty(ref _regionOperations, value, nameof(RegionOperations));
@@ -36,10 +37,10 @@ namespace ASMC.ViewModel
             get => _userItemOperation;
             set => SetProperty(ref _userItemOperation, value, nameof(UserItemOperation));
         }
-        public IDevice[] DeviceInterface
+        public IDevice[] Device
         {
-            get => _deviceInterface;
-            set => SetProperty(ref _deviceInterface, value, nameof(DeviceInterface));
+            get => _device;
+            set => SetProperty(ref _device, value, nameof(Device));
         }
         public string[] AccessoriesList
         {
@@ -48,23 +49,32 @@ namespace ASMC.ViewModel
         }
         public DataView DataOperation
         {
-            get => _DataOperation;
-            set => SetProperty(ref _DataOperation, value, nameof(DataOperation));
+            get => _dataOperation;
+            set => SetProperty(ref _dataOperation, value, nameof(DataOperation));
         }
         public ObservableCollection<IProg> Prog { get; set; }
 
         public IUserItemOperationBase SelectionItemOperation
         {
-            get => _SelectionItemOperation;
-            set => SetProperty(ref _SelectionItemOperation, value, nameof(SelectionItemOperation));
+            get => _selectionItemOperation;
+            set => SetProperty(ref _selectionItemOperation, value, nameof(SelectionItemOperation));
+        }
+        public AbstraktOperation.TypeOpeation TypeOpertion
+        {
+            get => _typeOpertion;
+            set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion));
         }
         public WizardViewModel()
         {
-            Prog = new ObservableCollection<IProg> {new Devise()};
-            UserItemOperation = Prog[0].Operation.UserItemOperationFirsVerf?.UserItemOperation;
-            DeviceInterface = Prog[0].Operation.UserItemOperationFirsVerf?.Device;
-            Prog[0].Operation.UserItemOperationFirsVerf?.RefreshDevice();
-            AccessoriesList = Prog[0].Operation.UserItemOperationFirsVerf?.Accessories;
+           var s =  AP.Math.MathStatistics.Mapping((decimal) 0.6, (decimal) 0.005, (decimal) 0.95, 0, 30);
+            Prog = new ObservableCollection<IProg> {new Device()};
+            Prog[0].AbstraktOperation.IsSpeedWork = false;
+            Prog[0].AbstraktOperation.SelectedTypeOpeation = AbstraktOperation.TypeOpeation.PrimaryVerf;
+            UserItemOperation = Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation;
+            Device = Prog[0].AbstraktOperation.SelectedOperation?.Device;
+            Prog[0].AbstraktOperation.SelectedOperation?.RefreshDevice();
+            AccessoriesList = Prog[0].AbstraktOperation.SelectedOperation?.Accessories;
+            Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation[0].StartWork();
             //DataOperation = SelectionItemOperation?.Data.DefaultView;
         }
     }
