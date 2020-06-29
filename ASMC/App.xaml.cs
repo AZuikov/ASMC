@@ -60,11 +60,7 @@ namespace ASMC
             try
             {
                 InitializeSettings();
-                InitializeLocalization();
-                InitializeDataProvider();
-
-             
-
+                InitializeLocalization();  
                 if(!LaunchWindow("DefaultWindowService"))
                 {
                     Shutdown();
@@ -115,12 +111,8 @@ namespace ASMC
         private void InitializeSettings()
         {
             //Settings = new SettingsManager<AssemblySettings>(new JsonSettingsProvider());
-        }
-
-        private void InitializeDataProvider()
-        {
-            DataProvider = new SqlDataProvider();
-        }
+        }   
+     
 
         private async Task InitializeUserLangAsync()
         {

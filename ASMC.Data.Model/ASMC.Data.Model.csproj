@@ -64,6 +64,7 @@
     <Compile Include="CommandArgs.cs" />
     <Compile Include="Asumc\InformationInCards.cs" />
     <Compile Include="Interface\IBasicOperation.cs" />
+    <Compile Include="Interface\IProrgam.cs" />
     <Compile Include="MapperSetting.cs" />
     <Compile Include="SettingContext.cs" />
     <Compile Include="Interface\IParameter.cs" />

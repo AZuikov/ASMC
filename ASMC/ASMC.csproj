@@ -161,13 +161,9 @@
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ASMC.Automation.Linear\ASMC.Automation.Linear.csproj">
-      <Project>{19C251EF-6CB2-4F66-8296-5FEFF6A8B94F}</Project>
-      <Name>ASMC.Automation.Linear</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ASMC.Automation.Radio\ASMC.Automation.Radio.csproj">
+    <ProjectReference Include="..\ASMC.Automation.Radio\Test.csproj">
       <Project>{73947502-8419-482B-BBE6-651B2A170221}</Project>
-      <Name>ASMC.Automation.Radio</Name>
+      <Name>Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\ASMC.Core\ASMC.Core.csproj">
       <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>

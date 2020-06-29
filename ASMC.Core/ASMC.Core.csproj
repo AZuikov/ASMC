@@ -86,7 +86,7 @@
     <Compile Include="Settings\SettingsSelector.cs" />
     <Compile Include="Settings\WindowSettingsBase.cs" />
     <Compile Include="ValidationRules\Rules.cs" />
-    <Compile Include="ViewModel\BasicOperationViewModel.cs" />
+    <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\ReadAndWriteTextVM.cs" />
     <Compile Include="ViewModel\WorkViewMOdel.cs" />
     <Compile Include="View\DataView.xaml.cs">

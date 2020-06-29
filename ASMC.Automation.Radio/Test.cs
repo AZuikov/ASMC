@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 
-namespace ASMC.Automation.Radio
+namespace Plugins.Test
 {
  
-    public class Device  : IProg
+    public class Device  : IProrgam
     {
         public string Type { get; set; }
         public string Grsi { get; set; }
@@ -31,19 +31,7 @@ namespace ASMC.Automation.Radio
         }
 
     }
-    public interface IProg
-    {
-        string Type { get; set; }
-        string Grsi { get; set; }
-        string Range    {    get;   }
-
-         string Accuracy
-        {
-            get; 
-        }
-        AbstraktOperation AbstraktOperation { get; }
-
-    }
+ 
 
     public class Operation : AbstraktOperation
     {
