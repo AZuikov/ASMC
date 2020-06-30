@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ASMC.Data.Model.Devises.Parametr;
 using ASMC.Data.Model.Interface;
 using ASMC.Devises.Annotations;
+using ASMC.Devises.SimpleScada;
 using Palsys.Data.Model.Metr;
 
 namespace ASMC.Devises.VirtMeasInst

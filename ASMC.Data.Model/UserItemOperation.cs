@@ -23,17 +23,24 @@ namespace ASMC.Data.Model
         public string[] Name { get; set; }
         public string SelectedName { get; set; }
         public string StringConnect { get; set; }
+        public void Setting()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface IDevice
     {    
-        string Description { get; set; }
+        /// <summary>
+        /// Позволяет получить описание устройства.
+        /// </summary>
+        string Description { get; }
         /// <summary>
         /// позволяет поучать или задавать перечень взаимозаменяемых устройств.
         /// </summary>
         string[] Name
         {
-            get; set;
+            get; 
         } 
         /// <summary>
         /// Позволяет задать или получить имя выбранного прибора
@@ -49,6 +56,10 @@ namespace ASMC.Data.Model
         {
             get; set;
         }
+        /// <summary>
+        /// Позволяет вызвать окно
+        /// </summary>
+        void Setting();
 
     }
     /// <summary>
@@ -209,7 +220,7 @@ namespace ASMC.Data.Model
         /// </summary>
         public Guid Guid { get; }  =new Guid();
         /// <summary>
-        /// Запускает выполнение операций с указаном Гуиду.
+        /// Запускает выполнение операций с указаном Гуидом.
         /// </summary>
         /// <param name="guid"></param>
         public abstract void StartSinglWork(Guid guid);
@@ -232,54 +243,7 @@ namespace ASMC.Data.Model
      
 
     }
-    /// <summary>
-    /// Сущность предоставляющая реализацию дерева
-    /// </summary>
-    public class TreeNode
-    {
-        /// <summary>
-        /// Позволяет получать и задавать имя узла.
-        /// </summary>
-        public string Name
-        {
-            get; set;
-        }
-        /// <summary>
-        /// Позволяет получить первый узел.
-        /// </summary>
-        public TreeNode FirstNode
-        {
-            get { return Nodes.First(); }
-        }
-        /// <summary>
-        /// Позволяет получить последний узел
-        /// </summary>
-        public TreeNode LastNode
-        {
-            get { return Nodes.Last();}
-        }
-        /// <summary>
-        /// Позволяет получить родительский узел.
-        /// </summary>
-        public TreeNode Parent
-        {
-            get { return Nodes.Parent; }
-        }
-        public CollectionNode Nodes { get; }
-
-        protected TreeNode()
-        {
-            Nodes =  new CollectionNode(this);
-        }
-    }
-    public class CollectionNode : List<TreeNode>
-    {
-        public TreeNode Parent { get; }
-        public CollectionNode(TreeNode parent)
-        {
-            Parent = parent;
-        }
-    }
+    
     public class ShemeImage
     {
         public string Path { get; set; }

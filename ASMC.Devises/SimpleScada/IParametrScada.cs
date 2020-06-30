@@ -1,10 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Palsys.Data.Model.Metr;
 
-namespace ASMC.Data.Model.Interface
+namespace ASMC.Devises.SimpleScada
 {
-    
-    
-
+    public interface IMeasuredParametr : IParametr
+    {
+        MeasuredValue MeasuredValue
+        {
+            get; set;
+        }
+    }
+    public interface IParametrScada : IMeasuredParametr
+    {
+        string DatebaseName
+        {
+            get; set;
+        }
+        string Procedure
+        {
+            get; set;
+        }
+        Tuple<string, object>[] Parameters
+        {
+            get; set;
+        }
+    }
     /// <summary>
     /// Описывает измеряемые параметры
     /// </summary>
@@ -23,13 +47,19 @@ namespace ASMC.Data.Model.Interface
         /// <value>
         /// The identifier.
         /// </value>
-        int Id { get; }
+        int Id
+        {
+            get;
+        }
 
         /// <summary>
         /// Получение значение параметра
         /// </summary>
         /// <returns></returns>
-        double Value { get; set; }
+        double Value
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Наименование измеряемого параметра
@@ -37,9 +67,11 @@ namespace ASMC.Data.Model.Interface
         /// <value>
         /// The name of the parametr.
         /// </value>
-        string Name { get;  }
+        string Name
+        {
+            get;
+        }
 
         void FillValue();
     }
 }
-

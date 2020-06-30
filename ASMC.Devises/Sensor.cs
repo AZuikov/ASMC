@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
-using ASMC.Data.Model.Interface;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ASMC.Devises.SimpleScada;
 
-namespace ASMC.Data.Model.Devises.Parametr
+namespace ASMC.Devises
 {
+
     /// <summary>
     /// Описывает датчики
     /// </summary>
@@ -14,7 +19,10 @@ namespace ASMC.Data.Model.Devises.Parametr
         /// <value>
         /// The name of the sensor.
         /// </value>
-        public virtual string SensorName { get; set; }
+        public virtual string SensorName
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Перечень параметров измеряемых датчиком
@@ -22,14 +30,18 @@ namespace ASMC.Data.Model.Devises.Parametr
         /// <value>
         /// The parametrs.
         /// </value>
-        public virtual List<IParametr> Parametrs { get; set; }
+        public virtual List<IParametr> Parametrs
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Выполняет считываение показаний с датчика
         /// </summary>
         public virtual void UpdateValue()
         {
-            if (Parametrs==null)    return;
+            if(Parametrs == null)
+                return;
 
             foreach(var parametr in Parametrs)
             {

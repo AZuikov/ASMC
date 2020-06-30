@@ -155,7 +155,7 @@
         </TabItem>
         <TabItem Header="Настройка">
           <StackPanel>
-            <ListView ItemsSource="{Binding DeviceInterface}" MaxHeight="700">
+            <ListView ItemsSource="{Binding Device}" >
               <ListView.View>
                 <GridView  AllowsColumnReorder="False">
                   <GridViewColumn Header="Имя устройства" Width="150"  >
@@ -165,7 +165,7 @@
                         </DataTemplate>
                     </GridViewColumn.CellTemplate>
                   </GridViewColumn>
-                  <GridViewColumn Header="Имя устройства" Width="150" >
+                  <GridViewColumn Header="Строка додключения" Width="150" >
                     <GridViewColumn.CellTemplate >
                       <DataTemplate>
                         <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=Aray}"/>
@@ -176,6 +176,13 @@
                     <GridViewColumn.CellTemplate >
                       <DataTemplate>
                         <TextBlock  Margin="5,10,5,10" Text="Подключен" />
+                      </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                  </GridViewColumn>
+                  <GridViewColumn Header="Описание" Width="Auto" >
+                    <GridViewColumn.CellTemplate >
+                      <DataTemplate>
+                        <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Description}"    />
                       </DataTemplate>
                     </GridViewColumn.CellTemplate>
                   </GridViewColumn>

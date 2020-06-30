@@ -8,8 +8,6 @@ using AP.Math;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
-using DevExpress.Mvvm;
-using Plugins.Test;
 
 namespace ASMC.ViewModel
 {
@@ -18,7 +16,7 @@ namespace ASMC.ViewModel
         private string[] _accessoriesList;
         private DataView _dataOperation;
         private IDevice[] _device;
-        private ViewModelBase _regionOperations;
+        private BaseViewModel _regionOperations;
         private IUserItemOperationBase _selectionItemOperation;
         private AbstraktOperation.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
@@ -91,7 +89,7 @@ namespace ASMC.ViewModel
 
         public ObservableCollection<IProrgam> Prog { get; set; }
 
-        public ViewModelBase RegionOperations
+        public BaseViewModel RegionOperations
         {
             get => _regionOperations;
             set => SetProperty(ref _regionOperations, value, nameof(RegionOperations));

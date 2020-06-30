@@ -8,23 +8,38 @@ namespace ASMC.Data.Model.Interface
 {
     public interface IProrgam    
     {
+        /// <summary>
+        /// Позволяет получать тип СИ
+        /// </summary>
         string Type
         {
-            get; set;
+            get; 
         }
+        /// <summary>
+        /// Позволяет получать госреестр СИ
+        /// </summary>
         string Grsi
         {
-            get; set;
+            get; 
         }
+        /// <summary>
+        /// Позволяет получать диапазон СИ
+        /// </summary>
         string Range
         {
             get;
         }
-
+        /// <summary>
+        /// Позволяет получить характеристику точности СИ
+        /// </summary>
         string Accuracy
         {
             get;
         }
+
+        /// <summary>
+        /// Позволяет получить сушность метрологических операций
+        /// </summary>
         AbstraktOperation AbstraktOperation
         {
             get;
