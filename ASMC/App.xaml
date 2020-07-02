@@ -4,21 +4,23 @@
           
              xmlns:asmc="clr-namespace:ASMC"
              xmlns:ps="http://schemas.palitra-system.ru/winfx/xaml/core"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/Generic.xaml" />
         <ResourceDictionary Source="Resources/Resources.xaml"/>
       </ResourceDictionary.MergedDictionaries>
-            <dxmvvm:WindowService x:Key="DefaultWindowService"
+            <ui:WindowService x:Key="DefaultWindowService"
                               WindowStartupLocation="CenterScreen"
                               WindowShowMode="Default"
-                              Title="">
+                              Title=""
+                              SizeToContent="WidthAndHeight">
                 <!--<dxmvvm:WindowService.SettingsSelector>
                     <asmc:ViewSettingsSelector />
                 </dxmvvm:WindowService.SettingsSelector>-->
-            </dxmvvm:WindowService>
+            </ui:WindowService>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -4,13 +4,25 @@ using DevExpress.Mvvm;
 
 namespace ASMC.Core.ViewModel
 {
-    public class BaseViewModel : ViewModelBase
+    public class BaseViewModel : ViewModelBase, ISupportDialog
     {
         private readonly WeakEvent<EventHandler, EventArgs> _initializing = new WeakEvent<EventHandler, EventArgs>();
         private bool _isInitialized;
 
         private object _settings;
+        private string _regionName;
+        private object _entity;
+        private bool? _dialogResult;
 
+        /// <summary>
+        /// Возвращает или задает имя региона
+        /// для представления. Служебное свойство.
+        /// </summary>
+        public string RegionName
+        {
+            get => _regionName;
+            set => SetProperty(ref _regionName, value, nameof(RegionName));
+        }
         /// <summary>
         ///     Возвращает значение, показывающее, была
         ///     ли проведена инициализация модели
@@ -31,6 +43,29 @@ namespace ASMC.Core.ViewModel
         {
             get => _settings;
             set => SetProperty(ref _settings, value, () => OnSettingsChanged(_settings));
+        }
+        /// <inheritdoc />
+        public bool? DialogResult
+        {
+            get => _dialogResult;
+            private set => SetProperty(ref _dialogResult, value, nameof(DialogResult));
+        }
+
+        /// <summary>
+        /// Возвращает или задает сущность,
+        /// данные которой содержит справочник.
+        /// </summary>
+        public object Entity
+        {
+            get => _entity;
+            set => SetProperty(ref _entity, value, nameof(Entity), OnEntityChanged);
+        }
+        /// <summary>
+        /// Вызывается при изменении текущей
+        /// выбранной сущности справочника.
+        /// </summary>
+        protected virtual void OnEntityChanged()
+        {
         }
 
         /// <summary>

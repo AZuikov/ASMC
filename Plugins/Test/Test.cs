@@ -103,6 +103,10 @@ namespace Plugins.Test
     }
     public class ItemOperation1  : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
+        public ItemOperation1()
+        {
+            Sheme = new ShemeImage() {Number = 1, Path = ""};
+        }
 
         public override void StartSinglWork(Guid guid)
         {

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
+using ASMC.Core;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -197,7 +198,9 @@ namespace ASMC.ViewModel
 
         private void LastShemaCallback()
         {
-           
+            var service = GetService<IFormService>("Shem");
+            if(service?.Show() != true)
+                return;
         }
 
         private void EnableOpeationCallback()
