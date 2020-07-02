@@ -3,33 +3,43 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 
-namespace Plugins.Test
+namespace Test2
 {
- 
-    public class Device  : IProrgam
+    public class Device1 : IProrgam
     {
-        public string Type { get; set; }
-        public string Grsi { get; set; }
+        public string Type
+        {
+            get; set;
+        }
+        public string Grsi
+        {
+            get; set;
+        }
 
-        public string Range{ get; set; }
+        public string Range
+        {
+            get; set;
+        }
 
         public string Accuracy
         {
             get; set;
         }
 
-        public AbstraktOperation AbstraktOperation { get; }
+        public AbstraktOperation AbstraktOperation
+        {
+            get;
+        }
 
 
-        public Device()
+        public Device1()
         {
             AbstraktOperation = new Operation();
-            Type = "34401";
+            Type = "34461";
             Grsi = "СССР";
             Range = "1-5А";
             Accuracy = "0-5";
@@ -37,6 +47,14 @@ namespace Plugins.Test
 
     }
 
+
+    public class Operation : AbstraktOperation
+    {
+        public Operation()
+        {
+            this.UserItemOperationPeriodicVerf = new OpertionFirsVerf();
+        }
+    }
     public class DeviceInterface : IDevice
     {
         public string Description
@@ -65,43 +83,44 @@ namespace Plugins.Test
             get;
         }
     }
-    public class Operation : AbstraktOperation
-    {
-        public Operation()
-        {
-            this.UserItemOperationPrimaryVerf = new OpertionFirsVerf() ;
-        } 
-    }
-
     public class OpertionFirsVerf : IUserItemOperation
     {
         private string[] _StringConnectArray;
         public void RefreshDevice()
         {
-            _StringConnectArray = new[] { "COM5", "COM6" }; 
+            _StringConnectArray = new[] { "COM5", "COM6" };
         }
 
-        public IDevice[] Device { get; }
-        public IUserItemOperationBase[] UserItemOperation { get; }
-        public string[] Accessories { get; }
+        public IDevice[] Device
+        {
+            get;
+        }
+        public IUserItemOperationBase[] UserItemOperation
+        {
+            get;
+        }
+        public string[] Accessories
+        {
+            get;
+        }
 
         public OpertionFirsVerf()
         {
             Device = new[]
             {
-                new DeviceInterface{ Name = new []{"344010A"}, StringConnect = "COM1", Description = "Мультиметр"},
-                new DeviceInterface{ Name = new []{"APPA-106", "APPA-107"}, StringConnect = "COM12" } ,
+                new DeviceInterface{ Name = new []{"Н4-12"}, StringConnect = "COM1", Description = "Мультиметр"},
+                new DeviceInterface{ Name = new []{"5522A", "APPA-107"}, StringConnect = "COM12" } ,
                 new DeviceInterface{ Name = new []{"APP32A-106", "APPA-107"}, StringConnect = "COM12" },
                 new DeviceInterface{ Name = new []{"AP54545PA-106", "APPA-107"}, StringConnect = "COM12" }
             };
-            Accessories = new[] {"Мультиметр 344010A", "Набор проводов"};
-      
-            var opertio3 = new ItemOperation2 {Name = "Измерение напряжения"};
-            opertio3.Nodes.Add(new ItemOperation3 {Name = "Измерение постоянного тока"});   
+            Accessories = new[] { "Калибратор 5700", "Набор проводов" };
+
+            var opertio3 = new ItemOperation2 { Name = "Измерение силы тока" };
+            opertio3.Nodes.Add(new ItemOperation3 { Name = "Измерение электричексого сопростивления тока" });
             UserItemOperation = new IUserItemOperationBase[] { new ItemOperation1 { Name = "Опробывание" }, opertio3 };
         }
     }
-    public class ItemOperation1  : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class ItemOperation1 : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
 
         public override void StartSinglWork(Guid guid)
@@ -109,11 +128,13 @@ namespace Plugins.Test
             throw new NotImplementedException();
         }
 
-        public List<IBasicOperation<string>> DataRow { get; set; }
+        public List<IBasicOperation<string>> DataRow
+        {
+            get; set;
+        }
 
         public override void StartWork()
         {
-            Thread.Sleep(30000);
             //throw new NotImplementedException();
         }
 
@@ -139,11 +160,14 @@ namespace Plugins.Test
         public override void StartSinglWork(Guid guid)
         {
             throw new NotImplementedException();
-        } 
-        
-        public List<IBasicOperation<double?>> DataRow { get; set; }
-    
-       
+        }
+
+        public List<IBasicOperation<double?>> DataRow
+        {
+            get; set;
+        }
+
+
         public override void StartWork()
         {
             throw new NotImplementedException();
@@ -154,7 +178,7 @@ namespace Plugins.Test
             DataRow = new List<IBasicOperation<double?>>
             {
                 new BasicOperationVerefication<double?>{Getting = 512.3, Expected = 512.0},
-                new BasicOperationVerefication<double?> {Getting = 5.001, Expected = 5.005},  
+                new BasicOperationVerefication<double?> {Getting = 5.001, Expected = 5.005},
                 new BasicOperationVerefication<double?> {Getting = null , Expected = 5.005},
             };
         }
@@ -174,7 +198,7 @@ namespace Plugins.Test
 
             return data;
         }
-       
+
     }
 
     public class ItemOperation3 : AbstractUserItemOperationBase, IUserItemOperation<double?>
@@ -194,6 +218,9 @@ namespace Plugins.Test
             throw new NotImplementedException();
         }
 
-        public List<IBasicOperation<double?>> DataRow { get; set; }
+        public List<IBasicOperation<double?>> DataRow
+        {
+            get; set;
+        }
     }
 }

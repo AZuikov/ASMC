@@ -16,18 +16,7 @@ namespace ASMC.Data.Model
     }
     /// <summary>
     /// Интерфейст описывающий подключаемые настройки утроств, необходимыех для выполнения операций.
-    /// </summary>
-    public class DeviceInterface    : IDevice
-    {
-        public string Description { get; set; }
-        public string[] Name { get; set; }
-        public string SelectedName { get; set; }
-        public string StringConnect { get; set; }
-        public void Setting()
-        {
-            throw new NotImplementedException();
-        }
-    }
+    /// </summary> 
 
     public interface IDevice
     {    
@@ -60,6 +49,8 @@ namespace ASMC.Data.Model
         /// Позволяет вызвать окно
         /// </summary>
         void Setting();
+
+        bool? IsConnect { get; }
 
     }
     /// <summary>
@@ -96,6 +87,54 @@ namespace ASMC.Data.Model
     /// </summary>
     public abstract class AbstraktOperation
     {
+        public event ChangeShemaHandler ChangeShemaEvent;
+        public TypeOpeation? EnabledOperation
+        {
+            get
+            {
+                TypeOpeation? res = null;
+                if (UserItemOperationPrimaryVerf!=null || SpeedUserItemOperationPrimaryVerf!=null)
+                {
+                    res = TypeOpeation.PrimaryVerf;
+                }
+                if(UserItemOperationPeriodicVerf != null || SpeedUserItemOperationPeriodicVerf != null)
+                {
+                    if (res!=null)
+                    {
+                        res |= TypeOpeation.PeriodicVerf;
+                    }
+                    else
+                    {
+                        res = TypeOpeation.PeriodicVerf;
+                    }
+                }
+                if(UserItemOperationCalibration != null || SpeedUserItemOperationCalibration != null)
+                {
+                    if(res != null)
+                    {
+                        res |= TypeOpeation.Calibration;
+                    }
+                    else
+                    {
+                        res = TypeOpeation.Calibration;
+                    }
+                }
+                if(UserItemOperationAdjustment != null)
+                {
+                    if(res != null)
+                    {
+                        res |= TypeOpeation.Adjustment;
+                    }
+                    else
+                    {
+                        res = TypeOpeation.Adjustment;
+                    }
+                }
+                return res;
+            }
+        }
+
+        public delegate void ChangeShemaHandler(IUserItemOperationBase sender);
         /// <summary>
         /// Позволяет задать или получить признак определяющий ускоренную работу.
         /// </summary>
@@ -107,13 +146,20 @@ namespace ASMC.Data.Model
         /// Позволяет задать или получить тип операции.
         /// </summary>
         public TypeOpeation SelectedTypeOpeation { get; set; }
-
-        public async void StartWorkAsync()
+        private IUserItemOperationBase CurrentUserItemOperationBase { get; set; }
+        public async Task StartWorkAsync()
         {
             foreach (var opertion in SelectedOperation.UserItemOperation)
             {
-                await Task.Run(() => opertion.StartWork());
+                CurrentUserItemOperationBase = opertion;
+                ChangeShemaEvent?.Invoke(opertion);
+              await Task.Run(() => opertion.StartWork());
             }                        
+        }
+
+        protected AbstraktOperation()
+        {
+
         }
 
         /// <summary>
@@ -131,6 +177,9 @@ namespace ASMC.Data.Model
                         return IsSpeedWork ? SpeedUserItemOperationPeriodicVerf : UserItemOperationPeriodicVerf;
                     case TypeOpeation.Calibration:
                         return IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
+                    case TypeOpeation.Adjustment:
+                        return UserItemOperationAdjustment;
+                        break;
                 }
 
                 return null;
@@ -177,17 +226,30 @@ namespace ASMC.Data.Model
             get; set;
         }
         /// <summary>
+        /// Позволяет  задать или получить операции регрулировки
+        /// </summary>
+        protected IUserItemOperation UserItemOperationAdjustment
+        {
+            get; set;
+        }
+        
+        /// <summary>
         /// Содержит перечесления типов операции.
         /// </summary>
+        [Flags]
         public  enum TypeOpeation
         {
             PrimaryVerf,
             PeriodicVerf,
-            Calibration
+            Calibration,
+            Adjustment
         }
 
        
     }
+
+   
+
     /// <summary>
     /// Предоставляет интерфес пункта операции
     /// </summary>

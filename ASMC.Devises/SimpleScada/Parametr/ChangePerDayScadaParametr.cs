@@ -1,5 +1,6 @@
-﻿using System;
-using ASMC.Data.Model.Interface;
+﻿
+
+using System;
 
 namespace ASMC.Devises.SimpleScada.Parametr
 {
