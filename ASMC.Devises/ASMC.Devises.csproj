@@ -47,6 +47,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,6 +56,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IEEE\IEEE_BaseClass.cs" />
+    <Compile Include="IEEE\Keysight\ElectronicLoad\Main_N3300.cs" />
+    <Compile Include="IEEE\Keysight\ElectronicLoad\N3303A.cs" />
+    <Compile Include="IEEE\Keysight\ElectronicLoad\N3306A.cs" />
+    <Compile Include="IEEE\Keysight\Multimeter\Main_Mult.cs" />
+    <Compile Include="IEEE\Keysight\Multimeter\Mult_34401A.cs" />
+    <Compile Include="IEEE\Keysight\Multimeter\Mult_34460_61A.cs" />
+    <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
+    <Compile Include="Port\Ports.cs" />
+    <Compile Include="Port\Profigrupp\B5-71-PRO\B5-71-PRO.cs" />
+    <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro1.cs" />
+    <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro2.cs" />
+    <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro4.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensor.cs" />
@@ -72,9 +86,16 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="IEEE\" />
-    <Folder Include="Port\" />
+    <ProjectReference Include="..\AP.Math\AP.Math.csproj">
+      <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
+      <Name>AP.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
+      <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
+      <Name>AP.Reports</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
