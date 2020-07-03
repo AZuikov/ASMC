@@ -75,15 +75,15 @@ namespace Plugins.Test
 
     public class OpertionFirsVerf : IUserItemOperation
     {
-        private string[] _StringConnectArray;
         public void RefreshDevice()
         {
-            _StringConnectArray = new[] { "COM5", "COM6" }; 
+            AddresDivece = new[] { "COM5", "COM6" }; 
         }
 
         public IDevice[] Device { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
+        public string[] AddresDivece { get; set; }
 
         public OpertionFirsVerf()
         {

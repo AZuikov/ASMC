@@ -13,7 +13,7 @@ namespace ASMC.Data.Model
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>
     {
-        public Guid Guid { get; } = new Guid();
+        public Guid Guid { get; } = Guid.NewGuid();
         public T Getting { get; set; }
         public T Expected{ get; set; }
         public Predicate<T> IsGood { get; set; }

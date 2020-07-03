@@ -49,6 +49,12 @@
     <Reference Include="Fluent, Version=6.1.0.326, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.6.1.0.326\lib\net45\Fluent.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack">
+      <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.7.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -83,6 +89,8 @@
     <Compile Include="IFormService.cs" />
     <Compile Include="ISupportClose.cs" />
     <Compile Include="ISupportDialog.cs" />
+    <Compile Include="ISupportSettings.cs" />
+    <Compile Include="ITaskMessageService.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -96,9 +104,10 @@
     <Compile Include="ValidationRules\Rules.cs" />
     <Compile Include="ViewExtensions.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
-    <Compile Include="ViewModel\DialogViewModel.cs" />
+    <Compile Include="ViewModel\ClosableViewModel.cs" />
+    <Compile Include="ViewModel\DialogBaseContent.cs" />
+    <Compile Include="ViewModel\FromBaseViewModel.cs" />
     <Compile Include="ViewModel\ReadAndWriteTextVM.cs" />
-    <Compile Include="ViewModel\WorkViewMOdel.cs" />
     <Compile Include="View\DataView.xaml.cs">
       <DependentUpon>DataView.xaml</DependentUpon>
     </Compile>
