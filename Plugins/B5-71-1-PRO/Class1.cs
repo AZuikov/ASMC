@@ -62,6 +62,7 @@ namespace B5_71_PRO
         public IDevice[] Device { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
+        public string[] AddresDivece { get; set; }
 
         public OpertionFirsVerf()
         {
