@@ -39,7 +39,7 @@
       <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\NLog.4.6.7\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.6.6\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="Palsys.Data.Model">
       <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Data.Model.dll</HintPath>

@@ -12,7 +12,11 @@ namespace ASMC.Data.Model.Interface
     /// <typeparam name="T"></typeparam>
     public interface IBasicOperation<T>
     {
+        /// <summary>
+        /// Уникальный идентификатор операции
+        /// </summary>
         Guid Guid { get; }
+
         /// <summary>
         /// Позволяет получить и задать получаемое значение.
         /// </summary>
@@ -28,7 +32,7 @@ namespace ASMC.Data.Model.Interface
             get; set;
         }
         /// <summary>
-        /// Позволяет задать условие провеверки соответствия полученого знаечния ожидаемому.
+        /// Позволяет задать условие проверки соответствия полученого знаечния ожидаемому.
         /// </summary>
         Predicate<T> IsGood
         {
