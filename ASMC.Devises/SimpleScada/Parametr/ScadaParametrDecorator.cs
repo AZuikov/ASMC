@@ -1,4 +1,4 @@
-﻿using ASMC.Data.Model.Interface;
+﻿
 
 namespace ASMC.Devises.SimpleScada.Parametr
 {

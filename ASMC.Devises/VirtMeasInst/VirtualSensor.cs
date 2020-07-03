@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ASMC.Data.Model.Interface;
 using ASMC.Devises.Annotations;
 using ASMC.Devises.SimpleScada;
 using Palsys.Data.Model.Metr;

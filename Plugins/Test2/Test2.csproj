@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{856299C8-69DA-4511-8B4C-3BB1C3578BD1}</ProjectGuid>
+    <ProjectGuid>{B1CFA88B-26DA-420E-9521-B2DE5DFE2F01}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ASMC.Devises</RootNamespace>
-    <AssemblyName>ASMC.Devises</AssemblyName>
+    <RootNamespace>Test2</RootNamespace>
+    <AssemblyName>Test2</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,19 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ivi.Visa, Version=5.8.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kelary.Ivi.Visa.5.8.908\lib\Ivi.Visa.dll</HintPath>
-    </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
-    </Reference>
-    <Reference Include="Palsys.Data.Model">
-      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Data.Model.dll</HintPath>
-    </Reference>
-    <Reference Include="Palsys.Utils, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Palitra System\Metr7\Palsys.Utils.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,26 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sensor.cs" />
-    <Compile Include="SimpleScada\IParametrScada.cs" />
-    <Compile Include="SimpleScada\IvaSensor.cs" />
-    <Compile Include="SimpleScada\Parametr\ChangePerDayScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ChangePerHourScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ConverterScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ScadaParametrDecorator.cs" />
-    <Compile Include="SimpleScada\Dv2TsSensor.cs" />
-    <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
-    <Compile Include="VirtMeasInst\VirtualSensor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IEEE\" />
-    <Folder Include="Port\" />
+    <ProjectReference Include="..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

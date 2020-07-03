@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ASMC.Data.Model.Interface;
+
 
 namespace ASMC.Devises.SimpleScada
 {

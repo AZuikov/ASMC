@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASMC.Devises.SimpleScada
+namespace ASMC.Core
 {
-    public class Dv2TsSensor : Sensor
+    public interface ISupportDialog
     {
-        public Dv2TsSensor(string name)
+        bool? DialogResult
         {
-            SensorName = name;
+            get;
         }
 
+        void Initialize();
     }
 }
