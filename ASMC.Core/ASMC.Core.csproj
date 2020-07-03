@@ -96,6 +96,7 @@
     <Compile Include="ValidationRules\Rules.cs" />
     <Compile Include="ViewExtensions.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
+    <Compile Include="ViewModel\DialogViewModel.cs" />
     <Compile Include="ViewModel\ReadAndWriteTextVM.cs" />
     <Compile Include="ViewModel\WorkViewMOdel.cs" />
     <Compile Include="View\DataView.xaml.cs">

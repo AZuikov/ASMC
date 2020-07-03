@@ -32,7 +32,6 @@ namespace ASMC.ViewModel
         private IDevice[] _device;
         private AbstraktOperation.TypeOpeation? _enableOpeation = AbstraktOperation.TypeOpeation.Adjustment;
         private ShemeImage _lastShema;
-        private BaseViewModel _regionOperations;
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
         private IProrgam _selectProgram;
@@ -86,14 +85,7 @@ namespace ASMC.ViewModel
         /// <summary>
         /// Позволяет получать коллекцию программ
         /// </summary>
-        public ObservableCollection<IProrgam> Prog { get; }
-
-
-        public BaseViewModel RegionOperations
-        {
-            get => _regionOperations;
-            set => SetProperty(ref _regionOperations, value, nameof(RegionOperations));
-        }
+        public ObservableCollection<IProrgam> Prog { get; } = new ObservableCollection<IProrgam>();
 
         /// <summary>
         /// Позволяет получить или задать выбранную вкладку.
@@ -136,14 +128,13 @@ namespace ASMC.ViewModel
 
         public WizardViewModel()
         {
-            StartCommand = new DelegateCommand(ExecuteMethod);
+            StartCommand = new DelegateCommand(OnStartCommand);
             NextCommand =
                 new DelegateCommand(OnNextCommand,
                     () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
                           SelectProgram != null);
             BackCommand =
                 new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
-            Prog = new ObservableCollection<IProrgam>();
             //Prog = new ObservableCollection<IProrgam> {new Device()};
             //Prog[0].AbstraktOperation.IsSpeedWork = false;
             //Prog[0].AbstraktOperation.SelectedTypeOpeation = AbstraktOperation.TypeOpeation.PrimaryVerf;
@@ -183,7 +174,7 @@ namespace ASMC.ViewModel
             if (EnableOpeation != null) TypeOpertion = EnableOpeation.Value;
         }
 
-        private async void ExecuteMethod()
+        private async void OnStartCommand()
         {
             if (SelectionItemOperation == null) await SelectProgram.AbstraktOperation.StartWorkAsync();
         }

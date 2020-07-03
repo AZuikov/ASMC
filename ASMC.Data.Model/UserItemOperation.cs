@@ -156,7 +156,15 @@ namespace ASMC.Data.Model
               await Task.Run(() => opertion.StartWork());
             }                        
         }
-
+        public void StartWork()
+        {
+            foreach(var opertion in SelectedOperation.UserItemOperation)
+            {
+                CurrentUserItemOperationBase = opertion;
+                ChangeShemaEvent?.Invoke(opertion);
+                opertion.StartWork();
+            }
+        }
         protected AbstraktOperation()
         {
 

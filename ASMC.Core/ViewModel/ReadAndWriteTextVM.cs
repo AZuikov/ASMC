@@ -3,7 +3,7 @@ using DevExpress.Mvvm;
 
 namespace ASMC.Core.ViewModel
 {
-    public class ReadAndWriteTextVM
+    public class ReadAndWriteTextVM : DialogViewModel
     {
         public string DocumentHeaderPath { get; set; }
         private bool _RadioButtonValue;
