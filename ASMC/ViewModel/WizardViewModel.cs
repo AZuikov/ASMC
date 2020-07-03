@@ -24,50 +24,24 @@ namespace ASMC.ViewModel
             Operations
         }
 
+        #region  Fields
+
         private string[] _accessoriesList;
+        private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
         private IDevice[] _device;
         private AbstraktOperation.TypeOpeation? _enableOpeation = AbstraktOperation.TypeOpeation.Adjustment;
+        private ShemeImage _lastShema;
         private BaseViewModel _regionOperations;
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
         private IProrgam _selectProgram;
         private AbstraktOperation.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
-        private IUserItemOperationBase _CurentItemOperation;
-        private ShemeImage _LastShema;
 
-        public WizardViewModel()
-        {
-            StartCommand = new DelegateCommand(ExecuteMethod);
-            NextCommand =
-                new DelegateCommand(OnNextCommand,
-                    () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
-                          SelectProgram != null);
-            BackCommand =
-                new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
-            Prog = new ObservableCollection<IProrgam>();
-            LoadPlugins();
-            //Prog = new ObservableCollection<IProrgam> {new Device()};
-            //Prog[0].AbstraktOperation.IsSpeedWork = false;
-            //Prog[0].AbstraktOperation.SelectedTypeOpeation = AbstraktOperation.TypeOpeation.PrimaryVerf;
-            //UserItemOperation = Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation;
-            //Device = Prog[0].AbstraktOperation.SelectedOperation?.Device;
-            //Prog[0].AbstraktOperation.SelectedOperation?.RefreshDevice();
-            //AccessoriesList = Prog[0].AbstraktOperation.SelectedOperation?.Accessories;
-            //Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation[0].StartWork();
+        #endregion
 
-
-            //DataOperation = SelectionItemOperation?.Data.DefaultView;
-        }
-
-        private async void ExecuteMethod()
-        {
-            if (this.SelectionItemOperation==null)
-            {
-               await  SelectProgram.AbstraktOperation.StartWorkAsync();  
-            } 
-        }
+        #region Property
 
         public string[] AccessoriesList
         {
@@ -76,6 +50,12 @@ namespace ASMC.ViewModel
         }
 
         public ICommand BackCommand { get; }
+
+        public IUserItemOperationBase CurentItemOperation
+        {
+            get => _curentItemOperation;
+            set => SetProperty(ref _curentItemOperation, value, nameof(CurentItemOperation));
+        }
 
         public DataView DataOperation
         {
@@ -95,16 +75,16 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _enableOpeation, value, nameof(EnableOpeation), EnableOpeationCallback);
         }
 
-
-        
-        public ICommand StartCommand
+        public ShemeImage LastShema
         {
-            get;
+            get => _lastShema;
+            set => SetProperty(ref _lastShema, value, nameof(LastShema), LastShemaCallback);
         }
+
         public ICommand NextCommand { get; }
 
         /// <summary>
-        ///     Позволяет получать коллекцию программ
+        /// Позволяет получать коллекцию программ
         /// </summary>
         public ObservableCollection<IProrgam> Prog { get; }
 
@@ -114,6 +94,7 @@ namespace ASMC.ViewModel
             get => _regionOperations;
             set => SetProperty(ref _regionOperations, value, nameof(RegionOperations));
         }
+
         /// <summary>
         /// Позволяет получить или задать выбранную вкладку.
         /// </summary>
@@ -121,14 +102,6 @@ namespace ASMC.ViewModel
         {
             get => _selectedTabItem;
             set => SetProperty(ref _selectedTabItem, value, nameof(SelectedTabItem), ChangedCallback);
-        }
-
-        private void ChangedCallback()
-        {
-            if ( SelectedTabItem== TabItemControl.Operations)  
-            {
-
-            }
         }
 
         public IUserItemOperationBase SelectionItemOperation
@@ -143,7 +116,9 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _selectProgram, value, nameof(SelectProgram), SelectProgramCallback);
         }
 
-      
+
+        public ICommand StartCommand { get; }
+
 
         public AbstraktOperation.TypeOpeation TypeOpertion
         {
@@ -157,56 +132,67 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _userItemOperation, value, nameof(UserItemOperation));
         }
 
+        #endregion
+
+        public WizardViewModel()
+        {
+            StartCommand = new DelegateCommand(ExecuteMethod);
+            NextCommand =
+                new DelegateCommand(OnNextCommand,
+                    () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
+                          SelectProgram != null);
+            BackCommand =
+                new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
+            Prog = new ObservableCollection<IProrgam>();
+            //Prog = new ObservableCollection<IProrgam> {new Device()};
+            //Prog[0].AbstraktOperation.IsSpeedWork = false;
+            //Prog[0].AbstraktOperation.SelectedTypeOpeation = AbstraktOperation.TypeOpeation.PrimaryVerf;
+            //UserItemOperation = Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation;
+            //Device = Prog[0].AbstraktOperation.SelectedOperation?.Device;
+            //Prog[0].AbstraktOperation.SelectedOperation?.RefreshDevice();
+            //AccessoriesList = Prog[0].AbstraktOperation.SelectedOperation?.Accessories;
+            //Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation[0].StartWork();
+
+
+            //DataOperation = SelectionItemOperation?.Data.DefaultView;
+        }
+
+        #region Methods
+
         protected override void OnInitialized()
         {
             base.OnInitialized();
             LoadPlugins();
         }
-        private void SelectProgramCallback()
-        {
-            if(SelectProgram != null)
-            {
-                EnableOpeation = SelectProgram.AbstraktOperation.EnabledOperation;
-                SelectProgram.AbstraktOperation.IsSpeedWork = false;
-                SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
-                UserItemOperation = SelectProgram.AbstraktOperation.SelectedOperation?.UserItemOperation;
-                Device = SelectProgram.AbstraktOperation.SelectedOperation?.Device;
-                SelectProgram.AbstraktOperation.SelectedOperation?.RefreshDevice();
-                AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
-                SelectProgram.AbstraktOperation.ChangeShemaEvent    += AbstraktOperationOnChangeShemaEvent;
-            }
-        }
-        public IUserItemOperationBase CurentItemOperation
-        {
-            get => _CurentItemOperation;
-            set => SetProperty(ref _CurentItemOperation, value, nameof(CurentItemOperation));
-        }
+
         private void AbstraktOperationOnChangeShemaEvent(IUserItemOperationBase sender)
         {
             SelectionItemOperation = sender;
-            if (SelectionItemOperation.Sheme?.Number!= LastShema?.Number)
-            {
-                LastShema = SelectionItemOperation.Sheme;
-            }
-           
+            if (SelectionItemOperation.Sheme?.Number != LastShema?.Number) LastShema = SelectionItemOperation.Sheme;
         }
 
-        public ShemeImage LastShema {
-            get => _LastShema;
-            set => SetProperty(ref _LastShema, value, nameof(LastShema), LastShemaCallback);
+        private void ChangedCallback()
+        {
+            if (SelectedTabItem == TabItemControl.Operations)
+            {
+            }
+        }
+
+        private void EnableOpeationCallback()
+        {
+            if (EnableOpeation != null) TypeOpertion = EnableOpeation.Value;
+        }
+
+        private async void ExecuteMethod()
+        {
+            if (SelectionItemOperation == null) await SelectProgram.AbstraktOperation.StartWorkAsync();
         }
 
         private void LastShemaCallback()
         {
             var service = GetService<IFormService>("Shem");
-            if(service?.Show() != true)
+            if (service?.Show() != true)
                 return;
-        }
-
-        private void EnableOpeationCallback()
-        {
-            if(EnableOpeation != null) TypeOpertion = EnableOpeation.Value;
-          
         }
 
         private void LoadPlugins()
@@ -235,5 +221,22 @@ namespace ASMC.ViewModel
         {
             SelectedTabItem = SelectedTabItem + 1;
         }
+
+        private void SelectProgramCallback()
+        {
+            if (SelectProgram != null)
+            {
+                EnableOpeation = SelectProgram.AbstraktOperation.EnabledOperation;
+                SelectProgram.AbstraktOperation.IsSpeedWork = false;
+                SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
+                UserItemOperation = SelectProgram.AbstraktOperation.SelectedOperation?.UserItemOperation;
+                Device = SelectProgram.AbstraktOperation.SelectedOperation?.Device;
+                SelectProgram.AbstraktOperation.SelectedOperation?.RefreshDevice();
+                AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
+                SelectProgram.AbstraktOperation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
+            }
+        }
+
+        #endregion
     }
 }

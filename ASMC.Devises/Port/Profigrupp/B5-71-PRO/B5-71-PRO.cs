@@ -49,17 +49,17 @@ namespace ASMC.Devises.Port.Profigrupp
             //перезагружаем блок питания
             this.Reset();
 
-            if (!_ports.Open()) return false;
+            if (!ComPort.Open()) return false;
 
            
             //Переводим в режим дистанционного управления. При этом работают клавиши на панели прибора.
-            _ports.WriteLine("cps_int_ext");
+            ComPort.WriteLine("cps_int_ext");
             Thread.Sleep(500);
             //В ответ на команду перевода врежим дистанционного управления прибор должен прислать сообщение "EIC"
-            string answer = _ports.ReadLine();
+            string answer = ComPort.ReadLine();
             Thread.Sleep(500);
 
-            _ports.Close();
+            ComPort.Close();
 
             if (String.Equals(answer, "EIC"))
                 return true;
@@ -78,13 +78,13 @@ namespace ASMC.Devises.Port.Profigrupp
         {
            
             //если порт не открыт нужно бросить исключение
-            if (!_ports.Open()) return null;
+            if (!ComPort.Open()) return null;
 
-            _ports.Write("M");
-            string answer = _ports.ReadLine();
+            ComPort.Write("M");
+            string answer = ComPort.ReadLine();
             var StrArr = answer.Split('M');
             
-            _ports.Close();
+            ComPort.Close();
             return StrArr;
         }
 
@@ -115,13 +115,13 @@ namespace ASMC.Devises.Port.Profigrupp
         {
                 
                 //если порт не открыт нужно бросить исключение
-                if (!_ports.Open()) return null;
+                if (!ComPort.Open()) return null;
 
-                _ports.WriteLine("R");
-                string answer = _ports.ReadLine();
+                ComPort.WriteLine("R");
+                string answer = ComPort.ReadLine();
                 var ArrStr = answer.Split('R');
 
-                _ports.Close();
+                ComPort.Close();
 
             return ArrStr;
         }
@@ -151,8 +151,8 @@ namespace ASMC.Devises.Port.Profigrupp
         /// <param name="portName">имя последовательного порта, к которому подключен блок питания</param>
         public override void Init(string portName)
         {
-            _ports = new Ports(portName, Ports.SpeedRate.R9600, Parity.None, Ports.DataBit.Bit8, StopBits.One);
-            _ports.EndLineTerm = "\r";
+            ComPort = new ComPort(portName, ComPort.SpeedRate.R9600, Parity.None, ComPort.DataBit.Bit8, StopBits.One);
+            ComPort.EndLineTerm = "\r";
         }
 
        
@@ -163,10 +163,10 @@ namespace ASMC.Devises.Port.Profigrupp
         {
                        
 
-            if (!_ports.Open()) return;
-            _ports.WriteLine("c_reset_ext");
+            if (!ComPort.Open()) return;
+            ComPort.WriteLine("c_reset_ext");
             Thread.Sleep(3000);
-            _ports.Close();
+            ComPort.Close();
             
         }
 
@@ -257,12 +257,12 @@ namespace ASMC.Devises.Port.Profigrupp
         public override bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.SI)
         {
             //нужно выбросить исключение
-           if (!_ports.Open()) return  false;
+           if (!ComPort.Open()) return  false;
 
-            _ports.WriteLine("I" + CurrMultipliersConvert(inCurr, inUnitCurrMultipliers));
+            ComPort.WriteLine("I" + CurrMultipliersConvert(inCurr, inUnitCurrMultipliers));
             Thread.Sleep(2500);
-            string answer = _ports.ReadLine();
-            _ports.Close();
+            string answer = ComPort.ReadLine();
+            ComPort.Close();
 
             if (string.Equals(answer, "I")) return true;
 
@@ -279,11 +279,11 @@ namespace ASMC.Devises.Port.Profigrupp
         public override bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.SI)
         {
             //нужно выбросить исключение
-            if (!_ports.Open()) return false;
-            _ports.WriteLine("U" + VoltMultipliersConvert(inVolt, inUnitVoltMultipliers));
+            if (!ComPort.Open()) return false;
+            ComPort.WriteLine("U" + VoltMultipliersConvert(inVolt, inUnitVoltMultipliers));
             Thread.Sleep(2500);
-            string answer = _ports.ReadLine();
-            _ports.Close();
+            string answer = ComPort.ReadLine();
+            ComPort.Close();
 
             if (string.Equals(answer, "U")) return true;
 
@@ -297,11 +297,11 @@ namespace ASMC.Devises.Port.Profigrupp
         public override bool OnOutput()
         {
             //нужно выбросить исключение
-            if (!_ports.Open()) return false;
-            _ports.WriteLine("Y");
+            if (!ComPort.Open()) return false;
+            ComPort.WriteLine("Y");
             Thread.Sleep(700);
-            string answer = _ports.ReadLine();
-            _ports.Close();
+            string answer = ComPort.ReadLine();
+            ComPort.Close();
 
             if (string.Equals(answer, "Y")) return true;
 
@@ -315,11 +315,11 @@ namespace ASMC.Devises.Port.Profigrupp
         public override bool OffOutput()
         {
             //нужно выбросить исключение
-            if (!_ports.Open()) return false;
-            _ports.WriteLine("N");
+            if (!ComPort.Open()) return false;
+            ComPort.WriteLine("N");
             Thread.Sleep(700);
-            string answer = _ports.ReadLine();
-            _ports.Close();
+            string answer = ComPort.ReadLine();
+            ComPort.Close();
 
             if (string.Equals(answer, "N")) return true;
 
@@ -329,40 +329,40 @@ namespace ASMC.Devises.Port.Profigrupp
 
         protected B5_71_PRO(string PortName) : base(PortName)
         {
-            _ports = new Ports(PortName, Ports.SpeedRate.R9600, Parity.None, Ports.DataBit.Bit8, StopBits.One);
-            _ports.EndLineTerm = "\r";
+            ComPort = new ComPort(PortName, ComPort.SpeedRate.R9600, Parity.None, ComPort.DataBit.Bit8, StopBits.One);
+            ComPort.EndLineTerm = "\r";
         }
 
         protected B5_71_PRO(string PortName, SpeedRate bautRate) : base(PortName, bautRate)
         {
-            _ports = new Ports(PortName, bautRate, Parity.None, Ports.DataBit.Bit8, StopBits.One);
-            _ports.EndLineTerm = "\r";
+            ComPort = new ComPort(PortName, bautRate, Parity.None, ComPort.DataBit.Bit8, StopBits.One);
+            ComPort.EndLineTerm = "\r";
         }
 
         protected B5_71_PRO(string PortName, SpeedRate bautRate, Parity parity) : base(PortName, bautRate, parity)
         {
-            _ports = new Ports(PortName, bautRate, parity, Ports.DataBit.Bit8, StopBits.One);
-            _ports.EndLineTerm = "\r";
+            ComPort = new ComPort(PortName, bautRate, parity, ComPort.DataBit.Bit8, StopBits.One);
+            ComPort.EndLineTerm = "\r";
         }
 
         protected B5_71_PRO(string PortName, SpeedRate bautRate, Parity parity, DataBit databit) : base(PortName, bautRate, parity, databit)
         {
-            _ports = new Ports(PortName, bautRate, parity, databit, StopBits.One);
-            _ports.EndLineTerm = "\r";
+            ComPort = new ComPort(PortName, bautRate, parity, databit, StopBits.One);
+            ComPort.EndLineTerm = "\r";
         }
 
         protected B5_71_PRO(string PortName, SpeedRate bautRate, Parity parity, DataBit databit, StopBits stopbits) : base(PortName, bautRate, parity, databit, stopbits)
         {
-            _ports = new Ports(PortName, bautRate, parity, databit, stopbits);
-            _ports.EndLineTerm = "\r";
+            ComPort = new ComPort(PortName, bautRate, parity, databit, stopbits);
+            ComPort.EndLineTerm = "\r";
         }
 
        
     }
 
-    public abstract class AbstractB5_71_PRO :Ports
+    public abstract class AbstractB5_71_PRO :ComPort
     {
-        protected Ports _ports;
+        protected ComPort ComPort;
 
         /// <summary>
         /// Максимальное значение напряжения источника питания

@@ -5,7 +5,7 @@ using AP.Reports.Utils;
 
 namespace ASMC.Devises.IEEE.Keysight.ElectronicLoad
 {
-    public abstract class Main_N3300 : Main
+    public abstract class Main_N3300 : IeeeBase
     {
        
         private const string FuncCurr = "CURR";

@@ -59,7 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IEEE\IEEE_BaseClass.cs" />
+    <Compile Include="IEEE\IEEE_Base.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\Main_N3300.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3303A.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3306A.cs" />
@@ -67,7 +67,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34401A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34460_61A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
-    <Compile Include="Port\Ports.cs" />
+    <Compile Include="Port\ComPort.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B5-71-PRO.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro1.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro2.cs" />

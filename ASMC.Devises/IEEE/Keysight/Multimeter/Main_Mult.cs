@@ -7,7 +7,7 @@ using MathNet.Numerics.Statistics;
 
 namespace ASMC.Devises.IEEE.Keysight.Multimeter
 {
-    public class Main_Mult: Main
+    public class Main_Mult: IeeeBase
     {
         /// <summary>
         /// Запрос на получение значения (U, I, R, F), для преобразования использовать ConvertDate

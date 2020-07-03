@@ -11,7 +11,7 @@ using NLog;
 
 namespace ASMC.Devises.Port
 {
-    public class Ports
+    public class ComPort
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         protected SerialPort Sp;
@@ -28,27 +28,27 @@ namespace ASMC.Devises.Port
                 Sp.ReadTimeout = value;
             }
         }
-        public Ports(string portName)
+        public ComPort(string portName)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)SpeedRate.R9600,Parity.None, (int)DataBit.Bit8, StopBits.One);            
         }
-        public Ports(string portName, SpeedRate bautRate)
+        public ComPort(string portName, SpeedRate bautRate)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, Parity.None, (int)DataBit.Bit8, StopBits.One);
         }
-        public Ports(string portName, SpeedRate bautRate, Parity parity)
+        public ComPort(string portName, SpeedRate bautRate, Parity parity)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, parity, (int)DataBit.Bit8, StopBits.One);
         }
-        public Ports(string portName, SpeedRate bautRate, Parity parity, DataBit databit)
+        public ComPort(string portName, SpeedRate bautRate, Parity parity, DataBit databit)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, StopBits.One);
         }
-        public Ports(string portName, SpeedRate bautRate, Parity parity, DataBit databit, StopBits stopbits)
+        public ComPort(string portName, SpeedRate bautRate, Parity parity, DataBit databit, StopBits stopbits)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, stopbits);
