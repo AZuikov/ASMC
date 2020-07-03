@@ -69,13 +69,13 @@ namespace ASMC.Devises.IEEE
         /// Beeps the start.
         /// </summary>
         /// <param name="state">True запуск, False стоп</param>
-        public void BEEP(bool state, int delay_beep = 2000)
+        public void BEEP(bool state, int delayBeep = 2000)
         {
             if (state)
             {
                 Time = new System.Windows.Forms.Timer()
                 {
-                    Interval = delay_beep
+                    Interval = delayBeep
                 };
                 Connection();
                 WriteLine(_BEEP);

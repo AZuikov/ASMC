@@ -3,15 +3,18 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Windows.Forms;
+using NLog;
 
 namespace ASMC.Devises.Port
 {
     public class Ports
     {
-        protected SerialPort SP;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        protected SerialPort Sp;
         /// <summary>
         /// Установка таймаута, изначально выставлено 500 мс
         /// </summary>
@@ -21,127 +24,139 @@ namespace ASMC.Devises.Port
         public int SetTimeout {
             set
             {
-                SP.WriteTimeout = value;
-                SP.ReadTimeout = value;
+                Sp.WriteTimeout = value;
+                Sp.ReadTimeout = value;
             }
         }
-        public Ports(string PortName)
+        public Ports(string portName)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            SP = new SerialPort(PortName, (int)SpeedRate.R9600,Parity.None, (int)DataBit.bit8, StopBits.One);            
+            Sp = new SerialPort(portName, (int)SpeedRate.R9600,Parity.None, (int)DataBit.Bit8, StopBits.One);            
         }
-        public Ports(string PortName, SpeedRate bautRate)
+        public Ports(string portName, SpeedRate bautRate)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            SP = new SerialPort(PortName, (int)bautRate, Parity.None, (int)DataBit.bit8, StopBits.One);
+            Sp = new SerialPort(portName, (int)bautRate, Parity.None, (int)DataBit.Bit8, StopBits.One);
         }
-        public Ports(string PortName, SpeedRate bautRate, Parity parity)
+        public Ports(string portName, SpeedRate bautRate, Parity parity)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            SP = new SerialPort(PortName, (int)bautRate, parity, (int)DataBit.bit8, StopBits.One);
+            Sp = new SerialPort(portName, (int)bautRate, parity, (int)DataBit.Bit8, StopBits.One);
         }
-        public Ports(string PortName, SpeedRate bautRate, Parity parity, DataBit databit)
+        public Ports(string portName, SpeedRate bautRate, Parity parity, DataBit databit)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            SP = new SerialPort(PortName, (int)bautRate, parity, (int)databit, StopBits.One);
+            Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, StopBits.One);
         }
-        public Ports(string PortName, SpeedRate bautRate, Parity parity, DataBit databit, StopBits stopbits)
+        public Ports(string portName, SpeedRate bautRate, Parity parity, DataBit databit, StopBits stopbits)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            SP = new SerialPort(PortName, (int)bautRate, parity, (int)databit, stopbits);
+            Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, stopbits);
         }
-
+        /// <summary>
+        /// Позволяет задать или получить терменал окончания строки.
+        /// </summary>
         public string EndLineTerm {
-            set { SP.NewLine = value; }
-            get { return SP.NewLine; }
+            set { Sp.NewLine = value; }
+            get { return Sp.NewLine; }
         }
-
+        /// <summary>
+        /// Открывает соединение с Com портом.
+        /// </summary>
+        /// <returns>Возвращает True, если порт открыт, иначе False</returns>
         public bool Open()
         {
-            if (!SP.IsOpen)
+            if (Sp.IsOpen) return true;
+            try
             {
-                try
-                {
-                    SP.Open();
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    MessageBox                .Show("Не удаеться открыть COM port " + SP.PortName, "Ошибка COM порта", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }              
-                return true;
+                Sp.Open();
             }
-            else
+            catch (UnauthorizedAccessException e)
             {
-                MessageBox.Show("Не удаеться открыть COM port " + SP.PortName, "Ошибка COM порта", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Error(e);
                 return false;
-            }
+            }              
+            return true;
         }
         public void Close()
         {
-            if (SP.IsOpen)
+            if (!Sp.IsOpen) return;
+            try
+            {  
+                Sp.Close();
+            }
+            catch(IOException e)
             {
-                SP.Close();
+                Logger.Error(e);
             }
         }
 
-      
 
+        /// <summary>
+        /// Считывает строку оканчивающуюся терминальнм символом из ComPort.
+        /// </summary>
+        /// <returns>Возвращает рузультат чтения</returns>
         public string ReadLine()
         {
-            if (SP.IsOpen)
+            if (!Sp.IsOpen) return null;
+            try
             {
-                try
-                {
-                    return SP.ReadLine();
-                }
-                catch (TimeoutException)
-                {
-                    
-                }
-                catch (Exception)
-                {
-
-                }
+                return Sp.ReadLine();
             }
-            return "";
+            catch (TimeoutException e)
+            {
+                Logger.Error(e);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+            return null;
         }
-        public bool Write(string data)
+        /// <summary>
+        /// Записывает в порт строку.
+        /// </summary>
+        /// <param name="data"></param>
+        public void Write(string data)
         {
-            if (SP.IsOpen)
+            if(!Sp.IsOpen)
             {
-                SP.Write(data);
-                return true;
+                Logger.Warn($@"Запись в порт {Sp.PortName}данных:{data} не выполнена");
+                return;
             }
-            else
-            {
-                return false;
-            }
+            Sp.Write(data);
         }
-        public bool WriteLine(string data)
+        /// <summary>
+        /// Записывает строку оканчивающуюся терминальнм символом в ComPort.
+        /// </summary>
+        /// <returns>Возвращает рузультат чтения</returns>
+        public void WriteLine(string data)
         {
-            if (SP.IsOpen)
+            if (!Sp.IsOpen)
             {
-                SP.WriteLine(data);
-                return true;
+                Logger.Warn($@"Запись в порт {Sp.PortName}данных:{data} не выполнена");
+                return;
             }
-            else
-            {
-                return false;
-            }
+            Sp.WriteLine(data);
         }
         public static string[] GetPortName()
         {
             return SerialPort.GetPortNames();
         }
+        /// <summary>
+        /// Предоставлет перечесление возможного размера данных.
+        /// </summary>
         public enum DataBit
         {
-            bit4 = 4,
-            bit5 = 5,
-            bit6 = 6,
-            bit7 = 7,
-            bit8 = 8
+            Bit4 = 4,
+            Bit5 = 5,
+            Bit6 = 6,
+            Bit7 = 7,
+            Bit8 = 8
         }
+        /// <summary>
+        /// Предоставляет перечисление возможных скоростей.
+        /// </summary>
         public enum SpeedRate
         {
             R75 = 75,

@@ -127,11 +127,11 @@ namespace ASMC.Devises.IEEE.Keysight.Multimeter
             /// </summary>
             /// <param name="value">значение</param>
             /// <param name="TypeCalValue">Тип калибровки</param>
-            /// <param name="Multipliers">Множитель</param>
+            /// <param name="multipliers">Множитель</param>
             /// <returns></returns>
-            public static string SetCalValue(double value, string TypeCalValue, string Multipliers)
+            public static string SetCalValue(double value, string TypeCalValue, string multipliers)
             {
-                return "CAL:VAL " + value + Multipliers.Insert(Multipliers.Length, TypeCalValue);
+                return "CAL:VAL " + value + multipliers.Insert(multipliers.Length, TypeCalValue);
             }
             /// <summary>
             /// Запрос на установки калибровки

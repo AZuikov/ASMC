@@ -151,7 +151,7 @@ namespace ASMC.Devises.Port.Profigrupp
         /// <param name="portName">имя последовательного порта, к которому подключен блок питания</param>
         public override void Init(string portName)
         {
-            _ports = new Ports(portName, Ports.SpeedRate.R9600, Parity.None, Ports.DataBit.bit8, StopBits.One);
+            _ports = new Ports(portName, Ports.SpeedRate.R9600, Parity.None, Ports.DataBit.Bit8, StopBits.One);
             _ports.EndLineTerm = "\r";
         }
 
@@ -329,19 +329,19 @@ namespace ASMC.Devises.Port.Profigrupp
 
         protected B5_71_PRO(string PortName) : base(PortName)
         {
-            _ports = new Ports(PortName, Ports.SpeedRate.R9600, Parity.None, Ports.DataBit.bit8, StopBits.One);
+            _ports = new Ports(PortName, Ports.SpeedRate.R9600, Parity.None, Ports.DataBit.Bit8, StopBits.One);
             _ports.EndLineTerm = "\r";
         }
 
         protected B5_71_PRO(string PortName, SpeedRate bautRate) : base(PortName, bautRate)
         {
-            _ports = new Ports(PortName, bautRate, Parity.None, Ports.DataBit.bit8, StopBits.One);
+            _ports = new Ports(PortName, bautRate, Parity.None, Ports.DataBit.Bit8, StopBits.One);
             _ports.EndLineTerm = "\r";
         }
 
         protected B5_71_PRO(string PortName, SpeedRate bautRate, Parity parity) : base(PortName, bautRate, parity)
         {
-            _ports = new Ports(PortName, bautRate, parity, Ports.DataBit.bit8, StopBits.One);
+            _ports = new Ports(PortName, bautRate, parity, Ports.DataBit.Bit8, StopBits.One);
             _ports.EndLineTerm = "\r";
         }
 
