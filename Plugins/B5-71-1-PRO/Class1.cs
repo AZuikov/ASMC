@@ -8,6 +8,7 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devises.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devises.IEEE.Keysight.Multimeter;
+using ASMC.Devises.Port;
 using ASMC.Devises.Port.Profigrupp;
 
 
@@ -21,7 +22,8 @@ namespace B5_71_PRO
             Type = "Б5-71/1-ПРО";
             Grsi = "42467-09";
             Range = "0 - 30 В; 0 - 10 А";
-            Accuracy = "Напряжение ПГ ±(0,002 * U + 0.1), ток ПГ ±(0,01 * I + 0,05)";
+            Accuracy = "Напряжение ПГ ±(0,002 * U + 0.1); ток ПГ ±(0,01 * I + 0,05)";
+            
         }
         public string Type { get; }
         public string Grsi { get; }
@@ -36,8 +38,7 @@ namespace B5_71_PRO
         public Operation()
         {
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf();
-
-
+            this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
         }
     }
 
@@ -64,6 +65,9 @@ namespace B5_71_PRO
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
 
+        /// <summary>
+        /// Операции поверки. Для первичной и периодической одинаковые.
+        /// </summary>
         public OpertionFirsVerf()
         {
             //Необходимые эталоны
@@ -78,6 +82,8 @@ namespace B5_71_PRO
             //Необходимые аксесуары
             Accessories = new[]
             {
+                "Нагрузка электронная Keysight N3300A с модулем N3306A",
+                "Мультиметр цифровой Фпшдуте/Keysight 34401A",
                 "Преобразователь интерфесов National Instruments GPIB-USB",
                 "Преобразователь интерфесов USB - RS-232 + нульмодемный кабебель",
                 "Кабель banana - banana 6 шт.",
@@ -85,8 +91,8 @@ namespace B5_71_PRO
             };
 
             //Перечень операций поверки
-            UserItemOperation = new IUserItemOperationBase[]{new ItemOperation1(),
-                new ItemOperation2(),
+            UserItemOperation = new IUserItemOperationBase[]{new Oper1Oprobovanie(),
+                new Oper2DcvOutput(),
                 new ItemOperation3(),
                 new ItemOperation4(),
                 new ItemOperation5(), 
@@ -111,9 +117,9 @@ namespace B5_71_PRO
     /// <summary>
     /// Проведение опробования
     /// </summary>
-    public class ItemOperation1 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper1Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
-        public ItemOperation1()
+        public Oper1Oprobovanie()
         {
             Name = "Опробование";
         }
@@ -125,25 +131,39 @@ namespace B5_71_PRO
 
         public override void StartWork()
         {
-            throw new NotImplementedException();
+            BasicOperation<bool> bo = new BasicOperation<bool>();
+            bo.Expected = true;
+            bo.IsGood = s => { return bo.Getting == true ? true : false; }; 
+
+            DataRow.Add(bo);
         }
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            var data = new DataTable();
+            data.Columns.Add("Результат опробования");
+            var dataRow = data.NewRow();
+            var dds = DataRow[0] as BasicOperationVerefication<bool>;
+            dataRow[0] = dds.Getting;
+            data.Rows.Add(dataRow);
+            return data;
         }
 
-        public List<IBasicOperation<string>> DataRow { get; set; }
+        public List<IBasicOperation<bool>> DataRow { get; set; }
     }
+
 
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public class ItemOperation2 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
         public List<IBasicOperation<string>> DataRow { get; set; }
+        //список точек поверки (процент от максимальных значений блока питания  )
+        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
 
-        public ItemOperation2()
+        public Oper2DcvOutput()
         {
             this.Name = "Определение погрешности установки выходного напряжения";
             Sheme = new ShemeImage
@@ -160,7 +180,7 @@ namespace B5_71_PRO
 
         public override void StartWork()
         {
-
+            //------------- Инициализация устройств!!!!
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
             n3306a.Connection();
@@ -173,6 +193,59 @@ namespace B5_71_PRO
                 throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
 
             n3306a.SetWorkingChanel();
+            n3306a.OffOutput();
+            n3306a.Close();
+
+            Mult_34401A m34401 = new Mult_34401A();
+            m34401.Devace();
+
+            //порт нужно спрашивать у интерфейса
+            string portName = "com3";
+            var BP = new B571Pro1(portName);
+            //инициализация блока питания
+            BP.InitDevice(portName);
+
+            BP.SetStateCurr(10);
+            BP.SetStateVolt(30);
+            BP.OnOutput();
+
+
+            foreach (decimal coef in MyPoint)
+            {
+                decimal setPoint = coef * BP.VoltMax;
+                //ставим точку напряжения
+                BP.SetStateVolt(setPoint);
+
+                //измеряем напряжение
+                m34401.Connection();
+                m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
+                m34401.WriteLine(Mult_34401A.QueryValue);
+
+
+                var result = m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
+                m34401.Close();
+
+                AP.Math.MathStatistics.Round(ref result, 3);
+
+                var absTol = setPoint - (decimal)result;
+                AP.Math.MathStatistics.Round(ref absTol, 3);
+
+                var dopusk = BP.tolleranceFormulaVolt(setPoint);
+                AP.Math.MathStatistics.Round(ref dopusk, 3);
+
+                //забиваем результаты конкретного измерения для последующей передачи их в протокол
+                BasicOperation<decimal> BufOperation = new BasicOperation<decimal>();
+                BufOperation.Expected = setPoint;
+                
+
+            }
+
+            // -------- закрываем все объекты
+            BP.OffOutput();
+            BP.Close();
+
+            m34401.Close();
+
             n3306a.OffOutput();
             n3306a.Close();
 

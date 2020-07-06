@@ -104,6 +104,8 @@ namespace Test2
             get;
         }
 
+        public string[] AddresDivece { get; set; }
+
         public OpertionFirsVerf()
         {
             Device = new[]

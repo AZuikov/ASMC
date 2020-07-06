@@ -70,6 +70,7 @@ namespace Plugins.Test
         public Operation()
         {
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf() ;
+            
         } 
     }
 

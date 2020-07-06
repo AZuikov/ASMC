@@ -6,6 +6,7 @@ using System.Windows.Input;
 using DevExpress.Mvvm;
 using NLog;
 
+
 namespace ASMC.Core.ViewModel
 {
     public class BaseViewModel : ViewModelBase, ISupportSettings

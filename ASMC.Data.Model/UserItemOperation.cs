@@ -130,7 +130,7 @@ namespace ASMC.Data.Model
                     res = TypeOpeation.PrimaryVerf;
                 if (UserItemOperationPeriodicVerf != null || SpeedUserItemOperationPeriodicVerf != null)
                     if (res != null)
-                        res |= TypeOpeation.PeriodicVerf;
+                        res = res| TypeOpeation.PeriodicVerf;
                     else
                         res = TypeOpeation.PeriodicVerf;
                 if (UserItemOperationCalibration != null || SpeedUserItemOperationCalibration != null)
