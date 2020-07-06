@@ -184,6 +184,10 @@
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ASMC.Devices\ASMC.Devices.csproj">
+      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
+      <Name>ASMC.Devices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ASMC.Interpreter\ASMC.Interpreter.csproj">
       <Project>{8056D2DD-58E0-4FE8-9FF2-95F11AE8A4AC}</Project>
       <Name>ASMC.Interpreter</Name>

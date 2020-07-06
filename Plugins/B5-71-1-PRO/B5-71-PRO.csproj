@@ -56,7 +56,7 @@
     <ProjectReference Include="..\..\ASMC.Devices\ASMC.Devices.csproj">
       <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
       <Name>ASMC.Devices</Name>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

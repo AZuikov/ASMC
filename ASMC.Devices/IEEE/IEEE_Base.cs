@@ -140,9 +140,9 @@ namespace ASMC.Devices.IEEE
                 Session.TimeoutMilliseconds = 60000;
                 Session.Clear();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Соединение c " + DeviseType + " не устаеновленно");
+                Logger.Error(e);
 
                 return false;
             }
