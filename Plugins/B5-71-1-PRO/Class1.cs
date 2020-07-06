@@ -89,7 +89,7 @@ namespace B5_71_PRO
             Accessories = new[]
             {
                 "Нагрузка электронная Keysight N3300A с модулем N3306A",
-                "Мультиметр цифровой Фпшдуте/Keysight 34401A",
+                "Мультиметр цифровой Agilent/Keysight 34401A",
                 "Преобразователь интерфесов National Instruments GPIB-USB",
                 "Преобразователь интерфесов USB - RS-232 + нульмодемный кабебель",
                 "Кабель banana - banana 6 шт.",
