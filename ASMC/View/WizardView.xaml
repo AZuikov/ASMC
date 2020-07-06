@@ -9,6 +9,10 @@
              xmlns:behavior="clr-namespace:ASMC.Core.Behavior;assembly=ASMC.Core"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:view="clr-namespace:ASMC.View"
+             xmlns:ui1="clr-namespace:ASMC.UI"
 
              mc:Ignorable="d"
              d:DesignHeight="650" d:DesignWidth="800" MinWidth="800">
@@ -24,6 +28,9 @@
       </Style>
     </ResourceDictionary>
   </UserControl.Resources>
+  <dxmvvm:Interaction.Behaviors>
+    <ui1:ShemService x:Name="ShemService" />
+  </dxmvvm:Interaction.Behaviors>
   <StackPanel>
     <Menu Margin="0,0,0,10">
       <MenuItem Header="Файл">

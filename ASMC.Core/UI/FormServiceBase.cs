@@ -288,8 +288,8 @@ namespace ASMC.Core.UI
                     Entity = ((BaseViewModel) sender).Entity;
                     break;
                 //case nameof(BaseViewModel.DialogResult):
-                  //  _dialogResult = ((BaseViewModel) sender).DialogResult;
-                    break;
+                //    _dialogResult = ((BaseViewModel) sender).DialogResult;
+                //    break;
             }
         }
 

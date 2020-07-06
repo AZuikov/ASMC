@@ -14,6 +14,7 @@ using ASMC.ViewModel;
 using DevExpress.Mvvm.Native;
 using DevExpress.Mvvm.UI;
 using DevExpress.Xpf.Core;
+using NLog;
 
 namespace ASMC
 {
@@ -24,6 +25,7 @@ namespace ASMC
     {
         #region Fields
 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static Mutex _mutex;
 
         #endregion
@@ -70,6 +72,7 @@ namespace ASMC
             }
             catch(Exception error)
             {
+                Logger.Fatal(error);
                 ShowMessage(error.Message, MessageBoxImage.Error, MessageBoxButton.OK);
                 Shutdown(1);
             }
@@ -86,6 +89,7 @@ namespace ASMC
             }
             catch(Exception error)
             {
+                Logger.Error(error);
                 ShowMessage(error.Message, MessageBoxImage.Error, MessageBoxButton.OK);
             }
 
