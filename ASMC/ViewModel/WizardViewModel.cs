@@ -10,11 +10,13 @@ using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
+using NLog;
 
 namespace ASMC.ViewModel
 {
     public class WizardViewModel : BaseViewModel
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public enum TabItemControl
         {
             ChoiceSi,
@@ -181,7 +183,7 @@ namespace ASMC.ViewModel
 
         private void LastShemaCallback()
         {
-            var service = GetService<IFormService>("Shem");
+            var service = GetService<IFormService>("ShemService");
             if (service?.Show() != true)
                 return;
         }
@@ -192,15 +194,34 @@ namespace ASMC.ViewModel
             if (!Directory.Exists(path)) return;
 
             var files = Directory.GetFiles(path);
-            foreach (var file in files)
-                if (file.EndsWith(".dll"))
-                    Assembly.LoadFile(Path.GetFullPath(file));
+            try
+            {
+                foreach(var file in files)
+                    if(file.EndsWith(".dll"))
+                        Assembly.LoadFile(Path.GetFullPath(file));
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            } 
 
             if (files.Length <= 0) return;
             var interfaceType = typeof(IProrgam);
-            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
-                .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass).ToArray();
-            foreach (var type in types) Prog.Add((IProrgam) Activator.CreateInstance(type));
+            Type[] types=null;
+            try
+            {
+                 types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
+                    .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass).ToArray();
+            }
+            catch(Exception e)
+            {
+                Logger.Error(e);
+            }
+
+
+            if (types == null) return;
+            foreach (var type in types)
+                Prog.Add((IProrgam) Activator.CreateInstance(type));
         }
 
         private void OnBackCommand()
@@ -215,17 +236,15 @@ namespace ASMC.ViewModel
 
         private void SelectProgramCallback()
         {
-            if (SelectProgram != null)
-            {
-                EnableOpeation = SelectProgram.AbstraktOperation.EnabledOperation;
-                SelectProgram.AbstraktOperation.IsSpeedWork = false;
-                SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
-                UserItemOperation = SelectProgram.AbstraktOperation.SelectedOperation?.UserItemOperation;
-                Device = SelectProgram.AbstraktOperation.SelectedOperation?.Device;
-                SelectProgram.AbstraktOperation.SelectedOperation?.RefreshDevice();
-                AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
-                SelectProgram.AbstraktOperation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
-            }
+            if (SelectProgram == null) return;
+            EnableOpeation = SelectProgram.AbstraktOperation.EnabledOperation;
+            SelectProgram.AbstraktOperation.IsSpeedWork = false;
+            SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
+            UserItemOperation = SelectProgram.AbstraktOperation.SelectedOperation?.UserItemOperation;
+            Device = SelectProgram.AbstraktOperation.SelectedOperation?.Device;
+            SelectProgram.AbstraktOperation.SelectedOperation?.RefreshDevice();
+            AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
+            SelectProgram.AbstraktOperation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
         }
 
         #endregion

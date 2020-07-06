@@ -111,16 +111,20 @@ namespace ASMC.Data.Model
         [Flags]
         public enum TypeOpeation
         {
-            PrimaryVerf,
-            PeriodicVerf,
-            Calibration,
-            Adjustment
+            PrimaryVerf=1,
+            PeriodicVerf=2,
+            Calibration=4,
+            Adjustment=8
         }
-
+        /// <summary>
+        /// Событие изменение схемы.
+        /// </summary>
         public event ChangeShemaHandler ChangeShemaEvent;
 
         #region Property
-
+        /// <summary>
+        /// Предоставляет доступные операции.
+        /// </summary>
         public TypeOpeation? EnabledOperation
         {
             get

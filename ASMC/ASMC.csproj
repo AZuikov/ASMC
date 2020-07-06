@@ -55,6 +55,10 @@
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.2">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Themes.Office2016White.v17.2.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\NLog.4.6.7\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.Composition.Registration" />
@@ -94,10 +98,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblySettings.cs" />
-    <Compile Include="UI\Shem.cs" />
+    <Compile Include="UI\ShemService.cs" />
     <Compile Include="ViewModel\WizardViewModel.cs" />
     <Compile Include="ViewSettingsSelector.cs" />
     <Compile Include="View\Converters\VersionToStringConverter.cs" />
+    <Compile Include="View\ShemServiceView.xaml.cs">
+      <DependentUpon>ShemServiceView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\WizardView.xaml.cs">
       <DependentUpon>WizardView.xaml</DependentUpon>
     </Compile>
@@ -122,6 +129,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources.ru.resx" />
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -145,6 +155,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ValueContentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ShemServiceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

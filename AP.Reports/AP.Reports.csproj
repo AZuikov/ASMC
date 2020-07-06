@@ -52,7 +52,7 @@
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.RichEdit.v17.2.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.2">
-      <HintPath>..\..\..\WPF\packages\DevExpress.v17.2\DevExpress.Xpf.Grid.v17.2.dll</HintPath>
+      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\DevExpress.v17.2\DevExpress.Xpf.Grid.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
