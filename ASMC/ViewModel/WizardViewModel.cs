@@ -240,7 +240,7 @@ namespace ASMC.ViewModel
             EnableOpeation = SelectProgram.AbstraktOperation.EnabledOperation;
             SelectProgram.AbstraktOperation.IsSpeedWork = false;
             SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
-            UserItemOperation = SelectProgram.AbstraktOperation.SelectedOperation?.UserItemOperation;
+            UserItemOperation = SelectProgram.AbstraktOperation.SelectedOperation.UserItemOperation;
             Device = SelectProgram.AbstraktOperation.SelectedOperation?.Device;
             SelectProgram.AbstraktOperation.SelectedOperation?.RefreshDevice();
             AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
