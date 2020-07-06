@@ -14,8 +14,11 @@ namespace ASMC.Data.Model
     public class BasicOperation<T>  : IBasicOperation<T>
     {
         public Guid Guid { get; } = Guid.NewGuid();
+        /// <inheritdoc />
         public T Getting { get; set; }
+        /// <inheritdoc />
         public T Expected{ get; set; }
+        /// <inheritdoc />
         public Predicate<T> IsGood { get; set; }
     }
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T>

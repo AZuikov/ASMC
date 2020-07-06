@@ -38,11 +38,12 @@
     <Reference Include="MathNet.Numerics">
       <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="NLog">
-      <HintPath>..\packages\NLog.4.6.6\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\AP.Reports\bin\Debug\NLog.dll</HintPath>
     </Reference>
     <Reference Include="Palsys.Data.Model">
-      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Data.Model.dll</HintPath>
+      <HintPath>..\..\Старые библиотеки, не удалять\Palsys.Data.Model.dll</HintPath>
     </Reference>
     <Reference Include="Palsys.Utils, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

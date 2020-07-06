@@ -163,19 +163,20 @@ namespace ASMC.Data.Model
         {
             get
             {
-                switch (SelectedTypeOpeation)
+                if (SelectedTypeOpeation.HasFlag(TypeOpeation.PrimaryVerf))
                 {
-                    case TypeOpeation.PrimaryVerf:
-                        return IsSpeedWork ? SpeedUserItemOperationPrimaryVerf : UserItemOperationPrimaryVerf;
-                    case TypeOpeation.PeriodicVerf:
-                        return IsSpeedWork ? SpeedUserItemOperationPeriodicVerf : UserItemOperationPeriodicVerf;
-                    case TypeOpeation.Calibration:
-                        return IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
-                    case TypeOpeation.Adjustment:
-                        return UserItemOperationAdjustment;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    return IsSpeedWork ? SpeedUserItemOperationPrimaryVerf : UserItemOperationPrimaryVerf;
                 }
+                if (SelectedTypeOpeation.HasFlag(TypeOpeation.PeriodicVerf))
+                {
+                    return IsSpeedWork ? SpeedUserItemOperationPeriodicVerf : UserItemOperationPeriodicVerf;
+                }
+                if (SelectedTypeOpeation.HasFlag(TypeOpeation.Calibration))
+                {
+                    return IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
+                }
+                return SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment) ? UserItemOperationAdjustment : null;
+
             }
         }
 

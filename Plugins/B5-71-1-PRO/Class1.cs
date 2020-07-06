@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
-using ASMC.Devises.IEEE.Keysight.ElectronicLoad;
-using ASMC.Devises.IEEE.Keysight.Multimeter;
-using ASMC.Devises.Port;
-using ASMC.Devises.Port.Profigrupp;
+using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
+using ASMC.Devices.IEEE.Keysight.Multimeter;
+using ASMC.Devices.Port.Profigrupp;
+
+// !!!!!!!! Внимание !!!!!!!!!
+//  Имя последовательного порта прописано жестко!!!!
+// Необходимо реализовать его настройку из ВНЕ - через интрефейс ASMC
 
 
 namespace B5_71_PRO
@@ -24,6 +24,7 @@ namespace B5_71_PRO
             Range = "0 - 30 В; 0 - 10 А";
             Accuracy = "Напряжение ПГ ±(0,002 * U + 0.1); ток ПГ ±(0,01 * I + 0,05)";
             
+            
         }
         public string Type { get; }
         public string Grsi { get; }
@@ -35,10 +36,14 @@ namespace B5_71_PRO
     public class Operation : AbstraktOperation
     {
       
+        //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation()
         {
+            //это операция первичной поверки
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf();
+            //здесь периодическая поверка, но набор операций такой же
             this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
+            
         }
     }
 
@@ -58,6 +63,7 @@ namespace B5_71_PRO
         public bool? IsConnect { get; }
     }
 
+   
     public class OpertionFirsVerf : IUserItemOperation
     {
         public IDevice[] Device { get; }
@@ -93,7 +99,7 @@ namespace B5_71_PRO
             //Перечень операций поверки
             UserItemOperation = new IUserItemOperationBase[]{new Oper1Oprobovanie(),
                 new Oper2DcvOutput(),
-                new ItemOperation3(),
+                new Oper3DcvMeasure(),
                 new ItemOperation4(),
                 new ItemOperation5(), 
                 new ItemOperation6(), 
@@ -104,6 +110,9 @@ namespace B5_71_PRO
 
         }
 
+        /// <summary>
+        /// Проверяет всели эталоны подключены
+        /// </summary>
       public void RefreshDevice()
         {
             foreach (var dev in Device)
@@ -112,6 +121,7 @@ namespace B5_71_PRO
             }
         }   
     }
+    
 
 
     /// <summary>
@@ -122,6 +132,7 @@ namespace B5_71_PRO
         public Oper1Oprobovanie()
         {
             Name = "Опробование";
+            DataRow = new List<IBasicOperation<bool>>();
         }
 
         public override void StartSinglWork(Guid guid)
@@ -156,9 +167,10 @@ namespace B5_71_PRO
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
-        public List<IBasicOperation<string>> DataRow { get; set; }
+        private B571Pro1 BP;
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
         public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
@@ -171,6 +183,7 @@ namespace B5_71_PRO
             Number = 1,
             Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
+            DataRow = new  List<IBasicOperation<decimal>>();
         }
 
         public override void StartSinglWork(Guid guid)
@@ -201,7 +214,7 @@ namespace B5_71_PRO
 
             //порт нужно спрашивать у интерфейса
             string portName = "com3";
-            var BP = new B571Pro1(portName);
+            BP = new B571Pro1(portName);
             //инициализация блока питания
             BP.InitDevice(portName);
 
@@ -222,7 +235,7 @@ namespace B5_71_PRO
                 m34401.WriteLine(Mult_34401A.QueryValue);
 
 
-                var result = m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
+                var result = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
                 m34401.Close();
 
                 AP.Math.MathStatistics.Round(ref result, 3);
@@ -234,9 +247,16 @@ namespace B5_71_PRO
                 AP.Math.MathStatistics.Round(ref dopusk, 3);
 
                 //забиваем результаты конкретного измерения для последующей передачи их в протокол
-                BasicOperation<decimal> BufOperation = new BasicOperation<decimal>();
-                BufOperation.Expected = setPoint;
+                BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
                 
+                BufOperation.Expected = setPoint;
+                BufOperation.Getting = result;
+                BufOperation.ErrorCalculation = ErrorCalculation;
+                BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
+                BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+                DataRow.Add(BufOperation);
+
+
 
             }
 
@@ -252,9 +272,45 @@ namespace B5_71_PRO
 
         }
 
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            inA = BP.tolleranceFormulaVolt(inA);
+            AP.Math.MathStatistics.Round(ref inA, 3);
+
+            return BP.tolleranceFormulaVolt(inA);
+
+        }
+
+        /// <summary>
+        /// Формирует итоговую таблицу дял режима воспроизведения напряжения
+        /// </summary>
+        /// <returns>Таблица с результатами измерений</returns>
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Установленное значение напряжения");
+            dataTable.Columns.Add("Измеренное значение");
+            dataTable.Columns.Add("Абсолютная погрешность");
+            dataTable.Columns.Add("Минимальное допустимое значение");
+            dataTable.Columns.Add("Максимальное допустимое значение");
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<decimal>;
+                dataRow[0] = dds.Expected;
+                dataRow[1] = dds.Getting;
+                dataRow[2] = dds.Error;
+                dataRow[3] = dds.LowerTolerance;
+                dataRow[4] = dds.UpperTolerance;
+                dataTable.Rows.Add(dataRow);
+
+
+            }
+
+
+            return dataTable;
+
         }
 
         
@@ -264,11 +320,22 @@ namespace B5_71_PRO
     /// <summary>
     /// Измерение постоянного напряжения 
     /// </summary>
-    public class ItemOperation3 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
-        public ItemOperation3()
+        private B571Pro1 BP;
+        public List<IBasicOperation<string>> DataRow { get; set; }
+        //список точек поверки (процент от максимальных значений блока питания  )
+        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
+
+        public Oper3DcvMeasure()
         {
             Name = "Определение погрешности измерения выходного напряжения";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
         }
 
         public override void StartSinglWork(Guid guid)
@@ -278,7 +345,7 @@ namespace B5_71_PRO
 
         public override void StartWork()
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override DataTable FillData()
@@ -286,7 +353,7 @@ namespace B5_71_PRO
             throw new NotImplementedException();
         }
 
-        public List<IBasicOperation<string>> DataRow { get; set; }
+        
     }
 
     /// <summary>
