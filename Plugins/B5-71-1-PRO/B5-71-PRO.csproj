@@ -54,7 +54,7 @@
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ASMC.Devices\ASMC.Devices.csproj">
-      <Project>{C606FA94-0B7E-4698-801F-206CA9DA0CEF}</Project>
+      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
       <Name>ASMC.Devices</Name>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </ProjectReference>

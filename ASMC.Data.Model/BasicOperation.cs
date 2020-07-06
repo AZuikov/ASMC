@@ -21,11 +21,8 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public T Expected{ get; set; }
         /// <inheritdoc />
-<<<<<<< HEAD
-=======
         public string Comment { get; set; }
         /// <inheritdoc />
->>>>>>>  мелкие изменения
         public Predicate<T> IsGood { get; set; }
     }
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
