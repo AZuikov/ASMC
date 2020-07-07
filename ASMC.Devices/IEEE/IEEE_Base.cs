@@ -124,6 +124,7 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         public void Close()
         {
+            Session.Clear();
             Session?.Dispose();
         }
 
@@ -143,17 +144,18 @@ namespace ASMC.Devices.IEEE
             catch (Exception e)
             {
                 Logger.Error(e);
-
+                Session.Clear();
                 return false;
             }
+
 
             return true;
         }
 
         /// <summary>
-        /// Опрашивает все подключеннные устройства и находит необходимый(по типу прибора), установкивая строку подключения
+        /// Опрашивает все подключеннные устройства и находит необходимый(по типу прибора), устанавливая строку подключения
         /// </summary>
-        /// <returns>Если устройство с указаным типом было найдено возвращает True</returns>
+        /// <returns>Если устройство с указаным типом было найдено возвращает True. В противном случае False</returns>
         public bool Devace()
         {
             _words = null;
@@ -166,13 +168,23 @@ namespace ASMC.Devices.IEEE
                 {
                     onDevace.MoveNext();
                     _devace[i] = onDevace.Current;
-                    Stringconection = onDevace.Current;
-                    if (Connection(true)) continue;
+                    Stringconection = _devace[i];
+                    if (!Connection(true))
+                    {
+                        //если прибор не подключился, т.е. не знает команд scpi, тогда на запрос *idn? он ничего не ответит
+                        //в этом случае мы должны его отпустить
+                        Session.Dispose();
+                        continue;
+                    }
 
                     if (_words != null)
                         if (_words.Length > 2)
                         {
-                            if (string.CompareOrdinal(GetDeviceType(), DeviseType) == 0) return true;
+                            if (string.CompareOrdinal(GetDeviceType(), DeviseType) == 0)
+                            {
+                                Close();
+                                return true;
+                            }
                         }
                         else
                         {
@@ -219,6 +231,7 @@ namespace ASMC.Devices.IEEE
 
                         Close();
                     }
+                    
                 }
             Logger.Warn($@"Устройство {DeviseType} не найдено");
             return false;
@@ -402,7 +415,10 @@ namespace ASMC.Devices.IEEE
             catch (Exception e)
             {
                 Logger.Error(e);
+                Session.Clear();
+                return false;
             }
+            
 
             return true;
         }

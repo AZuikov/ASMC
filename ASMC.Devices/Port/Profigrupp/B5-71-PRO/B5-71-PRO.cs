@@ -49,7 +49,11 @@ namespace ASMC.Devices.Port.Profigrupp
             //перезагружаем блок питания
             this.Reset();
 
-            if (!ComPort.Open()) return false;
+            if (!ComPort.Open())
+            {
+                ComPort.Close();
+                return false;
+            }
 
            
             //Переводим в режим дистанционного управления. При этом работают клавиши на панели прибора.

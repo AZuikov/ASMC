@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
@@ -100,7 +101,7 @@ namespace B5_71_PRO
             UserItemOperation = new IUserItemOperationBase[]{new Oper1Oprobovanie(),
                 new Oper2DcvOutput(),
                 new Oper3DcvMeasure(),
-                new ItemOperation4(),
+                new Oper4VoltUnstable(),
                 new ItemOperation5(), 
                 new ItemOperation6(), 
                 new ItemOperation7(), 
@@ -169,6 +170,8 @@ namespace B5_71_PRO
     /// </summary>
     public class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
+        //порт нужно спрашивать у интерфейса
+        string portName = "com3";
         private B571Pro1 BP;
         public List<IBasicOperation<decimal>> DataRow { get; set; }
         //список точек поверки (процент от максимальных значений блока питания  )
@@ -193,11 +196,16 @@ namespace B5_71_PRO
 
         public override void StartWork()
         {
-            //------------- Инициализация устройств!!!!
+            //------- Создаем подключение к мультиметру
+            Mult_34401A m34401 = new Mult_34401A();
+            m34401.Devace();
+            m34401.Connection();
+            m34401.Close();
+            
+            //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
             n3306a.Connection();
-
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -208,68 +216,60 @@ namespace B5_71_PRO
             n3306a.SetWorkingChanel();
             n3306a.OffOutput();
             n3306a.Close();
+            //-------------------------------------------------
+            
 
-            Mult_34401A m34401 = new Mult_34401A();
-            m34401.Devace();
 
-            //порт нужно спрашивать у интерфейса
-            string portName = "com3";
+            
             BP = new B571Pro1(portName);
+
             //инициализация блока питания
             BP.InitDevice(portName);
 
             BP.SetStateCurr(10);
             BP.SetStateVolt(30);
             BP.OnOutput();
-
-
-            foreach (decimal coef in MyPoint)
-            {
-                decimal setPoint = coef * BP.VoltMax;
-                //ставим точку напряжения
-                BP.SetStateVolt(setPoint);
-
-                //измеряем напряжение
-                m34401.Connection();
-                m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
-                m34401.WriteLine(Mult_34401A.QueryValue);
-
-
-                var result = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
-                m34401.Close();
-
-                AP.Math.MathStatistics.Round(ref result, 3);
-
-                var absTol = setPoint - (decimal)result;
-                AP.Math.MathStatistics.Round(ref absTol, 3);
-
-                var dopusk = BP.tolleranceFormulaVolt(setPoint);
-                AP.Math.MathStatistics.Round(ref dopusk, 3);
-
-                //забиваем результаты конкретного измерения для последующей передачи их в протокол
-                BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
+           
+              foreach (decimal coef in MyPoint)
+                {
+                    decimal setPoint = coef * BP.VoltMax;
+                    //ставим точку напряжения
+                    BP.SetStateVolt(setPoint);
+    
+                    //измеряем напряжение
+                    m34401.Connection();
+                    m34401.WriteLine(Mult_34401A.DC.Voltage.Range.V100);
+                    m34401.WriteLine(Mult_34401A.QueryValue);
+    
+    
+                    var result = m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
+                    m34401.Close();
+    
+                    AP.Math.MathStatistics.Round(ref result, 3);
+    
+                    var absTol = setPoint - (decimal)result;
+                    AP.Math.MathStatistics.Round(ref absTol, 3);
+    
+                    var dopusk = BP.tolleranceFormulaVolt(setPoint);
+                    AP.Math.MathStatistics.Round(ref dopusk, 3);
+    
+                    //забиваем результаты конкретного измерения для последующей передачи их в протокол
+                    BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
+    
+                    BufOperation.Expected = setPoint;
+                    BufOperation.Getting = (decimal)result;
+                    BufOperation.ErrorCalculation = ErrorCalculation;
+                    BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
+                    BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+                    DataRow.Add(BufOperation);
+                }
                 
-                BufOperation.Expected = setPoint;
-                BufOperation.Getting = result;
-                BufOperation.ErrorCalculation = ErrorCalculation;
-                BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
-                BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-                DataRow.Add(BufOperation);
-
-
-
-            }
-
+            
             // -------- закрываем все объекты
-            BP.OffOutput();
-            BP.Close();
+           BP.OffOutput();
+           BP.Close();
 
-            m34401.Close();
-
-            n3306a.OffOutput();
-            n3306a.Close();
-
-
+           
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -320,10 +320,12 @@ namespace B5_71_PRO
     /// <summary>
     /// Измерение постоянного напряжения 
     /// </summary>
-    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
+        //порт нужно спрашивать у интерфейса
+        string portName = "com3";
         private B571Pro1 BP;
-        public List<IBasicOperation<string>> DataRow { get; set; }
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
         public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
@@ -336,6 +338,7 @@ namespace B5_71_PRO
                 Number = 1,
                 Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
+            DataRow = new List<IBasicOperation<decimal>>();
         }
 
         public override void StartSinglWork(Guid guid)
@@ -345,12 +348,117 @@ namespace B5_71_PRO
 
         public override void StartWork()
         {
-           
+            //------- Создаем подключение к мультиметру
+            Mult_34401A m34401 = new Mult_34401A();
+            m34401.Devace();
+            m34401.Connection();
+            m34401.Close();
+
+            //------- Создаем подключение к нагрузке
+            N3306A n3306a = new N3306A(1);
+            n3306a.Devace();
+            n3306a.Connection();
+            //массив всех установленных модулей
+            string[] InstalledMod = n3306a.GetInstalledModulesName();
+            //Берем канал который нам нужен
+            string[] currModel = InstalledMod[n3306a.GetChanelNumb() - 1].Split(':');
+            if (!currModel[1].Equals(n3306a.GetModuleModel()))
+                throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+
+            n3306a.SetWorkingChanel();
+            n3306a.OffOutput();
+            n3306a.Close();
+            //-------------------------------------------------
+
+            BP = new B571Pro1(portName);
+
+            //инициализация блока питания
+            BP.InitDevice(portName);
+
+            BP.SetStateCurr(10);
+            BP.SetStateVolt(30);
+            BP.OnOutput();
+
+            foreach (decimal coef in MyPoint)
+            {
+                decimal setPoint = coef * BP.VoltMax;
+                //ставим точку напряжения
+                BP.SetStateVolt(setPoint);
+
+                //измеряем напряжение
+
+                m34401.Connection();
+                m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
+                m34401.WriteLine(Mult_34401A.QueryValue);
+                var result = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
+                AP.Math.MathStatistics.Round(ref result, 3);
+                m34401.Close();
+
+                var resultMeasBp = BP.GetMeasureVolt();
+                AP.Math.MathStatistics.Round(ref resultMeasBp, 2);
+
+                var absTol = result - (decimal)resultMeasBp;
+                AP.Math.MathStatistics.Round(ref absTol, 3);
+
+                var dopusk = BP.tolleranceFormulaVolt(result);
+                AP.Math.MathStatistics.Round(ref dopusk, 3);
+
+                //забиваем результаты конкретного измерения для последующей передачи их в протокол
+                BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
+
+                BufOperation.Expected = result;
+                BufOperation.Getting = resultMeasBp;
+                BufOperation.ErrorCalculation = ErrorCalculation;
+                BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
+                BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+                DataRow.Add(BufOperation);
+
+
+            }
+
+            BP.OffOutput();
+            BP.Close();
+
+            
+
+
+
+        }
+
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            inA = BP.tolleranceFormulaVolt(inA);
+            AP.Math.MathStatistics.Round(ref inA, 3);
+
+            return BP.tolleranceFormulaVolt(inA);
+
         }
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Измеренное эталонным мультиметром значение");
+            dataTable.Columns.Add("Измеренное источником питания значение");
+            dataTable.Columns.Add("Абсолютная погрешность");
+            dataTable.Columns.Add("Минимальное допустимое значение");
+            dataTable.Columns.Add("Максимальное допустимое значение");
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<decimal>;
+                dataRow[0] = dds.Expected;
+                dataRow[1] = dds.Getting;
+                dataRow[2] = dds.Error;
+                dataRow[3] = dds.LowerTolerance;
+                dataRow[4] = dds.UpperTolerance;
+                dataTable.Rows.Add(dataRow);
+
+
+            }
+
+
+            return dataTable;
         }
 
         
@@ -359,9 +467,9 @@ namespace B5_71_PRO
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public class ItemOperation4 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper4VoltUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
-        public ItemOperation4()
+        public Oper4VoltUnstable()
         {
             Name = "Определение нестабильности выходного напряжения";
         }
@@ -381,7 +489,7 @@ namespace B5_71_PRO
             throw new NotImplementedException();
         }
 
-        public List<IBasicOperation<string>> DataRow { get; set; }
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
 
     /// <summary>
