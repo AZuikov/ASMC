@@ -104,11 +104,11 @@ namespace B5_71_PRO
                 new Oper2DcvOutput(),
                 new Oper3DcvMeasure(),
                 new Oper4VoltUnstable(),
-                new ItemOperation5(), 
-                new ItemOperation6(), 
-                new ItemOperation7(), 
-                new ItemOperation8(), 
-                new ItemOperation9()
+                new Oper5VoltPulsation(), 
+                new Oper6DciOutput(), 
+                new Oper7DciMeasure(), 
+                new Oper8DciUnstable(), 
+                new Oper9DciPuls()
             };
 
         }
@@ -599,9 +599,9 @@ namespace B5_71_PRO
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public class ItemOperation5 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper5VoltPulsation : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
-        public ItemOperation5()
+        public Oper5VoltPulsation()
         {
             Name = "Определение уровня пульсаций по напряжению";
         }
@@ -629,9 +629,9 @@ namespace B5_71_PRO
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public class ItemOperation6 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper6DciOutput : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
-        public ItemOperation6()
+        public Oper6DciOutput()
         {
             Name = "Определение погрешности установки выходного тока";
         }
@@ -658,9 +658,9 @@ namespace B5_71_PRO
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public class ItemOperation7 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper7DciMeasure : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
-        public ItemOperation7()
+        public Oper7DciMeasure()
         {
             Name = "Определение погрешности измерения выходного тока";
         }
@@ -687,9 +687,9 @@ namespace B5_71_PRO
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public class ItemOperation8 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper8DciUnstable : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
-        public ItemOperation8()
+        public Oper8DciUnstable()
         {
             Name = "Определение нестабильности выходного тока";
         }
@@ -717,9 +717,9 @@ namespace B5_71_PRO
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public class ItemOperation9 : AbstractUserItemOperationBase, IUserItemOperation<string>
+    public class Oper9DciPuls : AbstractUserItemOperationBase, IUserItemOperation<string>
     {
-        public ItemOperation9()
+        public Oper9DciPuls()
         {
             Name = "Определение уровня пульсаций постоянного тока";
         }
