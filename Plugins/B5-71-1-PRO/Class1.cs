@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -418,11 +420,7 @@ namespace B5_71_PRO
 
             BP.OffOutput();
             BP.Close();
-
             
-
-
-
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -469,9 +467,21 @@ namespace B5_71_PRO
     /// </summary>
     public class Oper4VoltUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
+        //порт нужно спрашивать у интерфейса
+        string portName = "com3";
+        private B571Pro1 BP;
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
+
+
         public Oper4VoltUnstable()
         {
             Name = "Определение нестабильности выходного напряжения";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            DataRow = new List<IBasicOperation<decimal>>();
         }
 
         public override void StartSinglWork(Guid guid)
@@ -481,15 +491,109 @@ namespace B5_71_PRO
 
         public override void StartWork()
         {
-            throw new NotImplementedException();
+            //------- Создаем подключение к мультиметру
+            Mult_34401A m34401 = new Mult_34401A();
+            m34401.Devace();
+            m34401.Connection();
+            m34401.Close();
+
+            //------- Создаем подключение к нагрузке
+            N3306A n3306a = new N3306A(1);
+            n3306a.Devace();
+            n3306a.Connection();
+            //массив всех установленных модулей
+            string[] InstalledMod = n3306a.GetInstalledModulesName();
+            //Берем канал который нам нужен
+            string[] currModel = InstalledMod[n3306a.GetChanelNumb() - 1].Split(':');
+            if (!currModel[1].Equals(n3306a.GetModuleModel()))
+                throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+
+            n3306a.SetWorkingChanel();
+            n3306a.OffOutput();
+            n3306a.Close();
+            //-------------------------------------------------
+
+            BP = new B571Pro1(portName);
+            //инициализация блока питания
+            BP.InitDevice(portName);
+            BP.SetStateCurr(10);
+            BP.SetStateVolt(30);
+            BP.OnOutput();
+            
+            // ------ настроим нагрузку
+            n3306a.Connection();
+            n3306a.SetWorkingChanel();
+            n3306a.SetResistanceFunc();
+            n3306a.OnOutput();
+            n3306a.Close();
+            
+            //сюда запишем результаты
+            List<decimal> voltUnstableList = new List<decimal>();
+            //это точки для нагрузки в Омах
+            decimal[] arrResistanceVoltUnstable = { (decimal)3.4, 6, 30 };
+
+            foreach (decimal resistance in arrResistanceVoltUnstable)
+            {
+                n3306a.Connection();
+                n3306a.SetResistance(resistance); //ставим сопротивление
+                n3306a.Close();
+                // время выдержки
+                Thread.Sleep(2000);
+                //измерения
+                m34401.Connection();
+                m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
+                m34401.WriteLine(Mult_34401A.QueryValue);
+                // записываем результаты
+                voltUnstableList.Add((decimal)m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI));
+                m34401.Close();
+            }
+
+            BP.OffOutput();
+            BP.Close();
+
+            //считаем нестабильность
+            decimal resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
+            AP.Math.MathStatistics.Round(ref resultVoltUnstable, 3);
+
+            //забиваем результаты конкретного измерения для последующей передачи их в протокол
+            BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
+
+            BufOperation.Expected = 0;
+            BufOperation.Getting = resultVoltUnstable;
+            BufOperation.ErrorCalculation = ErrorCalculation;
+            BufOperation.LowerTolerance = 0;
+            BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+            DataRow.Add(BufOperation);
+
+
+        }
+
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            return BP.tolleranceVoltageUnstability;
+
         }
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2");
+            dataTable.Columns.Add("Минимальное допустимое значение");
+            dataTable.Columns.Add("Максимальное допустимое значение");
+
+            var dataRow = dataTable.NewRow();
+            var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+            dataRow[0] = dds.Getting;
+            dataRow[1] = dds.LowerTolerance;
+            dataRow[2] = dds.UpperTolerance;
+            dataTable.Rows.Add(dataRow);
+
+            return dataTable;
         }
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        
+
+       
     }
 
     /// <summary>
