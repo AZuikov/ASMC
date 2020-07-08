@@ -792,7 +792,9 @@ namespace B5_71_PRO
                 throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
 
             n3306a.SetWorkingChanel();
-            n3306a.OffOutput();
+            n3306a.SetVoltFunc();
+            n3306a.SetVoltLevel((decimal)0.9 * BP.VoltMax);
+            n3306a.OnOutput();
             n3306a.Close();
             //-------------------------------------------------
 
@@ -801,16 +803,10 @@ namespace B5_71_PRO
 
             //инициализация блока питания
             BP.InitDevice(portName);
-
             BP.SetStateCurr(10);
             BP.SetStateVolt(30);
             BP.OnOutput();
-
-            n3306a.Connection();
-            n3306a.SetVoltFunc();
-            n3306a.SetVoltLevel((decimal)0.9 * BP.VoltMax);
-            n3306a.Close();
-
+            
             foreach (decimal coef in MyPoint)
             {
                 decimal setPoint = coef * BP.CurrMax;
@@ -822,15 +818,8 @@ namespace B5_71_PRO
                 n3306a.Connection();
                 var result = n3306a.GetMeasCurr();
                 n3306a.Close();
-
                 AP.Math.MathStatistics.Round(ref result, 3);
-
-                var absTol = setPoint - (decimal)result;
-                AP.Math.MathStatistics.Round(ref absTol, 3);
-
-                var dopusk = BP.tolleranceFormulaCurrent(setPoint);
-                AP.Math.MathStatistics.Round(ref dopusk, 3);
-
+                
                 //забиваем результаты конкретного измерения для последующей передачи их в протокол
                 BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
 
@@ -846,7 +835,7 @@ namespace B5_71_PRO
             BP.OffOutput();
             BP.Close();
 
-            n3306a.Close();
+            
 
         }
 
