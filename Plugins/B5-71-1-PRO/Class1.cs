@@ -108,7 +108,7 @@ namespace B5_71_PRO
                 new Oper6DciOutput(), 
                 new Oper7DciMeasure(), 
                 new Oper8DciUnstable(), 
-                new Oper9DciPuls()
+                new Oper9DciPulsation()
             };
 
         }
@@ -1120,14 +1120,14 @@ namespace B5_71_PRO
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public class Oper9DciPuls : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper9DciPulsation : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         //порт нужно спрашивать у интерфейса
         string portName = "com3";
         private B571Pro1 BP;
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public Oper9DciPuls()
+        public Oper9DciPulsation()
         {
             Name = "Определение уровня пульсаций постоянного тока";
             Name = "Определение нестабильности выходного напряжения";
