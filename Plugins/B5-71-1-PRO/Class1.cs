@@ -230,8 +230,8 @@ namespace B5_71_PRO
             //инициализация блока питания
             BP.InitDevice(portName);
 
-            BP.SetStateCurr(10);
-            BP.SetStateVolt(30);
+            BP.SetStateCurr(BP.CurrMax);
+            BP.SetStateVolt(BP.VoltMax);
             BP.OnOutput();
            
               foreach (decimal coef in MyPoint)
@@ -383,8 +383,8 @@ namespace B5_71_PRO
             //инициализация блока питания
             BP.InitDevice(portName);
 
-            BP.SetStateCurr(10);
-            BP.SetStateVolt(30);
+            BP.SetStateCurr(BP.CurrMax);
+            BP.SetStateVolt(BP.VoltMax);
             BP.OnOutput();
 
             foreach (decimal coef in MyPoint)
@@ -526,8 +526,8 @@ namespace B5_71_PRO
             BP = new B571Pro1(portName);
             //инициализация блока питания
             BP.InitDevice(portName);
-            BP.SetStateCurr(10);
-            BP.SetStateVolt(30);
+            BP.SetStateCurr(BP.CurrMax);
+            BP.SetStateVolt(BP.VoltMax);
             BP.OnOutput();
             
             // ------ настроим нагрузку
@@ -663,8 +663,8 @@ namespace B5_71_PRO
             BP = new B571Pro1(portName);
             //инициализация блока питания
             BP.InitDevice(portName);
-            BP.SetStateCurr(10);
-            BP.SetStateVolt(30);
+            BP.SetStateCurr(BP.CurrMax);
+            BP.SetStateVolt(BP.VoltMax);
             BP.OnOutput();
 
             // ------ настроим нагрузку
@@ -802,8 +802,8 @@ namespace B5_71_PRO
             
             //инициализация блока питания
             BP.InitDevice(portName);
-            BP.SetStateCurr(10);
-            BP.SetStateVolt(30);
+            BP.SetStateCurr(BP.CurrMax);
+            BP.SetStateVolt(BP.VoltMax);
             BP.OnOutput();
             
             foreach (decimal coef in MyPoint)
@@ -930,8 +930,8 @@ namespace B5_71_PRO
             
             //инициализация блока питания
             BP.InitDevice(portName);
-            BP.SetStateCurr(10);
-            BP.SetStateVolt(30);
+            BP.SetStateCurr(BP.CurrMax);
+            BP.SetStateVolt(BP.VoltMax);
             BP.OnOutput();
 
             //-------------------------------------------------
