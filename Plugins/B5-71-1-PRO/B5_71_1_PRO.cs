@@ -245,7 +245,7 @@ namespace B5_71_1_PRO
                     m34401.WriteLine(Mult_34401A.DC.Voltage.Range.V100);
                     m34401.WriteLine(Mult_34401A.QueryValue);
     
-                    Thread.Sleep(7000);
+                    
                     var result = m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
                     m34401.Close();
     
@@ -408,9 +408,7 @@ namespace B5_71_1_PRO
                 var absTol = result - (decimal)resultMeasBp;
                 AP.Math.MathStatistics.Round(ref absTol, 3);
 
-                var dopusk = BP.tolleranceFormulaVolt(result);
-                AP.Math.MathStatistics.Round(ref dopusk, 3);
-
+                
                 //забиваем результаты конкретного измерения для последующей передачи их в протокол
                 BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
 
@@ -546,6 +544,7 @@ namespace B5_71_1_PRO
             foreach (decimal resistance in arrResistanceVoltUnstable)
             {
                 n3306a.Connection();
+                n3306a.SetResistanceRange(resistance);
                 n3306a.SetResistance(resistance); //ставим сопротивление
                 n3306a.Close();
                 // время выдержки
@@ -674,6 +673,7 @@ namespace B5_71_1_PRO
             n3306a.Connection();
             n3306a.SetWorkingChanel();
             n3306a.SetResistanceFunc();
+            n3306a.SetResistanceRange(arrResistanceVoltUnstable[0]);
             n3306a.SetResistance(arrResistanceVoltUnstable[0]);
             n3306a.OnOutput();
             n3306a.Close();
@@ -1054,6 +1054,7 @@ namespace B5_71_1_PRO
 
             n3306a.SetWorkingChanel();
             n3306a.SetResistanceFunc();
+            n3306a.SetResistanceRange(arrResistanceCurrUnstable[0]);
             n3306a.SetResistance(arrResistanceCurrUnstable[0]);
             n3306a.OnOutput();
             n3306a.Close();
@@ -1067,6 +1068,7 @@ namespace B5_71_1_PRO
             foreach (decimal resistance in arrResistanceCurrUnstable)
             {
                 n3306a.Connection();
+                n3306a.SetResistanceRange(resistance);
                 n3306a.SetResistance(resistance);
                 Thread.Sleep(5000);
                 currUnstableList.Add(n3306a.GetMeasCurr());
@@ -1172,6 +1174,7 @@ namespace B5_71_1_PRO
             
             n3306a.SetWorkingChanel();
             n3306a.SetResistanceFunc();
+            n3306a.SetResistanceRange(arrResistanceCurrUnstable[0]);
             n3306a.SetResistance(arrResistanceCurrUnstable[0]);
             n3306a.OnOutput();
             n3306a.Close();

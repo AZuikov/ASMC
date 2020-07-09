@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using AP.Reports.Utils;
@@ -159,7 +160,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public bool SetCurrLevel(decimal currLevelIn)
         {
             
-            this.WriteLine("CURR:LEV " + currLevelIn);
+            this.WriteLine("CURR:LEV " + currLevelIn.ToString("G17", new CultureInfo("en-US")));
             Thread.Sleep(700);
             //!!!!   доделать с прибором   !!!!!
             decimal currLevAnswer = this.GetCurrLevel();
@@ -237,7 +238,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             decimal moduleMaxRange = rangeCurrentArr.Last();
             if (inRange > moduleMaxRange) throw new ArgumentOutOfRangeException();
 
-            this.WriteLine("SENSe:CURR:RANGe " + inRange);
+            this.WriteLine("SENSe:CURR:RANGe " + inRange.ToString("G17", new CultureInfo("en-US")));
             return true;
         }
 
@@ -250,7 +251,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             decimal moduleMaxRange = rangeVoltArr.Last();
             if (inRange > moduleMaxRange) throw new ArgumentOutOfRangeException();
 
-            this.WriteLine("SENSe:VOLTage:RANGe " + inRange);
+            this.WriteLine("SENSe:VOLTage:RANGe " + inRange.ToString("G17", new CultureInfo("en-US")));
             return true;
 
         }
@@ -263,7 +264,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
 
             //узнаем максимальный предел для конкретного модуля
-            decimal moduleMaxRange = rangeResistanceArr.Last();
+            decimal moduleMaxRange = rangeResistanceArr.Max();
 
                 //если предел который хотим поставить больше чем может канал, то выбросим исключение
                 if (inRange > moduleMaxRange) throw new ArgumentException();
@@ -273,7 +274,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             {
                 if (inRange <= rangeDestination)
                 {
-                    this.WriteLine("RESistance:RANGe " + rangeDestination);
+                    this.WriteLine("RESistance:RANGe " + rangeDestination.ToString("G17", new CultureInfo("en-US")));
                     break;
                 }
             }
@@ -290,7 +291,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             if (this.SetResistanceRange(inResist))
             { 
-                this.WriteLine("RESistance " + inResist);
+                this.WriteLine("RESistance " + inResist.ToString("G17", new CultureInfo("en-US")));
                 return true;
 
             }
@@ -344,7 +345,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             if (inLevel > rangeVoltArr.Last()) throw new ArgumentOutOfRangeException();
             
             //отправляем команду с уставкой по вольтам
-            this.WriteLine("VOLT " + inLevel);
+            this.WriteLine("VOLT " + inLevel.ToString("G17", new CultureInfo("en-US")));
             Thread.Sleep(100);
             
             //удостоверимся, что значение принято
