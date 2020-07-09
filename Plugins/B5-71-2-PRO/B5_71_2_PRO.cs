@@ -1134,7 +1134,7 @@ namespace B5_71_2_PRO
         public Oper9DciPulsation()
         {
             Name = "Определение уровня пульсаций постоянного тока";
-            Name = "Определение нестабильности выходного напряжения";
+            
             Sheme = new ShemeImage
             {
                 Number = 1,
