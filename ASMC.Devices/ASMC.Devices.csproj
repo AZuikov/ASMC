@@ -60,6 +60,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
+    <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
     <Compile Include="IEEE\IEEE_Base.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\Main_N3300.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3303A.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34401A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34460_61A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
+    <Compile Include="IEEE\Fluke\Calibrator\Main_Claibr.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B5-71-PRO.cs" />
