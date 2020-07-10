@@ -100,10 +100,10 @@ namespace B5_71_4_PRO
                 new Oper2DcvOutput(),
                 new Oper3DcvMeasure(),
                 new Oper4VoltUnstable(),
-                new Oper5VoltPulsation(),
                 new Oper6DciOutput(),
                 new Oper7DciMeasure(),
                 new Oper8DciUnstable(),
+                new Oper5VoltPulsation(),
                 new Oper9DciPulsation()
             };
 
@@ -258,6 +258,9 @@ namespace B5_71_4_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+                BufOperation.IsGood = s => { return (BufOperation.Getting < BufOperation.UpperTolerance) & 
+                                                    (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false; };
+                
                 DataRow.Add(BufOperation);
             }
 
@@ -408,6 +411,10 @@ namespace B5_71_4_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+                BufOperation.IsGood = s => {
+                    return (BufOperation.Getting < BufOperation.UpperTolerance) &
+                           (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false;
+                };
                 DataRow.Add(BufOperation);
 
 
@@ -569,6 +576,10 @@ namespace B5_71_4_PRO
             BufOperation.ErrorCalculation = ErrorCalculation;
             BufOperation.LowerTolerance = 0;
             BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+            BufOperation.IsGood = s => {
+                return (BufOperation.Getting < BufOperation.UpperTolerance) &
+                       (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
+            };
             DataRow.Add(BufOperation);
 
 
@@ -701,6 +712,10 @@ namespace B5_71_4_PRO
             BufOperation.ErrorCalculation = ErrorCalculation;
             BufOperation.LowerTolerance = 0;
             BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+            BufOperation.IsGood = s => {
+                return (BufOperation.Getting < BufOperation.UpperTolerance) &
+                       (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
+            };
             DataRow.Add(BufOperation);
 
 
@@ -812,6 +827,10 @@ namespace B5_71_4_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+                BufOperation.IsGood = s => {
+                    return (BufOperation.Getting < BufOperation.UpperTolerance) &
+                           (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false;
+                };
                 DataRow.Add(BufOperation);
 
             }
@@ -943,6 +962,10 @@ namespace B5_71_4_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+                BufOperation.IsGood = s => {
+                    return (BufOperation.Getting < BufOperation.UpperTolerance) &
+                           (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false;
+                };
                 DataRow.Add(BufOperation);
             }
 
@@ -1074,6 +1097,10 @@ namespace B5_71_4_PRO
             BufOperation.ErrorCalculation = ErrorCalculation;
             BufOperation.LowerTolerance = 0;
             BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+            BufOperation.IsGood = s => {
+                return (BufOperation.Getting < BufOperation.UpperTolerance) &
+                       (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
+            };
             DataRow.Add(BufOperation);
 
 
@@ -1209,6 +1236,10 @@ namespace B5_71_4_PRO
             BufOperation.ErrorCalculation = ErrorCalculation;
             BufOperation.LowerTolerance = 0;
             BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
+            BufOperation.IsGood = s => {
+                return (BufOperation.Getting < BufOperation.UpperTolerance) &
+                       (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
+            };
             DataRow.Add(BufOperation);
 
         }
