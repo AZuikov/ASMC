@@ -1,13 +1,14 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-using MathNet.Numerics.Statistics;
+
 using System;
 using System.Globalization;
 using System.Threading;
+using MathNet.Numerics.Statistics;
 
-namespace IEEE_488.Fluke.CalibtatorOscilloscope
+namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 {
-    public class Calibr_9500B : Main
+    public class Calibr_9500B : IeeeBase
     {
         /// <summary>
         /// Множитель

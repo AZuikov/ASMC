@@ -1,12 +1,12 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-using Common;
+
 using System;
 using System.Threading;
 
-namespace IEEE_488.Fluke.Multimeter
+namespace ASMC.Devices.IEEE.Fluke.Multimeter
 {
-    public class Mult8508A : Main
+    public class Mult8508A : IeeeBase
     {
 
         public Mult8508A() : base()
