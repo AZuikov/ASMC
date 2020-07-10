@@ -62,6 +62,8 @@
   <ItemGroup>
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
+    <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
+    <Compile Include="IEEE\Fluke\Multimeter\Mult8508A.cs" />
     <Compile Include="IEEE\IEEE_Base.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\Main_N3300.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3303A.cs" />
