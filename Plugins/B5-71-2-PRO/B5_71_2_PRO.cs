@@ -81,6 +81,7 @@ namespace B5_71_2_PRO
 
             //Перечень операций поверки
             UserItemOperation = new IUserItemOperationBase[]{
+                new Oper0VisualTest(),
                 new Oper1Oprobovanie(),
                 new Oper2DcvOutput(),
                 new Oper3DcvMeasure(),
@@ -120,6 +121,40 @@ namespace B5_71_2_PRO
         public bool? IsConnect { get; }
     }
 
+
+    /// <summary>
+    /// Внешний осмотр СИ
+    /// </summary>
+    public class Oper0VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    {
+        public List<IBasicOperation<bool>> DataRow { get; set; }
+
+        public Oper0VisualTest()
+        {
+            Name = "Внешний осмотр";
+            DataRow = new List<IBasicOperation<bool>>();
+        }
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            BasicOperation<bool> bo = new BasicOperation<bool>();
+            bo.Expected = true;
+            bo.IsGood = s => { return bo.Getting == true ? true : false; };
+
+            DataRow.Add(bo);
+        }
+
+
+    }
 
 
     /// <summary>

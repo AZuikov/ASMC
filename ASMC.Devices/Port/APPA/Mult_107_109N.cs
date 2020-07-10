@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace ASMC.Devices.Port.APPA
 {
-    public class Mult107109N : ComPort
+    public class Mult107_109N : ComPort
     {
         private readonly System.Timers.Timer _wait;
         private bool _flagTimeout;
@@ -52,7 +52,7 @@ namespace ASMC.Devices.Port.APPA
                 return value; 
             }
         }
-        public Mult107109N(string portName) : base(portName)
+        public Mult107_109N(string portName) : base(portName)
         {
             _wait = new System.Timers.Timer();
             _byffer = new List<byte>();
