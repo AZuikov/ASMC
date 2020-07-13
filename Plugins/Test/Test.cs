@@ -11,7 +11,7 @@ using ASMC.Data.Model.Interface;
 namespace Plugins.Test
 {
  
-    public class Device  : IProrgam
+    public class Device  : IProgram
     {
         public string Type { get; set; }
         public string Grsi { get; set; }

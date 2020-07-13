@@ -1,9 +1,11 @@
-﻿using ASMC.Data.Model;
+﻿using System;
+using System.Data;
+using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 
 namespace APPA_107N_109N
 {
-    public class APPA_107N : IProrgam
+    public class APPA_107N : IProgram
 
     {
         public APPA_107N()
@@ -23,4 +25,137 @@ namespace APPA_107N_109N
         public string Accuracy { get; }
         public AbstraktOperation AbstraktOperation { get; }
     }
+
+    public class Operation : AbstraktOperation
+    {
+        //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
+        public Operation()
+        {
+            //это операция первичной поверки
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf();
+            //здесь периодическая поверка, но набор операций такой же
+            UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
+        }
+    }
+
+    public class UsedDevices : IDevice
+    {
+        public string Description { get; set; }
+        public string[] Name { get; set; }
+        public string SelectedName { get; set; }
+        public string StringConnect { get; set; }
+
+        public void Setting()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool? IsConnect { get; }
+    }
+
+    public class OpertionFirsVerf : IUserItemOperation
+    {
+        public string[] Accessories { get; }
+        public string[] AddresDivece { get; set; }
+        public IDevice[] Device { get; }
+        public IUserItemOperationBase[] UserItemOperation { get; }
+
+        public OpertionFirsVerf()
+        {
+            //Необходимые устройства
+            Device = new IDevice[]
+            {
+                new UsedDevices {Name = new []{"5522A"}, Description = "Многофунциональный калибратор"},
+                new UsedDevices {Name = new[]{"Appa-107N"}, Description = "Цифровой портативный мультиметр"}
+
+            };
+
+            Accessories = new[]
+            {
+                "Интерфейсный кабель для клибратора (GPIB или COM порт)",
+                "Кабель banana - banana 2 шт.",
+                "Интерфейсный кабель для прибора APPA-10N USB-COM инфракрасный."
+            };
+
+            UserItemOperation = new IUserItemOperationBase[]
+            {
+                new Oper1VisualTest(),
+                new Oper2Oprobovanie(),
+                new Oper3DcvMeasure(),
+                new Oper4AcvMeasure(),
+                new Oper5DcIMeasure(),
+                new Oper6AcIMeasure(),
+                new Oper7FreqMeasure(),
+                new Oper8OhmMeasure(),
+                new Oper9FarMeasure(),
+                new Oper10TemperatureMeasure(),
+            };
+        }
+
+        public void RefreshDevice()
+        {
+            throw new NotImplementedException();
+        }
+
+    }
+ 
+
+    public class Oper1VisualTest : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Oper2Oprobovanie : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+    }
+
+    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+    }
+
+    public class Oper4AcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+    }
+
+    public class Oper5DcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+    }
+
+    public class Oper6AcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+    }
+
+    public class Oper7FreqMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+    }
+
+    public class Oper8OhmMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+
+    }
+
+    public class Oper9FarMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+
+    }
+
+    public class Oper10TemperatureMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    {
+
+    }
+
+
 }
