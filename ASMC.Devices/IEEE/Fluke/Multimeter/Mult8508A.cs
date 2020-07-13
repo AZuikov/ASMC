@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using AP.Reports.Utils;
 
 namespace ASMC.Devices.IEEE.Fluke.Multimeter
 {
