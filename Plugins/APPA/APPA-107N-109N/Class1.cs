@@ -59,18 +59,17 @@ namespace APPA_107N_109N
     {
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
+        public IDevice[] ControlDevices { get; }
+        public IDevice[] TestDevices { get; }
         public IDevice[] Device { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
 
         public OpertionFirsVerf()
         {
             //Необходимые устройства
-            Device = new IDevice[]
-            {
-                new UsedDevices {Name = new []{"5522A"}, Description = "Многофунциональный калибратор"},
-                new UsedDevices {Name = new[]{"Appa-107N"}, Description = "Цифровой портативный мультиметр"}
+            ControlDevices = new IDevice[] { new UsedDevices {Name = new []{"5522A"}, Description = "Многофунциональный калибратор"}};
+            TestDevices = new IDevice[]{ new UsedDevices { Name = new[] { "Appa-107N" }, Description = "Цифровой портативный мультиметр" } };
 
-            };
 
             Accessories = new[]
             {
@@ -176,8 +175,14 @@ namespace APPA_107N_109N
 
         public Oper3DcvMeasure()
         {
-            Name = "Определение погрешности измерения постоянног напряжения";
+            Name = "Определение погрешности измерения постоянного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "ShemePicture/5522A_NORMAL_DMM.jpg"
+
+            };
         }
 
         protected override DataTable FillData()
@@ -194,7 +199,9 @@ namespace APPA_107N_109N
         {
             Calib_5522A flkCalib5522A = new Calib_5522A();
             flkCalib5522A.Devace();
-            flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue((decimal)5));
+            flkCalib5522A.Connection();
+            flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(5,Calib_5522A.Multipliers.mili));
+            
 
         }
 
