@@ -748,18 +748,18 @@ namespace B5_71_2_PRO
 
 
             //забиваем результаты конкретного измерения для последующей передачи их в протокол
-            BasicOperationVerefication<decimal> BufOperation = new BasicOperationVerefication<decimal>();
-
-            BufOperation.Expected = 0;
-            BufOperation.Getting = voltPulsV357;
-            BufOperation.ErrorCalculation = ErrorCalculation;
-            BufOperation.LowerTolerance = 0;
-            BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-            BufOperation.IsGood = s => {
-                return (BufOperation.Getting < BufOperation.UpperTolerance) &
-                       (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
+            var bufOperation = new BasicOperationVerefication<decimal>
+            {
+                Expected = 0,
+                Getting = voltPulsV357,
+                ErrorCalculation = ErrorCalculation,
+                LowerTolerance = 0
             };
-            DataRow.Add(BufOperation);
+
+            bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            bufOperation.IsGood = s => (bufOperation.Getting < bufOperation.UpperTolerance) &
+                                       (bufOperation.Getting >= bufOperation.LowerTolerance);
+            DataRow.Add(bufOperation);
 
 
         }
@@ -1191,7 +1191,7 @@ namespace B5_71_2_PRO
         string portName = "com3";
         private B571Pro2 BP;
         //список точек
-        public static readonly decimal[] arrResistanceCurrUnstable = { (decimal)7.5, (decimal)4.17, (decimal)0.83 };
+        public static readonly decimal[] ArrResistanceCurrUnstable = { (decimal)7.5, (decimal)4.17, (decimal)0.83 };
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
 
@@ -1233,8 +1233,8 @@ namespace B5_71_2_PRO
             
             n3306a.SetWorkingChanel();
             n3306a.SetResistanceFunc();
-            n3306a.SetResistanceRange(arrResistanceCurrUnstable[0]);
-            n3306a.SetResistance(arrResistanceCurrUnstable[0]);
+            n3306a.SetResistanceRange(ArrResistanceCurrUnstable[0]);
+            n3306a.SetResistance(ArrResistanceCurrUnstable[0]);
             n3306a.OnOutput();
             n3306a.Close();
 

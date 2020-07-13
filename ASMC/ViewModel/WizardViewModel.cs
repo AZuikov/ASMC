@@ -36,7 +36,7 @@ namespace ASMC.ViewModel
         private ShemeImage _lastShema;
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
-        private IProrgam _selectProgram;
+        private IProgram _selectProgram;
         private AbstraktOperation.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
 
@@ -87,7 +87,7 @@ namespace ASMC.ViewModel
         /// <summary>
         /// Позволяет получать коллекцию программ
         /// </summary>
-        public ObservableCollection<IProrgam> Prog { get; } = new ObservableCollection<IProrgam>();
+        public ObservableCollection<IProgram> Prog { get; } = new ObservableCollection<IProgram>();
 
         /// <summary>
         /// Позволяет получить или задать выбранную вкладку.
@@ -104,7 +104,7 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _selectionItemOperation, value, nameof(SelectionItemOperation));
         }
 
-        public IProrgam SelectProgram
+        public IProgram SelectProgram
         {
             get => _selectProgram;
             set => SetProperty(ref _selectProgram, value, nameof(SelectProgram), SelectProgramCallback);
@@ -206,7 +206,7 @@ namespace ASMC.ViewModel
             } 
 
             if (files.Length <= 0) return;
-            var interfaceType = typeof(IProrgam);
+            var interfaceType = typeof(IProgram);
             Type[] types=null;
             try
             {
@@ -221,7 +221,7 @@ namespace ASMC.ViewModel
 
             if (types == null) return;
             foreach (var type in types)
-                Prog.Add((IProrgam) Activator.CreateInstance(type));
+                Prog.Add((IProgram) Activator.CreateInstance(type));
         }
 
         private void OnBackCommand()
