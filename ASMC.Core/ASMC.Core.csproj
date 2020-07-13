@@ -85,6 +85,7 @@
   <ItemGroup>
     <Compile Include="Behavior\BindableSelectedItemBeheavior.cs" />
     <Compile Include="Behavior\IsFocesedUI.cs" />
+    <Compile Include="EnumFlagToBoolConverter.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="IFormService.cs" />
     <Compile Include="ISupportClose.cs" />

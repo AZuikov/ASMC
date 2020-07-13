@@ -77,10 +77,16 @@ namespace ASMC.Data.Model
         string[] AddresDivece { get; set; }
 
         /// <summary>
-        /// Возвращает перечень подключаемых устройств.
+        /// Возвращает перечень устройст используемых для МК подключаемых устройств.
         /// </summary>
-        IDevice[] Device { get; }
-
+        IDevice[] ControlDevices { get; }
+        /// <summary>
+        /// Возвращает перечень устройст подвергаемых МК.
+        /// </summary>
+        IDevice[] TestDevices
+        {
+            get;
+        }
         /// <summary>
         /// Возвращает перечень операций
         /// </summary>
@@ -111,8 +117,8 @@ namespace ASMC.Data.Model
         [Flags]
         public enum TypeOpeation
         {
-            PrimaryVerf=1,
-            PeriodicVerf=2,
+            PeriodicVerf = 1,
+            PrimaryVerf =2,
             Calibration=4,
             Adjustment=8
         }

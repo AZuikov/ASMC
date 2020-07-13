@@ -72,7 +72,7 @@ namespace B5_71_1_PRO
         public OpertionFirsVerf()
         {
             //Необходимые эталоны
-            Device = new IDevice[]
+            ControlDevices = new IDevice[]
             {
                 new StandartDevices {Name = new[] {"N3300A"}, Description = "Электронная нагрузка"},
                 new StandartDevices {Name = new[] {"34401A"}, Description = "Мультиметр"},
@@ -106,7 +106,7 @@ namespace B5_71_1_PRO
             };
         }
 
-        public IDevice[] Device { get; }
+        public IDevice[] ControlDevices { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
@@ -116,7 +116,7 @@ namespace B5_71_1_PRO
         /// </summary>
         public void RefreshDevice()
         {
-            foreach (var dev in Device)
+            foreach (var dev in ControlDevices)
             {
             }
         }
@@ -791,12 +791,14 @@ namespace B5_71_1_PRO
 
 
             //забиваем результаты конкретного измерения для последующей передачи их в протокол
-            var bufOperation = new BasicOperationVerefication<decimal>();
+            var bufOperation = new BasicOperationVerefication<decimal>
+            {
+                Expected = 0,
+                Getting = voltPulsV357,
+                ErrorCalculation = ErrorCalculation,
+                LowerTolerance = 0
+            };
 
-            bufOperation.Expected = 0;
-            bufOperation.Getting = voltPulsV357;
-            bufOperation.ErrorCalculation = ErrorCalculation;
-            bufOperation.LowerTolerance = 0;
             bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
             bufOperation.IsGood = s => (bufOperation.Getting < bufOperation.UpperTolerance) &
                                        (bufOperation.Getting >= bufOperation.LowerTolerance);
@@ -849,6 +851,7 @@ namespace B5_71_1_PRO
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
+                // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected;
                 dataRow[1] = dds.Getting;
                 dataRow[2] = dds.Error;
@@ -982,6 +985,7 @@ namespace B5_71_1_PRO
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
+                // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected;
                 dataRow[1] = dds.Getting;
                 dataRow[2] = dds.Error;
@@ -1115,6 +1119,7 @@ namespace B5_71_1_PRO
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+            // ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting;
             dataRow[1] = dds.LowerTolerance;
             dataRow[2] = dds.UpperTolerance;
@@ -1245,6 +1250,7 @@ namespace B5_71_1_PRO
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
             dataRow[0] = _bp.CurrMax;
+            // ReSharper disable once PossibleNullReferenceException
             dataRow[1] = dds.Getting;
             dataRow[2] = dds.Error;
             dataTable.Rows.Add(dataRow);

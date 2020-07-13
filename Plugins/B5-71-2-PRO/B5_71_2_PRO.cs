@@ -49,7 +49,7 @@ namespace B5_71_2_PRO
 
     public class OpertionFirsVerf : IUserItemOperation
     {
-        public IDevice[] Device { get; }
+        public IDevice[] ControlDevices { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
@@ -60,7 +60,7 @@ namespace B5_71_2_PRO
         public OpertionFirsVerf()
         {
             //Необходимые эталоны
-            Device = new[]
+            ControlDevices = new[]
             {
                 new StandartDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
                 new StandartDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
@@ -100,7 +100,7 @@ namespace B5_71_2_PRO
         /// </summary>
         public void RefreshDevice()
         {
-            foreach (var dev in Device)
+            foreach (var dev in ControlDevices)
             {
 
             }

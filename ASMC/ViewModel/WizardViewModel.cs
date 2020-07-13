@@ -16,23 +16,43 @@ namespace ASMC.ViewModel
 {
     public class WizardViewModel : BaseViewModel
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        /// <summary>
+        /// Перечень вкладок.
+        /// </summary>
         public enum TabItemControl
         {
+            /// <summary>
+            /// Выбор программы МК.
+            /// </summary>
             ChoiceSi,
+            /// <summary>
+            /// Выбор вида МК.
+            /// </summary>
             ChoiceTypeMc,
+            /// <summary>
+            /// Подготовка рабочего места.
+            /// </summary>
             Workplace,
+            /// <summary>
+            /// Настройка приборов.
+            /// </summary>
             Settings,
+            /// <summary>
+            /// Операции МК.
+            /// </summary>
             Operations
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region  Fields
 
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
-        private IDevice[] _device;
-        private AbstraktOperation.TypeOpeation? _enableOpeation = AbstraktOperation.TypeOpeation.Adjustment;
+        private IDevice[] _controlDevices;
+        private AbstraktOperation.TypeOpeation? _enableOpeation;
+        private bool _isSpeedWork;
         private ShemeImage _lastShema;
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
@@ -50,8 +70,6 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _accessoriesList, value, nameof(AccessoriesList));
         }
 
-        public ICommand BackCommand { get; }
-
         public IUserItemOperationBase CurentItemOperation
         {
             get => _curentItemOperation;
@@ -64,10 +82,10 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _dataOperation, value, nameof(DataOperation));
         }
 
-        public IDevice[] Device
+        public IDevice[] ControlDevices
         {
-            get => _device;
-            set => SetProperty(ref _device, value, nameof(Device));
+            get => _controlDevices;
+            set => SetProperty(ref _controlDevices, value, nameof(ControlDevices));
         }
 
         public AbstraktOperation.TypeOpeation? EnableOpeation
@@ -76,13 +94,30 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _enableOpeation, value, nameof(EnableOpeation), EnableOpeationCallback);
         }
 
+        /// <summary>
+        /// Режим проверки(Ускроренные операции)
+        /// </summary>
+        public bool IsSpeedWork
+        {
+            get => _isSpeedWork;
+            set => SetProperty(ref _isSpeedWork, value, nameof(IsSpeedWork), OnIsSpeedWorkCallback);
+        }
+
+        private void OnIsSpeedWorkCallback()
+        {
+            SelectProgram.AbstraktOperation.IsSpeedWork = IsSpeedWork;
+            OnSelectProgramCallback();
+        }
+
+        /// <summary>
+         /// ПОзволяет получать или задавать последнюю отображенную схему.
+         /// </summary>
         public ShemeImage LastShema
         {
             get => _lastShema;
             set => SetProperty(ref _lastShema, value, nameof(LastShema), LastShemaCallback);
         }
 
-        public ICommand NextCommand { get; }
 
         /// <summary>
         /// Позволяет получать коллекцию программ
@@ -104,22 +139,28 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _selectionItemOperation, value, nameof(SelectionItemOperation));
         }
 
+        /// <summary>
+        /// Позволяет получать или задавать программу МК.
+        /// </summary>
         public IProgram SelectProgram
         {
             get => _selectProgram;
-            set => SetProperty(ref _selectProgram, value, nameof(SelectProgram), SelectProgramCallback);
+            set => SetProperty(ref _selectProgram, value, nameof(SelectProgram), OnSelectProgramCallback);
         }
 
 
-        public ICommand StartCommand { get; }
-
-
+        /// <summary>
+        /// Позволяет получать или задавать тип выбранной операции МК.
+        /// </summary>
         public AbstraktOperation.TypeOpeation TypeOpertion
         {
             get => _typeOpertion;
             set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion));
         }
 
+        /// <summary>
+        /// Позволяет получать или задавать перечень операций МК.
+        /// </summary>
         public IUserItemOperationBase[] UserItemOperation
         {
             get => _userItemOperation;
@@ -176,11 +217,6 @@ namespace ASMC.ViewModel
             if (EnableOpeation != null) TypeOpertion = EnableOpeation.Value;
         }
 
-        private async void OnStartCommand()
-        {
-            if (SelectionItemOperation == null) await SelectProgram.AbstraktOperation.StartWorkAsync();
-        }
-
         private void LastShemaCallback()
         {
             var service = GetService<IFormService>("ShemService");
@@ -196,24 +232,24 @@ namespace ASMC.ViewModel
             var files = Directory.GetFiles(path);
             try
             {
-                foreach(var file in files)
-                    if(file.EndsWith(".dll"))
+                foreach (var file in files)
+                    if (file.EndsWith(".dll"))
                         Assembly.LoadFile(Path.GetFullPath(file));
             }
             catch (Exception e)
             {
                 Logger.Error(e);
-            } 
+            }
 
             if (files.Length <= 0) return;
             var interfaceType = typeof(IProgram);
-            Type[] types=null;
+            Type[] types = null;
             try
             {
-                 types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
+                types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
                     .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass).ToArray();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.Error(e);
             }
@@ -234,18 +270,42 @@ namespace ASMC.ViewModel
             SelectedTabItem = SelectedTabItem + 1;
         }
 
-        private void SelectProgramCallback()
+        private async void OnStartCommand()
+        {
+            if (SelectionItemOperation == null) await SelectProgram.AbstraktOperation.StartWorkAsync();
+        }
+
+        private void OnSelectProgramCallback()
         {
             if (SelectProgram == null) return;
             EnableOpeation = SelectProgram.AbstraktOperation.EnabledOperation;
-            SelectProgram.AbstraktOperation.IsSpeedWork = false;
+            foreach (Enum en in Enum.GetValues(typeof(AbstraktOperation.TypeOpeation)))
+                if (EnableOpeation != null && ((Enum) EnableOpeation).HasFlag(en))
+                {
+                    TypeOpertion = (AbstraktOperation.TypeOpeation) en;
+                    break;
+                }
+
             SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
-            UserItemOperation = SelectProgram.AbstraktOperation.SelectedOperation.UserItemOperation;
-            Device = SelectProgram.AbstraktOperation.SelectedOperation?.Device;
+            UserItemOperation = SelectProgram.AbstraktOperation?.SelectedOperation?.UserItemOperation;
+            ControlDevices = SelectProgram.AbstraktOperation.SelectedOperation?.ControlDevices;
             SelectProgram.AbstraktOperation.SelectedOperation?.RefreshDevice();
             AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
             SelectProgram.AbstraktOperation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
         }
+
+        #endregion
+
+        #region Command
+
+        public ICommand BackCommand { get; }
+
+        /// <summary>
+        /// Комманда запуска режима МК.
+        /// </summary>
+        public ICommand StartCommand { get; }
+
+        public ICommand NextCommand { get; }
 
         #endregion
     }
