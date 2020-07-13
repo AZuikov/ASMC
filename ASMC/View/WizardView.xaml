@@ -242,7 +242,7 @@
                   </utils:ValueContentControl>
                 </Grid>
                 <GroupBox Header="Обслуживаемое средство">
-                  <ListView ItemsSource="{Binding Device}" >
+                  <ListView ItemsSource="{Binding TestDevices}" >
                     <ListView.View>
                       <GridView  AllowsColumnReorder="False">
                         <GridViewColumn Header="Имя устройства" Width="150"  >
@@ -278,7 +278,7 @@
                   </ListView>
                 </GroupBox>
                 <GroupBox Header="Средства используемые для метрологического контроля">
-                  <ListView ItemsSource="{Binding Device}" >
+                  <ListView ItemsSource="{Binding ControlDevices}" >
                     <ListView.View>
                       <GridView  AllowsColumnReorder="False">
                         <GridViewColumn Header="Имя устройства" Width="150"  >
