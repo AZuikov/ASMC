@@ -120,41 +120,164 @@ namespace APPA_107N_109N
 
     public class Oper2Oprobovanie : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper4AcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper5DcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper6AcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper7FreqMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper8OhmMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
 
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper9FarMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
 
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper10TemperatureMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
 
+        public override void StartSinglWork(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartWork()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
