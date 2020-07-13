@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices.IEEE.Fluke.Calibrator;
 
 namespace APPA_107N_109N
 {
@@ -100,8 +102,16 @@ namespace APPA_107N_109N
     }
  
 
-    public class Oper1VisualTest : AbstractUserItemOperationBase, IUserItemOperationBase
+    public class Oper1VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
+        public List<IBasicOperation<bool>> DataRow { get; set; }
+
+        public Oper1VisualTest()
+        {
+            Name = "Внешний осмотр";
+            DataRow = new List<IBasicOperation<bool>>();
+        }
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -114,15 +124,34 @@ namespace APPA_107N_109N
 
         public override void StartWork()
         {
-            throw new NotImplementedException();
+            var bo = new BasicOperation<bool> { Expected = true };
+            bo.IsGood = s => bo.Getting;
+
+            DataRow.Add(bo);
         }
+
+        
     }
 
-    public class Oper2Oprobovanie : AbstractUserItemOperationBase, IUserItemOperationBase
+    public class Oper2Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
+        public List<IBasicOperation<bool>> DataRow { get; set; }
+
+        public Oper2Oprobovanie()
+        {
+            Name = "Опробование";
+            DataRow = new List<IBasicOperation<bool>>();
+        }
+
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            var data = new DataTable();
+            data.Columns.Add("Результат опробования");
+            var dataRow = data.NewRow();
+            var dds = DataRow[0] as BasicOperationVerefication<bool>;
+            dataRow[0] = dds.Getting;
+            data.Rows.Add(dataRow);
+            return data;
         }
 
         public override void StartSinglWork(Guid guid)
@@ -132,12 +161,25 @@ namespace APPA_107N_109N
 
         public override void StartWork()
         {
-            throw new NotImplementedException();
+            var bo = new BasicOperation<bool> { Expected = true };
+            bo.IsGood = s => bo.Getting;
+
+            DataRow.Add(bo);
         }
+
+        
     }
 
-    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
+
+        public Oper3DcvMeasure()
+        {
+            Name = "Определение погрешности измерения постоянног напряжения";
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -150,8 +192,13 @@ namespace APPA_107N_109N
 
         public override void StartWork()
         {
-            throw new NotImplementedException();
+            Calib_5522A flkCalib5522A = new Calib_5522A();
+            flkCalib5522A.Devace();
+            flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue((decimal)5));
+
         }
+
+        
     }
 
     public class Oper4AcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase

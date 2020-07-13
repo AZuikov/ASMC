@@ -160,6 +160,21 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// </summary>
                 public struct Resistance
                 {
+                    public enum ZCOMP
+                    {
+                        /// <summary>
+                        /// компенсация 2х проводная
+                        /// </summary>
+                        [StringValue("ZCOMP WIRE2")] Wire2,
+                        /// <summary>
+                        /// компенсация 4х проводная
+                        /// </summary>
+                        [StringValue("ZCOMP WIRE4")] Wire4,
+                        /// <summary>
+                        /// Отключает компенсацию
+                        /// </summary>
+                        [StringValue("ZCOMP NONE")] WireNONE
+                    }
                     /// <summary>
                     /// Установить сопротивление
                     /// </summary>
@@ -175,26 +190,23 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// Активирует или дезактивирует компенсацию импеданса при 2-проводном или 4-проводном подключении. Компенсация в режиме воспроизведения сопротивления доступна для сопротивлений величиной менее 110 кΩ. Компенсация в режиме воспроизведения емкости доступна для емкостей величиной не менее 110 нФ. 
                 /// </summary>
                 //todo: этот параметр учавтсвует в формировании сопротивления и ёмкости
-                public enum ZCOMP
-                {
-                    /// <summary>
-                    /// компенсация 2х проводная
-                    /// </summary>
-                    [StringValue("ZCOMP WIRE2")] Wire2,
-                    /// <summary>
-                    /// компенсация 4х проводная
-                    /// </summary>
-                    [StringValue("ZCOMP WIRE4")] Wire4,
-                    /// <summary>
-                    /// Отключает компенсацию
-                    /// </summary>
-                    [StringValue("ZCOMP NONE")] WireNONE
-                }
+               
                 /// <summary>
                 /// Содержит набор команд по установке емкости
                 /// </summary>
                 public struct Capacitance
                 {
+                    public enum ZCOMP
+                    {
+                        /// <summary>
+                        /// компенсация 2х проводная
+                        /// </summary>
+                        [StringValue("ZCOMP WIRE2")] Wire2,
+                        /// <summary>
+                        /// Отключает компенсацию
+                        /// </summary>
+                        [StringValue("ZCOMP NONE")] WireNONE
+                    }
                     /// <summary>
                     /// Установить емкость
                     /// </summary>
