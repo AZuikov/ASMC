@@ -17,7 +17,7 @@ using ASMC.Devices.Port.Profigrupp;
 
 namespace B5_71_1_PRO
 {
-    public class B5_71_1PRO : IProrgam
+    public class B5_71_1PRO : IProgram
     {
         public B5_71_1PRO()
         {

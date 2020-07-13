@@ -9,7 +9,7 @@ using ASMC.Data.Model.Interface;
 
 namespace Test2
 {
-    public class Device1 : IProrgam
+    public class Device1 : IProgram
     {
         public string Type
         {

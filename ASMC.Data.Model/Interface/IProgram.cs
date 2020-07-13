@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ASMC.Data.Model.Interface
 {
-    public interface IProrgam    
+    public interface IProgram    
     {
         /// <summary>
         /// Позволяет получать тип СИ
