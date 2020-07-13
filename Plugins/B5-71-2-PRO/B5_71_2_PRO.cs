@@ -136,7 +136,13 @@ namespace B5_71_2_PRO
         }
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            var data = new DataTable();
+            data.Columns.Add("Результат внешнего осмотра");
+            var dataRow = data.NewRow();
+            var dds = DataRow[0] as BasicOperationVerefication<bool>;
+            dataRow[0] = dds.Getting;
+            data.Rows.Add(dataRow);
+            return data;
         }
 
         public override void StartSinglWork(Guid guid)
