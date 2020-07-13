@@ -43,6 +43,18 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             /// </summary>
            [StringValue("")] SI 
         }
+
+        /// <summary>
+        /// Множители (приставки) для обозначения частоты
+        /// </summary>
+        public enum HerzMultiplers
+        {
+            [StringValue(" M")] mili,
+            [StringValue("")] SI,
+            [StringValue(" K")] kilo,
+            [StringValue(" MA")] mega,
+        }
+
         /// <summary>
         /// Содержит команды позволяющие задовать настройки выхода
         /// </summary>
@@ -90,9 +102,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
 
                         //todo: множитель для частоты нужно уточнить в документации и сделать перечисление
-                        public static string SetValue(decimal voltage, decimal hertz, Multipliers inMultipliers, string MultipliersHerts)
+                        public static string SetValue(decimal voltage, decimal hertz, Multipliers inMultipliers, HerzMultiplers inHerzMultiplers)
                         {
-                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "V" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersHerts + "HZ";
+                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "V" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inHerzMultiplers + "HZ";
                         }
                         /// <summary>
                         /// Содержит команды установки формы генерируемого напряжения
@@ -149,9 +161,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <param name="MultipliersVolt">Множитель устанавливаемой еденицы напряжения <смотреть cref="Multipliers"/> struct.</param>
                         /// <param name="MultipliersHerts">Множитель устанавливаемой еденицы частоты <смотреть cref="Multipliers"/> struct.</param>
                         /// <returns>Сформированую команду</returns>
-                        public static string SetValue(double voltage, double hertz, Multipliers inMultipliers, string MultipliersHerts)
+                        public static string SetValue(double voltage, double hertz, Multipliers inMultipliers, HerzMultiplers inHerzMultiplers)
                         {
-                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "A" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersHerts + "HZ";
+                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "A" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inHerzMultiplers + "HZ";
                         }
                     }
                 }
@@ -189,7 +201,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// <summary>
                 /// Активирует или дезактивирует компенсацию импеданса при 2-проводном или 4-проводном подключении. Компенсация в режиме воспроизведения сопротивления доступна для сопротивлений величиной менее 110 кΩ. Компенсация в режиме воспроизведения емкости доступна для емкостей величиной не менее 110 нФ. 
                 /// </summary>
-                //todo: этот параметр учавтсвует в формировании сопротивления и ёмкости
+                
                
                 /// <summary>
                 /// Содержит набор команд по установке емкости
@@ -264,30 +276,31 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             /// <summary>
             /// СОдержит доступные состояние выхода
             /// </summary>
-            public struct State
+            public enum State
             {
                 /// <summary>
                 /// Включить выход
                 /// </summary>
-                public const string ON = "OPER";
+                [StringValue("OPER")] ON,
                 /// <summary>
                 /// Выключить выход
                 /// </summary>
-                public const string OFF = "STBY";
+                [StringValue("STBY")] OFF
             }
             
             /// <summary>
             /// Замыкает или размыкает внутренний контакт между защитным заземлением и заземлением корпуса (шасси). 
             /// </summary>
-            public struct EARTH
+            public enum EARTH
              {  /// <summary>
                 /// подключить клемму передней панели LO к заземлению шасси
                 /// </summary>
-                public const string ON = "EARTH TIED";
+                [StringValue("EARTH TIED")] ON,
                 /// <summary>
                 /// отсоединить клемму передней панели LO от заземления шасси
                 /// </summary>
-                public const string OFF = "EARTH OPEN";
+                [StringValue("EARTH OPEN")]OFF
+
              }
 
         }
