@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using AP.Reports.Utils;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
@@ -15,32 +16,32 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         /// <summary>
         /// Содержит доступные множители
         /// </summary>
-        public struct Multipliers
+        public enum Multipliers
         {
             /// <summary>
             /// The mega
             /// </summary>
-            public const string mega = " MA";
+           [StringValue(" MA")] mega,
             /// <summary>
             /// The mili
             /// </summary>
-            public const string mili = " M";
+            [StringValue(" M")] mili,
             /// <summary>
             /// The nano
             /// </summary>
-            public const string nano = " N";
+            [StringValue(" N")] nano,
             /// <summary>
             /// The kilo
             /// </summary>
-            public const string kilo = " K";
+           [StringValue(" K")] kilo,
             /// <summary>
             /// The micro
             /// </summary>
-            public const string micro = " U";
+           [StringValue(" U")] micro,
             /// <summary>
             /// The si
             /// </summary>
-            public const string SI = "";
+           [StringValue("")] SI 
         }
         /// <summary>
         /// Содержит команды позволяющие задовать настройки выхода
@@ -68,9 +69,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <param name="value">The value со</param>
                         /// <param name="Multipliers">Множитель устанавливаемой еденицы <смотреть cref="Multipliers"/> struct.</param>
                         /// <returns>Сформированую команду</returns>
-                        public static string SetValue(double value, string Multipliers = "")
+                        public static string SetValue(decimal value, Multipliers inMultipliers)
                         {
-                            return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + Multipliers + "V" + ", 0 HZ";
+                            return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "V" + ", 0 HZ";
                         }
 
                     }
@@ -84,28 +85,31 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// </summary>
                         /// <param name="voltage">The voltage.</param>
                         /// <param name="hertz">The hertz.</param>
-                        /// <param name="MultipliersVolt">Множитель устанавливаемой еденицы напряжения <смотреть cref="Multipliers"/> struct.</param>
+                        /// <param name="inMultipliers">Множитель устанавливаемой еденицы напряжения <смотреть cref="Multipliers"/> struct.</param>
                         /// <param name="MultipliersHerts">Множитель устанавливаемой еденицы частоты <смотреть cref="Multipliers"/> struct.</param>
                         /// <returns>Сформированую команду</returns>
-                        public static string SetValue(double voltage, double hertz, string MultipliersVolt, string MultipliersHerts)
+
+                        //todo: множитель для частоты нужно уточнить в документации и сделать перечисление
+                        public static string SetValue(decimal voltage, decimal hertz, Multipliers inMultipliers, string MultipliersHerts)
                         {
-                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersVolt + "V" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersHerts + "HZ";
+                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "V" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersHerts + "HZ";
                         }
                         /// <summary>
                         /// Содержит команды установки формы генерируемого напряжения
                         /// </summary>
-                        public struct Wave
+                        public enum Wave
                         {
                             /// <summary>
                             /// Команда генерации меандра
                             /// </summary>
-                            public const string SQUARE = "WAVE SQUARE";
+                            [StringValue("WAVE SQUARE")] SQUARE ,
                             /// <summary>
                             /// Команда генерации синусойды
                             /// </summary>
-                            public const string SINE = "WAVE SINE";
-                            public const string TRI = "WAVE TRI";
-                            public const string TRUNCS = "WAVE TRUNCS,";
+                            [StringValue("WAVE SINE")] SINE,
+                            [StringValue("WAVE TRI")] TRI,
+                            //тут точно нужна запятая в значении???
+                            [StringValue("WAVE TRUNCS,")] TRUNCS 
                         }
                     }
 
@@ -126,9 +130,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <param name="value">Устанавливаемое значение.</param>
                         /// <param name="Multipliers">Множитель устанавливаемой еденицы <смотреть cref="Multipliers"/> struct.</param>
                         /// <returns>Сформированую команду</returns>
-                        public static string SetValue(double value, string Multipliers = "")
+                        public static string SetValue(double value, Multipliers inMultipliers)
                         {
-                            return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + Multipliers + "A" + ", 0 HZ";
+                            return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "A" + ", 0 HZ";
                         }
 
                     }
@@ -145,9 +149,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <param name="MultipliersVolt">Множитель устанавливаемой еденицы напряжения <смотреть cref="Multipliers"/> struct.</param>
                         /// <param name="MultipliersHerts">Множитель устанавливаемой еденицы частоты <смотреть cref="Multipliers"/> struct.</param>
                         /// <returns>Сформированую команду</returns>
-                        public static string SetValue(double voltage, double hertz, string MultipliersVolt, string MultipliersHerts)
+                        public static string SetValue(double voltage, double hertz, Multipliers inMultipliers, string MultipliersHerts)
                         {
-                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersVolt + "A" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersHerts + "HZ";
+                            return "OUT " + voltage.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "A" + ", " + hertz.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + MultipliersHerts + "HZ";
                         }
                     }
                 }
@@ -162,28 +166,29 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <param name="value">Значение</param>
                     /// <param name="Multipliers">Множитель</param>
                     /// <returns></returns>
-                    public static string SetValue(double value, string Multipliers = "")
+                    public static string SetValue(double value, Multipliers inMultipliers)
                     {
-                        return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + Multipliers + "OHM";
+                        return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "OHM";
                     }
                 }
                 /// <summary>
                 /// Активирует или дезактивирует компенсацию импеданса при 2-проводном или 4-проводном подключении. Компенсация в режиме воспроизведения сопротивления доступна для сопротивлений величиной менее 110 кΩ. Компенсация в режиме воспроизведения емкости доступна для емкостей величиной не менее 110 нФ. 
                 /// </summary>
-                public struct ZCOMP
+                //todo: этот параметр учавтсвует в формировании сопротивления и ёмкости
+                public enum ZCOMP
                 {
                     /// <summary>
                     /// компенсация 2х проводная
                     /// </summary>
-                    public const string Wire2 = "ZCOMP WIRE2";
+                    [StringValue("ZCOMP WIRE2")] Wire2,
                     /// <summary>
                     /// компенсация 4х проводная
                     /// </summary>
-                    public const string Wire4 = "ZCOMP WIRE4";
+                    [StringValue("ZCOMP WIRE4")] Wire4,
                     /// <summary>
                     /// Отключает компенсацию
                     /// </summary>
-                    public const string WireNONE = "ZCOMP NONE";
+                    [StringValue("ZCOMP NONE")] WireNONE
                 }
                 /// <summary>
                 /// Содержит набор команд по установке емкости
@@ -196,9 +201,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <param name="value">Значение</param>
                     /// <param name="Multipliers">Множитель</param>
                     /// <returns></returns>
-                    public static string SetValue(double value, string Multipliers = "")
+                    public static string SetValue(double value,  Multipliers inMultipliers)
                     {
-                        return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + Multipliers + "F";
+                        return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + inMultipliers + "F";
                     }
                 }
                 /// <summary>
@@ -209,20 +214,20 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <summary>
                     /// Содержит достумные виды преобразователей
                     /// </summary>
-                    public struct TypeTermocuple
+                    public enum TypeTermocuple
                     {
-                        public const string B = "B";
-                        public const string C = "C";
-                        public const string E = "E";
-                        public const string J = "J";
-                        public const string K = "K";
-                        public const string N = "N";
-                        public const string R = "R";
-                        public const string S = "S";
-                        public const string T = "T";
-                        public const string LinOut10mV = "X";
-                        public const string Himidity = "Y";
-                        public const string LinOut1mV = "Z";
+                        [StringValue("B")] B,
+                        [StringValue("C")] C,
+                        [StringValue("E")] E,
+                        [StringValue("J")] J,
+                        [StringValue("K")] K,
+                        [StringValue("N")] N,
+                        [StringValue("R")] R,
+                        [StringValue("S")] S,
+                        [StringValue("T")] T,
+                        [StringValue("X")] LinOut10mV,
+                        [StringValue("Y")] Himidity,
+                        [StringValue("Z")] LinOut1mV 
                     }
                     /// <summary>
                     /// Установка выбранноего типа преобразователя
