@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Core.UI;
+using ASMC.ViewModel;
 
 namespace ASMC.UI
 {
@@ -16,7 +17,7 @@ namespace ASMC.UI
 
         protected override object CreateViewModel()
         {
-            return null;
+            return new ShemViewModel();
             //throw new NotImplementedException();
         }
     }
