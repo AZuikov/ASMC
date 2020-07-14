@@ -11,6 +11,7 @@ using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
+using DevExpress.Mvvm;
 
 
 //TODO:       Имя последовательного порта прописано жестко!!!!     Необходимо реализовать его настройку из ВНЕ - через интрефейс ASMC
@@ -33,7 +34,7 @@ namespace B5_71_1_PRO
         public string Grsi { get; }
         public string Range { get; }
         public string Accuracy { get; }
-        public ITaskMessageService TaskMessageService {
+        public IMessageBoxService TaskMessageService {
             get { return AbstraktOperation.TaskMessageService; }
             set { AbstraktOperation.TaskMessageService = value; }
         }
@@ -161,7 +162,7 @@ namespace B5_71_1_PRO
         {
             
        
-            //this.TaskMessageService.Show("dsdsadsa", "dsadasas", TaskMessageButton.Ok, TaskMessageIcon.None);
+            this.TaskMessageService.Show("dsdsadsa", "dsadasas", MessageButton.OK, MessageIcon.Information, MessageResult.No);
             var bo = new BasicOperation<bool> {Expected = true};
             bo.IsGood = s => bo.Getting;
             DataRow.Add(bo);

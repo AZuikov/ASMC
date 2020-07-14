@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Core;
+using DevExpress.Mvvm;
 
 namespace ASMC.Data.Model.Interface
 {
@@ -38,7 +39,7 @@ namespace ASMC.Data.Model.Interface
         {
             get;
         }
-         ITaskMessageService TaskMessageService
+        IMessageBoxService TaskMessageService
         {
             get;
              set;

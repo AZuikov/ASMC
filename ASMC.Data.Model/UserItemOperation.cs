@@ -115,7 +115,7 @@ namespace ASMC.Data.Model
     public abstract class AbstraktOperation
     {
 
-        public ITaskMessageService TaskMessageService { get; set; }
+        public IMessageBoxService TaskMessageService { get; set; }
         public delegate void ChangeShemaHandler(IUserItemOperationBase sender);
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace ASMC.Data.Model
     public interface IUserItemOperationBase
     {
         #region Property
-        ITaskMessageService TaskMessageService { get; set; }
+        IMessageBoxService TaskMessageService { get; set; }
         /// <summary>
         /// Предоставляет данные для отображения операций.
         /// </summary>
@@ -360,7 +360,7 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public abstract void StartWork();
 
-        public ITaskMessageService TaskMessageService { get; set; }
+        public IMessageBoxService TaskMessageService { get; set; }
 
         /// <inheritdoc />
         public DataTable Data => FillData();
