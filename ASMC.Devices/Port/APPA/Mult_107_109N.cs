@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
+using NLog;
 
 namespace ASMC.Devices.Port.APPA
 {
@@ -17,6 +18,9 @@ namespace ASMC.Devices.Port.APPA
         private readonly List<byte> _byffer;
         private readonly byte[] _sendData = { 0x55, 0x55, 0x00, 0x00, 0xAA };
         static readonly AutoResetEvent WaitEvent = new AutoResetEvent(false);
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public double Value
         {
             get
@@ -151,7 +155,7 @@ namespace ASMC.Devices.Port.APPA
             }
             catch (Exception a)
             {
-                Console.WriteLine(a.ToString());
+                Logger.Error(a);
             }
 
         }
