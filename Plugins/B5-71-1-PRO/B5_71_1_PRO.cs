@@ -134,6 +134,11 @@ namespace B5_71_1_PRO
         {
             throw new NotImplementedException();
         }
+
+        public void FindDivice()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

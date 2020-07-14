@@ -118,6 +118,11 @@ namespace B5_71_2_PRO
         {
             throw new NotImplementedException();
         }
+
+        public void FindDivice()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class UsedDevices : IDevice
