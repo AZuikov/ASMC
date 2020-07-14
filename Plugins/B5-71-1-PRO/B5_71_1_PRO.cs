@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using AP.Math;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
@@ -119,9 +120,7 @@ namespace B5_71_1_PRO
         /// </summary>
         public void RefreshDevice()
         {
-            foreach (var dev in ControlDevices)
-            {
-            }
+            AddresDivece = new IeeeBase().GetAllDevace().ToArray();
         }
     }
 

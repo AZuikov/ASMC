@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
+using ASMC.Devices.Port.APPA;
 
 namespace APPA_107N_109N
 {
@@ -80,22 +83,23 @@ namespace APPA_107N_109N
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new Oper1VisualTest(),
-                new Oper2Oprobovanie(),
-                new Oper3DcvMeasure(),
-                new Oper4AcvMeasure(),
-                new Oper5DcIMeasure(),
-                new Oper6AcIMeasure(),
-                new Oper7FreqMeasure(),
-                new Oper8OhmMeasure(),
-                new Oper9FarMeasure(),
-                new Oper10TemperatureMeasure(),
+                new Oper1VisualTest(this),
+                new Oper2Oprobovanie(this),
+                new Oper3DcvMeasure(this),
+                new Oper4AcvMeasure(this),
+                new Oper5DcIMeasure(this),
+                new Oper6AcIMeasure(this),
+                new Oper7FreqMeasure(this),
+                new Oper8OhmMeasure(this),
+                new Oper9FarMeasure(this),
+                new Oper10TemperatureMeasure(this),
             };
         }
 
         public void RefreshDevice()
         {
-            throw new NotImplementedException();
+            AddresDivece = new IeeeBase().GetAllDevace().ToArray();
+
         }
 
     }
@@ -105,7 +109,7 @@ namespace APPA_107N_109N
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        public Oper1VisualTest()
+        public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Внешний осмотр";
             DataRow = new List<IBasicOperation<bool>>();
@@ -136,7 +140,7 @@ namespace APPA_107N_109N
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        public Oper2Oprobovanie()
+        public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
             DataRow = new List<IBasicOperation<bool>>();
@@ -173,7 +177,7 @@ namespace APPA_107N_109N
     {
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public Oper3DcvMeasure()
+        public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения постоянного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
@@ -184,6 +188,7 @@ namespace APPA_107N_109N
 
             };
         }
+
 
         protected override DataTable FillData()
         {
@@ -198,10 +203,18 @@ namespace APPA_107N_109N
         public override void StartWork()
         {
             Calib_5522A flkCalib5522A = new Calib_5522A();
-            flkCalib5522A.Devace();
+            flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
             flkCalib5522A.Connection();
-            flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(5,Calib_5522A.Multipliers.mili));
             
+
+            string serialPortName = this.UserItemOperation.ControlDevices.First().StringConnect;
+            Mult107_109N appa107N = new Mult107_109N(serialPortName);
+            appa107N.Open();
+
+
+
+
+
 
         }
 
@@ -210,6 +223,11 @@ namespace APPA_107N_109N
 
     public class Oper4AcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        public Oper4AcvMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        {
+            
+        }
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -228,6 +246,10 @@ namespace APPA_107N_109N
 
     public class Oper5DcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        public Oper5DcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        {
+            
+        }
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -246,6 +268,10 @@ namespace APPA_107N_109N
 
     public class Oper6AcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        public Oper6AcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        {
+            
+        }
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -264,6 +290,10 @@ namespace APPA_107N_109N
 
     public class Oper7FreqMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        public Oper7FreqMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        {
+            
+        }
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -282,6 +312,10 @@ namespace APPA_107N_109N
 
     public class Oper8OhmMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        public Oper8OhmMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        {
+            
+        }
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -300,6 +334,10 @@ namespace APPA_107N_109N
 
     public class Oper9FarMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        public Oper9FarMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        {
+            
+        }
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -318,6 +356,10 @@ namespace APPA_107N_109N
 
     public class Oper10TemperatureMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
+        public Oper10TemperatureMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        {
+            
+        }
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
