@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -222,38 +223,51 @@ namespace APPA_107N_109N
             
 
             decimal[] multiplaisArr = { (decimal)0.1, 1, 10, (decimal)0.001, (decimal)0.01 };
-            
-            // предел измерения 2 В
-            do
-            {
-              //вывод окна сообщения о включении предела измерения  
-            } while (appa107N.GetRange!= Mult107_109N.Range.Range1Manual);
-            //foreach (Mult107_109N.Range range in Enum.GetValues(typeof(Mult107_109N.Range)))
+            var ranges = new[]
+                {Mult107_109N.Range.Range1Manual, Mult107_109N.Range.Range2Manual, Mult107_109N.Range.Range3Manual};
 
-            flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(0,Calib_5522A.Multipliers.SI));
-            flkCalib5522A.WriteLine(Calib_5522A.Out.State.ON.ToString());
-
-            for (int i = 0; i < _pointsArr.Length; i++)
+            decimal DcvMeas(int point)
             {
-                //поверяемая точка
-                decimal point = _pointsArr[i] * multiplaisArr[0];
-                flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(point,Calib_5522A.Multipliers.SI));
-                
-                
-                decimal[] valuesMeasure = new decimal[10];
+                var countMeas = 10;
+                decimal resultVal = 0;
+               
+                flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(0, Calib_5522A.Multipliers.SI));
+                flkCalib5522A.WriteLine(Calib_5522A.Out.State.ON.GetStringValue());
+
+                for (int i = 0; i < _pointsArr.Length; i++)
+                {
+                    //поверяемая точка
+                    flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(_pointsArr[i] * multiplaisArr[point], Calib_5522A.Multipliers.SI));
+
+
+                    var valuesMeasure = new List<decimal>();
+                    do
+                    {
+                        for (int j = 0; j < countMeas; )
+                            valuesMeasure.Add((decimal)appa107N.Value);
+
+                    } while (!AP.Math.MathStatistics.IntoTreeSigma(valuesMeasure.ToArray())); // пока показания не стабилизировались будут проводиться измерения
+                    //Теперь уберем выбросы
+                    var array = valuesMeasure.ToArray();
+                    AP.Math.MathStatistics.Grubbs(ref array);
+                    //вычисляем среднее значение и округляем
+                    resultVal = AP.Math.MathStatistics.GetArithmeticalMean(array);
+                    AP.Math.MathStatistics.Round(ref resultVal, 4);
+
+                }
+
+                return resultVal;
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
                 do
                 {
-                    for (int j = 0; j < valuesMeasure.Length; j++)
-                        valuesMeasure[i] = (decimal) appa107N.Value;
-                 
-                } while (!AP.Math.MathStatistics.IntoTreeSigma(valuesMeasure)); // пока показания не стабилизировались будут проводиться измерения
-                //Теперь уберем выбросы
-                AP.Math.MathStatistics.Grubbs(ref valuesMeasure);
-                //вычисляем среднее значение и округляем
-                decimal resultVal = AP.Math.MathStatistics.GetArithmeticalMean(valuesMeasure);
-                AP.Math.MathStatistics.Round(ref resultVal,4);
-
+                    //вывод окна сообщения о включении предела измерения  
+                } while (appa107N.GetRange != ranges[i]);
+                DcvMeas(i);
             }
+
 
 
 
