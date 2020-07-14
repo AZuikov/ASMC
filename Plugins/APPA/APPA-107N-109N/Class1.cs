@@ -176,6 +176,8 @@ namespace APPA_107N_109N
     public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         public List<IBasicOperation<decimal>> DataRow { get; set; }
+        //список точек из методики поверки
+        readonly decimal[] _pointsArr = { 4, 8, 12, 16, 18, -18 };
 
         public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -204,12 +206,57 @@ namespace APPA_107N_109N
         {
             Calib_5522A flkCalib5522A = new Calib_5522A();
             flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
-            flkCalib5522A.Connection();
-            
+            //тут нужно проверять, если прибор не подключен, тогда прекращаем работу
+            if (flkCalib5522A.Connection())
+            {
+                
+                return;
+            }
+            flkCalib5522A.Close();
+
 
             string serialPortName = this.UserItemOperation.ControlDevices.First().StringConnect;
             Mult107_109N appa107N = new Mult107_109N(serialPortName);
             appa107N.Open();
+
+            
+
+            decimal[] multiplaisArr = { (decimal)0.1, 1, 10, (decimal)0.001, (decimal)0.01 };
+            
+            // предел измерения 2 В
+            do
+            {
+              //вывод окна сообщения о включении предела измерения  
+            } while (appa107N.GetRange!= Mult107_109N.Range.Range1Manual);
+            //foreach (Mult107_109N.Range range in Enum.GetValues(typeof(Mult107_109N.Range)))
+
+            flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(0,Calib_5522A.Multipliers.SI));
+            flkCalib5522A.WriteLine(Calib_5522A.Out.State.ON.ToString());
+
+            for (int i = 0; i < _pointsArr.Length; i++)
+            {
+                //поверяемая точка
+                decimal point = _pointsArr[i] * multiplaisArr[0];
+                flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(point,Calib_5522A.Multipliers.SI));
+                
+                
+                decimal[] valuesMeasure = new decimal[10];
+                do
+                {
+                    for (int j = 0; j < valuesMeasure.Length; j++)
+                        valuesMeasure[i] = (decimal) appa107N.Value;
+                 
+                } while (!AP.Math.MathStatistics.IntoTreeSigma(valuesMeasure)); // пока показания не стабилизировались будут проводиться измерения
+                //Теперь уберем выбросы
+                AP.Math.MathStatistics.Grubbs(ref valuesMeasure);
+                //вычисляем среднее значение и округляем
+                decimal resultVal = AP.Math.MathStatistics.GetArithmeticalMean(valuesMeasure);
+                AP.Math.MathStatistics.Round(ref resultVal,4);
+
+            }
+
+
+
 
 
 

@@ -300,6 +300,12 @@ namespace ASMC.Data.Model
 
     public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
     {
+        protected IUserItemOperation UserItemOperation { get; }
+
+        protected AbstractUserItemOperationBase(IUserItemOperation userItemOperation)
+        {
+            UserItemOperation = userItemOperation;
+        }
         #region Property
 
         /// <summary>
