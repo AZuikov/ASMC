@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using ASMC.Core;
 using ASMC.Data.Model.Interface;
+using DevExpress.Mvvm;
 
 namespace ASMC.Data.Model
 {
@@ -101,6 +104,8 @@ namespace ASMC.Data.Model
         /// </summary>
         void RefreshDevice();
 
+        void FindDivice();
+
         #endregion
     }
 
@@ -109,6 +114,8 @@ namespace ASMC.Data.Model
     /// </summary>
     public abstract class AbstraktOperation
     {
+
+        public ITaskMessageService TaskMessageService { get; set; }
         public delegate void ChangeShemaHandler(IUserItemOperationBase sender);
 
         /// <summary>
@@ -169,20 +176,32 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (SelectedTypeOpeation.HasFlag(TypeOpeation.PrimaryVerf))
+                IUserItemOperation res = null;
+                if(SelectedTypeOpeation.HasFlag(TypeOpeation.PrimaryVerf))
                 {
-                    return IsSpeedWork ? SpeedUserItemOperationPrimaryVerf : UserItemOperationPrimaryVerf;
+                    res = IsSpeedWork ? SpeedUserItemOperationPrimaryVerf : UserItemOperationPrimaryVerf;
                 }
-                if (SelectedTypeOpeation.HasFlag(TypeOpeation.PeriodicVerf))
+                else if(SelectedTypeOpeation.HasFlag(TypeOpeation.PeriodicVerf))
                 {
-                    return IsSpeedWork ? SpeedUserItemOperationPeriodicVerf : UserItemOperationPeriodicVerf;
+                    res = IsSpeedWork ? SpeedUserItemOperationPeriodicVerf : UserItemOperationPeriodicVerf;
                 }
-                if (SelectedTypeOpeation.HasFlag(TypeOpeation.Calibration))
+                else if(SelectedTypeOpeation.HasFlag(TypeOpeation.Calibration))
                 {
-                    return IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
+                    res = IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
                 }
-                return SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment) ? UserItemOperationAdjustment : null;
+                else if(SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment))
+                {
+                    res = SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment) ? UserItemOperationAdjustment : null;
+                }
 
+                if(res?.UserItemOperation != null)
+                {
+                    foreach(var t in res.UserItemOperation)
+                    {
+                        t.TaskMessageService = TaskMessageService;
+                    }
+                }  
+                return res;
             }
         }
 
@@ -246,13 +265,13 @@ namespace ASMC.Data.Model
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public async Task StartWorkAsync()
+        public void StartWorkAsync()
         {
             foreach (var opertion in SelectedOperation.UserItemOperation)
             {
                 CurrentUserItemOperationBase = opertion;
                 ChangeShemaEvent?.Invoke(opertion);
-                await Task.Run(() => opertion.StartWork());
+                opertion.StartWork();
             }
         }
 
@@ -266,6 +285,7 @@ namespace ASMC.Data.Model
     public interface IUserItemOperationBase
     {
         #region Property
+        ITaskMessageService TaskMessageService { get; set; }
         /// <summary>
         /// Предоставляет данные для отображения операций.
         /// </summary>
@@ -301,7 +321,10 @@ namespace ASMC.Data.Model
     public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
     {
         protected IUserItemOperation UserItemOperation { get; }
+<<<<<<< HEAD
 
+=======
+>>>>>>> очень много всего
         protected AbstractUserItemOperationBase(IUserItemOperation userItemOperation)
         {
             UserItemOperation = userItemOperation;
@@ -340,6 +363,8 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public abstract void StartWork();
+
+        public ITaskMessageService TaskMessageService { get; set; }
 
         /// <inheritdoc />
         public DataTable Data => FillData();

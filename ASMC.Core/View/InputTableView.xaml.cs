@@ -1,8 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using ASMC.Core.Behavior;
-using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
 
 namespace ASMC.Core.View
 {
@@ -12,13 +10,13 @@ namespace ASMC.Core.View
     public partial class InputTableView : UserControl
     {
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register(nameof(Data), typeof(IBasicOperation<double>[]), typeof(InputTableView));
+            DependencyProperty.Register(nameof(Data), typeof(object[]), typeof(InputTableView));
 
         public static readonly DependencyProperty IsOnlyReadProperty =
             DependencyProperty.Register(nameof(IsOnlyRead), typeof(bool), typeof(InputTableView), new PropertyMetadata(false));
 
         public static readonly DependencyProperty SelectValueProperty = DependencyProperty.Register(nameof(SelectValue),
-            typeof(IBasicOperation<double>), typeof(InputTableView),
+            typeof(object), typeof(InputTableView),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
@@ -41,8 +39,8 @@ namespace ASMC.Core.View
         {
             get; set;
         }
-        public IBasicOperation<double>[] Data { get; set; }
+        public object[] Data { get; set; }
 
-        public IBasicOperation<double> SelectValue { get; set; }
+        public object SelectValue { get; set; }
     }
 }

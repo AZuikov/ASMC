@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ASMC.View
 {
     /// <summary>
-    /// Логика взаимодействия для ShemServiceView.xaml
+    /// Логика взаимодействия для ShemView.xaml
     /// </summary>
-    public partial class ShemServiceView : UserControl
+    public partial class ShemView : UserControl
     {
-        public ShemServiceView()
+        public ShemView()
         {
             InitializeComponent();
         }

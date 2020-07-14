@@ -32,6 +32,8 @@
   </UserControl.Resources>
   <dxmvvm:Interaction.Behaviors>
     <ui1:ShemService x:Name="ShemService" />
+    <ui:MessageBoxService/>
+    <ui:TaskMessageService/>
   </dxmvvm:Interaction.Behaviors>
   <StackPanel>
     <Menu Margin="0,0,0,10">
@@ -238,7 +240,7 @@
                     <Button Content="Поиск"/>
                   </utils:ValueContentControl>
                   <utils:ValueContentControl Orientation="Horizontal"  Header="Обновить список устройств" Grid.Column="2">
-                    <Button Content="Обновить"/>
+                    <Button Content="Обновить" Command="{Binding RefreshCommand}"/>
                   </utils:ValueContentControl>
                 </Grid>
                 <GroupBox Header="Обслуживаемое средство">

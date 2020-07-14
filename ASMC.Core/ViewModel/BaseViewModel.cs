@@ -1,66 +1,263 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 using NLog;
 
-
 namespace ASMC.Core.ViewModel
 {
     public class BaseViewModel : ViewModelBase, ISupportSettings
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region  Fields
+
+        private readonly WeakEvent<EventHandler, EventArgs> _initializing = new WeakEvent<EventHandler, EventArgs>();
+        private readonly object _syncRoot = new object();
+        private object _entity;
+        private bool _isBusy;
+        private bool _isInitialized;
+        private string _regionName = Guid.NewGuid().ToString();
+
+        private object _settings;
+
+        #endregion
+
+        /// <summary>
+        /// Происходит при успешной инициализации
+        /// модели представления.
+        /// </summary>
+        public event EventHandler Initialized;
+
+        /// <summary>
+        /// Происходит при инициализации
+        /// модели представления.
+        /// </summary>
+        public event EventHandler Initializing
+        {
+            add => _initializing.Add(value);
+            remove => _initializing.Remove(value);
+        }
+
+        /// <summary>
+        /// Происходит при изменении объекта,
+        /// содержащего пользовательские параметры.
+        /// </summary>
+        public event EventHandler SettingsChanged;
+
+        #region Property
+
+        /// <summary>
+        /// Возвращает или задает сущность,
+        /// данные которой содержит справочник.
+        /// </summary>
+        public object Entity
+        {
+            get => _entity;
+            set => SetProperty(ref _entity, value, nameof(Entity), OnEntityChanged);
+        }
+
+        /// <summary>
+        /// Возвращает истинно, если выполняется
+        /// операция с данными; иначе ложно
+        /// </summary>
+        public bool IsBusy
+        {
+            get => _isBusy;
+            protected set
+            {
+                lock (_syncRoot)
+                {
+                    if (SetProperty(ref _isBusy, value))
+                        CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Возвращает значение, показывающее, была
+        /// ли проведена инициализация модели
+        /// представления.
+        /// </summary>
+        public bool IsInitialized
+        {
+            get => _isInitialized;
+            private set => SetProperty(ref _isInitialized, value);
+        }
+
+        /// <summary>
+        /// Возвращает или задает имя региона
+        /// для представления. Служебное свойство.
+        /// </summary>
+        public string RegionName
+        {
+            get => _regionName;
+            set => SetProperty(ref _regionName, value, nameof(RegionName));
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Выполняет инициализацию
+        /// модели представления.
+        /// </summary>
+        public void Initialize()
+        {
+            if (_isInitialized)
+                return;
+
+            OnInitializing();
+            IsInitialized = true;
+            OnInitialized();
+        }
+
         /// <summary>
         /// Уведомляет пользователя об исключительной
         /// ситуации в модели представления.
         /// </summary>
-        /// <param name="e">Исключение, по которому необходимо
-        /// вывести подробные сведения.</param>
-        /// <param name="message">Сообщение о событии.</param>
-        /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>,
-        /// отвечающий за вывод сообщений.</param>
-        /// <returns>Возвращает истинно, если сведения по исключению
-        /// были переданы в соответствующий сервис; иначе ложно.</returns>
-        /// <remarks>При вызове метода также производится
-        /// логирование данных по исключительной ситуации.</remarks>
+        /// <param name = "e">
+        /// Исключение, по которому необходимо
+        /// вывести подробные сведения.
+        /// </param>
+        /// <param name = "message">Сообщение о событии.</param>
+        /// <param name = "messageService">
+        /// Сервис
+        /// <see cref = "IMessageBoxService" />,
+        /// отвечающий за вывод сообщений.
+        /// </param>
+        /// <returns>
+        /// Возвращает истинно, если сведения по исключению
+        /// были переданы в соответствующий сервис; иначе ложно.
+        /// </returns>
+        /// <remarks>
+        /// При вызове метода также производится
+        /// логирование данных по исключительной ситуации.
+        /// </remarks>
         protected bool Alert(Exception e, string message = null, IMessageBoxService messageService = null)
         {
             var msg = message ?? e.Message;
-            if(message == null && e.InnerException != null)
+            if (message == null && e.InnerException != null)
                 msg += Environment.NewLine + e.InnerException.Message;
 
             Logger.Error(e);
             return Alert(msg, true, messageService);
         }
+
+        /// <summary>
+        /// Уведомляет о событии в модели представления,
+        /// требующем внимания пользователя.
+        /// </summary>
+        /// <param name = "instruction">
+        /// Строка, содержащая текст
+        /// события для пользователя.
+        /// </param>
+        /// <param name = "message">
+        /// Строка, содержащая дополнительное
+        /// сообщение для пользователя.
+        /// </param>
+        /// <param name = "criticalState">
+        /// Задает состояние
+        /// критичного события.
+        /// </param>
+        /// <param name = "messageService">
+        /// Сервис
+        /// <see cref = "IMessageBoxService" />,
+        /// отвечающий за вывод сообщений.
+        /// </param>
+        /// <returns>
+        /// Возвращает истинно, если сведения по событию
+        /// были переданы в соответствующий сервис; иначе ложно.
+        /// </returns>
+        protected bool Alert(string instruction, string message, bool criticalState = false,
+            ITaskMessageService messageService = null)
+        {
+            var service = messageService ?? GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
+            if (service == null)
+                return false;
+
+            service.InstructionText = instruction;
+            service.Show(
+                message,
+                "Ошибка",
+                TaskMessageButton.Ok,
+                criticalState ? TaskMessageIcon.Error : TaskMessageIcon.Warning);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Уведомляет о событии в модели представления,
+        /// требующем внимания пользователя.
+        /// </summary>
+        /// <param name = "message">Сообщение о событии.</param>
+        /// <param name = "criticalState">
+        /// Задает состояние
+        /// критичного события.
+        /// </param>
+        /// <param name = "messageService">
+        /// Сервис
+        /// <see cref = "IMessageBoxService" />,
+        /// отвечающий за вывод сообщений.
+        /// </param>
+        /// <returns>
+        /// Возвращает истинно, если сведения по событию
+        /// были переданы в соответствующий сервис; иначе ложно.
+        /// </returns>
+        protected bool Alert(string message, bool criticalState = false, IMessageBoxService messageService = null)
+        {
+            var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
+            if (service == null)
+                return false;
+
+            service.Show(
+                message,
+                "Ошибка",
+                MessageBoxButton.OK,
+                criticalState ? MessageBoxImage.Error : MessageBoxImage.Warning);
+
+            return true;
+        }
+
         /// <summary>
         /// Инициирует пользовательский запрос
         /// на подтверждение операции в модели
         /// представления.
         /// </summary>
-        /// <param name="instruction">Строка, содержащая текст
-        /// выполняемой операции для пользователя.</param>
-        /// <param name="message">Строка, содержащая дополнительное
-        /// сообщение для пользователя.</param>
-        /// <param name="dontAskThisAgain">Отображение опции Больше не спрашивать.</param>
-        /// <param name="allowsCancel">Задает состояние
-        /// возможности выбора опции Отмена.</param>
-        /// <param name="criticalState">Задает состояние
-        /// критичного решения.</param>
-        /// <param name="taskService">Сервис
-        /// <see cref="ITaskMessageService"/>, отвечающий за
-        /// вывод сообщений.</param>
+        /// <param name = "instruction">
+        /// Строка, содержащая текст
+        /// выполняемой операции для пользователя.
+        /// </param>
+        /// <param name = "message">
+        /// Строка, содержащая дополнительное
+        /// сообщение для пользователя.
+        /// </param>
+        /// <param name = "dontAskThisAgain">Отображение опции Больше не спрашивать.</param>
+        /// <param name = "allowsCancel">
+        /// Задает состояние
+        /// возможности выбора опции Отмена.
+        /// </param>
+        /// <param name = "criticalState">
+        /// Задает состояние
+        /// критичного решения.
+        /// </param>
+        /// <param name = "taskService">
+        /// Сервис
+        /// <see cref = "ITaskMessageService" />, отвечающий за
+        /// вывод сообщений.
+        /// </param>
         protected bool? Confirm(string instruction, string message, ref bool dontAskThisAgain, bool allowsCancel = true,
             bool criticalState = false, ITaskMessageService taskService = null)
         {
             var service = taskService ?? GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return true;
 
-            if(dontAskThisAgain)
+            if (dontAskThisAgain)
             {
-                service.FooterCheckBoxText ="Больше не спрашивать";
+                service.FooterCheckBoxText = "Больше не спрашивать";
                 service.FooterCheckBoxChecked = false;
             }
 
@@ -74,7 +271,7 @@ namespace ASMC.Core.ViewModel
                 criticalState ? TaskMessageIcon.Warning : TaskMessageIcon.None);
 
             dontAskThisAgain = service.FooterCheckBoxChecked == true;
-            switch(result)
+            switch (result)
             {
                 case TaskMessageResult.Yes:
                     return true;
@@ -90,20 +287,28 @@ namespace ASMC.Core.ViewModel
         /// на подтверждение операции в модели
         /// представления.
         /// </summary>
-        /// <param name="message">Строка, содержащая текст
-        /// выполняемой операции для пользователя.</param>
-        /// <param name="allowsCancel">Задает состояние
-        /// возможности выбора опции Отмена.</param>
-        /// <param name="criticalState">Задает состояние
-        /// критичного решения.</param>
-        /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>, отвечающий за
-        /// вывод сообщений.</param>
+        /// <param name = "message">
+        /// Строка, содержащая текст
+        /// выполняемой операции для пользователя.
+        /// </param>
+        /// <param name = "allowsCancel">
+        /// Задает состояние
+        /// возможности выбора опции Отмена.
+        /// </param>
+        /// <param name = "criticalState">
+        /// Задает состояние
+        /// критичного решения.
+        /// </param>
+        /// <param name = "messageService">
+        /// Сервис
+        /// <see cref = "IMessageBoxService" />, отвечающий за
+        /// вывод сообщений.
+        /// </param>
         protected bool? Confirm(string message, bool allowsCancel = true, bool criticalState = false,
             IMessageBoxService messageService = null)
         {
             var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return true;
 
             var result = service.Show(
@@ -113,7 +318,7 @@ namespace ASMC.Core.ViewModel
                 criticalState ? MessageBoxImage.Warning : MessageBoxImage.Question,
                 allowsCancel ? MessageBoxResult.Cancel : MessageBoxResult.No);
 
-            switch(result)
+            switch (result)
             {
                 case MessageBoxResult.Yes:
                     return true;
@@ -123,20 +328,58 @@ namespace ASMC.Core.ViewModel
                     return null;
             }
         }
+
+        /// <summary>
+        /// Инициирует пользовательский запрос
+        /// на подтверждение операции в модели
+        /// представления.
+        /// </summary>
+        /// <param name = "instruction">
+        /// Строка, содержащая текст
+        /// выполняемой операции для пользователя.
+        /// </param>
+        /// <param name = "message">
+        /// Строка, содержащая дополнительное
+        /// сообщение для пользователя.
+        /// </param>
+        /// <param name = "allowsCancel">
+        /// Задает состояние
+        /// возможности выбора опции Отмена.
+        /// </param>
+        /// <param name = "criticalState">
+        /// Задает состояние
+        /// критичного решения.
+        /// </param>
+        /// <param name = "taskService">
+        /// Сервис
+        /// <see cref = "ITaskMessageService" />, отвечающий за
+        /// вывод сообщений.
+        /// </param>
+        protected bool? Confirm(string instruction, string message, bool allowsCancel = true,
+            bool criticalState = false, ITaskMessageService taskService = null)
+        {
+            var dontAskThisAgain = false;
+            return Confirm(instruction, message, ref dontAskThisAgain, allowsCancel, criticalState, taskService);
+        }
+
         /// <summary>
         /// Уведомляет пользователя о событии в
         /// модели представления.
         /// </summary>
-        /// <param name="message">Сообщение о событии.</param>
-        /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>,
-        /// отвечающий за вывод сообщений.</param>
-        /// <returns>Возвращает истинно, если сведения по событию
-        /// были переданы в соответствующий сервис; иначе ложно.</returns>
+        /// <param name = "message">Сообщение о событии.</param>
+        /// <param name = "messageService">
+        /// Сервис
+        /// <see cref = "IMessageBoxService" />,
+        /// отвечающий за вывод сообщений.
+        /// </param>
+        /// <returns>
+        /// Возвращает истинно, если сведения по событию
+        /// были переданы в соответствующий сервис; иначе ложно.
+        /// </returns>
         protected bool Message(string message, IMessageBoxService messageService = null)
         {
             var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return false;
 
             service.Show(
@@ -147,23 +390,32 @@ namespace ASMC.Core.ViewModel
 
             return true;
         }
+
         /// <summary>
         /// Уведомляет пользователя о событии в
         /// модели представления.
         /// </summary>
-        /// <param name="instruction">Строка, содержащая текст
-        /// события для пользователя.</param>
-        /// <param name="message">Строка, содержащая дополнительное
-        /// сообщение для пользователя.</param>
-        /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>,
-        /// отвечающий за вывод сообщений.</param>
-        /// <returns>Возвращает истинно, если сведения по событию
-        /// были переданы в соответствующий сервис; иначе ложно.</returns>
+        /// <param name = "instruction">
+        /// Строка, содержащая текст
+        /// события для пользователя.
+        /// </param>
+        /// <param name = "message">
+        /// Строка, содержащая дополнительное
+        /// сообщение для пользователя.
+        /// </param>
+        /// <param name = "messageService">
+        /// Сервис
+        /// <see cref = "IMessageBoxService" />,
+        /// отвечающий за вывод сообщений.
+        /// </param>
+        /// <returns>
+        /// Возвращает истинно, если сведения по событию
+        /// были переданы в соответствующий сервис; иначе ложно.
+        /// </returns>
         protected bool Message(string instruction, string message, ITaskMessageService messageService = null)
         {
             var service = messageService ?? GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
+            if (service == null)
                 return false;
 
             service.InstructionText = instruction;
@@ -175,152 +427,7 @@ namespace ASMC.Core.ViewModel
 
             return true;
         }
-        /// <summary>
-        /// Уведомляет о событии в модели представления,
-        /// требующем внимания пользователя.
-        /// </summary>
-        /// <param name="instruction">Строка, содержащая текст
-        /// события для пользователя.</param>
-        /// <param name="message">Строка, содержащая дополнительное
-        /// сообщение для пользователя.</param>
-        /// <param name="criticalState">Задает состояние
-        /// критичного события.</param>
-        /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>,
-        /// отвечающий за вывод сообщений.</param>
-        /// <returns>Возвращает истинно, если сведения по событию
-        /// были переданы в соответствующий сервис; иначе ложно.</returns>
-        protected bool Alert(string instruction, string message, bool criticalState = false,
-            ITaskMessageService messageService = null)
-        {
-            var service = messageService ?? GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
-                return false;
 
-            service.InstructionText = instruction;
-            service.Show(
-                message,
-                "Ошибка",
-                TaskMessageButton.Ok,
-                criticalState ? TaskMessageIcon.Error : TaskMessageIcon.Warning);
-
-            return true;
-        }
-        /// <summary>
-        /// Инициирует пользовательский запрос
-        /// на подтверждение операции в модели
-        /// представления.
-        /// </summary>
-        /// <param name="instruction">Строка, содержащая текст
-        /// выполняемой операции для пользователя.</param>
-        /// <param name="message">Строка, содержащая дополнительное
-        /// сообщение для пользователя.</param>
-        /// <param name="allowsCancel">Задает состояние
-        /// возможности выбора опции Отмена.</param>
-        /// <param name="criticalState">Задает состояние
-        /// критичного решения.</param>
-        /// <param name="taskService">Сервис
-        /// <see cref="ITaskMessageService"/>, отвечающий за
-        /// вывод сообщений.</param>
-        protected bool? Confirm(string instruction, string message, bool allowsCancel = true,
-            bool criticalState = false, ITaskMessageService taskService = null)
-        {
-            var dontAskThisAgain = false;
-            return Confirm(instruction, message, ref dontAskThisAgain, allowsCancel, criticalState, taskService);
-        }
-        /// <summary>
-        /// Уведомляет о событии в модели представления,
-        /// требующем внимания пользователя.
-        /// </summary>
-        /// <param name="message">Сообщение о событии.</param>
-        /// <param name="criticalState">Задает состояние
-        /// критичного события.</param>
-        /// <param name="messageService">Сервис
-        /// <see cref="IMessageBoxService"/>,
-        /// отвечающий за вывод сообщений.</param>
-        /// <returns>Возвращает истинно, если сведения по событию
-        /// были переданы в соответствующий сервис; иначе ложно.</returns>
-        protected bool Alert(string message, bool criticalState = false, IMessageBoxService messageService = null)
-        {
-            var service = messageService ?? GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            if(service == null)
-                return false;
-
-            service.Show(
-                message,
-                "Ошибка",
-                MessageBoxButton.OK,
-                criticalState ? MessageBoxImage.Error : MessageBoxImage.Warning);
-
-            return true;
-        }
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        /// <summary>
-        /// Возвращает истинно, если выполняется
-        /// операция с данными; иначе ложно
-        /// </summary>
-        public bool IsBusy
-        {
-            get => _isBusy;
-            protected set
-            {
-                lock(_syncRoot)
-                {
-                    if(SetProperty(ref _isBusy, value))
-                        CommandManager.InvalidateRequerySuggested();
-                }
-            }
-        }
-        private readonly WeakEvent<EventHandler, EventArgs> _initializing = new WeakEvent<EventHandler, EventArgs>();
-        private bool _isInitialized;
-
-        private object _settings;
-        private string _regionName;
-        private object _entity;
-        private bool? _dialogResult;
-        private bool _isBusy;
-        private readonly object _syncRoot = new object();
-        /// <summary>
-        /// Возвращает или задает имя региона
-        /// для представления. Служебное свойство.
-        /// </summary>
-        public string RegionName
-        {
-            get => _regionName;
-            set => SetProperty(ref _regionName, value, nameof(RegionName));
-        }
-        /// <summary>
-        ///     Возвращает значение, показывающее, была
-        ///     ли проведена инициализация модели
-        ///     представления.
-        /// </summary>
-        public bool IsInitialized
-        {
-            get => _isInitialized;
-            private set => SetProperty(ref _isInitialized, value);
-        }
-
-        /// <summary>
-        ///     Возвращает или задает объект,
-        ///     содержащий пользовательские
-        ///     параметры модели представления.
-        /// </summary>
-        public object Settings
-        {
-            get => _settings;
-            set => SetProperty(ref _settings, value, () => OnSettingsChanged(_settings));
-        }
-    
-
-        /// <summary>
-        /// Возвращает или задает сущность,
-        /// данные которой содержит справочник.
-        /// </summary>
-        public object Entity
-        {
-            get => _entity;
-            set => SetProperty(ref _entity, value, nameof(Entity), OnEntityChanged);
-        }
         /// <summary>
         /// Вызывается при изменении текущей
         /// выбранной сущности справочника.
@@ -330,43 +437,7 @@ namespace ASMC.Core.ViewModel
         }
 
         /// <summary>
-        ///     Выполняет инициализацию
-        ///     модели представления.
-        /// </summary>
-        public void Initialize()
-        {
-            if (_isInitialized)
-                return;
-
-            OnInitializing();
-            IsInitialized = true;
-            OnInitialized();
-        }
-
-        /// <summary>
-        ///     Происходит при успешной инициализации
-        ///     модели представления.
-        /// </summary>
-        public event EventHandler Initialized;
-
-        /// <summary>
-        ///     Происходит при инициализации
-        ///     модели представления.
-        /// </summary>
-        public event EventHandler Initializing
-        {
-            add => _initializing.Add(value);
-            remove => _initializing.Remove(value);
-        }
-
-        /// <summary>
-        ///     Происходит при изменении объекта,
-        ///     содержащего пользовательские параметры.
-        /// </summary>
-        public event EventHandler SettingsChanged;
-
-        /// <summary>
-        ///     Вызывает событие <see cref="Initialized" />.
+        /// Вызывает событие <see cref = "Initialized" />.
         /// </summary>
         protected virtual void OnInitialized()
         {
@@ -374,7 +445,7 @@ namespace ASMC.Core.ViewModel
         }
 
         /// <summary>
-        ///     Вызывает событие <see cref="Initializing" />.
+        /// Вызывает событие <see cref = "Initializing" />.
         /// </summary>
         protected virtual void OnInitializing()
         {
@@ -390,11 +461,11 @@ namespace ASMC.Core.ViewModel
         }
 
         /// <summary>
-        ///     Вызывает событие <see cref="SettingsChanged" />.
+        /// Вызывает событие <see cref = "SettingsChanged" />.
         /// </summary>
-        /// <param name="settings">
-        ///     Объект, содержащий
-        ///     пользовательские параметры.
+        /// <param name = "settings">
+        /// Объект, содержащий
+        /// пользовательские параметры.
         /// </param>
         protected virtual void OnSettingsChanged(object settings)
         {
@@ -402,25 +473,25 @@ namespace ASMC.Core.ViewModel
         }
 
         /// <summary>
-        ///     Задает значение поля для свойства.
+        /// Задает значение поля для свойства.
         /// </summary>
-        /// <typeparam name="T">Тип поля.</typeparam>
-        /// <param name="storage">Поле свойства.</param>
-        /// <param name="value">Значение свойства.</param>
-        /// <param name="propertyName">Имя свойства.</param>
+        /// <typeparam name = "T">Тип поля.</typeparam>
+        /// <param name = "storage">Поле свойства.</param>
+        /// <param name = "value">Значение свойства.</param>
+        /// <param name = "propertyName">Имя свойства.</param>
         protected new bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
             return base.SetProperty(ref storage, value, propertyName);
         }
 
         /// <summary>
-        ///     Задает значение поля для свойства.
+        /// Задает значение поля для свойства.
         /// </summary>
-        /// <typeparam name="T">Тип поля.</typeparam>
-        /// <param name="storage">Поле свойства.</param>
-        /// <param name="value">Значение свойства.</param>
-        /// <param name="changedCallback">Метод, вызываемый при изменении значения.</param>
-        /// <param name="propertyName">Имя свойства.</param>
+        /// <typeparam name = "T">Тип поля.</typeparam>
+        /// <param name = "storage">Поле свойства.</param>
+        /// <param name = "value">Значение свойства.</param>
+        /// <param name = "changedCallback">Метод, вызываемый при изменении значения.</param>
+        /// <param name = "propertyName">Имя свойства.</param>
         protected bool SetProperty<T>(ref T storage, T value, Action changedCallback,
             [CallerMemberName] string propertyName = null)
         {
@@ -430,6 +501,19 @@ namespace ASMC.Core.ViewModel
         private void ParentInitializing(object sender, EventArgs e)
         {
             Initialize();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Возвращает или задает объект,
+        /// содержащий пользовательские
+        /// параметры модели представления.
+        /// </summary>
+        public object Settings
+        {
+            get => _settings;
+            set => SetProperty(ref _settings, value, () => OnSettingsChanged(_settings));
         }
     }
 }

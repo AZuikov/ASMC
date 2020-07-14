@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using ASMC.Core;
+using ASMC.Core.UI;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -178,6 +179,8 @@ namespace ASMC.ViewModel
                           SelectProgram != null);
             BackCommand =
                 new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
+            RefreshCommand =
+                new DelegateCommand(OnRefreshCommand);
             //Prog = new ObservableCollection<IProrgam> {new Device()};
             //Prog[0].AbstraktOperation.IsSpeedWork = false;
             //Prog[0].AbstraktOperation.SelectedTypeOpeation = AbstraktOperation.TypeOpeation.PrimaryVerf;
@@ -189,6 +192,11 @@ namespace ASMC.ViewModel
 
 
             //DataOperation = SelectionItemOperation?.Data.DefaultView;
+        }
+
+        private void OnRefreshCommand()
+        {
+           SelectProgram.AbstraktOperation.SelectedOperation.RefreshDevice();
         }
 
         #region Methods
@@ -219,9 +227,10 @@ namespace ASMC.ViewModel
 
         private void LastShemaCallback()
         {
-            var service = GetService<IFormService>("ShemService");
-            if (service?.Show() != true)
-                return;
+            var message = GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
+            message.Show("32321", "fdsfsf", TaskMessageButton.None, TaskMessageIcon.Information);
+            // var service = GetService<IFormService>("ShemService");
+            //service?.Show();
         }
 
         private void LoadPlugins()
@@ -258,6 +267,10 @@ namespace ASMC.ViewModel
             if (types == null) return;
             foreach (var type in types)
                 Prog.Add((IProgram) Activator.CreateInstance(type));
+            foreach (var program in Prog)
+            {
+                program.TaskMessageService = GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
+            }
         }
 
         private void OnBackCommand()
@@ -272,7 +285,7 @@ namespace ASMC.ViewModel
 
         private async void OnStartCommand()
         {
-            if (SelectionItemOperation == null) await SelectProgram.AbstraktOperation.StartWorkAsync();
+            if (SelectionItemOperation == null)  SelectProgram.AbstraktOperation.StartWorkAsync();
         }
 
         private void OnSelectProgramCallback()
@@ -297,7 +310,10 @@ namespace ASMC.ViewModel
         #endregion
 
         #region Command
-
+        public ICommand RefreshCommand
+        {
+            get;
+        }
         public ICommand BackCommand { get; }
 
         /// <summary>

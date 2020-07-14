@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using ASMC.Data.Model;
 
 namespace ASMC.Core
 {

@@ -371,14 +371,9 @@ namespace ASMC.Core.UI
             var window = (Window)Activator.CreateInstance(WindowType);
 
             if(WindowShowMode == WindowShowMode.Dialog)
-                WindowAttachedProperties.SetShowIcon(window, false);
-
-            //var mainWnd = Application.Current.MainWindow;
-            //if (mainWnd != window)
-            //    window.Owner = mainWnd;
+                WindowAttachedProperties.SetShowIcon(window, false);   
 
             window.Content = view;
-            //window.Owner = AssociatedObject != null ? Window.GetWindow(AssociatedObject) : null;
             window.Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(wnd => wnd.IsActive);
 
             InitializeDocumentContainer(window, ContentControl.ContentProperty, WindowStyle);
