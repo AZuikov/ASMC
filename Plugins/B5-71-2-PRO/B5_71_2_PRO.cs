@@ -50,6 +50,7 @@ namespace B5_71_2_PRO
     public class OpertionFirsVerf : IUserItemOperation
     {
         public IDevice[] ControlDevices { get; }
+        public IDevice[] TestDevices { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
@@ -60,13 +61,16 @@ namespace B5_71_2_PRO
         public OpertionFirsVerf()
         {
             //Необходимые эталоны
-            ControlDevices = new[]
+            ControlDevices = new IDevice[]
             {
-                new StandartDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
-                new StandartDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
-                new StandartDevices{ Name = new []{"В3-57"}, Description = "Микровольтметр"}
+                new UsedDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
+                new UsedDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
+                new UsedDevices{ Name = new []{"В3-57"}, Description = "Микровольтметр"}
 
             };
+
+            TestDevices = new IDevice[]
+                {new UsedDevices {Name = new[] {"Б5-71/2-ПРО"}, Description = "источник питания"}};
 
             //Необходимые аксесуары
             Accessories = new[]
@@ -107,7 +111,7 @@ namespace B5_71_2_PRO
         }
     }
 
-    public class StandartDevices : IDevice
+    public class UsedDevices : IDevice
     {
         public string Description { get; set; }
         public string[] Name { get; set; }

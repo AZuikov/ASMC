@@ -48,7 +48,7 @@ namespace B5_71_1_PRO
     }
 
 
-    public class StandartDevices : IDevice
+    public class UseDevices : IDevice
     {
         public string Description { get; set; }
         public string[] Name { get; set; }
@@ -74,10 +74,12 @@ namespace B5_71_1_PRO
             //Необходимые эталоны
             ControlDevices = new IDevice[]
             {
-                new StandartDevices {Name = new[] {"N3300A"}, Description = "Электронная нагрузка"},
-                new StandartDevices {Name = new[] {"34401A"}, Description = "Мультиметр"},
-                new StandartDevices {Name = new[] {"В3-57"}, Description = "Микровольтметр"}
+                new UseDevices {Name = new[] {"N3300A"}, Description = "Электронная нагрузка"},
+                new UseDevices {Name = new[] {"34401A"}, Description = "Мультиметр"},
+                new UseDevices {Name = new[] {"В3-57"}, Description = "Микровольтметр"}
             };
+
+            TestDevices = new IDevice[]{new UseDevices{Name = new []{"Б5-71/1-ПРО"}, Description = "источник питания" } };
 
             //Необходимые аксесуары
             Accessories = new[]
@@ -107,6 +109,7 @@ namespace B5_71_1_PRO
         }
 
         public IDevice[] ControlDevices { get; }
+        public IDevice[] TestDevices { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
