@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Input;
 using ASMC.Core;
 using ASMC.Core.UI;
@@ -227,8 +228,8 @@ namespace ASMC.ViewModel
 
         private void LastShemaCallback()
         {
-            var message = GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
-            message.Show("32321", "fdsfsf", TaskMessageButton.None, TaskMessageIcon.Information);
+            var message = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
+            //message.Show("32321", "fdsfsf", MessageBoxButton.OK, MessageBoxImage.None);
             // var service = GetService<IFormService>("ShemService");
             //service?.Show();
         }
@@ -269,7 +270,7 @@ namespace ASMC.ViewModel
                 Prog.Add((IProgram) Activator.CreateInstance(type));
             foreach (var program in Prog)
             {
-                program.TaskMessageService = GetService<ITaskMessageService>(ServiceSearchMode.PreferLocal);
+                program.TaskMessageService = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
             }
         }
 

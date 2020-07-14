@@ -11,6 +11,7 @@ using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
+using DevExpress.Mvvm;
 
 // !!!!!!!! Внимание !!!!!!!!!
 //  Имя последовательного порта прописано жестко!!!!
@@ -35,7 +36,7 @@ namespace B5_71_2_PRO
         public string Grsi { get; }
         public string Range { get; }
         public string Accuracy { get; }
-        public ITaskMessageService TaskMessageService { get; set; }
+        public IMessageBoxService TaskMessageService { get; set; }
         public AbstraktOperation AbstraktOperation { get; }
     }
 
