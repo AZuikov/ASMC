@@ -50,6 +50,10 @@
       <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
       <Name>AP.Math</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
+      <Name>ASMC.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>

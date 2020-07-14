@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using ASMC.Core;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
@@ -26,10 +27,14 @@ namespace B5_71_2_PRO
             Range = "0 - 50 В; 0 - 6 А";
             Accuracy = "Напряжение ПГ ±(0,002 * U + 0.1); ток ПГ ±(0,01 * I + 0,05)";
         }
+
+      
+
         public string Type { get; }
         public string Grsi { get; }
         public string Range { get; }
         public string Accuracy { get; }
+        public ITaskMessageService TaskMessageService { get; set; }
         public AbstraktOperation AbstraktOperation { get; }
     }
 
@@ -37,19 +42,20 @@ namespace B5_71_2_PRO
     {
 
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
-        public Operation()
+
+        public Operation() 
         {
             //это операция первичной поверки
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf();
             //здесь периодическая поверка, но набор операций такой же
             this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
-
         }
     }
 
     public class OpertionFirsVerf : IUserItemOperation
     {
         public IDevice[] ControlDevices { get; }
+        public IDevice[] TestDevices { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
@@ -81,16 +87,16 @@ namespace B5_71_2_PRO
 
             //Перечень операций поверки
             UserItemOperation = new IUserItemOperationBase[]{
-                new Oper0VisualTest(),
-                new Oper1Oprobovanie(),
-                new Oper2DcvOutput(),
-                new Oper3DcvMeasure(),
-                new Oper4VoltUnstable(),
-                new Oper6DciOutput(),
-                new Oper7DciMeasure(),
-                new Oper8DciUnstable(),
-                new Oper5VoltPulsation(),
-                new Oper9DciPulsation()
+                new Oper0VisualTest(this),
+                new Oper1Oprobovanie(this),
+                new Oper2DcvOutput(this),
+                new Oper3DcvMeasure(this),
+                new Oper4VoltUnstable(this),
+                new Oper6DciOutput(this),
+                new Oper7DciMeasure(this),
+                new Oper8DciUnstable(this),
+                new Oper5VoltPulsation(this),
+                new Oper9DciPulsation(this)
             };
 
         }
@@ -104,6 +110,11 @@ namespace B5_71_2_PRO
             {
 
             }
+        }
+
+        public void FindDivice()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -129,11 +140,7 @@ namespace B5_71_2_PRO
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        public Oper0VisualTest()
-        {
-            Name = "Внешний осмотр";
-            DataRow = new List<IBasicOperation<bool>>();
-        }
+   
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
@@ -154,6 +161,11 @@ namespace B5_71_2_PRO
         }
 
 
+        public Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Внешний осмотр";
+            DataRow = new List<IBasicOperation<bool>>();
+        }
     }
 
 
@@ -162,11 +174,7 @@ namespace B5_71_2_PRO
     /// </summary>
     public class Oper1Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
-        public Oper1Oprobovanie()
-        {
-            Name = "Опробование";
-            DataRow = new List<IBasicOperation<bool>>();
-        }
+     
 
         public override void StartSinglWork(Guid guid)
         {
@@ -175,9 +183,8 @@ namespace B5_71_2_PRO
 
         public override void StartWork()
         {
-            BasicOperation<bool> bo = new BasicOperation<bool>();
-            bo.Expected = true;
-            bo.IsGood = s => { return bo.Getting == true ? true : false; };
+            var bo = new BasicOperation<bool> {Expected = true};
+            bo.IsGood = s => bo.Getting;
 
             DataRow.Add(bo);
         }
@@ -194,6 +201,12 @@ namespace B5_71_2_PRO
         }
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
+
+        public Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Опробование";
+            DataRow = new List<IBasicOperation<bool>>();
+        }
     }
 
 
@@ -210,16 +223,7 @@ namespace B5_71_2_PRO
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
         public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
 
-        public Oper2DcvOutput()
-        {
-            this.Name = "Определение погрешности установки выходного напряжения";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
+         
 
         public override void StartSinglWork(Guid guid)
         {
@@ -353,6 +357,16 @@ namespace B5_71_2_PRO
         }
 
 
+        public Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            this.Name = "Определение погрешности установки выходного напряжения";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
 
@@ -369,16 +383,6 @@ namespace B5_71_2_PRO
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
         public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
 
-        public Oper3DcvMeasure()
-        {
-            Name = "Определение погрешности измерения выходного напряжения";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
 
         public override void StartSinglWork(Guid guid)
         {
@@ -502,6 +506,16 @@ namespace B5_71_2_PRO
         }
 
 
+        public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности измерения выходного напряжения";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
     /// <summary>
@@ -517,16 +531,7 @@ namespace B5_71_2_PRO
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
 
-        public Oper4VoltUnstable()
-        {
-            Name = "Определение нестабильности выходного напряжения";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
+       
 
         public override void StartSinglWork(Guid guid)
         {
@@ -645,8 +650,16 @@ namespace B5_71_2_PRO
         }
 
 
-
-
+        public Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение нестабильности выходного напряжения";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
     /// <summary>
@@ -661,20 +674,7 @@ namespace B5_71_2_PRO
         public static readonly decimal[] arrResistanceVoltUnstable = { (decimal)9.26, (decimal)16.7, (decimal)83.3 };
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public Oper5VoltPulsation()
-        {
-            Name = "Определение уровня пульсаций по напряжению";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            /*
-             *Еще одна схема, для переключения терминала мультиметра
-             *  C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/34401A_V3-57.jpg
-             */
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
+    
 
         public override void StartSinglWork(Guid guid)
         {
@@ -790,6 +790,20 @@ namespace B5_71_2_PRO
         }
 
 
+        public Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение уровня пульсаций по напряжению";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            /*
+             *Еще одна схема, для переключения терминала мультиметра
+             *  C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/34401A_V3-57.jpg
+             */
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
 
@@ -807,16 +821,7 @@ namespace B5_71_2_PRO
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
         public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
 
-        public Oper6DciOutput()
-        {
-            Name = "Определение погрешности установки выходного тока";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
+    
 
         public override void StartSinglWork(Guid guid)
         {
@@ -924,6 +929,16 @@ namespace B5_71_2_PRO
         }
 
 
+        public Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности установки выходного тока";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
 
@@ -940,16 +955,7 @@ namespace B5_71_2_PRO
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
         public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
 
-        public Oper7DciMeasure()
-        {
-            Name = "Определение погрешности измерения выходного тока";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
+   
 
         public override void StartSinglWork(Guid guid)
         {
@@ -1055,6 +1061,16 @@ namespace B5_71_2_PRO
         }
 
 
+        public Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности измерения выходного тока";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
 
@@ -1072,17 +1088,7 @@ namespace B5_71_2_PRO
         public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
         public static readonly decimal[] arrResistanceCurrUnstable = { (decimal)7.5, (decimal)4.17, (decimal)0.83 };
 
-        public Oper8DciUnstable()
-        {
-            Name = "Определение нестабильности выходного тока";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
-
+   
         public override void StartSinglWork(Guid guid)
         {
             throw new NotImplementedException();
@@ -1178,6 +1184,16 @@ namespace B5_71_2_PRO
             return dataTable;
         }
 
+        public Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение нестабильности выходного тока";
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
 
@@ -1195,21 +1211,6 @@ namespace B5_71_2_PRO
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
 
-        public Oper9DciPulsation()
-        {
-            Name = "Определение уровня пульсаций постоянного тока";
-            
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
-            };
-            /*
-            *Еще одна схема, для переключения терминала мультиметра
-            *  C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/34401A_V3-57.jpg
-            */
-            DataRow = new List<IBasicOperation<decimal>>();
-        }
 
         public override void StartSinglWork(Guid guid)
         {
@@ -1319,6 +1320,21 @@ namespace B5_71_2_PRO
         }
 
 
+        public Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение уровня пульсаций постоянного тока";
+
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+            };
+            /*
+            *Еще одна схема, для переключения терминала мультиметра
+            *  C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/34401A_V3-57.jpg
+            */
+            DataRow = new List<IBasicOperation<decimal>>();
+        }
     }
 
 

@@ -7,7 +7,6 @@ using ASMC.Core.Settings;
 using ASMC.Core.ViewModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
-using DevExpress.Utils.OAuth;
 
 namespace ASMC.Core.UI
 {
@@ -97,7 +96,7 @@ namespace ASMC.Core.UI
         /// <summary>
         /// Возвращает или задает локатор
         /// представлений для поиска
-        /// представления справочника.
+        /// представления формы.
         /// </summary>
         public ViewLocator ViewLocator { get; set; }
 
@@ -152,7 +151,6 @@ namespace ASMC.Core.UI
         protected Size MaxSize { get; set; } = new Size(int.MaxValue, int.MaxValue);
 
         #endregion
-
         #region Methods
 
         /// <inheritdoc />
@@ -183,30 +181,50 @@ namespace ASMC.Core.UI
             var cb = viewModel as BaseViewModel;
             if (cb != null)
             {
+                SetBinding(viewModel, nameof(BaseViewModel.Entity), EntityProperty);
                 cb.Entity = Entity; 
                 Subscribe(cb);  
             }
 
+            var type = GetDocumentType(viewModel);
             ViewInjectionManager.Default.Inject(cb?.RegionName, null, () => viewModel,
-                ViewLocator?.ResolveViewType(GetDocumentType(viewModel)));
-
+                ViewLocator?.ResolveViewType(type));
+            
             try
             {
-                SubscribeWindowServiceEvents(wndService);
-                wndService.Show("CatalogView", viewModel, null, null);
+                //SubscribeWindowServiceEvents(wndService);
+                wndService.Show("ShemView", viewModel, Parameter, null);
+                //wndService.Show(viewModel.GetType().Name.TrimEnd(Convert.ToChar("Model")), viewModel, null, null);
             }
             finally
             {
                 ViewInjectionManager.Default.Remove(cb?.RegionName, null);
 
-                UnsubscribeWindowServiceEvents(wndService);
+                //UnsubscribeWindowServiceEvents(wndService);
                 if (cb != null)
+                {
+                    ClearBinding(EntityProperty);
                     Unsubscribe(cb);
+                }
             }
 
             return _dialogResult == true;
         }
 
+        private void SetBinding(object obj, string path, DependencyProperty targetProperty)
+        {
+            var bnd = new Binding(path)
+            {
+                Source = obj,
+                Mode = BindingMode.TwoWay
+            };
+
+            BindingOperations.SetBinding(this, targetProperty, bnd);
+        }
+        private void ClearBinding(DependencyProperty targetProperty)
+        {
+            BindingOperations.ClearBinding(this, targetProperty);
+        }
         /// <summary>
         /// Создает модель представления справочника.
         /// </summary>
@@ -215,15 +233,8 @@ namespace ASMC.Core.UI
         /// <inheritdoc />
         protected override void OnAttached()
         {
-            base.OnAttached();
-
-            //BindingOperations.SetBinding(this, SettingsProperty,
-            //    new Binding
-            //    {
-            //        Source = AssociatedObject,
-            //        Path = new PropertyPath(ViewExtensions.SettingsProperty)
-            //    });
-
+            base.OnAttached();   
+    
             BindingOperations.SetBinding(this, SettingsSelectorProperty,
                 new Binding
                 {

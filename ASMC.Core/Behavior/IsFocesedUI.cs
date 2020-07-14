@@ -9,8 +9,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
 using ASMC.Core.Annotations;
-using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
 
 namespace ASMC.Core.Behavior
 {

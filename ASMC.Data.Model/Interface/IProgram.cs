@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ASMC.Core;
 
 namespace ASMC.Data.Model.Interface
 {
     public interface IProgram    
     {
+
         /// <summary>
         /// Позволяет получать тип СИ
         /// </summary>
@@ -36,7 +38,11 @@ namespace ASMC.Data.Model.Interface
         {
             get;
         }
-
+         ITaskMessageService TaskMessageService
+        {
+            get;
+             set;
+         }
         /// <summary>
         /// Позволяет получить сушность метрологических операций
         /// </summary>

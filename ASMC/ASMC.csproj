@@ -33,12 +33,25 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Data.v17.2">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Data.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v17.2">
       <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v17.2.Core, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\DevExpress.v17.2\DevExpress.Pdf.v17.2.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Printing.v17.2.Core">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Printing.v17.2.Core.dll</HintPath>
@@ -51,9 +64,6 @@
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.2.Core">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Grid.v17.2.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.2">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Xpf.Themes.Office2016White.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -134,6 +144,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
