@@ -11,6 +11,7 @@ using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
+using DevExpress.Mvvm;
 
 // !!!!!!!! Внимание !!!!!!!!!
 //  Имя последовательного порта прописано жестко!!!!
@@ -33,7 +34,7 @@ namespace B5_71_4_PRO
         public string Grsi { get; }
         public string Range { get; }
         public string Accuracy { get; }
-        public ITaskMessageService TaskMessageService { get; set; }
+        public IMessageBoxService TaskMessageService { get; set; }
         public AbstraktOperation AbstraktOperation { get; }
     }
 
@@ -68,10 +69,6 @@ namespace B5_71_4_PRO
 
     public class OpertionFirsVerf : IUserItemOperation
     {
-<<<<<<< HEAD
-        //public IDevice[] Device { get; }
-=======
->>>>>>> очень много всего
         public IDevice[] TestDevices { get; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
@@ -83,12 +80,7 @@ namespace B5_71_4_PRO
         /// </summary>
         public OpertionFirsVerf()
         {
-            //Необходимые эталоны
-<<<<<<< HEAD
             TestDevices = new[]
-=======
-            ControlDevices = new[]
->>>>>>> очень много всего
             {
                 new UseDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
                 new UseDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
@@ -130,14 +122,7 @@ namespace B5_71_4_PRO
         /// </summary>
         public void RefreshDevice()
         {
-<<<<<<< HEAD
             AddresDivece = new IeeeBase().GetAllDevace().ToArray();
-=======
-            foreach (var dev in ControlDevices)
-            {
-                
-            }
->>>>>>> очень много всего
         }
 
         public void FindDivice()

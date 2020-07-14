@@ -321,10 +321,7 @@ namespace ASMC.Data.Model
     public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
     {
         protected IUserItemOperation UserItemOperation { get; }
-<<<<<<< HEAD
 
-=======
->>>>>>> очень много всего
         protected AbstractUserItemOperationBase(IUserItemOperation userItemOperation)
         {
             UserItemOperation = userItemOperation;

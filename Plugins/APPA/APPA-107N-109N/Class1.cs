@@ -8,6 +8,7 @@ using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Port.APPA;
+using DevExpress.Mvvm;
 
 namespace APPA_107N_109N
 {
@@ -29,6 +30,7 @@ namespace APPA_107N_109N
         public string Grsi { get; }
         public string Range { get; }
         public string Accuracy { get; }
+        public IMessageBoxService TaskMessageService { get; set; }
         public AbstraktOperation AbstraktOperation { get; }
     }
 
@@ -103,6 +105,10 @@ namespace APPA_107N_109N
 
         }
 
+        public void FindDivice()
+        {
+            throw new NotImplementedException();
+        }
     }
  
 
