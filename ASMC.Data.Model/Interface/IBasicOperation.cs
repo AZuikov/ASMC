@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ASMC.Data.Model.Interface
@@ -12,6 +13,24 @@ namespace ASMC.Data.Model.Interface
     /// <typeparam name="T"></typeparam>
     public interface IBasicOperation<T>
     {
+        Action InitWork
+        {
+            get; set;
+        }
+        Func<CancellationTokenSource, Task> BodyWork
+        {
+            get; set;
+        }
+
+        Action CompliteWork
+        {
+            get;
+            set;
+        }
+        /// <summary>
+        /// Пhедоставляет метод который при вызове заполняет <see cref="IBasicOperation{T}"/>
+        /// </summary>
+        Task WorkAsync(CancellationTokenSource token);
         /// <summary>
         /// Уникальный идентификатор операции
         /// </summary>

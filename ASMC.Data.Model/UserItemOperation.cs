@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASMC.Core;
@@ -251,27 +252,17 @@ namespace ASMC.Data.Model
 
         #region Methods
 
-        public void StartWork()
-        {
-            foreach (var opertion in SelectedOperation.UserItemOperation)
-            {
-                CurrentUserItemOperationBase = opertion;
-                ChangeShemaEvent?.Invoke(opertion);
-                opertion.StartWork();
-            }
-        }
-
         /// <summary>
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public void StartWorkAsync()
+        public void StartWorkAsync(CancellationTokenSource source)
         {
             foreach (var opertion in SelectedOperation.UserItemOperation)
             {
                 CurrentUserItemOperationBase = opertion;
                 ChangeShemaEvent?.Invoke(opertion);
-                opertion.StartWork();
+                opertion.StartWork(source);
             }
         }
 
@@ -313,9 +304,10 @@ namespace ASMC.Data.Model
         #region Methods
 
         void StartSinglWork(Guid guid);
-        void StartWork();
+       void StartWork(CancellationTokenSource token);
 
         #endregion
+
     }
 
     public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
@@ -352,14 +344,21 @@ namespace ASMC.Data.Model
         /// <param name = "guid"></param>
         public abstract void StartSinglWork(Guid guid);
 
+       
+
         /// <inheritdoc />
         public ShemeImage Sheme { get; set; }
 
         /// <inheritdoc />
         public bool? IsGood { get; set; }
-
+            public Func<CancellationTokenSource, Task>BodyWork
+        {
+            get; set;
+        }
         /// <inheritdoc />
-        public abstract void StartWork();
+        public abstract void StartWork(CancellationTokenSource token);
+
+      
 
         public IMessageBoxService TaskMessageService { get; set; }
 

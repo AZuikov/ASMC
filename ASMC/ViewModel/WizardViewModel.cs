@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using ASMC.Core;
@@ -286,7 +287,7 @@ namespace ASMC.ViewModel
 
         private async void OnStartCommand()
         {
-            if (SelectionItemOperation == null)  SelectProgram.AbstraktOperation.StartWorkAsync();
+            if (SelectionItemOperation == null)  SelectProgram.AbstraktOperation.StartWorkAsync(new CancellationTokenSource());
         }
 
         private void OnSelectProgramCallback()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASMC.Data.Model.Interface;
@@ -13,7 +14,24 @@ namespace ASMC.Data.Model
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>
-    {
+    {     /// <inheritdoc />
+        public Action InitWork { get; set; }
+
+        /// <inheritdoc />
+        public Action CompliteWork{  get;     set; }
+        public Func<CancellationTokenSource, Task>BodyWork
+        {
+            get; set;
+        }
+          
+        /// <inheritdoc />
+        public async Task WorkAsync(CancellationTokenSource token )
+        {
+            InitWork();
+            await BodyWork(token);
+            CompliteWork();
+        }
+
         /// <inheritdoc />
         public Guid Guid { get; } = Guid.NewGuid();
         /// <inheritdoc />
