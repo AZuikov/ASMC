@@ -13,7 +13,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace ASMC.Devices.IEEE
 {
-    public class IeeeBase
+    public class IeeeBase : IDisposable
     {
         /// <summary>
         /// Звуковой сигнал
@@ -107,7 +107,7 @@ namespace ASMC.Devices.IEEE
                 {
                     Interval = delayBeep
                 };
-                Connection();
+                Open();
                 WriteLine(_BEEP);
                 _time.Tick += (sender, args) => { WriteLine(_BEEP); };
                 _time.Start();
@@ -117,6 +117,12 @@ namespace ASMC.Devices.IEEE
                 _time.Stop();
                 Close();
             }
+        }
+
+        public void Dispose()
+        {
+          _time?.Dispose();
+            Session?.Dispose();
         }
 
         /// <summary>
@@ -132,7 +138,7 @@ namespace ASMC.Devices.IEEE
         /// Соеденение по уканой строке подключения
         /// </summary>
         /// <returns>Возвращает True в случае если соединение установлено</returns>
-        public bool Connection()
+        public bool Open()
         {
             //ConnectionClosed();
             try
@@ -169,7 +175,7 @@ namespace ASMC.Devices.IEEE
                     onDevace.MoveNext();
                     _devace[i] = onDevace.Current;
                     Stringconection = _devace[i];
-                    if (!Connection(true))
+                    if (!Open(true))
                     {
                         //если прибор не подключился, т.е. не знает команд scpi, тогда на запрос *idn? он ничего не ответит
                         //в этом случае мы должны его отпустить
@@ -213,7 +219,7 @@ namespace ASMC.Devices.IEEE
                     _devace[i] = onDevace.Current;
                     connect = onDevace.Current;
                     Stringconection = onDevace.Current;
-                    if (!Connection(false))
+                    if (!Open(false))
                     {
                         if (_words != null)
                             if (_words.Length > 2)
@@ -385,7 +391,7 @@ namespace ASMC.Devices.IEEE
             Thread.Sleep(_dealySending);
         }
 
-        private bool Connection(bool error)
+        private bool Open(bool error)
         {
             try
             {

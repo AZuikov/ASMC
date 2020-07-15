@@ -214,7 +214,7 @@ namespace APPA_107N_109N
             Calib_5522A flkCalib5522A = new Calib_5522A();
             flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
             //тут нужно проверять, если прибор не подключен, тогда прекращаем работу
-            if (flkCalib5522A.Connection())
+            if (flkCalib5522A.Open())
             {
                 
                 return;

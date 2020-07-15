@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -199,7 +200,7 @@ namespace ASMC.Data.Model
                 {
                     foreach(var t in res.UserItemOperation)
                     {
-                        t.TaskMessageService = TaskMessageService;
+                        t.MessageBoxService = TaskMessageService;
                     }
                 }  
                 return res;
@@ -258,12 +259,15 @@ namespace ASMC.Data.Model
         /// <returns></returns>
         public void StartWorkAsync(CancellationTokenSource source)
         {
-            foreach (var opertion in SelectedOperation.UserItemOperation)
-            {
-                CurrentUserItemOperationBase = opertion;
-                ChangeShemaEvent?.Invoke(opertion);
-                opertion.StartWork(source);
-            }
+            var a = SelectedOperation.UserItemOperation.First();
+            CurrentUserItemOperationBase = a;
+            a.StartWork(source);
+            //foreach(var opertion in SelectedOperation.UserItemOperation)
+            //{
+            //    CurrentUserItemOperationBase = opertion;
+            //    ChangeShemaEvent?.Invoke(opertion);
+            //    opertion.StartWork(source);
+            //}
         }
 
         #endregion
@@ -276,7 +280,7 @@ namespace ASMC.Data.Model
     public interface IUserItemOperationBase
     {
         #region Property
-        IMessageBoxService TaskMessageService { get; set; }
+        IMessageBoxService MessageBoxService { get; set; }
         /// <summary>
         /// Предоставляет данные для отображения операций.
         /// </summary>
@@ -360,7 +364,7 @@ namespace ASMC.Data.Model
 
       
 
-        public IMessageBoxService TaskMessageService { get; set; }
+        public IMessageBoxService MessageBoxService { get; set; }
 
         /// <inheritdoc />
         public DataTable Data => FillData();

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using AP.Reports.Utils;
 
@@ -61,16 +63,31 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// Возвращает массив с моделями установленных вставок нагрузки
         /// </summary>
         /// <returns></returns>
-        public string[] GetInstalledModulesName()
+        public List<Model> GetInstalledModulesName()
         {
-            
+            var model = new List<Model>();
             this.WriteLine("*RDT?");
             Thread.Sleep(300);
             string answer = this.ReadLine().TrimEnd('\n');
+            var reg = new Regex(@".+\d+");
+            foreach (var mod in answer.Split(';'))
+            {
+                var s = mod.Split(':');
+                model.Add(new Model{Channel = int.Parse(reg.Match(s[0]).Value) , Type = s[1]});
+
+            }
             
-           return answer.Split(';');
+           return model;
         }
 
+        public struct Model
+        {
+            public int Channel { get; set; }
+            public string Type
+            {
+                get; set;
+            }
+        }
         /// <summary>
         /// Устанавливает рабочий канал нагрузки
         /// </summary>

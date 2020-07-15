@@ -164,7 +164,7 @@ namespace B5_71_2_PRO
         {
             BasicOperation<bool> bo = new BasicOperation<bool>();
             bo.Expected = true;
-            bo.IsGood = s => { return bo.Getting == true ? true : false; };
+            bo.IsGood = () => { return bo.Getting == true ? true : false; };
 
             DataRow.Add(bo);
         }
@@ -193,7 +193,7 @@ namespace B5_71_2_PRO
         public override void StartWork()
         {
             var bo = new BasicOperation<bool> {Expected = true};
-            bo.IsGood = s => bo.Getting;
+            bo.IsGood = () => bo.Getting;
 
             DataRow.Add(bo);
         }
@@ -244,7 +244,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             while (m34401.GetTerminalConnect() == false)
             {
                 MessageBox.Show("На панели прибора " + m34401.GetDeviceType() + " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
@@ -254,7 +254,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -285,7 +285,7 @@ namespace B5_71_2_PRO
                 BP.SetStateVolt(setPoint);
                 Thread.Sleep(5000);
                 //измеряем напряжение
-                m34401.Connection();
+                m34401.Open();
                 m34401.WriteLine(Mult_34401A.DC.Voltage.Range.V100);
                 m34401.WriteLine(Mult_34401A.QueryValue);
 
@@ -309,7 +309,7 @@ namespace B5_71_2_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-                BufOperation.IsGood = s => {
+                BufOperation.IsGood = () => {
                     return (BufOperation.Getting < BufOperation.UpperTolerance) &
                            (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false;
                 };
@@ -403,7 +403,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             while (m34401.GetTerminalConnect() == false)
             {
                 MessageBox.Show("На панели прибора " + m34401.GetDeviceType() + " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
@@ -413,7 +413,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -443,7 +443,7 @@ namespace B5_71_2_PRO
 
                 //измеряем напряжение
                 Thread.Sleep(7000);
-                m34401.Connection();
+                m34401.Open();
                 m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
                 m34401.WriteLine(Mult_34401A.QueryValue);
                 var result = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
@@ -464,7 +464,7 @@ namespace B5_71_2_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-                BufOperation.IsGood = s => {
+                BufOperation.IsGood = () => {
                     return (BufOperation.Getting < BufOperation.UpperTolerance) &
                            (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false;
                 };
@@ -552,7 +552,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             while (m34401.GetTerminalConnect() == false)
             {
                 MessageBox.Show("На панели прибора " + m34401.GetDeviceType() + " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
@@ -562,7 +562,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -583,7 +583,7 @@ namespace B5_71_2_PRO
             BP.OnOutput();
 
             // ------ настроим нагрузку
-            n3306a.Connection();
+            n3306a.Open();
             n3306a.SetWorkingChanel();
             n3306a.SetResistanceFunc();
             n3306a.OnOutput();
@@ -596,14 +596,14 @@ namespace B5_71_2_PRO
 
             foreach (decimal resistance in arrResistanceVoltUnstable)
             {
-                n3306a.Connection();
+                n3306a.Open();
                 n3306a.SetResistanceRange(resistance);
                 n3306a.SetResistance(resistance); //ставим сопротивление
                 n3306a.Close();
                 // время выдержки
                 Thread.Sleep(7000);
                 //измерения
-                m34401.Connection();
+                m34401.Open();
                 m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
                 m34401.WriteLine(Mult_34401A.QueryValue);
                 // записываем результаты
@@ -626,7 +626,7 @@ namespace B5_71_2_PRO
             BufOperation.ErrorCalculation = ErrorCalculation;
             BufOperation.LowerTolerance = 0;
             BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-            BufOperation.IsGood = s => {
+            BufOperation.IsGood = () => {
                 return (BufOperation.Getting < BufOperation.UpperTolerance) &
                        (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
             };
@@ -695,13 +695,13 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             m34401.Close();
 
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -722,7 +722,7 @@ namespace B5_71_2_PRO
             BP.OnOutput();
 
             // ------ настроим нагрузку
-            n3306a.Connection();
+            n3306a.Open();
             n3306a.SetWorkingChanel();
             n3306a.SetResistanceFunc();
             n3306a.SetResistanceRange(arrResistanceVoltUnstable[0]);
@@ -730,7 +730,7 @@ namespace B5_71_2_PRO
             n3306a.OnOutput();
             n3306a.Close();
 
-            m34401.Connection();
+            m34401.Open();
 
             while (m34401.GetTerminalConnect())
             {
@@ -766,7 +766,7 @@ namespace B5_71_2_PRO
             };
 
             bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-            bufOperation.IsGood = s => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
                                        (bufOperation.Getting >= bufOperation.LowerTolerance);
             DataRow.Add(bufOperation);
 
@@ -844,7 +844,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -873,7 +873,7 @@ namespace B5_71_2_PRO
                 Thread.Sleep(2000);
 
                 //измеряем ток
-                n3306a.Connection();
+                n3306a.Open();
                 var result = n3306a.GetMeasCurr();
                 n3306a.Close();
                 AP.Math.MathStatistics.Round(ref result, 3);
@@ -886,7 +886,7 @@ namespace B5_71_2_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-                BufOperation.IsGood = s => {
+                BufOperation.IsGood = () => {
                     return (BufOperation.Getting < BufOperation.UpperTolerance) &
                            (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false;
                 };
@@ -978,7 +978,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -1006,7 +1006,7 @@ namespace B5_71_2_PRO
                 BP.SetStateCurr(setPoint);
                 Thread.Sleep(2000);
                 //измеряем ток
-                n3306a.Connection();
+                n3306a.Open();
                 var resultN3306A = n3306a.GetMeasCurr();
                 n3306a.Close();
                 AP.Math.MathStatistics.Round(ref resultN3306A, 3);
@@ -1022,7 +1022,7 @@ namespace B5_71_2_PRO
                 BufOperation.ErrorCalculation = ErrorCalculation;
                 BufOperation.LowerTolerance = BufOperation.Expected - BufOperation.Error;
                 BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-                BufOperation.IsGood = s => {
+                BufOperation.IsGood = () => {
                     return (BufOperation.Getting < BufOperation.UpperTolerance) &
                            (BufOperation.Getting > BufOperation.LowerTolerance) ? true : false;
                 };
@@ -1110,7 +1110,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -1136,7 +1136,7 @@ namespace B5_71_2_PRO
 
             foreach (decimal resistance in arrResistanceCurrUnstable)
             {
-                n3306a.Connection();
+                n3306a.Open();
                 n3306a.SetResistanceRange(resistance);
                 n3306a.SetResistance(resistance);
                 Thread.Sleep(2000);
@@ -1159,7 +1159,7 @@ namespace B5_71_2_PRO
             BufOperation.ErrorCalculation = ErrorCalculation;
             BufOperation.LowerTolerance = 0;
             BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-            BufOperation.IsGood = s => {
+            BufOperation.IsGood = () => {
                 return (BufOperation.Getting < BufOperation.UpperTolerance) &
                        (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
             };
@@ -1233,7 +1233,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к нагрузке
             N3306A n3306a = new N3306A(1);
             n3306a.Devace();
-            n3306a.Connection();
+            n3306a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3306a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -1257,7 +1257,7 @@ namespace B5_71_2_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
 
             //Начинаем измерять пульсации
 
@@ -1296,7 +1296,7 @@ namespace B5_71_2_PRO
             BufOperation.ErrorCalculation = ErrorCalculation;
             BufOperation.LowerTolerance = 0;
             BufOperation.UpperTolerance = BufOperation.Expected + BufOperation.Error;
-            BufOperation.IsGood = s => {
+            BufOperation.IsGood = () => {
                 return (BufOperation.Getting < BufOperation.UpperTolerance) &
                        (BufOperation.Getting >= BufOperation.LowerTolerance) ? true : false;
             };

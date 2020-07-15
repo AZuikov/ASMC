@@ -18,8 +18,8 @@ namespace ASMC.Data.Model
         public Action InitWork { get; set; }
 
         /// <inheritdoc />
-        public Action CompliteWork{  get;     set; }
-        public Func<CancellationTokenSource, Task>BodyWork
+        public Func<bool> CompliteWork{  get;     set; }
+        public Action BodyWork
         {
             get; set;
         }
@@ -27,9 +27,11 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public async Task WorkAsync(CancellationTokenSource token )
         {
-            InitWork();
-            await BodyWork(token);
-            CompliteWork();
+            do
+            {
+                InitWork();
+                await Task.Factory.StartNew(BodyWork, token.Token);
+            } while (!CompliteWork());
         }
 
         /// <inheritdoc />
@@ -41,7 +43,7 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public string Comment { get; set; }
         /// <inheritdoc />
-        public Predicate<T> IsGood { get; set; }
+        public Func<bool> IsGood { get; set; }
     }
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {

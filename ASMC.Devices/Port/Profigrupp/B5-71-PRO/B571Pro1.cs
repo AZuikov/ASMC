@@ -7,8 +7,13 @@
     /// </summary>
     public class B571Pro1 : B5_71_PRO
     {
+        public B571Pro1()
+        {
+        }
+
         public B571Pro1(string PortName) : base(PortName)
         {
+            DeviceType = "Б5-71/1-ПРО";
             VoltMax = 30;
             CurrMax = 10;
             //погрешность для нестабильности по напряжению
@@ -21,8 +26,6 @@
             tolleranceCurrentPuls = 5;
         }
 
-       
-
-       
+   
     }
 }

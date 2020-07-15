@@ -17,12 +17,12 @@ namespace ASMC.Data.Model.Interface
         {
             get; set;
         }
-        Func<CancellationTokenSource, Task> BodyWork
+        Action BodyWork
         {
             get; set;
         }
 
-        Action CompliteWork
+        Func<bool> CompliteWork
         {
             get;
             set;
@@ -58,7 +58,7 @@ namespace ASMC.Data.Model.Interface
         /// <summary>
         /// Позволяет задать условие провеверки соответствия полученого знаечния ожидаемому.
         /// </summary>
-        Predicate<T> IsGood
+        Func<bool> IsGood
         {
             get; set;
         }

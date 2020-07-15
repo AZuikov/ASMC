@@ -361,7 +361,9 @@ namespace ASMC.Devices.Port.Profigrupp
             ComPort.EndLineTerm = "\r";
         }
 
-       
+        protected B5_71_PRO()
+        {
+        }
     }
 
     public abstract class AbstractB5_71_PRO :ComPort
@@ -516,6 +518,9 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns></returns>
         public abstract bool OffOutput();
 
+        protected AbstractB5_71_PRO()
+        {
+        }
 
         protected AbstractB5_71_PRO(string PortName) : base(PortName)
         {

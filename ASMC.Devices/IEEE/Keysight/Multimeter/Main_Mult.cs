@@ -20,7 +20,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public bool TerminalSet()
         {
             string result;
-            Connection();
+            Open();
             WriteLine(QueryTerminal);
             result = ReadString();
             Close();

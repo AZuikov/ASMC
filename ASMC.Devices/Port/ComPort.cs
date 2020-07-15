@@ -13,6 +13,10 @@ namespace ASMC.Devices.Port
 {
     public class ComPort
     {
+        /// <summary>
+        /// Позволяет получать имя устройства.
+        /// </summary>
+        public string DeviceType { get; protected set; }
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         protected SerialPort Sp;
         /// <summary>
@@ -28,29 +32,27 @@ namespace ASMC.Devices.Port
                 Sp.ReadTimeout = value;
             }
         }
+        public ComPort()
+        {
+        }
         public ComPort(string portName)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)SpeedRate.R9600,Parity.None, (int)DataBit.Bit8, StopBits.One);            
         }
         public ComPort(string portName, SpeedRate bautRate)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, Parity.None, (int)DataBit.Bit8, StopBits.One);
         }
         public ComPort(string portName, SpeedRate bautRate, Parity parity)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, parity, (int)DataBit.Bit8, StopBits.One);
         }
         public ComPort(string portName, SpeedRate bautRate, Parity parity, DataBit databit)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, StopBits.One);
         }
         public ComPort(string portName, SpeedRate bautRate, Parity parity, DataBit databit, StopBits stopbits)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, stopbits);
         }
         /// <summary>

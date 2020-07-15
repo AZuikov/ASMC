@@ -241,7 +241,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             while (m34401.GetTerminalConnect() == false)
             {
                 MessageBox.Show("На панели прибора " + m34401.GetDeviceType() + " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
@@ -251,7 +251,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -281,7 +281,7 @@ namespace B5_71_4_PRO
                 BP.SetStateVolt(setPoint);
                 Thread.Sleep(5000);
                 //измеряем напряжение
-                m34401.Connection();
+                m34401.Open();
                 m34401.WriteLine(Mult_34401A.DC.Voltage.Range.V100);
                 m34401.WriteLine(Mult_34401A.QueryValue);
 
@@ -397,7 +397,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             while (m34401.GetTerminalConnect() == false)
             {
                 MessageBox.Show("На панели прибора " + m34401.GetDeviceType() + " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
@@ -407,7 +407,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -437,7 +437,7 @@ namespace B5_71_4_PRO
 
                 //измеряем напряжение
                 Thread.Sleep(7000);
-                m34401.Connection();
+                m34401.Open();
                 m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
                 m34401.WriteLine(Mult_34401A.QueryValue);
                 var result = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString(), Mult_34401A.Multipliers.SI);
@@ -546,7 +546,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             while (m34401.GetTerminalConnect() == false)
             {
                 MessageBox.Show("На панели прибора " + m34401.GetDeviceType() + " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
@@ -556,7 +556,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -570,7 +570,7 @@ namespace B5_71_4_PRO
             //-------------------------------------------------
 
            // ------ настроим нагрузку
-            n3303a.Connection();
+            n3303a.Open();
             n3303a.SetWorkingChanel();
             n3303a.SetResistanceFunc();
             //предварительно включаем нагрузку, что бы избежать резкого переходного процесса
@@ -592,7 +592,7 @@ namespace B5_71_4_PRO
             
             foreach (decimal resistance in arrResistanceVoltUnstable)
             {
-                n3303a.Connection();
+                n3303a.Open();
                 n3303a.SetResistanceRange(resistance);
                 n3303a.SetResistance(resistance); //ставим сопротивление
                 n3303a.Close();
@@ -600,7 +600,7 @@ namespace B5_71_4_PRO
                 // время выдержки
                 Thread.Sleep(3000);
                 //измерения
-                m34401.Connection();
+                m34401.Open();
                 m34401.WriteLine(Mult_34401A.DC.Voltage.Range.Auto);
                 m34401.WriteLine(Mult_34401A.QueryValue);
                 // записываем результаты
@@ -693,13 +693,13 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
             m34401.Close();
 
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -721,7 +721,7 @@ namespace B5_71_4_PRO
             BP.SetStateVolt(BP.VoltMax);
             BP.OnOutput();
 
-            m34401.Connection();
+            m34401.Open();
 
             while (m34401.GetTerminalConnect())
             {
@@ -833,7 +833,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -862,7 +862,7 @@ namespace B5_71_4_PRO
                 Thread.Sleep(4000);
 
                 //измеряем ток
-                n3303a.Connection();
+                n3303a.Open();
                 var result = n3303a.GetMeasCurr();
                 n3303a.Close();
                 AP.Math.MathStatistics.Round(ref result, 3);
@@ -966,7 +966,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -995,7 +995,7 @@ namespace B5_71_4_PRO
 
                 Thread.Sleep(4000);
                 //измеряем ток
-                n3303a.Connection();
+                n3303a.Open();
                 var resultn3303a = n3303a.GetMeasCurr();
                 n3303a.Close();
                 AP.Math.MathStatistics.Round(ref resultn3303a, 3);
@@ -1098,7 +1098,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -1124,7 +1124,7 @@ namespace B5_71_4_PRO
 
             foreach (decimal resistance in arrResistanceCurrUnstable)
             {
-                n3303a.Connection();
+                n3303a.Open();
                 n3303a.SetResistanceRange(resistance);
                 n3303a.SetResistance(resistance);
                 Thread.Sleep(5000);
@@ -1219,7 +1219,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к нагрузке
             N3303A n3303a = new N3303A(2);
             n3303a.Devace();
-            n3303a.Connection();
+            n3303a.Open();
             //массив всех установленных модулей
             string[] InstalledMod = n3303a.GetInstalledModulesName();
             //Берем канал который нам нужен
@@ -1243,7 +1243,7 @@ namespace B5_71_4_PRO
             //------- Создаем подключение к мультиметру
             Mult_34401A m34401 = new Mult_34401A();
             m34401.Devace();
-            m34401.Connection();
+            m34401.Open();
 
             //Начинаем измерять пульсации
 
