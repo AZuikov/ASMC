@@ -166,7 +166,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override async void StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationTokenSource token)
         {
            
             var bo = new BasicOperation<bool> {Expected = true};
@@ -220,11 +220,27 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationTokenSource token)
         {
+            //var bo = new BasicOperation<bool> { Expected = true };
+            //bo.IsGood = () => bo.Getting;
+
+            //DataRow.Add(bo);
             var bo = new BasicOperation<bool> { Expected = true };
             bo.IsGood = () => bo.Getting;
-
+            bo.InitWork = () =>
+            {
+                this.MessageBoxService.Show("Начало операции", "Начало операции1", MessageButton.OK, MessageIcon.Information,
+                    MessageResult.No);
+            };
+            bo.CompliteWork = () =>
+            {
+                this.MessageBoxService.Show("Конец операции", "Конец операции1", MessageButton.OK, MessageIcon.Information,
+                    MessageResult.No);
+                return false;
+            };
+            bo.BodyWork = () => { Thread.Sleep(10000); };
+            await bo.WorkAsync(token);
             DataRow.Add(bo);
         }
 
@@ -306,7 +322,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             var mult = new Mult_34401A();
             var load = new N3306A(1);
@@ -563,7 +579,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             //------- Создаем подключение к мультиметру
             var m34401 = new Mult_34401A();
@@ -705,7 +721,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             //------- Создаем подключение к мультиметру
             var m34401 = new Mult_34401A();
@@ -854,7 +870,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             //------- Создаем подключение к мультиметру
             var m34401 = new Mult_34401A();
@@ -1017,7 +1033,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             _bp = new B571Pro1(_portName);
 
@@ -1153,7 +1169,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             _bp = new B571Pro1(_portName);
 
@@ -1283,7 +1299,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             _bp = new B571Pro1(_portName);
 
@@ -1410,7 +1426,7 @@ namespace B5_71_1_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationTokenSource token)
         {
             _bp = new B571Pro1(_portName);
 

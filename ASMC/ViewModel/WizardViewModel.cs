@@ -287,7 +287,9 @@ namespace ASMC.ViewModel
 
         private async void OnStartCommand()
         {
-            if (SelectionItemOperation == null)  SelectProgram.AbstraktOperation.StartWorkAsync(new CancellationTokenSource());
+#pragma warning disable 4014
+            if (SelectionItemOperation == null)   SelectProgram.AbstraktOperation.StartWorkAsync(new CancellationTokenSource());
+#pragma warning restore 4014
         }
 
         private void OnSelectProgramCallback()

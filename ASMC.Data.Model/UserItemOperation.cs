@@ -257,17 +257,17 @@ namespace ASMC.Data.Model
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public void StartWorkAsync(CancellationTokenSource source)
+        public async Task StartWorkAsync(CancellationTokenSource source)
         {
-            var a = SelectedOperation.UserItemOperation.First();
-            CurrentUserItemOperationBase = a;
-            a.StartWork(source);
-            //foreach(var opertion in SelectedOperation.UserItemOperation)
-            //{
-            //    CurrentUserItemOperationBase = opertion;
-            //    ChangeShemaEvent?.Invoke(opertion);
-            //    opertion.StartWork(source);
-            //}
+            //var a = SelectedOperation.UserItemOperation.First();
+            //CurrentUserItemOperationBase = a;
+            //a.StartWork(source);
+            foreach(var opertion in SelectedOperation.UserItemOperation)
+            {
+                CurrentUserItemOperationBase = opertion;
+                ChangeShemaEvent?.Invoke(opertion);
+                await opertion.StartWork(source);
+            }
         }
 
         #endregion
@@ -308,7 +308,7 @@ namespace ASMC.Data.Model
         #region Methods
 
         void StartSinglWork(Guid guid);
-       void StartWork(CancellationTokenSource token);
+       Task StartWork(CancellationTokenSource token);
 
         #endregion
 
@@ -360,7 +360,7 @@ namespace ASMC.Data.Model
             get; set;
         }
         /// <inheritdoc />
-        public abstract void StartWork(CancellationTokenSource token);
+        public abstract Task StartWork(CancellationTokenSource token);
 
       
 
