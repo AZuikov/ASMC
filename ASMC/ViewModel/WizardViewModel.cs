@@ -62,6 +62,8 @@ namespace ASMC.ViewModel
         private IProgram _selectProgram;
         private AbstraktOperation.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
+        private IDevice[] _testDevices;
+        private string[] _addresDivece;
 
         #endregion
 
@@ -90,6 +92,12 @@ namespace ASMC.ViewModel
             get => _controlDevices;
             set => SetProperty(ref _controlDevices, value, nameof(ControlDevices));
         }
+        public IDevice[] TestDevices
+        {
+            get => _testDevices;
+            set => SetProperty(ref _testDevices, value, nameof(TestDevices));
+        }
+        
 
         public AbstraktOperation.TypeOpeation? EnableOpeation
         {
@@ -169,7 +177,11 @@ namespace ASMC.ViewModel
             get => _userItemOperation;
             set => SetProperty(ref _userItemOperation, value, nameof(UserItemOperation));
         }
-
+        public string[] AddresDivece
+        {
+            get => _addresDivece;
+            set => SetProperty(ref _addresDivece, value, nameof(AddresDivece));
+        }
         #endregion
 
         public WizardViewModel()
@@ -200,7 +212,7 @@ namespace ASMC.ViewModel
         {
            SelectProgram.AbstraktOperation.SelectedOperation.RefreshDevice();
         }
-
+    
         #region Methods
 
         protected override void OnInitialized()
@@ -285,7 +297,7 @@ namespace ASMC.ViewModel
             SelectedTabItem = SelectedTabItem + 1;
         }
 
-        private async void OnStartCommand()
+        private void OnStartCommand()
         {
 #pragma warning disable 4014
             if (SelectionItemOperation == null)   SelectProgram.AbstraktOperation.StartWorkAsync(new CancellationTokenSource());

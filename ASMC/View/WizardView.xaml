@@ -257,7 +257,7 @@
                         <GridViewColumn Header="Строка подключения" Width="150" >
                           <GridViewColumn.CellTemplate >
                             <DataTemplate>
-                              <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=Aray}"/>
+                              <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding AddresDivece}"/>
                             </DataTemplate>
                           </GridViewColumn.CellTemplate>
                         </GridViewColumn>

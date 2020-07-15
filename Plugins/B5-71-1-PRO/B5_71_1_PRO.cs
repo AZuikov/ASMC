@@ -103,16 +103,16 @@ namespace B5_71_1_PRO
             //Перечень операций поверки
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new Oper0VisualTest(this),
-                new Oper1Oprobovanie(this),
+                //new Oper0VisualTest(this),
+                //new Oper1Oprobovanie(this),
                 new Oper2DcvOutput(this),
-                new Oper3DcvMeasure(this),
-                new Oper4VoltUnstable(this),
-                new Oper6DciOutput(this),
-                new Oper7DciMeasure(this),
-                new Oper8DciUnstable(this),
-                new Oper5VoltPulsation(this),
-                new Oper9DciPulsation(this)
+                //new Oper3DcvMeasure(this),
+                //new Oper4VoltUnstable(this),
+                //new Oper6DciOutput(this),
+                //new Oper7DciMeasure(this),
+                //new Oper8DciUnstable(this),
+                //new Oper5VoltPulsation(this),
+                //new Oper9DciPulsation(this)
             };
         }
 
@@ -180,9 +180,9 @@ namespace B5_71_1_PRO
             {
                 this.MessageBoxService.Show("Конец операции", "Конец операции1", MessageButton.OK, MessageIcon.Information,
                     MessageResult.No);
-                return false;
+                return true;
             };
-            bo.BodyWork = () => { Thread.Sleep(10000); };
+            bo.BodyWork = () => { Thread.Sleep(3000); };
             await bo.WorkAsync(token);
             DataRow.Add(bo);
         }
@@ -230,16 +230,16 @@ namespace B5_71_1_PRO
             bo.IsGood = () => bo.Getting;
             bo.InitWork = () =>
             {
-                this.MessageBoxService.Show("Начало операции", "Начало операции1", MessageButton.OK, MessageIcon.Information,
+                this.MessageBoxService.Show("Начало операции", "Начало операции2", MessageButton.OK, MessageIcon.Information,
                     MessageResult.No);
             };
             bo.CompliteWork = () =>
             {
-                this.MessageBoxService.Show("Конец операции", "Конец операции1", MessageButton.OK, MessageIcon.Information,
+                this.MessageBoxService.Show("Конец операции", "Конец операции2", MessageButton.OK, MessageIcon.Information,
                     MessageResult.No);
-                return false;
+                return true;
             };
-            bo.BodyWork = () => { Thread.Sleep(10000); };
+            bo.BodyWork = () => { Thread.Sleep(3000); };
             await bo.WorkAsync(token);
             DataRow.Add(bo);
         }
@@ -341,11 +341,17 @@ namespace B5_71_1_PRO
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                mult.Stringconection = GetStringConnect(mult.GetDeviceType());
-                load.Stringconection = GetStringConnect(load.GetDeviceType());
+                //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
+                //load.Stringconection = GetStringConnect(load.GetDeviceType());
               
                 try
                 {
+                    operation.InitWork = () =>
+                    {
+                        MessageBoxService.Show("Нагрузка",
+                            $"Подключите к модулю", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                        /*схема*/
+                    };
                     operation.BodyWork = Test;
                     void Test()
                     {
@@ -353,7 +359,7 @@ namespace B5_71_1_PRO
                         load.Open();
                         load.SetWorkingChanel();
                         load.OffOutput();
-                        bp.InitDevice(GetStringConnect(bp.DeviceType));
+                        //bp.InitDevice(GetStringConnect(bp.DeviceType));
                         bp.Open();
 
 
@@ -388,17 +394,13 @@ namespace B5_71_1_PRO
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                 (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => operation.IsGood();
-                        operation.InitWork = () =>
-                        {
-                            MessageBoxService.Show("Нагрузка",
-                                $"Подключите к модулю {load.GetInstalledModulesName().FirstOrDefault(q => q.Channel == 1).Type}", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                            /*схема*/
-                        };
+                        
                         DataRow.Add(operation);
-                       
-                    } 
-                    bp.OffOutput();
-                    load.OffOutput();
+                        bp.OffOutput();
+                        load.OffOutput();
+                    }   
+                    await operation.WorkAsync(token);
+                 
                 }
                 finally
                 {
