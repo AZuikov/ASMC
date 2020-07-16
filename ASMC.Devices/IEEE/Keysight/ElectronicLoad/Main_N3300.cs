@@ -58,6 +58,19 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             return this.ModuleModel;
         }
 
+        /// <summary>
+        /// Проверяет установлен ли в нагрузке такой модуль
+        /// </summary>
+        /// <returns>true если модуль с такой моделью установлен</returns>
+        public bool FindThisModule()
+        {
+            //если в шасси стоит несколько блоков с одинаковой моделью, то метод завершит работу на первом же
+            foreach (Model model in GetInstalledModulesName())
+            {
+                if (model.Type.Equals(this.ModuleModel)) return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Возвращает массив с моделями установленных вставок нагрузки
@@ -67,7 +80,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             var model = new List<Model>();
             this.WriteLine("*RDT?");
-            Thread.Sleep(300);
+            Thread.Sleep(10);
             string answer = this.ReadLine().TrimEnd('\n');
             var reg = new Regex(@".+\d+");
             foreach (var mod in answer.Split(';'))
@@ -178,7 +191,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("CURR:LEV " + currLevelIn.ToString("G17", new CultureInfo("en-US")));
-            Thread.Sleep(700);
+            Thread.Sleep(10);
             //!!!!   доделать с прибором   !!!!!
             decimal currLevAnswer = this.GetCurrLevel();
 
@@ -210,9 +223,9 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         public decimal GetMeasCurr()
         {
-            Thread.Sleep(1000);
+           
             this.WriteLine("MEASure:CURRent?");
-            Thread.Sleep(1000);
+            Thread.Sleep(10);
             string answer = this.ReadLine();
 
             string[] val = answer.TrimEnd('\n').Split('E');
@@ -228,7 +241,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("MEAS:VOLT?");
-            Thread.Sleep(300);
+            Thread.Sleep(10);
             string answer = this.ReadLine();
             
 
@@ -239,7 +252,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("MEASure:POWer?");
-            Thread.Sleep(300);
+            Thread.Sleep(10);
             string answer = this.ReadLine();
             
 
@@ -346,7 +359,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("SENS:CURR:RANGE?");
-            Thread.Sleep(300);
+            Thread.Sleep(10);
             string answer = this.ReadLine();
             
 
@@ -363,7 +376,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             
             //отправляем команду с уставкой по вольтам
             this.WriteLine("VOLT " + inLevel.ToString("G17", new CultureInfo("en-US")));
-            Thread.Sleep(100);
+            Thread.Sleep(10);
             
             //удостоверимся, что значение принято
             this.WriteLine("VOLT?");
@@ -405,7 +418,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("outp 1");
-            Thread.Sleep(200);
+            Thread.Sleep(10);
             this.WriteLine("outp?");
             int answer = int.Parse(this.ReadLine());
             
@@ -422,7 +435,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("outp 0");
-            Thread.Sleep(200);
+            Thread.Sleep(10);
             this.WriteLine("outp?");
             int answer = int.Parse(this.ReadLine());
             
