@@ -1334,60 +1334,68 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro1(_portName);
 
-            //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
-            n3306A.Devace();
-            n3306A.Open();
-            //массив всех установленных модулей
-            var installedMod = n3306A.GetInstalledModulesName();
-            //Берем канал который нам нужен
-            //var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            //if(!currModel[1].Equals(n3306A.GetModuleModel()))
-            //    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
 
-            n3306A.SetWorkingChanel();
-            n3306A.SetVoltFunc();
-            n3306A.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
-            n3306A.OnOutput();
-            n3306A.Close();
-            //-------------------------------------------------
+            #region OldCodeDciOutput
+            //_bp = new B571Pro1(_portName);
 
-            //инициализация блока питания
-            _bp.InitDevice(_portName);
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
+            ////------- Создаем подключение к нагрузке
+            //var n3306A = new N3306A(1);
+            //n3306A.Devace();
+            //n3306A.Open();
+            ////массив всех установленных модулей
+            //var installedMod = n3306A.GetInstalledModulesName();
+            ////Берем канал который нам нужен
+            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+            ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
 
-            foreach(var coef in MyPoint)
-            {
-                var setPoint = coef * _bp.CurrMax;
-                //ставим точку напряжения
-                _bp.SetStateCurr(setPoint);
-                Thread.Sleep(2000);
+            //n3306A.SetWorkingChanel();
+            //n3306A.SetVoltFunc();
+            //n3306A.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            //n3306A.OnOutput();
+            //n3306A.Close();
+            ////-------------------------------------------------
 
-                //измеряем ток
-                n3306A.Open();
-                var result = n3306A.GetMeasCurr();
-                n3306A.Close();
-                MathStatistics.Round(ref result, 3);
+            ////инициализация блока питания
+            //_bp.InitDevice(_portName);
+            //_bp.SetStateCurr(_bp.CurrMax);
+            //_bp.SetStateVolt(_bp.VoltMax);
+            //_bp.OnOutput();
 
-                //забиваем результаты конкретного измерения для последующей передачи их в протокол
-                var bufOperation = new BasicOperationVerefication<decimal>();
+            //foreach (var coef in MyPoint)
+            //{
+            //    var setPoint = coef * _bp.CurrMax;
+            //    //ставим точку напряжения
+            //    _bp.SetStateCurr(setPoint);
+            //    Thread.Sleep(2000);
 
-                bufOperation.Expected = setPoint;
-                bufOperation.Getting = result;
-                bufOperation.ErrorCalculation = ErrorCalculation;
-                bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
-                bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-                bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                           (bufOperation.Getting > bufOperation.LowerTolerance);
-                DataRow.Add(bufOperation);
-            }
+            //    //измеряем ток
+            //    n3306A.Open();
+            //    var result = n3306A.GetMeasCurr();
+            //    n3306A.Close();
+            //    MathStatistics.Round(ref result, 3);
 
-            _bp.OffOutput();
-            _bp.Close();
+            //    //забиваем результаты конкретного измерения для последующей передачи их в протокол
+            //    var bufOperation = new BasicOperationVerefication<decimal>();
+
+            //    bufOperation.Expected = setPoint;
+            //    bufOperation.Getting = result;
+            //    bufOperation.ErrorCalculation = ErrorCalculation;
+            //    bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
+            //    bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            //    bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            //                               (bufOperation.Getting > bufOperation.LowerTolerance);
+            //    DataRow.Add(bufOperation);
+            //}
+
+            //_bp.OffOutput();
+            //_bp.Close();
+
+
+            #endregion
+
+
         }
 
    

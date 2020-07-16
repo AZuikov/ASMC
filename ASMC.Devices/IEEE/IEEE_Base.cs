@@ -268,66 +268,85 @@ namespace ASMC.Devices.IEEE
         /// Получить список всех устройств
         /// </summary>
         /// <returns></returns>
-        public List<string> GetAllDevace()
+        public List<string> GetAllDevace
         {
-            var arr = new List<string>();
+            get { var arr = new List<string>();
             arr = (List<string>) GlobalResourceManager.Find();
-            return arr;
+            return arr;}
+            
         }
 
         /// <summary>
         /// Позволяет получить фирму-производитель устройства от текущей сессии
         /// </summary>
         /// <returns>Возвращает фирму-производитель устройства</returns>
-        public string GetDeviceFirm()
+        public string GetDeviceFirm
         {
-            if (_words == null) GetBaseInfoFromDevice();
-            if(_words != null) return _words[0];
-            return "NO TYPE";
+            get{
+                if (_words == null) GetBaseInfoFromDevice();
+                if(_words != null) return _words[0];
+                return "NO TYPE";
+               }
+            
         }
 
         /// <summary>
         /// Позволяет получить зоводской номер устройства от текущей сессии
         /// </summary>
         /// <returns>Возвращает заводской номер устройства</returns>
-        public string GetDeviceNumber()
+        public string GetDeviceSerialNumber
         {
-            if (_words == null) GetBaseInfoFromDevice();
-            if (_words != null) return _words[2];
-            return "NO Device Model";
+            get
+            {
+                if (_words == null) GetBaseInfoFromDevice();
+                if (_words != null) return _words[2];
+                return "NO Device Serial Number";
+            }
+            
         }
 
         /// <summary>
         /// Позволяет получить идентификационный номер ПО
         /// </summary>
         /// <returns>Возвращает идентификационный номер ПО устройства</returns>
-        public string GetDevicePo()
+        public string GetDeviceFirmwareVersion
         {
-            if (_words == null) GetBaseInfoFromDevice();
-            if (_words != null)
+            get
             {
-                var arr = _words[3].Split('-');
-                return arr[0];
-            }
+                if (_words == null) GetBaseInfoFromDevice();
+                if (_words != null)
+                {
+                    var arr = _words[3].Split('-');
+                    return arr[0];
+                }
 
-            return "NO Firmware Version";
+                return "NO Firmware Version";
+            }
+           
         }
 
         /// <summary>
         /// Позволяет получить тип устройства от текущей сессии
         /// </summary>
         /// <returns>Возвращает тип устройства</returns>
-        public string GetDeviceType()
+        public string GetDeviceType
         {
-            if (_words == null) GetBaseInfoFromDevice();
-            if (_words != null) return _words[2];
-            return "NO Device Type";
+            get
+            {
+                if (_words == null) GetBaseInfoFromDevice();
+                if (_words != null) return _words[2];
+                return "NO Device Type";
+            }
+            
         }
 
         public List<string> GetOption()
         {
-            WriteLine(QueryConfig);
+            
+                WriteLine(QueryConfig);
             return new List<string>(ReadString().Split(','));
+           
+            
         }
 
         /// <summary>
