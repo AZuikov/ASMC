@@ -73,10 +73,10 @@ namespace ASMC.Devices.Port.APPA
         }
         public void SendQuery()
         {
-            if (Sp.IsOpen)
+            
+            if (Open())
             {
-                Sp.DataReceived += SerialPort_DataReceived;
-                Sp.Write(_sendData, 0, _sendData.Length);
+                Write(_sendData, 0, _sendData.Length);
                 _wait.Start();
             }
             else
@@ -85,6 +85,8 @@ namespace ASMC.Devices.Port.APPA
             }
 
         }
+
+      
         /// <summary>
         /// Положение переключатиля
         /// </summary>
@@ -134,7 +136,8 @@ namespace ASMC.Devices.Port.APPA
             OnPress = 0x01,
             DoublePress = 0x02
         }
-        private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+
+        protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             _byffer.Clear();
             var port = (SerialPort)sender;
@@ -149,9 +152,9 @@ namespace ASMC.Devices.Port.APPA
                         _byffer.Add((byte)port.ReadByte());
                     }
                 }
-                Sp.DiscardInBuffer();
+                DiscardInBuffer();
                 ChechetSumm();
-                Sp.DataReceived -= SerialPort_DataReceived;
+                //Sp.DataReceived -= SerialPort_DataReceived;
             }
             catch (Exception a)
             {

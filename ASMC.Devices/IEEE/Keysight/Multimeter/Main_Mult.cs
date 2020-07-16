@@ -608,9 +608,10 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         }
         private double Convert(string date, string Mult = "")
-        {            
+        {
+
             double[] dDate = new double[2];
-            string[] Value = date.Split('E');
+            string[] Value = date.Replace(".", ",").Split('E');
             dDate[0] = System.Convert.ToDouble(Value[0]);
             dDate[1] = System.Convert.ToDouble(Value[1]);
             switch (Mult)

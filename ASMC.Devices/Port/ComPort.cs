@@ -2,23 +2,39 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
-using System.Globalization;
 using System.IO;
 using System.IO.Ports;
-using System.Threading;
-using System.Windows.Forms;
 using NLog;
 
 namespace ASMC.Devices.Port
 {
-    public class ComPort
+    public class ComPort : IDisposable
     {
         /// <summary>
         /// Позволяет получать имя устройства.
         /// </summary>
         public string DeviceType { get; protected set; }
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        protected SerialPort Sp;
+        private readonly SerialPort _sp;
+        protected virtual void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            
+
+        }
+        public string PortName
+        { get => _sp.PortName;
+            set => _sp.PortName = value;
+        }
+        public SpeedRate BaudRate
+        {
+            get => (SpeedRate) _sp.BaudRate;
+            set => _sp.BaudRate=(int)value;
+        }
+        public Parity Parity
+        {
+            get => _sp.Parity;
+            set => _sp.Parity = value;
+        }
         /// <summary>
         /// Установка таймаута, изначально выставлено 500 мс
         /// </summary>
@@ -28,39 +44,52 @@ namespace ASMC.Devices.Port
         public int SetTimeout {
             set
             {
-                Sp.WriteTimeout = value;
-                Sp.ReadTimeout = value;
+                _sp.WriteTimeout = value;
+                _sp.ReadTimeout = value;
             }
+        }
+        public DBit DataBit
+        {
+            get => (DBit) _sp.DataBits;
+            set => _sp.DataBits = (int) value;
         }
         public ComPort()
         {
+            _sp= new SerialPort();
+          
         }
         public ComPort(string portName)
         {
-            Sp = new SerialPort(portName, (int)SpeedRate.R9600,Parity.None, (int)DataBit.Bit8, StopBits.One);            
+            _sp = new SerialPort(portName, (int)SpeedRate.R9600,Parity.None, (int)DBit.Bit8, StopBits.One);            
         }
         public ComPort(string portName, SpeedRate bautRate)
         {
-            Sp = new SerialPort(portName, (int)bautRate, Parity.None, (int)DataBit.Bit8, StopBits.One);
+            _sp = new SerialPort(portName, (int)bautRate, Parity.None, (int)DBit.Bit8, StopBits.One);
         }
         public ComPort(string portName, SpeedRate bautRate, Parity parity)
         {
-            Sp = new SerialPort(portName, (int)bautRate, parity, (int)DataBit.Bit8, StopBits.One);
+            _sp = new SerialPort(portName, (int)bautRate, parity, (int)DBit.Bit8, StopBits.One);
         }
-        public ComPort(string portName, SpeedRate bautRate, Parity parity, DataBit databit)
+        public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit)
         {
-            Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, StopBits.One);
+            _sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, StopBits.One);
         }
-        public ComPort(string portName, SpeedRate bautRate, Parity parity, DataBit databit, StopBits stopbits)
+        public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits)
         {
-            Sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, stopbits);
+            _sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, stopbits);
+            
+        }
+        public StopBits StopBit
+        {
+            get => _sp.StopBits;
+            set => _sp.StopBits = value;
         }
         /// <summary>
         /// Позволяет задать или получить терменал окончания строки.
         /// </summary>
         public string EndLineTerm {
-            set { Sp.NewLine = value; }
-            get { return Sp.NewLine; }
+            set { _sp.NewLine = value; }
+            get { return _sp.NewLine; }
         }
         /// <summary>
         /// Открывает соединение с Com портом.
@@ -68,10 +97,15 @@ namespace ASMC.Devices.Port
         /// <returns>Возвращает True, если порт открыт, иначе False</returns>
         public bool Open()
         {
-            if (Sp.IsOpen) return true;
+            if (_sp.IsOpen)
+            {
+                Logger.Error($"Порт {_sp.PortName} уже открыт.");
+                return true;
+            }
             try
             {
-                Sp.Open();
+                _sp.Open();
+                _sp.DataReceived += SerialPort_DataReceived;
             }
             catch (UnauthorizedAccessException e)
             {
@@ -82,10 +116,16 @@ namespace ASMC.Devices.Port
         }
         public void Close()
         {
-            if (!Sp.IsOpen) return;
             try
-            {  
-                Sp.Close();
+            {
+                if (!_sp.IsOpen)
+                {
+                Logger.Debug($"Порт {_sp.PortName} уже закрыт.");
+                return;
+                 }
+
+                _sp.DataReceived -= SerialPort_DataReceived;
+                _sp.Close();
             }
             catch(IOException e)
             {
@@ -100,10 +140,10 @@ namespace ASMC.Devices.Port
         /// <returns>Возвращает рузультат чтения</returns>
         public string ReadLine()
         {
-            if (!Sp.IsOpen) return null;
+            if (!_sp.IsOpen) return null;
             try
             {
-                return Sp.ReadLine();
+                return _sp.ReadLine();
             }
             catch (TimeoutException e)
             {
@@ -115,18 +155,32 @@ namespace ASMC.Devices.Port
             }
             return null;
         }
+        protected void Write(byte[] sendData, int v, int length)
+        {
+            if (!_sp.IsOpen)
+            {
+                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{sendData} не выполнена");
+                return;
+            }
+            _sp.Write(sendData, v, length);
+        }
+
+        protected void DiscardInBuffer()
+        {
+            _sp.DiscardInBuffer();
+        }
         /// <summary>
         /// Записывает в порт строку.
         /// </summary>
         /// <param name="data"></param>
         public void Write(string data)
         {
-            if(!Sp.IsOpen)
+            if(!_sp.IsOpen)
             {
-                Logger.Warn($@"Запись в порт {Sp.PortName}данных:{data} не выполнена");
+                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
                 return;
             }
-            Sp.Write(data);
+            _sp.Write(data);
         }
         /// <summary>
         /// Записывает строку оканчивающуюся терминальнм символом в ComPort.
@@ -134,21 +188,28 @@ namespace ASMC.Devices.Port
         /// <returns>Возвращает рузультат чтения</returns>
         public void WriteLine(string data)
         {
-            if (!Sp.IsOpen)
+            if (!_sp.IsOpen)
             {
-                Logger.Warn($@"Запись в порт {Sp.PortName}данных:{data} не выполнена");
+                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
                 return;
             }
-            Sp.WriteLine(data);
+            _sp.WriteLine(data);
         }
         public static string[] GetPortName()
         {
             return SerialPort.GetPortNames();
         }
+
+        public void Dispose()
+        {
+            _sp.DataReceived -= SerialPort_DataReceived;
+            _sp?.Dispose();
+        }
+
         /// <summary>
         /// Предоставлет перечесление возможного размера данных.
         /// </summary>
-        public enum DataBit
+        public enum DBit
         {
             Bit4 = 4,
             Bit5 = 5,

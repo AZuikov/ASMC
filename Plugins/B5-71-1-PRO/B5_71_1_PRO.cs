@@ -105,13 +105,13 @@ namespace B5_71_1_PRO
             {
                 //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                new Oper2DcvOutput(this),
+                //new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
                 //new Oper6DciOutput(this),
                 //new Oper7DciMeasure(this),
                 //new Oper8DciUnstable(this),
-                //new Oper5VoltPulsation(this),
+                new Oper5VoltPulsation(this),
                 //new Oper9DciPulsation(this)
             };
         }
@@ -326,21 +326,24 @@ namespace B5_71_1_PRO
         {
             var mult = new Mult_34401A();
             var load = new N3306A(1);
-            var bp= new B571Pro1(); 
-           
+            _bp= new B571Pro1();
 
-            string GetStringConnect(string nameDevice)
+
+            string GetStringConnect(string nameDevice, IeeeBase devType)
             {
                 var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, mult.GetDeviceType())).Select(q => q.StringConnect)
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
                     .ToString();
-                if(string.IsNullOrEmpty(connect))
+                if (string.IsNullOrEmpty(connect))
                     throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
                 return connect;
             }
+
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
+                mult.Stringconection = "GPIB0::22::INSTR";
+                load.Stringconection = "GPIB0::23::INSTR";
                 //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
                 //load.Stringconection = GetStringConnect(load.GetDeviceType());
               
@@ -349,7 +352,7 @@ namespace B5_71_1_PRO
                     operation.InitWork = () =>
                     {
                         MessageBoxService.Show("Нагрузка",
-                            $"Подключите к модулю", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                            $"Воспроизведение напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
                         /*схема*/
                     };
                     operation.BodyWork = Test;
@@ -359,22 +362,19 @@ namespace B5_71_1_PRO
                         load.Open();
                         load.SetWorkingChanel();
                         load.OffOutput();
-                        //bp.InitDevice(GetStringConnect(bp.DeviceType));
-                        bp.Open();
 
-
-                        var setPoint = point * _bp.VoltMax;
+                        _bp.InitDevice("com3");
+                        var setPoint = point *_bp.VoltMax;
                         //ставим точку напряжения
                         _bp.SetStateVolt(setPoint);
-                        Thread.Sleep(5000);
+                        _bp.SetStateCurr(_bp.CurrMax);
+                        _bp.OnOutput();
+                        
                         //измеряем напряжение
-                        mult.Open();
-                        mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
+                       mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
                         mult.WriteLine(Main_Mult.QueryValue);
-
-
                         var result = mult.DataPreparationAndConvert(mult.ReadString());
-                        mult.Close();
+                       
 
                         MathStatistics.Round(ref result, 3);
 
@@ -396,7 +396,7 @@ namespace B5_71_1_PRO
                         operation.CompliteWork = () => operation.IsGood();
                         
                         DataRow.Add(operation);
-                        bp.OffOutput();
+                        _bp.OffOutput();
                         load.OffOutput();
                     }   
                     await operation.WorkAsync(token);
@@ -407,7 +407,8 @@ namespace B5_71_1_PRO
                     
                     mult.Close();
                     load.Close();
-                    bp.Close();
+                    _bp.OffOutput();
+                    _bp.Close();
 
                 }
 
@@ -583,79 +584,175 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            //------- Создаем подключение к мультиметру
-            var m34401 = new Mult_34401A();
-            m34401.Devace();
-            m34401.Open();
-            while(m34401.GetTerminalConnect() == false)
-                MessageBox.Show("На панели прибора " + m34401.GetDeviceType() +
-                                " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
-            m34401.Close();
+            var mult = new Mult_34401A();
+            var load = new N3306A(1);
+            _bp = new B571Pro1();
 
-            //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
-            n3306A.Devace();
-            n3306A.Open();
-            //массив всех установленных модулей
-            var installedMod = n3306A.GetInstalledModulesName();
-            //Берем канал который нам нужен
-            //var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            //if(!currModel[1].Equals(n3306A.GetModuleModel()))
-            //    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
-
-            n3306A.SetWorkingChanel();
-            n3306A.OffOutput();
-            n3306A.Close();
-            //-------------------------------------------------
-
-            _bp = new B571Pro1(_portName);
-
-            //инициализация блока питания
-            _bp.InitDevice(_portName);
-
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
-
-            foreach(var coef in MyPoint)
+            string GetStringConnect(string nameDevice, IeeeBase devType)
             {
-                var setPoint = coef * _bp.VoltMax;
-                //ставим точку напряжения
-                _bp.SetStateVolt(setPoint);
-
-                //измеряем напряжение
-                Thread.Sleep(7000);
-                m34401.Open();
-                m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                m34401.WriteLine(Main_Mult.QueryValue);
-                var result = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString());
-                MathStatistics.Round(ref result, 3);
-                m34401.Close();
-
-                var resultMeasBp = _bp.GetMeasureVolt();
-                MathStatistics.Round(ref resultMeasBp, 2);
-
-                var absTol = result - resultMeasBp;
-                MathStatistics.Round(ref absTol, 3);
-
-
-                //забиваем результаты конкретного измерения для последующей передачи их в протокол
-                var bufOperation = new BasicOperationVerefication<decimal>
-                {
-                    Expected = result,
-                    Getting = resultMeasBp,
-                    ErrorCalculation = ErrorCalculation
-                };
-
-                bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
-                bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-                bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                           (bufOperation.Getting > bufOperation.LowerTolerance);
-                DataRow.Add(bufOperation);
+                var connect = this.UserItemOperation.ControlDevices
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
+                    .ToString();
+                if (string.IsNullOrEmpty(connect))
+                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
+                return connect;
             }
 
-            _bp.OffOutput();
-            _bp.Close();
+            foreach (var point in MyPoint)
+            {
+                var operation = new BasicOperationVerefication<decimal>();
+                mult.Stringconection = "GPIB0::22::INSTR";
+                load.Stringconection = "GPIB0::23::INSTR";
+                //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
+                //load.Stringconection = GetStringConnect(load.GetDeviceType());
+
+                try
+                {
+                    operation.InitWork = () =>
+                    {
+                        MessageBoxService.Show("Нагрузка",
+                            $"Измерение напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                        /*схема*/
+                    };
+                    operation.BodyWork = Test;
+                    void Test()
+                    {
+                        mult.Open();
+                        load.Open();
+                        load.SetWorkingChanel();
+                        load.OffOutput();
+
+                        _bp.InitDevice("com3");
+                        var setPoint = point * _bp.VoltMax;
+                        //ставим точку напряжения
+                        _bp.SetStateVolt(setPoint);
+                        _bp.SetStateCurr(_bp.CurrMax);
+                        _bp.OnOutput();
+
+                        //измеряем напряжение
+                        mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
+                        mult.WriteLine(Main_Mult.QueryValue);
+                        var resultMult = mult.DataPreparationAndConvert(mult.ReadString());
+                        var resultBp = _bp.GetMeasureVolt();
+
+                        MathStatistics.Round(ref resultMult, 3);
+                        MathStatistics.Round(ref resultBp, 3);
+
+                        //var absTol = setPoint - (decimal)result;
+                        //MathStatistics.Round(ref absTol, 3);
+
+                        var dopusk = _bp.tolleranceFormulaVolt(setPoint);
+                        MathStatistics.Round(ref dopusk, 3);
+
+                        //забиваем результаты конкретного измерения для последующей передачи их в протокол
+
+                        operation.Expected = (decimal)resultMult;
+                        operation.Getting = (decimal)resultBp;
+                        operation.ErrorCalculation = ErrorCalculation;
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                                (operation.Getting > operation.LowerTolerance);
+                        operation.CompliteWork = () => operation.IsGood();
+
+                        DataRow.Add(operation);
+                        _bp.OffOutput();
+                        load.OffOutput();
+                    }
+                    await operation.WorkAsync(token);
+
+                }
+                finally
+                {
+
+                    mult.Close();
+                    load.Close();
+                    _bp.OffOutput();
+                    _bp.Close();
+
+                }
+
+            }
+
+
+            #region OldCodeDcvMeasure
+            ////------- Создаем подключение к мультиметру
+            //var m34401 = new Mult_34401A();
+            //m34401.Devace();
+            //m34401.Open();
+            //while(m34401.GetTerminalConnect() == false)
+            //    MessageBox.Show("На панели прибора " + m34401.GetDeviceType() +
+            //                    " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
+            //m34401.Close();
+
+            ////------- Создаем подключение к нагрузке
+            //var n3306A = new N3306A(1);
+            //n3306A.Devace();
+            //n3306A.Open();
+            ////массив всех установленных модулей
+            //var installedMod = n3306A.GetInstalledModulesName();
+            ////Берем канал который нам нужен
+            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+            ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+
+            //n3306A.SetWorkingChanel();
+            //n3306A.OffOutput();
+            //n3306A.Close();
+            ////-------------------------------------------------
+
+            //_bp = new B571Pro1(_portName);
+
+            ////инициализация блока питания
+            //_bp.InitDevice(_portName);
+
+            //_bp.SetStateCurr(_bp.CurrMax);
+            //_bp.SetStateVolt(_bp.VoltMax);
+            //_bp.OnOutput();
+
+            //foreach(var coef in MyPoint)
+            //{
+            //    var setPoint = coef * _bp.VoltMax;
+            //    //ставим точку напряжения
+            //    _bp.SetStateVolt(setPoint);
+
+            //    //измеряем напряжение
+            //    Thread.Sleep(7000);
+            //    m34401.Open();
+            //    m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
+            //    m34401.WriteLine(Main_Mult.QueryValue);
+            //    var result = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString());
+            //    MathStatistics.Round(ref result, 3);
+            //    m34401.Close();
+
+            //    var resultMeasBp = _bp.GetMeasureVolt();
+            //    MathStatistics.Round(ref resultMeasBp, 2);
+
+            //    var absTol = result - resultMeasBp;
+            //    MathStatistics.Round(ref absTol, 3);
+
+
+            //    //забиваем результаты конкретного измерения для последующей передачи их в протокол
+            //    var bufOperation = new BasicOperationVerefication<decimal>
+            //    {
+            //        Expected = result,
+            //        Getting = resultMeasBp,
+            //        ErrorCalculation = ErrorCalculation
+            //    };
+
+            //    bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
+            //    bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            //    bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            //                               (bufOperation.Getting > bufOperation.LowerTolerance);
+            //    DataRow.Add(bufOperation);
+            //}
+
+            //_bp.OffOutput();
+            //_bp.Close();
+
+            #endregion
+
+
         }
 
        
@@ -725,86 +822,193 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            //------- Создаем подключение к мультиметру
-            var m34401 = new Mult_34401A();
-            m34401.Devace();
-            m34401.Open();
-            while(m34401.GetTerminalConnect() == false)
-                MessageBox.Show("На панели прибора " + m34401.GetDeviceType() +
-                                " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
-            m34401.Close();
+            var mult = new Mult_34401A();
+            var load = new N3306A(1);
+            _bp = new B571Pro1();
 
-            //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
-            n3306A.Devace();
-            n3306A.Open();
-            //массив всех установленных модулей
-            var installedMod = n3306A.GetInstalledModulesName();
-            //Берем канал который нам нужен
-            //var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            //if(!currModel[1].Equals(n3306A.GetModuleModel()))
-            //    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
-
-            n3306A.SetWorkingChanel();
-            n3306A.OffOutput();
-            n3306A.Close();
-            //-------------------------------------------------
-
-            _bp = new B571Pro1(_portName);
-            //инициализация блока питания
-            _bp.InitDevice(_portName);
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
-
-            // ------ настроим нагрузку
-            n3306A.Open();
-            n3306A.SetWorkingChanel();
-            n3306A.SetResistanceFunc();
-            n3306A.OnOutput();
-            n3306A.Close();
-
-            //сюда запишем результаты
-            var voltUnstableList = new List<decimal>();
-
-
-            foreach(var resistance in ArrResistanceVoltUnstable)
+            string GetStringConnect(string nameDevice, IeeeBase devType)
             {
-                n3306A.Open();
-                n3306A.SetResistanceRange(resistance);
-                n3306A.SetResistance(resistance); //ставим сопротивление
-                n3306A.Close();
-                // время выдержки
-                Thread.Sleep(7000);
-                //измерения
-                m34401.Open();
-                m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                m34401.WriteLine(Main_Mult.QueryValue);
-                // записываем результаты
-                voltUnstableList.Add((decimal)m34401.DataPreparationAndConvert(m34401.ReadString()));
-                m34401.Close();
+                var connect = this.UserItemOperation.ControlDevices
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
+                    .ToString();
+                if (string.IsNullOrEmpty(connect))
+                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
+                return connect;
             }
 
-            _bp.OffOutput();
-            _bp.Close();
 
-            //считаем нестабильность
-            var resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
-            MathStatistics.Round(ref resultVoltUnstable, 3);
+            var operation = new BasicOperationVerefication<decimal>();
+                mult.Stringconection = "GPIB0::22::INSTR";
+                load.Stringconection = "GPIB0::23::INSTR";
+                //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
+                //load.Stringconection = GetStringConnect(load.GetDeviceType());
 
-            //забиваем результаты конкретного измерения для последующей передачи их в протокол
-            var bufOperation = new BasicOperationVerefication<decimal>
-            {
-                Expected = 0,
-                Getting = resultVoltUnstable,
-                ErrorCalculation = ErrorCalculation,
-                LowerTolerance = 0
-            };
+                try
+                {
+                    operation.InitWork = () =>
+                    {
+                        MessageBoxService.Show("Нагрузка",
+                            $"Нестабильность по напряжению", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                        /*схема*/
+                    };
+                    operation.BodyWork = Test;
+                    void Test()
+                    {
+                        mult.Open();
+                        load.Open();
+                        load.SetWorkingChanel();
+                        load.OffOutput();
 
-            bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-            bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                       (bufOperation.Getting >= bufOperation.LowerTolerance);
-            DataRow.Add(bufOperation);
+                        _bp.InitDevice("com3");
+                        _bp.SetStateCurr(_bp.CurrMax);
+                       
+
+                        // ------ настроим нагрузку
+                        load.SetWorkingChanel();
+                        load.SetResistanceFunc();
+                        load.OnOutput();
+                        load.Close();
+
+                        //сюда запишем результаты
+                        var voltUnstableList = new List<decimal>();
+
+                         _bp.OnOutput();
+
+                        foreach (var resistance in ArrResistanceVoltUnstable)
+                            {
+                        load.Open();
+                        load.SetResistanceRange(resistance);
+                        load.SetResistance(resistance); //ставим сопротивление
+                        load.Close();
+                        // время выдержки
+                        Thread.Sleep(1000);
+                        //измерения
+                        mult.Open();
+                        mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
+                        mult.WriteLine(Main_Mult.QueryValue);
+                        // записываем результаты
+                        voltUnstableList.Add((decimal)mult.DataPreparationAndConvert(mult.ReadString()));
+                                mult.Close();
+                    }
+
+                    //считаем
+                    var resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
+                    MathStatistics.Round(ref resultVoltUnstable, 3);
+
+                    //забиваем результаты конкретного измерения для последующей передачи их в протокол
+                    var bufOperation = new BasicOperationVerefication<decimal>
+                    {
+                        Expected = 0,
+                        Getting = resultVoltUnstable,
+                        ErrorCalculation = ErrorCalculation,
+                        LowerTolerance = 0
+                    };
+
+                    bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+                    bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+                                               (bufOperation.Getting >= bufOperation.LowerTolerance);
+                    DataRow.Add(bufOperation);
+
+
+                }
+                    await operation.WorkAsync(token);
+
+            }
+                finally
+                {
+                    _bp.OffOutput();
+                    _bp.Close();
+                    load.Close();
+                    mult.Close();
+
+                }
+            
+
+            #region OldCodeVoltUnstable
+            ////------- Создаем подключение к мультиметру
+            //var m34401 = new Mult_34401A();
+            //m34401.Devace();
+            //m34401.Open();
+            //while (m34401.GetTerminalConnect() == false)
+            //    MessageBox.Show("На панели прибора " + m34401.GetDeviceType() +
+            //                    " нажмите клавишу REAR,\nчтобы включить ПЕРЕДНИЙ клеммный терминал.");
+            //m34401.Close();
+
+            ////------- Создаем подключение к нагрузке
+            //var n3306A = new N3306A(1);
+            //n3306A.Devace();
+            //n3306A.Open();
+            ////массив всех установленных модулей
+            //var installedMod = n3306A.GetInstalledModulesName();
+            ////Берем канал который нам нужен
+            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+            ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+
+            //n3306A.SetWorkingChanel();
+            //n3306A.OffOutput();
+            //n3306A.Close();
+            ////-------------------------------------------------
+
+            //_bp = new B571Pro1(_portName);
+            ////инициализация блока питания
+            //_bp.InitDevice(_portName);
+            //_bp.SetStateCurr(_bp.CurrMax);
+            //_bp.SetStateVolt(_bp.VoltMax);
+            //_bp.OnOutput();
+
+            //// ------ настроим нагрузку
+            //n3306A.Open();
+            //n3306A.SetWorkingChanel();
+            //n3306A.SetResistanceFunc();
+            //n3306A.OnOutput();
+            //n3306A.Close();
+
+            ////сюда запишем результаты
+            //var voltUnstableList = new List<decimal>();
+
+
+            //foreach (var resistance in ArrResistanceVoltUnstable)
+            //{
+            //    n3306A.Open();
+            //    n3306A.SetResistanceRange(resistance);
+            //    n3306A.SetResistance(resistance); //ставим сопротивление
+            //    n3306A.Close();
+            //    // время выдержки
+            //    Thread.Sleep(7000);
+            //    //измерения
+            //    m34401.Open();
+            //    m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
+            //    m34401.WriteLine(Main_Mult.QueryValue);
+            //    // записываем результаты
+            //    voltUnstableList.Add((decimal)m34401.DataPreparationAndConvert(m34401.ReadString()));
+            //    m34401.Close();
+            //}
+
+            //_bp.OffOutput();
+            //_bp.Close();
+
+            ////считаем нестабильность
+            //var resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
+            //MathStatistics.Round(ref resultVoltUnstable, 3);
+
+            ////забиваем результаты конкретного измерения для последующей передачи их в протокол
+            //var bufOperation = new BasicOperationVerefication<decimal>
+            //{
+            //    Expected = 0,
+            //    Getting = resultVoltUnstable,
+            //    ErrorCalculation = ErrorCalculation,
+            //    LowerTolerance = 0
+            //};
+
+            //bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            //bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            //                           (bufOperation.Getting >= bufOperation.LowerTolerance);
+            //DataRow.Add(bufOperation);
+
+
+            #endregion
+
         }
 
 
@@ -874,82 +1078,175 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            //------- Создаем подключение к мультиметру
-            var m34401 = new Mult_34401A();
-            m34401.Devace();
-            m34401.Open();
-            m34401.Close();
 
-            //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
-            n3306A.Devace();
-            n3306A.Open();
-            //массив всех установленных модулей
-            var installedMod = n3306A.GetInstalledModulesName();
-            //Берем канал который нам нужен
-            //var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            //if(!currModel[1].Equals(n3306A.GetModuleModel()))
-            //    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+            var mult = new Mult_34401A();
+            var load = new N3306A(1);
+            _bp = new B571Pro1();
 
-            n3306A.SetWorkingChanel();
-            n3306A.OffOutput();
-            n3306A.Close();
-            //-------------------------------------------------
-
-            _bp = new B571Pro1(_portName);
-            //инициализация блока питания
-            _bp.InitDevice(_portName);
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
-
-            // ------ настроим нагрузку
-            n3306A.Open();
-            n3306A.SetWorkingChanel();
-            n3306A.SetResistanceFunc();
-            n3306A.SetResistanceRange(ArrResistanceVoltUnstable[0]);
-            n3306A.SetResistance(ArrResistanceVoltUnstable[0]);
-            n3306A.OnOutput();
-            n3306A.Close();
-
-            m34401.Open();
-
-            while(m34401.GetTerminalConnect())
-                MessageBox.Show("На панели прибора " + m34401.GetDeviceType() +
-                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.");
-
-            MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения");
-
-            //нужно дать время для В3-57 для успокоения стрелки
-            Thread.Sleep(7000);
-            m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-            m34401.WriteLine(Main_Mult.QueryValue);
-
-            var voltPulsV357 = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString());
-            voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-            voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
-            MathStatistics.Round(ref voltPulsV357, 2);
-
-            //выключаем источник питания
-            _bp.OffOutput();
-            _bp.Close();
-
-            m34401.Close();
-
-
-            //забиваем результаты конкретного измерения для последующей передачи их в протокол
-            var bufOperation = new BasicOperationVerefication<decimal>
+            string GetStringConnect(string nameDevice, IeeeBase devType)
             {
-                Expected = 0,
-                Getting = voltPulsV357,
-                ErrorCalculation = ErrorCalculation,
-                LowerTolerance = 0
-            };
+                var connect = this.UserItemOperation.ControlDevices
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
+                    .ToString();
+                if (string.IsNullOrEmpty(connect))
+                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
+                return connect;
+            }
 
-            bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-            bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                       (bufOperation.Getting >= bufOperation.LowerTolerance);
-            DataRow.Add(bufOperation);
+            var operation = new BasicOperationVerefication<decimal>();
+            mult.Stringconection = "GPIB0::22::INSTR";
+            load.Stringconection = "GPIB0::23::INSTR";
+            //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
+            //load.Stringconection = GetStringConnect(load.GetDeviceType());
+            try
+            {
+                operation.InitWork = () =>
+                {
+                    MessageBoxService.Show("Нагрузка",
+                        $"Измерение пульсаций", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                    /*схема*/
+                };
+
+                operation.BodyWork = Test;
+
+                void Test()
+                {
+                    mult.Open();
+                    load.Open();
+                    load.SetWorkingChanel();
+                    load.OffOutput();
+
+                    _bp.InitDevice("com3");
+                    _bp.SetStateVolt(_bp.VoltMax);
+                    _bp.SetStateCurr(_bp.CurrMax);
+
+
+                    load.SetWorkingChanel();
+                    load.SetResistanceFunc();
+                    load.SetResistanceRange(ArrResistanceVoltUnstable[0]);
+                    load.SetResistance(ArrResistanceVoltUnstable[0]);
+                    load.OnOutput();
+                    load.Close();
+
+                    while (mult.GetTerminalConnect())
+                        MessageBoxService.Show("Указание оператору",
+                            "На панели прибора " + mult.GetDeviceType() +
+                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
+                    MessageBoxService.Show("Указание оператору",
+                        $"Установите на В3-57 подходящий предел измерения напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
+                    Thread.Sleep(7000);
+                    mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
+                    mult.WriteLine(Main_Mult.QueryValue);
+
+                    var voltPulsV357 = (decimal)mult.DataPreparationAndConvert(mult.ReadString());
+                    voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
+                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
+                    MathStatistics.Round(ref voltPulsV357, 2);
+
+                    operation.Expected = 0;
+                    operation.Getting = voltPulsV357;
+                    operation.ErrorCalculation = ErrorCalculation;
+                    operation.LowerTolerance = 0;
+
+                    DataRow.Add(operation);
+
+                }
+                await operation.WorkAsync(token);
+
+
+            }
+            finally
+            {
+                _bp.OffOutput();
+                _bp.Close();
+                mult.Close();
+                load.Close();
+            }
+
+            #region OldCodePulsationVolts
+
+            ////------- Создаем подключение к мультиметру
+            //var m34401 = new Mult_34401A();
+            //m34401.Devace();
+            //m34401.Open();
+            //m34401.Close();
+
+            ////------- Создаем подключение к нагрузке
+            //var n3306A = new N3306A(1);
+            //n3306A.Devace();
+            //n3306A.Open();
+            ////массив всех установленных модулей
+            //var installedMod = n3306A.GetInstalledModulesName();
+            ////Берем канал который нам нужен
+            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+            ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+
+            //n3306A.SetWorkingChanel();
+            //n3306A.OffOutput();
+            //n3306A.Close();
+            ////-------------------------------------------------
+
+            //_bp = new B571Pro1(_portName);
+            ////инициализация блока питания
+            //_bp.InitDevice(_portName);
+            //_bp.SetStateCurr(_bp.CurrMax);
+            //_bp.SetStateVolt(_bp.VoltMax);
+            //_bp.OnOutput();
+
+            //// ------ настроим нагрузку
+            //n3306A.Open();
+            //n3306A.SetWorkingChanel();
+            //n3306A.SetResistanceFunc();
+            //n3306A.SetResistanceRange(ArrResistanceVoltUnstable[0]);
+            //n3306A.SetResistance(ArrResistanceVoltUnstable[0]);
+            //n3306A.OnOutput();
+            //n3306A.Close();
+
+            //m34401.Open();
+
+            //while (m34401.GetTerminalConnect())
+            //    MessageBox.Show("На панели прибора " + m34401.GetDeviceType() +
+            //                    " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.");
+
+            //MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения");
+
+            ////нужно дать время для В3-57 для успокоения стрелки
+            //Thread.Sleep(7000);
+            //m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
+            //m34401.WriteLine(Main_Mult.QueryValue);
+
+            //var voltPulsV357 = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString());
+            //voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
+            //voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
+            //MathStatistics.Round(ref voltPulsV357, 2);
+
+            ////выключаем источник питания
+            //_bp.OffOutput();
+            //_bp.Close();
+
+            //m34401.Close();
+
+
+            ////забиваем результаты конкретного измерения для последующей передачи их в протокол
+            //var bufOperation = new BasicOperationVerefication<decimal>
+            //{
+
+            //    Expected = 0,
+            //    Getting = voltPulsV357,
+            //    ErrorCalculation = ErrorCalculation,
+            //    LowerTolerance = 0
+            //};
+
+            //bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            //bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            //                           (bufOperation.Getting >= bufOperation.LowerTolerance);
+            //DataRow.Add(bufOperation);
+
+            #endregion
+
         }
 
 

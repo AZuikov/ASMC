@@ -28,7 +28,7 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// Запрос индификации прибора
         /// </summary>
-        public const string IdentificationDevice = "*IDN?";
+        public const string QueryIdentificationDevice = "*IDN?";
 
         ///Вызывает конфигурацию опций прибора
         public const string QueryConfig = "*OPT?";
@@ -158,6 +158,27 @@ namespace ASMC.Devices.IEEE
             return true;
         }
 
+
+        /// <summary>
+        /// Метод обращается к прибору и заполняет массив для информации о нём
+        /// </summary>
+        private void GetBaseInfoFromDevice()
+        {
+            Session.FormattedIO.WriteLine(QueryIdentificationDevice);
+            
+            if ((Session.HardwareInterfaceType != HardwareInterfaceType.Custom) || (Session.HardwareInterfaceType == HardwareInterfaceType.Serial))
+            {
+                _words = new[] { Session.FormattedIO.ReadLine() };
+            }
+            else
+            {
+                _words = Session.FormattedIO.ReadLine().Split(',');
+                if (_words.Length < 2) _words = null;
+            }
+            
+        }
+
+
         /// <summary>
         /// Опрашивает все подключеннные устройства и находит необходимый(по типу прибора), устанавливая строку подключения
         /// </summary>
@@ -260,7 +281,9 @@ namespace ASMC.Devices.IEEE
         /// <returns>Возвращает фирму-производитель устройства</returns>
         public string GetDeviceFirm()
         {
-            return _words[0];
+            if (_words == null) GetBaseInfoFromDevice();
+            if(_words != null) return _words[0];
+            return "NO TYPE";
         }
 
         /// <summary>
@@ -269,7 +292,9 @@ namespace ASMC.Devices.IEEE
         /// <returns>Возвращает заводской номер устройства</returns>
         public string GetDeviceNumber()
         {
-            return _words[2];
+            if (_words == null) GetBaseInfoFromDevice();
+            if (_words != null) return _words[2];
+            return "NO Device Model";
         }
 
         /// <summary>
@@ -278,8 +303,14 @@ namespace ASMC.Devices.IEEE
         /// <returns>Возвращает идентификационный номер ПО устройства</returns>
         public string GetDevicePo()
         {
-            var arr = _words[3].Split('-');
-            return arr[0];
+            if (_words == null) GetBaseInfoFromDevice();
+            if (_words != null)
+            {
+                var arr = _words[3].Split('-');
+                return arr[0];
+            }
+
+            return "NO Firmware Version";
         }
 
         /// <summary>
@@ -288,7 +319,9 @@ namespace ASMC.Devices.IEEE
         /// <returns>Возвращает тип устройства</returns>
         public string GetDeviceType()
         {
-            return _words[1];
+            if (_words == null) GetBaseInfoFromDevice();
+            if (_words != null) return _words[2];
+            return "NO Device Type";
         }
 
         public List<string> GetOption()
@@ -408,7 +441,8 @@ namespace ASMC.Devices.IEEE
             try
             {
                 Session.FormattedIO.WriteLine("*IDN?");
-                if (Stringconection.Contains("ASRL"))
+               
+                if (Session.HardwareInterfaceType == HardwareInterfaceType.Serial)
                 {
                     _words = new[] {Session.FormattedIO.ReadLine()};
                 }
