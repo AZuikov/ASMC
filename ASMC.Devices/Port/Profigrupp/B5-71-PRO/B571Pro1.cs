@@ -24,6 +24,7 @@
 
         public B571Pro1(string PortName) : base(PortName)
         {
+<<<<<<< HEAD
             
         }
 
@@ -32,5 +33,11 @@
         {
             throw new System.NotImplementedException();
         }
+=======
+           
+        }
+
+   
+>>>>>>> 1
     }
 }
