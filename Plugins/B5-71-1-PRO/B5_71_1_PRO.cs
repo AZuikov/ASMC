@@ -344,8 +344,9 @@ namespace B5_71_1_PRO
                 var operation = new BasicOperationVerefication<decimal>();
                 mult.StringConnection = "GPIB0::22::INSTR";
                 load.StringConnection = "GPIB0::23::INSTR";
-                //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
-                //load.Stringconection = GetStringConnect(load.GetDeviceType());
+                
+                //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+                //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
               
                 try
                 {

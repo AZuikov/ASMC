@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASMC.Core;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices.IEEE;
 using DevExpress.Mvvm;
 
 namespace ASMC.Data.Model
@@ -316,15 +317,38 @@ namespace ASMC.Data.Model
 
     public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
     {
-        protected string GetStringConnect(string nameDevice, IDevice devType)
+        /// <summary>
+        /// Связывает строку подключения из интрефеса пользователя с выбранным прибором. Работает для контрольных и контролируемых приборов.
+        /// </summary>
+        /// <param name="nameDevice">Имя прибора, которое выбрал пользователь в интерфейсе пользователя.</param>
+        /// <param name="currentDevice">Прибор из списка контрольных (эталонов) или контролируемых (поверяемых/проверяемых) приборов.</param>
+        /// <param name="controlOrTestDevice">Если true, тогда ищет сроку подключения для эталонов (контрольных приборов). 
+        /// Если false, тогда ищем строку подключения для поверяемого (контролируемого) прибора.</param>
+        /// <returns></returns>
+        protected string GetStringConnect(string nameDevice, Devices.IDevice currentDevice, bool controlOrTestDevice)
         {
-            var connect = this.UserItemOperation.ControlDevices
-                .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
-                .ToString();
+            string connect;
+            if (controlOrTestDevice)
+            {
+                connect = this.UserItemOperation.ControlDevices
+                    .Where(q => string.Equals(q.SelectedName, currentDevice.DeviceType)).Select(q => q.StringConnect)
+                    .ToString();
+            }
+            else
+            {
+                connect = this.UserItemOperation.TestDevices
+                    .Where(q => string.Equals(q.SelectedName, currentDevice.DeviceType)).Select(q => q.StringConnect)
+                    .ToString();
+            }
+
             if (string.IsNullOrEmpty(connect))
                 throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
+
             return connect;
         }
+
+
+
         protected IUserItemOperation UserItemOperation { get; }
 
         protected AbstractUserItemOperationBase(IUserItemOperation userItemOperation)
