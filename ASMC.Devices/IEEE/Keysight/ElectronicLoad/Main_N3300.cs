@@ -59,17 +59,17 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         }
 
         /// <summary>
-        /// Проверяет установлен ли в нагрузке такой модуль
+        /// Проверяет установлен ли в нагрузке такой модуль. Возвращает номер канала или -1 если такой модуль не установлен
         /// </summary>
         /// <returns>true если модуль с такой моделью установлен</returns>
-        public bool FindThisModule()
+        public int FindThisModule()
         {
             //если в шасси стоит несколько блоков с одинаковой моделью, то метод завершит работу на первом же
             foreach (Model model in GetInstalledModulesName())
             {
-                if (model.Type.Equals(this.ModuleModel)) return true;
+                if (model.Type.Equals(this.ModuleModel)) return model.Channel;
             }
-            return false;
+            return -1;
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             this.WriteLine("*RDT?");
             Thread.Sleep(10);
             string answer = this.ReadLine().TrimEnd('\n');
-            var reg = new Regex(@".+\d+");
+            var reg = new Regex(@"(?<=.+)\d+");
             foreach (var mod in answer.Split(';'))
             {
                 var s = mod.Split(':');

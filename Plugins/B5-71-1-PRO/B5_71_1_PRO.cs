@@ -127,7 +127,7 @@ namespace B5_71_1_PRO
         /// </summary>
         public void RefreshDevice()
         {
-            AddresDivece = new IeeeBase().GetAllDevace().ToArray();
+            AddresDivece = new IeeeBase().GetAllDevace.ToArray();
         }
 
         public void FindDivice()
@@ -332,7 +332,7 @@ namespace B5_71_1_PRO
             string GetStringConnect(string nameDevice, IeeeBase devType)
             {
                 var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
                     .ToString();
                 if (string.IsNullOrEmpty(connect))
                     throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
@@ -591,7 +591,7 @@ namespace B5_71_1_PRO
             string GetStringConnect(string nameDevice, IeeeBase devType)
             {
                 var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
                     .ToString();
                 if (string.IsNullOrEmpty(connect))
                     throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
@@ -829,7 +829,7 @@ namespace B5_71_1_PRO
             string GetStringConnect(string nameDevice, IeeeBase devType)
             {
                 var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
                     .ToString();
                 if (string.IsNullOrEmpty(connect))
                     throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
@@ -1086,7 +1086,7 @@ namespace B5_71_1_PRO
             string GetStringConnect(string nameDevice, IeeeBase devType)
             {
                 var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType())).Select(q => q.StringConnect)
+                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
                     .ToString();
                 if (string.IsNullOrEmpty(connect))
                     throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
@@ -1130,7 +1130,7 @@ namespace B5_71_1_PRO
 
                     while (mult.GetTerminalConnect())
                         MessageBoxService.Show("Указание оператору",
-                            "На панели прибора " + mult.GetDeviceType() +
+                            "На панели прибора " + mult.GetDeviceType +
                                                 " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
 
                     MessageBoxService.Show("Указание оператору",
@@ -1769,7 +1769,7 @@ namespace B5_71_1_PRO
             //Начинаем измерять пульсации
 
             while(m34401.GetTerminalConnect())
-                MessageBox.Show("На панели прибора " + m34401.GetDeviceType() +
+                MessageBox.Show("На панели прибора " + m34401.GetDeviceType +
                                 " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.");
 
             MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения");
