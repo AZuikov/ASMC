@@ -1774,7 +1774,7 @@ namespace B5_71_1_PRO
             _bp = new B571Pro1(_portName);
 
             //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
+            var n3306A = new N3306A();
             n3306A.Devace();
             n3306A.Open();
             //массив всех установленных модулей
@@ -1901,7 +1901,7 @@ namespace B5_71_1_PRO
             _bp = new B571Pro1(_portName);
 
             //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
+            var n3306A = new N3306A();
             n3306A.Devace();
             n3306A.Open();
             //массив всех установленных модулей
