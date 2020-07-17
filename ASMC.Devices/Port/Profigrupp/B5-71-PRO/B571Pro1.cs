@@ -24,20 +24,9 @@
 
         public B571Pro1(string PortName) : base(PortName)
         {
-<<<<<<< HEAD
-            
-        }
-
-
-        public override void Init(string portName)
-        {
-            throw new System.NotImplementedException();
-        }
-=======
            
         }
 
    
->>>>>>> 1
     }
 }
