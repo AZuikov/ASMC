@@ -27,11 +27,10 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         protected decimal[] rangeCurrentArr;
         protected string ModuleModel;
 
-        protected Main_N3300(int chanNum)
+        protected Main_N3300()
         {
             this.DeviseType = "N3300A";
-            //закрепим номер канала за вставкой нагрузки
-            this.chanNum = chanNum;
+            
             
         }
 
@@ -67,9 +66,14 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             //если в шасси стоит несколько блоков с одинаковой моделью, то метод завершит работу на первом же
             foreach (Model model in GetInstalledModulesName())
             {
-                if (model.Type.Equals(this.ModuleModel)) return model.Channel;
+                //если модуль найден, то прописывается канал
+                if (model.Type.Equals(this.ModuleModel))
+                 this.chanNum = model.Channel;
             }
-            return -1;
+            //если модуль не найден, то канал пишется отрицательным числом. 
+            this.chanNum = -1;
+
+            return this.chanNum;
         }
 
         /// <summary>

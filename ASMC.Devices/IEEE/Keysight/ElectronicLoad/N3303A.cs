@@ -2,7 +2,7 @@
 {
     public class N3303A : Main_N3300
     {
-        public N3303A(int chanNum) : base(chanNum)
+        public N3303A() 
         {
             ModuleModel = "N3303A";
 

@@ -4,7 +4,7 @@
     {
 
         
-        public N3306A(int chanNum) : base(chanNum)
+        public N3306A() 
         {
             ModuleModel = "N3306A";
 
