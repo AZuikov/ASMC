@@ -333,8 +333,8 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb()<=0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
+            if (load.GetChanelNumb<=0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
             
@@ -594,8 +594,8 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb() <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
+            if (load.GetChanelNumb <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
             string GetStringConnect(string nameDevice, IeeeBase devType)
@@ -841,8 +841,8 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb() <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
+            if (load.GetChanelNumb <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
             string GetStringConnect(string nameDevice, IeeeBase devType)
@@ -1105,8 +1105,8 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb() <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
+            if (load.GetChanelNumb <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
             string GetStringConnect(string nameDevice, IeeeBase devType)
@@ -1362,70 +1362,128 @@ namespace B5_71_1_PRO
         public async override Task StartWork(CancellationTokenSource token)
         {
 
+            var mult = new Mult_34401A();
+            _bp = new B571Pro1();
+
+            var load = new N3306A();
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+            load.SetWorkingChanel();
+            load.SetVoltFunc();
+            load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            load.OnOutput();
+            load.Close();
+
+            _bp.InitDevice(_portName);
+            _bp.SetStateCurr(_bp.CurrMax);
+            _bp.SetStateVolt(_bp.VoltMax);
+            _bp.OnOutput();
+
+            foreach (var coef in MyPoint)
+            {
+                var operation = new BasicOperationVerefication<decimal>();
+                mult.StringConnection = "GPIB0::22::INSTR";
+                load.StringConnection = "GPIB0::23::INSTR";
+
+                //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+                //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
+                try
+                {
+                    var setPoint = coef * _bp.CurrMax;
+                    //ставим точку напряжения
+                    _bp.SetStateCurr(setPoint);
+                    Thread.Sleep(1000);
+
+                    //измеряем ток
+                    load.Open();
+                    var result = load.GetMeasCurr();
+                    load.Close();
+                    MathStatistics.Round(ref result, 3);
+
+                    operation.Expected = setPoint;
+                    operation.Getting = result;
+                    operation.ErrorCalculation = ErrorCalculation;
+                    operation.LowerTolerance = operation.Expected - operation.Error;
+                    operation.UpperTolerance = operation.Expected + operation.Error;
+                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                               (operation.Getting > operation.LowerTolerance);
+                    DataRow.Add(operation);
+
+                }
+                finally
+                {
+                    _bp.OffOutput();
+                    _bp.Close();
+                    load.Close();
+                    mult.Close();
+                }
+            }
 
             #region OldCodeDciOutput
-            //_bp = new B571Pro1(_portName);
+                //_bp = new B571Pro1(_portName);
 
-            ////------- Создаем подключение к нагрузке
-            //var n3306A = new N3306A(1);
-            //n3306A.Devace();
-            //n3306A.Open();
-            ////массив всех установленных модулей
-            //var installedMod = n3306A.GetInstalledModulesName();
-            ////Берем канал который нам нужен
-            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
-            ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
-
-            //n3306A.SetWorkingChanel();
-            //n3306A.SetVoltFunc();
-            //n3306A.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
-            //n3306A.OnOutput();
-            //n3306A.Close();
-            ////-------------------------------------------------
-
-            ////инициализация блока питания
-            //_bp.InitDevice(_portName);
-            //_bp.SetStateCurr(_bp.CurrMax);
-            //_bp.SetStateVolt(_bp.VoltMax);
-            //_bp.OnOutput();
-
-            //foreach (var coef in MyPoint)
-            //{
-            //    var setPoint = coef * _bp.CurrMax;
-            //    //ставим точку напряжения
-            //    _bp.SetStateCurr(setPoint);
-            //    Thread.Sleep(2000);
-
-            //    //измеряем ток
-            //    n3306A.Open();
-            //    var result = n3306A.GetMeasCurr();
-            //    n3306A.Close();
-            //    MathStatistics.Round(ref result, 3);
-
-            //    //забиваем результаты конкретного измерения для последующей передачи их в протокол
-            //    var bufOperation = new BasicOperationVerefication<decimal>();
-
-            //    bufOperation.Expected = setPoint;
-            //    bufOperation.Getting = result;
-            //    bufOperation.ErrorCalculation = ErrorCalculation;
-            //    bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
-            //    bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-            //    bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-            //                               (bufOperation.Getting > bufOperation.LowerTolerance);
-            //    DataRow.Add(bufOperation);
-            //}
-
-            //_bp.OffOutput();
-            //_bp.Close();
+                ////------- Создаем подключение к нагрузке
+                //var n3306A = new N3306A(1);
+                //n3306A.Devace();
+                //n3306A.Open();
+                ////массив всех установленных модулей
+                //var installedMod = n3306A.GetInstalledModulesName();
+                ////Берем канал который нам нужен
+                ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+                ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+                ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
 
 
-            #endregion
+                ////-------------------------------------------------
+
+                ////инициализация блока питания
+                //_bp.InitDevice(_portName);
+                //_bp.SetStateCurr(_bp.CurrMax);
+                //_bp.SetStateVolt(_bp.VoltMax);
+                //_bp.OnOutput();
+
+                //foreach (var coef in MyPoint)
+                //{
+                //    var setPoint = coef * _bp.CurrMax;
+                //    //ставим точку напряжения
+                //    _bp.SetStateCurr(setPoint);
+                //    Thread.Sleep(2000);
+
+                //    //измеряем ток
+                //    n3306A.Open();
+                //    var result = n3306A.GetMeasCurr();
+                //    n3306A.Close();
+                //    MathStatistics.Round(ref result, 3);
+
+                //    //забиваем результаты конкретного измерения для последующей передачи их в протокол
+                //    var bufOperation = new BasicOperationVerefication<decimal>();
+
+                //    bufOperation.Expected = setPoint;
+                //    bufOperation.Getting = result;
+                //    bufOperation.ErrorCalculation = ErrorCalculation;
+                //    bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
+                //    bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+                //    bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+                //                               (bufOperation.Getting > bufOperation.LowerTolerance);
+                //    DataRow.Add(bufOperation);
+                //}
+
+                //_bp.OffOutput();
+                //_bp.Close();
+
+
+                #endregion
 
 
         }
 
-   
+
         public Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного тока";
@@ -1506,63 +1564,139 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro1(_portName);
 
-            //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
-            n3306A.Devace();
-            n3306A.Open();
-            //массив всех установленных модулей
-            var installedMod = n3306A.GetInstalledModulesName();
-            //Берем канал который нам нужен
-            //var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            //if(!currModel[1].Equals(n3306A.GetModuleModel()))
-            //    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+            var mult = new Mult_34401A();
+            _bp = new B571Pro1();
 
-            n3306A.SetWorkingChanel();
-            n3306A.SetVoltFunc();
-            n3306A.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
-            n3306A.OnOutput();
-            n3306A.Close();
+            var load = new N3306A();
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-            //инициализация блока питания
+            load.SetWorkingChanel();
+            load.SetVoltFunc();
+            load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            load.OnOutput();
+            load.Close();
+
             _bp.InitDevice(_portName);
             _bp.SetStateCurr(_bp.CurrMax);
             _bp.SetStateVolt(_bp.VoltMax);
             _bp.OnOutput();
 
-            //-------------------------------------------------
-            foreach(var coef in MyPoint)
+            foreach (var coef in MyPoint)
             {
-                var setPoint = coef * _bp.CurrMax;
-                //ставим точку напряжения
-                _bp.SetStateCurr(setPoint);
+                var operation = new BasicOperationVerefication<decimal>();
+                mult.StringConnection = "GPIB0::22::INSTR";
+                load.StringConnection = "GPIB0::23::INSTR";
 
-                //измеряем ток
-                n3306A.Open();
-                Thread.Sleep(2000);
-                var resultN3306A = n3306A.GetMeasCurr();
-                n3306A.Close();
-                MathStatistics.Round(ref resultN3306A, 3);
+                //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+                //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
 
-                var resultBpCurr = _bp.GetMeasureCurr();
-                MathStatistics.Round(ref resultBpCurr, 3);
+                try
+                {
+                    var setPoint = coef * _bp.CurrMax;
+                    //ставим точку напряжения
+                    _bp.SetStateCurr(setPoint);
+                    Thread.Sleep(1000);
 
-                //забиваем результаты конкретного измерения для последующей передачи их в протокол
-                var bufOperation = new BasicOperationVerefication<decimal>();
+                    //измеряем ток
+                    load.Open();
+                    var resultN3300 = load.GetMeasCurr();
+                    load.Close();
+                    MathStatistics.Round(ref resultN3300, 3);
 
-                bufOperation.Expected = resultN3306A;
-                bufOperation.Getting = resultBpCurr;
-                bufOperation.ErrorCalculation = ErrorCalculation;
-                bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
-                bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-                bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                           (bufOperation.Getting > bufOperation.LowerTolerance);
-                DataRow.Add(bufOperation);
+                    var resultBpCurr = _bp.GetMeasureCurr();
+                    MathStatistics.Round(ref resultBpCurr, 3);
+
+                    operation.Expected = resultN3300;
+                    operation.Getting = resultBpCurr;
+                    operation.ErrorCalculation = ErrorCalculation;
+                    operation.LowerTolerance = operation.Expected - operation.Error;
+                    operation.UpperTolerance = operation.Expected + operation.Error;
+                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                               (operation.Getting > operation.LowerTolerance);
+                    DataRow.Add(operation);
+
+                }
+                finally
+                {
+                    _bp.OffOutput();
+                    _bp.Close();
+                    load.Close();
+                    mult.Close();
+                }
             }
 
-            _bp.OffOutput();
-            _bp.Close();
+
+
+            #region OLdCodeDciMeasure
+
+            //_bp = new B571Pro1(_portName);
+
+            ////------- Создаем подключение к нагрузке
+            //var n3306A = new N3306A(1);
+            //n3306A.Devace();
+            //n3306A.Open();
+            ////массив всех установленных модулей
+            //var installedMod = n3306A.GetInstalledModulesName();
+            ////Берем канал который нам нужен
+            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+            ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+
+            //n3306A.SetWorkingChanel();
+            //n3306A.SetVoltFunc();
+            //n3306A.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            //n3306A.OnOutput();
+            //n3306A.Close();
+
+            ////инициализация блока питания
+            //_bp.InitDevice(_portName);
+            //_bp.SetStateCurr(_bp.CurrMax);
+            //_bp.SetStateVolt(_bp.VoltMax);
+            //_bp.OnOutput();
+
+            ////-------------------------------------------------
+            //foreach (var coef in MyPoint)
+            //{
+            //    var setPoint = coef * _bp.CurrMax;
+            //    //ставим точку напряжения
+            //    _bp.SetStateCurr(setPoint);
+
+            //    //измеряем ток
+            //    n3306A.Open();
+            //    Thread.Sleep(2000);
+            //    var resultN3306A = n3306A.GetMeasCurr();
+            //    n3306A.Close();
+            //    MathStatistics.Round(ref resultN3306A, 3);
+
+            //    var resultBpCurr = _bp.GetMeasureCurr();
+            //    MathStatistics.Round(ref resultBpCurr, 3);
+
+            //    //забиваем результаты конкретного измерения для последующей передачи их в протокол
+            //    var bufOperation = new BasicOperationVerefication<decimal>();
+
+            //    bufOperation.Expected = resultN3306A;
+            //    bufOperation.Getting = resultBpCurr;
+            //    bufOperation.ErrorCalculation = ErrorCalculation;
+            //    bufOperation.LowerTolerance = bufOperation.Expected - bufOperation.Error;
+            //    bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            //    bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            //                               (bufOperation.Getting > bufOperation.LowerTolerance);
+            //    DataRow.Add(bufOperation);
+            //}
+
+            //_bp.OffOutput();
+            //_bp.Close();
+
+
+            #endregion
+
+
         }
 
 

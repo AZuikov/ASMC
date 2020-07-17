@@ -52,9 +52,9 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             [StringValue("")] SI
         }
 
-        public string GetModuleModel()
+        public string GetModuleModel
         {
-            return this.ModuleModel;
+            get =>ModuleModel;
         }
 
         /// <summary>
@@ -125,9 +125,9 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// Возвращает номер канала модуля нагрузки
         /// </summary>
         /// <returns></returns>
-        public int GetChanelNumb()
+        public int GetChanelNumb
         {
-            return this.chanNum;
+            get =>chanNum;
         }
 
 
