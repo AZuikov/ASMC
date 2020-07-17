@@ -27,10 +27,6 @@
            
         }
 
-
-        public override void Init(string portName)
-        {
-            throw new System.NotImplementedException();
-        }
+   
     }
 }
