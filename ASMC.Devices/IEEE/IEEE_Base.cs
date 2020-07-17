@@ -73,17 +73,13 @@ namespace ASMC.Devices.IEEE
         public string DeviceType
         {
             get => DeviceType;
-            set => DeviceType = value;
+            protected set => DeviceType = value;
         }
 
         /// <summary>
         /// Строка подкючения
         /// </summary>
-        public string StringConnection
-        {
-            get => StringConnection;
-            set => StringConnection = value;
-        }
+        public string StringConnection { get; set; }
 
         /// <summary>
         /// Объкт сессии

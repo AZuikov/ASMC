@@ -1091,7 +1091,7 @@ namespace B5_71_4_PRO
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public void StartWork()
         {
             BP = new B571Pro4(portName);
 

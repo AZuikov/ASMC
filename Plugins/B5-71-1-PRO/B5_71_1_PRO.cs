@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+
 using AP.Math;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -325,10 +325,17 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            var mult = new Mult_34401A();
             _bp = new B571Pro1();
-
+            var mult = new Mult_34401A();
             var load = new N3306A();
+
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
+
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
             load.Open();
             load.FindThisModule();
             load.Close();
@@ -342,11 +349,7 @@ namespace B5_71_1_PRO
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                mult.StringConnection = "GPIB0::22::INSTR";
-                load.StringConnection = "GPIB0::23::INSTR";
-                
-                //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-                //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+               
               
                 try
                 {
@@ -364,7 +367,7 @@ namespace B5_71_1_PRO
                         load.SetWorkingChanel();
                         load.OffOutput();
 
-                        _bp.InitDevice("com3");
+                        _bp.InitDevice();
                         var setPoint = point *_bp.VoltMax;
                         //ставим точку напряжения
                         _bp.SetStateVolt(setPoint);
@@ -450,7 +453,7 @@ namespace B5_71_1_PRO
             //_bp = new B571Pro1(_portName);
 
             ////инициализация блока питания
-            //_bp.InitDevice(_portName);
+            //_bp.InitDevice();
             //_bp.SetStateCurr(_bp.CurrMax);
             //_bp.SetStateVolt(_bp.VoltMax);
             //_bp.OnOutput();
@@ -588,8 +591,15 @@ namespace B5_71_1_PRO
         {
             _bp = new B571Pro1();
             var mult = new Mult_34401A();
-
             var load = new N3306A();
+
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
+
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
             load.Open();
             load.FindThisModule();
             load.Close();
@@ -598,23 +608,12 @@ namespace B5_71_1_PRO
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
-            string GetStringConnect(string nameDevice, IeeeBase devType)
-            {
-                var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
-                    .ToString();
-                if (string.IsNullOrEmpty(connect))
-                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
-                return connect;
-            }
+            
 
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                mult.StringConnection = "GPIB0::22::INSTR";
-                load.StringConnection = "GPIB0::23::INSTR";
-                //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
-                //load.Stringconection = GetStringConnect(load.GetDeviceType());
+               
 
                 try
                 {
@@ -632,7 +631,7 @@ namespace B5_71_1_PRO
                         load.SetWorkingChanel();
                         load.OffOutput();
 
-                        _bp.InitDevice("com3");
+                        _bp.InitDevice();
                         var setPoint = point * _bp.VoltMax;
                         //ставим точку напряжения
                         _bp.SetStateVolt(setPoint);
@@ -714,7 +713,7 @@ namespace B5_71_1_PRO
             //_bp = new B571Pro1(_portName);
 
             ////инициализация блока питания
-            //_bp.InitDevice(_portName);
+            //_bp.InitDevice();
 
             //_bp.SetStateCurr(_bp.CurrMax);
             //_bp.SetStateVolt(_bp.VoltMax);
@@ -835,8 +834,15 @@ namespace B5_71_1_PRO
         {
             _bp = new B571Pro1();
             var mult = new Mult_34401A();
-
             var load = new N3306A();
+
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
+
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
             load.Open();
             load.FindThisModule();
             load.Close();
@@ -845,22 +851,8 @@ namespace B5_71_1_PRO
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
-            string GetStringConnect(string nameDevice, IeeeBase devType)
-            {
-                var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
-                    .ToString();
-                if (string.IsNullOrEmpty(connect))
-                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
-                return connect;
-            }
-
-
-            var operation = new BasicOperationVerefication<decimal>();
-                mult.StringConnection = "GPIB0::22::INSTR";
-                load.StringConnection = "GPIB0::23::INSTR";
-                //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
-                //load.Stringconection = GetStringConnect(load.GetDeviceType());
+           var operation = new BasicOperationVerefication<decimal>();
+               
 
                 try
                 {
@@ -878,7 +870,7 @@ namespace B5_71_1_PRO
                         load.SetWorkingChanel();
                         load.OffOutput();
 
-                        _bp.InitDevice("com3");
+                        _bp.InitDevice();
                         _bp.SetStateCurr(_bp.CurrMax);
                        
 
@@ -971,7 +963,7 @@ namespace B5_71_1_PRO
 
             //_bp = new B571Pro1(_portName);
             ////инициализация блока питания
-            //_bp.InitDevice(_portName);
+            //_bp.InitDevice();
             //_bp.SetStateCurr(_bp.CurrMax);
             //_bp.SetStateVolt(_bp.VoltMax);
             //_bp.OnOutput();
@@ -1099,31 +1091,24 @@ namespace B5_71_1_PRO
         {
             _bp = new B571Pro1();
             var mult = new Mult_34401A();
-
             var load = new N3306A();
+
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
+
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
             load.Open();
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
             if (load.GetChanelNumb <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-
-            string GetStringConnect(string nameDevice, IeeeBase devType)
-            {
-                var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
-                    .ToString();
-                if (string.IsNullOrEmpty(connect))
-                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
-                return connect;
-            }
-
+            
             var operation = new BasicOperationVerefication<decimal>();
-            mult.StringConnection = "GPIB0::22::INSTR";
-            load.StringConnection = "GPIB0::23::INSTR";
-            //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
-            //load.Stringconection = GetStringConnect(load.GetDeviceType());
+            
             try
             {
                 operation.InitWork = () =>
@@ -1142,7 +1127,7 @@ namespace B5_71_1_PRO
                     load.SetWorkingChanel();
                     load.OffOutput();
 
-                    _bp.InitDevice("com3");
+                    _bp.InitDevice();
                     _bp.SetStateVolt(_bp.VoltMax);
                     _bp.SetStateCurr(_bp.CurrMax);
 
@@ -1217,7 +1202,7 @@ namespace B5_71_1_PRO
 
             //_bp = new B571Pro1(_portName);
             ////инициализация блока питания
-            //_bp.InitDevice(_portName);
+            //_bp.InitDevice();
             //_bp.SetStateCurr(_bp.CurrMax);
             //_bp.SetStateVolt(_bp.VoltMax);
             //_bp.OnOutput();
@@ -1362,10 +1347,17 @@ namespace B5_71_1_PRO
         public async override Task StartWork(CancellationTokenSource token)
         {
 
-            var mult = new Mult_34401A();
             _bp = new B571Pro1();
-
+            var mult = new Mult_34401A();
             var load = new N3306A();
+
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
+
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
             load.Open();
             load.FindThisModule();
             load.Close();
@@ -1379,7 +1371,7 @@ namespace B5_71_1_PRO
             load.OnOutput();
             load.Close();
 
-            _bp.InitDevice(_portName);
+            _bp.InitDevice();
             _bp.SetStateCurr(_bp.CurrMax);
             _bp.SetStateVolt(_bp.VoltMax);
             _bp.OnOutput();
@@ -1387,14 +1379,20 @@ namespace B5_71_1_PRO
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                mult.StringConnection = "GPIB0::22::INSTR";
-                load.StringConnection = "GPIB0::23::INSTR";
-
-                //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-                //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+               
 
                 try
                 {
+                    operation.InitWork = () =>
+                    {
+                        MessageBoxService.Show("Нагрузка",
+                            $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                        /*схема*/
+                    };
+                    operation.BodyWork = Test;
+
+                    void Test()
+                    {
                     var setPoint = coef * _bp.CurrMax;
                     //ставим точку напряжения
                     _bp.SetStateCurr(setPoint);
@@ -1414,6 +1412,10 @@ namespace B5_71_1_PRO
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                (operation.Getting > operation.LowerTolerance);
                     DataRow.Add(operation);
+                    }
+                    await operation.WorkAsync(token);
+
+
 
                 }
                 finally
@@ -1443,7 +1445,7 @@ namespace B5_71_1_PRO
                 ////-------------------------------------------------
 
                 ////инициализация блока питания
-                //_bp.InitDevice(_portName);
+                //_bp.InitDevice();
                 //_bp.SetStateCurr(_bp.CurrMax);
                 //_bp.SetStateVolt(_bp.VoltMax);
                 //_bp.OnOutput();
@@ -1564,11 +1566,18 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-
-            var mult = new Mult_34401A();
             _bp = new B571Pro1();
-
+            var mult = new Mult_34401A();
             var load = new N3306A();
+
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
+
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
+
             load.Open();
             load.FindThisModule();
             load.Close();
@@ -1582,7 +1591,7 @@ namespace B5_71_1_PRO
             load.OnOutput();
             load.Close();
 
-            _bp.InitDevice(_portName);
+            _bp.InitDevice();
             _bp.SetStateCurr(_bp.CurrMax);
             _bp.SetStateVolt(_bp.VoltMax);
             _bp.OnOutput();
@@ -1590,36 +1599,47 @@ namespace B5_71_1_PRO
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                mult.StringConnection = "GPIB0::22::INSTR";
-                load.StringConnection = "GPIB0::23::INSTR";
-
-                //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-                //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+                
 
                 try
                 {
-                    var setPoint = coef * _bp.CurrMax;
-                    //ставим точку напряжения
-                    _bp.SetStateCurr(setPoint);
-                    Thread.Sleep(1000);
+                    operation.InitWork = () =>
+                    {
+                        MessageBoxService.Show("Нагрузка",
+                            $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                        /*схема*/
+                    };
+                    operation.BodyWork = Test;
 
-                    //измеряем ток
-                    load.Open();
-                    var resultN3300 = load.GetMeasCurr();
-                    load.Close();
-                    MathStatistics.Round(ref resultN3300, 3);
+                    void Test()
+                    {
+                        var setPoint = coef * _bp.CurrMax;
+                        //ставим точку напряжения
+                        _bp.SetStateCurr(setPoint);
+                        Thread.Sleep(1000);
 
-                    var resultBpCurr = _bp.GetMeasureCurr();
-                    MathStatistics.Round(ref resultBpCurr, 3);
+                        //измеряем ток
+                        load.Open();
+                        var resultN3300 = load.GetMeasCurr();
+                        load.Close();
+                        MathStatistics.Round(ref resultN3300, 3);
 
-                    operation.Expected = resultN3300;
-                    operation.Getting = resultBpCurr;
-                    operation.ErrorCalculation = ErrorCalculation;
-                    operation.LowerTolerance = operation.Expected - operation.Error;
-                    operation.UpperTolerance = operation.Expected + operation.Error;
-                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                               (operation.Getting > operation.LowerTolerance);
-                    DataRow.Add(operation);
+                        var resultBpCurr = _bp.GetMeasureCurr();
+                        MathStatistics.Round(ref resultBpCurr, 3);
+
+                        operation.Expected = resultN3300;
+                        operation.Getting = resultBpCurr;
+                        operation.ErrorCalculation = ErrorCalculation;
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                                 (operation.Getting > operation.LowerTolerance);
+                        DataRow.Add(operation);
+                    }
+
+                    await operation.WorkAsync(token);
+
+
 
                 }
                 finally
@@ -1655,7 +1675,7 @@ namespace B5_71_1_PRO
             //n3306A.Close();
 
             ////инициализация блока питания
-            //_bp.InitDevice(_portName);
+            //_bp.InitDevice();
             //_bp.SetStateCurr(_bp.CurrMax);
             //_bp.SetStateVolt(_bp.VoltMax);
             //_bp.OnOutput();
@@ -1771,65 +1791,153 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro1(_portName);
+            _bp = new B571Pro1();
+            var mult = new Mult_34401A();
+            var load = new N3306A();
 
-            //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
-            n3306A.Devace();
-            n3306A.Open();
-            //массив всех установленных модулей
-            var installedMod = n3306A.GetInstalledModulesName();
-            //Берем канал который нам нужен
-            //var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            //if(!currModel[1].Equals(n3306A.GetModuleModel()))
-                //throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
 
-            var currUnstableList = new List<decimal>();
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
+
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
-            n3306A.SetWorkingChanel();
-            n3306A.SetResistanceFunc();
-            n3306A.SetResistanceRange(ArrResistanceCurrUnstable[0]);
-            n3306A.SetResistance(ArrResistanceCurrUnstable[0]);
-            n3306A.OnOutput();
-            n3306A.Close();
-
-            //инициализация блока питания
-            _bp.InitDevice(_portName);
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
-
-            foreach(var resistance in ArrResistanceCurrUnstable)
+            var operation = new BasicOperationVerefication<decimal>();
+            try
             {
-                n3306A.Open();
-                n3306A.SetResistanceRange(resistance);
-                n3306A.SetResistance(resistance);
-                Thread.Sleep(2000);
-                currUnstableList.Add(n3306A.GetMeasCurr());
-                n3306A.Close();
+                operation.InitWork = () =>
+                {
+                    MessageBoxService.Show("Нагрузка",
+                        $"Нестабильность по току", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                    /*схема*/
+                };
+                operation.BodyWork = Test;
+
+                void Test()
+                {
+                    load.Open();
+                    load.SetWorkingChanel();
+                    load.SetResistanceFunc();
+                    load.SetResistanceRange(ArrResistanceCurrUnstable[0]);
+                    load.SetResistance(ArrResistanceCurrUnstable[0]);
+                    load.OnOutput();
+                    load.Close();
+
+                    ////инициализация блока питания
+                    _bp.InitDevice();
+                    _bp.SetStateCurr(_bp.CurrMax);
+                    _bp.SetStateVolt(_bp.VoltMax);
+                    _bp.OnOutput();
+
+                    var currUnstableList = new List<decimal>();
+
+                    foreach (var resistance in ArrResistanceCurrUnstable)
+                    {
+                        load.Open();
+                        load.SetResistanceRange(resistance);
+                        load.SetResistance(resistance);
+                        Thread.Sleep(1000);
+                        currUnstableList.Add(load.GetMeasCurr());
+                        load.Close();
+                    }
+
+                    var resultCurrUnstable = (currUnstableList.Max() - currUnstableList.Min()) / 2;
+                    MathStatistics.Round(ref resultCurrUnstable, 3);
+
+                    operation.Expected = 0;
+                    operation.Getting = resultCurrUnstable;
+                    operation.ErrorCalculation = ErrorCalculation;
+                    operation.LowerTolerance = 0;
+                    operation.UpperTolerance = operation.Expected + operation.Error;
+                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                               (operation.Getting >= operation.LowerTolerance);
+                    DataRow.Add(operation);
+
+                }
+
+                await operation.WorkAsync(token);
+            }
+            finally
+            {
+                _bp.OffOutput();
+                _bp.Close();
+                load.Close();
+                mult.Close();
             }
 
-            _bp.OffOutput();
-            _bp.Close();
+            #region OldCodeDciUnstable
 
-            var resultCurrUnstable = (currUnstableList.Max() - currUnstableList.Min()) / 2;
-            MathStatistics.Round(ref resultCurrUnstable, 3);
+            //_bp = new B571Pro1(_portName);
 
-            //забиваем результаты конкретного измерения для последующей передачи их в протокол
-            var bufOperation = new BasicOperationVerefication<decimal>();
+            ////------- Создаем подключение к нагрузке
+            //var n3306A = new N3306A(1);
+            //n3306A.Devace();
+            //n3306A.Open();
+            ////массив всех установленных модулей
+            //var installedMod = n3306A.GetInstalledModulesName();
+            ////Берем канал который нам нужен
+            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+            ////throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
 
-            bufOperation.Expected = 0;
-            bufOperation.Getting = resultCurrUnstable;
-            bufOperation.ErrorCalculation = ErrorCalculation;
-            bufOperation.LowerTolerance = 0;
-            bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-            bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                       (bufOperation.Getting >= bufOperation.LowerTolerance);
-            DataRow.Add(bufOperation);
+            //var currUnstableList = new List<decimal>();
+
+
+            //n3306A.SetWorkingChanel();
+            //n3306A.SetResistanceFunc();
+            //n3306A.SetResistanceRange(ArrResistanceCurrUnstable[0]);
+            //n3306A.SetResistance(ArrResistanceCurrUnstable[0]);
+            //n3306A.OnOutput();
+            //n3306A.Close();
+
+            ////инициализация блока питания
+            //_bp.InitDevice();
+            //_bp.SetStateCurr(_bp.CurrMax);
+            //_bp.SetStateVolt(_bp.VoltMax);
+            //_bp.OnOutput();
+
+            //foreach (var resistance in ArrResistanceCurrUnstable)
+            //{
+            //    n3306A.Open();
+            //    n3306A.SetResistanceRange(resistance);
+            //    n3306A.SetResistance(resistance);
+            //    Thread.Sleep(2000);
+            //    currUnstableList.Add(n3306A.GetMeasCurr());
+            //    n3306A.Close();
+            //}
+
+            //_bp.OffOutput();
+            //_bp.Close();
+
+            //var resultCurrUnstable = (currUnstableList.Max() - currUnstableList.Min()) / 2;
+            //MathStatistics.Round(ref resultCurrUnstable, 3);
+
+            ////забиваем результаты конкретного измерения для последующей передачи их в протокол
+            //var bufOperation = new BasicOperationVerefication<decimal>();
+
+            //bufOperation.Expected = 0;
+            //bufOperation.Getting = resultCurrUnstable;
+            //bufOperation.ErrorCalculation = ErrorCalculation;
+            //bufOperation.LowerTolerance = 0;
+            //bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            //bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            //                           (bufOperation.Getting >= bufOperation.LowerTolerance);
+            //DataRow.Add(bufOperation);
+
+
+            #endregion
+
         }
 
-     
+
         public Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного тока";
@@ -1898,78 +2006,175 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro1(_portName);
+            _bp = new B571Pro1();
+            var mult = new Mult_34401A();
+            var load = new N3306A();
 
-            //------- Создаем подключение к нагрузке
-            var n3306A = new N3306A(1);
-            n3306A.Devace();
-            n3306A.Open();
-            //массив всех установленных модулей
-            var installedMod = n3306A.GetInstalledModulesName();
-            //Берем канал который нам нужен
-            //var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
-            //if(!currModel[1].Equals(n3306A.GetModuleModel()))
-            //    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
+            _bp.StringConnection = _portName;
 
-            n3306A.SetWorkingChanel();
-            n3306A.SetResistanceFunc();
-            n3306A.SetResistanceRange(ArrResistanceCurrUnstable[0]);
-            n3306A.SetResistance(ArrResistanceCurrUnstable[0]);
-            n3306A.OnOutput();
-            n3306A.Close();
+            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
+            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
 
-            //инициализация блока питания
-            _bp.InitDevice(_portName);
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
-
-            //------- Создаем подключение к мультиметру
-            var m34401 = new Mult_34401A();
-            m34401.Devace();
-            m34401.Open();
-
-            //Начинаем измерять пульсации
-
-            while(m34401.GetTerminalConnect())
-                MessageBox.Show("На панели прибора " + m34401.GetDeviceType +
-                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.");
-
-            MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения");
-            //нужно дать время В3-57
-            Thread.Sleep(5000);
-            m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-            m34401.WriteLine(Main_Mult.QueryValue);
-
-            var currPuls34401 = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString());
-
-            var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
-            //по закону ома считаем сопротивление
-            var measResist = _bp.GetMeasureVolt() / _bp.GetMeasureCurr();
-            // считаем пульсации
-            currPulsV357 = currPulsV357 / measResist;
-            MathStatistics.Round(ref currPulsV357, 2);
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
-            m34401.Close();
-
-
-            _bp.OffOutput();
-            _bp.Close();
-
-            //забиваем результаты конкретного измерения для последующей передачи их в протокол
-            var bufOperation = new BasicOperationVerefication<decimal>
+            var operation = new BasicOperationVerefication<decimal>();
+            try
             {
-                Expected = 0,
-                Getting = currPulsV357,
-                ErrorCalculation = ErrorCalculation,
-                LowerTolerance = 0
-            };
+                operation.InitWork = () =>
+                {
+                    MessageBoxService.Show("Нагрузка",
+                        $"Измерение пульсаций тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                    /*схема*/
+                };
 
-            bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-            bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                       (bufOperation.Getting >= bufOperation.LowerTolerance);
-            DataRow.Add(bufOperation);
+                operation.BodyWork = Test;
+
+                void Test()
+                {
+                    load.SetWorkingChanel();
+                    load.SetResistanceFunc();
+                    load.SetResistanceRange(ArrResistanceCurrUnstable[0]);
+                    load.SetResistance(ArrResistanceCurrUnstable[0]);
+                    load.OnOutput();
+                    load.Close();
+
+                    //инициализация блока питания
+                    _bp.InitDevice();
+                    _bp.SetStateCurr(_bp.CurrMax);
+                    _bp.SetStateVolt(_bp.VoltMax);
+                    _bp.OnOutput();
+
+                    while (mult.GetTerminalConnect())
+                        MessageBoxService.Show("Указание оператору",
+                            "На панели прибора " + mult.GetDeviceType +
+                            " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
+                    MessageBoxService.Show("Указание оператору",
+                        $"Установите на В3-57 подходящий предел измерения напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
+
+                    //нужно дать время В3-57
+                    Thread.Sleep(5000);
+                    mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
+                    mult.WriteLine(Main_Mult.QueryValue);
+
+                    var currPuls34401 = (decimal)mult.DataPreparationAndConvert(load.ReadString());
+
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
+                    //по закону ома считаем сопротивление
+                    var measResist = _bp.GetMeasureVolt() / _bp.GetMeasureCurr();
+                    // считаем пульсации
+                    currPulsV357 = currPulsV357 / measResist;
+                    MathStatistics.Round(ref currPulsV357, 3);
+
+                    operation.Expected = 0;
+                    operation.Getting = currPulsV357;
+                    operation.ErrorCalculation = ErrorCalculation;
+                    operation.LowerTolerance = 0;
+                    operation.UpperTolerance = operation.Expected + operation.Error;
+                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                               (operation.Getting >= operation.LowerTolerance);
+                    DataRow.Add(operation);
+
+
+                }
+            }
+            finally
+            {
+                _bp.OffOutput();
+                _bp.Close();
+                mult.Close();
+                load.Close();
+            }
+
+
+            #region MyRegion
+
+            //_bp = new B571Pro1();
+
+            ////------- Создаем подключение к нагрузке
+            //var n3306A = new N3306A(1);
+            //n3306A.Devace();
+            //n3306A.Open();
+            ////массив всех установленных модулей
+            //var installedMod = n3306A.GetInstalledModulesName();
+            ////Берем канал который нам нужен
+            ////var currModel = installedMod[n3306A.GetChanelNumb() - 1].Split(':');
+            ////if(!currModel[1].Equals(n3306A.GetModuleModel()))
+            ////    throw new ArgumentException("Неверно указан номер канала модуля электронной нагрузки.");
+
+            //n3306A.SetWorkingChanel();
+            //n3306A.SetResistanceFunc();
+            //n3306A.SetResistanceRange(ArrResistanceCurrUnstable[0]);
+            //n3306A.SetResistance(ArrResistanceCurrUnstable[0]);
+            //n3306A.OnOutput();
+            //n3306A.Close();
+
+            ////инициализация блока питания
+            //_bp.InitDevice();
+            //_bp.SetStateCurr(_bp.CurrMax);
+            //_bp.SetStateVolt(_bp.VoltMax);
+            //_bp.OnOutput();
+
+            ////------- Создаем подключение к мультиметру
+            //var m34401 = new Mult_34401A();
+            //m34401.Devace();
+            //m34401.Open();
+
+            ////Начинаем измерять пульсации
+
+            //while (m34401.GetTerminalConnect())
+            //    MessageBox.Show("На панели прибора " + m34401.GetDeviceType +
+            //                    " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.");
+
+            //MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения");
+            ////нужно дать время В3-57
+            //Thread.Sleep(5000);
+            //m34401.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
+            //m34401.WriteLine(Main_Mult.QueryValue);
+
+            //var currPuls34401 = (decimal)m34401.DataPreparationAndConvert(m34401.ReadString());
+
+            //var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
+            ////по закону ома считаем сопротивление
+            //var measResist = _bp.GetMeasureVolt() / _bp.GetMeasureCurr();
+            //// считаем пульсации
+            //currPulsV357 = currPulsV357 / measResist;
+            //MathStatistics.Round(ref currPulsV357, 2);
+
+
+            //m34401.Close();
+
+
+            //_bp.OffOutput();
+            //_bp.Close();
+
+            ////забиваем результаты конкретного измерения для последующей передачи их в протокол
+            //var bufOperation = new BasicOperationVerefication<decimal>
+            //{
+            //    Expected = 0,
+            //    Getting = currPulsV357,
+            //    ErrorCalculation = ErrorCalculation,
+            //    LowerTolerance = 0
+            //};
+
+            //bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
+            //bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
+            //                           (bufOperation.Getting >= bufOperation.LowerTolerance);
+            //DataRow.Add(bufOperation);
+
+            #endregion
+
+
+
         }
 
 

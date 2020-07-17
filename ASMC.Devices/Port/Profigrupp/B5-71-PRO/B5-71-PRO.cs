@@ -44,9 +44,9 @@ namespace ASMC.Devices.Port.Profigrupp
         /// </summary>
         /// <param name="PortName">Имя последовательного порта, к которому подключен блок питания.</param>
         /// <returns>Если при подключении к блоку питания получен верный ответ функция вернет true. В противном случае вернет false.</returns>
-        public bool InitDevice(String PortName)
+        public bool InitDevice()
         {
-            Init(PortName);
+            Init();
 
             //перезагружаем блок питания
             this.Reset();
@@ -154,11 +154,10 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <summary>
         /// Задает параметры подключения к последовательному порту. Задает символ конца строки для блока питания.
         /// </summary>
-        /// <param name="portName">имя последовательного порта, к которому подключен блок питания</param>
-        public override void Init(string portName)
+        public void Init()
         {
             
-            this.StringConnection = portName;
+            
             this.BaudRate = SpeedRate.R9600;
             this.Parity = Parity.None;
             this.DataBit = DBit.Bit8;
