@@ -9,10 +9,6 @@
     {
         public B571Pro1()
         {
-        }
-
-        public B571Pro1(string PortName) : base(PortName)
-        {
             DeviceType = "Б5-71/1-ПРО";
             VoltMax = 30;
             CurrMax = 10;
@@ -24,6 +20,11 @@
             tolleranceVoltPuls = 2;
             //пульсации по току
             tolleranceCurrentPuls = 5;
+        }
+
+        public B571Pro1(string PortName) : base(PortName)
+        {
+           
         }
 
    
