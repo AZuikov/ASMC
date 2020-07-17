@@ -283,6 +283,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
+            dataTable.TableName = "table2";
             dataTable.Columns.Add("Установленное значение напряжения, В");
             dataTable.Columns.Add("Измеренное значение, В");
             dataTable.Columns.Add("Абсолютная погрешность, В");
@@ -325,8 +326,15 @@ namespace B5_71_1_PRO
         public async override Task StartWork(CancellationTokenSource token)
         {
             var mult = new Mult_34401A();
-            var load = new N3306A(1);
-            _bp= new B571Pro1();
+            _bp = new B571Pro1();
+
+            var load = new N3306A();
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb()<=0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
 
 
             string GetStringConnect(string nameDevice, IeeeBase devType)
@@ -543,6 +551,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
+            dataTable.TableName = "table3";
             dataTable.Columns.Add("Измеренное эталонным мультиметром значение, В");
             dataTable.Columns.Add("Измеренное источником питания значение, В");
             dataTable.Columns.Add("Абсолютная погрешность, В");
@@ -584,9 +593,17 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            var mult = new Mult_34401A();
-            var load = new N3306A(1);
             _bp = new B571Pro1();
+            var mult = new Mult_34401A();
+
+            var load = new N3306A();
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb() <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
+
 
             string GetStringConnect(string nameDevice, IeeeBase devType)
             {
@@ -792,6 +809,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
+            dataTable.TableName = "table4";
             dataTable.Columns.Add("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
             dataTable.Columns.Add("Максимальное допустимое значение, В");
@@ -822,9 +840,17 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            var mult = new Mult_34401A();
-            var load = new N3306A(1);
             _bp = new B571Pro1();
+            var mult = new Mult_34401A();
+
+            var load = new N3306A();
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb() <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
+
 
             string GetStringConnect(string nameDevice, IeeeBase devType)
             {
@@ -1047,7 +1073,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
-
+            dataTable.TableName = "table5";
             dataTable.Columns.Add("Величина напряжения на выходе источника питания, В");
             dataTable.Columns.Add("Измеренное значение пульсаций, мВ");
             dataTable.Columns.Add("Допустимое значение пульсаций, мВ");
@@ -1078,10 +1104,17 @@ namespace B5_71_1_PRO
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-
-            var mult = new Mult_34401A();
-            var load = new N3306A(1);
             _bp = new B571Pro1();
+            var mult = new Mult_34401A();
+
+            var load = new N3306A();
+            load.Open();
+            load.FindThisModule();
+            load.Close();
+            //если модуль нагрузки найти не удалось
+            if (load.GetChanelNumb() <= 0)
+                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
+
 
             string GetStringConnect(string nameDevice, IeeeBase devType)
             {
@@ -1292,6 +1325,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
+            dataTable.TableName = "table6";
             dataTable.Columns.Add("Установленное значение тока, А");
             dataTable.Columns.Add("Измеренное значение, А");
             dataTable.Columns.Add("Абсолютная погрешность, А");
@@ -1437,6 +1471,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
+            dataTable.TableName = "table7";
             dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
             dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
             dataTable.Columns.Add("Абсолютная погрешность, А");
@@ -1577,6 +1612,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
+            dataTable.TableName = "table8";
             dataTable.Columns.Add("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
             dataTable.Columns.Add("Максимальное допустимое значение, А");
@@ -1703,7 +1739,7 @@ namespace B5_71_1_PRO
         protected override DataTable FillData()
         {
             var dataTable = new DataTable();
-
+            dataTable.TableName = "table8";
             dataTable.Columns.Add("Величина тока на выходе источника питания, В");
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");

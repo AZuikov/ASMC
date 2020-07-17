@@ -58,7 +58,8 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         }
 
         /// <summary>
-        /// Проверяет установлен ли в нагрузке такой модуль. Возвращает номер канала или -1 если такой модуль не установлен
+        /// Проверяет установлен ли в нагрузке такой модуль. Если модуль устновлен, то записывает номер канала в объект и возвращает его. 
+        /// Если модуль не устнановлен, то прописывает в объект отрицательный номер канала -1 и возвращает его, тогда объект не рабочий. 
         /// </summary>
         /// <returns>true если модуль с такой моделью установлен</returns>
         public int FindThisModule()
@@ -134,7 +135,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// Отвечает, какой текущий режим канала
         /// </summary>
         /// <returns></returns>
-        public string AskMyFunc()
+        public string AskMyCurrentFunc()
         {
             
             this.WriteLine("FUNC?");
@@ -154,7 +155,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             this.WriteLine("FUNC RES");
             
 
-            return this.AskMyFunc().Equals(FuncRes);
+            return this.AskMyCurrentFunc().Equals(FuncRes);
         }
 
        
@@ -169,7 +170,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             this.WriteLine("FUNC Volt");
             
 
-            return this.AskMyFunc().Equals(FuncVolt);
+            return this.AskMyCurrentFunc().Equals(FuncVolt);
         }
 
         /// <summary>
@@ -182,7 +183,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             this.WriteLine("FUNC CURRent");
             
 
-            return this.AskMyFunc().Equals(FuncCurr);
+            return this.AskMyCurrentFunc().Equals(FuncCurr);
 
         }
 
