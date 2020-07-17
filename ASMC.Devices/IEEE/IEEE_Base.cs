@@ -70,11 +70,7 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         private readonly int _dealySending;
 
-        public string DeviceType
-        {
-            get => DeviceType;
-            protected set => DeviceType = value;
-        }
+        public string DeviceType { get; protected set; }
 
         /// <summary>
         /// Строка подкючения

@@ -105,13 +105,13 @@ namespace B5_71_1_PRO
             {
                 //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                //new Oper2DcvOutput(this),
+                new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
                 //new Oper6DciOutput(this),
                 //new Oper7DciMeasure(this),
                 //new Oper8DciUnstable(this),
-                new Oper5VoltPulsation(this),
+                //new Oper5VoltPulsation(this),
                 //new Oper9DciPulsation(this)
             };
         }
@@ -1114,7 +1114,7 @@ namespace B5_71_1_PRO
                 operation.InitWork = () =>
                 {
                     MessageBoxService.Show("Нагрузка",
-                        $"Измерение пульсаций", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                        $"Измерение пульсаций напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
                     /*схема*/
                 };
 
