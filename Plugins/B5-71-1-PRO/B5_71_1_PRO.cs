@@ -105,10 +105,10 @@ namespace B5_71_1_PRO
             {
                 //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                new Oper2DcvOutput(this),
+                //new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
-                //new Oper6DciOutput(this),
+                new Oper6DciOutput(this),
                 //new Oper7DciMeasure(this),
                 //new Oper8DciUnstable(this),
                 //new Oper5VoltPulsation(this),
@@ -871,6 +871,7 @@ namespace B5_71_1_PRO
                         load.OffOutput();
 
                         _bp.InitDevice();
+                        _bp.SetStateVolt(_bp.VoltMax);
                         _bp.SetStateCurr(_bp.CurrMax);
                        
 
@@ -907,24 +908,21 @@ namespace B5_71_1_PRO
                     MathStatistics.Round(ref resultVoltUnstable, 3);
 
                     //забиваем результаты конкретного измерения для последующей передачи их в протокол
-                    var bufOperation = new BasicOperationVerefication<decimal>
-                    {
-                        Expected = 0,
-                        Getting = resultVoltUnstable,
-                        ErrorCalculation = ErrorCalculation,
-                        LowerTolerance = 0
-                    };
 
-                    bufOperation.UpperTolerance = bufOperation.Expected + bufOperation.Error;
-                    bufOperation.IsGood = () => (bufOperation.Getting < bufOperation.UpperTolerance) &
-                                               (bufOperation.Getting >= bufOperation.LowerTolerance);
-                    DataRow.Add(bufOperation);
+                        operation.Expected = 0;
+                        operation.Getting = resultVoltUnstable;
+                        operation.ErrorCalculation = ErrorCalculation;
+                        operation.LowerTolerance = 0;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                               (operation.Getting >= operation.LowerTolerance);
+                    DataRow.Add(operation);
 
 
                 }
-                    await operation.WorkAsync(token);
+                await operation.WorkAsync(token);
 
-            }
+                }
                 finally
                 {
                     _bp.OffOutput();
@@ -1348,14 +1346,12 @@ namespace B5_71_1_PRO
         {
 
             _bp = new B571Pro1();
-            var mult = new Mult_34401A();
             var load = new N3306A();
 
-            mult.StringConnection = "GPIB0::22::INSTR";
+            
             load.StringConnection = "GPIB0::23::INSTR";
             _bp.StringConnection = _portName;
 
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
             //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
 
             load.Open();
@@ -1365,6 +1361,7 @@ namespace B5_71_1_PRO
             if (load.GetChanelNumb <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
+            load.Open();
             load.SetWorkingChanel();
             load.SetVoltFunc();
             load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
@@ -1380,7 +1377,6 @@ namespace B5_71_1_PRO
             {
                 var operation = new BasicOperationVerefication<decimal>();
                
-
                 try
                 {
                     operation.InitWork = () =>
@@ -1401,7 +1397,7 @@ namespace B5_71_1_PRO
                     //измеряем ток
                     load.Open();
                     var result = load.GetMeasCurr();
-                    load.Close();
+                    
                     MathStatistics.Round(ref result, 3);
 
                     operation.Expected = setPoint;
@@ -1415,15 +1411,13 @@ namespace B5_71_1_PRO
                     }
                     await operation.WorkAsync(token);
 
-
-
                 }
                 finally
                 {
                     _bp.OffOutput();
                     _bp.Close();
                     load.Close();
-                    mult.Close();
+                    
                 }
             }
 

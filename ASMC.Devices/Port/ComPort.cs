@@ -18,7 +18,7 @@ namespace ASMC.Devices.Port
         private readonly SerialPort _sp;
         protected virtual void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            
+           //если мы сюда попали, это нормально? 
 
         }
         public string StringConnection

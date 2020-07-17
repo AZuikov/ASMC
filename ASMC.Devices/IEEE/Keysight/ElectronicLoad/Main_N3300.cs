@@ -69,10 +69,15 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             {
                 //если модуль найден, то прописывается канал
                 if (model.Type.Equals(this.ModuleModel))
-                 this.chanNum = model.Channel;
+                {
+                    this.chanNum = model.Channel;
+                    break;
+                }
+                else
+                    //если модуль не найден, то канал пишется отрицательным числом. 
+                    this.chanNum = -1;
             }
-            //если модуль не найден, то канал пишется отрицательным числом. 
-            this.chanNum = -1;
+            
 
             return this.chanNum;
         }
@@ -205,19 +210,25 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         }
 
         /// <summary>
+        /// Конвертирует строку в число decimal
+        /// </summary>
+        /// <param name="inStr"></param>
+        /// <returns></returns>
+        private decimal StrToDecimal(string inStr)
+        {
+            string[] val = inStr.TrimEnd('\n').Replace(".", ",").Split('E');
+
+            return decimal.Parse(val[0]) * (decimal)System.Math.Pow(10, double.Parse(val[1]));
+        }
+
+        /// <summary>
         /// Возвращает ограничение тока на канале
         /// </summary>
         /// <returns></returns>
         public decimal GetCurrLevel()
         {
-            
-             this.WriteLine("CURR:LEV?");
-            string answer = this.ReadLine();
-            
-
-            string[] val = answer.TrimEnd('\n').Split('E');
-
-            return decimal.Parse(val[0]) * (decimal)System.Math.Pow(10, double.Parse(val[1]));
+            this.WriteLine("CURR:LEV?");
+            return StrToDecimal(this.ReadLine());
         }
 
        
@@ -230,12 +241,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
            
             this.WriteLine("MEASure:CURRent?");
-            Thread.Sleep(10);
-            string answer = this.ReadLine();
-
-            string[] val = answer.TrimEnd('\n').Split('E');
-
-            return decimal.Parse(val[0]) * (decimal)System.Math.Pow(10, double.Parse(val[1]));
+            return StrToDecimal(this.ReadLine());
         }
 
         /// <summary>
@@ -246,22 +252,14 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("MEAS:VOLT?");
-            Thread.Sleep(10);
-            string answer = this.ReadLine();
-            
-
-            return Decimal.Parse(answer);
+            return StrToDecimal(this.ReadLine());
         }
 
         public decimal GetMeasPower()
         {
             
             this.WriteLine("MEASure:POWer?");
-            Thread.Sleep(10);
-            string answer = this.ReadLine();
-            
-
-            return Decimal.Parse(answer);
+            return StrToDecimal(this.ReadLine());
         }
 
         /// <summary>
@@ -364,11 +362,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             
             this.WriteLine("SENS:CURR:RANGE?");
-            Thread.Sleep(10);
-            string answer = this.ReadLine();
-            
-
-            return Decimal.Parse(answer);
+            return StrToDecimal(this.ReadLine());
         }
 
         /// <summary>
@@ -388,7 +382,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             string answer =this.ReadLine();
             
             //преобразуем строку в число
-            string[] val = answer.TrimEnd('\n').Split('E');
+            string[] val = answer.TrimEnd('\n').Replace(".",",").Split('E');
             decimal resultVoltLevel = decimal.Parse(val[0]) * (decimal)System.Math.Pow(10, double.Parse(val[1]));
 
             //если значение установилось, то ответ прибора будет тем же числом, что мы отправили на прибор - тогда вернем true

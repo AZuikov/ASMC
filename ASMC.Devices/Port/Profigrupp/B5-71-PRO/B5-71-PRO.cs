@@ -154,7 +154,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <summary>
         /// Задает параметры подключения к последовательному порту. Задает символ конца строки для блока питания.
         /// </summary>
-        public void Init()
+        public override void Init()
         {
             
             
@@ -439,8 +439,8 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <summary>
         /// Проверка подключения к источнику питания 
         /// </summary>
-        /// <param name="portName">Передать имя последовательного порта</param>
-       public abstract void Init (string portName);
+        
+       public abstract void Init ();
         /// <summary>
         /// Сброс блока к настройкам по умолчанию.
         /// </summary>
