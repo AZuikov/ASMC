@@ -337,15 +337,7 @@ namespace B5_71_1_PRO
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel()} не установлен в базовый блок нагрузки");
 
 
-            string GetStringConnect(string nameDevice, IeeeBase devType)
-            {
-                var connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
-                    .ToString();
-                if (string.IsNullOrEmpty(connect))
-                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
-                return connect;
-            }
+            
 
             foreach (var point in MyPoint)
             {

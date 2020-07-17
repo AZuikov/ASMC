@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDevice.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />

@@ -29,7 +29,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         protected Main_N3300()
         {
-            this.DeviseType = "N3300A";
+            this.DeviceType = "N3300A";
             
             
         }

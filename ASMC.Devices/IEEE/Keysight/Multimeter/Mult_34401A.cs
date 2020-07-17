@@ -7,7 +7,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     {
         public Mult_34401A() : base()
         {
-            DeviseType = "34401A";
+            DeviceType = "34401A";
             secured_code_calibr = "HP034401";
         }
         public Mult_34401A(string connect) : this()

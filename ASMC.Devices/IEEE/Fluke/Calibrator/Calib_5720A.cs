@@ -7,7 +7,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     {
         public Calib_5720A() : base()
         {
-            DeviseType = "5720A";
+            DeviceType = "5720A";
         }
         public Calib_5720A(string connect) : this()
         {

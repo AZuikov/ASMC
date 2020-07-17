@@ -7,7 +7,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     {
         public Mult_34465_70A() : base()
         {
-            DeviseType = "344**A";
+            DeviceType = "344**A";
         }
         public Mult_34465_70A(string connect) : this()
         {

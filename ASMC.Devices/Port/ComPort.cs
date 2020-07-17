@@ -8,7 +8,7 @@ using NLog;
 
 namespace ASMC.Devices.Port
 {
-    public class ComPort : IDisposable
+    public class ComPort : IDevice
     {
         /// <summary>
         /// Позволяет получать имя устройства.

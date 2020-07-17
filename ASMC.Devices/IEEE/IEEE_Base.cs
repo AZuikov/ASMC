@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Windows.Forms;
 using Ivi.Visa;
@@ -13,7 +14,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace ASMC.Devices.IEEE
 {
-    public class IeeeBase : IDisposable
+    public class IeeeBase : IDevice
     {
         /// <summary>
         /// Звуковой сигнал
@@ -69,17 +70,28 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         private readonly int _dealySending;
 
-        protected string DeviseType;
+        public string DeviceType
+        {
+            get => DeviceType;
+            set => DeviceType = value;
+        }
+
+        /// <summary>
+        /// Строка подкючения
+        /// </summary>
+        public string StringConnection
+        {
+            get => StringConnection;
+            set => StringConnection = value;
+        }
 
         /// <summary>
         /// Объкт сессии
         /// </summary>
         protected IMessageBasedSession Session;
 
-        /// <summary>
-        /// Строка подкючения
-        /// </summary>
-        public string StringConnection;
+        
+       
 
         #endregion
 
@@ -207,7 +219,7 @@ namespace ASMC.Devices.IEEE
                     if (_words != null)
                         if (_words.Length > 2)
                         {
-                            if (string.CompareOrdinal(GetDeviceType, DeviseType) == 0)
+                            if (string.CompareOrdinal(GetDeviceType, DeviceType) == 0)
                             {
                                 Close();
                                 return true;
@@ -222,7 +234,7 @@ namespace ASMC.Devices.IEEE
                     Close();
                 }
             }
-            Logger.Warn($@"Устройство {DeviseType} не найдено");
+            Logger.Warn($@"Устройство {DeviceType} не найдено");
             return false;
         }
 
@@ -260,7 +272,7 @@ namespace ASMC.Devices.IEEE
                     }
                     
                 }
-            Logger.Warn($@"Устройство {DeviseType} не найдено");
+            Logger.Warn($@"Устройство {DeviceType} не найдено");
             return false;
         }
 
