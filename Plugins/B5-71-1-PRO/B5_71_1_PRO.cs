@@ -350,8 +350,8 @@ namespace B5_71_1_PRO
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                mult.Stringconection = "GPIB0::22::INSTR";
-                load.Stringconection = "GPIB0::23::INSTR";
+                mult.StringConnection = "GPIB0::22::INSTR";
+                load.StringConnection = "GPIB0::23::INSTR";
                 //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
                 //load.Stringconection = GetStringConnect(load.GetDeviceType());
               
@@ -618,8 +618,8 @@ namespace B5_71_1_PRO
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                mult.Stringconection = "GPIB0::22::INSTR";
-                load.Stringconection = "GPIB0::23::INSTR";
+                mult.StringConnection = "GPIB0::22::INSTR";
+                load.StringConnection = "GPIB0::23::INSTR";
                 //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
                 //load.Stringconection = GetStringConnect(load.GetDeviceType());
 
@@ -864,8 +864,8 @@ namespace B5_71_1_PRO
 
 
             var operation = new BasicOperationVerefication<decimal>();
-                mult.Stringconection = "GPIB0::22::INSTR";
-                load.Stringconection = "GPIB0::23::INSTR";
+                mult.StringConnection = "GPIB0::22::INSTR";
+                load.StringConnection = "GPIB0::23::INSTR";
                 //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
                 //load.Stringconection = GetStringConnect(load.GetDeviceType());
 
@@ -1127,8 +1127,8 @@ namespace B5_71_1_PRO
             }
 
             var operation = new BasicOperationVerefication<decimal>();
-            mult.Stringconection = "GPIB0::22::INSTR";
-            load.Stringconection = "GPIB0::23::INSTR";
+            mult.StringConnection = "GPIB0::22::INSTR";
+            load.StringConnection = "GPIB0::23::INSTR";
             //mult.Stringconection = GetStringConnect(mult.GetDeviceType());
             //load.Stringconection = GetStringConnect(load.GetDeviceType());
             try

@@ -11,7 +11,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         }
         public Calib_5522A(string connect) : this()
         {
-            Stringconection = connect;
+            StringConnection = connect;
         }
     }
 }

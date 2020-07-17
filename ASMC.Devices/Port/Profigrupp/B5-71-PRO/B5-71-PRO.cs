@@ -158,7 +158,7 @@ namespace ASMC.Devices.Port.Profigrupp
         public override void Init(string portName)
         {
             
-            this.PortName = portName;
+            this.StringConnection = portName;
             this.BaudRate = SpeedRate.R9600;
             this.Parity = Parity.None;
             this.DataBit = DBit.Bit8;

@@ -21,7 +21,7 @@ namespace ASMC.Devices.Port
             
 
         }
-        public string PortName
+        public string StringConnection
         { get => _sp.PortName;
             set => _sp.PortName = value;
         }

@@ -79,7 +79,7 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// Строка подкючения
         /// </summary>
-        public string Stringconection;
+        public string StringConnection;
 
         #endregion
 
@@ -87,7 +87,7 @@ namespace ASMC.Devices.IEEE
         {   
             _words = null;
             Session = null;
-            Stringconection = null;
+            StringConnection = null;
             /*50ms задежка*/
             _dealySending = 50;
         }
@@ -143,7 +143,7 @@ namespace ASMC.Devices.IEEE
             //ConnectionClosed();
             try
             {
-                Session = (IMessageBasedSession) GlobalResourceManager.Open(Stringconection);
+                Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 60000;
                 Session.Clear();
             }
@@ -195,7 +195,7 @@ namespace ASMC.Devices.IEEE
                 {
                     onDevace.MoveNext();
                     _devace[i] = onDevace.Current;
-                    Stringconection = _devace[i];
+                    StringConnection = _devace[i];
                     if (!Open(true))
                     {
                         //если прибор не подключился, т.е. не знает команд scpi, тогда на запрос *idn? он ничего не ответит
@@ -207,7 +207,7 @@ namespace ASMC.Devices.IEEE
                     if (_words != null)
                         if (_words.Length > 2)
                         {
-                            if (string.CompareOrdinal(GetDeviceType(), DeviseType) == 0)
+                            if (string.CompareOrdinal(GetDeviceType, DeviseType) == 0)
                             {
                                 Close();
                                 return true;
@@ -216,7 +216,7 @@ namespace ASMC.Devices.IEEE
                         else
                         {
                             _words = null;
-                            Stringconection = null;
+                            StringConnection = null;
                         }
 
                     Close();
@@ -239,13 +239,13 @@ namespace ASMC.Devices.IEEE
                     onDevace.MoveNext();
                     _devace[i] = onDevace.Current;
                     connect = onDevace.Current;
-                    Stringconection = onDevace.Current;
+                    StringConnection = onDevace.Current;
                     if (!Open(false))
                     {
                         if (_words != null)
                             if (_words.Length > 2)
                             {
-                                if (string.Compare(GetDeviceType(), deviseType) == 0) return true;
+                                if (string.Compare(GetDeviceType, deviseType) == 0) return true;
                             }
                             else
                             {
@@ -382,7 +382,7 @@ namespace ASMC.Devices.IEEE
 
         public void SetStringconection(string conection)
         {
-            Stringconection = conection;
+            StringConnection = conection;
         }
 
         /// <summary>
@@ -447,7 +447,7 @@ namespace ASMC.Devices.IEEE
         {
             try
             {
-                Session = (IMessageBasedSession) GlobalResourceManager.Open(Stringconection);
+                Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 100;
                 Session.Clear();
             }

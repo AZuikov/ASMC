@@ -11,7 +11,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         }
         public Mult_34465_70A(string connect) : this()
         {
-            Stringconection = connect;
+            StringConnection = connect;
         }       
     }
 }

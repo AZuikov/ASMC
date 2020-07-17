@@ -316,6 +316,15 @@ namespace ASMC.Data.Model
 
     public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
     {
+        protected string GetStringConnect(string nameDevice, IDevice devType)
+        {
+            var connect = this.UserItemOperation.ControlDevices
+                .Where(q => string.Equals(q.SelectedName, devType.GetDeviceType)).Select(q => q.StringConnect)
+                .ToString();
+            if (string.IsNullOrEmpty(connect))
+                throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
+            return connect;
+        }
         protected IUserItemOperation UserItemOperation { get; }
 
         protected AbstractUserItemOperationBase(IUserItemOperation userItemOperation)

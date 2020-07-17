@@ -42,7 +42,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         }
         public Calibr_9500B(string connect) : this()
         {
-            Stringconection = connect;
+            StringConnection = connect;
         }
         /// <summary>
         /// Управление переключением выхода: включено/выключено 

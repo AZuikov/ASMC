@@ -12,7 +12,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         }
         public Mult_34401A(string connect) : this()
         {
-            Stringconection = connect;
+            StringConnection = connect;
         }
         public class Filtr : AC.Voltage.Filtr
         {
