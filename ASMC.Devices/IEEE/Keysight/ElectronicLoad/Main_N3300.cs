@@ -240,7 +240,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public decimal GetMeasCurr()
         {
            
-            this.WriteLine("MEASure:CURRent?");
+            this.WriteLine("MEAS:CURR?");
             return StrToDecimal(this.ReadLine());
         }
 

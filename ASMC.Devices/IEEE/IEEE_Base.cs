@@ -150,6 +150,9 @@ namespace ASMC.Devices.IEEE
                 Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 60000;
                 Session.Clear();
+                Thread.Sleep(10);
+                
+
             }
             catch (Exception e)
             {

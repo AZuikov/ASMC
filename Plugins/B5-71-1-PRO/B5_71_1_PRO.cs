@@ -105,12 +105,12 @@ namespace B5_71_1_PRO
             {
                 //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                new Oper2DcvOutput(this),
+                //new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
-                new Oper6DciOutput(this),
+                //new Oper6DciOutput(this),
                 //new Oper7DciMeasure(this),
-                //new Oper8DciUnstable(this),
+                new Oper8DciUnstable(this),
                 //new Oper5VoltPulsation(this),
                 //new Oper9DciPulsation(this)
             };
@@ -903,6 +903,8 @@ namespace B5_71_1_PRO
                                 mult.Close();
                     }
 
+                        _bp.OffOutput();
+
                     //считаем
                     var resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
                     MathStatistics.Round(ref resultVoltUnstable, 3);
@@ -1398,6 +1400,8 @@ namespace B5_71_1_PRO
                     //измеряем ток
                     load.Open();
                     var result = load.GetMeasCurr();
+
+                        _bp.OffOutput();
                     
                     MathStatistics.Round(ref result, 3);
 
@@ -1563,10 +1567,10 @@ namespace B5_71_1_PRO
         public async override Task StartWork(CancellationTokenSource token)
         {
             _bp = new B571Pro1();
-            var mult = new Mult_34401A();
+           
             var load = new N3306A();
 
-            mult.StringConnection = "GPIB0::22::INSTR";
+           
             load.StringConnection = "GPIB0::23::INSTR";
             _bp.StringConnection = _portName;
 
@@ -1591,7 +1595,7 @@ namespace B5_71_1_PRO
             _bp.InitDevice();
             _bp.SetStateCurr(_bp.CurrMax);
             _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
+            
 
             foreach (var coef in MyPoint)
             {
@@ -1600,12 +1604,12 @@ namespace B5_71_1_PRO
 
                 try
                 {
-                    operation.InitWork = () =>
-                    {
-                        MessageBoxService.Show("Нагрузка",
-                            $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                        /*схема*/
-                    };
+                    //operation.InitWork = () =>
+                    //{
+                    //    MessageBoxService.Show("Нагрузка",
+                    //        $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                    //    /*схема*/
+                    //};
                     operation.BodyWork = Test;
 
                     void Test()
@@ -1613,12 +1617,14 @@ namespace B5_71_1_PRO
                         var setPoint = coef * _bp.CurrMax;
                         //ставим точку напряжения
                         _bp.SetStateCurr(setPoint);
-                        Thread.Sleep(1000);
+                        _bp.OnOutput();
+                        Thread.Sleep(500);
 
                         //измеряем ток
                         load.Open();
+                        
                         var resultN3300 = load.GetMeasCurr();
-                        load.Close();
+                        
                         MathStatistics.Round(ref resultN3300, 3);
 
                         var resultBpCurr = _bp.GetMeasureCurr();
@@ -1631,7 +1637,9 @@ namespace B5_71_1_PRO
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
+                        operation.CompliteWork = () => operation.IsGood();
                         DataRow.Add(operation);
+                        _bp.OffOutput();
                     }
 
                     await operation.WorkAsync(token);
@@ -1644,7 +1652,7 @@ namespace B5_71_1_PRO
                     _bp.OffOutput();
                     _bp.Close();
                     load.Close();
-                    mult.Close();
+                    
                 }
             }
 
@@ -1789,10 +1797,10 @@ namespace B5_71_1_PRO
         public async override Task StartWork(CancellationTokenSource token)
         {
             _bp = new B571Pro1();
-            var mult = new Mult_34401A();
+           
             var load = new N3306A();
 
-            mult.StringConnection = "GPIB0::22::INSTR";
+            
             load.StringConnection = "GPIB0::23::INSTR";
             _bp.StringConnection = _portName;
 
@@ -1841,10 +1849,12 @@ namespace B5_71_1_PRO
                         load.Open();
                         load.SetResistanceRange(resistance);
                         load.SetResistance(resistance);
-                        Thread.Sleep(1000);
+                        Thread.Sleep(700);
                         currUnstableList.Add(load.GetMeasCurr());
-                        load.Close();
+                        
                     }
+
+                    _bp.OffOutput();
 
                     var resultCurrUnstable = (currUnstableList.Max() - currUnstableList.Min()) / 2;
                     MathStatistics.Round(ref resultCurrUnstable, 3);
@@ -1856,6 +1866,7 @@ namespace B5_71_1_PRO
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                (operation.Getting >= operation.LowerTolerance);
+                    operation.CompliteWork = () => operation.IsGood();
                     DataRow.Add(operation);
 
                 }
@@ -1867,7 +1878,7 @@ namespace B5_71_1_PRO
                 _bp.OffOutput();
                 _bp.Close();
                 load.Close();
-                mult.Close();
+                
             }
 
             #region OldCodeDciUnstable
