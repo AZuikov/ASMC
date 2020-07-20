@@ -14,11 +14,34 @@ namespace ASMC.Data.Model
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>
-    {     /// <inheritdoc />
-        public Action InitWork { get; set; }
+    {
+        private Func<bool> _func;
+        private Action _action;
 
         /// <inheritdoc />
-        public Func<bool> CompliteWork{  get;     set; }
+        public Action InitWork
+        {
+            get
+            {
+                if (_action == null) return () => { };
+                return _action;
+            }
+            set => _action = value;
+        }
+
+        /// <inheritdoc />
+        public Func<bool> CompliteWork
+        {
+            get
+            {
+                if (_func == null) return () => true;
+                return _func;
+            }
+
+            set { _func = value; }
+        }
+            
+        
         public Action BodyWork
         {
             get; set;
@@ -48,10 +71,8 @@ namespace ASMC.Data.Model
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {
         /// <inheritdoc />
-        public T Error
-        {
-            get => ErrorCalculation(Getting, Expected);
-        }
+        public T Error => ErrorCalculation(Getting, Expected);
+
         /// <inheritdoc />
         public Func<T, T, T> ErrorCalculation
         {

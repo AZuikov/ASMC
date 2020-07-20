@@ -1371,7 +1371,7 @@ namespace B5_71_1_PRO
             _bp.InitDevice();
             _bp.SetStateCurr(_bp.CurrMax);
             _bp.SetStateVolt(_bp.VoltMax);
-            _bp.OnOutput();
+            
 
             foreach (var coef in MyPoint)
             {
@@ -1379,12 +1379,12 @@ namespace B5_71_1_PRO
                
                 try
                 {
-                    operation.InitWork = () =>
-                    {
-                        MessageBoxService.Show("Нагрузка",
-                            $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                        /*схема*/
-                    };
+                    //operation.InitWork = () =>
+                    //{
+                    //    MessageBoxService.Show("Нагрузка",
+                    //        $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                    //    /*схема*/
+                    //};
                     operation.BodyWork = Test;
 
                     void Test()
@@ -1392,7 +1392,8 @@ namespace B5_71_1_PRO
                     var setPoint = coef * _bp.CurrMax;
                     //ставим точку напряжения
                     _bp.SetStateCurr(setPoint);
-                    Thread.Sleep(1000);
+                    _bp.OnOutput();
+                    Thread.Sleep(500);
 
                     //измеряем ток
                     load.Open();
@@ -1407,7 +1408,8 @@ namespace B5_71_1_PRO
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                (operation.Getting > operation.LowerTolerance);
-                    DataRow.Add(operation);
+                        operation.CompliteWork = () => operation.IsGood();
+                        DataRow.Add(operation);
                     }
                     await operation.WorkAsync(token);
 
@@ -1579,6 +1581,7 @@ namespace B5_71_1_PRO
             if (load.GetChanelNumb <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
+            load.Open();
             load.SetWorkingChanel();
             load.SetVoltFunc();
             load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
