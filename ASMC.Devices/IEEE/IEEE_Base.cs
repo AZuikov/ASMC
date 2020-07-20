@@ -173,7 +173,7 @@ namespace ASMC.Devices.IEEE
         {
             Session.FormattedIO.WriteLine(QueryIdentificationDevice);
             
-            if ((Session.HardwareInterfaceType != HardwareInterfaceType.Custom) || (Session.HardwareInterfaceType == HardwareInterfaceType.Serial))
+            if ((Session.HardwareInterfaceType == HardwareInterfaceType.Custom) )
             {
                 _words = new[] { Session.FormattedIO.ReadLine() };
             }
@@ -341,7 +341,7 @@ namespace ASMC.Devices.IEEE
             get
             {
                 if (_words == null) GetBaseInfoFromDevice();
-                if (_words != null) return _words[2];
+                if (_words != null) return _words[1];
                 return "NO Device Type";
             }
             

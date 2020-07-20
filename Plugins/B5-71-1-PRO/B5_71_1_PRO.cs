@@ -103,16 +103,16 @@ namespace B5_71_1_PRO
             //Перечень операций поверки
             UserItemOperation = new IUserItemOperationBase[]
             {
-                //new Oper0VisualTest(this),
-                //new Oper1Oprobovanie(this),
-                //new Oper2DcvOutput(this),
-                //new Oper3DcvMeasure(this),
-                //new Oper4VoltUnstable(this),
-                //new Oper6DciOutput(this),
-                //new Oper7DciMeasure(this),
+                new Oper0VisualTest(this),
+                new Oper1Oprobovanie(this),
+                new Oper2DcvOutput(this),
+                new Oper3DcvMeasure(this),
+                new Oper4VoltUnstable(this),
+                new Oper6DciOutput(this),
+                new Oper7DciMeasure(this),
                 new Oper8DciUnstable(this),
-                //new Oper5VoltPulsation(this),
-                //new Oper9DciPulsation(this)
+                new Oper5VoltPulsation(this),
+                new Oper9DciPulsation(this)
             };
         }
 
@@ -1147,6 +1147,8 @@ namespace B5_71_1_PRO
                     MessageBoxService.Show("Указание оператору",
                         $"Установите на В3-57 подходящий предел измерения напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
 
+                    _bp.OnOutput();
+
                     Thread.Sleep(7000);
                     mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
                     mult.WriteLine(Main_Mult.QueryValue);
@@ -1156,10 +1158,15 @@ namespace B5_71_1_PRO
                     voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
                     MathStatistics.Round(ref voltPulsV357, 2);
 
+                    _bp.OffOutput();
+
                     operation.Expected = 0;
                     operation.Getting = voltPulsV357;
                     operation.ErrorCalculation = ErrorCalculation;
                     operation.LowerTolerance = 0;
+                    operation.UpperTolerance = operation.Expected + operation.Error;
+
+                    operation.CompliteWork = () => operation.IsGood();
 
                     DataRow.Add(operation);
 
@@ -2047,6 +2054,7 @@ namespace B5_71_1_PRO
 
                 void Test()
                 {
+                    load.Open();
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
                     load.SetResistanceRange(ArrResistanceCurrUnstable[0]);
@@ -2060,6 +2068,7 @@ namespace B5_71_1_PRO
                     _bp.SetStateVolt(_bp.VoltMax);
                     _bp.OnOutput();
 
+                    mult.Open();
                     while (mult.GetTerminalConnect())
                         MessageBoxService.Show("Указание оператору",
                             "На панели прибора " + mult.GetDeviceType +
@@ -2068,13 +2077,13 @@ namespace B5_71_1_PRO
                     MessageBoxService.Show("Указание оператору",
                         $"Установите на В3-57 подходящий предел измерения напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
 
-
+                    
                     //нужно дать время В3-57
                     Thread.Sleep(5000);
                     mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
                     mult.WriteLine(Main_Mult.QueryValue);
 
-                    var currPuls34401 = (decimal)mult.DataPreparationAndConvert(load.ReadString());
+                    var currPuls34401 = (decimal)mult.DataPreparationAndConvert(mult.ReadString());
 
                     var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
                     //по закону ома считаем сопротивление
@@ -2083,6 +2092,8 @@ namespace B5_71_1_PRO
                     currPulsV357 = currPulsV357 / measResist;
                     MathStatistics.Round(ref currPulsV357, 3);
 
+                    _bp.OffOutput();
+
                     operation.Expected = 0;
                     operation.Getting = currPulsV357;
                     operation.ErrorCalculation = ErrorCalculation;
@@ -2090,17 +2101,20 @@ namespace B5_71_1_PRO
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                (operation.Getting >= operation.LowerTolerance);
+                    operation.CompliteWork = () => operation.IsGood();
+
                     DataRow.Add(operation);
 
 
                 }
+                await operation.WorkAsync(token);
             }
             finally
             {
                 _bp.OffOutput();
                 _bp.Close();
                 mult.Close();
-                load.Close();
+               
             }
 
 
