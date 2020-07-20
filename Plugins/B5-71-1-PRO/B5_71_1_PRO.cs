@@ -105,7 +105,7 @@ namespace B5_71_1_PRO
             {
                 //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                //new Oper2DcvOutput(this),
+                new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
                 new Oper6DciOutput(this),
