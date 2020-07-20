@@ -1113,24 +1113,10 @@ namespace B5_71_1_PRO
             {
                 operation.InitWork = () =>
                 {
-                    MessageBoxService.Show("Нагрузка",
-                        $"Измерение пульсаций напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                    /*схема*/
-                };
-
-                operation.BodyWork = Test;
-
-                void Test()
-                {
                     mult.Open();
                     load.Open();
                     load.SetWorkingChanel();
                     load.OffOutput();
-
-                    _bp.InitDevice();
-                    _bp.SetStateVolt(_bp.VoltMax);
-                    _bp.SetStateCurr(_bp.CurrMax);
-
 
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
@@ -1139,15 +1125,28 @@ namespace B5_71_1_PRO
                     load.OnOutput();
                     load.Close();
 
-                    while (mult.GetTerminalConnect())
-                        MessageBoxService.Show("Указание оператору",
-                            "На панели прибора " + mult.GetDeviceType +
-                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-
-                    MessageBoxService.Show("Указание оператору",
-                        $"Установите на В3-57 подходящий предел измерения напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-
+                    _bp.InitDevice();
+                    _bp.SetStateVolt(_bp.VoltMax);
+                    _bp.SetStateCurr(_bp.CurrMax);
                     _bp.OnOutput();
+
+
+                    while (mult.GetTerminalConnect())
+                        MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
+                                               " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                            "Указание оператору", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
+                    MessageBoxService.Show($"Установите на В3-57 подходящий предел измерения напряжения", 
+                        "Указание оператору", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
+                };
+
+                operation.BodyWork = Test;
+
+                void Test()
+                {
+                    
+                    
 
                     Thread.Sleep(7000);
                     mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
@@ -1165,6 +1164,9 @@ namespace B5_71_1_PRO
                     operation.ErrorCalculation = ErrorCalculation;
                     operation.LowerTolerance = 0;
                     operation.UpperTolerance = operation.Expected + operation.Error;
+                    operation.IsGood = () =>
+                        (operation.Expected >= operation.LowerTolerance) &
+                        (operation.Expected < operation.UpperTolerance);
 
                     operation.CompliteWork = () => operation.IsGood();
 
@@ -1180,7 +1182,7 @@ namespace B5_71_1_PRO
                 _bp.OffOutput();
                 _bp.Close();
                 mult.Close();
-                load.Close();
+                
             }
 
             #region OldCodePulsationVolts
@@ -2045,15 +2047,6 @@ namespace B5_71_1_PRO
             {
                 operation.InitWork = () =>
                 {
-                    MessageBoxService.Show("Нагрузка",
-                        $"Измерение пульсаций тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                    /*схема*/
-                };
-
-                operation.BodyWork = Test;
-
-                void Test()
-                {
                     load.Open();
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
@@ -2070,12 +2063,19 @@ namespace B5_71_1_PRO
 
                     mult.Open();
                     while (mult.GetTerminalConnect())
-                        MessageBoxService.Show("Указание оператору",
-                            "На панели прибора " + mult.GetDeviceType +
-                            " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                        MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
+                                               " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                            "Указание оператору", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
 
-                    MessageBoxService.Show("Указание оператору",
-                        $"Установите на В3-57 подходящий предел измерения напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                    MessageBoxService.Show($"Установите на В3-57 подходящий предел измерения напряжения",
+                        "Указание оператору", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+                };
+
+                operation.BodyWork = Test;
+
+                void Test()
+                {
+                   
 
                     
                     //нужно дать время В3-57
