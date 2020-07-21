@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using AP.Math;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -222,10 +221,7 @@ namespace B5_71_1_PRO
 
         public override async Task StartWork(CancellationTokenSource token)
         {
-            //var bo = new BasicOperation<bool> { Expected = true };
-            //bo.IsGood = () => bo.Getting;
-
-            //DataRow.Add(bo);
+            
             var bo = new BasicOperation<bool> { Expected = true };
             bo.IsGood = () => bo.Getting;
             bo.InitWork = () =>
@@ -272,8 +268,9 @@ namespace B5_71_1_PRO
         //порт нужно спрашивать у интерфейса
         private readonly string _portName = "com3";
 
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
         #endregion
-                
+
         #region Methods
 
         /// <summary>
@@ -316,7 +313,7 @@ namespace B5_71_1_PRO
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        
 
         public override void StartSinglWork(Guid guid)
         {
@@ -1116,8 +1113,6 @@ namespace B5_71_1_PRO
                     mult.Open();
                     load.Open();
                     load.SetWorkingChanel();
-                    load.OffOutput();
-
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
                     load.SetResistanceRange(ArrResistanceVoltUnstable[0]);

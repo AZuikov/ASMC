@@ -6,7 +6,7 @@
     /// </summary>
     public class B571Pro2 : B5_71_PRO
     {
-        public B571Pro2(string PortName):base (PortName)
+        public B571Pro2()
         {
             VoltMax = 50;
             CurrMax = 6;
@@ -18,7 +18,12 @@
             //пульсации по току
             tolleranceCurrentPuls = 5;
         }
-        
-       
+
+        public B571Pro2(string PortName) : base(PortName)
+        {
+        }
+
+
+
     }
 }
