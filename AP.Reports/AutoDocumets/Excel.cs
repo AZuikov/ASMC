@@ -757,6 +757,7 @@ namespace AP.Reports.AutoDocumets
                         //объявляем область для переноса
                         if (mergeSoursesWorksheets.First().LastCellUsed() != null)
                         {
+                            //TODO : Функцию LOGчисло  растягивает по ячейкам
                             var rangeToCopy = mergeSoursesWorksheets.First().Range(
                                 mergeSoursesWorksheets.First().Cell(1, 1),
                                 mergeSoursesWorksheets.First().LastCellUsed()
@@ -840,13 +841,13 @@ namespace AP.Reports.AutoDocumets
 
 
                             targetCell.Value = rangeToCopy;
-                            foreach (var columns in rangeToCopy.Columns())
+                            foreach(var columns in rangeToCopy.Columns())
                                 targetCell.Worksheet.Column(columns.ColumnNumber()).Width = mergeSoursesWorksheets
                                     .First().Worksheet.Column(columns.ColumnNumber()).Width;
-                            foreach (var columns in rangeToCopy.Rows())
+                            foreach(var columns in rangeToCopy.Rows())
                                 targetCell.Worksheet.Column(columns.RowNumber()).Width = mergeSoursesWorksheets
                                     .First().Worksheet.Column(columns.RowNumber()).Width;
-                            foreach (var cell in rangeToCopy.Cells())
+                            foreach(var cell in rangeToCopy.Cells())
                                 targetCell.Worksheet.Cell(cell.Address).Style = mergeSoursesWorksheets
                                     .First().Worksheet.Cell(cell.Address).Style;
                         }

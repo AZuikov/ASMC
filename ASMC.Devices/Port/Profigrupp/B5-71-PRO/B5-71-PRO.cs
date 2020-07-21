@@ -436,11 +436,7 @@ namespace ASMC.Devices.Port.Profigrupp
             return (decimal)0.01 * inCurrPoint + (decimal)0.05;
         }
 
-        /// <summary>
-        /// Проверка подключения к источнику питания 
-        /// </summary>
-        /// <param name="portName">Передать имя последовательного порта</param>
-       public abstract void Init (string portName);
+ 
         /// <summary>
         /// Сброс блока к настройкам по умолчанию.
         /// </summary>

@@ -1,4 +1,6 @@
-﻿namespace ASMC.Devices.Port.Profigrupp
+﻿using System.Text.RegularExpressions;
+
+namespace ASMC.Devices.Port.Profigrupp
 {
 
     /// <summary>
@@ -22,11 +24,9 @@
             tolleranceCurrentPuls = 5;
         }
 
-        public B571Pro1(string PortName) : base(PortName)
+        public B571Pro1(string portName) : base(portName)
         {
            
-        }
-
-   
+        }  
     }
 }
