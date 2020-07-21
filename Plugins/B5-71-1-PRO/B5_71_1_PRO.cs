@@ -891,7 +891,7 @@ namespace B5_71_1_PRO
                         load.Open();
                         load.SetResistanceRange(resistance);
                         load.SetResistance(resistance); //ставим сопротивление
-                        load.Close();
+                        
                         // время выдержки
                         Thread.Sleep(1000);
                         //измерения
@@ -900,7 +900,7 @@ namespace B5_71_1_PRO
                         mult.WriteLine(Main_Mult.QueryValue);
                         // записываем результаты
                         voltUnstableList.Add((decimal)mult.DataPreparationAndConvert(mult.ReadString()));
-                                mult.Close();
+                               
                     }
 
                         _bp.OffOutput();
