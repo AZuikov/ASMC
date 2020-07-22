@@ -85,14 +85,13 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Возвращает перечень устройст используемых для МК подключаемых устройств.
         /// </summary>
-        IDevice[] ControlDevices { get; }
+        IDevice[] ControlDevices { get; set; }
+
         /// <summary>
         /// Возвращает перечень устройст подвергаемых МК.
         /// </summary>
-        IDevice[] TestDevices
-        {
-            get;
-        }
+        IDevice[] TestDevices { get; set; }
+
         /// <summary>
         /// Возвращает перечень операций
         /// </summary>

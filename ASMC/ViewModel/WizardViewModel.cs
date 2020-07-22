@@ -64,6 +64,7 @@ namespace ASMC.ViewModel
         private IUserItemOperationBase[] _userItemOperation;
         private IDevice[] _testDevices;
         private string[] _addresDivece;
+        private SettingViewModel _settingViewModel = new SettingViewModel();
 
         #endregion
 
@@ -87,17 +88,13 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _dataOperation, value, nameof(DataOperation));
         }
 
-        public IDevice[] ControlDevices
-        {
-            get => _controlDevices;
-            set => SetProperty(ref _controlDevices, value, nameof(ControlDevices));
-        }
-        public IDevice[] TestDevices
-        {
-            get => _testDevices;
-            set => SetProperty(ref _testDevices, value, nameof(TestDevices));
-        }
-        
+       public SettingViewModel SettingViewModel
+       {
+           get => _settingViewModel;
+           set => SetProperty(ref _settingViewModel, value, nameof(SettingViewModel));
+       }
+
+     
 
         public AbstraktOperation.TypeOpeation? EnableOpeation
         {
@@ -143,7 +140,9 @@ namespace ASMC.ViewModel
             get => _selectedTabItem;
             set => SetProperty(ref _selectedTabItem, value, nameof(SelectedTabItem), ChangedCallback);
         }
-
+        /// <summary>
+        /// Позволяет задать или получить 
+        /// </summary>
         public IUserItemOperationBase SelectionItemOperation
         {
             get => _selectionItemOperation;
@@ -177,11 +176,6 @@ namespace ASMC.ViewModel
             get => _userItemOperation;
             set => SetProperty(ref _userItemOperation, value, nameof(UserItemOperation));
         }
-        public string[] AddresDivece
-        {
-            get => _addresDivece;
-            set => SetProperty(ref _addresDivece, value, nameof(AddresDivece));
-        }
         #endregion
 
         public WizardViewModel()
@@ -195,22 +189,13 @@ namespace ASMC.ViewModel
                 new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
             RefreshCommand =
                 new DelegateCommand(OnRefreshCommand);
-            //Prog = new ObservableCollection<IProrgam> {new Device()};
-            //Prog[0].AbstraktOperation.IsSpeedWork = false;
-            //Prog[0].AbstraktOperation.SelectedTypeOpeation = AbstraktOperation.TypeOpeation.PrimaryVerf;
-            //UserItemOperation = Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation;
-            //Device = Prog[0].AbstraktOperation.SelectedOperation?.Device;
-            //Prog[0].AbstraktOperation.SelectedOperation?.RefreshDevice();
-            //AccessoriesList = Prog[0].AbstraktOperation.SelectedOperation?.Accessories;
-            //Prog[0].AbstraktOperation.SelectedOperation?.UserItemOperation[0].StartWork();
-
-
-            //DataOperation = SelectionItemOperation?.Data.DefaultView;
         }
+
 
         private void OnRefreshCommand()
         {
            SelectProgram.AbstraktOperation.SelectedOperation.RefreshDevice();
+            SettingViewModel.AddresDivece = SelectProgram.AbstraktOperation.SelectedOperation.AddresDivece;
         }
     
         #region Methods
@@ -317,10 +302,24 @@ namespace ASMC.ViewModel
 
             SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
             UserItemOperation = SelectProgram.AbstraktOperation?.SelectedOperation?.UserItemOperation;
-            ControlDevices = SelectProgram.AbstraktOperation.SelectedOperation?.ControlDevices;
-            SelectProgram.AbstraktOperation.SelectedOperation?.RefreshDevice();
+            if (SettingViewModel!=null)
+            {
+                SettingViewModel.Event -= SettingViewModel_Event;
+            }
+            SettingViewModel = new SettingViewModel
+            {
+                ControlDevices = SelectProgram.AbstraktOperation.SelectedOperation?.ControlDevices,
+                TestDevices = SelectProgram.AbstraktOperation.SelectedOperation?.TestDevices
+            };
+            SettingViewModel.Event += SettingViewModel_Event;
             AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
             SelectProgram.AbstraktOperation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
+        }
+
+        private void SettingViewModel_Event()
+        {  
+            SelectProgram.AbstraktOperation.SelectedOperation.ControlDevices = SettingViewModel.ControlDevices;
+            SelectProgram.AbstraktOperation.SelectedOperation.TestDevices = SettingViewModel.TestDevices;
         }
 
         #endregion

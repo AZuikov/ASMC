@@ -243,7 +243,8 @@
                     <Button Content="Обновить" Command="{Binding RefreshCommand}"/>
                   </utils:ValueContentControl>
                 </Grid>
-                <GroupBox Header="Обслуживаемое средство">
+                <view:SettingView DataContext="{Binding SettingViewModel}" />
+                <!--<GroupBox Header="Обслуживаемое средство">
                   <ListView ItemsSource="{Binding TestDevices}" >
                     <ListView.View>
                       <GridView  AllowsColumnReorder="False">
@@ -257,7 +258,7 @@
                         <GridViewColumn Header="Строка подключения" Width="150" >
                           <GridViewColumn.CellTemplate >
                             <DataTemplate>
-                              <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding AddresDivece}"/>
+                              <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=AddresDivece}"/>
                             </DataTemplate>
                           </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -271,7 +272,7 @@
                         <GridViewColumn Header="Описание" Width="Auto" >
                           <GridViewColumn.CellTemplate >
                             <DataTemplate>
-                              <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Description}"    />
+                              <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Path=Description}"    />
                             </DataTemplate>
                           </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -307,14 +308,14 @@
                         <GridViewColumn Header="Описание" Width="Auto" >
                           <GridViewColumn.CellTemplate >
                             <DataTemplate>
-                              <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Description}"    />
+                              <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Path=Description}"    />
                             </DataTemplate>
                           </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                       </GridView>
                     </ListView.View>
                   </ListView>
-                </GroupBox>
+                </GroupBox>-->
 
                 <!--<DataGrid AutoGenerateColumns="False" ItemsSource="{Binding DeviceInterface}"   CanUserReorderColumns="False" CanUserSortColumns="False" SelectionUnit="Cell" >
                 <DataGrid.Columns  >

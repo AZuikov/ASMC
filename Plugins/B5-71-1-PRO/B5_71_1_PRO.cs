@@ -115,8 +115,9 @@ namespace B5_71_1_PRO
             };
         }
 
-        public IDevice[] ControlDevices { get; }
-        public IDevice[] TestDevices { get; }
+        public IDevice[] ControlDevices { get; set; }
+        public IDevice[] TestDevices { get; set;
+        }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
