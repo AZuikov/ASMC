@@ -324,21 +324,21 @@ namespace ASMC.Data.Model
         /// <param name="controlOrTestDevice">Если true, тогда ищет сроку подключения для эталонов (контрольных приборов). 
         /// Если false, тогда ищем строку подключения для поверяемого (контролируемого) прибора.</param>
         /// <returns></returns>
-        protected string GetStringConnect(string nameDevice, Devices.IDevice currentDevice, bool controlOrTestDevice)
+        protected string GetStringConnect(string nameDevice, Devices.IDevice currentDevice)
         {
             string connect;
-            if (controlOrTestDevice)
+            connect = this.UserItemOperation.ControlDevices
+                    .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.DeviceType))?.StringConnect;
+
+            if (connect != null)
             {
-                connect = this.UserItemOperation.ControlDevices
-                    .Where(q => string.Equals(q.SelectedName, currentDevice.DeviceType)).Select(q => q.StringConnect)
-                    .ToString();
-            }
-            else
-            {
+                if (string.IsNullOrEmpty(connect))
+                    throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
+
+            }else
                 connect = this.UserItemOperation.TestDevices
-                    .Where(q => string.Equals(q.SelectedName, currentDevice.DeviceType)).Select(q => q.StringConnect)
-                    .ToString();
-            }
+                    .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.DeviceType))?.StringConnect;
+
 
             if (string.IsNullOrEmpty(connect))
                 throw new ArgumentException($@"Строка подключения не указана для {nameDevice}");
