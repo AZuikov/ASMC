@@ -375,7 +375,9 @@
               </Grid>
             </StackPanel>
           </TabItem>
-          <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}"/>
+          <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}">
+            <Button Command="{Binding OnCreatDocumetCommand}"/>
+          </TabItem>
         </TabControl>
       </StackPanel>
  

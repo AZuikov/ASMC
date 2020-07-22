@@ -13,7 +13,8 @@ using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
-using NLog;
+using NLog; 
+using AP.Reports.AutoDocumets;
 
 namespace ASMC.ViewModel
 {
@@ -191,12 +192,58 @@ namespace ASMC.ViewModel
                 new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
             RefreshCommand =
                 new DelegateCommand(OnRefreshCommand);
+            CreatDocumetCommandCommand =
+                new DelegateCommand(OnCreatDocumetCommand);
         }
 
+        public ICommand CreatDocumetCommandCommand { get; }
+
+        private void OnCreatDocumetCommand()
+        {
+            Word _report = new Word();
+            _report.OpenDocument(@"Z:\ОГМетр\Внутренние\Документы - Общие\AutoMeas\Пропуск в Тест.dotx");
+            foreach (var uio in SelectProgram.AbstraktOperation.SelectedOperation.UserItemOperation)
+            {       
+                _report.FillTableToBookmark(uio.Data.TableName, uio.Data); 
+            }
+            
+            var path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
+            _report.SaveAs(path);
+            _report.Close();
+            System.Diagnostics.Process.Start(path);
+        }
+        private static string GetUniqueFileName(string name, string format)
+        {
+
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\MaterialPass";
+
+            var newFileName = path + @"\" + name + format;
+            if(!Directory.Exists(path))
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\MaterialPass");
+            else
+            {
+                Directory.Delete(path, true);
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\MaterialPass");
+            }
+            var tempFiles = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            var i = 0;
+            while(true)
+            {
+                var fileExist = false;
+                foreach(var tempFile in tempFiles)
+                    if(tempFile == newFileName)
+                        fileExist = true;
+                if(fileExist == false)
+                    break;
+                newFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\" + name + "_" + i + format;
+                i++;
+            }
+            return newFileName;
+        }
 
         private void OnRefreshCommand()
         {
-           SelectProgram.AbstraktOperation.SelectedOperation.RefreshDevice();
+            SelectProgram.AbstraktOperation.SelectedOperation.RefreshDevice();
             SettingViewModel.AddresDivece = SelectProgram.AbstraktOperation.SelectedOperation.AddresDivece;
         }
     
