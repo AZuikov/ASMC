@@ -182,7 +182,7 @@ namespace B5_71_1_PRO
                     MessageResult.No);
                 return true;
             };
-            bo.BodyWork = () => { Thread.Sleep(3000); };
+            bo.BodyWork = () => { Thread.Sleep(100); };
             await bo.WorkAsync(token);
             DataRow.Add(bo);
         }

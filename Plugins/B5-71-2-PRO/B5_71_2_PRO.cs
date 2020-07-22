@@ -111,11 +111,11 @@ namespace B5_71_2_PRO
 
             //Перечень операций поверки
             UserItemOperation = new IUserItemOperationBase[]{
-                new Oper0VisualTest(this),
-                new Oper1Oprobovanie(this),
-                new Oper2DcvOutput(this),
-                new Oper3DcvMeasure(this),
-                new Oper4VoltUnstable(this),
+                //new Oper0VisualTest(this),
+                //new Oper1Oprobovanie(this),
+                //new Oper2DcvOutput(this),
+                //new Oper3DcvMeasure(this),
+                //new Oper4VoltUnstable(this),
                 new Oper6DciOutput(this),
                 new Oper7DciMeasure(this),
                 new Oper8DciUnstable(this),
@@ -1065,8 +1065,11 @@ namespace B5_71_2_PRO
 
             load.Open();
             load.SetWorkingChanel();
-            load.SetVoltFunc();
-            load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            //load.SetVoltFunc();
+            //load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            load.SetResistanceFunc();
+            load.SetResistanceRange(_bp.VoltMax / _bp.CurrMax - 3);
+            load.SetResistance(_bp.VoltMax / _bp.CurrMax - 3);
             load.OnOutput();
             load.Close();
 
@@ -1232,8 +1235,11 @@ namespace B5_71_2_PRO
 
             load.Open();
             load.SetWorkingChanel();
-            load.SetVoltFunc();
-            load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            //load.SetVoltFunc();
+            //load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
+            load.SetResistanceFunc();
+            load.SetResistanceRange(_bp.VoltMax / _bp.CurrMax - 3);
+            load.SetResistance(_bp.VoltMax / _bp.CurrMax - 3);
             load.OnOutput();
             load.Close();
 
