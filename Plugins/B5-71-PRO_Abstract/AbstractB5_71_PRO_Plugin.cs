@@ -13,8 +13,7 @@ using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using DevExpress.Mvvm;
 
-
-namespace AbstractB5_71_PRO_Plugin
+namespace B5_71_PRO_Abstract
 {
     /// <summary>
     /// В этом пространчтве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели устройства
@@ -73,11 +72,12 @@ namespace AbstractB5_71_PRO_Plugin
 
     public class OpertionFirsVerf : IUserItemOperation
     {
-        public IDevice[] TestDevices { get; }
+        public IDevice[] TestDevices { get; set; }
         public IUserItemOperationBase[] UserItemOperation { get; }
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
-        public IDevice[] ControlDevices { get; }
+        public IDevice[] ControlDevices { get; set; }
+
 
         /// <summary>
         /// Операции поверки. Для первичной и периодической одинаковые.
@@ -246,11 +246,9 @@ namespace AbstractB5_71_PRO_Plugin
     public abstract class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         #region Fields
-        //порт нужно спрашивать у интерфейса
-        string _portName = "com3";
         protected B5_71_PRO _bp { get; set; }
-        private Mult_34401A mult { get; set; }
-        private Main_N3300 load { get; set; }
+        protected Mult_34401A mult { get; set; }
+        protected Main_N3300 load { get; set; }
         public List<IBasicOperation<decimal>> DataRow { get; set; }
         #endregion
 
@@ -304,35 +302,31 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-           mult.StringConnection = "GPIB0::22::INSTR";
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-
-
-
+            
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-
-
+                
                 try
                 {
                     operation.InitWork = () =>
                     {
-                        MessageBoxService.Show("Нагрузка",
-                            $"Воспроизведение напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                        /*схема*/
+                        mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
+                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+
+                        load.Open();
+                        load.FindThisModule();
+                        load.Close();
+                        //если модуль нагрузки найти не удалось
+                        if (load.GetChanelNumb <= 0)
+                            throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+                        while (mult.GetTerminalConnect() == false)
+                            MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
+                                                   " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                                "Указание оператору", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
                     };
                     operation.BodyWork = Test;
                     void Test()
@@ -411,17 +405,16 @@ namespace AbstractB5_71_PRO_Plugin
     public abstract class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         #region Fields
-
         //порт нужно спрашивать у интерфейса
-        string _portName = "com3";
-        private B571Pro4 _bp;
+        protected B5_71_PRO _bp { get; set; }
+        protected Mult_34401A mult { get; set; }
+        protected Main_N3300 load { get; set; }
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
         #endregion
 
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
-        public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
+        
 
         #region Methods
 
@@ -468,27 +461,7 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro4();
-            var mult = new Mult_34401A();
-            var load = new N3303A();
-
-            mult.StringConnection = "GPIB0::22::INSTR";
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-
-
-
+            
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -498,9 +471,22 @@ namespace AbstractB5_71_PRO_Plugin
                 {
                     operation.InitWork = () =>
                     {
-                        MessageBoxService.Show("Нагрузка",
-                            $"Измерение напряжения", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                        /*схема*/
+                        mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
+                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+
+                        load.Open();
+                        load.FindThisModule();
+                        load.Close();
+                        //если модуль нагрузки найти не удалось
+                        if (load.GetChanelNumb <= 0)
+                            throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+                        while (mult.GetTerminalConnect() == false)
+                            MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
+                                                   " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                                "Указание оператору", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
                     };
                     operation.BodyWork = Test;
                     void Test()
@@ -526,17 +512,11 @@ namespace AbstractB5_71_PRO_Plugin
 
                         MathStatistics.Round(ref resultMult, 3);
                         MathStatistics.Round(ref resultBp, 3);
-
-                        //var absTol = setPoint - (decimal)result;
-                        //MathStatistics.Round(ref absTol, 3);
-
-                        var dopusk = _bp.tolleranceFormulaVolt(setPoint);
-                        MathStatistics.Round(ref dopusk, 3);
-
+                      
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
                         operation.Expected = (decimal)resultMult;
-                        operation.Getting = (decimal)resultBp;
+                        operation.Getting = resultBp;
                         operation.ErrorCalculation = ErrorCalculation;
                         operation.LowerTolerance = operation.Expected - operation.Error;
                         operation.UpperTolerance = operation.Expected + operation.Error;
@@ -563,22 +543,13 @@ namespace AbstractB5_71_PRO_Plugin
 
             }
 
-
-
-
-
         }
 
 
         public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного напряжения";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-4-PRO_N3303_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
+           DataRow = new List<IBasicOperation<decimal>>();
         }
     }
 
@@ -588,15 +559,17 @@ namespace AbstractB5_71_PRO_Plugin
     public abstract class Oper4VoltUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         #region Fields
-
+        
         //порт нужно спрашивать у интерфейса
-        string _portName = "com3";
-        private B571Pro4 _bp;
+        protected B5_71_PRO _bp { get; set; }
+        protected Mult_34401A mult { get; set; }
+        protected Main_N3300 load { get; set; }
         public List<IBasicOperation<decimal>> DataRow { get; set; }
+        
         #endregion
 
         //это точки для нагрузки в Омах
-        public static readonly decimal[] ArrResistanceVoltUnstable = { (decimal)20.27, (decimal)37.5, (decimal)187.5 };
+        
         public static readonly decimal[] ArrСoefVoltUnstable = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
 
         #region Methods
@@ -634,35 +607,28 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro4();
-            var mult = new Mult_34401A();
-            var load = new N3303A();
-
-            mult.StringConnection = "GPIB0::22::INSTR";
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-
             var operation = new BasicOperationVerefication<decimal>();
-
 
             try
             {
                 operation.InitWork = () =>
                 {
-                    MessageBoxService.Show("Нагрузка",
-                        $"Нестабильность по напряжению", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                    /*схема*/
+                    mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
+                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+
+                    load.Open();
+                    load.FindThisModule();
+                    load.Close();
+                    //если модуль нагрузки найти не удалось
+                    if (load.GetChanelNumb <= 0)
+                        throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+                    while (mult.GetTerminalConnect() == false)
+                        MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
+                                               " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                            "Указание оператору", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
+
                 };
                 operation.BodyWork = Test;
                 void Test()
@@ -675,13 +641,13 @@ namespace AbstractB5_71_PRO_Plugin
                     _bp.InitDevice();
                     _bp.SetStateVolt(_bp.VoltMax);
                     _bp.SetStateCurr(_bp.CurrMax);
-
-
+                    
                     // ------ настроим нагрузку
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
-                    load.SetResistanceRange(200);
-                    load.SetResistance(200);
+
+                    load.SetMaxResistanceRange();
+                    load.SetResistance(_bp.VoltMax/(_bp.CurrMax* ArrСoefVoltUnstable[2]));
                     load.OnOutput();
                     load.Close();
 
@@ -744,12 +710,7 @@ namespace AbstractB5_71_PRO_Plugin
         public Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного напряжения";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-4-PRO_N3303_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
+           DataRow = new List<IBasicOperation<decimal>>();
         }
     }
 
@@ -760,9 +721,9 @@ namespace AbstractB5_71_PRO_Plugin
     {
         #region Fileds
 
-        //порт нужно спрашивать у интерфейса
-        string _portName = "com3";
-        private B571Pro4 _bp;
+        protected B5_71_PRO _bp { get; set; }
+        protected Mult_34401A mult { get; set; }
+        protected Main_N3300 load { get; set; }
         public List<IBasicOperation<decimal>> DataRow { get; set; }
         #endregion
 
@@ -805,30 +766,25 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro4();
-            var mult = new Mult_34401A();
-            var load = new N3303A();
-
-            mult.StringConnection = "GPIB0::22::INSTR";
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
-
+           
             var operation = new BasicOperationVerefication<decimal>();
 
             try
             {
                 operation.InitWork = () =>
                 {
+                    mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
+                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+
+
+                    load.Open();
+                    load.FindThisModule();
+                    load.Close();
+                    //если модуль нагрузки найти не удалось
+                    if (load.GetChanelNumb <= 0)
+                        throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
                     mult.Open();
                     load.Open();
                     load.SetWorkingChanel();
@@ -861,7 +817,7 @@ namespace AbstractB5_71_PRO_Plugin
                 void Test()
                 {
 
-                    Thread.Sleep(7000);
+                    Thread.Sleep(5000);
                     mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
                     mult.WriteLine(Main_Mult.QueryValue);
 
@@ -903,16 +859,7 @@ namespace AbstractB5_71_PRO_Plugin
         public Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций по напряжению";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-4-PRO_N3303_34401_v3-57.jpg"
-            };
-            /*
-             *Еще одна схема, для переключения терминала мультиметра
-             *  C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/34401A_V3-57.jpg
-             */
-            DataRow = new List<IBasicOperation<decimal>>();
+           DataRow = new List<IBasicOperation<decimal>>();
         }
     }
 
@@ -922,16 +869,16 @@ namespace AbstractB5_71_PRO_Plugin
     public abstract class Oper6DciOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         #region Fields
-        //порт нужно спрашивать у интерфейса
-        string _portName = "com3";
-        private B571Pro4 _bp;
+
+        protected B5_71_PRO _bp {get; set;}
+        protected Main_N3300 load {get; set;}
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
         #endregion
 
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
-        public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
+        
 
         #region Methods
 
@@ -980,36 +927,7 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-
-            _bp = new B571Pro4();
-            var load = new N3303A();
-
-
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-            load.Open();
-            load.SetWorkingChanel();
-            //load.SetVoltFunc();
-            //load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
-            load.SetResistanceFunc();
-            load.SetResistanceRange(_bp.VoltMax / _bp.CurrMax - 3);
-            load.SetResistance(_bp.VoltMax / _bp.CurrMax - 3);
-            load.OnOutput();
-            load.Close();
-
-            _bp.InitDevice();
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
+            
 
 
             foreach (var coef in MyPoint)
@@ -1018,12 +936,30 @@ namespace AbstractB5_71_PRO_Plugin
 
                 try
                 {
-                    //operation.InitWork = () =>
-                    //{
-                    //    MessageBoxService.Show("Нагрузка",
-                    //        $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                    //    /*схема*/
-                    //};
+                    operation.InitWork = () =>
+                    {
+                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, load);
+
+                        load.Open();
+                        load.FindThisModule();
+                        load.Close();
+                        //если модуль нагрузки найти не удалось
+                        if (load.GetChanelNumb <= 0)
+                            throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+                        load.Open();
+                        load.SetWorkingChanel();
+                        load.SetResistanceFunc();
+                        load.SetResistanceRange(_bp.VoltMax / _bp.CurrMax - 3);
+                        load.SetResistance(_bp.VoltMax / _bp.CurrMax - 3);
+                        load.OnOutput();
+                        load.Close();
+
+                        _bp.InitDevice();
+                        _bp.SetStateCurr(_bp.CurrMax);
+                        _bp.SetStateVolt(_bp.VoltMax);
+                    };
                     operation.BodyWork = Test;
 
                     void Test()
@@ -1070,12 +1006,7 @@ namespace AbstractB5_71_PRO_Plugin
         public Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного тока";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-4-PRO_N3303_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
+           DataRow = new List<IBasicOperation<decimal>>();
         }
     }
 
@@ -1085,16 +1016,17 @@ namespace AbstractB5_71_PRO_Plugin
     public abstract class Oper7DciMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         #region Fields
-        //порт нужно спрашивать у интерфейса
-        string _portName = "com3";
-        private B571Pro4 _bp;
+
+        protected Main_N3300 load { get; set; }
+        protected B5_71_PRO _bp;
+        
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
         #endregion
 
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
-        public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
+        
 
         #region Methods
 
@@ -1141,38 +1073,8 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro4();
-
-            var load = new N3303A();
-
-
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-            load.Open();
-            load.SetWorkingChanel();
-            //load.SetVoltFunc();
-            //load.SetVoltLevel((decimal)0.9 * _bp.VoltMax);
-            load.SetResistanceFunc();
-            load.SetResistanceRange(_bp.VoltMax / _bp.CurrMax - 3);
-            load.SetResistance(_bp.VoltMax / _bp.CurrMax - 3);
-            load.OnOutput();
-            load.Close();
-
-            _bp.InitDevice();
-            _bp.SetStateCurr(_bp.CurrMax);
-            _bp.SetStateVolt(_bp.VoltMax);
+           
+           
 
 
             foreach (var coef in MyPoint)
@@ -1182,12 +1084,31 @@ namespace AbstractB5_71_PRO_Plugin
 
                 try
                 {
-                    //operation.InitWork = () =>
-                    //{
-                    //    MessageBoxService.Show("Нагрузка",
-                    //        $"Воспроизведение тока", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                    //    /*схема*/
-                    //};
+                    operation.InitWork = () =>
+                    {
+                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+
+
+                        load.Open();
+                        load.FindThisModule();
+                        load.Close();
+                        //если модуль нагрузки найти не удалось
+                        if (load.GetChanelNumb <= 0)
+                            throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+                        load.Open();
+                        load.SetWorkingChanel();
+                        load.SetResistanceFunc();
+                        load.SetResistanceRange(_bp.VoltMax / _bp.CurrMax - 3);
+                        load.SetResistance(_bp.VoltMax / _bp.CurrMax - 3);
+                        load.OnOutput();
+                        load.Close();
+
+                        _bp.InitDevice();
+                        _bp.SetStateCurr(_bp.CurrMax);
+                        _bp.SetStateVolt(_bp.VoltMax);
+                    };
                     operation.BodyWork = Test;
 
                     void Test()
@@ -1196,7 +1117,7 @@ namespace AbstractB5_71_PRO_Plugin
                         //ставим точку напряжения
                         _bp.SetStateCurr(setPoint);
                         _bp.OnOutput();
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
 
                         //измеряем ток
                         load.Open();
@@ -1233,23 +1154,11 @@ namespace AbstractB5_71_PRO_Plugin
             }
 
         }
-
-
-
-
-
-
-
-
+        
         public Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного тока";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-4-PRO_N3303_34401_v3-57.jpg"
-            };
-            DataRow = new List<IBasicOperation<decimal>>();
+           DataRow = new List<IBasicOperation<decimal>>();
         }
     }
 
@@ -1259,18 +1168,14 @@ namespace AbstractB5_71_PRO_Plugin
     public abstract class Oper8DciUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         #region Fields
-
-        string _portName = "com3";
-        private B571Pro4 _bp;
+        protected B5_71_PRO _bp;
+        protected Main_N3300 load;
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
         #endregion
-        //порт нужно спрашивать у интерфейса
-
+        
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
-        //public static readonly decimal[] MyPointCurr = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
-        //public static readonly decimal[] ArrResistanceCurrUnstable = { (decimal)15, (decimal)8.125, (decimal)1.875 };
+        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
+        
 
         #region Methods
 
@@ -1307,23 +1212,10 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro4();
+           
+           
 
-            var load = new N3303A();
-
-
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+           
 
 
             var operation = new BasicOperationVerefication<decimal>();
@@ -1331,9 +1223,15 @@ namespace AbstractB5_71_PRO_Plugin
             {
                 operation.InitWork = () =>
                 {
-                    MessageBoxService.Show("Нагрузка",
-                        $"Нестабильность по току", MessageButton.OK, MessageIcon.Information, MessageResult.OK);
-                    /*схема*/
+                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+
+                    load.Open();
+                    load.FindThisModule();
+                    load.Close();
+                    //если модуль нагрузки найти не удалось
+                    if (load.GetChanelNumb <= 0)
+                        throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
                 };
                 operation.BodyWork = Test;
 
@@ -1342,7 +1240,7 @@ namespace AbstractB5_71_PRO_Plugin
                     load.Open();
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
-                    decimal point = (_bp.VoltMax * (decimal) 0.9 / _bp.CurrMax);
+                    decimal point = (_bp.VoltMax * MyPoint[2] / _bp.CurrMax);
                     load.SetResistanceRange(point);
                     load.SetResistance(point);
                     load.OnOutput();
@@ -1399,11 +1297,6 @@ namespace AbstractB5_71_PRO_Plugin
         public Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного тока";
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-4-PRO_N3303_34401_v3-57.jpg"
-            };
             DataRow = new List<IBasicOperation<decimal>>();
         }
     }
@@ -1415,16 +1308,12 @@ namespace AbstractB5_71_PRO_Plugin
     {
         #region Fields
 
-        //порт нужно спрашивать у интерфейса
-        string _portName = "com3";
-        private B571Pro4 _bp;
+        protected B5_71_PRO _bp { get; set; }
+        protected Main_N3300 load { get; set;}
+        protected Mult_34401A mult { get; set; }
         public List<IBasicOperation<decimal>> DataRow { get; set; }
         #endregion
-
-        //список точек
-        public static readonly decimal[] ArrResistanceCurrUnstable = { (decimal)15, (decimal)8.125, (decimal)1.875 };
-
-
+        
         #region Methods
 
         protected override DataTable FillData()
@@ -1461,23 +1350,8 @@ namespace AbstractB5_71_PRO_Plugin
 
         public async override Task StartWork(CancellationTokenSource token)
         {
-            _bp = new B571Pro4();
-            var mult = new Mult_34401A();
-            var load = new N3303A();
-
-            mult.StringConnection = "GPIB0::22::INSTR";
-            load.StringConnection = "GPIB0::23::INSTR";
-            _bp.StringConnection = _portName;
-
-            //mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult, true);
-            //load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load, true);
-
-            load.Open();
-            load.FindThisModule();
-            load.Close();
-            //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
-                throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+            
+           
 
 
             var operation = new BasicOperationVerefication<decimal>();
@@ -1485,6 +1359,16 @@ namespace AbstractB5_71_PRO_Plugin
             {
                 operation.InitWork = () =>
                 {
+                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+
+                    load.Open();
+                    load.FindThisModule();
+                    load.Close();
+                    //если модуль нагрузки найти не удалось
+                    if (load.GetChanelNumb <= 0)
+                        throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
+
                     load.Open();
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
@@ -1562,16 +1446,7 @@ namespace AbstractB5_71_PRO_Plugin
         public Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций постоянного тока";
-
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-4-PRO_N3303_34401_v3-57.jpg"
-            };
-            /*
-            *Еще одна схема, для переключения терминала мультиметра
-            *  C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/34401A_V3-57.jpg
-            */
+            
             DataRow = new List<IBasicOperation<decimal>>();
         }
     }

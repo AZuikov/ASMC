@@ -290,6 +290,25 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         }
 
         /// <summary>
+        /// Устанавливает максимальный предел воспроизведения сопротивления
+        /// </summary>
+        /// <returns></returns>
+        public bool SetMaxResistanceRange()
+        {
+            this.WriteLine("RESistance:RANGe MAX");
+            return true;
+        }
+
+        /// <summary>
+        /// Возвращает маскимальное значение сопротивление на этой нагрузке
+        /// </summary>
+        /// <returns></returns>
+        public decimal GetMaxResistenceRange()
+        {
+            return rangeResistanceArr.Max();
+        }
+
+        /// <summary>
         /// Устанавливает ПРЕДЕЛ сопротивления для режима CR 
         /// </summary>
         /// <param name="inRange">Значение сопротивления, которое нужно установить</param>
