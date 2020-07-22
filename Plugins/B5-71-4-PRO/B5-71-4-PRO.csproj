@@ -66,6 +66,10 @@
       <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
       <Name>ASMC.Devices</Name>
     </ProjectReference>
+    <ProjectReference Include="..\B5-71-PRO_Abstract\B5-71-PRO_Abstract.csproj">
+      <Project>{9E15A5E6-F812-4E56-BF83-2B5C0D247F96}</Project>
+      <Name>B5-71-PRO_Abstract</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

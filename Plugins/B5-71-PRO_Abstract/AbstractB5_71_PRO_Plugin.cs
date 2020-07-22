@@ -19,9 +19,9 @@ namespace B5_71_PRO_Abstract
     /// В этом пространчтве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели устройства
     /// </summary>
 
-    public abstract class AbstractB5_71_PRO: B5_71_PRO, IProgram
+    public abstract class AbstractB5_71_PRO_Plugin: B5_71_PRO, IProgram
     {
-        public AbstractB5_71_PRO(string type, string range)
+        public AbstractB5_71_PRO_Plugin(string type, string range)
         {
             AbstraktOperation = new Operation();
             Type = type;
@@ -39,7 +39,7 @@ namespace B5_71_PRO_Abstract
             get { return AbstraktOperation.TaskMessageService; }
             set { AbstraktOperation.TaskMessageService = value; }
         }
-        public AbstraktOperation AbstraktOperation { get; }
+        public AbstraktOperation AbstraktOperation { get; protected set; }
     }
 
     public  class Operation : AbstraktOperation
@@ -49,8 +49,7 @@ namespace B5_71_PRO_Abstract
 
         public  Operation()
         {
-            //это операция первичной поверки
-            this.UserItemOperationPrimaryVerf = new OpertionFirsVerf();
+            
             //здесь периодическая поверка, но набор операций такой же
             this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
         }
@@ -70,44 +69,15 @@ namespace B5_71_PRO_Abstract
         public bool? IsConnect { get; }
     }
 
-    public class OpertionFirsVerf : IUserItemOperation
+    public abstract class OpertionFirsVerf : IUserItemOperation
     {
         public IDevice[] TestDevices { get; set; }
-        public IUserItemOperationBase[] UserItemOperation { get; }
-        public string[] Accessories { get; }
+        public IUserItemOperationBase[] UserItemOperation { get; set; }
+        public string[] Accessories { get; protected set; }
         public string[] AddresDivece { get; set; }
         public IDevice[] ControlDevices { get; set; }
 
-
-        /// <summary>
-        /// Операции поверки. Для первичной и периодической одинаковые.
-        /// </summary>
-        public OpertionFirsVerf()
-        {
-            TestDevices = new[]
-            {
-                new UseDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
-                new UseDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
-                new UseDevices{ Name = new []{"В3-57"}, Description = "Микровольтметр"}
-
-            };
-
-            ControlDevices = new IDevice[] { new UseDevices { Name = new[] { "Б5-71/4-ПРО" }, Description = "источник питания" } };
-
-            //Необходимые аксесуары
-            Accessories = new[]
-            {
-                "Нагрузка электронная Keysight N3300A с модулем n3303a",
-                "Мультиметр цифровой Agilent/Keysight 34401A",
-                "Преобразователь интерфесов National Instruments GPIB-USB",
-                "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
-                "Кабель banana - banana 6 шт.",
-                "Кабель BNC - banan для В3-57"
-            };
-            
-            
-
-        }
+        
 
         /// <summary>
         /// Проверяет всели эталоны подключены
