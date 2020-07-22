@@ -29,12 +29,12 @@ namespace ASMC.ViewModel
         public string[] AddresDivece
         {
             get => _addresDivece;
-            set => SetProperty(ref _addresDivece, value, nameof(AddresDivece), () => { StringConnect = AddresDivece.FirstOrDefault(); });
+            set => SetProperty(ref _addresDivece, value, nameof(AddresDivece), () => { if(string.IsNullOrWhiteSpace(StringConnect)) StringConnect = AddresDivece.FirstOrDefault(); });
         }
         public string[] Name
         {
             get => _name;
-            set => SetProperty(ref _name, value, nameof(Name), ()=> { SelectedName = Name.FirstOrDefault(); });
+            set => SetProperty(ref _name, value, nameof(Name), ()=> { if(string.IsNullOrWhiteSpace(SelectedName))  SelectedName = Name.FirstOrDefault(); });
         }
         public string SelectedName
         {

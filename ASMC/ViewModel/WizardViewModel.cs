@@ -43,7 +43,11 @@ namespace ASMC.ViewModel
             /// <summary>
             /// Операции МК.
             /// </summary>
-            Operations
+            Operations,
+            /// <summary>
+            /// Операции МК.
+            /// </summary>
+            Documents
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -53,7 +57,6 @@ namespace ASMC.ViewModel
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
-        private IDevice[] _controlDevices;
         private AbstraktOperation.TypeOpeation? _enableOpeation;
         private bool _isSpeedWork;
         private ShemeImage _lastShema;
@@ -62,8 +65,7 @@ namespace ASMC.ViewModel
         private IProgram _selectProgram;
         private AbstraktOperation.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
-        private IDevice[] _testDevices;
-        private string[] _addresDivece;
+
         private SettingViewModel _settingViewModel = new SettingViewModel();
 
         #endregion
