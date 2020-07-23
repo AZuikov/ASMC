@@ -72,4 +72,7 @@
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\ASMC\bin\Debug\Plugins" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
