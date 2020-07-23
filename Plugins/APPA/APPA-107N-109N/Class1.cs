@@ -31,10 +31,10 @@ namespace APPA_107N_109N
         public string Range { get; }
         public string Accuracy { get; }
         public IMessageBoxService TaskMessageService { get; set; }
-        public AbstraktOperation AbstraktOperation { get; }
+        public OperationBase Operation { get; }
     }
 
-    public class Operation : AbstraktOperation
+    public class Operation : OperationBase
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation()

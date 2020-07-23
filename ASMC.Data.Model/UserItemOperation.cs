@@ -27,7 +27,10 @@ namespace ASMC.Data.Model
     public interface IDevice
     {
         #region Property
-
+        /// <summary>
+        /// Позволяет получить или задать признак возможности выбора строки подключения.
+        /// </summary>
+        bool IsCanStringConnect  {   get; set; }
         /// <summary>
         /// Позволяет получить описание устройства.
         /// </summary>
@@ -114,7 +117,7 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Содержет доступныйе виды Метрологического контроля.
     /// </summary>
-    public abstract class AbstraktOperation
+    public class OperationBase
     {
 
         public IMessageBoxService TaskMessageService { get; set; }
@@ -167,7 +170,7 @@ namespace ASMC.Data.Model
         }
 
         /// <summary>
-        /// Позволяет задать или получить признак определяющий ускоренную работу.
+        /// Позволяет задать или получить признак определяющий ускоренную работу(ПРОВЕРКА).
         /// </summary>
         public bool IsSpeedWork { get; set; }
 

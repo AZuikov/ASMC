@@ -19,53 +19,33 @@ namespace B5_71_PRO_Abstract
     /// В этом пространчтве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели устройства
     /// </summary>
 
-    public abstract class AbstractB571ProPlugin: B5_71_PRO, IProgram
+    public abstract class AbstractB571ProPlugin: AbstractProgram
     {
-        public AbstractB571ProPlugin(string type, string range)
-        {
-            AbstraktOperation = new Operation();
-            Type = type;
+        protected AbstractB571ProPlugin()
+        {      
+           
             Grsi = "42467-09";
-            Range = range;
             Accuracy = "Напряжение ПГ ±(0,002 * U + 0.1); ток ПГ ±(0,01 * I + 0,05)";
-        }
-
-        public string Type { get; }
-        public string Grsi { get; }
-        public string Range { get; }
-        public string Accuracy { get; }
-        public IMessageBoxService TaskMessageService
-        {
-            get { return AbstraktOperation.TaskMessageService; }
-            set { AbstraktOperation.TaskMessageService = value; }
-        }
-        public AbstraktOperation AbstraktOperation { get; protected set; }
+        }  
     }
-
-    public  class Operation : AbstraktOperation
-    {
-
-        //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
-
-        public  Operation()
-        {
-            
-            //здесь периодическая поверка, но набор операций такой же
-            this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
-        }
-    }
-
     public class UseDevices : IDevice
     {
+        /// <inheritdoc />
+        public bool IsCanStringConnect { get; set; } = true;
+        /// <inheritdoc />
         public string Description { get; set; }
+        /// <inheritdoc />
         public string[] Name { get; set; }
+        /// <inheritdoc />
         public string SelectedName { get; set; }
+        /// <inheritdoc />
         public string StringConnect { get; set; }
+        /// <inheritdoc />
         public void Setting()
         {
             throw new NotImplementedException();
         }
-
+        /// <inheritdoc />
         public bool? IsConnect { get; }
     }
 

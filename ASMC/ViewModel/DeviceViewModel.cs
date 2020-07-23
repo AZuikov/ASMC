@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Core.ViewModel;
+using ASMC.Data.Model;
 
 namespace ASMC.ViewModel
 {
-    public class DeviceViewModel : BaseViewModel 
+    public class DeviceViewModel : BaseViewModel
     {
         private string _stringConnect;
         private string _selectedName;
@@ -15,6 +16,8 @@ namespace ASMC.ViewModel
         private bool? _isConnect;
         private string _description;
         private string[] _addresDivece;
+
+        public bool IsCanStringConnect { get; set; }
 
         public string Description
         {
@@ -46,5 +49,7 @@ namespace ASMC.ViewModel
             get => _stringConnect;
             set => SetProperty(ref _stringConnect, value, nameof(StringConnect));
         }
+
+     
     }
 }

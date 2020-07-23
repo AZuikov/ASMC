@@ -23,17 +23,21 @@ namespace B5_71_4_PRO
 {
     public class B5_71_4PRO : AbstractB571ProPlugin
     {
-        public B5_71_4PRO() : base("Б5-71/4-ПРО", "0 - 75 В, 0 - 4 А")
+        public B5_71_4PRO() 
         {
-            AbstraktOperation = new Operation();
+            this.Range = "0 - 75 В, 0 - 4 А";
+            this.Type= "Б5-71/4-ПРО";
+            Operation = new Operation();
         }
     }
 
-    public class Operation : B5_71_PRO_Abstract.Operation
+    public class Operation : OperationBase
     {
         public Operation()
         {
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf();
+            //здесь периодическая поверка, но набор операций такой же
+            this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
         }
     }
 
@@ -45,7 +49,7 @@ namespace B5_71_4_PRO
             {
                 new UseDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
                 new UseDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
-                new UseDevices{ Name = new []{"В3-57"}, Description = "Микровольтметр"}
+                new UseDevices{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
 
             };
 

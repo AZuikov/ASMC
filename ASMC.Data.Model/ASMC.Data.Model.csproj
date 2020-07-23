@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractProgram.cs" />
     <Compile Include="BasicOperation.cs" />
     <Compile Include="Interface\IBasicOperation.cs" />
     <Compile Include="Interface\IProgram.cs" />
