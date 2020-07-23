@@ -24,7 +24,7 @@ namespace B5_71_2_PRO
     {
         public B5_71_2PRO()
         {
-            AbstraktOperation = new Operation();
+            Operation = new Operation();
             Type = "Б5-71/2-ПРО";
             Grsi = "42467-09";
             Range = "0 - 50 В; 0 - 6 А";
@@ -39,13 +39,13 @@ namespace B5_71_2_PRO
         public string Accuracy { get; }
         public IMessageBoxService TaskMessageService
         {
-            get { return AbstraktOperation.TaskMessageService; }
-            set { AbstraktOperation.TaskMessageService = value; }
+            get { return Operation.TaskMessageService; }
+            set { Operation.TaskMessageService = value; }
         }
-        public AbstraktOperation AbstraktOperation { get; }
+        public OperationBase Operation { get; }
     }
 
-    public class Operation : AbstraktOperation
+    public class Operation : OperationBase
     {
 
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.

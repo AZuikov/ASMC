@@ -47,7 +47,7 @@ namespace ASMC.Data.Model.Interface
         /// <summary>
         /// Позволяет получить сушность метрологических операций
         /// </summary>
-        AbstraktOperation AbstraktOperation
+        OperationBase Operation
         {
             get;
         }

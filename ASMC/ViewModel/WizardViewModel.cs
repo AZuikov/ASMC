@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -58,13 +59,13 @@ namespace ASMC.ViewModel
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
-        private AbstraktOperation.TypeOpeation? _enableOpeation;
+        private OperationBase.TypeOpeation? _enableOpeation;
         private bool _isSpeedWork;
         private ShemeImage _lastShema;
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
         private IProgram _selectProgram;
-        private AbstraktOperation.TypeOpeation _typeOpertion;
+        private OperationBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
 
         private SettingViewModel _settingViewModel = new SettingViewModel();
@@ -99,7 +100,7 @@ namespace ASMC.ViewModel
 
      
 
-        public AbstraktOperation.TypeOpeation? EnableOpeation
+        public OperationBase.TypeOpeation? EnableOpeation
         {
             get => _enableOpeation;
             set => SetProperty(ref _enableOpeation, value, nameof(EnableOpeation), EnableOpeationCallback);
@@ -116,7 +117,7 @@ namespace ASMC.ViewModel
 
         private void OnIsSpeedWorkCallback()
         {
-            SelectProgram.AbstraktOperation.IsSpeedWork = IsSpeedWork;
+            SelectProgram.Operation.IsSpeedWork = IsSpeedWork;
             OnSelectProgramCallback();
         }
 
@@ -165,7 +166,7 @@ namespace ASMC.ViewModel
         /// <summary>
         /// Позволяет получать или задавать тип выбранной операции МК.
         /// </summary>
-        public AbstraktOperation.TypeOpeation TypeOpertion
+        public OperationBase.TypeOpeation TypeOpertion
         {
             get => _typeOpertion;
             set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion));
@@ -200,16 +201,18 @@ namespace ASMC.ViewModel
 
         private void OnCreatDocumetCommand()
         {
-            Word _report = new Word();
-            _report.OpenDocument(@"D:\Б5-71_1.docx");
-            foreach (var uio in SelectProgram.AbstraktOperation.SelectedOperation.UserItemOperation)
+            Word report = new Word();
+            report.OpenDocument(@"D:\Б5-71_1.docx");
+            var a = new Document.ConditionalFormatting{ Color =  Color.IndianRed, Condition = Document.ConditionalFormatting.Conditions.Equal, Region = Document.ConditionalFormatting.RegionAction.Row , Value = "Брак", NameColumn = "Результат"};
+
+            foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
             {       
-                _report.FillTableToBookmark(uio.Data.TableName, uio.Data); 
+                report.FillTableToBookmark(uio.Data.TableName, uio.Data, false, a); 
             }
             
             var path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
-            _report.SaveAs(path);
-            _report.Close();
+            report.SaveAs(path);
+            report.Close();
             System.Diagnostics.Process.Start(path);
         }
         private static string GetUniqueFileName(string name, string format)
@@ -243,8 +246,8 @@ namespace ASMC.ViewModel
 
         private void OnRefreshCommand()
         {
-            SelectProgram.AbstraktOperation.SelectedOperation.RefreshDevice();
-            SettingViewModel.AddresDivece = SelectProgram.AbstraktOperation.SelectedOperation.AddresDivece;
+            SelectProgram.Operation.SelectedOperation.RefreshDevice();
+            SettingViewModel.AddresDivece = SelectProgram.Operation.SelectedOperation.AddresDivece;
         }
     
         #region Methods
@@ -304,7 +307,7 @@ namespace ASMC.ViewModel
             try
             {
                 types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
-                    .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass).ToArray();
+                    .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             }
             catch (Exception e)
             {
@@ -334,41 +337,41 @@ namespace ASMC.ViewModel
         private void OnStartCommand()
         {
 #pragma warning disable 4014
-            if (SelectionItemOperation == null)   SelectProgram.AbstraktOperation.StartWorkAsync(new CancellationTokenSource());
+            if (SelectionItemOperation == null)   SelectProgram.Operation.StartWorkAsync(new CancellationTokenSource());
 #pragma warning restore 4014
         }
 
         private void OnSelectProgramCallback()
         {
             if (SelectProgram == null) return;
-            EnableOpeation = SelectProgram.AbstraktOperation.EnabledOperation;
-            foreach (Enum en in Enum.GetValues(typeof(AbstraktOperation.TypeOpeation)))
+            EnableOpeation = SelectProgram.Operation.EnabledOperation;
+            foreach (Enum en in Enum.GetValues(typeof(OperationBase.TypeOpeation)))
                 if (EnableOpeation != null && ((Enum) EnableOpeation).HasFlag(en))
                 {
-                    TypeOpertion = (AbstraktOperation.TypeOpeation) en;
+                    TypeOpertion = (OperationBase.TypeOpeation) en;
                     break;
                 }
 
-            SelectProgram.AbstraktOperation.SelectedTypeOpeation = TypeOpertion;
-            UserItemOperation = SelectProgram.AbstraktOperation?.SelectedOperation?.UserItemOperation;
+            SelectProgram.Operation.SelectedTypeOpeation = TypeOpertion;
+            UserItemOperation = SelectProgram.Operation?.SelectedOperation?.UserItemOperation;
             if (SettingViewModel!=null)
             {
                 SettingViewModel.Event -= SettingViewModel_Event;
             }
             SettingViewModel = new SettingViewModel
             {
-                ControlDevices = SelectProgram.AbstraktOperation.SelectedOperation?.ControlDevices,
-                TestDevices = SelectProgram.AbstraktOperation.SelectedOperation?.TestDevices
+                ControlDevices = SelectProgram.Operation.SelectedOperation?.ControlDevices,
+                TestDevices = SelectProgram.Operation.SelectedOperation?.TestDevices
             };
             SettingViewModel.Event += SettingViewModel_Event;
-            AccessoriesList = SelectProgram.AbstraktOperation.SelectedOperation?.Accessories;
-            SelectProgram.AbstraktOperation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
+            AccessoriesList = SelectProgram.Operation.SelectedOperation?.Accessories;
+            SelectProgram.Operation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
         }
 
         private void SettingViewModel_Event()
         {  
-            SelectProgram.AbstraktOperation.SelectedOperation.ControlDevices = SettingViewModel.ControlDevices;
-            SelectProgram.AbstraktOperation.SelectedOperation.TestDevices = SettingViewModel.TestDevices;
+            SelectProgram.Operation.SelectedOperation.ControlDevices = SettingViewModel.ControlDevices;
+            SelectProgram.Operation.SelectedOperation.TestDevices = SettingViewModel.TestDevices;
         }
 
         #endregion
