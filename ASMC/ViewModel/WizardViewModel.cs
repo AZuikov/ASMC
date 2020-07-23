@@ -201,7 +201,7 @@ namespace ASMC.ViewModel
         private void OnCreatDocumetCommand()
         {
             Word _report = new Word();
-            _report.OpenDocument(@"‪C:\Users\02zaa01\Desktop\Б5-71_1.docx");
+            _report.OpenDocument(@"D:\Б5-71_1.docx");
             foreach (var uio in SelectProgram.AbstraktOperation.SelectedOperation.UserItemOperation)
             {       
                 _report.FillTableToBookmark(uio.Data.TableName, uio.Data); 

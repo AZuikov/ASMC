@@ -75,15 +75,32 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// Строка подкючения
         /// </summary>
-        public string StringConnection { get; set; }
+        
+        public string StringConnection {
+            get => _stringConnection;
+            set
+            {
+                if (value == null)
+                {
+                    _stringConnection = null;
+                    return;
+                }
+                   
+                if (value.StartsWith("com", true, CultureInfo.InvariantCulture))
+                {
+                    var replace = value.ToLower().Replace("com", "ASRL") + "::INSTR";
+                    _stringConnection = replace;
+                    return;
+                }
+                _stringConnection = value;
+            } }
 
         /// <summary>
         /// Объкт сессии
         /// </summary>
         protected IMessageBasedSession Session;
 
-        
-       
+        private string _stringConnection;
 
         #endregion
 
@@ -277,7 +294,10 @@ namespace ASMC.Devices.IEEE
         /// <returns></returns>
         public List<string> GetAllDevace
         {
-            get { var arr = new List<string>();
+            
+            get {
+                
+                var arr = new List<string>();
             arr = (List<string>) GlobalResourceManager.Find();
             return arr;}
             

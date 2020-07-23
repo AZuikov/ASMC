@@ -376,7 +376,7 @@
             </StackPanel>
           </TabItem>
           <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}">
-            <Button Command="{Binding OnCreatDocumetCommand}"/>
+                        <Button Content="Протокол" Command="{Binding CreatDocumetCommandCommand}"/>
           </TabItem>
         </TabControl>
       </StackPanel>

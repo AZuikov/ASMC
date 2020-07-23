@@ -41,7 +41,7 @@ namespace B5_71_4_PRO
     {
         public OpertionFirsVerf()
         {
-            TestDevices = new[]
+            ControlDevices = new[]
             {
                 new UseDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
                 new UseDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
@@ -49,7 +49,7 @@ namespace B5_71_4_PRO
 
             };
 
-            ControlDevices = new IDevice[] { new UseDevices { Name = new[] { "Б5-71/4-ПРО" }, Description = "источник питания" } };
+            TestDevices = new IDevice[] { new UseDevices { Name = new[] { "Б5-71/4-ПРО" }, Description = "источник питания" } };
 
             //Необходимые аксесуары
             Accessories = new[]
@@ -64,8 +64,8 @@ namespace B5_71_4_PRO
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new Oper0VisualTest(this),
-                new Oper1Oprobovanie(this),
+                //new Oper0VisualTest(this),
+                //new Oper1Oprobovanie(this),
                 new Oper2DcvOutput(this),
                 new Oper3DcvMeasure(this),
                 new Oper4VoltUnstable(this),

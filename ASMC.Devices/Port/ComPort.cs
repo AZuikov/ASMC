@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Ports;
 using NLog;
@@ -16,6 +17,7 @@ namespace ASMC.Devices.Port
         public string DeviceType { get; protected set; }
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly SerialPort _sp;
+
         protected virtual void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
            //если мы сюда попали, это нормально? 
@@ -23,8 +25,23 @@ namespace ASMC.Devices.Port
         }
         public string StringConnection
         { get => _sp.PortName;
-            set => _sp.PortName = value;
+            set
+            {
+                if (value == null)
+                {
+                    _sp.PortName = null;
+                    return;
+                }
+                if (value.StartsWith("ASRL", true, CultureInfo.InvariantCulture))
+                {
+                    var replace ="COM"+ value.ToUpper().Replace("ASRL", "").Replace("::INSTR","");
+                    _sp.PortName = replace;
+                    return;
+                }
+                _sp.PortName = value;
+            }
         }
+        
         public SpeedRate BaudRate
         {
             get => (SpeedRate) _sp.BaudRate;

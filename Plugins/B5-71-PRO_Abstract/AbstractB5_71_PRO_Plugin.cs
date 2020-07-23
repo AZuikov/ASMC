@@ -250,11 +250,11 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
-                dataRow[0] = dds.Expected;
-                dataRow[1] = dds.Getting;
-                dataRow[2] = dds.Error;
-                dataRow[3] = dds.LowerTolerance;
-                dataRow[4] = dds.UpperTolerance;
+                dataRow[0] = dds.Expected + " В";
+                dataRow[1] = dds.Getting + " В";
+                dataRow[2] = dds.Error + " В";
+                dataRow[3] = dds.LowerTolerance + " В";
+                dataRow[4] = dds.UpperTolerance + " В";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -281,9 +281,9 @@ namespace B5_71_PRO_Abstract
                 {
                     operation.InitWork = () =>
                     {
-                        mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
-                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
-                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+                        mult.StringConnection = GetStringConnect(mult);
+                        load.StringConnection = GetStringConnect(load);
+                        _bp.StringConnection = GetStringConnect(_bp);
 
                         load.Open();
                         load.FindThisModule();
@@ -292,6 +292,7 @@ namespace B5_71_PRO_Abstract
                         if (load.GetChanelNumb <= 0)
                             throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
+                        mult.Open();
                         while (mult.GetTerminalConnect() == false)
                             MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
                                                    " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
@@ -402,11 +403,11 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
-                dataRow[0] = dds.Expected;
-                dataRow[1] = dds.Getting;
-                dataRow[2] = dds.Error;
-                dataRow[3] = dds.LowerTolerance;
-                dataRow[4] = dds.UpperTolerance;
+                dataRow[0] = dds.Expected + " В";
+                dataRow[1] = dds.Getting + " В";
+                dataRow[2] = dds.Error + " В";
+                dataRow[3] = dds.LowerTolerance + " В";
+                dataRow[4] = dds.UpperTolerance + " В";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -441,9 +442,9 @@ namespace B5_71_PRO_Abstract
                 {
                     operation.InitWork = () =>
                     {
-                        mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
-                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
-                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+                        mult.StringConnection = GetStringConnect( mult);
+                        load.StringConnection = GetStringConnect(load);
+                        _bp.StringConnection = GetStringConnect(_bp);
 
                         load.Open();
                         load.FindThisModule();
@@ -452,6 +453,7 @@ namespace B5_71_PRO_Abstract
                         if (load.GetChanelNumb <= 0)
                             throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
+                        mult.Open();
                         while (mult.GetTerminalConnect() == false)
                             MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
                                                    " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
@@ -560,9 +562,9 @@ namespace B5_71_PRO_Abstract
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            dataRow[0] = dds.Getting;
-            dataRow[1] = dds.LowerTolerance;
-            dataRow[2] = dds.UpperTolerance;
+            dataRow[0] = dds.Getting + " В";
+            dataRow[1] = dds.Error + " В";
+            
             dataTable.Rows.Add(dataRow);
 
             return dataTable;
@@ -583,9 +585,9 @@ namespace B5_71_PRO_Abstract
             {
                 operation.InitWork = () =>
                 {
-                    mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
-                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
-                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+                    mult.StringConnection = GetStringConnect( mult);
+                    load.StringConnection = GetStringConnect(load);
+                    _bp.StringConnection = GetStringConnect(_bp);
 
                     load.Open();
                     load.FindThisModule();
@@ -594,6 +596,7 @@ namespace B5_71_PRO_Abstract
                     if (load.GetChanelNumb <= 0)
                         throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
+                    mult.Open();
                     while (mult.GetTerminalConnect() == false)
                         MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
@@ -718,9 +721,9 @@ namespace B5_71_PRO_Abstract
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            dataRow[0] = _bp.VoltMax;
-            dataRow[1] = dds.Getting;
-            dataRow[2] = dds.Error;
+            dataRow[0] = _bp.VoltMax + " В";
+            dataRow[1] = dds.Getting + " мВ";
+            dataRow[2] = dds.Error + " мВ";
             dataTable.Rows.Add(dataRow);
 
             return dataTable;
@@ -743,9 +746,9 @@ namespace B5_71_PRO_Abstract
             {
                 operation.InitWork = () =>
                 {
-                    mult.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[1].SelectedName, mult);
-                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
-                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
+                    mult.StringConnection = GetStringConnect( mult);
+                    load.StringConnection = GetStringConnect(load);
+                    _bp.StringConnection = GetStringConnect(_bp);
 
 
                     load.Open();
@@ -755,9 +758,8 @@ namespace B5_71_PRO_Abstract
                     if (load.GetChanelNumb <= 0)
                         throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-                    mult.Open();
+                   
                     load.Open();
-                    load.SetWorkingChanel();
                     load.SetWorkingChanel();
                     load.SetResistanceFunc();
                     decimal point = _bp.VoltMax / ((decimal)0.9 * _bp.CurrMax);
@@ -771,7 +773,7 @@ namespace B5_71_PRO_Abstract
                     _bp.SetStateCurr(_bp.CurrMax);
                     _bp.OnOutput();
 
-
+                    mult.Open();
                     while (mult.GetTerminalConnect())
                         MessageBoxService.Show("На панели прибора " + mult.GetDeviceType +
                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
@@ -876,11 +878,11 @@ namespace B5_71_PRO_Abstract
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Expected;
-                dataRow[1] = dds.Getting;
-                dataRow[2] = dds.Error;
-                dataRow[3] = dds.LowerTolerance;
-                dataRow[4] = dds.UpperTolerance;
+                dataRow[0] = dds.Expected + " А";
+                dataRow[1] = dds.Getting + " А";
+                dataRow[2] = dds.Error + " А";
+                dataRow[3] = dds.LowerTolerance + " А";
+                dataRow[4] = dds.UpperTolerance + " А";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -908,8 +910,8 @@ namespace B5_71_PRO_Abstract
                 {
                     operation.InitWork = () =>
                     {
-                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
-                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, load);
+                        load.StringConnection = GetStringConnect(load);
+                        _bp.StringConnection = GetStringConnect(_bp);
 
                         load.Open();
                         load.FindThisModule();
@@ -1015,11 +1017,11 @@ namespace B5_71_PRO_Abstract
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Expected;
-                dataRow[1] = dds.Getting;
-                dataRow[2] = dds.Error;
-                dataRow[3] = dds.LowerTolerance;
-                dataRow[4] = dds.UpperTolerance;
+                dataRow[0] = dds.Expected + " А";
+                dataRow[1] = dds.Getting + " А";
+                dataRow[2] = dds.Error + " А";
+                dataRow[3] = dds.LowerTolerance + " А";
+                dataRow[4] = dds.UpperTolerance + " А";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1056,8 +1058,8 @@ namespace B5_71_PRO_Abstract
                 {
                     operation.InitWork = () =>
                     {
-                        _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
-                        load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                        _bp.StringConnection = GetStringConnect(_bp);
+                        load.StringConnection = GetStringConnect(load);
 
 
                         load.Open();
@@ -1160,9 +1162,9 @@ namespace B5_71_PRO_Abstract
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
             // ReSharper disable once PossibleNullReferenceException
-            dataRow[0] = dds.Getting;
-            dataRow[1] = dds.LowerTolerance;
-            dataRow[2] = dds.UpperTolerance;
+            dataRow[0] = dds.Getting + " А";
+            dataRow[1] = dds.Error + " А";
+            
             dataTable.Rows.Add(dataRow);
 
             return dataTable;
@@ -1193,8 +1195,8 @@ namespace B5_71_PRO_Abstract
             {
                 operation.InitWork = () =>
                 {
-                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
-                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                    _bp.StringConnection = GetStringConnect(_bp);
+                    load.StringConnection = GetStringConnect(load);
 
                     load.Open();
                     load.FindThisModule();
@@ -1296,10 +1298,10 @@ namespace B5_71_PRO_Abstract
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            dataRow[0] = _bp.CurrMax;
+            dataRow[0] = _bp.CurrMax + " А";
             // ReSharper disable once PossibleNullReferenceException
-            dataRow[1] = dds.Getting;
-            dataRow[2] = dds.Error;
+            dataRow[1] = dds.Getting + "мА";
+            dataRow[2] = dds.Error + "мА";
             dataTable.Rows.Add(dataRow);
 
             return dataTable;
@@ -1329,8 +1331,9 @@ namespace B5_71_PRO_Abstract
             {
                 operation.InitWork = () =>
                 {
-                    _bp.StringConnection = GetStringConnect(this.UserItemOperation.TestDevices[0].SelectedName, _bp);
-                    load.StringConnection = GetStringConnect(this.UserItemOperation.ControlDevices[0].SelectedName, load);
+                    _bp.StringConnection = GetStringConnect(_bp);
+                    load.StringConnection = GetStringConnect(load);
+                    mult.StringConnection = GetStringConnect(mult);
 
                     load.Open();
                     load.FindThisModule();
