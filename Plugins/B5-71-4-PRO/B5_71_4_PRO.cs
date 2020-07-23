@@ -21,7 +21,7 @@ using DevExpress.Mvvm;
 
 namespace B5_71_4_PRO
 {
-    public class B5_71_4PRO : AbstractB5_71_PRO_Plugin
+    public class B5_71_4PRO : AbstractB571ProPlugin
     {
         public B5_71_4PRO() : base("Б5-71/4-ПРО", "0 - 75 В, 0 - 4 А")
         {
@@ -99,9 +99,9 @@ namespace B5_71_4_PRO
     {
         public Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-            mult = new Mult_34401A();
-            load = new N3303A();
+            Bp = new B571Pro4();
+            Mult = new Mult_34401A();
+            Load = new N3303A();
         }
     }
 
@@ -112,9 +112,9 @@ namespace B5_71_4_PRO
     {
         public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-            mult = new Mult_34401A();
-            load = new N3303A();
+            Bp = new B571Pro4();
+            Mult = new Mult_34401A();
+            Load = new N3303A();
         }
 
     }
@@ -126,9 +126,9 @@ namespace B5_71_4_PRO
     {
         public Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-            mult = new Mult_34401A();
-            load = new N3303A();
+            Bp = new B571Pro4();
+            Mult = new Mult_34401A();
+            Load = new N3303A();
         }
     }
 
@@ -139,9 +139,9 @@ namespace B5_71_4_PRO
     {
         public Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-            mult = new Mult_34401A();
-            load = new N3303A();
+            Bp = new B571Pro4();
+            Mult = new Mult_34401A();
+            Load = new N3303A();
         }
     }
     /// <summary>
@@ -151,8 +151,8 @@ namespace B5_71_4_PRO
     {
         public Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-          load = new N3303A();
+            Bp = new B571Pro4();
+          Load = new N3303A();
         }
     }
 
@@ -163,8 +163,8 @@ namespace B5_71_4_PRO
     {
         public Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-            load = new N3303A();
+            Bp = new B571Pro4();
+            Load = new N3303A();
         }
     }
 
@@ -178,8 +178,8 @@ namespace B5_71_4_PRO
     {
         public Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-            load = new N3303A();
+            Bp = new B571Pro4();
+            Load = new N3303A();
         }
     }
 
@@ -191,9 +191,9 @@ namespace B5_71_4_PRO
     {
         public Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            _bp = new B571Pro4();
-            load = new N3303A();
-            mult = new Mult_34401A();
+            Bp = new B571Pro4();
+            Load = new N3303A();
+            Mult = new Mult_34401A();
         }
     }
 
