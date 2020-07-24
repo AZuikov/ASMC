@@ -1,19 +1,9 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AP.Math;
-using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
-using ASMC.Devices.IEEE;
+﻿using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
-using DevExpress.Mvvm;
+
 
 // !!!!!!!! Внимание !!!!!!!!!
 //  Имя последовательного порта прописано жестко!!!!
@@ -76,8 +66,8 @@ namespace B5_71_4_PRO
                 new Oper6DciOutput(this),
                 new Oper7DciMeasure(this),
                 new Oper8DciUnstable(this),
-                new Oper5VoltPulsation(this),
-                new Oper9DciPulsation(this)
+                //new Oper5VoltPulsation(this),
+                //new Oper9DciPulsation(this)
             };
         }
     }

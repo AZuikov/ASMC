@@ -21,31 +21,39 @@ namespace B5_71_PRO_Abstract
 
     public abstract class AbstractB571ProPlugin: AbstractProgram
     {
-        protected AbstractB571ProPlugin()
-        {      
-           
+        public AbstractB571ProPlugin()
+        {
             Grsi = "42467-09";
             Accuracy = "Напряжение ПГ ±(0,002 * U + 0.1); ток ПГ ±(0,01 * I + 0,05)";
-        }  
+        }
+        public OperationBase AbstraktOperation { get; protected set; }
     }
+
+    public  class Operation : OperationBase
+    {
+
+        //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
+
+        public  Operation()
+        {
+            
+            //здесь периодическая поверка, но набор операций такой же
+            this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
+        }
+    }
+
     public class UseDevices : IDevice
     {
-        /// <inheritdoc />
         public bool IsCanStringConnect { get; set; } = true;
-        /// <inheritdoc />
         public string Description { get; set; }
-        /// <inheritdoc />
         public string[] Name { get; set; }
-        /// <inheritdoc />
         public string SelectedName { get; set; }
-        /// <inheritdoc />
         public string StringConnect { get; set; }
-        /// <inheritdoc />
         public void Setting()
         {
             throw new NotImplementedException();
         }
-        /// <inheritdoc />
+
         public bool? IsConnect { get; }
     }
 
@@ -56,9 +64,7 @@ namespace B5_71_PRO_Abstract
         public string[] Accessories { get; protected set; }
         public string[] AddresDivece { get; set; }
         public IDevice[] ControlDevices { get; set; }
-
         
-
         /// <summary>
         /// Проверяет всели эталоны подключены
         /// </summary>
@@ -285,14 +291,17 @@ namespace B5_71_PRO_Abstract
                         Load.OffOutput();
 
                         Bp.InitDevice();
+                        Bp.SetStateVolt(Bp.VoltMax);
                         Bp.SetStateCurr(Bp.CurrMax);
-                        Bp.OnOutput();
+                        
 
                     foreach (var point in MyPoint)
                         {
                             var setPoint = point * Bp.VoltMax;
                             //ставим точку напряжения
                             Bp.SetStateVolt(setPoint);
+                            Bp.OnOutput();
+                            Thread.Sleep(1000);
                             
                             //измеряем напряжение
                             Mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
@@ -439,17 +448,20 @@ namespace B5_71_PRO_Abstract
                         Load.OffOutput();
 
                         Bp.InitDevice();
+                        Bp.SetStateVolt(Bp.VoltMax);
                         Bp.SetStateCurr(Bp.CurrMax);
-                        Bp.OnOutput();
+                        
 
                     foreach (var point in MyPoint)
                         {
                             var setPoint = point * Bp.VoltMax;
                             //ставим точку напряжения
                             Bp.SetStateVolt(setPoint);
-                            
-                            //измеряем напряжение
-                            Mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
+                            Bp.OnOutput();
+                            Thread.Sleep(1000);
+
+                        //измеряем напряжение
+                        Mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
                             Mult.WriteLine(Main_Mult.QueryValue);
                             var resultMult = Mult.DataPreparationAndConvert(Mult.ReadString());
                             var resultBp = Bp.GetMeasureVolt();
@@ -772,6 +784,7 @@ namespace B5_71_PRO_Abstract
                 {
 
                     Thread.Sleep(5000);
+
                     Mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
                     Mult.WriteLine(Main_Mult.QueryValue);
 
@@ -926,9 +939,9 @@ namespace B5_71_PRO_Abstract
                             var setPoint = coef * Bp.CurrMax;
                             //ставим значение тока
                             Bp.SetStateCurr(setPoint);
-                        
-                            //измеряем ток
-                            Load.Open();
+                            Thread.Sleep(1000);
+                        //измеряем ток
+                        Load.Open();
                             var result = Load.GetMeasCurr();
                         
                             MathStatistics.Round(ref result, 3);
@@ -1075,9 +1088,9 @@ namespace B5_71_PRO_Abstract
                             var setPoint = coef * Bp.CurrMax;
                             //ставим точку напряжения
                             Bp.SetStateCurr(setPoint);
-                        
+                            Thread.Sleep(1000);
                             //измеряем ток
-                            var resultN3300 = Load.GetMeasCurr();
+                        var resultN3300 = Load.GetMeasCurr();
 
                             MathStatistics.Round(ref resultN3300, 3);
 
@@ -1214,7 +1227,7 @@ namespace B5_71_PRO_Abstract
                         decimal resistance = (coef*Bp.VoltMax)/Bp.CurrMax;
                         Load.SetResistanceRange(resistance);
                         Load.SetResistance(resistance);
-                        Thread.Sleep(700);
+                        Thread.Sleep(1000);
                         currUnstableList.Add(Load.GetMeasCurr());
 
                     }

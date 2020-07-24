@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -10,26 +12,23 @@ using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Port.APPA;
 using DevExpress.Mvvm;
 
+
 namespace APPA_107N_109N
 {
-    public class APPA_107N : IProgram
+    public class Appa107N109NBasePlugin : AbstractProgram
 
     {
-        public APPA_107N()
+        public Appa107N109NBasePlugin()
         {
-            Type = "Мультиметр цифровой";
+            
             Grsi = "20085-11";
-            Range = "Пост. напр. 0 - 1000 В, пер. напр. 0 - 750 В,\n" +
-                    " пост./пер. ток 0 - 10 А, изм. частоты до 1 МГц,\n" +
-                    " эл. сопр. 0 - 2 ГОм, эл. ёмкость до 40 мФ.";
-            Accuracy = "DCV 0.06%, ACV 1%, DCI 0.2%, ACI 1.2%,\n" +
-                       " FREQ 0.01%, OHM 5%, FAR 1.5%";
+            
         }
 
-        public string Type { get; }
+        public string Type { get; protected set; }
         public string Grsi { get; }
-        public string Range { get; }
-        public string Accuracy { get; }
+        public string Range { get; protected set; }
+        public string Accuracy { get; protected set; }
         public IMessageBoxService TaskMessageService { get; set; }
         public OperationBase Operation { get; }
     }
@@ -40,7 +39,7 @@ namespace APPA_107N_109N
         public Operation()
         {
             //это операция первичной поверки
-            UserItemOperationPrimaryVerf = new OpertionFirsVerf();
+            //UserItemOperationPrimaryVerf = new OpertionFirsVerf();
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
         }
@@ -48,6 +47,7 @@ namespace APPA_107N_109N
 
     public class UsedDevices : IDevice
     {
+        public bool IsCanStringConnect { get; set; }
         public string Description { get; set; }
         public string[] Name { get; set; }
         public string SelectedName { get; set; }
@@ -61,14 +61,14 @@ namespace APPA_107N_109N
         public bool? IsConnect { get; }
     }
 
-    public class OpertionFirsVerf : IUserItemOperation
+    public abstract class OpertionFirsVerf : IUserItemOperation
     {
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
-        public IDevice[] ControlDevices { get; }
-        public IDevice[] TestDevices { get; }
+        public IDevice[] ControlDevices { get; set; }
+        public IDevice[] TestDevices { get; set; }
         public IDevice[] Device { get; }
-        public IUserItemOperationBase[] UserItemOperation { get; }
+        public IUserItemOperationBase[] UserItemOperation { get; set; }
 
         public OpertionFirsVerf()
         {
@@ -81,27 +81,15 @@ namespace APPA_107N_109N
             {
                 "Интерфейсный кабель для клибратора (GPIB или COM порт)",
                 "Кабель banana - banana 2 шт.",
-                "Интерфейсный кабель для прибора APPA-10N USB-COM инфракрасный."
+                "Интерфейсный кабель для прибора APPA-107N/APPA-109N USB-COM инфракрасный."
             };
 
-            UserItemOperation = new IUserItemOperationBase[]
-            {
-                new Oper1VisualTest(this),
-                new Oper2Oprobovanie(this),
-                new Oper3DcvMeasure(this),
-                new Oper4AcvMeasure(this),
-                new Oper5DcIMeasure(this),
-                new Oper6AcIMeasure(this),
-                new Oper7FreqMeasure(this),
-                new Oper8OhmMeasure(this),
-                new Oper9FarMeasure(this),
-                new Oper10TemperatureMeasure(this),
-            };
+            
         }
 
         public void RefreshDevice()
         {
-            AddresDivece = new IeeeBase().GetAllDevace().ToArray();
+            AddresDivece = new IeeeBase().GetAllDevace.ToArray();
 
         }
 
@@ -112,7 +100,7 @@ namespace APPA_107N_109N
     }
  
 
-    public class Oper1VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public abstract class Oper1VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
@@ -132,18 +120,15 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
         {
-            var bo = new BasicOperation<bool> { Expected = true };
-            bo.IsGood = s => bo.Getting;
-
-            DataRow.Add(bo);
+           
         }
 
         
     }
 
-    public class Oper2Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public abstract class Oper2Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
@@ -169,10 +154,11 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
+       
         {
             var bo = new BasicOperation<bool> { Expected = true };
-            bo.IsGood = s => bo.Getting;
+            //bo.IsGood = s => bo.Getting;
 
             DataRow.Add(bo);
         }
@@ -180,7 +166,7 @@ namespace APPA_107N_109N
         
     }
 
-    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
         public List<IBasicOperation<decimal>> DataRow { get; set; }
         //список точек из методики поверки
@@ -209,7 +195,8 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
+       
         {
             Calib_5522A flkCalib5522A = new Calib_5522A();
             flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
@@ -288,7 +275,7 @@ namespace APPA_107N_109N
         
     }
 
-    public class Oper4AcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper4AcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
         public Oper4AcvMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -305,13 +292,14 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
+       
         {
             throw new NotImplementedException();
         }
     }
 
-    public class Oper5DcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper5DcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
         public Oper5DcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -327,13 +315,13 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
         {
             throw new NotImplementedException();
         }
     }
 
-    public class Oper6AcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper6AcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
         public Oper6AcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -349,13 +337,13 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
         {
             throw new NotImplementedException();
         }
     }
 
-    public class Oper7FreqMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper7FreqMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
         public Oper7FreqMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -371,13 +359,13 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
         {
             throw new NotImplementedException();
         }
     }
 
-    public class Oper8OhmMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper8OhmMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
         public Oper8OhmMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -393,13 +381,13 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
         {
             throw new NotImplementedException();
         }
     }
 
-    public class Oper9FarMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper9FarMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
         public Oper9FarMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -415,13 +403,13 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
         {
             throw new NotImplementedException();
         }
     }
 
-    public class Oper10TemperatureMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper10TemperatureMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
     {
         public Oper10TemperatureMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -437,7 +425,8 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartWork()
+        public override async Task StartWork(CancellationTokenSource token)
+        
         {
             throw new NotImplementedException();
         }
