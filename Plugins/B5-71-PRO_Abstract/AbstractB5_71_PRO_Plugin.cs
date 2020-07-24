@@ -328,17 +328,20 @@ namespace B5_71_PRO_Abstract
                         MathStatistics.Round(ref result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
-
+                        
                         operation.Expected = setPoint;
                         operation.Getting = (decimal) result;
-                        operation.ErrorCalculation = ErrorCalculation;
+                        //operation.Error = Bp.tolleranceFormulaVolt(setPoint);
+                        operation.ErrorCalculation =(c,b)=> ErrorCalculation(setPoint,0);
                         operation.LowerTolerance = operation.Expected - operation.Error;
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => operation.IsGood();
 
-                        DataRow.Add(operation);
+                       var a = (BasicOperationVerefication<decimal>)operation.Clone();
+
+                        DataRow.Add(a);
                     }
 
                     Bp.OffOutput();

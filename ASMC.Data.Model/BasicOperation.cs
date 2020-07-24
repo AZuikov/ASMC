@@ -13,7 +13,7 @@ namespace ASMC.Data.Model
     /// Предоставляет реализацию
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class BasicOperation<T>  : IBasicOperation<T>
+    public class BasicOperation<T>  : IBasicOperation<T>, ICloneable
     {
         private Func<bool> _func;
         private Action _action;
@@ -71,6 +71,12 @@ namespace ASMC.Data.Model
         public string Comment { get; set; }
         /// <inheritdoc />
         public Func<bool> IsGood { get; set; }
+
+        public virtual object Clone()
+        {
+            return new BasicOperation<T> { InitWork = InitWork, BodyWork = BodyWork, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWork = CompliteWork };
+        }
+
     }
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {
@@ -80,8 +86,14 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public Func<T, T, T> ErrorCalculation
         {
-            set; private get;
+            set; protected get;
         }
+        public override object Clone()
+        {
+            var @base = (BasicOperation<T>)base.Clone();
+            return new MeasuringOperation<T>() { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
+        }
+
     }
 
     /// <summary>
@@ -99,5 +111,10 @@ namespace ASMC.Data.Model
         /// Позволяет получить или задать верхнюю допустимую границу.
         /// </summary>
         public T UpperTolerance { get; set; }
+        public override object Clone()
+        {
+            var @base = (MeasuringOperation<T>)base.Clone();
+            return new BasicOperationVerefication<T> { LowerTolerance = LowerTolerance, UpperTolerance = UpperTolerance, ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
+        }
     }
 }
