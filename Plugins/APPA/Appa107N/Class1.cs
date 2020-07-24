@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using APPA_107N_109N;
+﻿using APPA_107N_109N;
 using ASMC.Data.Model;
 
 namespace Appa107N
@@ -85,9 +80,10 @@ namespace Appa107N
         }
     }
 
-    public class Oper7FreqMeasur : APPA_107N_109N.Oper7FreqMeasure
+    public class Oper7FreqMeasure : APPA_107N_109N.Oper7FreqMeasure
+
     {
-        public Oper7FreqMeasur(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper7FreqMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
         }
     }

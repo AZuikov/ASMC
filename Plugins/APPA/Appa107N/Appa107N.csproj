@@ -45,6 +45,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\APPA-107N-109N\APPA-107N-109N.csproj">
       <Project>{2bc759a0-2e5f-46ef-aa23-555d6475ea6c}</Project>
       <Name>APPA-107N-109N</Name>

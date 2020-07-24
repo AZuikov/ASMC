@@ -15,7 +15,7 @@ using DevExpress.Mvvm;
 
 namespace APPA_107N_109N
 {
-    public class Appa107N109NBasePlugin : IProgram
+    public class Appa107N109NBasePlugin : AbstractProgram
 
     {
         public Appa107N109NBasePlugin()
@@ -47,6 +47,7 @@ namespace APPA_107N_109N
 
     public class UsedDevices : IDevice
     {
+        public bool IsCanStringConnect { get; set; }
         public string Description { get; set; }
         public string[] Name { get; set; }
         public string SelectedName { get; set; }

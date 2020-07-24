@@ -66,8 +66,8 @@ namespace B5_71_4_PRO
                 new Oper6DciOutput(this),
                 new Oper7DciMeasure(this),
                 new Oper8DciUnstable(this),
-                new Oper5VoltPulsation(this),
-                new Oper9DciPulsation(this)
+                //new Oper5VoltPulsation(this),
+                //new Oper9DciPulsation(this)
             };
         }
     }
