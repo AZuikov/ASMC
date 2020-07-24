@@ -504,8 +504,9 @@ namespace B5_71_PRO_Abstract
                                                  (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
 
+                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
 
-                        DataRow.Add(operation);
+                        DataRow.Add(a);
                     }
 
 
@@ -671,6 +672,7 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
+                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
                     DataRow.Add(operation);
                 }
 
@@ -798,7 +800,7 @@ namespace B5_71_PRO_Abstract
                     var voltPulsV357 = (decimal) Mult.DataPreparationAndConvert(Mult.ReadString());
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
                     voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal) 0.99, 0, 3);
-                    MathStatistics.Round(ref voltPulsV357, 2);
+                    MathStatistics.Round(ref voltPulsV357, MathStatistics.GetMantissa(Bp.tolleranceVoltPuls));
 
                     Bp.OffOutput();
 
@@ -962,7 +964,10 @@ namespace B5_71_PRO_Abstract
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        DataRow.Add(operation);
+
+                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
+
+                        DataRow.Add(a);
                     }
 
                     Bp.OffOutput();
@@ -1112,7 +1117,10 @@ namespace B5_71_PRO_Abstract
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        DataRow.Add(operation);
+
+                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
+
+                        DataRow.Add(a);
                     }
 
 
@@ -1289,7 +1297,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "table8"};
+            var dataTable = new DataTable {TableName = "table9"};
             
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");
