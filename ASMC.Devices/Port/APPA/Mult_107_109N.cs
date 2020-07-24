@@ -56,7 +56,7 @@ namespace ASMC.Devices.Port.APPA
                 return value; 
             }
         }
-        public Mult107_109N(string portName) : base(portName)
+        public Mult107_109N() 
         {
             _wait = new System.Timers.Timer();
             _byffer = new List<byte>();
