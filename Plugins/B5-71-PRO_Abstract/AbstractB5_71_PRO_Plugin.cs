@@ -58,7 +58,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public bool? IsConnect { get; }
+        public bool? IsConnect { get; } = true;
     }
 
     public abstract class OpertionFirsVerf : IUserItemOperation
@@ -98,7 +98,7 @@ namespace B5_71_PRO_Abstract
         //}
 
 
-        public Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Внешний осмотр";
             DataRow = new List<IBasicOperation<bool>>();
@@ -112,6 +112,7 @@ namespace B5_71_PRO_Abstract
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<bool>;
+            // ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting;
             data.Rows.Add(dataRow);
             return data;
@@ -134,12 +135,13 @@ namespace B5_71_PRO_Abstract
             {
                 MessageBoxService.Show("Начало операции", "Начало операции1", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.No);
+                return Task.CompletedTask;
             };
             bo.CompliteWork = () =>
             {
                 MessageBoxService.Show("Конец операции", "Конец операции1", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.No);
-                return true;
+                return Task.FromResult(true);
             };
             bo.BodyWork = () => { Thread.Sleep(100); };
             await bo.WorkAsync(token);
@@ -167,6 +169,7 @@ namespace B5_71_PRO_Abstract
             data.Columns.Add("Результат опробования");
             var dataRow = data.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<bool>;
+            // ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting;
             data.Rows.Add(dataRow);
             return data;
@@ -188,12 +191,13 @@ namespace B5_71_PRO_Abstract
             {
                 MessageBoxService.Show("Начало операции", "Начало операции2", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.No);
+                return Task.CompletedTask;
             };
             bo.CompliteWork = () =>
             {
                 MessageBoxService.Show("Конец операции", "Конец операции2", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.No);
-                return true;
+                return Task.FromResult(true);
             };
             bo.BodyWork = () => { Thread.Sleep(100); };
             await bo.WorkAsync(token);
@@ -230,8 +234,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table2";
+            var dataTable = new DataTable {TableName = "table2"};
             dataTable.Columns.Add("Установленное значение напряжения, В");
             dataTable.Columns.Add("Измеренное значение, В");
             dataTable.Columns.Add("Абсолютная погрешность, В");
@@ -243,6 +246,7 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
+                // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected + " В";
                 dataRow[1] = dds.Getting + " В";
                 dataRow[2] = dds.Error + " В";
@@ -256,7 +260,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
+        private decimal ErrorCalculation(decimal inA)
         {
             inA = Bp.tolleranceFormulaVolt(inA);
             MathStatistics.Round(ref inA, 3);
@@ -298,6 +302,7 @@ namespace B5_71_PRO_Abstract
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
+                    return Task.CompletedTask;
                 };
                 operation.BodyWork = Test;
 
@@ -328,18 +333,18 @@ namespace B5_71_PRO_Abstract
                         MathStatistics.Round(ref result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
-                        
+
                         operation.Expected = setPoint;
                         operation.Getting = (decimal) result;
                         //operation.Error = Bp.tolleranceFormulaVolt(setPoint);
-                        operation.ErrorCalculation =(c,b)=> ErrorCalculation(setPoint,0);
+                        operation.ErrorCalculation = (c, b) => ErrorCalculation(setPoint);
                         operation.LowerTolerance = operation.Expected - operation.Error;
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => operation.IsGood();
+                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
 
-                       var a = (BasicOperationVerefication<decimal>)operation.Clone();
+                        var a = (BasicOperationVerefication<decimal>) operation.Clone();
 
                         DataRow.Add(a);
                     }
@@ -378,7 +383,7 @@ namespace B5_71_PRO_Abstract
         #endregion
 
 
-        public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
@@ -388,8 +393,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table3";
+            var dataTable = new DataTable {TableName = "table3"};
             dataTable.Columns.Add("Измеренное эталонным мультиметром значение, В");
             dataTable.Columns.Add("Измеренное источником питания значение, В");
             dataTable.Columns.Add("Абсолютная погрешность, В");
@@ -401,13 +405,14 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
+                // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected + " В";
                 dataRow[1] = dds.Getting + " В";
                 dataRow[2] = dds.Error + " В";
                 dataRow[3] = dds.LowerTolerance + " В";
                 dataRow[4] = dds.UpperTolerance + " В";
                 dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
-                
+
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -459,6 +464,7 @@ namespace B5_71_PRO_Abstract
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
+                    return Task.CompletedTask;
                 };
                 operation.BodyWork = Test;
 
@@ -500,7 +506,8 @@ namespace B5_71_PRO_Abstract
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => operation.IsGood();
+                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+
 
                         DataRow.Add(operation);
                     }
@@ -540,7 +547,7 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
@@ -550,8 +557,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table4";
+            var dataTable = new DataTable {TableName = "table4"};
             dataTable.Columns.Add("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
             dataTable.Columns.Add("Максимальное допустимое значение, В");
@@ -559,6 +565,7 @@ namespace B5_71_PRO_Abstract
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+            // ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting + " В";
             dataRow[1] = dds.Error + " В";
             dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
@@ -608,6 +615,7 @@ namespace B5_71_PRO_Abstract
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
+                    return Task.CompletedTask;
                 };
                 operation.BodyWork = Test;
 
@@ -691,7 +699,7 @@ namespace B5_71_PRO_Abstract
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27, (decimal) 37.5, (decimal) 187.5};
 
-        public Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций по напряжению";
             DataRow = new List<IBasicOperation<decimal>>();
@@ -701,8 +709,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table5";
+            var dataTable = new DataTable {TableName = "table5"};
             dataTable.Columns.Add("Величина напряжения на выходе источника питания, В");
             dataTable.Columns.Add("Измеренное значение пульсаций, мВ");
             dataTable.Columns.Add("Допустимое значение пульсаций, мВ");
@@ -711,6 +718,7 @@ namespace B5_71_PRO_Abstract
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
             dataRow[0] = Bp.VoltMax + " В";
+            // ReSharper disable once PossibleNullReferenceException
             dataRow[1] = dds.Getting + " мВ";
             dataRow[2] = dds.Error + " мВ";
             dataRow[3] = dds.IsGood() ? "Годен" : "Брак";
@@ -778,7 +786,7 @@ namespace B5_71_PRO_Abstract
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
 
-                    MessageBoxService.Show($"Установите на В3-57 подходящий предел измерения напряжения",
+                    MessageBoxService.Show("Установите на В3-57 подходящий предел измерения напряжения",
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
                 };
@@ -808,7 +816,7 @@ namespace B5_71_PRO_Abstract
                         (operation.Expected >= operation.LowerTolerance) &
                         (operation.Expected < operation.UpperTolerance);
 
-                    operation.CompliteWork = () => operation.IsGood();
+                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
 
                     DataRow.Add(operation);
                 }
@@ -849,7 +857,7 @@ namespace B5_71_PRO_Abstract
         #endregion
 
 
-        public Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
@@ -859,8 +867,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table6";
+            var dataTable = new DataTable {TableName = "table6"};
             dataTable.Columns.Add("Установленное значение тока, А");
             dataTable.Columns.Add("Измеренное значение, А");
             dataTable.Columns.Add("Абсолютная погрешность, А");
@@ -923,6 +930,7 @@ namespace B5_71_PRO_Abstract
                     if (Load.GetChanelNumb <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                    return Task.CompletedTask;
                 };
                 operation.BodyWork = Test;
 
@@ -960,7 +968,7 @@ namespace B5_71_PRO_Abstract
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => operation.IsGood();
+                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
                         DataRow.Add(operation);
                     }
 
@@ -998,7 +1006,7 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
@@ -1008,8 +1016,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table7";
+            var dataTable = new DataTable {TableName = "table7"};
             dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
             dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
             dataTable.Columns.Add("Абсолютная погрешность, А");
@@ -1071,6 +1078,7 @@ namespace B5_71_PRO_Abstract
                     if (Load.GetChanelNumb <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                    return Task.CompletedTask;
                 };
                 operation.BodyWork = Test;
 
@@ -1112,7 +1120,7 @@ namespace B5_71_PRO_Abstract
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => operation.IsGood();
+                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
                         DataRow.Add(operation);
                     }
 
@@ -1146,7 +1154,7 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
@@ -1156,8 +1164,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table8";
+            var dataTable = new DataTable {TableName = "table8"};
             dataTable.Columns.Add("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
             dataTable.Columns.Add("Максимальное допустимое значение, А");
@@ -1207,6 +1214,7 @@ namespace B5_71_PRO_Abstract
                     if (Load.GetChanelNumb <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                    return Task.CompletedTask;
                 };
                 operation.BodyWork = Test;
 
@@ -1251,7 +1259,7 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
-                    operation.CompliteWork = () => operation.IsGood();
+                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
                     DataRow.Add(operation);
                 }
 
@@ -1280,7 +1288,7 @@ namespace B5_71_PRO_Abstract
         #endregion
 
 
-        public Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций постоянного тока";
 
@@ -1291,8 +1299,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable();
-            dataTable.TableName = "table8";
+            var dataTable = new DataTable {TableName = "table8"};
             dataTable.Columns.Add("Величина тока на выходе источника питания, В");
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");
@@ -1363,7 +1370,8 @@ namespace B5_71_PRO_Abstract
                         Bp.OnOutput();
                     }
 
-                    await Task.Factory.StartNew(ConfigDeviseAsync, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
+                    await Task.Factory.StartNew(ConfigDeviseAsync, token, TaskCreationOptions.AttachedToParent,
+                                                TaskScheduler.Current);
 
                     Mult.Open();
                     while (Mult.GetTerminalConnect())
@@ -1372,7 +1380,7 @@ namespace B5_71_PRO_Abstract
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
 
-                    MessageBoxService.Show($"Установите на В3-57 подходящий предел измерения напряжения",
+                    MessageBoxService.Show("Установите на В3-57 подходящий предел измерения напряжения",
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
                 };
@@ -1404,7 +1412,7 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
-                    operation.CompliteWork = () => operation.IsGood();
+                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
 
                     DataRow.Add(operation);
                 }

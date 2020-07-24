@@ -15,30 +15,30 @@ namespace ASMC.Data.Model
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>, ICloneable
     {
-        private Func<bool> _func;
-        private Action _action;
+        private Func<Task<bool>> _compliteWork;
+        private Func<Task> _initWork;
 
         /// <inheritdoc />
-        public Action InitWork
+        public Func<Task> InitWork
         {
             get
             {
-                if (_action == null) return () => { };
-                return _action;
+                if (_initWork == null) return () =>  default(Task);
+                return _initWork;
             }
-            set => _action = value;
+            set => _initWork = value;
         }
 
         /// <inheritdoc />
-        public Func<bool> CompliteWork
+        public Func<Task<bool>> CompliteWork
         {
             get
             {
-                if (_func == null) return () => true;
-                return _func;
+                if (_compliteWork == null) return () => default(Task<bool>);
+                return _compliteWork;
             }
 
-            set { _func = value; }
+            set { _compliteWork = value; }
         }
             
         
@@ -56,9 +56,9 @@ namespace ASMC.Data.Model
                 { 
                     token.ThrowIfCancellationRequested();
                 }
-                InitWork(); 
+                await InitWork(); 
                 await Task.Factory.StartNew(BodyWork, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
-            } while (!CompliteWork());
+            } while (!CompliteWork().Result);
         }
 
         /// <inheritdoc />

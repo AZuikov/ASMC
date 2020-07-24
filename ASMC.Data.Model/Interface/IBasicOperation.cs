@@ -13,7 +13,7 @@ namespace ASMC.Data.Model.Interface
     /// <typeparam name="T"></typeparam>
     public interface IBasicOperation<T>
     {
-        Action InitWork
+        Func<Task> InitWork
         {
             get; set;
         }
@@ -22,7 +22,7 @@ namespace ASMC.Data.Model.Interface
             get; set;
         }
 
-        Func<bool> CompliteWork
+        Func<Task<bool>> CompliteWork
         {
             get;
             set;
