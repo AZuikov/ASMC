@@ -230,6 +230,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности установки выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
+            
         }
 
         #region Methods
@@ -360,6 +361,7 @@ namespace B5_71_PRO_Abstract
         }
         public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
             foreach (var dr in DataRow)
             {
                 await dr.WorkAsync(token);

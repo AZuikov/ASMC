@@ -351,7 +351,6 @@ namespace ASMC.Data.Model
 
         protected AbstractUserItemOperationBase()
         {
-            InitWork();
         }
 
 

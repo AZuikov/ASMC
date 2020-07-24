@@ -1,4 +1,7 @@
-﻿using ASMC.Data.Model;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
@@ -60,14 +63,14 @@ namespace B5_71_4_PRO
             {
                 //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                //new Oper2DcvOutput(this),
+                new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
                 //new Oper6DciOutput(this),
                 //new Oper7DciMeasure(this),
                 //new Oper8DciUnstable(this),
                 //new Oper5VoltPulsation(this),
-                new Oper9DciPulsation(this)
+                //new Oper9DciPulsation(this)
             };
         }
     }
@@ -77,12 +80,32 @@ namespace B5_71_4_PRO
         public Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
         }
+
+        protected override void InitWork()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Oper1Oprobovanie : B5_71_PRO_Abstract.Oper1Oprobovanie
     {
         public Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+        }
+
+        protected override void InitWork()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            throw new NotImplementedException();
         }
     }
 
