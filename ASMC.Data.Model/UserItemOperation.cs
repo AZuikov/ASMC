@@ -322,14 +322,15 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Запускает выполнение всех операций.
         /// </summary>
-        Task  StartWork(CancellationToken token);
-
+        Task  StartWork(CancellationToken token);   
+        
         #endregion
 
     }
 
     public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
     {
+        protected abstract void InitWork();
         /// <summary>
         /// Связывает строку подключения из интрефеса пользователя с выбранным прибором. Работает для контрольных и контролируемых приборов.
         /// </summary>
@@ -348,6 +349,10 @@ namespace ASMC.Data.Model
             return connect;
         }
 
+        protected AbstractUserItemOperationBase()
+        {
+            InitWork();
+        }
 
 
         protected IUserItemOperation UserItemOperation { get; }
