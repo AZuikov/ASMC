@@ -298,7 +298,7 @@ namespace ASMC.Devices.IEEE
             get
             {
 
-                var arr = (string[]) GlobalResourceManager.Find();
+                var arr = (List<string>) GlobalResourceManager.Find();
                 for (int i = 0; i < arr.Count(); i++)
                 {
                     if (arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture))

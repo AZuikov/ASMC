@@ -755,7 +755,7 @@ namespace B5_71_PRO_Abstract
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.SetStateCurr(Bp.CurrMax);
                         Bp.OnOutput();
-                    }, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
+                    }, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
 
 
                     Mult.Open();
