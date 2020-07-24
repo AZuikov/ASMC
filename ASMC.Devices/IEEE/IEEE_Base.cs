@@ -294,13 +294,22 @@ namespace ASMC.Devices.IEEE
         /// <returns></returns>
         public List<string> GetAllDevace
         {
-            
-            get {
-                
-                var arr = new List<string>();
-            arr = (List<string>) GlobalResourceManager.Find();
-            return arr;}
-            
+
+            get
+            {
+
+                var arr = (string[]) GlobalResourceManager.Find();
+                for (int i = 0; i < arr.Count(); i++)
+                {
+                    if (arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture))
+                    {
+                        var replace = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
+                        arr[i] = replace;
+                    }
+                }
+
+                return arr.ToList();
+            }
         }
 
         /// <summary>
