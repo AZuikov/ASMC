@@ -97,7 +97,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken token)
         {
 
             var bo = new BasicOperation<bool> { Expected = true };
@@ -119,7 +119,7 @@ namespace B5_71_PRO_Abstract
         }
 
 
-        //public override async Task StartWork(CancellationTokenSource token)
+        //public override async Task StartWork(CancellationToken token)
         //{
         //    BasicOperation<bool> bo = new BasicOperation<bool>();
         //    bo.Expected = true;
@@ -149,7 +149,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken token)
         {
 
             var bo = new BasicOperation<bool> { Expected = true };
@@ -250,7 +250,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
             var operation = new BasicOperationVerefication<decimal>();
             try
@@ -404,7 +404,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
             var operation = new BasicOperationVerefication<decimal>();
             
@@ -552,7 +552,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
             var operation = new BasicOperationVerefication<decimal>();
 
@@ -712,7 +712,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
            
             var operation = new BasicOperationVerefication<decimal>();
@@ -879,7 +879,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
             
             var operation = new BasicOperationVerefication<decimal>();
@@ -1028,7 +1028,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
             var operation = new BasicOperationVerefication<decimal>();
 
@@ -1168,7 +1168,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
            
            var operation = new BasicOperationVerefication<decimal>();
@@ -1302,7 +1302,7 @@ namespace B5_71_PRO_Abstract
             throw new NotImplementedException();
         }
 
-        public async override Task StartWork(CancellationTokenSource token)
+        public async override Task StartWork(CancellationToken token)
         {
             var operation = new BasicOperationVerefication<decimal>();
             try

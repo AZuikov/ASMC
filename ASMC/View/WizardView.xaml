@@ -81,7 +81,7 @@
                       Content="Запустить" Command="{Binding StartCommand}"  />
               <Button Grid.Column="2" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}" 
                      Content="Пауза" />
-              <Button Grid.Column="4" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}" 
+              <Button Grid.Column="4" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}"  Command="{Binding StopCommand}" 
                      Content="Отмена" />
             </Grid>
             <Button Grid.Column="1" Content="Назад" Command="{Binding BackCommand}"  />

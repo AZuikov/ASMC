@@ -1,26 +1,32 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Input;
-using ASMC.Core;
-using ASMC.Core.UI;
+using AP.Reports.AutoDocumets;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
-using NLog; 
-using AP.Reports.AutoDocumets;
+using NLog;
 
 namespace ASMC.ViewModel
 {
     public class WizardViewModel : BaseViewModel
     {
+        public enum StateWork
+        {
+            Stop,
+            Start,
+            Pause
+        }
+
         /// <summary>
         /// Перечень вкладок.
         /// </summary>
@@ -30,22 +36,27 @@ namespace ASMC.ViewModel
             /// Выбор программы МК.
             /// </summary>
             ChoiceSi,
+
             /// <summary>
             /// Выбор вида МК.
             /// </summary>
             ChoiceTypeMc,
+
             /// <summary>
             /// Подготовка рабочего места.
             /// </summary>
             Workplace,
+
             /// <summary>
             /// Настройка приборов.
             /// </summary>
             Settings,
+
             /// <summary>
             /// Операции МК.
             /// </summary>
             Operations,
+
             /// <summary>
             /// Операции МК.
             /// </summary>
@@ -56,6 +67,8 @@ namespace ASMC.ViewModel
 
         #region  Fields
 
+        private readonly CancellationTokenSource _isWorkToken = new CancellationTokenSource();
+
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
@@ -65,10 +78,11 @@ namespace ASMC.ViewModel
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
         private IProgram _selectProgram;
-        private OperationBase.TypeOpeation _typeOpertion;
-        private IUserItemOperationBase[] _userItemOperation;
 
         private SettingViewModel _settingViewModel = new SettingViewModel();
+        private StateWork _stateWorkFlag;
+        private OperationBase.TypeOpeation _typeOpertion;
+        private IUserItemOperationBase[] _userItemOperation;
 
         #endregion
 
@@ -79,6 +93,9 @@ namespace ASMC.ViewModel
             get => _accessoriesList;
             set => SetProperty(ref _accessoriesList, value, nameof(AccessoriesList));
         }
+
+        public ICommand CreatDocumetCommandCommand { get; }
+
 
         public IUserItemOperationBase CurentItemOperation
         {
@@ -92,13 +109,6 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _dataOperation, value, nameof(DataOperation));
         }
 
-       public SettingViewModel SettingViewModel
-       {
-           get => _settingViewModel;
-           set => SetProperty(ref _settingViewModel, value, nameof(SettingViewModel));
-       }
-
-     
 
         public OperationBase.TypeOpeation? EnableOpeation
         {
@@ -115,21 +125,6 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _isSpeedWork, value, nameof(IsSpeedWork), OnIsSpeedWorkCallback);
         }
 
-        private void OnIsSpeedWorkCallback()
-        {
-            SelectProgram.Operation.IsSpeedWork = IsSpeedWork;
-            OnSelectProgramCallback();
-        }
-
-        /// <summary>
-         /// ПОзволяет получать или задавать последнюю отображенную схему.
-         /// </summary>
-        public ShemeImage LastShema
-        {
-            get => _lastShema;
-            set => SetProperty(ref _lastShema, value, nameof(LastShema), LastShemaCallback);
-        }
-
 
         /// <summary>
         /// Позволяет получать коллекцию программ
@@ -142,10 +137,11 @@ namespace ASMC.ViewModel
         public TabItemControl SelectedTabItem
         {
             get => _selectedTabItem;
-            set => SetProperty(ref _selectedTabItem, value, nameof(SelectedTabItem), ChangedCallback);
+            set => SetProperty(ref _selectedTabItem, value, nameof(SelectedTabItem), TabItemChanged);
         }
+
         /// <summary>
-        /// Позволяет задать или получить 
+        /// Позволяет задать или получить
         /// </summary>
         public IUserItemOperationBase SelectionItemOperation
         {
@@ -160,6 +156,18 @@ namespace ASMC.ViewModel
         {
             get => _selectProgram;
             set => SetProperty(ref _selectProgram, value, nameof(SelectProgram), OnSelectProgramCallback);
+        }
+
+        public SettingViewModel SettingViewModel
+        {
+            get => _settingViewModel;
+            set => SetProperty(ref _settingViewModel, value, nameof(SettingViewModel));
+        }
+
+        public StateWork StateWorkFlag
+        {
+            get => _stateWorkFlag;
+            set => SetProperty(ref _stateWorkFlag, value, nameof(StateWorkFlag));
         }
 
 
@@ -180,77 +188,64 @@ namespace ASMC.ViewModel
             get => _userItemOperation;
             set => SetProperty(ref _userItemOperation, value, nameof(UserItemOperation));
         }
+
         #endregion
 
         public WizardViewModel()
         {
-            StartCommand = new DelegateCommand(OnStartCommand);
+            StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
             NextCommand =
                 new DelegateCommand(OnNextCommand,
-                    () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
-                          SelectProgram != null);
+                                    () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
+                                          SelectProgram != null);
             BackCommand =
                 new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
+            StopCommand = new DelegateCommand(OnStopCommand,
+                                              () => !_isWorkToken.IsCancellationRequested &&
+                                                    StateWorkFlag != StateWork.Stop);
             RefreshCommand =
                 new DelegateCommand(OnRefreshCommand);
             CreatDocumetCommandCommand =
                 new DelegateCommand(OnCreatDocumetCommand);
         }
 
-        public ICommand CreatDocumetCommandCommand { get; }
+        #region Methods
 
-        private void OnCreatDocumetCommand()
-        {
-            Word report = new Word();
-            report.OpenDocument(@"D:\Б5-71_1.docx");
-            var a = new Document.ConditionalFormatting{ Color =  Color.IndianRed, Condition = Document.ConditionalFormatting.Conditions.Equal, Region = Document.ConditionalFormatting.RegionAction.Row , Value = "Брак", NameColumn = "Результат"};
-
-            foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
-            {       
-                report.FillTableToBookmark(uio.Data.TableName, uio.Data, false, a); 
-            }
-            
-            var path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
-            report.SaveAs(path);
-            report.Close();
-            System.Diagnostics.Process.Start(path);
-        }
         private static string GetUniqueFileName(string name, string format)
         {
-
             var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\MaterialPass";
 
             var newFileName = path + @"\" + name + format;
-            if(!Directory.Exists(path))
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\MaterialPass");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
+                                          @"\MaterialPass");
+            }
             else
             {
                 Directory.Delete(path, true);
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\MaterialPass");
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
+                                          @"\MaterialPass");
             }
-            var tempFiles = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+
+            var tempFiles =
+                Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
             var i = 0;
-            while(true)
+            while (true)
             {
                 var fileExist = false;
-                foreach(var tempFile in tempFiles)
-                    if(tempFile == newFileName)
+                foreach (var tempFile in tempFiles)
+                    if (tempFile == newFileName)
                         fileExist = true;
-                if(fileExist == false)
+                if (fileExist == false)
                     break;
-                newFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\" + name + "_" + i + format;
+                newFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\" + name +
+                              "_" + i + format;
                 i++;
             }
+
             return newFileName;
         }
-
-        private void OnRefreshCommand()
-        {
-            SelectProgram.Operation.SelectedOperation.RefreshDevice();
-            SettingViewModel.AddresDivece = SelectProgram.Operation.SelectedOperation.AddresDivece;
-        }
-    
-        #region Methods
 
         protected override void OnInitialized()
         {
@@ -258,31 +253,11 @@ namespace ASMC.ViewModel
             LoadPlugins();
         }
 
-        private void AbstraktOperationOnChangeShemaEvent(IUserItemOperationBase sender)
-        {
-            SelectionItemOperation = sender;
-            if (SelectionItemOperation.Sheme?.Number != LastShema?.Number) LastShema = SelectionItemOperation.Sheme;
-        }
-
-        private void ChangedCallback()
-        {
-            if (SelectedTabItem == TabItemControl.Operations)
-            {
-            }
-        }
-
         private void EnableOpeationCallback()
         {
             if (EnableOpeation != null) TypeOpertion = EnableOpeation.Value;
         }
 
-        private void LastShemaCallback()
-        {
-            var message = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            //message.Show("32321", "fdsfsf", MessageBoxButton.OK, MessageBoxImage.None);
-            // var service = GetService<IFormService>("ShemService");
-            //service?.Show();
-        }
 
         private void LoadPlugins()
         {
@@ -307,7 +282,7 @@ namespace ASMC.ViewModel
             try
             {
                 types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
-                    .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+                                 .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             }
             catch (Exception e)
             {
@@ -319,9 +294,7 @@ namespace ASMC.ViewModel
             foreach (var type in types)
                 Prog.Add((IProgram) Activator.CreateInstance(type));
             foreach (var program in Prog)
-            {
                 program.TaskMessageService = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
-            }
         }
 
         private void OnBackCommand()
@@ -329,16 +302,52 @@ namespace ASMC.ViewModel
             SelectedTabItem = SelectedTabItem - 1;
         }
 
+        private void OnCreatDocumetCommand()
+        {
+            var report = new Word();
+            report.OpenDocument(@"D:\Б5-71_1.docx");
+            var a = new Document.ConditionalFormatting
+            {
+                Color = Color.IndianRed,
+                Condition = Document.ConditionalFormatting.Conditions.Equal,
+                Region = Document.ConditionalFormatting.RegionAction.Row,
+                Value = "Брак",
+                NameColumn = "Результат"
+            };
+
+            foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
+                report.FillTableToBookmark(uio.Data.TableName, uio.Data, false, a);
+
+            var path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
+            report.SaveAs(path);
+            report.Close();
+            Process.Start(path);
+        }
+
+        private void OnIsSpeedWorkCallback()
+        {
+            SelectProgram.Operation.IsSpeedWork = IsSpeedWork;
+            OnSelectProgramCallback();
+        }
+
         private void OnNextCommand()
         {
             SelectedTabItem = SelectedTabItem + 1;
         }
 
-        private void OnStartCommand()
+        private async void OnRefreshCommand()
         {
-#pragma warning disable 4014
-            if (SelectionItemOperation == null)   SelectProgram.Operation.StartWorkAsync(new CancellationTokenSource());
-#pragma warning restore 4014
+            try
+            {
+                await Task.Factory.StartNew(SelectProgram.Operation.SelectedOperation.RefreshDevice);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+                Alert(e);
+            }
+
+            SettingViewModel.AddresDivece = SelectProgram.Operation.SelectedOperation.AddresDivece;
         }
 
         private void OnSelectProgramCallback()
@@ -354,10 +363,7 @@ namespace ASMC.ViewModel
 
             SelectProgram.Operation.SelectedTypeOpeation = TypeOpertion;
             UserItemOperation = SelectProgram.Operation?.SelectedOperation?.UserItemOperation;
-            if (SettingViewModel!=null)
-            {
-                SettingViewModel.Event -= SettingViewModel_Event;
-            }
+            if (SettingViewModel != null) SettingViewModel.Event -= SettingViewModel_Event;
             SettingViewModel = new SettingViewModel
             {
                 ControlDevices = SelectProgram.Operation.SelectedOperation?.ControlDevices,
@@ -365,22 +371,41 @@ namespace ASMC.ViewModel
             };
             SettingViewModel.Event += SettingViewModel_Event;
             AccessoriesList = SelectProgram.Operation.SelectedOperation?.Accessories;
-            SelectProgram.Operation.ChangeShemaEvent += AbstraktOperationOnChangeShemaEvent;
+        }
+
+        private async void OnStartCommand()
+        {
+            StateWorkFlag = StateWork.Start;
+            if (SelectionItemOperation == null) await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
+            StateWorkFlag = StateWork.Stop;
+        }
+
+        private void OnStopCommand()
+        {
+            StateWorkFlag = StateWork.Stop;
+            _isWorkToken.Cancel();
         }
 
         private void SettingViewModel_Event()
-        {  
+        {
             SelectProgram.Operation.SelectedOperation.ControlDevices = SettingViewModel.ControlDevices;
             SelectProgram.Operation.SelectedOperation.TestDevices = SettingViewModel.TestDevices;
+        }
+
+
+        private void TabItemChanged()
+        {
+            if (SelectedTabItem == TabItemControl.Settings) OnRefreshCommand();
         }
 
         #endregion
 
         #region Command
-        public ICommand RefreshCommand
-        {
-            get;
-        }
+
+        public ICommand StopCommand { get; }
+
+        public ICommand RefreshCommand { get; }
+
         public ICommand BackCommand { get; }
 
         /// <summary>

@@ -48,12 +48,16 @@ namespace ASMC.Data.Model
         }
           
         /// <inheritdoc />
-        public async Task WorkAsync(CancellationTokenSource token )
+        public async Task WorkAsync(CancellationToken token )
         {
             do
             {
-                InitWork();
-                await Task.Factory.StartNew(BodyWork, token.Token);
+                if(token.IsCancellationRequested)
+                { 
+                    token.ThrowIfCancellationRequested();
+                }
+                InitWork(); 
+                await Task.Factory.StartNew(BodyWork, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
             } while (!CompliteWork());
         }
 

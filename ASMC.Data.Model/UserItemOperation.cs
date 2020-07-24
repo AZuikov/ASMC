@@ -9,6 +9,7 @@ using ASMC.Core;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using DevExpress.Mvvm;
+using NLog;
 
 namespace ASMC.Data.Model
 {
@@ -119,7 +120,7 @@ namespace ASMC.Data.Model
     /// </summary>
     public class OperationBase
     {
-
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public IMessageBoxService TaskMessageService { get; set; }
         public delegate void ChangeShemaHandler(IUserItemOperationBase sender);
 
@@ -261,15 +262,20 @@ namespace ASMC.Data.Model
         /// </summary>
         /// <returns></returns>
         public async Task StartWorkAsync(CancellationTokenSource source)
-        {
-            //var a = SelectedOperation.UserItemOperation.First();
-            //CurrentUserItemOperationBase = a;
-            //a.StartWork(source);
+        {    
             foreach(var opertion in SelectedOperation.UserItemOperation)
             {
                 CurrentUserItemOperationBase = opertion;
-                ChangeShemaEvent?.Invoke(opertion);
-                await opertion.StartWork(source);
+                try
+                {
+                    await opertion.StartWork(source.Token);
+                }
+                catch (Exception e)
+                {
+                    source.Cancel();
+                    source.Token.ThrowIfCancellationRequested();
+                    Logger.Error(e);
+                }
             }
         }
 
@@ -311,7 +317,7 @@ namespace ASMC.Data.Model
         #region Methods
 
         void StartSinglWork(Guid guid);
-       Task StartWork(CancellationTokenSource token);
+       Task StartWork(CancellationToken token);
 
         #endregion
 
@@ -322,10 +328,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Связывает строку подключения из интрефеса пользователя с выбранным прибором. Работает для контрольных и контролируемых приборов.
         /// </summary>
-        /// <param name="nameDevice">Имя прибора, которое выбрал пользователь в интерфейсе пользователя.</param>
         /// <param name="currentDevice">Прибор из списка контрольных (эталонов) или контролируемых (поверяемых/проверяемых) приборов.</param>
-        /// <param name="controlOrTestDevice">Если true, тогда ищет сроку подключения для эталонов (контрольных приборов). 
-        /// Если false, тогда ищем строку подключения для поверяемого (контролируемого) прибора.</param>
         /// <returns></returns>
         protected string GetStringConnect(Devices.IDevice currentDevice)
         {
@@ -381,12 +384,12 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public bool? IsGood { get; set; }
-            public Func<CancellationTokenSource, Task>BodyWork
+            public Func<CancellationToken, Task>BodyWork
         {
             get; set;
         }
         /// <inheritdoc />
-        public abstract Task StartWork(CancellationTokenSource token);
+        public abstract Task StartWork(CancellationToken token);
 
       
 
