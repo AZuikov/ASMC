@@ -506,7 +506,9 @@ namespace B5_71_PRO_Abstract
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
 
 
-                        DataRow.Add(operation);
+                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
+
+                        DataRow.Add(a);
                     }
 
 
@@ -991,7 +993,9 @@ namespace B5_71_PRO_Abstract
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        DataRow.Add(operation);
+                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
+
+                        DataRow.Add(a);
                     }
 
                     Bp.OffOutput();
@@ -1152,7 +1156,9 @@ namespace B5_71_PRO_Abstract
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        DataRow.Add(operation);
+                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
+
+                        DataRow.Add(a);
                     }
 
 
@@ -1345,7 +1351,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "table8"};
+            var dataTable = new DataTable {TableName = "table9"};
             
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");
