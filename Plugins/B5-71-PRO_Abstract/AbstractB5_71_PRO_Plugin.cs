@@ -237,7 +237,6 @@ namespace B5_71_PRO_Abstract
             var dataTable = new DataTable {TableName = "table2"};
             dataTable.Columns.Add("Установленное значение напряжения, В");
             dataTable.Columns.Add("Измеренное значение, В");
-            dataTable.Columns.Add("Абсолютная погрешность, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
             dataTable.Columns.Add("Максимальное допустимое значение, В");
             dataTable.Columns.Add("Результат");
@@ -249,10 +248,9 @@ namespace B5_71_PRO_Abstract
                 // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected + " В";
                 dataRow[1] = dds.Getting + " В";
-                dataRow[2] = dds.Error + " В";
-                dataRow[3] = dds.LowerTolerance + " В";
-                dataRow[4] = dds.UpperTolerance + " В";
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[2] = dds.LowerTolerance + " В";
+                dataRow[3] = dds.UpperTolerance + " В";
+                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -396,7 +394,6 @@ namespace B5_71_PRO_Abstract
             var dataTable = new DataTable {TableName = "table3"};
             dataTable.Columns.Add("Измеренное эталонным мультиметром значение, В");
             dataTable.Columns.Add("Измеренное источником питания значение, В");
-            dataTable.Columns.Add("Абсолютная погрешность, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
             dataTable.Columns.Add("Максимальное допустимое значение, В");
             dataTable.Columns.Add("Результат");
@@ -408,10 +405,9 @@ namespace B5_71_PRO_Abstract
                 // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected + " В";
                 dataRow[1] = dds.Getting + " В";
-                dataRow[2] = dds.Error + " В";
-                dataRow[3] = dds.LowerTolerance + " В";
-                dataRow[4] = dds.UpperTolerance + " В";
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[2] = dds.LowerTolerance + " В";
+                dataRow[3] = dds.UpperTolerance + " В";
+                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
 
 
                 dataTable.Rows.Add(dataRow);
@@ -559,8 +555,7 @@ namespace B5_71_PRO_Abstract
         {
             var dataTable = new DataTable {TableName = "table4"};
             dataTable.Columns.Add("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В");
-            dataTable.Columns.Add("Минимальное допустимое значение, В");
-            dataTable.Columns.Add("Максимальное допустимое значение, В");
+            dataTable.Columns.Add("Допустимое значение, В");
             dataTable.Columns.Add("Результат");
 
             var dataRow = dataTable.NewRow();
@@ -710,18 +705,18 @@ namespace B5_71_PRO_Abstract
         protected override DataTable FillData()
         {
             var dataTable = new DataTable {TableName = "table5"};
-            dataTable.Columns.Add("Величина напряжения на выходе источника питания, В");
+            
             dataTable.Columns.Add("Измеренное значение пульсаций, мВ");
             dataTable.Columns.Add("Допустимое значение пульсаций, мВ");
             dataTable.Columns.Add("Результат");
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            dataRow[0] = Bp.VoltMax + " В";
+            
             // ReSharper disable once PossibleNullReferenceException
-            dataRow[1] = dds.Getting + " мВ";
-            dataRow[2] = dds.Error + " мВ";
-            dataRow[3] = dds.IsGood() ? "Годен" : "Брак";
+            dataRow[0] = dds.Getting + " мВ";
+            dataRow[1] = dds.Error + " мВ";
+            dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
             dataTable.Rows.Add(dataRow);
 
             return dataTable;
@@ -870,7 +865,6 @@ namespace B5_71_PRO_Abstract
             var dataTable = new DataTable {TableName = "table6"};
             dataTable.Columns.Add("Установленное значение тока, А");
             dataTable.Columns.Add("Измеренное значение, А");
-            dataTable.Columns.Add("Абсолютная погрешность, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
             dataTable.Columns.Add("Максимальное допустимое значение, А");
             dataTable.Columns.Add("Результат");
@@ -882,10 +876,9 @@ namespace B5_71_PRO_Abstract
                 // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected + " А";
                 dataRow[1] = dds.Getting + " А";
-                dataRow[2] = dds.Error + " А";
-                dataRow[3] = dds.LowerTolerance + " А";
-                dataRow[4] = dds.UpperTolerance + " А";
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[2] = dds.LowerTolerance + " А";
+                dataRow[3] = dds.UpperTolerance + " А";
+                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1019,7 +1012,6 @@ namespace B5_71_PRO_Abstract
             var dataTable = new DataTable {TableName = "table7"};
             dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
             dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
-            dataTable.Columns.Add("Абсолютная погрешность, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
             dataTable.Columns.Add("Максимальное допустимое значение, А");
             dataTable.Columns.Add("Результат");
@@ -1031,10 +1023,9 @@ namespace B5_71_PRO_Abstract
                 // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Expected + " А";
                 dataRow[1] = dds.Getting + " А";
-                dataRow[2] = dds.Error + " А";
-                dataRow[3] = dds.LowerTolerance + " А";
-                dataRow[4] = dds.UpperTolerance + " А";
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[2] = dds.LowerTolerance + " А";
+                dataRow[3] = dds.UpperTolerance + " А";
+                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1166,8 +1157,7 @@ namespace B5_71_PRO_Abstract
         {
             var dataTable = new DataTable {TableName = "table8"};
             dataTable.Columns.Add("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А");
-            dataTable.Columns.Add("Минимальное допустимое значение, А");
-            dataTable.Columns.Add("Максимальное допустимое значение, А");
+            dataTable.Columns.Add("Допустимое значение, А");
             dataTable.Columns.Add("Результат");
 
             var dataRow = dataTable.NewRow();
@@ -1300,18 +1290,16 @@ namespace B5_71_PRO_Abstract
         protected override DataTable FillData()
         {
             var dataTable = new DataTable {TableName = "table8"};
-            dataTable.Columns.Add("Величина тока на выходе источника питания, В");
+            
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");
             dataTable.Columns.Add("Результат");
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            dataRow[0] = Bp.CurrMax + " А";
-            // ReSharper disable once PossibleNullReferenceException
-            dataRow[1] = dds.Getting + " мА";
-            dataRow[2] = dds.Error + " мА";
-            dataRow[3] = dds.IsGood() ? "Годен" : "Брак";
+            dataRow[0] = dds.Getting + " мА";
+            dataRow[1] = dds.Error + " мА";
+            dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
 
             dataTable.Rows.Add(dataRow);
 
