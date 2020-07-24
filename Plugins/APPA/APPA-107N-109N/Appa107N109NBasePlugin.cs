@@ -115,10 +115,7 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public override async Task StartWork(CancellationTokenSource token)
         {

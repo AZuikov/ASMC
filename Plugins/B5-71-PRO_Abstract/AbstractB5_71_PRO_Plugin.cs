@@ -122,10 +122,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+      
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -178,10 +175,7 @@ namespace B5_71_PRO_Abstract
         #endregion
 
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -223,6 +217,12 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if(a != null)
+            await a.WorkAsync(token);
+        }
 
         protected Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -272,13 +272,14 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public override async Task StartWork(CancellationToken token)
         {
+            foreach (var dr in DataRow)
+            {
+                await dr.WorkAsync(token);
+            }
             var operation = new BasicOperationVerefication<decimal>();
             try
             {
@@ -433,10 +434,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -584,11 +582,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
+       
         public override async Task StartWork(CancellationToken token)
         {
             var operation = new BasicOperationVerefication<decimal>();
@@ -735,10 +729,7 @@ namespace B5_71_PRO_Abstract
         #endregion
 
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -906,10 +897,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -1054,10 +1042,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -1191,10 +1176,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+     
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -1328,10 +1310,7 @@ namespace B5_71_PRO_Abstract
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
 
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+     
 
         public override async Task StartWork(CancellationToken token)
         {

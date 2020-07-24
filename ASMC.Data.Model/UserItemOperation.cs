@@ -315,9 +315,14 @@ namespace ASMC.Data.Model
         #endregion
 
         #region Methods
-
-        void StartSinglWork(Guid guid);
-       Task StartWork(CancellationToken token);
+        /// <summary>
+        /// Запускает выполнение операций с указаном Гуидом.
+        /// </summary>
+        Task StartSinglWork(CancellationToken token,Guid guid);
+        /// <summary>
+        /// Запускает выполнение всех операций.
+        /// </summary>
+        Task  StartWork(CancellationToken token);
 
         #endregion
 
@@ -371,14 +376,6 @@ namespace ASMC.Data.Model
         /// </summary>
         public Guid Guid { get; } = Guid.NewGuid();
 
-        /// <summary>
-        /// Запускает выполнение операций с указаном Гуидом.
-        /// </summary>
-        /// <param name = "guid"></param>
-        public abstract void StartSinglWork(Guid guid);
-
-       
-
         /// <inheritdoc />
         public ShemeImage Sheme { get; set; }
 
@@ -388,6 +385,10 @@ namespace ASMC.Data.Model
         {
             get; set;
         }
+
+        /// <inheritdoc />
+        public abstract Task StartSinglWork(CancellationToken token, Guid guid);
+
         /// <inheritdoc />
         public abstract Task StartWork(CancellationToken token);
 
