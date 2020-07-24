@@ -168,20 +168,26 @@ namespace APPA_107N_109N
 
     public abstract class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
+        #region Fields
         public List<IBasicOperation<decimal>> DataRow { get; set; }
         //список точек из методики поверки
-        readonly decimal[] _pointsArr = { 4, 8, 12, 16, 18, -18 };
+        readonly decimal[] _pointsArr = { (decimal)0.004, (decimal)0.008, (decimal)0.012, (decimal)0.016, (decimal)0.018, (decimal)-0.018 };
+        //множитель, соответсвующий пределу измерения
+        readonly decimal[] _multArr = { 1, 10, 100, 1000, 10000};
+        //эталон
+        protected Calib_5522A flkCalib5522A;
+        //контрлируемый прибор
+        protected Mult107_109N appa107N;
+
+
+        #endregion
+
 
         public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения постоянного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage
-            {
-                Number = 1,
-                Path = "ShemePicture/5522A_NORMAL_DMM.jpg"
-
-            };
+           
         }
 
 
@@ -198,7 +204,7 @@ namespace APPA_107N_109N
         public override async Task StartWork(CancellationTokenSource token)
        
         {
-            Calib_5522A flkCalib5522A = new Calib_5522A();
+            
             flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
             //тут нужно проверять, если прибор не подключен, тогда прекращаем работу
             if (flkCalib5522A.Open())
@@ -209,8 +215,9 @@ namespace APPA_107N_109N
             flkCalib5522A.Close();
 
 
-            string serialPortName = this.UserItemOperation.ControlDevices.First().StringConnect;
-            Mult107_109N appa107N = new Mult107_109N(serialPortName);
+            
+            
+            appa107N.StringConnection = GetStringConnect(appa107N);
             appa107N.Open();
 
             

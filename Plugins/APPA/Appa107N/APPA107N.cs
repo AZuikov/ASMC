@@ -3,10 +3,10 @@ using ASMC.Data.Model;
 
 namespace Appa107N
 {
-    public class Class1 :Appa107N109NBasePlugin
+    public class APPA107N :Appa107N109NBasePlugin
     {
         
-        public Class1() 
+        public APPA107N() 
         {
             this.Type = "APPA-107N";
             this.Range = "Пост. напр. 0 - 1000 В, пер. напр. 0 - 750 В,\n" +
