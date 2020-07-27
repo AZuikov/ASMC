@@ -18,7 +18,7 @@ namespace ASMC.Devices.Port.Profigrupp
         [StringValue(" microV")]
         Micro,
         [StringValue("")]
-        SI
+        Si
     }
 
     public enum CurrMultipliers
@@ -30,11 +30,11 @@ namespace ASMC.Devices.Port.Profigrupp
         [StringValue(" microA")]
         Micro,
         [StringValue("")]
-        SI
+        Si
     }
 
 
-    public abstract class B5_71_PRO :  AbstractB5_71_PRO
+    public abstract class B571Pro :  AbstractB571Pro
 
     {
        
@@ -87,10 +87,10 @@ namespace ASMC.Devices.Port.Profigrupp
 
             this.Write("M");
             string answer = this.ReadLine();
-            var StrArr = answer.Split('M');
+            var strArr = answer.Split('M');
 
             this.Close();
-            return StrArr;
+            return strArr;
         }
 
         /// <summary>
@@ -124,11 +124,11 @@ namespace ASMC.Devices.Port.Profigrupp
 
             this.WriteLine("R");
                 string answer = this.ReadLine();
-                var ArrStr = answer.Split('R');
+                var arrStr = answer.Split('R');
 
             this.Close();
 
-            return ArrStr;
+            return arrStr;
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace ASMC.Devices.Port.Profigrupp
 
             switch (inVoltMultipliers)
             {
-                case VoltMultipliers.SI:
+                case VoltMultipliers.Si:
                     inVar *= 1000;
                     break;
                 case VoltMultipliers.Micro:
@@ -234,7 +234,7 @@ namespace ASMC.Devices.Port.Profigrupp
 
             switch (inCurrMultipliers)
             {
-                case CurrMultipliers.SI:
+                case CurrMultipliers.Si:
                     inVar *= 1000;
                     break;
                 case CurrMultipliers.Micro:
@@ -265,7 +265,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name="inCurr">Ток который необходимо задать.</param>
         /// <param name="inUnitCurrMultipliers">Единицы измерения тока.</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public override bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.SI)
+        public override bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si)
         {
             //нужно выбросить исключение
            if (!this.Open()) return  false;
@@ -287,7 +287,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name="inVolt">Значение напряжения.</param>
         /// <param name="inUnitVoltMultipliers">Единицы измерения</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public override bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.SI)
+        public override bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si)
         {
             //нужно выбросить исключение
             if (!this.Open()) return false;
@@ -338,20 +338,20 @@ namespace ASMC.Devices.Port.Profigrupp
         }
 
 
-        protected B5_71_PRO(string PortName) : base(PortName)
+        protected B571Pro(string portName) : base(portName)
         {
             //Sp = new Sp(PortName, Sp.SpeedRate.R9600, Parity.None, Sp.DataBit.Bit8, StopBits.One);
             //Sp.EndLineTerm = "\r";
 
         }
 
-        protected B5_71_PRO()
+        protected B571Pro()
         {
           
         }
     }
 
-    public abstract class AbstractB5_71_PRO :ComPort
+    public abstract class AbstractB571Pro :ComPort
     {
  
 
@@ -368,34 +368,35 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <summary>
         /// Погрешность нетсабильности выходного напряжения.
         /// </summary>
-        public decimal tolleranceVoltageUnstability { get; protected set; }
+        public decimal TolleranceVoltageUnstability { get; protected set; }
 
         /// <summary>
         /// Погрешность нетсабильности выходного тока.
         /// </summary>
-        public decimal tolleranceCurrentUnstability { get; protected set; }
+        public decimal TolleranceCurrentUnstability { get; protected set; }
 
         /// <summary>
         /// Допустимый уровень пульсаций по напряжению
         /// </summary>
-        public decimal tolleranceVoltPuls { get; protected set; }
+        public decimal TolleranceVoltPuls { get; protected set; }
 
         /// <summary>
         /// Допустимый уровень пульсаций по току
         /// </summary>
-        public decimal tolleranceCurrentPuls { get; protected set; }
+        public decimal TolleranceCurrentPuls { get; protected set; }
 
         /// <summary>
         /// Формула расчета погрешности по воспроизведению и измерению напряжения источника питания.
         /// </summary>
         /// <param name="inVoltPoint">Поверяемая точка. В вольтах</param>
+        /// <param name = "inUnitVoltMultipliers"></param>
         /// <returns>Погрешность в вольтах.</returns>
-        public decimal tolleranceFormulaVolt(decimal inVoltPoint,
-            VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.SI)
+        public decimal TolleranceFormulaVolt(decimal inVoltPoint,
+            VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si)
         {
             switch (inUnitVoltMultipliers)
             {
-                case VoltMultipliers.SI:
+                case VoltMultipliers.Si:
                 case VoltMultipliers.Volt:
                     break;
 
@@ -416,12 +417,12 @@ namespace ASMC.Devices.Port.Profigrupp
         /// </summary>
         /// <param name="inVoltPoint">Поверяемая точка. В амперах</param>
         /// <returns>Погрешность в амперах</returns>
-        public decimal tolleranceFormulaCurrent(decimal inCurrPoint,
-            CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.SI)
+        public decimal TolleranceFormulaCurrent(decimal inCurrPoint,
+            CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si)
         {
             switch (inUnitCurrMultipliers)
             {
-                case CurrMultipliers.SI:
+                case CurrMultipliers.Si:
                 case CurrMultipliers.Amp:
                     break;
                 case CurrMultipliers.Milli:
@@ -464,7 +465,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name="inCurr">величина уставки тока</param>
         /// <param name="inUnitCurrMultipliers">единицы измерения тока, по умолчанию амперы</param>
         /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
-        public abstract bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.SI);
+        public abstract bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si);
 
 
         /// <summary>
@@ -484,7 +485,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name="inVolt">значения устанавливаемого напряжения</param>
         /// <param name="inUnitVoltMultipliers">единицы измерения устанавливаемого напряжения</param>
         /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
-        public abstract bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.SI);
+        public abstract bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si);
 
         /// <summary>
         /// Измеренное блоком питания постоянное напряжение.
@@ -503,28 +504,28 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns></returns>
         public abstract bool OffOutput();
 
-        protected AbstractB5_71_PRO()
+        protected AbstractB571Pro()
         {
             
         }
 
-        protected AbstractB5_71_PRO(string PortName) : base(PortName)
+        protected AbstractB571Pro(string portName) : base(portName)
         {
         }
 
-        protected AbstractB5_71_PRO(string PortName, SpeedRate bautRate) : base(PortName, bautRate)
+        protected AbstractB571Pro(string portName, SpeedRate bautRate) : base(portName, bautRate)
         {
         }
 
-        protected AbstractB5_71_PRO(string PortName, SpeedRate bautRate, Parity parity) : base(PortName, bautRate, parity)
+        protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity) : base(portName, bautRate, parity)
         {
         }
 
-        protected AbstractB5_71_PRO(string PortName, SpeedRate bautRate, Parity parity, DBit databit) : base(PortName, bautRate, parity, databit)
+        protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit) : base(portName, bautRate, parity, databit)
         {
         }
 
-        protected AbstractB5_71_PRO(string PortName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits) : base(PortName, bautRate, parity, databit, stopbits)
+        protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits) : base(portName, bautRate, parity, databit, stopbits)
         {
         }
     }

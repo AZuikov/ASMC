@@ -185,6 +185,9 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
             private readonly MainN3300 _mainN3300;
+            /// <summary>
+            /// Предоставляет доступные диапазоны соправтивления.
+            /// </summary>
             public ICommand[] Ranges { get; protected internal set; }
             public LResistance(MainN3300 mainN3300)
             {  
@@ -242,8 +245,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
                 if(value < 0)
                     throw new ArgumentException("Значение меньше 0");
 
-                var val = value * (decimal)mult.GetDoubleValue();
-                SetRange(val, mult); 
+                var val = value * (decimal)mult.GetDoubleValue(); 
                 _mainN3300.WriteLine($@"RESistance { this.JoinValueMult(val, mult)}");
                 return _mainN3300;
             }

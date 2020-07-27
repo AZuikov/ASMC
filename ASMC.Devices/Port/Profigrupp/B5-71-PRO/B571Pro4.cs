@@ -5,7 +5,7 @@
     /// Класс для блока питания модели Б5-71/4-ПРО
     /// производства ООО "Профигрупп"
     /// </summary>
-    public class B571Pro4 : B5_71_PRO
+    public class B571Pro4 : B571Pro
     {
         public B571Pro4()
         {
@@ -13,12 +13,12 @@
             VoltMax = 75;
             CurrMax = 4;
             //погрешность для нестабильности по напряжению
-            tolleranceVoltageUnstability = (decimal)0.001 * VoltMax + (decimal)0.02;
+            TolleranceVoltageUnstability = (decimal)0.001 * VoltMax + (decimal)0.02;
             //погрешность для нестабильности по току
-            tolleranceCurrentUnstability = (decimal)0.001 * CurrMax + (decimal)0.05;
-            tolleranceVoltPuls = 2;
+            TolleranceCurrentUnstability = (decimal)0.001 * CurrMax + (decimal)0.05;
+            TolleranceVoltPuls = 2;
             //пульсации по току
-            tolleranceCurrentPuls = 5;
+            TolleranceCurrentPuls = 5;
         }
 
         public B571Pro4(string PortName) : base(PortName)

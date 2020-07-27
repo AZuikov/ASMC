@@ -325,7 +325,7 @@ namespace B5_71_2_PRO
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            inA = _bp.tolleranceFormulaVolt(inA);
+            inA = _bp.TolleranceFormulaVolt(inA);
             AP.Math.MathStatistics.Round(ref inA, 3);
 
             return inA;
@@ -395,7 +395,7 @@ namespace B5_71_2_PRO
                         var absTol = setPoint - (decimal)result;
                         MathStatistics.Round(ref absTol, 3);
 
-                        var dopusk = _bp.tolleranceFormulaVolt(setPoint);
+                        var dopusk = _bp.TolleranceFormulaVolt(setPoint);
                         MathStatistics.Round(ref dopusk, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
@@ -534,7 +534,7 @@ namespace B5_71_2_PRO
                         //var absTol = setPoint - (decimal)result;
                         //MathStatistics.Round(ref absTol, 3);
 
-                        var dopusk = _bp.tolleranceFormulaVolt(setPoint);
+                        var dopusk = _bp.TolleranceFormulaVolt(setPoint);
                         MathStatistics.Round(ref dopusk, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
@@ -604,7 +604,7 @@ namespace B5_71_2_PRO
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            inA = _bp.tolleranceFormulaVolt(inA);
+            inA = _bp.TolleranceFormulaVolt(inA);
             AP.Math.MathStatistics.Round(ref inA, 3);
 
             return inA;
@@ -648,7 +648,7 @@ namespace B5_71_2_PRO
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            return _bp.tolleranceVoltageUnstability;
+            return _bp.TolleranceVoltageUnstability;
 
         }
 
@@ -827,7 +827,7 @@ namespace B5_71_2_PRO
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            return _bp.tolleranceVoltPuls;
+            return _bp.TolleranceVoltPuls;
 
         }
         protected override DataTable FillData()
@@ -1001,7 +1001,7 @@ namespace B5_71_2_PRO
         #region Methods
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            inA = _bp.tolleranceFormulaCurrent(inA);
+            inA = _bp.TolleranceFormulaCurrent(inA);
             AP.Math.MathStatistics.Round(ref inA, 3);
 
             return inA;
@@ -1172,7 +1172,7 @@ namespace B5_71_2_PRO
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            inA = _bp.tolleranceFormulaCurrent(inA);
+            inA = _bp.TolleranceFormulaCurrent(inA);
             AP.Math.MathStatistics.Round(ref inA, 3);
             return inA;
 
@@ -1355,7 +1355,7 @@ namespace B5_71_2_PRO
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
 
-            return _bp.tolleranceCurrentUnstability;
+            return _bp.TolleranceCurrentUnstability;
 
         }
 
@@ -1624,7 +1624,7 @@ namespace B5_71_2_PRO
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            return _bp.tolleranceCurrentPuls;
+            return _bp.TolleranceCurrentPuls;
 
         }
 

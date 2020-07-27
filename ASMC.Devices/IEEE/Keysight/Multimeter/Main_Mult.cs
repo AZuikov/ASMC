@@ -584,9 +584,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                         this._multMain = multMain;
                         Filters= new ICommand[]
                         {
-                            new Command("SENS:VOLT:AC:BAND 3", "ФНЧ 3 Гц",3),
-                            new Command("SENS:VOLT:AC:BAND 20", "ФНЧ 3 Гц",20),
-                            new Command("SENS:VOLT:AC:BAND 200", "ФНЧ 3 Гц",200),
+                            new Command("SENS:VOLT:AC:BAND 3", "ФВЧ 3 Гц",3),
+                            new Command("SENS:VOLT:AC:BAND 20", "ФВЧ 3 Гц",20),
+                            new Command("SENS:VOLT:AC:BAND 200", "ФВЧ 3 Гц",200),
                         };
 
                     }

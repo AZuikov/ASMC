@@ -9,6 +9,7 @@ using NLog;
 
 namespace ASMC.Devices.Port.APPA
 {
+    // ReSharper disable once InconsistentNaming
     public class Mult107_109N : ComPort
     {
         private readonly System.Timers.Timer _wait;
@@ -17,7 +18,7 @@ namespace ASMC.Devices.Port.APPA
         private const byte Cadr = 19;
         private readonly List<byte> _byffer;
         private readonly byte[] _sendData = { 0x55, 0x55, 0x00, 0x00, 0xAA };
-        static readonly AutoResetEvent WaitEvent = new AutoResetEvent(false);
+        private static readonly AutoResetEvent WaitEvent = new AutoResetEvent(false);
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -36,23 +37,24 @@ namespace ASMC.Devices.Port.APPA
                 switch (_data[11] & 0x07)
                 {
                     case (int)Point.None:
-                        value = (_data[10] << 8) | (_data[9] << 8) | (_data[8]);
+                        value = (_data[10] << 8) | (_data[9] << 8) | _data[8];
                         break;
                     case (int)Point.Point1:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | (_data[8])) / 10.0;
+                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 10.0;
                         break;
                     case (int)Point.Point2:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | (_data[8])) / 100.0;
+                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 100.0;
                         break;
                     case (int)Point.Point3:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | (_data[8])) / 1000.0;
+                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 1000.0;
                         break;
                     case (int)Point.Point4:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | (_data[8])) / 10000.0;
+                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 10000.0;
                         break;
                     default:
                         return 0;
                 }
+                Logger.Info(value);
                 return value; 
             }
         }
@@ -153,7 +155,7 @@ namespace ASMC.Devices.Port.APPA
                     }
                 }
                 DiscardInBuffer();
-                ChechetSumm();
+                if(!ChechetSumm()) throw  new ArithmeticException("Ошибочная контрольная сумма.");
                 //Sp.DataReceived -= SerialPort_DataReceived;
             }
             catch (Exception a)
@@ -162,30 +164,28 @@ namespace ASMC.Devices.Port.APPA
             }
 
         }
-        bool ChechetSumm()
+
+        private bool ChechetSumm()
         {
-            if (_byffer.Count == Cadr)
+            if (_byffer.Count != Cadr) return false;
+            var chechSum = 0;
+            for (var i = 0; i < _byffer.Count - 1; i++)
             {
-                var chechSum = 0;
-                for (var i = 0; i < _byffer.Count - 1; i++)
-                {
-                    chechSum = chechSum + _byffer[i];
-                }
-                if (_byffer[_byffer.Count - 1] != (chechSum & 0xFF))
-                {
-                    SendQuery();
-                    WaitEvent.Reset();
-                    return false;
-                }
-
-                _data = _byffer;
-                _wait.Stop();
-                WaitEvent.Set();
-
-                return true;
+                chechSum = chechSum + _byffer[i];
+            }
+            if (_byffer[_byffer.Count - 1] != (chechSum & 0xFF))
+            {
+                SendQuery();
+                WaitEvent.Reset();
+                return false;
             }
 
-            return false;
+            _data = _byffer;
+            _wait.Stop();
+            WaitEvent.Set();
+
+            return true;
+
         }
         
 
@@ -200,6 +200,7 @@ namespace ASMC.Devices.Port.APPA
                     _flagTimeout = false;
                     throw new TimeoutException();
                 }
+                Logger.Info(((Range)_data[7]).ToString());
                 return (Range)_data[7];
             }
         }
@@ -214,6 +215,7 @@ namespace ASMC.Devices.Port.APPA
                     _flagTimeout = false;
                     throw new TimeoutException();
                 }
+                Logger.Info(((Rotor)_data[4]).ToString());
                 return (Rotor)_data[4];
             }
         }
@@ -228,6 +230,7 @@ namespace ASMC.Devices.Port.APPA
                     _flagTimeout = false;
                     throw new TimeoutException();
                 }
+                Logger.Info(((BlueState)_data[5]).ToString());
                 return (BlueState)_data[5];
             }
         }

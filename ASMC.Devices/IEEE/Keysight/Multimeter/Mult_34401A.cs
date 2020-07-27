@@ -11,9 +11,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             UserType = "34401A";
             SecuredCodeCalibr = "HP034401";
-            this.Ac.Voltage.Filtr = new MFiltr(this);
+            this.Ac.Voltage.Filtr = new MFiltr01(this);
         }
-        public class MFiltr : MAc.MVoltage.MFiltr
+        public class MFiltr01 : MAc.MVoltage.MFiltr
         {
             private readonly MultMain _multMain;
             public enum EFiltrs
@@ -37,14 +37,14 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 [DoubleValue(200)]
                 F200,
             }
-            public MFiltr(MultMain multMain) : base(multMain)
+            public MFiltr01(MultMain multMain) : base(multMain)
             {
                 _multMain= multMain;
                 Filters = new ICommand[]
                 {
-                    new Command("SENS:VOLT:AC:BAND 3", "ФНЧ 3 Гц",3),
-                    new Command("SENS:VOLT:AC:BAND 20", "ФНЧ 3 Гц",20),
-                    new Command("SENS:VOLT:AC:BAND 200", "ФНЧ 3 Гц",200),
+                    new Command("SENS:DET:BAND 3", "ФВЧ 3 Гц",3),
+                    new Command("SENS:DET:BAND 20", "ФВЧ 20 Гц",20),
+                    new Command("SENS:DET:BAND 200", "ФВЧ 200 Гц",200),
                 };
             }
             public MultMain Set(EFiltrs range = EFiltrs.F20)

@@ -220,7 +220,7 @@ namespace B5_71_PRO_Abstract
 
         #region Property
 
-        protected B5_71_PRO Bp { get; set; }
+        protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
@@ -358,7 +358,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA)
         {
-            inA = Bp.tolleranceFormulaVolt(inA);
+            inA = Bp.TolleranceFormulaVolt(inA);
             MathStatistics.Round(ref inA, 3);
 
             return inA;
@@ -393,7 +393,7 @@ namespace B5_71_PRO_Abstract
         #region Property
 
         //порт нужно спрашивать у интерфейса
-        protected B5_71_PRO Bp { get; set; }
+        protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
@@ -527,7 +527,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            inA = Bp.tolleranceFormulaVolt(inA);
+            inA = Bp.TolleranceFormulaVolt(inA);
             MathStatistics.Round(ref inA, 3);
 
             return inA;
@@ -562,7 +562,7 @@ namespace B5_71_PRO_Abstract
         #region Property
 
         //порт нужно спрашивать у интерфейса
-        protected B5_71_PRO Bp { get; set; }
+        protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
@@ -653,11 +653,8 @@ namespace B5_71_PRO_Abstract
 
                         // время выдержки
                         Thread.Sleep(1000);
-                        //измерения
-                        Mult.Open();
-                        Mult.Dc.Voltage.Range.Set(100);
                         // записываем результаты
-                        voltUnstableList.Add((decimal)Mult.GetMeasValue());
+                        voltUnstableList.Add((decimal)Mult.Dc.Voltage.Range.Set(100).GetMeasValue());
                     }
 
                     Bp.OffOutput();
@@ -689,7 +686,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            return Bp.tolleranceVoltageUnstability;
+            return Bp.TolleranceVoltageUnstability;
         }
 
         #endregion
@@ -834,7 +831,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            return Bp.tolleranceVoltPuls;
+            return Bp.TolleranceVoltPuls;
         }
 
         #endregion
@@ -853,7 +850,7 @@ namespace B5_71_PRO_Abstract
 
         #region Fileds
 
-        protected B5_71_PRO Bp { get; set; }
+        protected B571Pro Bp { get; set; }
         protected Mult_34401A Mult { get; set; }
         protected MainN3300 Load { get; set; }
         public List<IBasicOperation<decimal>> DataRow { get; set; }
@@ -871,7 +868,7 @@ namespace B5_71_PRO_Abstract
 
         #region Property
 
-        protected B5_71_PRO Bp { get; set; }
+        protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
 
         #endregion
@@ -987,7 +984,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            inA = Bp.tolleranceFormulaCurrent(inA);
+            inA = Bp.TolleranceFormulaCurrent(inA);
             MathStatistics.Round(ref inA, 3);
 
             return inA;
@@ -1020,7 +1017,7 @@ namespace B5_71_PRO_Abstract
 
         #region  Fields
 
-        protected B5_71_PRO Bp;
+        protected B571Pro Bp;
 
         #endregion
 
@@ -1146,7 +1143,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            inA = Bp.tolleranceFormulaCurrent(inA);
+            inA = Bp.TolleranceFormulaCurrent(inA);
             MathStatistics.Round(ref inA, 3);
             return inA;
         }
@@ -1179,7 +1176,7 @@ namespace B5_71_PRO_Abstract
 
         #region  Fields
 
-        protected B5_71_PRO Bp;
+        protected B571Pro Bp;
         protected MainN3300 Load;
 
         #endregion
@@ -1285,7 +1282,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            return Bp.tolleranceCurrentUnstability;
+            return Bp.TolleranceCurrentUnstability;
         }
 
         #endregion
@@ -1313,7 +1310,7 @@ namespace B5_71_PRO_Abstract
     {
         #region Property
 
-        protected B5_71_PRO Bp { get; set; }
+        protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
@@ -1437,7 +1434,7 @@ namespace B5_71_PRO_Abstract
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
-            return Bp.tolleranceCurrentPuls;
+            return Bp.TolleranceCurrentPuls;
         }
 
         #endregion
