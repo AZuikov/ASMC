@@ -12,6 +12,7 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using DevExpress.Mvvm;
+using NLog;
 
 namespace B5_71_PRO_Abstract
 {
@@ -63,10 +64,16 @@ namespace B5_71_PRO_Abstract
 
     public abstract class OpertionFirsVerf : IUserItemOperation
     {
+        
+        /// <inheritdoc />
         public IDevice[] TestDevices { get; set; }
+        /// <inheritdoc />
         public IUserItemOperationBase[] UserItemOperation { get; set; }
+        /// <inheritdoc />
         public string[] Accessories { get; protected set; }
+        /// <inheritdoc />
         public string[] AddresDivece { get; set; }
+        /// <inheritdoc />
         public IDevice[] ControlDevices { get; set; }
 
         /// <summary>
@@ -74,9 +81,9 @@ namespace B5_71_PRO_Abstract
         /// </summary>
         public void RefreshDevice()
         {
-            AddresDivece = new IeeeBase().GetAllDevace.ToArray();
+            AddresDivece = IeeeBase.GetAllDevace;
         }
-
+        /// <inheritdoc />
         public void FindDivice()
         {
             throw new NotImplementedException();
@@ -88,6 +95,7 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper0VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //public override async Task StartWork(CancellationToken token)
         //{
         //    BasicOperation<bool> bo = new BasicOperation<bool>();
@@ -105,7 +113,7 @@ namespace B5_71_PRO_Abstract
         }
 
         #region Methods
-
+        /// <inheritdoc />
         protected override DataTable FillData()
         {
             var data = new DataTable();
@@ -122,8 +130,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-      
-
+        /// <inheritdoc />
         public override async Task StartWork(CancellationToken token)
         {
             var bo = new BasicOperation<bool> {Expected = true};
@@ -152,6 +159,8 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper1Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         protected Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
@@ -174,8 +183,6 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-
-       
 
         public override async Task StartWork(CancellationToken token)
         {
@@ -206,7 +213,7 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
     {
-       
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
         private static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -214,23 +221,15 @@ namespace B5_71_PRO_Abstract
         #region Property
 
         protected B5_71_PRO Bp { get; set; }
-        protected Main_N3300 Load { get; set; }
+        protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
         #endregion
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
-            await a.WorkAsync(token);
-        }
 
         protected Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
-            
         }
 
         #region Methods
@@ -261,6 +260,102 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
+
+        protected override void InitWork()
+        {
+            var operation = new BasicOperationVerefication<decimal>();
+            
+            foreach (var point in MyPoint)
+            {
+                operation.InitWork = async () =>
+                {
+                    try
+                    {
+                        await Task.Run(() =>
+                        {
+                            Mult.StringConnection = GetStringConnect(Mult);
+                            Load.StringConnection = GetStringConnect(Load);
+                            Bp.StringConnection = GetStringConnect(Bp);
+
+                            
+                            Load.FindThisModule();
+                            
+                            //если модуль нагрузки найти не удалось
+                            if (Load.ChanelNumber <= 0)
+                                throw new
+                                    ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+                            Mult.Open();
+                        });
+                      
+                        while(!Mult.IsTerminal)
+                            MessageBoxService.Show("На панели прибора " + Mult.UserType +
+                                                   " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                                                   "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                   MessageResult.OK);
+                    }
+                    catch(Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+                };
+                operation.BodyWork = () =>
+                {
+                    try
+                    {
+                        
+                        Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);   
+                        Bp.InitDevice();
+                        Bp.SetStateVolt(Bp.VoltMax);
+                        Bp.SetStateCurr(Bp.CurrMax);
+
+
+                        var setPoint = point * Bp.VoltMax;
+                        //ставим точку напряжения
+                        Bp.SetStateVolt(setPoint);
+                        Bp.OnOutput();
+                        Thread.Sleep(1000);
+
+                        //измеряем напряжение
+                        Mult.Dc.Voltage.Range.Set(100);
+                        var result = Mult.GetMeasValue();
+                        MathStatistics.Round(ref result, 3);
+
+                        //забиваем результаты конкретного измерения для последующей передачи их в протокол
+
+                        operation.Expected = setPoint;
+                        operation.Getting = (decimal) result;
+                        //operation.Error = Bp.tolleranceFormulaVolt(setPoint);
+                        operation.ErrorCalculation = (c, b) => ErrorCalculation(setPoint);
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                                 (operation.Getting > operation.LowerTolerance);  
+                        
+                        Bp.OffOutput();
+                        Load.SetOutputState(MainN3300.State.Off);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+                    finally
+                    {
+                        Mult.Close();
+                        
+                        Bp.Close();
+                    }
+                };
+                operation.CompliteWork = () =>  Task.FromResult(operation.IsGood());
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<decimal>) operation.Clone());
+            
+            };
+
+        }
+
         private decimal ErrorCalculation(decimal inA)
         {
             inA = Bp.tolleranceFormulaVolt(inA);
@@ -271,102 +366,19 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
+        }
+
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-
-
-        protected override void InitWork()
-        {
-            var operation = new BasicOperationVerefication<decimal>();
-            try
-            {
-                operation.InitWork = () =>
-                {
-                    Mult.StringConnection = GetStringConnect(Mult);
-                    Load.StringConnection = GetStringConnect(Load);
-                    Bp.StringConnection = GetStringConnect(Bp);
-
-                    Load.Open();
-                    Load.FindThisModule();
-                    Load.Close();
-                    //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-                    Mult.Open();
-                    while(Mult.GetTerminalConnect() == false)
-                        MessageBoxService.Show("На панели прибора " + Mult.GetDeviceType +
-                                               " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
-                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                               MessageResult.OK);
-                    return Task.CompletedTask;
-                };
-                operation.BodyWork = Test;
-
-                void Test()
-                {
-                    Mult.Open();
-                    Load.Open();
-                    Load.SetWorkingChanel();
-                    Load.OffOutput();
-
-                    Bp.InitDevice();
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    Bp.SetStateCurr(Bp.CurrMax);
-
-
-                    foreach(var point in MyPoint)
-                    {
-                        var setPoint = point * Bp.VoltMax;
-                        //ставим точку напряжения
-                        Bp.SetStateVolt(setPoint);
-                        Bp.OnOutput();
-                        Thread.Sleep(1000);
-
-                        //измеряем напряжение
-                        Mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
-                        Mult.WriteLine(Main_Mult.QueryValue);
-                        var result = Mult.DataPreparationAndConvert(Mult.ReadString());
-                        MathStatistics.Round(ref result, 3);
-
-                        //забиваем результаты конкретного измерения для последующей передачи их в протокол
-
-                        operation.Expected = setPoint;
-                        operation.Getting = (decimal)result;
-                        //operation.Error = Bp.tolleranceFormulaVolt(setPoint);
-                        operation.ErrorCalculation = (c, b) => ErrorCalculation(setPoint);
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                 (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-
-                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
-
-                        DataRow.Add(a);
-                    }
-
-                    Bp.OffOutput();
-                    Load.OffOutput();
-                }
-            }
-            finally
-            {
-                Mult.Close();
-                Load.Close();
-                Bp.OffOutput();
-                Bp.Close();
-            }
-        }
         public override async Task StartWork(CancellationToken token)
         {
             InitWork();
-            foreach (var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
-         
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
 
@@ -382,7 +394,7 @@ namespace B5_71_PRO_Abstract
 
         //порт нужно спрашивать у интерфейса
         protected B5_71_PRO Bp { get; set; }
-        protected Main_N3300 Load { get; set; }
+        protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
         #endregion
@@ -424,18 +436,6 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            inA = Bp.tolleranceFormulaVolt(inA);
-            MathStatistics.Round(ref inA, 3);
-
-            return inA;
-        }
-
-        #endregion
-
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-
 
         protected override void InitWork()
         {
@@ -449,17 +449,17 @@ namespace B5_71_PRO_Abstract
                     Load.StringConnection = GetStringConnect(Load);
                     Bp.StringConnection = GetStringConnect(Bp);
 
-                    Load.Open();
+                    
                     Load.FindThisModule();
-                    Load.Close();
+                    
                     //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
+                    if (Load.ChanelNumber <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                     Mult.Open();
-                    while(Mult.GetTerminalConnect() == false)
-                        MessageBoxService.Show("На панели прибора " + Mult.GetDeviceType +
+                    while (Mult.IsTerminal == false)
+                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
@@ -470,16 +470,15 @@ namespace B5_71_PRO_Abstract
                 void Test()
                 {
                     Mult.Open();
-                    Load.Open();
-                    Load.SetWorkingChanel();
-                    Load.OffOutput();
+                    
+                    Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
 
                     Bp.InitDevice();
                     Bp.SetStateVolt(Bp.VoltMax);
                     Bp.SetStateCurr(Bp.CurrMax);
 
 
-                    foreach(var point in MyPoint)
+                    foreach (var point in MyPoint)
                     {
                         var setPoint = point * Bp.VoltMax;
                         //ставим точку напряжения
@@ -488,9 +487,8 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1000);
 
                         //измеряем напряжение
-                        Mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
-                        Mult.WriteLine(Main_Mult.QueryValue);
-                        var resultMult = Mult.DataPreparationAndConvert(Mult.ReadString());
+                        Mult.Dc.Voltage.Range.Set(100); 
+                        var resultMult = Mult.GetMeasValue();
                         var resultBp = Bp.GetMeasureVolt();
 
                         MathStatistics.Round(ref resultMult, 3);
@@ -498,7 +496,7 @@ namespace B5_71_PRO_Abstract
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
-                        operation.Expected = (decimal)resultMult;
+                        operation.Expected = (decimal) resultMult;
                         operation.Getting = resultBp;
                         operation.ErrorCalculation = ErrorCalculation;
                         operation.LowerTolerance = operation.Expected - operation.Error;
@@ -508,36 +506,47 @@ namespace B5_71_PRO_Abstract
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
 
 
-                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
+                        var a = (BasicOperationVerefication<decimal>) operation.Clone();
 
                         DataRow.Add(a);
                     }
 
 
                     Bp.OffOutput();
-                    Load.OffOutput();
+                    Load.SetOutputState(MainN3300.State.Off);
                 }
             }
             finally
             {
                 Mult.Close();
-                Load.Close();
+                
                 Bp.OffOutput();
                 Bp.Close();
             }
         }
+
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            inA = Bp.tolleranceFormulaVolt(inA);
+            MathStatistics.Round(ref inA, 3);
+
+            return inA;
+        }
+
+        #endregion
+
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
+
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
+            if (a != null)
                 await a.WorkAsync(token);
         }
+
         public override async Task StartWork(CancellationToken token)
         {
-            foreach(var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
 
@@ -554,7 +563,7 @@ namespace B5_71_PRO_Abstract
 
         //порт нужно спрашивать у интерфейса
         protected B5_71_PRO Bp { get; set; }
-        protected Main_N3300 Load { get; set; }
+        protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
         #endregion
@@ -586,15 +595,6 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.tolleranceVoltageUnstability;
-        }
-
-        #endregion
-
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-
         protected override void InitWork()
         {
             var operation = new BasicOperationVerefication<decimal>();
@@ -607,17 +607,17 @@ namespace B5_71_PRO_Abstract
                     Load.StringConnection = GetStringConnect(Load);
                     Bp.StringConnection = GetStringConnect(Bp);
 
-                    Load.Open();
+                    
                     Load.FindThisModule();
-                    Load.Close();
+                    
                     //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
+                    if (Load.ChanelNumber <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                     Mult.Open();
-                    while(Mult.GetTerminalConnect() == false)
-                        MessageBoxService.Show("На панели прибора " + Mult.GetDeviceType +
+                    while (Mult.IsTerminal == false)
+                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
@@ -627,44 +627,37 @@ namespace B5_71_PRO_Abstract
 
                 void Test()
                 {
-                    Mult.Open();
-                    Load.Open();
-                    Load.SetWorkingChanel();
-                    Load.OffOutput();
-
+                   
+                    Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
                     Bp.InitDevice();
                     Bp.SetStateVolt(Bp.VoltMax);
                     Bp.SetStateCurr(Bp.CurrMax);
 
                     // ------ настроим нагрузку
-                    Load.SetWorkingChanel();
-                    Load.SetResistanceFunc();
+                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
 
-                    Load.SetMaxResistanceRange();
-                    Load.SetResistance(Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]));
-                    Load.OnOutput();
-                    Load.Close();
+                    Load.Resistance.SetMaxResistanceRange()
+                        .Resistance.Set(Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]))
+                        .SetOutputState(MainN3300.State.On);
 
                     //сюда запишем результаты
                     var voltUnstableList = new List<decimal>();
 
                     Bp.OnOutput();
 
-                    foreach(var coef in ArrСoefVoltUnstable)
+                    foreach (var coef in ArrСoefVoltUnstable)
                     {
-                        Load.Open();
+                        
                         var resistance = Bp.VoltMax / (coef * Bp.CurrMax);
-                        Load.SetResistanceRange(resistance);
-                        Load.SetResistance(resistance); //ставим сопротивление
+                        Load.Resistance.SetRange(resistance).Resistance.Set(resistance); //ставим сопротивление
 
                         // время выдержки
                         Thread.Sleep(1000);
                         //измерения
                         Mult.Open();
-                        Mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                        Mult.WriteLine(Main_Mult.QueryValue);
+                        Mult.Dc.Voltage.Range.Set(100);
                         // записываем результаты
-                        voltUnstableList.Add((decimal)Mult.DataPreparationAndConvert(Mult.ReadString()));
+                        voltUnstableList.Add((decimal)Mult.GetMeasValue());
                     }
 
                     Bp.OffOutput();
@@ -689,24 +682,30 @@ namespace B5_71_PRO_Abstract
             {
                 Bp.OffOutput();
                 Bp.Close();
-                Load.Close();
+                
                 Mult.Close();
             }
         }
 
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            return Bp.tolleranceVoltageUnstability;
+        }
+
+        #endregion
+
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
+
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
+            if (a != null)
                 await a.WorkAsync(token);
         }
 
         public override async Task StartWork(CancellationToken token)
         {
-            foreach(var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
 
@@ -728,15 +727,14 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "table5"};
-            
+            var dataTable = new DataTable {TableName = "table5"}; 
             dataTable.Columns.Add("Измеренное значение пульсаций, мВ");
             dataTable.Columns.Add("Допустимое значение пульсаций, мВ");
             dataTable.Columns.Add("Результат");
 
             var dataRow = dataTable.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            
+
             // ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting + " мВ";
             dataRow[1] = dds.Error + " мВ";
@@ -744,20 +742,6 @@ namespace B5_71_PRO_Abstract
             dataTable.Rows.Add(dataRow);
 
             return dataTable;
-        }
-
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.tolleranceVoltPuls;
-        }
-
-        #endregion
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
-                await a.WorkAsync(token);
         }
 
         protected override void InitWork()
@@ -768,29 +752,30 @@ namespace B5_71_PRO_Abstract
             {
                 operation.InitWork = async () =>
                 {
+
                     Mult.StringConnection = GetStringConnect(Mult);
                     Load.StringConnection = GetStringConnect(Load);
                     Bp.StringConnection = GetStringConnect(Bp);
 
 
-                    Load.Open();
+                    
                     Load.FindThisModule();
-                    Load.Close();
+                    
                     //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
+                    if (Load.ChanelNumber <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                     await Task.Factory.StartNew(() =>
                     {
-                        Load.Open();
-                        Load.SetWorkingChanel();
-                        Load.SetResistanceFunc();
                         var point = Bp.VoltMax / ((decimal)0.9 * Bp.CurrMax);
-                        Load.SetResistanceRange(point);
-                        Load.SetResistance(point);
-                        Load.OnOutput();
-                        Load.Close();
+                        Load.SetWorkingChanel()
+                            .SetModeWork(MainN3300.ModeWorks.Resistance)
+                            .Resistance.SetRange(point)
+                            .Resistance.Set(point)
+                            .SetOutputState(MainN3300.State.On);
+                        
+                       
 
                         Bp.InitDevice();
                         Bp.SetStateVolt(Bp.VoltMax);
@@ -800,8 +785,8 @@ namespace B5_71_PRO_Abstract
 
 
                     Mult.Open();
-                    while(Mult.GetTerminalConnect())
-                        MessageBoxService.Show("На панели прибора " + Mult.GetDeviceType +
+                    while (Mult.IsTerminal)
+                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
@@ -817,12 +802,10 @@ namespace B5_71_PRO_Abstract
                 {
                     Thread.Sleep(5000);
 
-                    Mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                    Mult.WriteLine(Main_Mult.QueryValue);
-
-                    var voltPulsV357 = (decimal)Mult.DataPreparationAndConvert(Mult.ReadString());
+                    Mult.Dc.Voltage.Range.Set(100);
+                    var voltPulsV357 = (decimal)Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
+                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal) 0.99, 0, 3);
                     MathStatistics.Round(ref voltPulsV357, 2);
 
                     Bp.OffOutput();
@@ -848,19 +831,31 @@ namespace B5_71_PRO_Abstract
                 Mult.Close();
             }
         }
+
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            return Bp.tolleranceVoltPuls;
+        }
+
+        #endregion
+
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
+        }
+
         public override async Task StartWork(CancellationToken token)
         {
-            foreach(var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
 
         #region Fileds
 
         protected B5_71_PRO Bp { get; set; }
         protected Mult_34401A Mult { get; set; }
-        protected Main_N3300 Load { get; set; }
+        protected MainN3300 Load { get; set; }
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
         #endregion
@@ -877,7 +872,7 @@ namespace B5_71_PRO_Abstract
         #region Property
 
         protected B5_71_PRO Bp { get; set; }
-        protected Main_N3300 Load { get; set; }
+        protected MainN3300 Load { get; set; }
 
         #endregion
 
@@ -917,6 +912,79 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
+
+        protected override void InitWork()
+        {
+            var operation = new BasicOperationVerefication<decimal>();
+
+
+            try
+            {
+                operation.InitWork = () =>
+                {
+                    Load.StringConnection = GetStringConnect(Load);
+                    Bp.StringConnection = GetStringConnect(Bp);
+
+                    
+                    Load.FindThisModule();
+                    
+                    //если модуль нагрузки найти не удалось
+                    if (Load.ChanelNumber <= 0)
+                        throw new
+                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                    return Task.CompletedTask;
+                };
+                operation.BodyWork = Test;
+
+                void Test()
+                {
+
+                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                    var resist = Bp.VoltMax / Bp.CurrMax - 3;
+                    Load.Resistance.SetRange(resist).Resistance.Set(resist);
+                    Load.SetOutputState(MainN3300.State.On);
+
+                    Bp.InitDevice();
+                    Bp.SetStateCurr(Bp.CurrMax);
+                    Bp.SetStateVolt(Bp.VoltMax);
+                    Bp.OnOutput();
+
+                    foreach (var coef in MyPoint)
+                    {
+                        var setPoint = coef * Bp.CurrMax;
+                        //ставим значение тока
+                        Bp.SetStateCurr(setPoint);
+                        Thread.Sleep(1000);
+                        //измеряем ток
+                        
+                        var result = Load.Meas.Current;
+
+                        MathStatistics.Round(ref result, 3);
+
+                        operation.Expected = setPoint;
+                        operation.Getting = result;
+                        operation.ErrorCalculation = ErrorCalculation;
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                                 (operation.Getting > operation.LowerTolerance);
+                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                        var a = (BasicOperationVerefication<decimal>) operation.Clone();
+
+                        DataRow.Add(a);
+                    }
+
+                    Bp.OffOutput();
+                }
+            }
+            finally
+            {
+                Bp.OffOutput();
+                Bp.Close();
+                
+            }
+        }
+
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
             inA = Bp.tolleranceFormulaCurrent(inA);
@@ -932,92 +1000,13 @@ namespace B5_71_PRO_Abstract
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
+            if (a != null)
                 await a.WorkAsync(token);
-        }
-
-
-        protected override void InitWork()
-        {
-            var operation = new BasicOperationVerefication<decimal>();
-
-
-            try
-            {
-                operation.InitWork = () =>
-                {
-                    Load.StringConnection = GetStringConnect(Load);
-                    Bp.StringConnection = GetStringConnect(Bp);
-
-                    Load.Open();
-                    Load.FindThisModule();
-                    Load.Close();
-                    //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-                    return Task.CompletedTask;
-                };
-                operation.BodyWork = Test;
-
-                void Test()
-                {
-                    Load.Open();
-                    Load.SetWorkingChanel();
-                    Load.SetResistanceFunc();
-                    Load.SetResistanceRange(Bp.VoltMax / Bp.CurrMax - 3);
-                    Load.SetResistance(Bp.VoltMax / Bp.CurrMax - 3);
-                    Load.OnOutput();
-                    Load.Close();
-
-                    Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax);
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    Bp.OnOutput();
-
-                    foreach(var coef in MyPoint)
-                    {
-                        var setPoint = coef * Bp.CurrMax;
-                        //ставим значение тока
-                        Bp.SetStateCurr(setPoint);
-                        Thread.Sleep(1000);
-                        //измеряем ток
-                        Load.Open();
-                        var result = Load.GetMeasCurr();
-
-                        MathStatistics.Round(ref result, 3);
-
-                        operation.Expected = setPoint;
-                        operation.Getting = result;
-                        operation.ErrorCalculation = ErrorCalculation;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                 (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
-
-                        DataRow.Add(a);
-                    }
-
-                    Bp.OffOutput();
-                }
-            }
-            finally
-            {
-                Bp.OffOutput();
-                Bp.Close();
-                Load.Close();
-            }
         }
 
         public override async Task StartWork(CancellationToken token)
         {
-            foreach(var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
-
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
 
@@ -1037,7 +1026,7 @@ namespace B5_71_PRO_Abstract
 
         #region Property
 
-        protected Main_N3300 Load { get; set; }
+        protected MainN3300 Load { get; set; }
 
         #endregion
 
@@ -1076,6 +1065,85 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
+
+        protected override void InitWork()
+        {
+            var operation = new BasicOperationVerefication<decimal>();
+
+            try
+            {
+                operation.InitWork = () =>
+                {
+                    Bp.StringConnection = GetStringConnect(Bp);
+                    Load.StringConnection = GetStringConnect(Load);
+
+
+                    
+                    Load.FindThisModule();
+                    
+                    //если модуль нагрузки найти не удалось
+                    if (Load.ChanelNumber <= 0)
+                        throw new
+                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                    return Task.CompletedTask;
+                };
+                operation.BodyWork = Test;
+
+                void Test()
+                {
+
+                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                    var resist = Bp.VoltMax / Bp.CurrMax - 3;
+                    Load.Resistance.SetRange(resist).Resistance.Set(resist);
+                    Load.SetOutputState(MainN3300.State.On);
+                    
+
+                    Bp.InitDevice();
+                    Bp.SetStateCurr(Bp.CurrMax);
+                    Bp.SetStateVolt(Bp.VoltMax);
+                    Bp.OnOutput();
+
+                    
+
+                    foreach (var coef in MyPoint)
+                    {
+                        var setPoint = coef * Bp.CurrMax;
+                        //ставим точку напряжения
+                        Bp.SetStateCurr(setPoint);
+                        Thread.Sleep(1000);
+                        //измеряем ток
+                        var resultN3300 = Load.Meas.Current;
+
+                        MathStatistics.Round(ref resultN3300, 3);
+
+                        var resultBpCurr = Bp.GetMeasureCurr();
+                        MathStatistics.Round(ref resultBpCurr, 3);
+
+                        operation.Expected = resultN3300;
+                        operation.Getting = resultBpCurr;
+                        operation.ErrorCalculation = ErrorCalculation;
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                                 (operation.Getting > operation.LowerTolerance);
+                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                        var a = (BasicOperationVerefication<decimal>) operation.Clone();
+
+                        DataRow.Add(a);
+                    }
+
+
+                    Bp.OffOutput();
+                }
+            }
+            finally
+            {
+                Bp.OffOutput();
+                Bp.Close();
+                
+            }
+        }
+
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
             inA = Bp.tolleranceFormulaCurrent(inA);
@@ -1091,95 +1159,13 @@ namespace B5_71_PRO_Abstract
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
+            if (a != null)
                 await a.WorkAsync(token);
         }
 
-
-        protected override void InitWork()
-        {
-            var operation = new BasicOperationVerefication<decimal>();
-
-            try
-            {
-                operation.InitWork = () =>
-                {
-                    Bp.StringConnection = GetStringConnect(Bp);
-                    Load.StringConnection = GetStringConnect(Load);
-
-
-                    Load.Open();
-                    Load.FindThisModule();
-                    Load.Close();
-                    //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-                    return Task.CompletedTask;
-                };
-                operation.BodyWork = Test;
-
-                void Test()
-                {
-                    Load.Open();
-                    Load.SetWorkingChanel();
-                    Load.SetResistanceFunc();
-                    Load.SetResistanceRange(Bp.VoltMax / Bp.CurrMax - 3);
-                    Load.SetResistance(Bp.VoltMax / Bp.CurrMax - 3);
-                    Load.OnOutput();
-                    Load.Close();
-
-                    Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax);
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    Bp.OnOutput();
-
-                    Load.Open();
-
-                    foreach(var coef in MyPoint)
-                    {
-                        var setPoint = coef * Bp.CurrMax;
-                        //ставим точку напряжения
-                        Bp.SetStateCurr(setPoint);
-                        Thread.Sleep(1000);
-                        //измеряем ток
-                        var resultN3300 = Load.GetMeasCurr();
-
-                        MathStatistics.Round(ref resultN3300, 3);
-
-                        var resultBpCurr = Bp.GetMeasureCurr();
-                        MathStatistics.Round(ref resultBpCurr, 3);
-
-                        operation.Expected = resultN3300;
-                        operation.Getting = resultBpCurr;
-                        operation.ErrorCalculation = ErrorCalculation;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                 (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        var a = (BasicOperationVerefication<decimal>)operation.Clone();
-
-                        DataRow.Add(a);
-                    }
-
-
-                    Bp.OffOutput();
-                }
-            }
-            finally
-            {
-                Bp.OffOutput();
-                Bp.Close();
-                Load.Close();
-            }
-        }
         public override async Task StartWork(CancellationToken token)
         {
-            foreach(var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
 
@@ -1194,7 +1180,7 @@ namespace B5_71_PRO_Abstract
         #region  Fields
 
         protected B5_71_PRO Bp;
-        protected Main_N3300 Load;
+        protected MainN3300 Load;
 
         #endregion
 
@@ -1225,23 +1211,6 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.tolleranceCurrentUnstability;
-        }
-
-        #endregion
-
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
-                await a.WorkAsync(token);
-        }
-
 
         protected override void InitWork()
         {
@@ -1254,11 +1223,11 @@ namespace B5_71_PRO_Abstract
                     Bp.StringConnection = GetStringConnect(Bp);
                     Load.StringConnection = GetStringConnect(Load);
 
-                    Load.Open();
+                    
                     Load.FindThisModule();
-                    Load.Close();
+                    
                     //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
+                    if (Load.ChanelNumber <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                     return Task.CompletedTask;
@@ -1267,14 +1236,11 @@ namespace B5_71_PRO_Abstract
 
                 void Test()
                 {
-                    Load.Open();
-                    Load.SetWorkingChanel();
-                    Load.SetResistanceFunc();
+                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                     var point = Bp.VoltMax * MyPoint[2] / Bp.CurrMax;
-                    Load.SetResistanceRange(point);
-                    Load.SetResistance(point);
-                    Load.OnOutput();
-                    Load.Close();
+                    Load.Resistance.SetRange(point).Resistance.Set(point);
+                    Load.SetOutputState(MainN3300.State.On);
+                    
 
                     ////инициализация блока питания
                     Bp.InitDevice();
@@ -1284,14 +1250,13 @@ namespace B5_71_PRO_Abstract
 
                     var currUnstableList = new List<decimal>();
 
-                    foreach(var coef in MyPoint)
+                    foreach (var coef in MyPoint)
                     {
-                        Load.Open();
+                        
                         var resistance = coef * Bp.VoltMax / Bp.CurrMax;
-                        Load.SetResistanceRange(resistance);
-                        Load.SetResistance(resistance);
+                        Load.Resistance.SetRange(resistance).Resistance.Set(resistance);
                         Thread.Sleep(1000);
-                        currUnstableList.Add(Load.GetMeasCurr());
+                        currUnstableList.Add(Load.Meas.Current);
                     }
 
                     Bp.OffOutput();
@@ -1309,22 +1274,35 @@ namespace B5_71_PRO_Abstract
                     operation.CompliteWork = () => Task.FromResult(operation.IsGood());
                     DataRow.Add(operation);
                 }
-
-             
             }
             finally
             {
                 Bp.OffOutput();
                 Bp.Close();
-                Load.Close();
+                
             }
         }
+
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            return Bp.tolleranceCurrentUnstability;
+        }
+
+        #endregion
+
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
+
+
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
+        }
+
         public override async Task StartWork(CancellationToken token)
         {
-            foreach(var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
 
@@ -1336,7 +1314,7 @@ namespace B5_71_PRO_Abstract
         #region Property
 
         protected B5_71_PRO Bp { get; set; }
-        protected Main_N3300 Load { get; set; }
+        protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
         #endregion
@@ -1354,7 +1332,7 @@ namespace B5_71_PRO_Abstract
         protected override DataTable FillData()
         {
             var dataTable = new DataTable {TableName = "table9"};
-            
+
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");
             dataTable.Columns.Add("Результат");
@@ -1370,24 +1348,6 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.tolleranceCurrentPuls;
-        }
-
-        #endregion
-
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if(a != null)
-                await a.WorkAsync(token);
-        }
-
 
         protected override void InitWork()
         {
@@ -1400,24 +1360,22 @@ namespace B5_71_PRO_Abstract
                     Load.StringConnection = GetStringConnect(Load);
                     Mult.StringConnection = GetStringConnect(Mult);
 
-                    Load.Open();
+                    
                     Load.FindThisModule();
-                    Load.Close();
+                    
                     //если модуль нагрузки найти не удалось
-                    if(Load.GetChanelNumb <= 0)
+                    if (Load.ChanelNumber <= 0)
                         throw new
                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                     void ConfigDeviseAsync()
                     {
-                        Load.Open();
-                        Load.SetWorkingChanel();
-                        Load.SetResistanceFunc();
-                        var point = (decimal)0.9 * Bp.VoltMax / Bp.CurrMax;
-                        Load.SetResistanceRange(point);
-                        Load.SetResistance(point);
-                        Load.OnOutput();
-                        Load.Close();
+                        
+                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                        var point = (decimal) 0.9 * Bp.VoltMax / Bp.CurrMax;
+                        Load.Resistance.SetRange(point).Resistance.Set(point);
+                        Load.SetOutputState(MainN3300.State.On);
+                        
 
                         //инициализация блока питания
                         Bp.InitDevice();
@@ -1429,8 +1387,8 @@ namespace B5_71_PRO_Abstract
                     await Task.Factory.StartNew(ConfigDeviseAsync);
 
                     Mult.Open();
-                    while(Mult.GetTerminalConnect())
-                        MessageBoxService.Show("На панели прибора " + Mult.GetDeviceType +
+                    while (Mult.IsTerminal)
+                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
@@ -1446,12 +1404,9 @@ namespace B5_71_PRO_Abstract
                 {
                     //нужно дать время В3-57
                     Thread.Sleep(5000);
-                    Mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                    Mult.WriteLine(Main_Mult.QueryValue);
-
-                    var currPuls34401 = (decimal)Mult.DataPreparationAndConvert(Mult.ReadString());
-
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
+                    Mult.Dc.Voltage.Range.Set(100);
+                    var currPuls34401 = (decimal)Mult.GetMeasValue();
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99, 0, 3);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
@@ -1479,12 +1434,27 @@ namespace B5_71_PRO_Abstract
                 Mult.Close();
             }
         }
+
+        private decimal ErrorCalculation(decimal inA, decimal inB)
+        {
+            return Bp.tolleranceCurrentPuls;
+        }
+
+        #endregion
+
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
+
+
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
+        }
+
         public override async Task StartWork(CancellationToken token)
         {
-            foreach(var dr in DataRow)
-            {
-                await dr.WorkAsync(token);
-            }
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
 }

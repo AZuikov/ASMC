@@ -4,6 +4,7 @@ using System.Collections;
 namespace AP.Utils.Data
 {
     /// <inheritdoc />
+    [AttributeUsage(AttributeTargets.Field)]
     public class StringValueAttribute : Attribute
     {
         /// <inheritdoc />
@@ -19,6 +20,7 @@ namespace AP.Utils.Data
     }
 
     /// <inheritdoc />
+    [AttributeUsage(AttributeTargets.Field)]
     public class DoubleValueAttribute : Attribute
     {
         /// <inheritdoc />

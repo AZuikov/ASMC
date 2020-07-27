@@ -8,48 +8,32 @@ using MathNet.Numerics.Statistics;
 
 namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 {
-    public class Calibr_9500B : IeeeBase
+    public class Calibr9500B : IeeeBase
     {
-        /// <summary>
-        /// Множитель
-        /// </summary>
-        public enum Multipliers
+        public Calibr9500B()
         {
-            Mega,
-            Mili,
-            Nano,
-            Kilo,
-            Micro,
-            Si
+            Source = new CSource(this);
         }
+
         public enum Chanel
         {
-            CH1,
-            CH2,
-            CH3,
-            CH4,
-            CH5
+            Ch1,
+            Ch2,
+            Ch3,
+            Ch4,
+            Ch5
         }
         public enum State
         {
-            ON,
-            OFF
-        }
-
-        public Calibr_9500B() : base()
-        {
-
-        }
-        public Calibr_9500B(string connect) : this()
-        {
-            StringConnection = connect;
+            On,
+            Off
         }
         /// <summary>
         /// Управление переключением выхода: включено/выключено 
         /// </summary>
         public static string Output(State st)
         {
-            return "OUTP " + st.ToString();
+            return "OUTP " + st;
         }
         /// <summary>
         /// Данная подсистема используется для конфигурирования выходных каналов, которые используются как выходы сигнала и запуска. 
@@ -65,7 +49,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 /// <returns></returns>
                 public static string SetChanel(Chanel ch)
                 {
-                    return "ROUT:SIGN " + ch.ToString();
+                    return "ROUT:SIGN " + ch;
                 }
                 /// <summary>
                 /// Данная команда выбирает между 50 Ом и 1 МОм импедансом осциллографа, в соответствии с уровнями для выбранного сигнального канала.
@@ -118,19 +102,27 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <returns></returns>
             public static string SetMeasure(TypeMes tm)
             {
-                return "CONF:" + tm.ToString();
+                return "CONF:" + tm;
             }
             /// <summary>
             /// Запрос значения сопротивления или емкости
             /// </summary>
             public const string QuaryValue = "READ?";
         }
+        public CSource Source { get; }
         /// <summary>
         /// Настройка выхода
         /// </summary>
-        public class Source
+        public class CSource :HelpIeeeBase
         {
-           public enum Shap
+            private readonly Calibr9500B _calibrMain;
+
+            public CSource(Calibr9500B calibrMain)
+            {
+                this._calibrMain = calibrMain;
+
+            }
+            public enum Shap
             {
                 /// <summary>
                 /// Определяет, что последующий выбор напряжения (VOLT) или тока (CURR) будет иметь только постоянную составляющую (DC). 
@@ -186,7 +178,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// </summary>
             public static string SetFunc(Shap sp)
             {
-                return "SOUR:FUNC " + sp.ToString();
+                return "SOUR:FUNC " + sp;
             }
             /// <summary>
             /// Настройки выходного параметра
@@ -205,7 +197,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public static string SetGND(State st)
                     {
-                        return "SOUR:PAR:DC:GRO "+st.ToString();
+                        return "SOUR:PAR:DC:GRO "+st;
                     }
                     /// <summary>
                     /// Данная команда позволяет установить постоянный сигнал на нескольких каналах (если устанавливается в «ON») и отключить многоканальность, если выбрано «OFF» 
@@ -214,7 +206,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public static string MCH(State st)
                     {
-                        return "SOUR:PAR:DC:MCH " + st.ToString();
+                        return "SOUR:PAR:DC:MCH " + st;
                     }
                 }
                 /// <summary>
@@ -247,7 +239,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public static string SetPolar(Polar pr)
                     {
-                        return "SOUR:PAR:SQU:POL " + pr.ToString();
+                        return "SOUR:PAR:SQU:POL " + pr;
                     }
                     /// <summary>
                     /// Данная команда устанавливает выходной сигнал прямоугольной формы в ноль(0 В), если выбрано «ON» и вернет предыдущее выходное значение, если выбрано «OFF».                     
@@ -256,7 +248,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public static string SetGND(State st)
                     {
-                        return "SOUR:PAR:SQU:GRO " + st.ToString();
+                        return "SOUR:PAR:SQU:GRO " + st;
                     }
                 }
                 /// <summary>
@@ -320,9 +312,10 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name="value">The value.</param>
             /// <param name="mult">The mult.</param>
             /// <returns></returns>
-            public static string SetVoltage(double value, Multipliers mult= Multipliers.Si)
+            public Calibr9500B SetVoltage(double value, Multipliers mult= Devices.Multipliers.None)
             {
-                return "SOUR:VOLT " + Convert(value, mult);
+                _calibrMain.WriteLine($@"SOUR:VOLT {JoinValueMult(value, mult)}");
+                return _calibrMain;
             }
             /// <summary>
             /// Установка частоты
@@ -330,9 +323,10 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name="value">The value.</param>
             /// <param name="mult">The mult.</param>
             /// <returns></returns>
-            public static string SetFreq(double value, Multipliers mult = Multipliers.Kilo)
+            public Calibr9500B SetFreq(double value, Multipliers mult = Devices.Multipliers.None)
             {
-                return "SOUR:FREQ " + Convert(value, mult);
+                _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
+                return _calibrMain;
             }
             /// <summary>
             /// Установка периода
@@ -340,84 +334,11 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name="value">The value.</param>
             /// <param name="mult">The mult.</param>
             /// <returns></returns>
-            public static string SetPeriod(double value, Multipliers mult)
+            public Calibr9500B SetPeriod(double value, Multipliers mult = Devices.Multipliers.None)
             {
-                return "SOUR:PER " + Convert(value, mult);
+                _calibrMain.WriteLine($@"SOUR:PER {JoinValueMult(value, mult)}");
+                return _calibrMain;
             }
-        }
-        /// <summary>
-        /// Пребразует данные в нужных единицах
-        /// </summary>
-        /// <param name="date">The date.</param>
-        /// <param name="Mult">The mult.</param>
-        /// <returns></returns>
-        public double DataPreparationAndConvert(string date, Multipliers Mult = Multipliers.Si)
-        {
-            string[] Value = date.Split(',');
-            double[] a = new double[Value.Length];
-            for (int i = 0; i < Value.Length; i++)
-            {
-                a[i] = Convert(Value[i], Mult);
-            }
-            return Statistics.Mean(a) < 0 ? Statistics.RootMeanSquare(a) * -1 : Statistics.RootMeanSquare(a);
-        }
-       
-        private double Convert(string date, Multipliers Mult)
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            double _return = 0;
-            double[] dDate = new double[2];
-            string[] Value = date.Split('E');
-            dDate[0] = System.Convert.ToDouble(Value[0]);
-            dDate[1] = System.Convert.ToDouble(Value[1]);
-            switch (Mult)
-            {
-                case Multipliers.Mega:
-                    _return = (dDate[0] * Math.Pow(10, dDate[1])) * 1E-6;
-                    break;
-                case Multipliers.Mili:
-                    _return = (dDate[0] * Math.Pow(10, dDate[1])) * 1E3;
-                    break;
-                case Multipliers.Nano:
-                    _return = (dDate[0] * Math.Pow(10, dDate[1])) * 1E9;
-                    break;
-                case Multipliers.Kilo:
-                    _return = (dDate[0] * Math.Pow(10, dDate[1])) * 1E-3;
-                    break;
-                case Multipliers.Micro:
-                    _return = (dDate[0] * Math.Pow(10, dDate[1])) * 1E6;
-                    break;
-                case Multipliers.Si:
-                    _return = (dDate[0] * Math.Pow(10, dDate[1]));
-                    break;
-            }
-            return _return;
-        }
-        private static string Convert(double date, Multipliers Mult)
-        {
-            double _data = 0;
-            switch (Mult)
-            {
-                case Multipliers.Mega:
-                    _data = date * 1E6;
-                    break;
-                case Multipliers.Mili:
-                    _data = date * 1E-3;
-                    break;
-                case Multipliers.Nano:
-                    _data = date * 1E-9;
-                    break;
-                case Multipliers.Kilo:
-                    _data = date * 1E3;
-                    break;
-                case Multipliers.Micro:
-                    _data = date * 1E-6;
-                    break;
-                case Multipliers.Si:
-                    _data = date;
-                    break;
-            }
-            return _data.ToString();
-        }
+        } 
     }
 }

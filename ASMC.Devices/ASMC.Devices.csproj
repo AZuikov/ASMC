@@ -60,7 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IDevice.cs" />
+    <Compile Include="DeviceInfo.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
@@ -72,7 +72,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34401A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34460_61A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
-    <Compile Include="IEEE\Fluke\Calibrator\Main_Claibr.cs" />
+    <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B5-71-PRO.cs" />
@@ -108,6 +108,10 @@
     <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
       <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
       <Name>AP.Reports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
+      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
+      <Name>AP.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

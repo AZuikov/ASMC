@@ -5,51 +5,48 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using AP.Reports.Utils;
+using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 {
-    public abstract class Main_N3300 : IeeeBase
+    public abstract class MainN3300 : IeeeBase
     {
-       
-        private const string FuncCurr = "CURR";
-        private const string FuncVolt = "VOLT";
-        private const string FuncRes = "RES";
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Номер канала, в котором установлен модуль нагрузки.
         /// </summary>
-        protected int chanNum;
+        private int _chanNum;
 
         //массивы с номиналами пределов модуля нагрузки
         //будет инициализироваться в конструкторе
-        protected decimal[] rangeResistanceArr;
-        protected decimal[] rangeVoltArr;
-        protected decimal[] rangeCurrentArr;
+        protected decimal[] RangeVoltArr;
+        protected decimal[] RangeCurrentArr;
         protected string ModuleModel;
 
-        protected Main_N3300()
+        protected MainN3300()
         {
-            this.DeviceType = "N3300A";
-            
-            
+            Resistance = new LResistance(this);
+            Meas = new LMeas(this);
+            this.UserType = "N3300A";
         }
 
         public enum VoltMultipliers
         {
           // [StringValue(" V")] Volt,
-           [StringValue("")] SI
+           [StringValue("")] None
         }
 
         public enum CurrMultipliers
         {
             //[StringValue(" A")] Amp,
-            [StringValue("")] SI
+            [StringValue("")] None
         }
 
         public enum ResistanceMultipliers
         {
             //[StringValue(" OHM")] Ohm,
-            [StringValue("")] SI
+            [StringValue("")] None
         }
 
         public string GetModuleModel
@@ -65,132 +62,202 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public int FindThisModule()
         {
             //если в шасси стоит несколько блоков с одинаковой моделью, то метод завершит работу на первом же
-            foreach (Model model in GetInstalledModulesName())
+            foreach (var model in GetInstalledModulesName())
             {
                 //если модуль найден, то прописывается канал
                 if (model.Type.Equals(this.ModuleModel))
                 {
-                    this.chanNum = model.Channel;
+                    this._chanNum = model.Channel;
                     break;
                 }
-                else
-                    //если модуль не найден, то канал пишется отрицательным числом. 
-                    this.chanNum = -1;
+
+                this._chanNum = -1;
             }
             
 
-            return this.chanNum;
+            return this._chanNum;
         }
 
         /// <summary>
         /// Возвращает массив с моделями установленных вставок нагрузки
         /// </summary>
         /// <returns></returns>
-        public List<Model> GetInstalledModulesName()
+        public Model[] GetInstalledModulesName()
         {
-            var model = new List<Model>();
             this.WriteLine("*RDT?");
             Thread.Sleep(10);
-            string answer = this.ReadLine().TrimEnd('\n');
+            var answer = this.ReadLine().TrimEnd('\n');
             var reg = new Regex(@"(?<=.+)\d+");
-            foreach (var mod in answer.Split(';'))
-            {
-                var s = mod.Split(':');
-                model.Add(new Model{Channel = int.Parse(reg.Match(s[0]).Value) , Type = s[1]});
-
-            }
-            
-           return model;
+            return answer.Split(';').Select(mod => mod.Split(':')).Select(s => new Model {Channel = int.Parse(reg.Match(s[0]).Value), Type = s[1]}).ToArray();
         }
 
         public struct Model
         {
+            /// <summary>
+            /// Позволяет задать или получить номер канала.
+            /// </summary>
             public int Channel { get; set; }
+            /// <summary>
+            /// Позволяет задать или получить Тип.
+            /// </summary>
             public string Type
             {
                 get; set;
             }
         }
+
         /// <summary>
         /// Устанавливает рабочий канал нагрузки
         /// </summary>
-        /// <param name="ChanNum">номер канала нагрузки - целое число</param>
         /// <returns></returns>
-        public  bool SetWorkingChanel()
-        {
-
-            this.WriteLine("CHAN:LOAD " + chanNum);
+        public  MainN3300 SetWorkingChanel()
+        {    
+            this.WriteLine("CHAN:LOAD " + _chanNum);
             this.WriteLine("CHAN:LOAD?");
-            int answer = int.Parse(this.ReadLine());
-
-            return answer == chanNum ? true : false;
+            if (int.Parse(this.ReadLine()) == ChanelNumber) return this;
+            Logger.Error("Канал не устанавлен");
+            throw new NullReferenceException("Канал не устанавлен");
         }
+
+
 
         /// <summary>
         /// Возвращает номер канала модуля нагрузки
         /// </summary>
         /// <returns></returns>
-        public int GetChanelNumb
+        public int ChanelNumber
         {
-            get =>chanNum;
+            get =>_chanNum;
         }
-
-
+     
+        public enum ModeWorks
+        {
+            /// <summary>
+            /// Режим стабилизации тока.
+            /// </summary>
+            [StringValue("CURR")]
+           Current,
+            /// <summary>
+            /// Режим нагрузки.
+            /// </summary>
+            [StringValue("RES")]
+            Resistance,
+            /// <summary>
+            /// Режим стабелизации напряжения.
+            /// </summary>
+            [StringValue("VOLT")]
+            Voltage
+        }
         /// <summary>
         /// Отвечает, какой текущий режим канала
         /// </summary>
-        /// <returns></returns>
-        public string AskMyCurrentFunc()
+        public ModeWorks ModeWork
         {
-            
-            this.WriteLine("FUNC?");
-            string answer = this.ReadLine();
-            
-
-            return answer;
+            get
+            {
+                this.WriteLine("FUNC?");
+                foreach (ModeWorks mode in Enum.GetValues(typeof(ModeWorks)) )
+                {
+                    if (mode.GetStringValue().Equals(this.ReadLine(), StringComparison.CurrentCultureIgnoreCase))
+                        return mode;
+                }
+                Logger.Error("Режим не определен.");
+                throw new Exception("Режим не определен.");
+            }
         }
-
         /// <summary>
-        /// Устанавливает режим CR на нагрузке
+        /// Устанавливает режим нагрузки.
         /// </summary>
+        /// <param name="mode"></param>
         /// <returns></returns>
-        public bool SetResistanceFunc()
+        public MainN3300 SetModeWork(ModeWorks mode)
         {
-            
-            this.WriteLine("FUNC RES");
-            
+            this.WriteLine($@"FUNC {mode.GetStringValue()}");
+            if (ModeWork == mode) return this;
+            Logger.Error("Режим не установлен.");
+            throw new Exception("Режим не установлен.");
 
-            return this.AskMyCurrentFunc().Equals(FuncRes);
         }
 
+        public LResistance Resistance { get; protected internal set; }
+
+        public class LResistance:HelpIeeeBase
+        {
+            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+            private readonly MainN3300 _mainN3300;
+            public ICommand[] Ranges { get; protected internal set; }
+            public LResistance(MainN3300 mainN3300)
+            {  
+               _mainN3300 = mainN3300;
+            }
+            /// <summary>
+            /// Возвращает маскимальное значение сопротивление на этой нагрузке
+            /// </summary>
+            /// <returns></returns>
+            public ICommand MaxResistenceRange
+            {
+              get  => Ranges.FirstOrDefault(f=>Equals(f.Value, Ranges.Select(s => s.Value).Max()));
+            }
+
+            /// <summary>
+            /// Устанавливает ПРЕДЕЛ сопротивления для режима CR 
+            /// </summary>
+            /// <param name="value">Значение сопротивления, которое нужно установить</param>
+            public MainN3300 SetRange(decimal value, Multipliers mult = Devices.Multipliers.None)
+            {
+
+                if (value<0) throw  new ArgumentException("Значение меньше 0");
+
+               var val = value* (decimal) mult.GetDoubleValue();
+                var res = Ranges.FirstOrDefault(q => q.Value <= (double) val);
+
+                if(res == null)
+                {
+                    Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                    res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
+                }
+
+                _mainN3300.WriteLine(res.StrCommand);
+
+                return _mainN3300; 
+
+            }
+            /// <summary>
+            /// Устанавливает максимальный предел воспроизведения сопротивления
+            /// </summary>
+            /// <returns></returns>
+            public MainN3300 SetMaxResistanceRange()
+            {
+                _mainN3300.WriteLine("RESistance:RANGe MAX");
+                return _mainN3300;
+            }
+
+            /// <summary>
+            /// Устанавливает ВЕЛИЧИНУ сопротивления для режима CR
+            /// </summary>
+            /// <param name = "value"></param>
+            /// <param name = "mult"></param>
+            public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
+            {
+                if(value < 0)
+                    throw new ArgumentException("Значение меньше 0");
+
+                var val = value * (decimal)mult.GetDoubleValue();
+                SetRange(val, mult); 
+                _mainN3300.WriteLine($@"RESistance { this.JoinValueMult(val, mult)}");
+                return _mainN3300;
+            }
+
+        }
+        public class LVoltage
+        {
+            
+        }
+        public class LCurrent
+        {
+            
+        }
        
-
-        /// <summary>
-        /// Устанавливает режим CV на нагрузке
-        /// </summary>
-        /// <returns></returns>
-        public bool SetVoltFunc()
-        {
-            
-            this.WriteLine("FUNC Volt");
-            
-
-            return this.AskMyCurrentFunc().Equals(FuncVolt);
-        }
-
-        /// <summary>
-        /// Устанавливает режим CC на нагрузке
-        /// </summary>
-        /// <returns></returns>
-        public bool SetCurrFunc()
-        {
-            
-            this.WriteLine("FUNC CURRent");
-            
-
-            return this.AskMyCurrentFunc().Equals(FuncCurr);
-
-        }
 
         /// <summary>
         /// Задает ограничение по току на канале
@@ -214,11 +281,11 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// </summary>
         /// <param name="inStr"></param>
         /// <returns></returns>
-        private decimal StrToDecimal(string inStr)
+        private static decimal StrToDecimal(string inStr)
         {
-            string[] val = inStr.TrimEnd('\n').Replace(".", ",").Split('E');
+            var val = inStr.TrimEnd('\n').Replace(".", ",").Split('E');
 
-            return decimal.Parse(val[0]) * (decimal)System.Math.Pow(10, double.Parse(val[1]));
+            return decimal.Parse(val[0]) * (decimal)Math.Pow(10, double.Parse(val[1]));
         }
 
         /// <summary>
@@ -230,37 +297,48 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             this.WriteLine("CURR:LEV?");
             return StrToDecimal(this.ReadLine());
         }
-
-       
-        /// <summary>
-        /// Возвращает измеренное значение тока в цепи
-        /// </summary>
-        /// <returns></returns>
-
-        public decimal GetMeasCurr()
+        public LMeas Meas { get; }
+        public class LMeas
         {
-           
-            this.WriteLine("MEAS:CURR?");
-            return StrToDecimal(this.ReadLine());
-        }
+            private readonly MainN3300 _mainN3300;
 
-        /// <summary>
-        /// Возвращает измеренное значение напряжения на нагрузке
-        /// </summary>
-        /// <returns></returns>
-        public decimal GetMeasVolt()
-        {
-            
-            this.WriteLine("MEAS:VOLT?");
-            return StrToDecimal(this.ReadLine());
-        }
+            public LMeas(MainN3300 mainN3300)
+            {
+                this._mainN3300 = mainN3300;
+            }
 
-        public decimal GetMeasPower()
-        {
-            
-            this.WriteLine("MEASure:POWer?");
-            return StrToDecimal(this.ReadLine());
-        }
+            /// <summary>
+            /// Возвращает измеренное значение напряжения на нагрузке
+            /// </summary>
+            public decimal Voltage
+            {
+                get
+                {
+                    _mainN3300.WriteLine("MEAS:VOLT?");
+                    return StrToDecimal(_mainN3300.ReadLine());
+                }
+            }
+            /// <summary>
+            /// Возвращает измеренное значение тока в цепи
+            /// </summary>
+            public decimal Current
+            {
+                get
+                {
+                    _mainN3300.WriteLine("MEAS:CURR?");
+                    return StrToDecimal(_mainN3300.ReadLine());
+                }
+            }
+            public decimal Power
+            {
+                get
+                {
+                    _mainN3300.WriteLine("MEAS:POWer?");
+                    return StrToDecimal(_mainN3300.ReadLine());
+                }
+            }
+        }  
+
 
         /// <summary>
         /// Устанавливает предел ИЗМЕРЯЕМОГО тока для нагрузки (зависит от модели вставки нагрузки)
@@ -268,7 +346,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <param name="inRange">Значение предела измерения тока</param>
         public  bool SetCurrMeasRange(decimal inRange)
         {
-            decimal moduleMaxRange = rangeCurrentArr.Last();
+            decimal moduleMaxRange = RangeCurrentArr.Last();
             if (inRange > moduleMaxRange) throw new ArgumentOutOfRangeException();
 
             this.WriteLine("SENSe:CURR:RANGe " + inRange.ToString("G17", new CultureInfo("en-US")));
@@ -281,7 +359,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <param name="inRange">Значение предела измерения напряжения</param>
         public  bool SetVoltMeasRange(decimal inRange)
         {
-            decimal moduleMaxRange = rangeVoltArr.Last();
+            decimal moduleMaxRange = RangeVoltArr.Last();
             if (inRange > moduleMaxRange) throw new ArgumentOutOfRangeException();
 
             this.WriteLine("SENSe:VOLTage:RANGe " + inRange.ToString("G17", new CultureInfo("en-US")));
@@ -289,66 +367,8 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         }
 
-        /// <summary>
-        /// Устанавливает максимальный предел воспроизведения сопротивления
-        /// </summary>
-        /// <returns></returns>
-        public bool SetMaxResistanceRange()
-        {
-            this.WriteLine("RESistance:RANGe MAX");
-            return true;
-        }
+       
 
-        /// <summary>
-        /// Возвращает маскимальное значение сопротивление на этой нагрузке
-        /// </summary>
-        /// <returns></returns>
-        public decimal GetMaxResistenceRange()
-        {
-            return rangeResistanceArr.Max();
-        }
-
-        /// <summary>
-        /// Устанавливает ПРЕДЕЛ сопротивления для режима CR 
-        /// </summary>
-        /// <param name="inRange">Значение сопротивления, которое нужно установить</param>
-        public bool SetResistanceRange(decimal inRange )
-        {
-
-            //узнаем максимальный предел для конкретного модуля
-            decimal moduleMaxRange = rangeResistanceArr.Max();
-
-                //если предел который хотим поставить больше чем может канал, то выбросим исключение
-                if (inRange > moduleMaxRange) throw new ArgumentException();
-
-                //выбираем предел измерения из списка для конкретного канала
-            foreach (decimal rangeDestination in this.rangeResistanceArr)
-            {
-                if (inRange <= rangeDestination)
-                {
-                    this.WriteLine("RESistance:RANGe " + rangeDestination.ToString("G17", new CultureInfo("en-US")));
-                    break;
-                }
-            }
-
-            return true;          
-
-        }
-
-        /// <summary>
-        /// Устанавливает ВЕЛИЧИНУ сопротивления для режима CR
-        /// </summary>
-        /// <param name="inResist">Величина сопротивления в Омах</param>
-        public bool SetResistance(decimal inResist)
-        {
-            if (this.SetResistanceRange(inResist))
-            { 
-                this.WriteLine("RESistance " + inResist.ToString("G17", new CultureInfo("en-US")));
-                return true;
-
-            }
-            return false;
-        }
         
 
 
@@ -390,7 +410,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <param name="inLevel"></param>
         public bool SetVoltLevel(decimal inLevel)
         {
-            if (inLevel > rangeVoltArr.Last()) throw new ArgumentOutOfRangeException();
+            if (inLevel > RangeVoltArr.Last()) throw new ArgumentOutOfRangeException();
             
             //отправляем команду с уставкой по вольтам
             this.WriteLine("VOLT " + inLevel.ToString("G17", new CultureInfo("en-US")));
@@ -405,7 +425,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             decimal resultVoltLevel = decimal.Parse(val[0]) * (decimal)System.Math.Pow(10, double.Parse(val[1]));
 
             //если значение установилось, то ответ прибора будет тем же числом, что мы отправили на прибор - тогда вернем true
-            return resultVoltLevel == inLevel? true : false;
+            return resultVoltLevel == inLevel;
         }
 
         /// <summary>
@@ -428,38 +448,32 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             
         }
 
-        /// <summary>
-        /// Включает выходы электронной нагрузки
-        /// </summary>
-        /// <returns></returns>
-        public bool OnOutput()
+        public enum State
         {
-            
-            this.WriteLine("outp 1");
-            Thread.Sleep(10);
-            this.WriteLine("outp?");
-            int answer = int.Parse(this.ReadLine());
-            
-
-            return answer == 1 ? true : false;
+            [StringValue("outp 0")]
+            Off,
+            [StringValue("outp 1")]
+            On
+        }
+        public MainN3300 SetOutputState(State state)
+        {
+            this.WriteLine(state.GetStringValue());
+            Thread.Sleep(10);  
+            if(StateOutput!=state) throw new Exception("Состояние выхода не изменено.");
+            return this;
+        }
+       
+       public State StateOutput
+        {
+            get
+            {
+                this.WriteLine("outp?");
+                return (State) int.Parse(this.ReadLine());
+            }
         }
 
 
-        /// <summary>
-        /// Выключает выходы электронной нагрузки
-        /// </summary>
-        /// <returns></returns>
-        public bool OffOutput()
-        {
-            
-            this.WriteLine("outp 0");
-            Thread.Sleep(10);
-            this.WriteLine("outp?");
-            int answer = int.Parse(this.ReadLine());
-            
-
-            return answer == 0 ? true : false;
-        }
+       
 
     }
 

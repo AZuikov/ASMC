@@ -8,14 +8,17 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Windows.Forms;
+using AP.Utils.Data;
 using Ivi.Visa;
+using MathNet.Numerics.Statistics;
 using NLog;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ASMC.Devices.IEEE
 {
-    public class IeeeBase : IDevice
+    public class IeeeBase : HelpIeeeBase, IDevice
     {
+       
         /// <summary>
         /// Звуковой сигнал
         /// </summary>
@@ -40,7 +43,8 @@ namespace ASMC.Devices.IEEE
         public const string QuerySinchronization = "*OPC?";
 
         /// <summary>
-        /// Самопроверка 0 - успешно, 1 - провал
+        /// Самопроверка 0 - успешно, 1 - пров
+        /// ал
         /// </summary>
         public const string QueryTestSelf = "*TST?";
 
@@ -51,6 +55,31 @@ namespace ASMC.Devices.IEEE
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private DeviceInfo _info;
+        public DeviceInfo Info
+        {
+            get
+            {
+                if (_info != null) return _info;
+
+                  var arr  =GetBaseInfoFromDevice();
+                string manufacturer = null, serial = null, type = null, fwv = null;
+                try
+                {
+                     manufacturer = arr[0];
+                    type = arr[1];
+                    serial = arr[2];
+                    fwv = arr[3];
+                }
+                catch (IndexOutOfRangeException e)
+                {
+                    Logger.Info(e);
+                }
+
+                _info = new DeviceInfo(fwv, manufacturer, serial, type);
+                return _info;
+            }
+        }
         #region  Fields
 
         /// <summary>
@@ -69,18 +98,15 @@ namespace ASMC.Devices.IEEE
         /// отвечает за задержку между командами в мс
         /// </summary>
         private readonly int _dealySending;
+        /// <inheritdoc />
+        public string UserType { get; protected set; }
 
-        public string DeviceType { get; protected set; }
-
-        /// <summary>
-        /// Строка подкючения
-        /// </summary>
-        
+        /// <inheritdoc /> 
         public string StringConnection {
             get => _stringConnection;
             set
             {
-                if (value == null)
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     _stringConnection = null;
                     return;
@@ -98,19 +124,24 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// Объкт сессии
         /// </summary>
-        protected IMessageBasedSession Session;
+        protected IMessageBasedSession Session { get; set; }
 
         private string _stringConnection;
 
         #endregion
 
         public IeeeBase()
-        {   
-            _words = null;
-            Session = null;
-            StringConnection = null;
+        {     
             /*50ms задежка*/
             _dealySending = 50;
+            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+                new Command("N", "н", 1E-9),
+                new Command("U", "мк", 1E-6),
+                new Command("MA", "м", 1E-3),
+                new Command("", "", 1),
+                new Command("K", "к", 1E3),
+                new Command("MA", "М", 1E6),
+                new Command("G", "Г", 1E9)};
         }
 
         #region Methods
@@ -130,6 +161,7 @@ namespace ASMC.Devices.IEEE
                 };
                 Open();
                 WriteLine(_BEEP);
+                Close();
                 _time.Tick += (sender, args) => { WriteLine(_BEEP); };
                 _time.Start();
             }
@@ -143,32 +175,26 @@ namespace ASMC.Devices.IEEE
         public void Dispose()
         {
           _time?.Dispose();
-            Session?.Dispose();
+            Close();
         }
 
-        /// <summary>
-        /// Закрывает соединение
-        /// </summary>
+        /// <inheritdoc />
         public void Close()
         {
             Session.Clear();
             Session?.Dispose();
         }
 
-        /// <summary>
-        /// Соеденение по уканой строке подключения
-        /// </summary>
-        /// <returns>Возвращает True в случае если соединение установлено</returns>
+        /// <inheritdoc />
         public bool Open()
         {
-            //ConnectionClosed();
+            
             try
             {
                 Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 60000;
                 Session.Clear();
                 Thread.Sleep(10);
-                
 
             }
             catch (Exception e)
@@ -177,8 +203,6 @@ namespace ASMC.Devices.IEEE
                 Session.Clear();
                 return false;
             }
-
-
             return true;
         }
 
@@ -186,20 +210,15 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// Метод обращается к прибору и заполняет массив для информации о нём
         /// </summary>
-        private void GetBaseInfoFromDevice()
+        private string[] GetBaseInfoFromDevice()
         {
+            
+            if(!Open()) {return null;}
             Session.FormattedIO.WriteLine(QueryIdentificationDevice);
-            
-            if ((Session.HardwareInterfaceType == HardwareInterfaceType.Custom) )
-            {
-                _words = new[] { Session.FormattedIO.ReadLine() };
-            }
-            else
-            {
-                _words = Session.FormattedIO.ReadLine().Split(',');
-                if (_words.Length < 2) _words = null;
-            }
-            
+            var res = Session.FormattedIO.ReadLine().Split(',');
+             Close();
+            return res;
+
         }
 
 
@@ -231,7 +250,7 @@ namespace ASMC.Devices.IEEE
                     if (_words != null)
                         if (_words.Length > 2)
                         {
-                            if (string.CompareOrdinal(GetDeviceType, DeviceType) == 0)
+                            if (string.CompareOrdinal(Info.Type, UserType) == 0)
                             {
                                 Close();
                                 return true;
@@ -246,7 +265,7 @@ namespace ASMC.Devices.IEEE
                     Close();
                 }
             }
-            Logger.Warn($@"Устройство {DeviceType} не найдено");
+            Logger.Warn($@"Устройство {UserType} не найдено");
             return false;
         }
 
@@ -269,13 +288,14 @@ namespace ASMC.Devices.IEEE
                         if (_words != null)
                             if (_words.Length > 2)
                             {
-                                if (string.Compare(GetDeviceType, deviseType) == 0) return true;
+                                if (string.CompareOrdinal(Info.Type, deviseType) == 0) return true;
                             }
                             else
                             {
-                                for (var allI = 0; allI < _words.Length; allI++)
-                                    if (_words[allI].Contains(deviseType))
+                                foreach (var t in _words)
+                                    if (t.Contains(deviseType))
                                         return true;
+
                                 _words = null;
                                 connect = null;
                             }
@@ -284,7 +304,7 @@ namespace ASMC.Devices.IEEE
                     }
                     
                 }
-            Logger.Warn($@"Устройство {DeviceType} не найдено");
+            Logger.Warn($@"Устройство {UserType} не найдено");
             return false;
         }
 
@@ -292,116 +312,44 @@ namespace ASMC.Devices.IEEE
         /// Получить список всех устройств
         /// </summary>
         /// <returns></returns>
-        public List<string> GetAllDevace
+        public static string[] GetAllDevace
         {
-
             get
-            {
-
-                var arr = (List<string>) GlobalResourceManager.Find();
-                for (int i = 0; i < arr.Count(); i++)
+            {  
+                var arr = GlobalResourceManager.Find().ToArray();
+                for (var i = 0; i < arr.Length; i++)
                 {
-                    if (arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture))
-                    {
-                        var replace = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
-                        arr[i] = replace;
-                    }
-                }
+                    if (!arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture)) continue;
 
-                return arr.ToList();
+                    var replace = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
+                    arr[i] = replace;
+                } 
+                return arr;
             }
         }
-
-        /// <summary>
-        /// Позволяет получить фирму-производитель устройства от текущей сессии
-        /// </summary>
-        /// <returns>Возвращает фирму-производитель устройства</returns>
-        public string GetDeviceFirm
-        {
-            get{
-                if (_words == null) GetBaseInfoFromDevice();
-                if(_words != null) return _words[0];
-                return "NO TYPE";
-               }
-            
-        }
-
-        /// <summary>
-        /// Позволяет получить зоводской номер устройства от текущей сессии
-        /// </summary>
-        /// <returns>Возвращает заводской номер устройства</returns>
-        public string GetDeviceSerialNumber
-        {
-            get
-            {
-                if (_words == null) GetBaseInfoFromDevice();
-                if (_words != null) return _words[2];
-                return "NO Device Serial Number";
-            }
-            
-        }
-
-        /// <summary>
-        /// Позволяет получить идентификационный номер ПО
-        /// </summary>
-        /// <returns>Возвращает идентификационный номер ПО устройства</returns>
-        public string GetDeviceFirmwareVersion
-        {
-            get
-            {
-                if (_words == null) GetBaseInfoFromDevice();
-                if (_words != null)
-                {
-                    var arr = _words[3].Split('-');
-                    return arr[0];
-                }
-
-                return "NO Firmware Version";
-            }
-           
-        }
-
-        /// <summary>
-        /// Позволяет получить тип устройства от текущей сессии
-        /// </summary>
-        /// <returns>Возвращает тип устройства</returns>
-        public string GetDeviceType
-        {
-            get
-            {
-                if (_words == null) GetBaseInfoFromDevice();
-                if (_words != null) return _words[1];
-                return "NO Device Type";
-            }
-            
-        }
-
+          
         public List<string> GetOption()
         {
-            
-                WriteLine(QueryConfig);
+            WriteLine(QueryConfig);
             return new List<string>(ReadString().Split(','));
-           
-            
         }
-
-        /// <summary>
-        /// Возвращает объект сесии
-        /// </summary>
-        /// <returns>Возвращет объект сессии</returns>
-        public IMessageBasedSession GetSession()
-        {
-            return Session;
-        }
-
         /// <summary>
         /// Считывает строку
         /// </summary>
         /// <returns>Возвращает считанаю строку</returns>
         public string ReadLine()
         {
-            Session = GetSession();
-            var date = Session.FormattedIO.ReadLine();
+            if(!Open()) return null;
+            string date = null;
+            try
+            {
+                date = Session.FormattedIO.ReadLine();
+            }
+            catch(TimeoutException e)
+            {
+                Logger.Error(e);
+            }
+            Close();
             return date;
         }
 
@@ -411,14 +359,18 @@ namespace ASMC.Devices.IEEE
         /// <returns>Возвращает считанаю строку</returns>
         public string ReadString()
         {
-            Session = GetSession();
-            var date = Session.FormattedIO.ReadString();
+            if (!Open()) return null;
+            string date = null;
+            try
+            {
+                date = Session.FormattedIO.ReadString();
+            }
+            catch (TimeoutException e)
+            {  
+              Logger.Error(e);  
+            } 
+            Close();
             return date;
-        }
-
-        public void SetStringconection(string conection)
-        {
-            StringConnection = conection;
         }
 
         /// <summary>
@@ -463,9 +415,10 @@ namespace ASMC.Devices.IEEE
         /// <param name = "date">Принимает текст команды в VBS формате</param>
         public void WriteLine(string date)
         {
-            Session = GetSession();
+            if(!Open()) return;
             Session.FormattedIO.WriteLine(date);
             Thread.Sleep(_dealySending);
+            Close();
         }
 
         /// <summary>
@@ -474,9 +427,10 @@ namespace ASMC.Devices.IEEE
         /// <param name = "date">Принимает текст команды в VBS формате</param>
         public void WriteLineVbs(string date)
         {
-            Session = GetSession();
+            if(!Open()) return;
             Session.FormattedIO.WriteLine("vbs '" + date + "'");
             Thread.Sleep(_dealySending);
+            Close();
         }
 
         private bool Open(bool error)
@@ -520,4 +474,65 @@ namespace ASMC.Devices.IEEE
 
         #endregion
     }
+
+    public abstract class HelpIeeeBase
+    {
+        public ICommand[] Multipliers
+        {
+            get; protected set;
+        }
+        /// <summary>
+        /// Преобразут данные в нужных единицах
+        /// </summary>
+        /// <param name = "date">The date.</param>
+        /// <param name = "mult">The mult.</param>
+        /// <returns></returns>
+        public double DataStrToDoubleMind(string date, Multipliers mult = Devices.Multipliers.None)
+        {
+
+            var value = date.Split(',');
+            var a = new double[value.Length];
+            for(var i = 0; i < value.Length; i++)
+                a[i] = StrToDoubleMindMind(value[i], GetMultiplier(mult));
+            return a.Mean() < 0 ? a.RootMeanSquare() * -1 : a.RootMeanSquare();
+        }
+
+        protected Multipliers GetMultiplier(ICommand mult)
+        {
+            var res = Enum.GetValues(typeof(Multipliers)).Cast<Multipliers>()
+                          .FirstOrDefault(q => Equals(q.GetDoubleValue(), mult.Value));
+            return res;
+        }
+        protected ICommand GetMultiplier(Multipliers mult)
+        {
+            var res = Multipliers.FirstOrDefault(q => Equals(q.Value, mult.GetDoubleValue()));
+            if(res == null)
+                throw new ArgumentOutOfRangeException($@"Даппозон {mult} не найден.");
+            return res;
+        }
+
+        private static double StrToDoubleMindMind(string date, ICommand mult = null)
+        {
+            var dDate = new double[2];
+            var value = date.Replace(".", ",").Split('E');
+            dDate[0] = Convert.ToDouble(value[0]);
+            dDate[1] = Convert.ToDouble(value[1]);
+            return math(dDate[0], dDate[1], mult);
+            // ReSharper disable once InconsistentNaming
+            double math(double val, double exponent, ICommand m)
+            {
+                return val * Math.Pow(10, exponent) / m?.Value ?? 1.0;
+            }
+        }
+        public string JoinValueMult(double value, Multipliers mult)
+        {
+            return JoinValueMult((decimal)value, mult);
+        }
+        public string JoinValueMult(decimal value, Multipliers mult)
+        {
+            return value.ToString("#17", CultureInfo.GetCultureInfo("en-US")) +
+                   GetMultiplier(mult).StrCommand;
+        }
+    }
+    
 }

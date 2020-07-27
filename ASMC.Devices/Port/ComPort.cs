@@ -14,7 +14,7 @@ namespace ASMC.Devices.Port
         /// <summary>
         /// Позволяет получать имя устройства.
         /// </summary>
-        public string DeviceType { get; protected set; }
+        public string UserType { get; protected set; }
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly SerialPort _sp;
 

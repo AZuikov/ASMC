@@ -2,68 +2,118 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using AP.Utils.Data;
 using MathNet.Numerics.Statistics;
+using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public class Main_Mult: IeeeBase
+    public abstract class MultMain : IeeeBase
     {
+       
+        /// <summary>
+        /// Запрос о включенных выходах. Ответ FRON - передняя панель,
+        /// </summary>
+        private const string QueryTerminal = "ROUT:TERM?";
+
         /// <summary>
         /// Запрос на получение значения (U, I, R, F), для преобразования использовать ConvertDate
         /// </summary>
-        public const string QueryValue = "READ?";
+        private const string QueryValue = "READ?";
         /// <summary>
-        /// Запрос о включенных выходах. Ответ FRON - передняя панель, 
+        /// Запрос на получение значения (U, I, R, F)
         /// </summary>
-        private const string QueryTerminal = "ROUT:TERM?";
-        public bool TerminalSet()
-        {
-            string result;
-            Open();
-            WriteLine(QueryTerminal);
-            result = ReadString();
-            Close();
-            if (string.Compare(result, "FRON", true)==0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+        /// <param name="multipliers">Желаемый множитель.</param>
+        /// <returns>Возвращает значение с желаемым множителем.</returns>
+        public double GetMeasValue(Multipliers multipliers = Devices.Multipliers.None)
+        {   var sw = new Stopwatch();
+            sw.Start();
+            WriteLine(QueryValue);
+            var res = DataStrToDoubleMind(ReadString(), multipliers);
+            sw.Stop();
+            TimeLastMeas = sw.Elapsed;
+            return res;
         }
-        protected static string secured_code_calibr;
-        public Main_Mult():base()
-        {
 
+        #region Property
+
+
+        /// <summary>
+        /// Передоставляет настройки постоянного тока.
+        /// </summary>
+        public MDc Dc { get; }
+
+        /// <summary>
+        /// Предоставляет признак включения входов на передней панели  true - передняя панель, false - задняя
+        /// </summary>
+        public bool IsTerminal
+        {
+            get
+            {
+                Open();
+                WriteLine(QueryTerminal);
+                var result = ReadLine().StartsWith("FRON", StringComparison.InvariantCultureIgnoreCase);
+                Close();
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Содержит пароль снятия защиты.
+        /// </summary>
+        protected static string SecuredCodeCalibr { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// Предоставляет время последнего измерения.
+        /// </summary>
+        public TimeSpan TimeLastMeas { get; private set; }
+
+        protected MultMain()
+        {
+            Dc = new MDc(this);
+            Ac = new MAc(this);
         }
         /// <summary>
-        /// Узать какие входы подключены
+        /// Предоставляет доступ к переменноме току.
         /// </summary>
-        /// <returns>true - передняя панель, false - задняя</returns>
-        public bool GetTerminalConnect()
-        {
-            string result;
-            WriteLine(QueryTerminal);
-            result=ReadString();
-            switch (result)
-            {
-                case "FRON":
-                    return true;
-                case "REAR":
-                    return false;
-            }
-            return false;
-        }
+        public MAc Ac { get; }
+
+  
+
         public class Calibr
         {
+            #region Methods
+
+            /// <summary>
+            /// Установить калибровочное зачение
+            /// </summary>
+            /// <param name = "value">значение</param>
+            /// <param name = "typeCalValue">Тип калибровки</param>
+            /// <param name = "multipliers">Множитель</param>
+            /// <returns></returns>
+            public static string SetCalValue(double value, string typeCalValue, string multipliers)
+            {
+                return "CAL:VAL " + value + multipliers.Insert(multipliers.Length, typeCalValue);
+            }
+
+            /// <summary>
+            /// Запрос на установки калибровки
+            /// </summary>
+            /// <returns></returns>
+            public static string QueryCal()
+            {
+                return "CAL?";
+            }
+
+            #endregion
+
             public class Secured
             {
-                /// <summary>
-                /// Запросить статус безапасности
-                /// </summary>
-                public static string ChecState = "CAL:SEC:STAT?";
                 /// <summary>
                 /// Статус
                 /// </summary>
@@ -72,42 +122,59 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                     /// <summary>
                     /// Включить
                     /// </summary>
-                    ON,
+                    On,
+
                     /// <summary>
                     /// Выключить
                     /// </summary>
-                    OFF
+                    Off
                 }
+
+                /// <summary>
+                /// Запросить статус безапасности
+                /// </summary>
+                public static string ChecState = "CAL:SEC:STAT?";
+
+                #region  Fields
+
                 /// <summary>
                 /// Автовыбор предела
                 /// </summary>
-                public string ON = "CAL:SEC:STAT ON, " + secured_code_calibr;
+                public string Off = "CAL:SEC:STAT OFF, " + SecuredCodeCalibr;
+
                 /// <summary>
                 /// Автовыбор предела
                 /// </summary>
-                public string OFF = "CAL:SEC:STAT OFF, " + secured_code_calibr;
+                public string On = "CAL:SEC:STAT ON, " + SecuredCodeCalibr;
+
+                #endregion
+
+                #region Methods
+
                 /// <summary>
                 /// Снятие и установка защиты
                 /// </summary>
-                /// <param name="state">Состояние защиты</param>
+                /// <param name = "state">Состояние защиты</param>
                 /// <returns></returns>
                 public static string InputCode(State state)
                 {
-                    return "CAL:SEC:STAT " + (state == 0 ? "ON, " : "OFF, ") + secured_code_calibr;
+                    return "CAL:SEC:STAT " + (state == 0 ? "ON, " : "OFF, ") + SecuredCodeCalibr;
                 }
+
                 /// <summary>
                 /// Снятие и установка защиты
                 /// </summary>
-                /// <param name="code">Код защиты</param>
-                /// <param name="state">Состояние защиты</param>
+                /// <param name = "code">Код защиты</param>
+                /// <param name = "state">Состояние защиты</param>
                 /// <returns></returns>
                 public static string InputCode(string code, State state)
                 {
                     return "CAL:SEC:STAT " + (state == 0 ? "ON, " : "OFF, ") + code;
                 }
-               
 
+                #endregion
             }
+
             /// <summary>
             /// Типы калибровок
             /// </summary>
@@ -117,299 +184,532 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 /// Калибровка напряжения
                 /// </summary>
                 public const string Volt = "V";
+
                 /// <summary>
                 /// Калибровка по току
                 /// </summary>
                 public const string Current = "";
             }
-            /// <summary>
-            /// Установить калибровочное зачение
-            /// </summary>
-            /// <param name="value">значение</param>
-            /// <param name="TypeCalValue">Тип калибровки</param>
-            /// <param name="multipliers">Множитель</param>
-            /// <returns></returns>
-            public static string SetCalValue(double value, string TypeCalValue, string multipliers)
-            {
-                return "CAL:VAL " + value + multipliers.Insert(multipliers.Length, TypeCalValue);
-            }
-            /// <summary>
-            /// Запрос на установки калибровки
-            /// </summary>
-            /// <returns></returns>
-            public static string QueryCal()
-            {
-                return "CAL?";
-            }
         }
-        /// <summary>
-        /// Содержит перечень всех доступных множителей
-        /// </summary>
-        public class Multipliers
+
+        public class MDc
         {
-            /// <summary>
-            /// The mega соответствует множетелю Мега
-            /// </summary>
-            public const string mega = " MA";
-            /// <summary>
-            /// The mili соответствует множетелю мили
-            /// </summary>
-            public const string mili = " M";
-            /// <summary>
-            /// The kilo соответствует множетелю кило
-            /// </summary>
-            public const string kilo = " K";
-            /// <summary>
-            /// The micro соответствует множетелю микро
-            /// </summary>
-            public const string micro = " U";
-            /// <summary>
-            /// The nano соответствует множетелю нано
-            /// </summary>
-            public const string nano = " N";
-            /// <summary>
-            /// The si без множителя, в соответствии с СИ
-            /// </summary>
-            public const string SI = "";
-        }
-        public class DC
-        {
-            public class Voltage
+
+            #region  Fields
+
+            private MultMain _multMain;
+
+            #endregion
+
+            #region Property
+
+            public MVoltage Voltage { get; }
+
+            #endregion
+
+            public MDc(MultMain multMain)
             {
-                /// <summary>
-                /// Определяет предел
-                /// </summary>
-                public class Range
+                _multMain = multMain;
+                Current = new MCurrent(multMain);
+                Voltage = new MVoltage(multMain);
+            }
+
+            public class MVoltage
+            {
+
+                #region  Fields
+
+                private MultMain _multMain;
+
+                #endregion
+
+                #region Property
+
+                public MRange Range { get; }
+
+                #endregion
+
+                public MVoltage(MultMain multMain)
                 {
-                    /// <summary>
-                    /// Sets the specified value.
-                    /// </summary>
-                    /// <param name="value">The value.</param>
-                    /// <param name="multipliers">Задает множитель <see cref="Multipliers"/> class.</param>
-                    /// <returns></returns>
-                    public static string Set(double value, string multipliers = "")
-                    {
-                        return "CONF:VOLT:DC: " + value.ToString(CultureInfo.GetCultureInfo("en-US")) + multipliers;
-                    }
-                    /// <summary>
-                    /// Команда автоматического выбора придела
-                    /// </summary>
-                    public const string Auto = "CONF:VOLT:DC AUTO";
-                    /// <summary>
-                    /// Команда 
-                    /// </summary>
-                    public const string V1000 = "CONF:VOLT:DC 1000";
-                    /// <summary>
-                    /// Предел 100 В
-                    /// </summary>
-                    public const string V100 = "CONF:VOLT:DC 100";
-                    /// <summary>
-                    /// Предел 10 В
-                    /// </summary>
-                    public const string V10 = "CONF:VOLT:DC 10";
-                    /// <summary>
-                    /// Предел 1 В
-                    /// </summary>COLT
-                    public const string V1 = "CONF:VOLT:DC 1";
-                    /// <summary>
-                    /// Предел 100 мВ
-                    /// </summary>
-                    public const string MV100 = "CONF:VOLT:DC 100 MV";
+                    _multMain = multMain;
+                    Range = new MRange(multMain);
                 }
 
+                /// <summary>
+                /// Определяет предел
+                /// </summary>
+                public class MRange
+                {
+                    public ICommand[] Ranges { get; protected internal set; }
+                   
+                    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+                    #region  Fields
+
+                    private readonly MultMain _multMain;
+
+                    #endregion
+
+                    public MRange(MultMain multMain)
+                    {
+                        Ranges = new ICommand[]{
+                            new Command("CONF:VOLT:DC AUTO", "Автоматичсекий выбор предела", 0),
+                            new Command("CONF:VOLT:DC 100 MV", "100 мВ", 1E-3),
+                            new Command("CONF:VOLT:DC 1 V", "1 В", 1),
+                            new Command("CONF:VOLT:DC 10 V", "10 В", 10),
+                            new Command("CONF:VOLT:DC 100 V", "100 В", 100),
+                            new Command("CONF:VOLT:DC 1000 V", "1000 В", 1000),   };
+                        _multMain = multMain;
+                    }
+
+                    #region Methods
+                    public enum ERanges
+                    {
+                        /// <summary>
+                        /// Команда автоматического выбора придела
+                        /// </summary>
+                        [StringValue("CONF:VOLT:DC AUTO")]
+                        [DoubleValue(0)]
+                        Auto,
+
+                        /// <summary>
+                        /// Предел 100 мВ
+                        /// </summary>
+                        [StringValue("CONF:VOLT:DC 100 MV")]
+                        [DoubleValue(0.1)]
+                        Mv100,
+
+                        /// <summary>
+                        /// Предел 1 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:DC 1")]
+                        [DoubleValue(1)]
+                        V1,
+
+                        /// <summary>
+                        /// Предел 10 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:DC 10")]
+                        [DoubleValue(10)]
+                        V10,
+
+                        /// <summary>
+                        /// Предел 100 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:DC 100")]
+                        [DoubleValue(100)]
+                        V100,
+
+                        /// <summary>
+                        /// Предел 1000 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:DC 1000")]
+                        [DoubleValue(1000)]
+                        V1000
+                    }
+                    /// <summary>
+                    /// Устанавливает диапазон взависимости от значения.
+                    /// </summary>
+                    /// <param name = "value">Входное значение.</param>
+                    /// <param name = "multipliers">Множитель вногдной величины.</param>
+                    /// <returns></returns>
+                    public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+                    {
+                        var val = Math.Abs(value);
+                        val *= multipliers.GetDoubleValue();
+                        var res = Ranges.FirstOrDefault(q => q.Value <= val);
+
+                        if(res == null)
+                        {
+                            Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                            res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
+                        }
+
+                        _multMain.WriteLine(res.StrCommand);
+
+                        return _multMain;
+                    }
+
+                    public MultMain Set(ERanges range = ERanges.Auto)
+                    {
+                        _multMain.WriteLine(range.GetStringValue());
+                        return _multMain;
+                    }
+
+                    #endregion
+                }
             }
-            public class Current
+            public MCurrent Current { get; }
+            public class MCurrent
+            {
+                #region  Fields
+
+                private MultMain _multMain;
+
+                #endregion
+
+                #region Property
+
+                public MRange Range { get;protected internal set; }
+
+                #endregion
+
+                public MCurrent(MultMain multMain)
+                {
+                    _multMain = multMain;
+                    Range = new MRange(multMain);
+                }
+                /// <summary>
+                /// Определяет предел
+                /// </summary>
+                public class MRange
+                {
+                    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+                    private readonly MultMain _multMain;
+                 
+                    #region Methods
+
+                    /// <summary>
+                    /// Устанавливает диапазон взависимости от значения.
+                    /// </summary>
+                    /// <param name = "value">Входное значение.</param>
+                    /// <param name = "multipliers">Множитель вногдной величины.</param>
+                    /// <returns></returns>
+                    public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+                    {
+                        var val = Math.Abs(value);
+                        val *= multipliers.GetDoubleValue();
+                        var res = Ranges.FirstOrDefault(q => q.Value <= val);
+
+                        if(res == null)
+                        {
+                            Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                            res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
+                        }
+
+                        _multMain.WriteLine(res.StrCommand);
+
+                        return _multMain;
+                    }
+
+                 
+
+                    #endregion
+                    public MRange(MultMain multMain)
+                    {
+                        this._multMain = multMain;
+                        Ranges = new ICommand[]{
+                            new Command("CONF:CURR:DC:RANG AUTO ON", "Автоматичсекий выбор предела", 0),
+                            new Command("CONF:CURR:DC 10 UA", "10 мкА", 10E-6),
+                            new Command("CONF:CURR:DC 100 MA", "100 мА", 100E-3),
+                            new Command("CONF:CURR:DC 10 MA", "10 мА", 10E-3),
+                            new Command("CONF:CURR:DC 1 MA", "1 мА", 1E-3),
+                            new Command("CONF:CURR:DC 1 A","1 А", 1),
+                            new Command("CONF:CURR:DC 3 A","3 А", 3)  };
+                        _multMain = multMain;
+                    }
+
+                    public ICommand[] Ranges { get; protected set; }
+                }
+            }
+        }
+
+        public class MAc
+        {
+            private MultMain _multMain;
+
+            public MAc(MultMain multMain)
+            {
+                this._multMain = multMain;
+                Voltage = new MVoltage(multMain);
+            }
+
+            public MVoltage Voltage { get;}
+
+            /// <summary>
+            /// Измерение переменного напряжения
+            /// </summary>
+            public class MVoltage
+            {
+                private MultMain _multMain;
+
+                public MVoltage(MultMain multMain)
+                {
+                    this._multMain = multMain;
+                    Range = new MRange(multMain);
+                    Filtr= new MFiltr(multMain);
+                }
+                /// <summary>
+                /// Позволяет настраивать предел измерения.
+                /// </summary>
+                public MRange Range { get; protected internal set; }
+
+                public MFiltr Filtr { get; protected internal set; }
+
+                /// <summary>
+                /// Определяет предел
+                /// </summary>
+                public class MRange
+                {
+                    public enum ERanges
+                    {
+                        /// <summary>
+                        /// Команда автоматического выбора придела
+                        /// </summary>
+                        [StringValue("CONF:VOLT:AC AUTO")]
+                        [DoubleValue(0)]
+                        Auto,
+
+                        /// <summary>
+                        /// Предел 100 мВ
+                        /// </summary>
+                        [StringValue("CONF:VOLT:AC 100 MV")]
+                        [DoubleValue(0.1)]
+                        Mv100,
+
+                        /// <summary>
+                        /// Предел 1 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:AC 1")]
+                        [DoubleValue(1)]
+                        V1,
+
+                        /// <summary>
+                        /// Предел 10 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:AC 10")]
+                        [DoubleValue(10)]
+                        V10,
+
+                        /// <summary>
+                        /// Предел 100 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:AC 100")]
+                        [DoubleValue(100)]
+                        V100,
+
+                        /// <summary>
+                        /// Предел 1000 В
+                        /// </summary>
+                        [StringValue("CONF:VOLT:AC 750")]
+                        [DoubleValue(750)]
+                        V750
+                    }
+
+                    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+                    private readonly MultMain _multMain;
+
+                    public MRange(MultMain multMain)
+                    {
+                        this._multMain = multMain;
+                        Filtr = new MFiltr(multMain);
+                        Ranges= new ICommand[]{
+                            new Command("CONF:VOLT:AC AUTO", "Автоматичсекий выбор предела", 0),
+                            new Command("CONF:VOLT:AC 100 MV", "100 мВ", 100E-3),
+                            new Command("CONF:VOLT:AC 1", "1 В", 1),
+                            new Command("CONF:VOLT:AC 10", "10 В", 10),
+                            new Command("CONF:VOLT:AC 100", "100 В", 100),
+                            new Command("CONF:VOLT:AC 750","750 В", 750)};
+                    }
+
+                    /// <summary>
+                    /// Позволяет настраивать фильтр.
+                    /// </summary>
+                    public MFiltr Filtr { get; }
+
+                    /// <summary>
+                    /// Устанавливает диапазон взависимости от значения.
+                    /// </summary>
+                    /// <param name = "value">Входное значение.</param>
+                    /// <param name = "multipliers">Множитель вногдной величины.</param>
+                    /// <returns></returns>
+                    public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+                    {
+                        var val = Math.Abs(value);
+                        val *= multipliers.GetDoubleValue();
+                        var res = Ranges.FirstOrDefault(q => q.Value <= val);
+
+                        if(res == null)
+                        {
+                            Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                            res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
+                        }
+
+                        _multMain.WriteLine(res.StrCommand);
+
+                        return _multMain;
+                    }
+
+                    public ICommand [] Ranges { get; protected set; }
+
+                    public MultMain Set(ERanges range = ERanges.Auto)
+                    {
+                        _multMain.WriteLine(range.GetStringValue());
+                        return _multMain;
+                    }
+                }
+
+                /// <summary>
+                /// Фильтр
+                /// </summary>
+                public class MFiltr
+                {
+                    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+                    public enum EFiltrs
+                    {
+                        /// <summary>
+                        /// Установить фильтр 3 Гц
+                        /// </summary>
+                        [StringValue("SENS:VOLT:AC:BAND 3")]
+                        [DoubleValue(3)]
+                        F3,
+                        /// <summary>
+                        /// Установить фильтр 20 Гц, по умолчанию
+                        /// </summary>
+                        [StringValue("SENS:VOLT:AC:BAND 20")]
+                        [DoubleValue(20)]
+                        F20,
+                        /// <summary>
+                        /// Установить фильтр 200 Гц
+                        /// </summary>
+                        [StringValue("CSENS:VOLT:AC:BAND 200")]
+                        [DoubleValue(200)]
+                        F200,
+                    }
+                   
+                    private readonly MultMain _multMain;
+
+                    public MFiltr(MultMain multMain)
+                    {
+                        this._multMain = multMain;
+                        Filters= new ICommand[]
+                        {
+                            new Command("SENS:VOLT:AC:BAND 3", "ФНЧ 3 Гц",3),
+                            new Command("SENS:VOLT:AC:BAND 20", "ФНЧ 3 Гц",20),
+                            new Command("SENS:VOLT:AC:BAND 200", "ФНЧ 3 Гц",200),
+                        };
+
+                    }
+                    public ICommand[] Filters
+                    {
+                        get; protected set;
+                    }
+                    /// <summary>
+                    /// Устанавливает диапазон фильтра взависимости от значения.
+                    /// </summary>
+                    /// <param name = "value">Входное значение.</param>
+                    /// <param name = "multipliers">Множитель вногдной величины.</param>
+                    /// <returns></returns>
+                    public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+                    {
+                        var val = Math.Abs(value);
+                        val *= multipliers.GetDoubleValue();
+                        var res = Filters.FirstOrDefault(q => q.Value >= val);
+
+                        if(res == null)
+                        {
+                            Logger.Info($@"Входное знаечние меньше допустимого,установлен минимальная полоса.");
+                            res = Filters.First(q => Equals(q.Value, Filters.Select(p => p.Value).Min()));
+                        }
+
+                        _multMain.WriteLine(res.StrCommand);
+
+                        return _multMain;
+                    }
+
+                 
+                }
+            }
+
+            /// <summary>
+            /// Содержит команды отвечающие за настройку измерения силы тока
+            /// </summary>
+            public class MCurrent
             {
                 /// <summary>
                 /// Определяет предел
                 /// </summary>
-                public class Range
+                public class MRange
                 {
                     /// <summary>
-                    /// Установка предела от ожидаемого значения
+                    /// Предел 1 А
                     /// </summary>
-                    /// <param name="value">Ожидаемое знаечние</param>
-                    /// <returns>Сформированую команду</returns>
-                    public static string Set(double value)
-                    {
-                        return "CONF:CURR:DC RANG " + value.ToString(CultureInfo.GetCultureInfo("en-US"));
-                    }
+                    public const string A1 = "CONF:CURR:AC 1";
+
+                    /// <summary>
+                    /// Предел 10 А
+                    /// </summary>
+                    public const string A10 = "CONF:CURR:AC 10";
+
+                    /// <summary>
+                    /// Предел 3 А
+                    /// </summary>
+                    public const string A3 = "CONF:CURR:AC 3";
+
                     /// <summary>
                     /// Автовыбор предела
                     /// </summary>
                     public const string Auto = "CONF:CURR:DC:RANG AUTO ON";
 
                     /// <summary>
-                    /// Предел 10 А
-                    /// </summary>
-                    public const string A10 = "CONF:CURR:DC 10";
-                    /// <summary>
-                    /// Предел 3 А
-                    /// </summary>
-                    public const string A3 = "CONF:CURR:DC 3";
-                    /// <summary>
-                    /// Предел 1 А
-                    /// </summary>
-                    public const string A1 = "CONF:CURR:DC 1";
-                    /// <summary>
-                    /// Предел 100 мА
-                    /// </summary>COLT
-                    public const string M100 = "CONF:CURR:DC 100 MA";
-                    /// <summary>
                     /// Предел 1 мА
                     /// </summary>
-                    public const string M1 = "CONF:CURR:DC 1 MA";
+                    public const string M1 = "CONF:CURR:AC 1 MA";
+
                     /// <summary>
                     /// Предел 10 мА
                     /// </summary>
-                    public const string M10 = "CONF:CURR:DC 10 MA";
+                    public const string M10 = "CONF:CURR:AC 10 MA";
+
+                    /// <summary>
+                    /// Предел 100 мА
+                    /// </summary>
+                    /// COLT
+                    public const string M100 = "CONF:CURR:AC 100 MA";
+
                     /// <summary>
                     /// Предел 100 мкА
                     /// </summary>
-                    public const string U100 = "CONF:CURR:DC 10 UA";
-                }
+                    public const string U100 = "CONF:CURR:AC 100 UA";
 
+                    #region Methods
 
-            }
-        }
-        public class AC
-        {
-            /// <summary>
-            /// Измерение переменного напряжения
-            /// </summary>
-            public class Voltage
-            {
-                /// <summary>
-                /// Определяет предел
-                /// </summary>
-                public class Range
-                {
                     /// <summary>
                     /// Установка предела от ожидаемого значения
                     /// </summary>
-                    /// <param name="value">Ожидаемое знаечние</param>
-                    /// <returns>Сформированую команду</returns>
-                    public static string Set(double value)
-                    {
-                        return "CONF:VOLT:AC " + value.ToString(CultureInfo.GetCultureInfo("en-US"));
-                    }
-                    /// <summary>
-                    /// Автовыбор предела
-                    /// </summary>
-                    public const string Auto = "CONF:VOLT:AC AUTO";
-                    /// <summary>
-                    /// Предел 750 В
-                    /// </summary>
-                    public const string V750 = "CONF:VOLT:AC 750";
-                    /// <summary>
-                    /// Предел 100 В
-                    /// </summary>
-                    public const string V100 = "CONF:VOLT:AC 100";
-                    /// <summary>
-                    /// Предел 10 В
-                    /// </summary>
-                    public const string V10 = "CONF:VOLT:AC 10";
-                    /// <summary>
-                    /// Предел 1 В
-                    /// </summary>
-                    public const string V1 = "CONF:VOLT:AC 1";
-                    /// <summary>
-                    /// Предел 100 мВ
-                    /// </summary>
-                    public const string MV100 = "CONF:VOLT:AC 100 MV";
-                }
-                /// <summary>
-                /// Фильтр
-                /// </summary>
-                public class Filtr
-                {
-                    /// <summary>
-                    /// Установить фильтр 3 Гц
-                    /// </summary>
-                    public const string Filtr_3 = "SENS:VOLT:AC:BAND 3";
-                    /// <summary>
-                    /// Установить фильтр 20 Гц, по умолчанию
-                    /// </summary>
-                    public const string Filtr_20_Def = "SENS:VOLT:AC:BAND 20";
-                    /// <summary>
-                    /// Установить фильтр 200 Гц
-                    /// </summary>
-                    public const string Filtr_200 = "SENS:VOLT:AC:BAND 200";
-                }
-            }
-            /// <summary>
-            /// Содержит команды отвечающие за настройку измерения силы тока
-            /// </summary>
-            public class Current
-            {
-                /// <summary>
-                /// Определяет предел
-                /// </summary>
-                public class Range
-                {
-                    /// <summary>
-                    /// Установка предела от ожидаемого значения
-                    /// </summary>
-                    /// <param name="value">Ожидаемое знаечние</param>
+                    /// <param name = "value">Ожидаемое знаечние</param>
                     /// <returns>Сформированую команду</returns>
                     public static string Set(double value)
                     {
                         return "CONF:CURR:AC:RANG " + value.ToString(CultureInfo.GetCultureInfo("en-US"));
                     }
-                    /// <summary>
-                    /// Автовыбор предела
-                    /// </summary>
-                    public const string Auto = "CONF:CURR:DC:RANG AUTO ON";
-                    /// <summary>
-                    /// Предел 10 А
-                    /// </summary>
-                    public const string A10 = "CONF:CURR:AC 10";
-                    /// <summary>
-                    /// Предел 3 А
-                    /// </summary>
-                    public const string A3 = "CONF:CURR:AC 3";
-                    /// <summary>
-                    /// Предел 1 А
-                    /// </summary>
-                    public const string A1 = "CONF:CURR:AC 1";
-                    /// <summary>
-                    /// Предел 100 мА
-                    /// </summary>COLT
-                    public const string M100 = "CONF:CURR:AC 100 MA";
-                    /// <summary>
-                    /// Предел 1 мА
-                    /// </summary>
-                    public const string M1 = "CONF:CURR:AC 1 MA";
-                    /// <summary>
-                    /// Предел 10 мА
-                    /// </summary>
-                    public const string M10 = "CONF:CURR:AC 10 MA";
-                    /// <summary>
-                    /// Предел 100 мкА
-                    /// </summary>
-                    public const string U100 = "CONF:CURR:AC 100 UA";
+
+                    #endregion
                 }
+
                 /// <summary>
                 /// Фильтр
                 /// </summary>
-                public class Filtr
+                public class MFiltr
                 {
-                    /// <summary>
-                    /// Установить фильтр 3 Гц
-                    /// </summary>
-                    public const string Filtr_3 = "SENS:CURR:AC:BAND 3";
-                    /// <summary>
-                    /// Установить фильтр 20 Гц, по умолчанию
-                    /// </summary>
-                    public const string Filtr_20_Def = "SENS:CURR:AC:BAND 20";
                     /// <summary>
                     /// Установить фильтр 200 Гц
                     /// </summary>
-                    public const string Filtr_200 = "SENS:CURR:AC:BAND 200";
+                    public const string Filtr200 = "SENS:CURR:AC:BAND 200";
+
+                    /// <summary>
+                    /// Установить фильтр 20 Гц, по умолчанию
+                    /// </summary>
+                    public const string Filtr20Def = "SENS:CURR:AC:BAND 20";
+
+                    /// <summary>
+                    /// Установить фильтр 3 Гц
+                    /// </summary>
+                    public const string Filtr3 = "SENS:CURR:AC:BAND 3";
                 }
             }
         }
+
         /// <summary>
         /// Содержит команды отвечающие за настройку измерения частоты
         /// </summary>
@@ -424,28 +724,34 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 /// Автовыбор предела включение измерения частоты
                 /// </summary>
                 public const string AutoAndOn = "CONF:FREQ";
+
+                /// <summary>
+                /// Предел 100 мВ
+                /// </summary>
+                public const string Mv100 = "SENS:FREQ:VOLT:RANG 0.1";
+
                 /// <summary>
                 /// Предел 1 В
                 /// </summary>
                 public const string V1 = "SENS:FREQ:VOLT:RANG 1";
+
                 /// <summary>
                 /// Предел 10 В
                 /// </summary>
                 public const string V10 = "SENS:FREQ:VOLT:RANG 10";
+
                 /// <summary>
                 /// Предел 100 В
                 /// </summary>
                 public const string V100 = "SENS:FREQ:VOLT:RANG 100";
+
                 /// <summary>
                 /// Предел 1000 В
                 /// </summary>
                 public const string V1000 = "SENS:FREQ:VOLT:RANG 1000";
-                /// <summary>
-                /// Предел 100 мВ
-                /// </summary>
-                public const string MV100 = "SENS:FREQ:VOLT:RANG 0.1";
             }
         }
+
         /// <summary>
         /// Содержит команды отвечающие за настройку измерения сопротивления
         /// </summary>
@@ -465,40 +771,49 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                     /// Автовыбор предела
                     /// </summary>
                     public const string Auto = "CONF:RES";
+
                     /// <summary>
                     /// Предел 100 Ом
                     /// </summary>
                     public const string R100 = "CONF:RES 100";
+
                     /// <summary>
                     /// Предел 1 кОм
                     /// </summary>
-                    public const string RK1 = "CONF:RES 1 KOhm";
+                    public const string Rk1 = "CONF:RES 1 KOhm";
+
                     /// <summary>
                     /// Предел 10 кОм
                     /// </summary>
-                    public const string RK10 = "CONF:RES 10 KOhm";
+                    public const string Rk10 = "CONF:RES 10 KOhm";
+
                     /// <summary>
                     /// Предел 100 кОм
                     /// </summary>
-                    public const string RK100 = "CONF:RES 100 KOhm";
+                    public const string Rk100 = "CONF:RES 100 KOhm";
+
                     /// <summary>
                     /// Предел 1 MОм
                     /// </summary>
-                    public const string RM1 = "CONF:RES 1 MOhm";
+                    public const string Rm1 = "CONF:RES 1 MOhm";
+
                     /// <summary>
                     /// Предел 10 MОм
                     /// </summary>
-                    public const string RM10 = "CONF:RES 10 MOhm";
+                    public const string Rm10 = "CONF:RES 10 MOhm";
+
                     /// <summary>
                     /// Предел 100 MОм
                     /// </summary>
-                    public const string RM100 = "CONF:RES 100 MOhm";
+                    public const string Rm100 = "CONF:RES 100 MOhm";
+
                     /// <summary>
                     /// Предел 1 ГОм
                     /// </summary>
-                    public const string RM1000 = "CONF:RES 1 GOhm";
+                    public const string Rm1000 = "CONF:RES 1 GOhm";
                 }
             }
+
             /// <summary>
             /// 4х проводное измерение
             /// </summary>
@@ -513,42 +828,50 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                     /// Автовыбор предела
                     /// </summary>
                     public const string Auto = "CONF:FRES";
+
                     /// <summary>
                     /// Предел 100 Ом
                     /// </summary>
                     public const string R100 = "CONF:FRES 100";
+
                     /// <summary>
                     /// Предел 1 кОм
                     /// </summary>
-                    public const string RK1 = "CONF:FRES 1 KOhm";
+                    public const string Rk1 = "CONF:FRES 1 KOhm";
+
                     /// <summary>
                     /// Предел 10 кОм
                     /// </summary>
-                    public const string RK10 = "CONF:FRES 10 KOhm";
+                    public const string Rk10 = "CONF:FRES 10 KOhm";
+
                     /// <summary>
                     /// Предел 100 кОм
                     /// </summary>
-                    public const string RK100 = "CONF:FRES 100 KOhm";
+                    public const string Rk100 = "CONF:FRES 100 KOhm";
+
                     /// <summary>
                     /// Предел 1 MОм
                     /// </summary>
-                    public const string RM1 = "CONF:FRES 1 MOhm";
+                    public const string Rm1 = "CONF:FRES 1 MOhm";
+
                     /// <summary>
                     /// Предел 10 MОм
                     /// </summary>
-                    public const string RM10 = "CONF:FRES 10 MOhm";
+                    public const string Rm10 = "CONF:FRES 10 MOhm";
+
                     /// <summary>
                     /// Предел 100 MОм
                     /// </summary>
-                    public const string RM100 = "CONF:FRES 100 MOhm";
+                    public const string Rm100 = "CONF:FRES 100 MOhm";
+
                     /// <summary>
                     /// Предел 1 ГОм
                     /// </summary>
-                    public const string RM1000 = "CONF:FRES 1 GOhm";
+                    public const string Rm1000 = "CONF:FRES 1 GOhm";
                 }
-
             }
         }
+
         /// <summary>
         /// Содержит команды для настроек измерения емкости
         /// </summary>
@@ -559,75 +882,40 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             /// </summary>
             public class Range
             {
-
                 /// <summary>
                 /// Автовыбор предела включение измерения частоты
                 /// </summary>
                 public const string AutoAndOn = "CONF:CAP";
+
                 /// <summary>
                 /// Предел 1 нФ
                 /// </summary>
-                public const string nF1 = "CONF:CAP 1 NF";
+                public const string Nf1 = "CONF:CAP 1 NF";
+
                 /// <summary>
                 /// Предел 10 нФ
                 /// </summary>
-                public const string nF10 = "CONF:CAP 10 NF";
+                public const string Nf10 = "CONF:CAP 10 NF";
+
                 /// <summary>
                 /// Предел 100 нФ
                 /// </summary>
-                public const string nF100 = "CONF:CAP 100 NF";
+                public const string Nf100 = "CONF:CAP 100 NF";
+
                 /// <summary>
                 /// Предел 1 мкФ
                 /// </summary>
-                public const string uF1 = "CONF:CAP 1 UF";
+                public const string Uf1 = "CONF:CAP 1 UF";
+
                 /// <summary>
                 /// Предел 10 мкФ
                 /// </summary>
-                public const string uF10 = "CONF:CAP 10 UF";
+                public const string Uf10 = "CONF:CAP 10 UF";
+
                 /// <summary>
                 /// Предел 100 мкФ
                 /// </summary>
-                public const string uF100 = "CONF:CAP 100 UF";
-            }
-        }
-        /// <summary>
-        /// Прробразут данные в нужных единицах
-        /// </summary>
-        /// <param name="date">The date.</param>
-        /// <param name="Mult">The mult.</param>
-        /// <returns></returns>
-        public double DataPreparationAndConvert(string date, string Mult = "")
-        {
-            string[] Value = date.Split(',');
-            double[] a = new double[Value.Length];
-            for (int i = 0; i < Value.Length; i++)
-            {
-                a[i] = Convert(Value[i], Mult);
-            }
-            return Statistics.Mean(a) < 0 ? Statistics.RootMeanSquare(a) * -1 : Statistics.RootMeanSquare(a);
-
-        }
-        private double Convert(string date, string Mult = "")
-        {
-
-            double[] dDate = new double[2];
-            string[] Value = date.Replace(".", ",").Split('E');
-            dDate[0] = System.Convert.ToDouble(Value[0]);
-            dDate[1] = System.Convert.ToDouble(Value[1]);
-            switch (Mult)
-            {
-                case " M":
-                    return (dDate[0] * Math.Pow(10, dDate[1])) * 1000;
-                case " N":
-                    return (dDate[0] * Math.Pow(10, dDate[1])) * 1000000000;
-                case " U":
-                    return (dDate[0] * Math.Pow(10, dDate[1])) * 1000000;
-                case " K":
-                    return (dDate[0] * Math.Pow(10, dDate[1])) / 1000;
-                case " MA":
-                    return (dDate[0] * Math.Pow(10, dDate[1])) / 1000000;
-                default:
-                    return (dDate[0] * Math.Pow(10, dDate[1]));
+                public const string Uf100 = "CONF:CAP 100 UF";
             }
         }
     }

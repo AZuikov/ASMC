@@ -1,6 +1,6 @@
 ﻿namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 {
-    public class N3306A : Main_N3300
+    public class N3306A : MainN3300
     {
 
         
@@ -8,11 +8,12 @@
         {
             ModuleModel = "N3306A";
 
-            //Пределы воспроизведения сопротивлений в режиме CR
-            this.rangeResistanceArr = new decimal[4] { 1, 10, 100, 1000 };
-
-            this.rangeVoltArr = new decimal[2] { 6, 60 };
-            this.rangeCurrentArr = new decimal[2] { 12, 120 };
+            this.Resistance.Ranges = new ICommand[]
+            {
+                new Command("RESistance:RANGe 1", "", 1), new Command("RESistance:RANGe 10", "", 10), new Command("RESistance:RANGe 100", "", 100), new Command("RESistance:RANGe 1000", "", 1000)
+            };
+            this.RangeVoltArr = new decimal[2] { 6, 60 };
+            this.RangeCurrentArr = new decimal[2] { 12, 120 };
         }
 
 

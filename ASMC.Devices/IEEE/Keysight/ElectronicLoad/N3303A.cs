@@ -1,22 +1,62 @@
-﻿namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
+﻿using AP.Reports.Utils;
+using NLog;
+
+namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 {
-    public class N3303A : Main_N3300
+    public class N3303A : MainN3300
     {
         public N3303A() 
         {
             ModuleModel = "N3303A";
 
             //Пределы воспроизведения сопротивлений в режиме CR
-            this.rangeResistanceArr = new decimal[4] { 48, 480, 4800, 12000 };
 
-            this.rangeVoltArr = new decimal[2] { 24, 240 };
-            this.rangeCurrentArr = new decimal[2] { 1, 10 };
+            this.RangeVoltArr = new decimal[2] { 24, 240 };
+            this.RangeCurrentArr = new decimal[2] { 1, 10 };
+          
+           this.Resistance= new LResistance03(this);
 
-           
+          
 
-           
         }
+          public class LResistance03: MainN3300.LResistance
+        {
 
+            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+            private readonly MainN3300 _mainN3300;
+            public enum ERanges
+            {
+                [StringValue("RESistance:RANGe 48")] [DoubleValue(48)]
+                Res48,
+                [StringValue("RESistance:RANGe 480")]
+                [DoubleValue(480)]
+                Res480,
+                [StringValue("RESistance:RANGe 4800")]
+                [DoubleValue(4800)]
+                Res4800,
+                [StringValue("RESistance:RANGe 12000")]
+                [DoubleValue(12000)]
+                Res12000
+            }
+            /// <summary>
+            /// Устанавливает ВЕЛИЧИНУ сопротивления для режима CR
+            /// </summary>
+            /// <param name = "value"></param>
+            /// <param name = "mult"></param>
+            public MainN3300 Set(ERanges value)
+            {
+                _mainN3300.WriteLine(value.GetStringValue());
+                return _mainN3300;
+            }
+            public LResistance03(MainN3300 mainN3300) : base(mainN3300)
+            {
+                _mainN3300 = mainN3300;
+               this.Ranges = new ICommand[]
+                {
+                    new Command("RESistance:RANGe 48", "", 48), new Command("RESistance:RANGe 480", "", 480), new Command("RESistance:RANGe 4800", "", 4800), new Command("RESistance:RANGe 12000", "", 12000)
+                };
+            }
+        }
         
     }
 }

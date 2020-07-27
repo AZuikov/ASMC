@@ -3,11 +3,11 @@
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public class Mult_34465_70A: Main_Mult
+    public class Mult_34465_70A: MultMain
     {
         public Mult_34465_70A() : base()
         {
-            DeviceType = "344**A";
+            UserType = "344**A";
         }
         public Mult_34465_70A(string connect) : this()
         {

@@ -338,7 +338,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb<=0)
+            if (load.ChanelNumber<=0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
@@ -373,9 +373,9 @@ namespace B5_71_1_PRO
                         _bp.OnOutput();
                         
                         //измеряем напряжение
-                       mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
-                        mult.WriteLine(Main_Mult.QueryValue);
-                        var result = mult.DataPreparationAndConvert(mult.ReadString());
+                       mult.WriteLine(MultMain.MDc.MVoltage.MRange.V100);
+                        mult.WriteLine(MultMain.QueryValue);
+                        var result = mult.DataStrToDoubleMind(mult.ReadString());
                        
 
                         MathStatistics.Round(ref result, 3);
@@ -602,7 +602,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
+            if (load.ChanelNumber <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
@@ -637,9 +637,9 @@ namespace B5_71_1_PRO
                         _bp.OnOutput();
 
                         //измеряем напряжение
-                        mult.WriteLine(Main_Mult.DC.Voltage.Range.V100);
-                        mult.WriteLine(Main_Mult.QueryValue);
-                        var resultMult = mult.DataPreparationAndConvert(mult.ReadString());
+                        mult.WriteLine(MultMain.MDc.MVoltage.MRange.V100);
+                        mult.WriteLine(MultMain.QueryValue);
+                        var resultMult = mult.DataStrToDoubleMind(mult.ReadString());
                         var resultBp = _bp.GetMeasureVolt();
 
                         MathStatistics.Round(ref resultMult, 3);
@@ -845,7 +845,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
+            if (load.ChanelNumber <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
@@ -894,10 +894,10 @@ namespace B5_71_1_PRO
                         Thread.Sleep(1000);
                         //измерения
                         mult.Open();
-                        mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                        mult.WriteLine(Main_Mult.QueryValue);
+                        mult.WriteLine(MultMain.MDc.MVoltage.MRange.Auto);
+                        mult.WriteLine(MultMain.QueryValue);
                         // записываем результаты
-                        voltUnstableList.Add((decimal)mult.DataPreparationAndConvert(mult.ReadString()));
+                        voltUnstableList.Add((decimal)mult.DataStrToDoubleMind(mult.ReadString()));
                                
                     }
 
@@ -1102,7 +1102,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
+            if (load.ChanelNumber <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
             
             var operation = new BasicOperationVerefication<decimal>();
@@ -1145,10 +1145,10 @@ namespace B5_71_1_PRO
                     
 
                     Thread.Sleep(7000);
-                    mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                    mult.WriteLine(Main_Mult.QueryValue);
+                    mult.WriteLine(MultMain.MDc.MVoltage.MRange.Auto);
+                    mult.WriteLine(MultMain.QueryValue);
 
-                    var voltPulsV357 = (decimal)mult.DataPreparationAndConvert(mult.ReadString());
+                    var voltPulsV357 = (decimal)mult.DataStrToDoubleMind(mult.ReadString());
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
                     voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
                     MathStatistics.Round(ref voltPulsV357, 2);
@@ -1365,7 +1365,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
+            if (load.ChanelNumber <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
             load.Open();
@@ -1587,7 +1587,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
+            if (load.ChanelNumber <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
             load.Open();
@@ -1816,7 +1816,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
+            if (load.ChanelNumber <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
@@ -2034,7 +2034,7 @@ namespace B5_71_1_PRO
             load.FindThisModule();
             load.Close();
             //если модуль нагрузки найти не удалось
-            if (load.GetChanelNumb <= 0)
+            if (load.ChanelNumber <= 0)
                 throw new ArgumentException($"Модуль нагрузки {load.GetModuleModel} не установлен в базовый блок нагрузки");
 
 
@@ -2076,10 +2076,10 @@ namespace B5_71_1_PRO
                     
                     //нужно дать время В3-57
                     Thread.Sleep(5000);
-                    mult.WriteLine(Main_Mult.DC.Voltage.Range.Auto);
-                    mult.WriteLine(Main_Mult.QueryValue);
+                    mult.WriteLine(MultMain.MDc.MVoltage.MRange.Auto);
+                    mult.WriteLine(MultMain.QueryValue);
 
-                    var currPuls34401 = (decimal)mult.DataPreparationAndConvert(mult.ReadString());
+                    var currPuls34401 = (decimal)mult.DataStrToDoubleMind(mult.ReadString());
 
                     var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
                     //по закону ома считаем сопротивление

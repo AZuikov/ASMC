@@ -339,12 +339,12 @@ namespace ASMC.Data.Model
         protected string GetStringConnect(Devices.IDevice currentDevice)
         {
             var connect = this.UserItemOperation.ControlDevices
-                                 .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.DeviceType, StringComparison.InvariantCultureIgnoreCase))?.StringConnect ??
+                                 .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType, StringComparison.InvariantCultureIgnoreCase))?.StringConnect ??
                              this.UserItemOperation.TestDevices
-                                 .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.DeviceType, StringComparison.InvariantCultureIgnoreCase))?.StringConnect;
+                                 .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType, StringComparison.InvariantCultureIgnoreCase))?.StringConnect;
            
             if (string.IsNullOrEmpty(connect))
-                throw new ArgumentException($@"Строка подключения не указана для {currentDevice.DeviceType}");
+                throw new ArgumentException($@"Строка подключения не указана для {currentDevice.UserType}");
 
             return connect;
         }

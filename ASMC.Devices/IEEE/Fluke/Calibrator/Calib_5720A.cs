@@ -3,15 +3,12 @@
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {  
-    public class Calib_5720A : Main_Claibr
+    public class Calib_5720A : CalibrMain
     {
-        public Calib_5720A() : base()
+        public Calib_5720A() 
         {
-            DeviceType = "5720A";
-        }
-        public Calib_5720A(string connect) : this()
-        {
-            StringConnection = connect;
+            UserType = "5720A";
+            this.Out.HerzRanges = new ICommand[] { new RangeCalibr(" M", "Множитель мега", 1E6, "HZ"), new RangeCalibr("", "Без множителя", 1E6, "HZ") };
         }
         public struct CurrPost
         {

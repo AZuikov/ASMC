@@ -3,15 +3,11 @@
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib_5522A:Main_Claibr
+    public class Calib5522A:CalibrMain
     {
-        public Calib_5522A() : base()
+        public Calib5522A()
         {
-            DeviceType = "5522A";
-        }
-        public Calib_5522A(string connect) : this()
-        {
-            StringConnection = connect;
-        }
+            UserType = "5522A";
+        } 
     }
 }

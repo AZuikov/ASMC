@@ -172,7 +172,7 @@ namespace APPA_107N_109N
         //множитель, соответсвующий пределу измерения
         readonly decimal[] _multArr = { 1, 10, 100, 1000, 10000};
         //эталон
-        protected Calib_5522A flkCalib5522A;
+        protected Calib5522A flkCalib5522A;
         //контрлируемый прибор
         protected Mult107_109N appa107N;
 
@@ -227,14 +227,11 @@ namespace APPA_107N_109N
             {
                 var countMeas = 10;
                 decimal resultVal = 0;
-               
-                flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(0, Calib_5522A.Multipliers.SI));
-                flkCalib5522A.WriteLine(Calib_5522A.Out.State.ON.GetStringValue());
+                flkCalib5522A.Out.Set.Voltage.Dc.SetValue(0).Out.SetOutput(CalibrMain.COut.State.On);  
 
-                for (int i = 0; i < _pointsArr.Length; i++)
+                foreach (var t in _pointsArr)
                 {
-                    //поверяемая точка
-                    flkCalib5522A.WriteLine(Calib_5522A.Out.Set.Voltage.DC.SetValue(_pointsArr[i] * multiplaisArr[point], Calib_5522A.Multipliers.SI));
+                    flkCalib5522A.Out.Set.Voltage.Dc.SetValue(t * multiplaisArr[point]);
 
 
                     var valuesMeasure = new List<decimal>();
@@ -250,7 +247,6 @@ namespace APPA_107N_109N
                     //вычисляем среднее значение и округляем
                     resultVal = AP.Math.MathStatistics.GetArithmeticalMean(array);
                     AP.Math.MathStatistics.Round(ref resultVal, 4);
-
                 }
 
                 return resultVal;
