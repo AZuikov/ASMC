@@ -13,7 +13,6 @@ namespace ASMC.Core.ViewModel
         private string _regionName = Guid.NewGuid().ToString();
         private bool _allowChanges;
         private bool _allowSearch = true;
-        private object _entity;
         private bool? _dialogResult;
 
         #endregion
@@ -82,12 +81,7 @@ namespace ASMC.Core.ViewModel
 
         #region Methods
 
-        /// <inheritdoc />
-        protected override async void OnInitialized()
-        {
-            base.OnInitialized();
-        }
-
+     
         
 
         /// <summary>
@@ -119,14 +113,6 @@ namespace ASMC.Core.ViewModel
         protected virtual void OnSelect()
         {
             DialogResult = true;
-        }
-
-        /// <summary>
-        /// Вызывается при изменении текущей
-        /// выбранной сущности справочника.
-        /// </summary>
-        protected virtual void OnEntityChanged()
-        {
         }
 
         private bool CanSelectCommand()

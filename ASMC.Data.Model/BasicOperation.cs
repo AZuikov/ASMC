@@ -17,6 +17,7 @@ namespace ASMC.Data.Model
     {
         private Func<Task<bool>> _compliteWork;
         private Func<Task> _initWork;
+        private Action _bodyWork;
 
         /// <inheritdoc />
         public Func<Task> InitWork
@@ -40,13 +41,19 @@ namespace ASMC.Data.Model
 
             set { _compliteWork = value; }
         }
-            
-        
+
+
         public Action BodyWork
         {
-            get; set;
+            get
+            {
+                if(_bodyWork == null)
+                    return () => { };
+                return _bodyWork;
+            }
+            set => _bodyWork = value;
         }
-          
+
         /// <inheritdoc />
         public async Task WorkAsync(CancellationToken token )
         {

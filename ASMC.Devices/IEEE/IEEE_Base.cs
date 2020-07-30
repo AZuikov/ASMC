@@ -312,7 +312,7 @@ namespace ASMC.Devices.IEEE
         /// Получить список всех устройств
         /// </summary>
         /// <returns></returns>
-        public static string[] GetAllDevace
+        public static string[] AllStringConnect
         {
             get
             {  
@@ -352,7 +352,6 @@ namespace ASMC.Devices.IEEE
             Close();
             return date;
         }
-
         /// <summary>
         /// Считывает текст до пробела
         /// </summary>
@@ -364,6 +363,7 @@ namespace ASMC.Devices.IEEE
             try
             {
                 date = Session.FormattedIO.ReadString();
+                
             }
             catch (TimeoutException e)
             {  
@@ -412,11 +412,11 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// Отправляет полученную команду, без изменений
         /// </summary>
-        /// <param name = "date">Принимает текст команды в VBS формате</param>
-        public void WriteLine(string date)
+        /// <param name = "str">Принимает текст команды в VBS формате</param>
+        public void WriteLine(string str)
         {
             if(!Open()) return;
-            Session.FormattedIO.WriteLine(date);
+            Session.FormattedIO.WriteLine(str);
             Thread.Sleep(_dealySending);
             Close();
         }

@@ -15,7 +15,7 @@ using DevExpress.Mvvm;
 
 namespace APPA_107N_109N
 {
-    public class Appa107N109NBasePlugin : AbstractProgram
+    public class Appa107N109NBasePlugin : Program
 
     {
         public Appa107N109NBasePlugin()
@@ -30,10 +30,10 @@ namespace APPA_107N_109N
         public string Range { get; protected set; }
         public string Accuracy { get; protected set; }
         public IMessageBoxService TaskMessageService { get; set; }
-        public OperationBase Operation { get; }
+        public OperationMetrControlBase Operation { get; }
     }
 
-    public class Operation : OperationBase
+    public class Operation : OperationMetrControlBase
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation()
@@ -89,7 +89,7 @@ namespace APPA_107N_109N
 
         public void RefreshDevice()
         {
-            AddresDivece = new IeeeBase().GetAllDevace.ToArray();
+            AddresDivece = new IeeeBase().AllStringConnect.ToArray();
 
         }
 
@@ -100,7 +100,7 @@ namespace APPA_107N_109N
     }
  
 
-    public abstract class Oper1VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public abstract class Oper1VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
@@ -125,7 +125,7 @@ namespace APPA_107N_109N
         
     }
 
-    public abstract class Oper2Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public abstract class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
@@ -163,7 +163,7 @@ namespace APPA_107N_109N
         
     }
 
-    public abstract class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
         public List<IBasicOperation<decimal>> DataRow { get; set; }
@@ -275,7 +275,7 @@ namespace APPA_107N_109N
         
     }
 
-    public abstract class Oper4AcvMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper4AcvMeasure : ParagraphBase, IUserItemOperationBase
     {
         public Oper4AcvMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -299,7 +299,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class Oper5DcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper5DcIMeasure : ParagraphBase, IUserItemOperationBase
     {
         public Oper5DcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -321,7 +321,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class Oper6AcIMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper6AcIMeasure : ParagraphBase, IUserItemOperationBase
     {
         public Oper6AcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -343,7 +343,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class Oper7FreqMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper7FreqMeasure : ParagraphBase, IUserItemOperationBase
     {
         public Oper7FreqMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -365,7 +365,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class Oper8OhmMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper8OhmMeasure : ParagraphBase, IUserItemOperationBase
     {
         public Oper8OhmMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -387,7 +387,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class Oper9FarMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper9FarMeasure : ParagraphBase, IUserItemOperationBase
     {
         public Oper9FarMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {
@@ -409,7 +409,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class Oper10TemperatureMeasure : AbstractUserItemOperationBase, IUserItemOperationBase
+    public abstract class Oper10TemperatureMeasure : ParagraphBase, IUserItemOperationBase
     {
         public Oper10TemperatureMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
         {

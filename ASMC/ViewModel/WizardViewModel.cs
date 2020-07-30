@@ -10,9 +10,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AP.Reports.AutoDocumets;
+using ASMC.Core;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.UI;
 using DevExpress.Mvvm;
 using NLog;
 
@@ -20,6 +22,9 @@ namespace ASMC.ViewModel
 {
     public class WizardViewModel : BaseViewModel
     {
+        /// <summary>
+        /// Состояние программы.
+        /// </summary>
         public enum StateWork
         {
             Stop,
@@ -72,16 +77,15 @@ namespace ASMC.ViewModel
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
-        private OperationBase.TypeOpeation? _enableOpeation;
-        private bool _isSpeedWork;
-        private ShemeImage _lastShema;
+        private OperationMetrControlBase.TypeOpeation? _enableOpeation;
+        private bool _isCheckWork;
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
         private IProgram _selectProgram;
 
         private SettingViewModel _settingViewModel = new SettingViewModel();
         private StateWork _stateWorkFlag;
-        private OperationBase.TypeOpeation _typeOpertion;
+        private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
 
         #endregion
@@ -110,7 +114,7 @@ namespace ASMC.ViewModel
         }
 
 
-        public OperationBase.TypeOpeation? EnableOpeation
+        public OperationMetrControlBase.TypeOpeation? EnableOpeation
         {
             get => _enableOpeation;
             set => SetProperty(ref _enableOpeation, value, nameof(EnableOpeation), EnableOpeationCallback);
@@ -119,11 +123,13 @@ namespace ASMC.ViewModel
         /// <summary>
         /// Режим проверки(Ускроренные операции)
         /// </summary>
-        public bool IsSpeedWork
+        public bool IsCheckWork
         {
-            get => _isSpeedWork;
-            set => SetProperty(ref _isSpeedWork, value, nameof(IsSpeedWork), OnIsSpeedWorkCallback);
+            get => _isCheckWork;
+            set => SetProperty(ref _isCheckWork, value, nameof(IsCheckWork), OnIsSpeedWorkCallback);
         }
+
+        public ICommand PauseCommand { get; }
 
 
         /// <summary>
@@ -174,7 +180,7 @@ namespace ASMC.ViewModel
         /// <summary>
         /// Позволяет получать или задавать тип выбранной операции МК.
         /// </summary>
-        public OperationBase.TypeOpeation TypeOpertion
+        public OperationMetrControlBase.TypeOpeation TypeOpertion
         {
             get => _typeOpertion;
             set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion));
@@ -207,6 +213,7 @@ namespace ASMC.ViewModel
                 new DelegateCommand(OnRefreshCommand);
             CreatDocumetCommandCommand =
                 new DelegateCommand(OnCreatDocumetCommand);
+            PauseCommand = new DelegateCommand(OnPauseCommand);
         }
 
         #region Methods
@@ -247,6 +254,7 @@ namespace ASMC.ViewModel
             return newFileName;
         }
 
+        /// <inheritdoc />
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -261,22 +269,22 @@ namespace ASMC.ViewModel
 
         private void LoadPlugins()
         {
-            var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
-            if (!Directory.Exists(path)) return;
+            //var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
+            //if (!Directory.Exists(path)) return;
 
-            var files = Directory.GetFiles(path);
-            try
-            {
-                foreach (var file in files)
-                    if (file.EndsWith(".dll"))
-                        Assembly.LoadFile(Path.GetFullPath(file));
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-            }
+            //var files = Directory.GetFiles(path);
+            //try
+            //{
+            //    foreach (var file in files)
+            //        if (file.EndsWith(".dll"))
+            //            Assembly.LoadFile(Path.GetFullPath(file));
+            //}
+            //catch (Exception e)
+            //{
+            //    Logger.Error(e);
+            //}
 
-            if (files.Length <= 0) return;
+            //if (files.Length <= 0) return;
             var interfaceType = typeof(IProgram);
             Type[] types = null;
             try
@@ -289,12 +297,18 @@ namespace ASMC.ViewModel
                 Logger.Error(e);
             }
 
-
+            var servicePack = new ServicePack
+            {
+                MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
+                ShemForm = GetService<IFormService>("ShemService"),
+                TestingDialog= GetService<IFormService>("TestingDialogService")
+            };
             if (types == null) return;
             foreach (var type in types)
-                Prog.Add((IProgram) Activator.CreateInstance(type));
-            foreach (var program in Prog)
-                program.TaskMessageService = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal);
+            {
+                Prog.Add((IProgram)Activator.CreateInstance(type, servicePack));
+            }
+               
         }
 
         private void OnBackCommand()
@@ -326,13 +340,20 @@ namespace ASMC.ViewModel
 
         private void OnIsSpeedWorkCallback()
         {
-            SelectProgram.Operation.IsSpeedWork = IsSpeedWork;
+            SelectProgram.Operation.IsSpeedWork = IsCheckWork;
             OnSelectProgramCallback();
         }
 
         private void OnNextCommand()
         {
             SelectedTabItem = SelectedTabItem + 1;
+        }
+
+        private void OnPauseCommand()
+        {
+            var servise = GetService<IFormService>("ShemService");
+            servise.Show();
+            throw new NotImplementedException();
         }
 
         private async void OnRefreshCommand()
@@ -354,10 +375,10 @@ namespace ASMC.ViewModel
         {
             if (SelectProgram == null) return;
             EnableOpeation = SelectProgram.Operation.EnabledOperation;
-            foreach (Enum en in Enum.GetValues(typeof(OperationBase.TypeOpeation)))
+            foreach (Enum en in Enum.GetValues(typeof(OperationMetrControlBase.TypeOpeation)))
                 if (EnableOpeation != null && ((Enum) EnableOpeation).HasFlag(en))
                 {
-                    TypeOpertion = (OperationBase.TypeOpeation) en;
+                    TypeOpertion = (OperationMetrControlBase.TypeOpeation) en;
                     break;
                 }
 
@@ -376,7 +397,10 @@ namespace ASMC.ViewModel
         private async void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
-            if (SelectionItemOperation == null) await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
+            if (SelectionItemOperation == null)
+            {
+                await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
+            }
             StateWorkFlag = StateWork.Stop;
         }
 

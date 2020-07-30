@@ -20,80 +20,57 @@ namespace B5_71_PRO_Abstract
     /// В этом пространчтве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели
     /// устройства
     /// </summary>
-    public abstract class AbstractB571ProPlugin : AbstractProgram
+    public abstract class AbstractB571ProPlugin : Program
     {
         #region Property
 
-        public OperationBase AbstraktOperation { get; protected set; }
+        public OperationMetrControlBase AbstraktOperation { get; protected set; }
 
-        #endregion
+        #endregion   
 
-        protected AbstractB571ProPlugin()
+        protected AbstractB571ProPlugin(ServicePack service) : base(service)
         {
             Grsi = "42467-09";
             Accuracy = "Напряжение ПГ ±(0,002 * U + 0.1); ток ПГ ±(0,01 * I + 0,05)";
         }
     }
 
-    public class Operation : OperationBase
+    public class Operation : OperationMetrControlBase
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
 
-        public Operation()
-        {
+
+        public Operation(ServicePack servicePack) 
+        {   
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
         }
     }
 
-    public class UseDevices : IDevice
-    {
-        public bool IsCanStringConnect { get; set; } = true;
-        public string Description { get; set; }
-        public string[] Name { get; set; }
-        public string SelectedName { get; set; }
-        public string StringConnect { get; set; }
+   
 
-        public void Setting()
+    public abstract class OpertionFirsVerf : ASMC.Data.Model.Operation
+    {
+        /// <inheritdoc />
+        public override void FindDivice()
         {
             throw new NotImplementedException();
         }
-
-        public bool? IsConnect { get; } = true;
-    }
-
-    public abstract class OpertionFirsVerf : IUserItemOperation
-    {
-        
         /// <inheritdoc />
-        public IDevice[] TestDevices { get; set; }
-        /// <inheritdoc />
-        public IUserItemOperationBase[] UserItemOperation { get; set; }
-        /// <inheritdoc />
-        public string[] Accessories { get; protected set; }
-        /// <inheritdoc />
-        public string[] AddresDivece { get; set; }
-        /// <inheritdoc />
-        public IDevice[] ControlDevices { get; set; }
-
-        /// <summary>
-        /// Проверяет всели эталоны подключены
-        /// </summary>
-        public void RefreshDevice()
+        public override void RefreshDevice()
         {
-            AddresDivece = IeeeBase.GetAllDevace;
+            AddresDivece = IeeeBase.AllStringConnect;
         }
-        /// <inheritdoc />
-        public void FindDivice()
+        protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
-            throw new NotImplementedException();
+           
         }
     }
 
     /// <summary>
     /// Внешний осмотр СИ
     /// </summary>
-    public abstract class Oper0VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public abstract class Oper0VisualTest : ParagraphBase, IUserItemOperation<string>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //public override async Task StartWork(CancellationToken token)
@@ -105,11 +82,28 @@ namespace B5_71_PRO_Abstract
         //    DataRow.Add(bo);
         //}
 
+        protected override void InitWork()
+        {
+            var operation = new BasicOperation<string>();
 
+            operation.IsGood = () => operation.Getting.Equals(operation.Expected, StringComparison.CurrentCultureIgnoreCase);
+            operation.InitWork = () =>
+            {
+                var service = this.UserItemOperation.ServicePack.TestingDialog;
+                service.Title = "Визуальный осмотр";
+                service.Show();
+                   return Task.CompletedTask;
+                };
+                
+                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                DataRow.Add(operation);
+
+
+        }
         protected Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Внешний осмотр";
-            DataRow = new List<IBasicOperation<bool>>();
+            DataRow = new List<IBasicOperation<string>>();
         }
 
         #region Methods
@@ -119,7 +113,7 @@ namespace B5_71_PRO_Abstract
             var data = new DataTable();
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
-            var dds = DataRow[0] as BasicOperationVerefication<bool>;
+            var dds = DataRow[0] as BasicOperation<string>;
             // ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting;
             data.Rows.Add(dataRow);
@@ -128,28 +122,20 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
-
+        public List<IBasicOperation<string>> DataRow { get; set; }
+        /// <inheritdoc />
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if(a != null)
+                await a.WorkAsync(token);
+        }
         /// <inheritdoc />
         public override async Task StartWork(CancellationToken token)
         {
-            var bo = new BasicOperation<bool> {Expected = true};
-            bo.IsGood = () => bo.Getting;
-            bo.InitWork = () =>
-            {
-                MessageBoxService.Show("Начало операции", "Начало операции1", MessageButton.OK, MessageIcon.Information,
-                                       MessageResult.No);
-                return Task.CompletedTask;
-            };
-            bo.CompliteWork = () =>
-            {
-                MessageBoxService.Show("Конец операции", "Конец операции1", MessageButton.OK, MessageIcon.Information,
-                                       MessageResult.No);
-                return Task.FromResult(true);
-            };
-            bo.BodyWork = () => { Thread.Sleep(100); };
-            await bo.WorkAsync(token);
-            DataRow.Add(bo);
+            InitWork();
+            foreach(var dr in DataRow)
+                await dr.WorkAsync(token);
         }
     }
 
@@ -157,7 +143,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Проведение опробования
     /// </summary>
-    public abstract class Oper1Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public abstract class Oper1Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -190,13 +176,13 @@ namespace B5_71_PRO_Abstract
             bo.IsGood = () => bo.Getting;
             bo.InitWork = () =>
             {
-                MessageBoxService.Show("Начало операции", "Начало операции2", MessageButton.OK, MessageIcon.Information,
+                this.UserItemOperation.ServicePack.MessageBox.Show("Начало операции", "Начало операции2", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.No);
                 return Task.CompletedTask;
             };
             bo.CompliteWork = () =>
             {
-                MessageBoxService.Show("Конец операции", "Конец операции2", MessageButton.OK, MessageIcon.Information,
+                this.UserItemOperation.ServicePack.MessageBox.Show("Конец операции", "Конец операции2", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.No);
                 return Task.FromResult(true);
             };
@@ -211,7 +197,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public abstract class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper2DcvOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -230,6 +216,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности установки выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage{Description = "Схема", Number = 1, FileName = @"Ошибка связи.JPG", ExtendedDescription = "свободный текст"};
         }
 
         #region Methods
@@ -289,7 +276,7 @@ namespace B5_71_PRO_Abstract
                         });
                       
                         while(!Mult.IsTerminal)
-                            MessageBoxService.Show("На панели прибора " + Mult.UserType +
+                          this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
                                                    " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                    "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                    MessageResult.OK);
@@ -377,6 +364,7 @@ namespace B5_71_PRO_Abstract
 
         public override async Task StartWork(CancellationToken token)
         {
+          
             InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
@@ -385,7 +373,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Измерение постоянного напряжения
     /// </summary>
-    public abstract class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -459,7 +447,7 @@ namespace B5_71_PRO_Abstract
 
                     Mult.Open();
                     while (Mult.IsTerminal == false)
-                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
+                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
@@ -553,7 +541,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public abstract class Oper4VoltUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         //это точки для нагрузки в Омах
 
@@ -617,7 +605,7 @@ namespace B5_71_PRO_Abstract
 
                     Mult.Open();
                     while (Mult.IsTerminal == false)
-                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
+                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
@@ -709,7 +697,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public abstract class Oper5VoltPulsation : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27, (decimal) 37.5, (decimal) 187.5};
@@ -783,12 +771,12 @@ namespace B5_71_PRO_Abstract
 
                     Mult.Open();
                     while (Mult.IsTerminal)
-                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
+                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
 
-                    MessageBoxService.Show("Установите на В3-57 подходящий предел измерения напряжения",
+                    this.UserItemOperation.ServicePack.MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения",
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
                 };
@@ -861,7 +849,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public abstract class Oper6DciOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper6DciOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -1010,7 +998,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public abstract class Oper7DciMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper7DciMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -1169,7 +1157,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public abstract class Oper8DciUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper8DciUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
@@ -1306,7 +1294,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public abstract class Oper9DciPulsation : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public abstract class Oper9DciPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Property
 
@@ -1385,12 +1373,12 @@ namespace B5_71_PRO_Abstract
 
                     Mult.Open();
                     while (Mult.IsTerminal)
-                        MessageBoxService.Show("На панели прибора " + Mult.UserType +
+                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
 
-                    MessageBoxService.Show("Установите на В3-57 подходящий предел измерения напряжения",
+                    this.UserItemOperation.ServicePack.MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения",
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
                 };

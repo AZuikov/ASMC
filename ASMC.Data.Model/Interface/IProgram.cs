@@ -8,9 +8,10 @@ using DevExpress.Mvvm;
 
 namespace ASMC.Data.Model.Interface
 {
-    public interface IProgram    
+    public interface IProgram
     {
 
+     
         /// <summary>
         /// Позволяет получать тип СИ
         /// </summary>
@@ -39,15 +40,10 @@ namespace ASMC.Data.Model.Interface
         {
             get;
         }
-        IMessageBoxService TaskMessageService
-        {
-            get;
-             set;
-         }
         /// <summary>
         /// Позволяет получить сушность метрологических операций
         /// </summary>
-        OperationBase Operation
+        OperationMetrControlBase Operation
         {
             get;
         }

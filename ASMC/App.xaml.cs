@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -9,6 +10,9 @@ using System.Threading.Tasks;
 using DevExpress.Mvvm;
 using System.Windows;
 using AP.Utils.Data;
+using ASMC.Core;
+using ASMC.Data.Model;
+using ASMC.Data.Model.Interface;
 using ASMC.Properties;
 using ASMC.ViewModel;
 using DevExpress.Mvvm.Native;
@@ -51,7 +55,26 @@ namespace ASMC
 
             ViewLocator.Default = new ViewLocator(Assembly.GetExecutingAssembly());
         }
+        private void LoadPlugins()
+        {
+            var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
+            if(!Directory.Exists(path))
+                return;
 
+            var files = Directory.GetFiles(path, "*.dll", SearchOption.AllDirectories);
+            try
+            {
+                foreach(var file in files)
+                        Assembly.LoadFile(Path.GetFullPath(file));
+            }
+            catch(Exception e)
+            {
+                Logger.Error(e);
+            }
+
+           
+
+        }
         #region Methods
         protected override async void OnStartup(StartupEventArgs e)
         {
@@ -62,7 +85,8 @@ namespace ASMC
             try
             {
                 InitializeSettings();
-                InitializeLocalization();  
+                InitializeLocalization();
+                LoadPlugins();
                 if(!LaunchWindow("DefaultWindowService"))
                 {
                     Shutdown();

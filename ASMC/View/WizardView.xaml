@@ -32,6 +32,7 @@
   </UserControl.Resources>
   <dxmvvm:Interaction.Behaviors>
     <ui1:ShemService x:Name="ShemService" />
+    <ui1:TestingDialogService x:Name="TestingDialogService"/>
     <ui:MessageBoxService/>
     <ui:TaskMessageService/>
   </dxmvvm:Interaction.Behaviors>
@@ -80,7 +81,7 @@
               <Button Grid.Column="0" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}" 
                       Content="Запустить" Command="{Binding StartCommand}"  />
               <Button Grid.Column="2" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}" 
-                     Content="Пауза" />
+                     Content="Пауза" Command="{Binding PauseCommand}" />
               <Button Grid.Column="4" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}"  Command="{Binding StopCommand}" 
                      Content="Отмена" />
             </Grid>
@@ -196,7 +197,7 @@
           </TabItem>
           <TabItem Header="Вид МО" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ChoiceTypeMc}">
             <StackPanel>
-              <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsSpeedWork}" />
+              <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsCheckWork}" />
               <GroupBox Header="Выберете вид МО:" Padding="10,0,10,10" VerticalAlignment="Top">
                 <Grid>
                   <Grid.RowDefinitions>

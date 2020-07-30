@@ -16,19 +16,19 @@ namespace B5_71_4_PRO
 {
     public class B5_71_4PRO : AbstractB571ProPlugin
     {
-        public B5_71_4PRO() 
+        public B5_71_4PRO(ServicePack service) : base(service)
         {
             this.Range = "0 - 75 В, 0 - 4 А";
-            this.Type= "Б5-71/4-ПРО";
-            Operation = new Operation();
+            this.Type = "Б5-71/4-ПРО";
+            Operation = new Operation(service);
         }
     }
 
-    public class Operation : OperationBase
+    public class Operation : OperationMetrControlBase
     {
-        public Operation()
+        public Operation(ServicePack servicePack) 
         {
-            this.UserItemOperationPrimaryVerf = new OpertionFirsVerf();
+            this.UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
             //здесь периодическая поверка, но набор операций такой же
             this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
         }
@@ -36,17 +36,17 @@ namespace B5_71_4_PRO
 
     public class OpertionFirsVerf : B5_71_PRO_Abstract.OpertionFirsVerf
     {
-        public OpertionFirsVerf()
+        public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
-            ControlDevices = new[]
+            ControlDevices = new IDevice[]
             {
-                new UseDevices { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
-                new UseDevices{ Name = new []{"34401A"},  Description = "Мультиметр"},
-                new UseDevices{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
+                new Device { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
+                new Device{ Name = new []{"34401A"},  Description = "Мультиметр"},
+                new Device{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
 
             };
 
-            TestDevices = new IDevice[] { new UseDevices { Name = new[] { "Б5-71/4-ПРО" }, Description = "источник питания" } };
+            TestDevices = new IDevice[] { new Device { Name = new[] { "Б5-71/4-ПРО" }, Description = "источник питания" } };
 
             //Необходимые аксесуары
             Accessories = new[]
@@ -61,7 +61,7 @@ namespace B5_71_4_PRO
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                //new Oper0VisualTest(this),
+                new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
                 new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
@@ -79,16 +79,6 @@ namespace B5_71_4_PRO
     {
         public Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-        }
-
-        protected override void InitWork()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
         }
     }
 

@@ -11,19 +11,18 @@ using DevExpress.Mvvm.UI;
 
 namespace ASMC.UI
 {
-    public class ShemService : FormServiceBase
+    public class TestingDialogService : FormServiceBase
     {
-        public ShemService()
+        public TestingDialogService()
         {
-            Title = "Схема";
             ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-            DocumentType = "ShemView";
-            MaxSize= new Size(1024,768);
+            DocumentType = "TestingDialogView";
+            MaxSize = new Size(1024, 768);
         }
 
         protected override object CreateViewModel()
         {
-            return new ShemViewModel();
+            return new TestingDialogViewModel();
         }
     }
 }

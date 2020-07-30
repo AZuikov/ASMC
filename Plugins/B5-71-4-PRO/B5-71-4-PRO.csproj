@@ -76,6 +76,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\Debug\Plugins" /Y</PostBuildEvent>
+    <PostBuildEvent>mkdir "D:\Work\C#\Git rep\ASMC\ASMC\ASMC\bin\Debug\Plugins" 2&gt; NUL
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\Debug\Plugins\$(TargetName)" /Y
+mkdir "D:\Work\C#\Git rep\ASMC\ASMC\ASMC\bin\Debug\Plugins\B5-71-4-PRO\Resources" 2&gt; NUL</PostBuildEvent>
   </PropertyGroup>
 </Project>

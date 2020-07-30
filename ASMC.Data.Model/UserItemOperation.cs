@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using ASMC.Core;
 using ASMC.Data.Model.Interface;
-using ASMC.Devices.IEEE;
 using DevExpress.Mvvm;
 using NLog;
 
@@ -28,14 +27,16 @@ namespace ASMC.Data.Model
     public interface IDevice
     {
         #region Property
-        /// <summary>
-        /// Позволяет получить или задать признак возможности выбора строки подключения.
-        /// </summary>
-        bool IsCanStringConnect  {   get; set; }
+
         /// <summary>
         /// Позволяет получить описание устройства.
         /// </summary>
         string Description { get; set; }
+
+        /// <summary>
+        /// Позволяет получить или задать признак возможности выбора строки подключения.
+        /// </summary>
+        bool IsCanStringConnect { get; set; }
 
         /// <summary>
         /// Позволяет получить статус подключения устройства.
@@ -58,19 +59,33 @@ namespace ASMC.Data.Model
         string StringConnect { get; set; }
 
         #endregion
+    }
 
-        #region Methods
+    /// <inheritdoc />
+    public class Device : IDevice
+    {
+        /// <inheritdoc />
+        public bool IsCanStringConnect { get; set; } = true;
 
-        /// <summary>
-        /// Позволяет вызвать окно
-        /// </summary>
-        void Setting();
+        /// <inheritdoc />
+        public string Description { get; set; }
 
-        #endregion
+        /// <inheritdoc />
+        public string[] Name { get; set; }
+
+        /// <inheritdoc />
+        public string SelectedName { get; set; }
+
+        /// <inheritdoc />
+        public string StringConnect { get; set; }
+
+        /// <inheritdoc />
+        public bool? IsConnect { get; } = true;
     }
 
     /// <summary>
-    /// Предоставлет интерфес операций метрологического контроля.
+    /// Предоставляет интерфес к циклу операций метрологического контроля.
+    /// Например: поверка, калибровка.
     /// </summary>
     public interface IUserItemOperation
     {
@@ -91,6 +106,8 @@ namespace ASMC.Data.Model
         /// </summary>
         IDevice[] ControlDevices { get; set; }
 
+        ServicePack ServicePack { get; }
+
         /// <summary>
         /// Возвращает перечень устройст подвергаемых МК.
         /// </summary>
@@ -105,25 +122,56 @@ namespace ASMC.Data.Model
 
         #region Methods
 
+        void FindDivice();
+
         /// <summary>
         /// Выполняет обнавление списка устройств.
         /// </summary>
         void RefreshDevice();
 
-        void FindDivice();
-
         #endregion
     }
+
+    /// <inheritdoc />
+    public abstract class Operation : IUserItemOperation
+    {
+        protected Operation(ServicePack servicePack)
+        {
+            ServicePack = servicePack;
+        }
+
+        /// <inheritdoc />
+        public IDevice[] TestDevices { get; set; }
+
+        /// <inheritdoc />
+        public IUserItemOperationBase[] UserItemOperation { get; set; }
+
+        /// <inheritdoc />
+        public string[] Accessories { get; protected set; }
+
+        /// <inheritdoc />
+        public string[] AddresDivece { get; set; }
+
+        /// <inheritdoc />
+        public IDevice[] ControlDevices { get; set; }
+
+        /// <summary>
+        /// Проверяет всели эталоны подключены
+        /// </summary>
+        public abstract void RefreshDevice();
+
+        /// <inheritdoc />
+        public abstract void FindDivice();
+
+        public ServicePack ServicePack { get; set; }
+    }
+
 
     /// <summary>
     /// Содержет доступныйе виды Метрологического контроля.
     /// </summary>
-    public class OperationBase
+    public class OperationMetrControlBase
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public IMessageBoxService TaskMessageService { get; set; }
-        public delegate void ChangeShemaHandler(IUserItemOperationBase sender);
-
         /// <summary>
         /// Содержит перечесления типов операции.
         /// </summary>
@@ -131,16 +179,15 @@ namespace ASMC.Data.Model
         public enum TypeOpeation
         {
             PeriodicVerf = 1,
-            PrimaryVerf =2,
-            Calibration=4,
-            Adjustment=8
+            PrimaryVerf = 2,
+            Calibration = 4,
+            Adjustment = 8
         }
-        /// <summary>
-        /// Событие изменение схемы.
-        /// </summary>
-        public event ChangeShemaHandler ChangeShemaEvent;
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
+
         /// <summary>
         /// Предоставляет доступные операции.
         /// </summary>
@@ -153,7 +200,7 @@ namespace ASMC.Data.Model
                     res = TypeOpeation.PrimaryVerf;
                 if (UserItemOperationPeriodicVerf != null || SpeedUserItemOperationPeriodicVerf != null)
                     if (res != null)
-                        res = res| TypeOpeation.PeriodicVerf;
+                        res = res | TypeOpeation.PeriodicVerf;
                     else
                         res = TypeOpeation.PeriodicVerf;
                 if (UserItemOperationCalibration != null || SpeedUserItemOperationCalibration != null)
@@ -183,30 +230,18 @@ namespace ASMC.Data.Model
             get
             {
                 IUserItemOperation res = null;
-                if(SelectedTypeOpeation.HasFlag(TypeOpeation.PrimaryVerf))
-                {
+                if (SelectedTypeOpeation.HasFlag(TypeOpeation.PrimaryVerf))
                     res = IsSpeedWork ? SpeedUserItemOperationPrimaryVerf : UserItemOperationPrimaryVerf;
-                }
-                else if(SelectedTypeOpeation.HasFlag(TypeOpeation.PeriodicVerf))
-                {
+                else if (SelectedTypeOpeation.HasFlag(TypeOpeation.PeriodicVerf))
                     res = IsSpeedWork ? SpeedUserItemOperationPeriodicVerf : UserItemOperationPeriodicVerf;
-                }
-                else if(SelectedTypeOpeation.HasFlag(TypeOpeation.Calibration))
-                {
+                else if (SelectedTypeOpeation.HasFlag(TypeOpeation.Calibration))
                     res = IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
-                }
-                else if(SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment))
-                {
+                else if (SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment))
                     res = SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment) ? UserItemOperationAdjustment : null;
-                }
 
-                if(res?.UserItemOperation != null)
-                {
-                    foreach(var t in res.UserItemOperation)
-                    {
-                        t.MessageBoxService = TaskMessageService;
-                    }
-                }  
+                //if (res?.UserItemOperation != null)
+                //    foreach (var t in res.UserItemOperation)
+                //        t.MessageBoxService = TaskMessageService;
                 return res;
             }
         }
@@ -214,7 +249,59 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Позволяет задать или получить тип операции.
         /// </summary>
-        public TypeOpeation SelectedTypeOpeation { get; set; }
+        public TypeOpeation SelectedTypeOpeation { get; set; } 
+
+
+        private IUserItemOperationBase CurrentUserItemOperationBase { get; set; }
+
+        #endregion
+        protected ShemeImage LastShem { get; set; }
+
+        private void ShowShem(ShemeImage sheme)
+        {
+
+            if (sheme == null||LastShem?.Number == sheme.Number) return;
+            LastShem = sheme;
+            var ser = SelectedOperation.ServicePack.ShemForm;
+            if (ser==null) 
+            {
+                Logger.Error("Сервис не найден");
+                throw new NullReferenceException("Сервис не найден");
+            }
+            ser.Entity = sheme;
+            ser.Show();
+
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Запускает все операции асинхронно
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartWorkAsync(CancellationTokenSource source)
+        {
+            foreach (var opertion in SelectedOperation.UserItemOperation)
+            {
+                CurrentUserItemOperationBase = opertion;
+                try
+                {
+                    ShowShem(opertion.Sheme);
+                    await opertion.StartWork(source.Token);
+                   
+                }
+                catch (Exception e)
+                {
+                    source.Cancel();
+                    source.Token.ThrowIfCancellationRequested();
+                    Logger.Error(e);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Operations
 
         /// <summary>
         /// Позволяет  задать или получить операции ускоренной калибровки.
@@ -251,57 +338,33 @@ namespace ASMC.Data.Model
         /// </summary>
         protected IUserItemOperation UserItemOperationPrimaryVerf { get; set; }
 
-        private IUserItemOperationBase CurrentUserItemOperationBase { get; set; }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Запускает все операции асинхронно
-        /// </summary>
-        /// <returns></returns>
-        public async Task StartWorkAsync(CancellationTokenSource source)
-        {    
-            foreach(var opertion in SelectedOperation.UserItemOperation)
-            {
-                CurrentUserItemOperationBase = opertion;
-                try
-                {
-                    await opertion.StartWork(source.Token);
-                }
-                catch (Exception e)
-                {
-                    source.Cancel();
-                    source.Token.ThrowIfCancellationRequested();
-                    Logger.Error(e);
-                }
-            }
-        }
-
         #endregion
     }
 
 
     /// <summary>
-    /// Предоставляет интерфес пункта операции
+    /// Предоставляет интерфес пункта(параграфа) операции
     /// </summary>
     public interface IUserItemOperationBase
     {
         #region Property
-        IMessageBoxService MessageBoxService { get; set; }
+
         /// <summary>
         /// Предоставляет данные для отображения операций.
         /// </summary>
         DataTable Data { get; }
+
         /// <summary>
         /// Предоставляет гуид операции.
         /// </summary>
         Guid Guid { get; }
+
         /// <summary>
         /// Предоставляет результат операции
         /// </summary>
         bool? IsGood { get; set; }
+
+
         /// <summary>
         /// Предоставляет наименование операции
         /// </summary>
@@ -315,63 +378,78 @@ namespace ASMC.Data.Model
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Запускает выполнение операций с указаном Гуидом.
         /// </summary>
-        Task StartSinglWork(CancellationToken token,Guid guid);
+        Task StartSinglWork(CancellationToken token, Guid guid);
+
         /// <summary>
         /// Запускает выполнение всех операций.
         /// </summary>
-        Task  StartWork(CancellationToken token);   
-        
-        #endregion
+        Task StartWork(CancellationToken token);
 
+        #endregion
     }
 
-    public abstract class AbstractUserItemOperationBase : TreeNode, IUserItemOperationBase
+    public abstract class ParagraphBase : TreeNode, IUserItemOperationBase
     {
-        protected abstract void InitWork();
-        /// <summary>
-        /// Связывает строку подключения из интрефеса пользователя с выбранным прибором. Работает для контрольных и контролируемых приборов.
-        /// </summary>
-        /// <param name="currentDevice">Прибор из списка контрольных (эталонов) или контролируемых (поверяемых/проверяемых) приборов.</param>
-        /// <returns></returns>
-        protected string GetStringConnect(Devices.IDevice currentDevice)
-        {
-            var connect = this.UserItemOperation.ControlDevices
-                                 .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType, StringComparison.InvariantCultureIgnoreCase))?.StringConnect ??
-                             this.UserItemOperation.TestDevices
-                                 .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType, StringComparison.InvariantCultureIgnoreCase))?.StringConnect;
-           
-            if (string.IsNullOrEmpty(connect))
-                throw new ArgumentException($@"Строка подключения не указана для {currentDevice.UserType}");
-
-            return connect;
-        }
-
-        protected AbstractUserItemOperationBase()
-        {
-        }
-
-
-        protected IUserItemOperation UserItemOperation { get; }
-
-        protected AbstractUserItemOperationBase(IUserItemOperation userItemOperation)
-        {
-            UserItemOperation = userItemOperation;
-        }
         #region Property
+
+        public Func<CancellationToken, Task> BodyWork { get; set; }
 
         /// <summary>
         /// Позволяет задать и получить признак ускоренного выполнения операций.
         /// </summary>
         public bool IsSpeedWork { get; set; }
 
+
+        protected IUserItemOperation UserItemOperation { get; }
+
         #endregion
+
+        protected ParagraphBase()
+        {
+        }
+
+        protected ParagraphBase(IUserItemOperation userItemOperation)
+        {
+            UserItemOperation = userItemOperation;
+        }
 
         #region Methods
 
         protected abstract DataTable FillData();
+
+        /// <summary>
+        /// Связывает строку подключения из интрефеса пользователя с выбранным прибором. Работает для контрольных и контролируемых
+        /// приборов.
+        /// </summary>
+        /// <param name = "currentDevice">
+        /// Прибор из списка контрольных (эталонов) или контролируемых (поверяемых/проверяемых)
+        /// приборов.
+        /// </param>
+        /// <returns></returns>
+        protected string GetStringConnect(Devices.IDevice currentDevice)
+        {
+            var connect = UserItemOperation.ControlDevices
+                                           .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType,
+                                                                              StringComparison
+                                                                                 .InvariantCultureIgnoreCase))
+                                          ?.StringConnect ??
+                          UserItemOperation.TestDevices
+                                           .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType,
+                                                                              StringComparison
+                                                                                 .InvariantCultureIgnoreCase))
+                                          ?.StringConnect;
+
+            if (string.IsNullOrEmpty(connect))
+                throw new ArgumentException($@"Строка подключения не указана для {currentDevice.UserType}");
+
+            return connect;
+        }
+
+        protected abstract void InitWork();
 
         #endregion
 
@@ -385,10 +463,7 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public bool? IsGood { get; set; }
-            public Func<CancellationToken, Task>BodyWork
-        {
-            get; set;
-        }
+
 
         /// <inheritdoc />
         public abstract Task StartSinglWork(CancellationToken token, Guid guid);
@@ -396,9 +471,6 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public abstract Task StartWork(CancellationToken token);
 
-      
-
-        public IMessageBoxService MessageBoxService { get; set; }
 
         /// <inheritdoc />
         public DataTable Data => FillData();
@@ -406,10 +478,66 @@ namespace ASMC.Data.Model
 
     public class ShemeImage
     {
-        #region Property
+        private string _fileName;
+        private string _fileNameDescription;
+        private string _extendedDescription;
 
+        #region Property
+        /// <summary>
+        /// Позволяет получать или задавать описание(заголовок) схемы
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        /// Позволяет задать или получить разширенное описание.
+        /// </summary>
+        public string ExtendedDescription
+        {
+            get => _extendedDescription;
+            set
+            {
+                if(!string.IsNullOrWhiteSpace(value))
+                {
+                    FileNameDescription = null;
+                }
+                _extendedDescription = value;
+            }
+        }
+
+        /// <summary>
+        /// Позволяет получать или задавать имя файла разширеного описания.
+        /// </summary>
+        public string FileNameDescription
+        {
+            get => _fileNameDescription;
+            set
+            {
+                var format = Path.GetExtension(value);
+                if("".Equals(format)&& !string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException($@"Разширение файла не обнаружино");
+
+                if (!string.IsNullOrWhiteSpace(value) && format != null && !format.Equals(".rtf", StringComparison.CurrentCultureIgnoreCase))  throw new ArgumentNullException($@"Расширение файла не RTF");
+                    ExtendedDescription = null;
+                _fileNameDescription = value;
+            }
+        }
+        /// <summary>
+        /// Позволяет получать или задавать номер схемы. Используется для контроля отображения схем.
+        /// </summary>
         public int Number { get; set; }
-        public string Path { get; set; }
+
+        /// <summary>
+        /// Позволяет получать или задавать имя файла.
+        /// </summary>
+        public string FileName
+        {
+            get => _fileName;
+            set
+            {
+                var format = Path.GetExtension(value);
+                if("".Equals(format)&& !string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException($@"Разширение файла не обнаружино");
+                _fileName = value;
+            }
+        }
 
         #endregion
     }

@@ -37,15 +37,15 @@ namespace B5_71_2_PRO
         public string Grsi { get; }
         public string Range { get; }
         public string Accuracy { get; }
-        public IMessageBoxService TaskMessageService
+        public IMessageBoxService MessageBoxService
         {
             get { return Operation.TaskMessageService; }
             set { Operation.TaskMessageService = value; }
         }
-        public OperationBase Operation { get; }
+        public OperationMetrControlBase Operation { get; }
     }
 
-    public class Operation : OperationBase
+    public class Operation : OperationMetrControlBase
     {
 
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
@@ -130,7 +130,7 @@ namespace B5_71_2_PRO
         /// </summary>
         public void RefreshDevice()
         {
-            AddresDivece = new IeeeBase().GetAllDevace.ToArray();
+            AddresDivece = new IeeeBase().AllStringConnect.ToArray();
         }
 
         public void FindDivice()
@@ -146,7 +146,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Внешний осмотр СИ
     /// </summary>
-    public class Oper0VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public class Oper0VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
@@ -205,7 +205,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Проведение опробования
     /// </summary>
-    public class Oper1Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public class Oper1Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
         #region Methods
 
@@ -264,7 +264,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper2DcvOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -438,7 +438,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -450,7 +450,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Измерение постоянного напряжения 
     /// </summary>
-    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -621,7 +621,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -630,7 +630,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public class Oper4VoltUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -800,7 +800,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -809,7 +809,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public class Oper5VoltPulsation : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -968,7 +968,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             /*
              *Еще одна схема, для переключения терминала мультиметра
@@ -983,7 +983,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public class Oper6DciOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper6DciOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -1143,7 +1143,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -1153,7 +1153,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public class Oper7DciMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper7DciMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -1323,7 +1323,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -1333,7 +1333,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public class Oper8DciUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper8DciUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -1484,7 +1484,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -1495,7 +1495,7 @@ namespace B5_71_2_PRO
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public class Oper9DciPulsation : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper9DciPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         #region Fields
 
@@ -1657,7 +1657,7 @@ namespace B5_71_2_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             /*
             *Еще одна схема, для переключения терминала мультиметра

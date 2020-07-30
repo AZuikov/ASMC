@@ -388,52 +388,25 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <summary>
         /// Формула расчета погрешности по воспроизведению и измерению напряжения источника питания.
         /// </summary>
-        /// <param name="inVoltPoint">Поверяемая точка. В вольтах</param>
-        /// <param name = "inUnitVoltMultipliers"></param>
+        /// <param name="value">Поверяемая точка. В вольтах</param>
+        /// <param name = "mult"></param>
         /// <returns>Погрешность в вольтах.</returns>
-        public decimal TolleranceFormulaVolt(decimal inVoltPoint,
-            VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si)
+        public decimal TolleranceFormulaVolt(decimal value,
+            Multipliers mult = Multipliers.None)
         {
-            switch (inUnitVoltMultipliers)
-            {
-                case VoltMultipliers.Si:
-                case VoltMultipliers.Volt:
-                    break;
-
-                case VoltMultipliers.Milli:
-                    inVoltPoint /= 1000;
-                    break;
-                case VoltMultipliers.Micro:
-                    inVoltPoint /= 1000000;
-                    break;
-
-            }
-
-            return (decimal)0.002 * inVoltPoint + (decimal)0.1;
+             value *= (decimal) mult.GetDoubleValue();
+            return (decimal)0.002 * value + (decimal)0.1;
         }
 
         /// <summary>
         /// Формула расчета погрешности по воспроизведению и измерению тока источника питания.
         /// </summary>
-        /// <param name="inVoltPoint">Поверяемая точка. В амперах</param>
         /// <returns>Погрешность в амперах</returns>
-        public decimal TolleranceFormulaCurrent(decimal inCurrPoint,
-            CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si)
+        public decimal TolleranceFormulaCurrent(decimal value,
+            Multipliers mult = Multipliers.None)
         {
-            switch (inUnitCurrMultipliers)
-            {
-                case CurrMultipliers.Si:
-                case CurrMultipliers.Amp:
-                    break;
-                case CurrMultipliers.Milli:
-                    inCurrPoint *= 1000;
-                    break;
-                case CurrMultipliers.Micro:
-                    inCurrPoint *= 1000000;
-                    break;
-            }
-
-            return (decimal)0.01 * inCurrPoint + (decimal)0.05;
+            value /= (decimal)mult.GetDoubleValue();
+            return (decimal)0.01 * value + (decimal)0.05;
         }
 
         /// <summary>

@@ -38,10 +38,10 @@ namespace B5_71_1_PRO
             get { return Operation.TaskMessageService; }
             set { Operation.TaskMessageService = value; }
         }
-        public OperationBase Operation { get; }
+        public OperationMetrControlBase Operation { get; }
     }
 
-    public class Operation : OperationBase
+    public class Operation : OperationMetrControlBase
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
 
@@ -127,7 +127,7 @@ namespace B5_71_1_PRO
         /// </summary>
         public void RefreshDevice()
         {
-            AddresDivece = new IeeeBase().GetAllDevace.ToArray();
+            AddresDivece = new IeeeBase().AllStringConnect.ToArray();
         }
 
         public void FindDivice()
@@ -140,7 +140,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Внешний осмотр СИ
     /// </summary>
-    public class Oper0VisualTest : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public class Oper0VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
     
 
@@ -197,7 +197,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Проведение опробования
     /// </summary>
-    public class Oper1Oprobovanie : AbstractUserItemOperationBase, IUserItemOperation<bool>
+    public class Oper1Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
       
         #region Methods
@@ -256,7 +256,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public class Oper2DcvOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper2DcvOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -513,7 +513,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -523,7 +523,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Измерение постоянного напряжения
     /// </summary>
-    public class Oper3DcvMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -770,7 +770,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -779,7 +779,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public class Oper4VoltUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 3.4, 6, 30};
@@ -1027,7 +1027,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -1036,7 +1036,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public class Oper5VoltPulsation : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 3.4, 6, 30};
@@ -1272,7 +1272,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             /*
              *Еще одна схема, для переключения терминала мультиметра
@@ -1286,7 +1286,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public class Oper6DciOutput : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper6DciOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -1497,7 +1497,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -1507,7 +1507,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public class Oper7DciMeasure : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper7DciMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -1736,7 +1736,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -1746,7 +1746,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public class Oper8DciUnstable : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper8DciUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         public static readonly decimal[] ArrResistanceCurrUnstable = {(decimal) 2.7, (decimal) 1.5, (decimal) 0.3};
 
@@ -1957,7 +1957,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             DataRow = new List<IBasicOperation<decimal>>();
         }
@@ -1967,7 +1967,7 @@ namespace B5_71_1_PRO
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public class Oper9DciPulsation : AbstractUserItemOperationBase, IUserItemOperation<decimal>
+    public class Oper9DciPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         //список точек
         public static readonly decimal[] ArrResistanceCurrUnstable = {(decimal) 2.7, (decimal) 1.5, (decimal) 0.3};
@@ -2203,7 +2203,7 @@ namespace B5_71_1_PRO
             Sheme = new ShemeImage
             {
                 Number = 1,
-                Path = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
+                FileName = "C:/Users/02zaa01/rep/ASMC/Plugins/ShemePicture/B5-71-1_2-PRO_N3306_34401_v3-57.jpg"
             };
             /*
             *Еще одна схема, для переключения терминала мультиметра

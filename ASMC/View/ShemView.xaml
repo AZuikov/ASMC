@@ -4,9 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ASMC.View"
+             xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Height="200" Width="100">
-  <Grid DataContext="{Binding Shema}">
-    <Image Source="{Binding Path}"/>
+             d:DesignHeight="450" d:DesignWidth="800" >
+  <UserControl.Resources>
+    <dx:ObjectToVisibilityConverter  Invert="True"   x:Key="ObjectToVisibilityConverterInverse"/>
+    <dx:ObjectToVisibilityConverter   x:Key="ObjectToVisibilityConverter" />
+  </UserControl.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="10*"/>
+      <RowDefinition Height="80*"/>
+      <RowDefinition Height="20*"/>
+    </Grid.RowDefinitions>
+    <TextBlock TextAlignment="Center" Visibility="{Binding Text, Converter={StaticResource ObjectToVisibilityConverter}}"   Text="{Binding Shema.Description}" FontWeight="Bold" FontSize="14"/>
+    <Image Grid.Row="1" Source="{Binding PathImage}" Stretch="UniformToFill" />
+    <StackPanel Grid.Row="2" >
+      <TextBlock Visibility="{Binding Text, Converter={StaticResource ObjectToVisibilityConverterInverse}}"  Text="{Binding Shema.ExtendedDescription}"/>
+      <toolkit:RichTextBox Visibility="{Binding Text, Converter={StaticResource ObjectToVisibilityConverter}}" IsReadOnly="True"  Text="{Binding Text}"  BorderThickness="0" VerticalScrollBarVisibility="Auto"/>
+    </StackPanel>
+   
   </Grid>
 </UserControl>

@@ -100,6 +100,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\Extended.Wpf.Toolkit.3.5.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -112,9 +115,11 @@
     </Compile>
     <Compile Include="Properties\AssemblySettings.cs" />
     <Compile Include="UI\ShemService.cs" />
+    <Compile Include="UI\TestingDialogService.cs" />
     <Compile Include="ViewModel\DeviceViewModel.cs" />
     <Compile Include="ViewModel\SettingViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />
+    <Compile Include="ViewModel\TestingDialogViewModel.cs" />
     <Compile Include="ViewModel\WizardViewModel.cs" />
     <Compile Include="ViewSettingsSelector.cs" />
     <Compile Include="View\Converters\VersionToStringConverter.cs" />
@@ -123,6 +128,9 @@
     </Compile>
     <Compile Include="View\ShemView.xaml.cs">
       <DependentUpon>ShemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\TestingDialogView.xaml.cs">
+      <DependentUpon>TestingDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\WizardView.xaml.cs">
       <DependentUpon>WizardView.xaml</DependentUpon>
@@ -183,6 +191,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ShemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TestingDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

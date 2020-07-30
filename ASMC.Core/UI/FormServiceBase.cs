@@ -169,7 +169,8 @@ namespace ASMC.Core.UI
                 ResizeMode = ResizeMode,
                 ViewLocator = ViewLocatorCore,
                 Settings = Settings as IWindowSettings,
-                SettingsSelector = SettingsSelector
+                SettingsSelector = SettingsSelector,
+                SizeToContent = SizeToContent.WidthAndHeight
             };
 
             var viewModel = CreateViewModel(); //_viewModel ?? (_viewModel = CreateViewModel());
@@ -181,9 +182,8 @@ namespace ASMC.Core.UI
             var cb = viewModel as BaseViewModel;
             if (cb != null)
             {
-                SetBinding(viewModel, nameof(BaseViewModel.Entity), EntityProperty);
-                cb.Entity = Entity; 
-                Subscribe(cb);  
+                cb.Entity = Entity;
+               Subscribe(cb);  
             }
 
             var type = GetDocumentType(viewModel);
@@ -193,7 +193,7 @@ namespace ASMC.Core.UI
             try
             {
                 //SubscribeWindowServiceEvents(wndService);
-                wndService.Show("ShemView", viewModel, Parameter, null);
+                wndService.Show("FormView", viewModel, Parameter, null);
                 //wndService.Show(viewModel.GetType().Name.TrimEnd(Convert.ToChar("Model")), viewModel, null, null);
             }
             finally

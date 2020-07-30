@@ -32,6 +32,12 @@ namespace ASMC.Devices
         bool Open();
 
         #endregion
+
+        string ReadLine();
+        /// <summary>
+        /// Отправляет полученную команду, без изменений
+        /// </summary>
+        void WriteLine(string str);
     }
 
     /// <summary>
@@ -74,7 +80,9 @@ namespace ASMC.Devices
         /// </summary>
         [StringValue("Г")] [DoubleValue(1E9)] Giga
     }
-
+    /// <summary>
+    /// Описывает информацию об устройстве.
+    /// </summary>
     public class DeviceInfo
     {
         #region Property
@@ -109,7 +117,9 @@ namespace ASMC.Devices
             Type = type;
         }
     }
-
+    /// <summary>
+    /// Описывает комманду для отправки в устройство.
+    /// </summary>
     public class Command : ICommand
     {
         public Command(string strCommand, string description, double value)
@@ -128,7 +138,6 @@ namespace ASMC.Devices
         /// <inheritdoc />
         public double Value { get; }
     }
-
     public interface ICommand
     {
         #region Property
