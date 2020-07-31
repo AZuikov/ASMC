@@ -11,7 +11,6 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:view="clr-namespace:ASMC.View"
              xmlns:ui1="clr-namespace:ASMC.UI"
-             xmlns:core="clr-namespace:ASMC.Core;assembly=ASMC.Core"
              xmlns:common="clr-namespace:ASMC.Common;assembly=ASMC.Common"
              xmlns:ui2="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
              xmlns:behavior="clr-namespace:ASMC.Common.Behavior;assembly=ASMC.Common"
