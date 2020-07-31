@@ -6,12 +6,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using ASMC.Core.Settings;
-using ASMC.Core.ViewModel;
+using ASMC.Common.Settings;
+using ASMC.Common.ViewModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 
-namespace ASMC.Core.UI
+namespace ASMC.Common.UI
 {
     /// <summary>
     /// Задает режим отображения окна.

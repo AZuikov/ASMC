@@ -56,6 +56,10 @@
       <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
       <Name>AP.Math</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ASMC.Common\ASMC.Common.csproj">
+      <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
+      <Name>ASMC.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ASMC.Core\ASMC.Core.csproj">
       <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
       <Name>ASMC.Core</Name>

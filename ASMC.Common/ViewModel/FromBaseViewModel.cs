@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Data;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 
-namespace ASMC.Core.ViewModel
+namespace ASMC.Common.ViewModel
 {
     public class FromBaseViewModel : ClosableViewModel, ISupportDialog
     {

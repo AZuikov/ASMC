@@ -114,20 +114,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblySettings.cs" />
-    <Compile Include="UI\ShemService.cs" />
     <Compile Include="UI\TestingDialogService.cs" />
     <Compile Include="ViewModel\DeviceViewModel.cs" />
     <Compile Include="ViewModel\SettingViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />
-    <Compile Include="ViewModel\TestingDialogViewModel.cs" />
     <Compile Include="ViewModel\WizardViewModel.cs" />
     <Compile Include="ViewSettingsSelector.cs" />
     <Compile Include="View\Converters\VersionToStringConverter.cs" />
     <Compile Include="View\SettingView.xaml.cs">
       <DependentUpon>SettingView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ShemView.xaml.cs">
-      <DependentUpon>ShemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TestingDialogView.xaml.cs">
       <DependentUpon>TestingDialogView.xaml</DependentUpon>
@@ -190,10 +185,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ShemView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\TestingDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -215,6 +206,10 @@
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Common\ASMC.Common.csproj">
+      <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
+      <Name>ASMC.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\ASMC.Core\ASMC.Core.csproj">
       <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>

@@ -1,4 +1,4 @@
-﻿using ASMC.Core;
+﻿using ASMC.Common;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
 

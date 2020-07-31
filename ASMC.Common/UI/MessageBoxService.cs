@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 
-namespace ASMC.Core.UI
+namespace ASMC.Common.UI
 {
     public class MessageBoxService : ServiceBase, IMessageBoxService
     {

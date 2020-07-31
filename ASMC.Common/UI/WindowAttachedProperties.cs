@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Interop;
 
-namespace ASMC.Core.UI
+namespace ASMC.Common.UI
 {
     public static class WindowAttachedProperties
     {

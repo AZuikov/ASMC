@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Interop;
-using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Application = System.Windows.Application;
 
-namespace ASMC.Core.UI
+namespace ASMC.Common.UI
 {
     /// <summary>
     /// Представляет реализацию сервиса

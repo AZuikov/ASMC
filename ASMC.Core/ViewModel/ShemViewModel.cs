@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using ASMC.Common.ViewModel;
-using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using DevExpress.Xpf.Core.Native;
 
-namespace ASMC.ViewModel
+namespace ASMC.Core.ViewModel
 {
     public class ShemViewModel : FromBaseViewModel
     {

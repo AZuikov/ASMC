@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
-namespace ASMC.Core
+namespace ASMC.Common
 {
     /// <summary>
     /// Представляет результат

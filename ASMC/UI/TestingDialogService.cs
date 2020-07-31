@@ -22,7 +22,8 @@ namespace ASMC.UI
 
         protected override object CreateViewModel()
         {
-            return new TestingDialogViewModel();
+            return null;
+            //return new TestingDialogViewModel();
         }
     }
 }

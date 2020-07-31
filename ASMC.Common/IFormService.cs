@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DevExpress.Mvvm;
 
-using DevExpress.Mvvm;
-
-namespace ASMC.Core
+namespace ASMC.Common
 {        /// <summary>
     /// Представляет интерфейс сервиса
     /// справочника данных.

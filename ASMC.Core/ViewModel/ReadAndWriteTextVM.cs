@@ -1,9 +1,11 @@
 ﻿using System.Windows.Documents;
+using ASMC.Common.ViewModel;
+using ASMC.Core.UI;
 using DevExpress.Mvvm;
 
 namespace ASMC.Core.ViewModel
 {
-    public class ReadAndWriteTextVM : DialogBaseContent
+    public class ReadAndWriteTextVM : FromBaseViewModel
     {
         public string DocumentHeaderPath { get; set; }
         private bool _RadioButtonValue;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ASMC.Core
+namespace ASMC.Common
 {
     public static class Exceptions
     {

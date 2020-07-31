@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ASMC.Core;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
 using NLog;

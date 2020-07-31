@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DevExpress.Mvvm.UI.Interactivity;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interactivity;
 
-namespace ASMC.Core.Behavior
+namespace ASMC.Common.Behavior
 {
     public class BindableSelectedItemBeheavior : Behavior<TreeView>
     {

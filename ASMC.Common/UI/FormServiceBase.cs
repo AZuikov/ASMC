@@ -3,15 +3,13 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
-using ASMC.Common;
 using ASMC.Common.Settings;
 using ASMC.Common.ViewModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
-using WindowService = ASMC.Common.UI.WindowService;
-using WindowShowMode = ASMC.Common.UI.WindowShowMode;
+using ViewInjectionManager = DevExpress.Mvvm.ViewInjectionManager;
 
-namespace ASMC.Core.UI
+namespace ASMC.Common.UI
 {
     public abstract class FormServiceBase : ServiceBase, IFormService
     {
@@ -214,16 +212,7 @@ namespace ASMC.Core.UI
             return _dialogResult == true;
         }
 
-        private void SetBinding(object obj, string path, DependencyProperty targetProperty)
-        {
-            var bnd = new Binding(path)
-            {
-                Source = obj,
-                Mode = BindingMode.TwoWay
-            };
-
-            BindingOperations.SetBinding(this, targetProperty, bnd);
-        }
+     
         private void ClearBinding(DependencyProperty targetProperty)
         {
             BindingOperations.ClearBinding(this, targetProperty);
@@ -255,20 +244,7 @@ namespace ASMC.Core.UI
             return type.Replace("ViewModel", "View");
         }
 
-        private void SubscribeWindowServiceEvents(WindowService service)
-        {
-            var dpd = DependencyPropertyDescriptor.FromProperty(WindowService.ActualSettingsProperty,
-                service.GetType());
-            dpd.AddValueChanged(service, WindowService_ActualSettingsChanged);
-        }
-
-        private void UnsubscribeWindowServiceEvents(WindowService service)
-        {
-            var dpd = DependencyPropertyDescriptor.FromProperty(WindowService.ActualSettingsProperty,
-                service.GetType());
-            dpd.RemoveValueChanged(service, WindowService_ActualSettingsChanged);
-        }
-
+      
         private void Subscribe(BaseViewModel viewModel)
         {
             //viewModel.Created += CardBaseViewModel_Created;

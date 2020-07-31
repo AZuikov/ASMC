@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using System.Windows;
-using ASMC.Core.UI;
-using ASMC.ViewModel;
+using ASMC.Core.ViewModel;
 using DevExpress.Mvvm.UI;
 
-namespace ASMC.UI
+namespace ASMC.Core.UI
 {
-    public class ShemService : FormServiceBase
+    public class ImageService : FormServiceBase
     {
-        public ShemService()
+        public ImageService()
         {
             Title = "Схема";
             ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());

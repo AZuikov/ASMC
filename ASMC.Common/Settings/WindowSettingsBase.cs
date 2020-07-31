@@ -1,4 +1,4 @@
-﻿namespace ASMC.Core.Settings
+﻿namespace ASMC.Common.Settings
 {
     /// <summary>
     /// Предствляет параметры окна

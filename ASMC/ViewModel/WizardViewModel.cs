@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AP.Reports.AutoDocumets;
+using ASMC.Common;
+using ASMC.Common.ViewModel;
 using ASMC.Core;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
@@ -300,7 +302,7 @@ namespace ASMC.ViewModel
             var servicePack = new ServicePack
             {
                 MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
-                ShemForm = GetService<IFormService>("ShemService"),
+                ShemForm = GetService<IFormService>("ImageService"),
                 TestingDialog= GetService<IFormService>("TestingDialogService")
             };
             if (types == null) return;

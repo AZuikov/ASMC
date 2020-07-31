@@ -13,9 +13,9 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       HorizontalAlignment="Left" Grid.ColumnSpan="2">
             <StackPanel>
-                <FlowDocumentScrollViewer DataContext="{Binding InputUserText}">
+                <RichTextBox DataContext="{Binding InputUserText}">
 
-                </FlowDocumentScrollViewer>
+                </RichTextBox>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>

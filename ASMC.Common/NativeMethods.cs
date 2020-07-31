@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ASMC.Core
+namespace ASMC.Common
 {
     internal class NativeMethods
     {

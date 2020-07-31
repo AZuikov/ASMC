@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using ASMC.Core.Settings;
+using ASMC.Common.Settings;
 
-namespace ASMC.Core
+namespace ASMC.Common
 {
     /// <summary>
     /// Класс расширений для представления

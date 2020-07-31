@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace ASMC.Core.Settings
+namespace ASMC.Common.Settings
 {
     /// <summary>
     /// Представляет селектор пользовательских параметров

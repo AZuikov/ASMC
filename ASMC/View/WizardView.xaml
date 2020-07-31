@@ -6,21 +6,23 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:utils="clr-namespace:AP.Utils;assembly=AP.Utils"
              xmlns:view1="clr-namespace:ASMC.Core.View;assembly=ASMC.Core"
-             xmlns:behavior="clr-namespace:ASMC.Core.Behavior;assembly=ASMC.Core"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:view="clr-namespace:ASMC.View"
              xmlns:ui1="clr-namespace:ASMC.UI"
              xmlns:core="clr-namespace:ASMC.Core;assembly=ASMC.Core"
+             xmlns:common="clr-namespace:ASMC.Common;assembly=ASMC.Common"
+             xmlns:ui2="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
+             xmlns:behavior="clr-namespace:ASMC.Common.Behavior;assembly=ASMC.Common"
+             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
 
              mc:Ignorable="d"
              d:DesignHeight="650" d:DesignWidth="800" MinWidth="800">
   <UserControl.Resources>
     <ResourceDictionary>
       <dx:EnumToBoolConverter x:Key="EnumToBoolConverter" />
-      <core:EnumFlagToBoolConverter x:Key="EnumFlagToBoolConverter" />
+      <common:EnumFlagToBoolConverter x:Key="EnumFlagToBoolConverter" />
       <GridLength x:Key="Gap">20</GridLength>
       <Style TargetType="Button">
         <Setter Property="Margin" Value="0,5,0,0" />
@@ -31,10 +33,10 @@
     </ResourceDictionary>
   </UserControl.Resources>
   <dxmvvm:Interaction.Behaviors>
-    <ui1:ShemService x:Name="ShemService" />
+    <ui:ImageService x:Name="ImageService" />
     <ui1:TestingDialogService x:Name="TestingDialogService"/>
-    <ui:MessageBoxService/>
-    <ui:TaskMessageService/>
+    <ui2:MessageBoxService/>
+    <ui2:TaskMessageService/>
   </dxmvvm:Interaction.Behaviors>
   <StackPanel>
     <Menu Margin="0,0,0,10">
@@ -366,9 +368,9 @@
                         Content="{Binding Path= Name}"/>
                       </DataTemplate>
                     </TreeView.ItemTemplate>
-                    <i:Interaction.Behaviors>
+                    <!--<i:Interaction.Behaviors>
                       <behavior:BindableSelectedItemBeheavior SelectItem ="{Binding SelectionItemOperation, Mode=TwoWay}"/>
-                    </i:Interaction.Behaviors>
+                    </i:Interaction.Behaviors>-->
                   </TreeView>
                 </StackPanel>
                 <GridSplitter Grid.Column="1" Width="2"></GridSplitter>
