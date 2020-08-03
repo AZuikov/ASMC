@@ -70,7 +70,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Внешний осмотр СИ
     /// </summary>
-    public abstract class Oper0VisualTest : ParagraphBase, IUserItemOperation<string>
+    public abstract class Oper0VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //public override async Task StartWork(CancellationToken token)
@@ -84,14 +84,15 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            var operation = new BasicOperation<string>();
-
-            operation.IsGood = () => operation.Getting.Equals(operation.Expected, StringComparison.CurrentCultureIgnoreCase);
+            var operation = new BasicOperation<bool>();
+            operation.Expected = true;
+            operation.IsGood = () => operation.Getting == operation.Expected;
             operation.InitWork = () =>
             {
                 var service = this.UserItemOperation.ServicePack.TestingDialog;
                 service.Title = "Визуальный осмотр";
                 service.Show();
+                operation.Getting = true;
                    return Task.CompletedTask;
                 };
                 
@@ -103,7 +104,7 @@ namespace B5_71_PRO_Abstract
         protected Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Внешний осмотр";
-            DataRow = new List<IBasicOperation<string>>();
+            DataRow = new List<IBasicOperation<bool>>();
         }
 
         #region Methods
@@ -113,7 +114,7 @@ namespace B5_71_PRO_Abstract
             var data = new DataTable();
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
-            var dds = DataRow[0] as BasicOperation<string>;
+            var dds = DataRow[0] as BasicOperation<bool>;
             // ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting;
             data.Rows.Add(dataRow);
@@ -122,7 +123,7 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<string>> DataRow { get; set; }
+        public List<IBasicOperation<bool>> DataRow { get; set; }
         /// <inheritdoc />
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
