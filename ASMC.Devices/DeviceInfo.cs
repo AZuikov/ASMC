@@ -148,12 +148,12 @@ namespace ASMC.Devices
         string StrCommand { get; }
 
         /// <summary>
-        /// Предоставляет описание диапазона.
+        /// Предоставляет описание команды.
         /// </summary>
         string Description { get; }
 
         /// <summary>
-        /// Предоставляет численное значение диапазона.
+        /// Предоставляет численное значение команды.
         /// </summary>
         double Value { get; }
 

@@ -217,7 +217,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
                 if(res == null)
                 {
                     Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
-                    res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
+                    res = Ranges.First(q => Equals(q.Value, MaxResistenceRange.Value));
                 }
 
                 _mainN3300.WriteLine(res.StrCommand);

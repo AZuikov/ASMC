@@ -9,19 +9,14 @@ using AP.Reports.Utils;
 namespace ASMC.Devices.Port.Profigrupp
 {
 
-    public enum VoltMultipliers
+    public enum bpRemoteState
     {
-        [StringValue(" V")]
-        Volt,
-        [StringValue(" mV")]
-        Milli,
-        [StringValue(" microV")]
-        Micro,
-        [StringValue("")]
-        Si
+    [StringValue("cont_ps_ext")] OnlyPcMode, //Работа тольк от ПК с блокировкой кнопок cont_ps_ext
+        [StringValue("cps_int_ext")] PcAndFrontPanel, //Управление от ПК и с клавиатуры прибора cps_int_ext
+        [StringValue("cont_ps_int")] OnlyFrontPanel //Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int 
     }
 
-    public enum CurrMultipliers
+public enum CurrMultipliers
     {
         [StringValue(" A")]
         Amp,
@@ -34,10 +29,94 @@ namespace ASMC.Devices.Port.Profigrupp
     }
 
 
-    public abstract class B571Pro :  AbstractB571Pro
+    public abstract class B571Pro : ComPort
 
     {
-       
+
+        /// <summary>
+        /// Максимальное значение напряжения источника питания
+        /// </summary>
+        public decimal VoltMax { get; protected set; }
+
+        /// <summary>
+        /// Максимальное значение тока источника питания
+        /// </summary>
+        public decimal CurrMax { get; protected set; }
+
+        /// <summary>
+        /// Погрешность нестабильности выходного напряжения.
+        /// </summary>
+        private decimal tolVoltUnstable;
+        public decimal TolleranceVoltageUnstability
+        {
+            get { return tolVoltUnstable;}
+            protected set
+            {
+                tolVoltUnstable = TollUnstable(VoltMax, (decimal)0.02); 
+            }
+        }
+
+        /// <summary>
+        /// Погрешность нетсабильности выходного тока.
+        /// </summary>
+
+        private decimal tolCurrUnstable;
+        public decimal TolleranceCurrentUnstability
+        {
+            get { return tolCurrUnstable;}
+            protected set
+            {
+                tolCurrUnstable = TollUnstable(CurrMax, (decimal)0.05); 
+            }
+        }
+
+        /// <summary>
+        /// формулы расчета погрешности нестабильности тока/напряжения
+        /// </summary>
+        /// <param name="bpInArg">Максимальный ток/напряжение для данной модели блока питания</param>
+        /// <param name="bpTolArg">Коэффициент из формулы расчета, различный для тока и напряжения</param>
+        /// <returns></returns>
+        private decimal TollUnstable(decimal bpInArg, decimal bpTolArg)
+        {
+            return (decimal) 0.001 * bpInArg + bpTolArg;
+        }
+
+        /// <summary>
+        /// Допустимый уровень пульсаций по напряжению
+        /// </summary>
+
+        public decimal TolleranceVoltPuls { get; protected set; } = 2;
+
+
+        /// <summary>
+        /// Допустимый уровень пульсаций по току
+        /// </summary>
+        public decimal TolleranceCurrentPuls { get; protected set; } = 5;
+
+        /// <summary>
+        /// Формула расчета погрешности по воспроизведению и измерению напряжения источника питания.
+        /// </summary>
+        /// <param name="value">Поверяемая точка. В вольтах</param>
+        /// <param name = "mult"></param>
+        /// <returns>Погрешность в вольтах.</returns>
+        public decimal TolleranceFormulaVolt(decimal value, Multipliers mult = Multipliers.None)
+        {
+
+            value *= (decimal)mult.GetDoubleValue();
+            return (decimal)0.002 * value + (decimal)0.1;
+        }
+
+        /// <summary>
+        /// Формула расчета погрешности по воспроизведению и измерению тока источника питания.
+        /// </summary>
+        /// <returns>Погрешность в амперах</returns>
+        public decimal TolleranceFormulaCurrent(decimal value, Multipliers mult = Multipliers.None)
+        {
+            value *= (decimal)mult.GetDoubleValue();
+            return (decimal)0.01 * value + (decimal)0.05;
+        }
+
+
 
         /// <summary>
         /// Производится подключение к блоку питания. Переводит прибор в режим дистанционного управления.
@@ -97,7 +176,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Вовзращает измеренное источником питания значения тока в цепи.
         /// </summary>
         /// <returns></returns>
-        public override decimal GetMeasureCurr()
+        public  decimal GetMeasureCurr()
         {
             return Decimal.Parse(GetMeasVal()[1])/1000;
 
@@ -107,7 +186,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Вовзращает измеренное источником питания напряжение на выходных клеммах.
         /// </summary>
         /// <returns></returns>
-        public override decimal GetMeasureVolt()
+        public  decimal GetMeasureVolt()
         {
             return Decimal.Parse(GetMeasVal()[2])/1000;
         }
@@ -135,7 +214,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Вовзращает величину уставки по току источника питания.
         /// </summary>
         /// <returns></returns>
-        public override decimal GetStateCurr()
+        public  decimal GetStateCurr()
         {
             return Decimal.Parse(GetStateVal()[1])/1000;
         }
@@ -145,7 +224,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Вовзращает величину уставки напряжения источника питания.
         /// </summary>
         /// <returns></returns>
-        public override decimal GetStateVolt()
+        public  decimal GetStateVolt()
         {
             return Decimal.Parse(GetStateVal()[2])/1000;
         }
@@ -153,10 +232,8 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <summary>
         /// Задает параметры подключения к последовательному порту. Задает символ конца строки для блока питания.
         /// </summary>
-        public override void Init()
+        public  void Init()
         {
-            
-            
             this.BaudRate = SpeedRate.R9600;
             this.Parity = Parity.None;
             this.DataBit = DBit.Bit8;
@@ -170,9 +247,8 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <summary>
         /// Отправляет на прибор команду перезагрузки
         /// </summary>
-        public override void Reset()
+        public  void Reset()
         {
-                       
 
             if (!this.Open()) return;
             this.WriteLine("c_reset_ext");
@@ -265,7 +341,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name="inCurr">Ток который необходимо задать.</param>
         /// <param name="inUnitCurrMultipliers">Единицы измерения тока.</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public override bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si)
+        public  bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si)
         {
             //нужно выбросить исключение
            if (!this.Open()) return  false;
@@ -287,12 +363,41 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name="inVolt">Значение напряжения.</param>
         /// <param name="inUnitVoltMultipliers">Единицы измерения</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public override bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si)
+        public  bool SetStateVolt(decimal inVolt, Multipliers mult = Multipliers.None)
         {
             //нужно выбросить исключение
             if (!this.Open()) return false;
-            this.WriteLine("U" + VoltMultipliersConvert(inVolt, inUnitVoltMultipliers));
-            Thread.Sleep(2500);
+
+            //блок питания понимает значения только в милливольтах
+           
+            switch (mult)
+            {
+                case Multipliers.None:
+                    inVolt = inVolt * (decimal)Multipliers.Kilo.GetDoubleValue();
+                    break;
+                case Multipliers.Mili:
+                    break;
+                case Multipliers.Nano:
+                    inVolt = inVolt * (decimal) Multipliers.Kilo.GetDoubleValue();
+                    break;
+                case Multipliers.Kilo:
+                    inVolt = inVolt * (decimal) Multipliers.Mega.GetDoubleValue();
+                    break;
+                case Multipliers.Mega:
+                    inVolt = inVolt * (decimal) Multipliers.Giga.GetDoubleValue();
+                    break;
+
+            }
+            string resultStr = AP.Math.MathStatistics.Round(ref inVolt, 0, true);
+
+            if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
+
+            for (; resultStr.Length < 6;)
+                resultStr = resultStr.Insert(0, "0");
+
+
+            this.WriteLine("U" + resultStr);
+            Thread.Sleep(2000);
             string answer = this.ReadLine();
             this.Close();
 
@@ -305,7 +410,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Включает выход истоника питания.
         /// </summary>
         /// <returns>Если от прибора получен положительный ответ, то вернет true. В противном случае false.</returns>
-        public override bool OnOutput()
+        public bool OnOutput()
         {
             //нужно выбросить исключение
             if (!this.Open()) return false;
@@ -323,7 +428,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Выключает выход истоника питания.
         /// </summary>
         /// <returns>Если от прибора получен положительный ответ, то вернет true. В противном случае false.</returns>
-        public override bool OffOutput()
+        public bool OffOutput()
         {
             //нужно выбросить исключение
             if (!this.Open()) return false;
@@ -351,155 +456,105 @@ namespace ASMC.Devices.Port.Profigrupp
         }
     }
 
-    public abstract class AbstractB571Pro :ComPort
-    {
+
+
+
+    //public abstract class AbstractB571Pro :ComPort
+    //{
  
 
-        /// <summary>
-        /// Максимальное значение напряжения источника питания
-        /// </summary>
-        public decimal VoltMax { get; protected set; }
-
-        /// <summary>
-        /// Максимальное значение тока источника питания
-        /// </summary>
-        public decimal CurrMax { get; protected set; }
-
-        /// <summary>
-        /// Погрешность нетсабильности выходного напряжения.
-        /// </summary>
-        public decimal TolleranceVoltageUnstability { get; protected set; }
-
-        /// <summary>
-        /// Погрешность нетсабильности выходного тока.
-        /// </summary>
-        public decimal TolleranceCurrentUnstability { get; protected set; }
-
-        /// <summary>
-        /// Допустимый уровень пульсаций по напряжению
-        /// </summary>
-        public decimal TolleranceVoltPuls { get; protected set; }
-
-        /// <summary>
-        /// Допустимый уровень пульсаций по току
-        /// </summary>
-        public decimal TolleranceCurrentPuls { get; protected set; }
-
-        /// <summary>
-        /// Формула расчета погрешности по воспроизведению и измерению напряжения источника питания.
-        /// </summary>
-        /// <param name="value">Поверяемая точка. В вольтах</param>
-        /// <param name = "mult"></param>
-        /// <returns>Погрешность в вольтах.</returns>
-        public decimal TolleranceFormulaVolt(decimal value,
-            Multipliers mult = Multipliers.None)
-        {
-             value *= (decimal) mult.GetDoubleValue();
-            return (decimal)0.002 * value + (decimal)0.1;
-        }
-
-        /// <summary>
-        /// Формула расчета погрешности по воспроизведению и измерению тока источника питания.
-        /// </summary>
-        /// <returns>Погрешность в амперах</returns>
-        public decimal TolleranceFormulaCurrent(decimal value,
-            Multipliers mult = Multipliers.None)
-        {
-            value /= (decimal)mult.GetDoubleValue();
-            return (decimal)0.01 * value + (decimal)0.05;
-        }
-
-        /// <summary>
-        /// Проверка подключения к источнику питания 
-        /// </summary>
+      
+    //    /// <summary>
+    //    /// Проверка подключения к источнику питания 
+    //    /// </summary>
         
-       public abstract void Init ();
-        /// <summary>
-        /// Сброс блока к настройкам по умолчанию.
-        /// </summary>
-        public abstract void Reset();
+    //   public abstract void Init ();
+    //    /// <summary>
+    //    /// Сброс блока к настройкам по умолчанию.
+    //    /// </summary>
+    //    public abstract void Reset();
 
-        //========================
-        //  Режимы функционирования блока
-        // 1. Работа тольк от ПК с блокировкой кнопок cont_ps_ext
-        // 2. Управление от ПК и с клавиатуры прибора cps_int_ext
-        // 3. Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int 
-        //========================
-
-
-        /// <summary>
-        /// Вовращает уставку постоянного тока блока питания.
-        /// </summary>
-        public abstract decimal GetStateCurr();
-
-        /// <summary>
-        /// Задает уставку тока блока питания
-        /// </summary>
-        /// <param name="inCurr">величина уставки тока</param>
-        /// <param name="inUnitCurrMultipliers">единицы измерения тока, по умолчанию амперы</param>
-        /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
-        public abstract bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si);
+    //    //========================
+    //    //  Режимы функционирования блока
+    //    // 1. Работа тольк от ПК с блокировкой кнопок cont_ps_ext
+    //    // 2. Управление от ПК и с клавиатуры прибора cps_int_ext
+    //    // 3. Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int 
+    //    //========================
 
 
-        /// <summary>
-        /// Измеренное блоком значение тока в цепи.
-        /// </summary>
-        public abstract decimal GetMeasureCurr();
+    //    /// <summary>
+    //    /// Вовращает уставку постоянного тока блока питания.
+    //    /// </summary>
+    //    public abstract decimal GetStateCurr();
+
+    //    /// <summary>
+    //    /// Задает уставку тока блока питания
+    //    /// </summary>
+    //    /// <param name="inCurr">величина уставки тока</param>
+    //    /// <param name="inUnitCurrMultipliers">единицы измерения тока, по умолчанию амперы</param>
+    //    /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
+    //    public abstract bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si);
 
 
-        /// <summary>
-        /// Возвращает уставку постоянного напряжения блока питания.
-        /// </summary>
-        public abstract decimal GetStateVolt();
+    //    /// <summary>
+    //    /// Измеренное блоком значение тока в цепи.
+    //    /// </summary>
+    //    public abstract decimal GetMeasureCurr();
 
-        /// <summary>
-        /// Задает уставку напряжения блока питания
-        /// </summary>
-        /// <param name="inVolt">значения устанавливаемого напряжения</param>
-        /// <param name="inUnitVoltMultipliers">единицы измерения устанавливаемого напряжения</param>
-        /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
-        public abstract bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si);
 
-        /// <summary>
-        /// Измеренное блоком питания постоянное напряжение.
-        /// </summary>
-        public abstract decimal GetMeasureVolt();
+    //    /// <summary>
+    //    /// Возвращает уставку постоянного напряжения блока питания.
+    //    /// </summary>
+    //    public abstract decimal GetStateVolt();
 
-        /// <summary>
-        /// Включает выход источника питания.
-        /// </summary>
-        /// <returns></returns>
-        public abstract bool OnOutput();
+    //    /// <summary>
+    //    /// Задает уставку напряжения блока питания
+    //    /// </summary>
+    //    /// <param name="inVolt">значения устанавливаемого напряжения</param>
+    //    /// <param name="inUnitVoltMultipliers">единицы измерения устанавливаемого напряжения</param>
+    //    /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
+    //    public abstract bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si);
 
-        /// <summary>
-        /// Выключает выход источника питания.
-        /// </summary>
-        /// <returns></returns>
-        public abstract bool OffOutput();
+    //    /// <summary>
+    //    /// Измеренное блоком питания постоянное напряжение.
+    //    /// </summary>
+    //    public abstract decimal GetMeasureVolt();
 
-        protected AbstractB571Pro()
-        {
+    //    /// <summary>
+    //    /// Включает выход источника питания.
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public abstract bool OnOutput();
+
+    //    /// <summary>
+    //    /// Выключает выход источника питания.
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public abstract bool OffOutput();
+
+    //    protected AbstractB571Pro()
+    //    {
             
-        }
+    //    }
 
-        protected AbstractB571Pro(string portName) : base(portName)
-        {
-        }
+    //    protected AbstractB571Pro(string portName) : base(portName)
+    //    {
+    //    }
 
-        protected AbstractB571Pro(string portName, SpeedRate bautRate) : base(portName, bautRate)
-        {
-        }
+    //    protected AbstractB571Pro(string portName, SpeedRate bautRate) : base(portName, bautRate)
+    //    {
+    //    }
 
-        protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity) : base(portName, bautRate, parity)
-        {
-        }
+    //    protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity) : base(portName, bautRate, parity)
+    //    {
+    //    }
 
-        protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit) : base(portName, bautRate, parity, databit)
-        {
-        }
+    //    protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit) : base(portName, bautRate, parity, databit)
+    //    {
+    //    }
 
-        protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits) : base(portName, bautRate, parity, databit, stopbits)
-        {
-        }
-    }
+    //    protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits) : base(portName, bautRate, parity, databit, stopbits)
+    //    {
+    //    }
+    //}
 }
