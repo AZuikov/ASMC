@@ -217,7 +217,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности установки выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage{Description = "Схема", Number = 1, FileName = @"Ошибка связи.JPG", ExtendedDescription = "свободный текст"};
+            Sheme = new ShemeImage{Description = "Схема", Number = 1, FileName = @"Ошибка связи.JPG", ExtendedDescription = "свободный текст", FileNameDescription = };
         }
 
         #region Methods
@@ -273,7 +273,7 @@ namespace B5_71_PRO_Abstract
                                 throw new
                                     ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-                            Mult.Open();
+                            
                         });
                       
                         while(!Mult.IsTerminal)
@@ -305,8 +305,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1000);
 
                         //измеряем напряжение
-                        Mult.Dc.Voltage.Range.Set(100);
-                        var result = Mult.GetMeasValue();
+                        var result =Mult.Dc.Voltage.Range.Set(100).GetMeasValue();
                         MathStatistics.Round(ref result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
