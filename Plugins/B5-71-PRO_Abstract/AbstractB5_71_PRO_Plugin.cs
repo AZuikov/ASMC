@@ -217,7 +217,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности установки выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage{Description = "Схема", Number = 1, FileName = @"Ошибка связи.JPG", ExtendedDescription = "свободный текст", FileNameDescription = };
+            Sheme = new ShemeImage{Description = "Схема", Number = 1, FileName = @"Ошибка связи.JPG", ExtendedDescription = "свободный текст"};
         }
 
         #region Methods
