@@ -26,8 +26,8 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         protected MainN3300()
         {
-            Resistance = new LResistance(this);
-            Meas = new LMeas(this);
+            Resistance = new Resistance(this);
+            Meas = new Meas(this);
             this.UserType = "N3300A";
         }
 
@@ -179,86 +179,9 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         }
 
-        public LResistance Resistance { get; protected internal set; }
+        public Resistance Resistance { get; protected internal set; }
 
-        public class LResistance:HelpIeeeBase
-        {
-            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-            private readonly MainN3300 _mainN3300;
-            /// <summary>
-            /// Предоставляет доступные диапазоны соправтивления.
-            /// </summary>
-            public ICommand[] Ranges { get; protected internal set; }
-            public LResistance(MainN3300 mainN3300)
-            {  
-               _mainN3300 = mainN3300;
-            }
-            /// <summary>
-            /// Возвращает маскимальное значение сопротивление на этой нагрузке
-            /// </summary>
-            /// <returns></returns>
-            public ICommand MaxResistenceRange
-            {
-              get  => Ranges.FirstOrDefault(f=>Equals(f.Value, Ranges.Select(s => s.Value).Max()));
-            }
-
-            /// <summary>
-            /// Устанавливает ПРЕДЕЛ сопротивления для режима CR 
-            /// </summary>
-            /// <param name="value">Значение сопротивления, которое нужно установить</param>
-            public MainN3300 SetRange(decimal value, Multipliers mult = Devices.Multipliers.None)
-            {
-
-                if (value<0) throw  new ArgumentException("Значение меньше 0");
-
-               var val = value* (decimal) mult.GetDoubleValue();
-                var res = Ranges.FirstOrDefault(q => q.Value <= (double) val);
-
-                if(res == null)
-                {
-                    Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
-                    res = Ranges.First(q => Equals(q.Value, MaxResistenceRange.Value));
-                }
-
-                _mainN3300.WriteLine(res.StrCommand);
-
-                return _mainN3300; 
-
-            }
-            /// <summary>
-            /// Устанавливает максимальный предел воспроизведения сопротивления
-            /// </summary>
-            /// <returns></returns>
-            public MainN3300 SetMaxResistanceRange()
-            {
-                _mainN3300.WriteLine("RESistance:RANGe MAX");
-                return _mainN3300;
-            }
-
-            /// <summary>
-            /// Устанавливает ВЕЛИЧИНУ сопротивления для режима CR
-            /// </summary>
-            /// <param name = "value"></param>
-            /// <param name = "mult"></param>
-            public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
-            {
-                if(value < 0)
-                    throw new ArgumentException("Значение меньше 0");
-
-                var val = value * (decimal)mult.GetDoubleValue(); 
-                _mainN3300.WriteLine($@"RESistance { this.JoinValueMult(val, mult)}");
-                return _mainN3300;
-            }
-
-        }
-        public class LVoltage
-        {
-            
-        }
-        public class LCurrent
-        {
-            
-        }
+        
        
 
         /// <summary>
@@ -299,48 +222,8 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             this.WriteLine("CURR:LEV?");
             return StrToDecimal(this.ReadLine());
         }
-        public LMeas Meas { get; }
-        public class LMeas
-        {
-            private readonly MainN3300 _mainN3300;
-
-            public LMeas(MainN3300 mainN3300)
-            {
-                this._mainN3300 = mainN3300;
-            }
-
-            /// <summary>
-            /// Возвращает измеренное значение напряжения на нагрузке
-            /// </summary>
-            public decimal Voltage
-            {
-                get
-                {
-                    _mainN3300.WriteLine("MEAS:VOLT?");
-                    return StrToDecimal(_mainN3300.ReadLine());
-                }
-            }
-            /// <summary>
-            /// Возвращает измеренное значение тока в цепи
-            /// </summary>
-            public decimal Current
-            {
-                get
-                {
-                    _mainN3300.WriteLine("MEAS:CURR?");
-                    return StrToDecimal(_mainN3300.ReadLine());
-                }
-            }
-            public decimal Power
-            {
-                get
-                {
-                    _mainN3300.WriteLine("MEAS:POWer?");
-                    return StrToDecimal(_mainN3300.ReadLine());
-                }
-            }
-        }  
-
+        public Meas Meas { get; }
+       
 
         /// <summary>
         /// Устанавливает предел ИЗМЕРЯЕМОГО тока для нагрузки (зависит от модели вставки нагрузки)
@@ -478,6 +361,130 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
        
 
     }
+    public class Meas     :HelpIeeeBase
+    {
+        private readonly MainN3300 _mainN3300;
 
-   
+        public Meas(MainN3300 mainN3300)
+        {
+            this._mainN3300 = mainN3300;
+        }
+
+        /// <summary>
+        /// Возвращает измеренное значение напряжения на нагрузке
+        /// </summary>
+        public decimal Voltage
+        {
+            get
+            {
+                _mainN3300.WriteLine("MEAS:VOLT?");
+                return (decimal) this.DataStrToDoubleMind(_mainN3300.ReadLine());
+            }
+        }
+        /// <summary>
+        /// Возвращает измеренное значение тока в цепи
+        /// </summary>
+        public decimal Current
+        {
+            get
+            {
+                _mainN3300.WriteLine("MEAS:CURR?");
+
+                return (decimal)this.DataStrToDoubleMind(_mainN3300.ReadLine());
+            }
+        }
+        public decimal Power
+        {
+            get
+            {
+                _mainN3300.WriteLine("MEAS:POWer?");
+
+                return (decimal)this.DataStrToDoubleMind(_mainN3300.ReadLine());
+            }
+        }
+    }
+
+    public class Resistance : HelpIeeeBase
+    {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly MainN3300 _mainN3300;
+        /// <summary>
+        /// Предоставляет доступные диапазоны соправтивления.
+        /// </summary>
+        public ICommand[] Ranges
+        {
+            get; protected internal set;
+        }
+        public Resistance(MainN3300 mainN3300)
+        {
+            _mainN3300 = mainN3300;
+        }
+        /// <summary>
+        /// Возвращает маскимальное значение сопротивление на этой нагрузке
+        /// </summary>
+        /// <returns></returns>
+        public ICommand MaxResistenceRange
+        {
+            get => Ranges.FirstOrDefault(f => Equals(f.Value, Ranges.Select(s => s.Value).Max()));
+        }
+
+        /// <summary>
+        /// Устанавливает ПРЕДЕЛ сопротивления для режима CR 
+        /// </summary>
+        /// <param name="value">Значение сопротивления, которое нужно установить</param>
+        public MainN3300 SetRange(decimal value, Multipliers mult = Devices.Multipliers.None)
+        {
+
+            if(value < 0)
+                throw new ArgumentException("Значение меньше 0");
+
+            var val = value * (decimal)mult.GetDoubleValue();
+            var res = Ranges.FirstOrDefault(q => q.Value <= (double)val);
+
+            if(res == null)
+            {
+                Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
+            }
+
+            _mainN3300.WriteLine(res.StrCommand);
+
+            return _mainN3300;
+
+        }
+        /// <summary>
+        /// Устанавливает максимальный предел воспроизведения сопротивления
+        /// </summary>
+        /// <returns></returns>
+        public MainN3300 SetMaxResistanceRange()
+        {
+            _mainN3300.WriteLine("RESistance:RANGe MAX");
+            return _mainN3300;
+        }
+
+        /// <summary>
+        /// Устанавливает ВЕЛИЧИНУ сопротивления для режима CR
+        /// </summary>
+        /// <param name = "value"></param>
+        /// <param name = "mult"></param>
+        public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
+        {
+            if(value < 0)
+                throw new ArgumentException("Значение меньше 0");
+
+            var val = value * (decimal)mult.GetDoubleValue();
+            _mainN3300.WriteLine($@"RESistance { this.JoinValueMult(val, mult)}");
+            return _mainN3300;
+        }
+
+    }
+    public class Voltage
+    {
+
+    }
+    public class Current
+    {
+
+    }
+
 }
