@@ -8,30 +8,29 @@ using AP.Reports.Utils;
 
 namespace ASMC.Devices.Port.Profigrupp
 {
-
-    public enum bpRemoteState
-    {
-    [StringValue("cont_ps_ext")] OnlyPcMode, //Работа тольк от ПК с блокировкой кнопок cont_ps_ext
-        [StringValue("cps_int_ext")] PcAndFrontPanel, //Управление от ПК и с клавиатуры прибора cps_int_ext
-        [StringValue("cont_ps_int")] OnlyFrontPanel //Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int 
-    }
-
-public enum CurrMultipliers
-    {
-        [StringValue(" A")]
-        Amp,
-        [StringValue(" mA")]
-        Milli,
-        [StringValue(" microA")]
-        Micro,
-        [StringValue("")]
-        Si
-    }
-
-
+    
     public abstract class B571Pro : ComPort
-
     {
+        /// <summary>
+        /// Установка напряжения или тока источника питания
+        /// </summary>
+        public enum EMode
+        {
+            [StringValue("U")] Vol,
+            [StringValue("I")] Curr
+        }
+
+        /// <summary>
+        /// Перечень режимов работы источника питания.
+        /// </summary>
+        public enum RemoteState
+        {
+            [StringValue("cont_ps_ext")] OnlyPcMode, //Работа тольк от ПК с блокировкой кнопок cont_ps_ext
+            [StringValue("cps_int_ext")] PcAndFrontPanel, //Управление от ПК и с клавиатуры прибора cps_int_ext
+            [StringValue("cont_ps_int")] OnlyFrontPanel, //Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int 
+            [StringValue("c_reset_ext")] ResetBp //команда перезагрузки блока питания
+        }
+
 
         /// <summary>
         /// Максимальное значение напряжения источника питания
@@ -122,33 +121,27 @@ public enum CurrMultipliers
         /// Производится подключение к блоку питания. Переводит прибор в режим дистанционного управления.
         /// </summary>
         /// <returns>Если при подключении к блоку питания получен верный ответ функция вернет true. В противном случае вернет false.</returns>
-        public bool InitDevice()
+        public B571Pro InitDevice()
         {
-            Init();
+            this.BaudRate = SpeedRate.R9600;
+            this.Parity = Parity.None;
+            this.DataBit = DBit.Bit8;
+            this.StopBit = StopBits.One;
+            this.EndLineTerm = "\r";
 
             //перезагружаем блок питания
             this.Reset();
 
-            if (!this.Open())
-            {
-                this.Close();
-                return false;
-            }
-
-
             //Переводим в режим дистанционного управления. При этом работают клавиши на панели прибора.
-            this.WriteLine("cps_int_ext");
+            this.WriteLine(RemoteState.PcAndFrontPanel.GetStringValue());
             Thread.Sleep(500);
             //В ответ на команду перевода врежим дистанционного управления прибор должен прислать сообщение "EIC"
             string answer = this.ReadLine();
-            Thread.Sleep(500);
-
-            this.Close();
-
+            
             if (String.Equals(answer, "EIC"))
-                return true;
-            else
-                return false;
+                return this;
+
+            throw new Exception("Инициализация блока не прошла успешно.");
 
         }
 
@@ -229,131 +222,44 @@ public enum CurrMultipliers
             return Decimal.Parse(GetStateVal()[2])/1000;
         }
 
-        /// <summary>
-        /// Задает параметры подключения к последовательному порту. Задает символ конца строки для блока питания.
-        /// </summary>
-        public  void Init()
-        {
-            this.BaudRate = SpeedRate.R9600;
-            this.Parity = Parity.None;
-            this.DataBit = DBit.Bit8;
-            this.StopBit = StopBits.One;
-            this.EndLineTerm = "\r";
-        }
-
-   
-
 
         /// <summary>
         /// Отправляет на прибор команду перезагрузки
         /// </summary>
         public  void Reset()
         {
-
-            if (!this.Open()) return;
-            this.WriteLine("c_reset_ext");
-            Thread.Sleep(3000);
-            this.Close();
-            
+            this.WriteLine(RemoteState.ResetBp.ToString());
+            Thread.Sleep(2000);
         }
 
-        /// <summary>
-        /// Конвертирует число (напряжение) в строку, необходимую для отправки на прибор. 
-        /// </summary>
-        /// <param name="inVar">Величина напряжения.</param>
-        /// <param name="inVoltMultipliers">Единица напряжения - вольты, милливольты, микровольты.</param>
-        /// <returns>Значение напряжения в строке, которое можно отправлять на прибор.</returns>
-        private string VoltMultipliersConvert(decimal inVar,VoltMultipliers inVoltMultipliers)
-        {
-            //можно ввести вольты
-            //можно ввести милливольты
-            //микровольты!!!!
-
-            switch (inVoltMultipliers)
-            {
-                case VoltMultipliers.Si:
-                    inVar *= 1000;
-                    break;
-                case VoltMultipliers.Micro:
-                    inVar /= 1000;
-                    break;
-                
-            }
-            
-            string resultStr = AP.Math.MathStatistics.Round(ref inVar, 0, true);
-            
-            //максимально до 17 знаков, разделитель точка
-            //inVar.ToString("G17", new CultureInfo("en-US"));
-
-           
-            if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
-            
-                for (; resultStr.Length < 6; )
-                    resultStr = resultStr.Insert(0, "0");
-           
-
-            return resultStr.Replace(',','.');
-        }
-
-        /// <summary>
-        /// Конвертирует число (ток) в строку, необходимую для отправки на прибор.
-        /// </summary>
-        /// <param name="inVar">Величина тока.</param>
-        /// <param name="inCurrMultipliers"></param>
-        /// <returns>Значение тока в строке, которое можно отправлять на прибор.</returns>
-
-        private string CurrMultipliersConvert(decimal inVar, CurrMultipliers inCurrMultipliers)
-        {
-            //можно ввести вольты
-            //можно ввести милливольты
-            //микровольты!!!!
-
-            switch (inCurrMultipliers)
-            {
-                case CurrMultipliers.Si:
-                    inVar *= 1000;
-                    break;
-                case CurrMultipliers.Micro:
-                    inVar /= 1000;
-                    break;
-
-            }
-
-            string resultStr = AP.Math.MathStatistics.Round(ref inVar, 0, true);
-
-            //максимально до 17 знаков, разделитель точка
-            //inVar.ToString("G17", new CultureInfo("en-US"));
-
-
-            if (resultStr.Length > 5) throw new ArgumentOutOfRangeException();
-
-            for (; resultStr.Length < 5;)
-                resultStr = resultStr.Insert(0, "0");
-
-
-            return resultStr;
-        }
+       
 
 
         /// <summary>
         /// Позволяет задать уставку по току для источника питания.
         /// </summary>
         /// <param name="inCurr">Ток который необходимо задать.</param>
-        /// <param name="inUnitCurrMultipliers">Единицы измерения тока.</param>
+        /// <param name="inUnitCurrMultipliers">Единицы измерения тока (милли, кило, амперы).</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public  bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si)
+        public  B571Pro SetStateCurr(decimal inCurr, Multipliers mult = Multipliers.None)
         {
-            //нужно выбросить исключение
-           if (!this.Open()) return  false;
 
-            this.WriteLine("I" + CurrMultipliersConvert(inCurr, inUnitCurrMultipliers));
-            Thread.Sleep(2500);
+            decimal inCurrToDevice = inCurr * (decimal)(mult.GetDoubleValue() * 1E3);
+
+            string resultStr = AP.Math.MathStatistics.Round(ref inCurrToDevice, 0, true);
+
+            if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
+
+            for (; resultStr.Length < 6;)
+                resultStr = resultStr.Insert(0, "0");
+
+            this.WriteLine("I" + resultStr);
+            Thread.Sleep(2000);
             string answer = this.ReadLine();
-            this.Close();
+           
+            if (string.Equals(answer, "I")) return this;
 
-            if (string.Equals(answer, "I")) return true;
-
-            return false;
+            throw new ArgumentException($"Неверное значение уставки по току: {inCurr} => {inCurrToDevice}");
 
         }
 
@@ -361,34 +267,15 @@ public enum CurrMultipliers
         /// Позволяет задать уставку по напряжению.
         /// </summary>
         /// <param name="inVolt">Значение напряжения.</param>
-        /// <param name="inUnitVoltMultipliers">Единицы измерения</param>
+        /// <param name="inUnitVoltMultipliers">Единицы измерения напряжения (милли, кило, вольты)</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public  bool SetStateVolt(decimal inVolt, Multipliers mult = Multipliers.None)
+        public  B571Pro SetStateVolt(decimal inVolt, Multipliers mult = Multipliers.None)
         {
-            //нужно выбросить исключение
-            if (!this.Open()) return false;
-
-            //блок питания понимает значения только в милливольтах
            
-            switch (mult)
-            {
-                case Multipliers.None:
-                    inVolt = inVolt * (decimal)Multipliers.Kilo.GetDoubleValue();
-                    break;
-                case Multipliers.Mili:
-                    break;
-                case Multipliers.Nano:
-                    inVolt = inVolt * (decimal) Multipliers.Kilo.GetDoubleValue();
-                    break;
-                case Multipliers.Kilo:
-                    inVolt = inVolt * (decimal) Multipliers.Mega.GetDoubleValue();
-                    break;
-                case Multipliers.Mega:
-                    inVolt = inVolt * (decimal) Multipliers.Giga.GetDoubleValue();
-                    break;
-
-            }
-            string resultStr = AP.Math.MathStatistics.Round(ref inVolt, 0, true);
+            //блок питания понимает значения только в милливольтах
+           decimal inVoltToDevice = inVolt * (decimal) (mult.GetDoubleValue() * 1E3);
+           
+            string resultStr = AP.Math.MathStatistics.Round(ref inVoltToDevice, 0, true);
 
             if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
 
@@ -399,60 +286,55 @@ public enum CurrMultipliers
             this.WriteLine("U" + resultStr);
             Thread.Sleep(2000);
             string answer = this.ReadLine();
-            this.Close();
+            
 
-            if (string.Equals(answer, "U")) return true;
+            if (string.Equals(answer, "U")) return this;
 
-            return false;
+            throw new ArgumentException($"Неверное значение уставки по напряжению: {inVolt} => {inVoltToDevice}");
         }
 
         /// <summary>
         /// Включает выход истоника питания.
         /// </summary>
         /// <returns>Если от прибора получен положительный ответ, то вернет true. В противном случае false.</returns>
-        public bool OnOutput()
+        public B571Pro OnOutput()
         {
-            //нужно выбросить исключение
-            if (!this.Open()) return false;
+            
             this.WriteLine("Y");
             Thread.Sleep(700);
             string answer = this.ReadLine();
-            this.Close();
+           
+            if (string.Equals(answer, "Y")) return this;
 
-            if (string.Equals(answer, "Y")) return true;
-
-            return false;
+            throw  new Exception("Блок питания не отвечает на команду включения выхода");
         }
 
         /// <summary>
         /// Выключает выход истоника питания.
         /// </summary>
         /// <returns>Если от прибора получен положительный ответ, то вернет true. В противном случае false.</returns>
-        public bool OffOutput()
+        public B571Pro OffOutput()
         {
-            //нужно выбросить исключение
-            if (!this.Open()) return false;
             this.WriteLine("N");
             Thread.Sleep(700);
             string answer = this.ReadLine();
-            this.Close();
+            
 
-            if (string.Equals(answer, "N")) return true;
+            if (string.Equals(answer, "N")) return this;
 
-            return false;
+            throw new Exception("Блок питания не отвечает на команду выключения выхода");
         }
 
 
         protected B571Pro(string portName) : base(portName)
         {
-            //Sp = new Sp(PortName, Sp.SpeedRate.R9600, Parity.None, Sp.DataBit.Bit8, StopBits.One);
-            //Sp.EndLineTerm = "\r";
+            
 
         }
 
         protected B571Pro()
         {
-          
+           
         }
     }
 
