@@ -16,7 +16,6 @@ using ASMC.Core;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
-using ASMC.UI;
 using DevExpress.Mvvm;
 using NLog;
 
@@ -303,7 +302,7 @@ namespace ASMC.ViewModel
             {
                 MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
                 ShemForm = GetService<IFormService>("ImageService"),
-                TestingDialog= GetService<IFormService>("TestingDialogService")
+                QuestionText= GetService<IFormService>("QuestionTextService")
             };
             if (types == null) return;
             foreach (var type in types)

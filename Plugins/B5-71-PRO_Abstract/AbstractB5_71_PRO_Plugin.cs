@@ -89,7 +89,7 @@ namespace B5_71_PRO_Abstract
             operation.IsGood = () => operation.Getting == operation.Expected;
             operation.InitWork = () =>
             {
-                var service = this.UserItemOperation.ServicePack.TestingDialog;
+                var service = this.UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Визуальный осмотр";
                 service.Show();
                 operation.Getting = true;

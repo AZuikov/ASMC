@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Documents;
 
-namespace ASMC.Core.View
+namespace ASMC.Common.View
 {
     /// <summary>
     /// Логика взаимодействия для WriteText.xaml
@@ -24,7 +24,7 @@ namespace ASMC.Core.View
         }    
         public WriteText()
         {
-            InitializeComponent();
+            //InitializeComponent();
             //RichTextBox dsad = new RichTextBox();
             //TextRange tr = new TextRange(dsad.Document.ContentStart, dsad.Document.ContentEnd);
             //using(var stream = new FileStream(@"\\zrto.int\ogmetr\AutoMeas\AutoMeas\PatchInfo — копия.rtf", FileMode.Open))

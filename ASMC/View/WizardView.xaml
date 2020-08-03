@@ -3,17 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:utils="clr-namespace:AP.Utils;assembly=AP.Utils"
-             xmlns:view1="clr-namespace:ASMC.Core.View;assembly=ASMC.Core"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:view="clr-namespace:ASMC.View"
-             xmlns:ui1="clr-namespace:ASMC.UI"
              xmlns:common="clr-namespace:ASMC.Common;assembly=ASMC.Common"
              xmlns:ui2="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
-             xmlns:behavior="clr-namespace:ASMC.Common.Behavior;assembly=ASMC.Common"
              xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
 
              mc:Ignorable="d"
@@ -32,8 +27,8 @@
     </ResourceDictionary>
   </UserControl.Resources>
   <dxmvvm:Interaction.Behaviors>
-    <ui:ImageService x:Name="ImageService" />
-    <ui1:TestingDialogService x:Name="TestingDialogService"/>
+    <ui:QuestionTextService x:Name="QuestionTextService" />
+    <ui:ImageService x:Name="ImageService"/>
     <ui2:MessageBoxService/>
     <ui2:TaskMessageService/>
   </dxmvvm:Interaction.Behaviors>

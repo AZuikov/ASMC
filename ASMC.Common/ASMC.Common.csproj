@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevExpress.Data.v17.2">
+      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\DevExpress.v17.2\DevExpress.Data.v17.2.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Mvvm.v17.2">
       <HintPath>..\packages\DevExpress.v17.2\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
@@ -84,9 +87,36 @@
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\ClosableViewModel.cs" />
     <Compile Include="ViewModel\FromBaseViewModel.cs" />
+    <Compile Include="View\WriteText.xaml.cs">
+      <DependentUpon>WriteText.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="View\" />
+    <Resource Include="Image\CharacterGrowFont.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\WriteText.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\CharacterShrinkFont.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\EditCopy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\EditCut.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\EditPaste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\ListBullets.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\ListNumbering.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

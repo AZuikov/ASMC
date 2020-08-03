@@ -38,6 +38,6 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Позволяет получать или задавать сервис диалога опробования или внешнего осмотра.
         /// </summary>
-        public IFormService TestingDialog { get; set; }
+        public IFormService QuestionText { get; set; }
     }
 }

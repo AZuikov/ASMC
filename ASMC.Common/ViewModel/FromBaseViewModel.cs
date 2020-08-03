@@ -8,7 +8,6 @@ namespace ASMC.Common.ViewModel
     {
         #region Fields
 
-        private string _regionName = Guid.NewGuid().ToString();
         private bool _allowChanges;
         private bool _allowSearch = true;
         private bool? _dialogResult;
