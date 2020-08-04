@@ -1,5 +1,6 @@
 ﻿using System;
 using AP.Reports.Utils;
+using AP.Utils.Data;
 
 namespace ASMC.Devices
 {
@@ -31,14 +32,26 @@ namespace ASMC.Devices
         /// </summary>
         bool Open();
 
-        #endregion
-
-        string ReadLine(bool closePort = true);
+        /// <summary>
+        /// Считывает строку. 
+        /// </summary>
+        /// <returns></returns>
+        string ReadLine();
 
         /// <summary>
-        /// Отправляет полученную команду, без изменений
+        /// Отправляет полученную команду, без изменений. 
         /// </summary>
-        void WriteLine(string data, bool closePort = true);
+        void WriteLine(string data );
+
+        /// <summary>
+        /// Отправляет данные и тут же считывает ответ.
+        /// </summary>
+        /// <param name="inStrData">Строка для отправки</param>
+        /// <returns>Полученный ответ.</returns>
+        string QueryLine(string inStrData);
+
+
+        #endregion
     }
 
     /// <summary>

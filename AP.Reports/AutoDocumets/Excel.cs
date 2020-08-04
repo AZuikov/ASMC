@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using AP.Reports.Helps;
 using AP.Reports.Interface;
 using AP.Reports.Utils;
+using AP.Utils.Data;
 using ClosedXML.Excel;
 
 namespace AP.Reports.AutoDocumets
@@ -19,7 +20,7 @@ namespace AP.Reports.AutoDocumets
             /// <summary>
             ///     Документ
             /// </summary>
-            [StringValue("xlsx")] Xlsx
+            [AP.Utils.Data.StringValue("xlsx")] Xlsx
         }
 
         private IXLCell _currentCell;

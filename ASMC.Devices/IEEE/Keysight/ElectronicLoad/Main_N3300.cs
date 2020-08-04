@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using AP.Reports.Utils;
+using AP.Utils.Data;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
@@ -158,7 +158,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
                 this.WriteLine("FUNC?");
                 foreach (ModeWorks mode in Enum.GetValues(typeof(ModeWorks)) )
                 {
-                    if (mode.GetStringValue().Equals(this.ReadLine(), StringComparison.CurrentCultureIgnoreCase))
+                    if (EnumExtensions.GetStringValue(mode).Equals(this.ReadLine(), StringComparison.CurrentCultureIgnoreCase))
                         return mode;
                 }
                 Logger.Error("Режим не определен.");
@@ -172,7 +172,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <returns></returns>
         public MainN3300 SetModeWork(ModeWorks mode)
         {
-            this.WriteLine($@"FUNC {mode.GetStringValue()}");
+            this.WriteLine($@"FUNC {EnumExtensions.GetStringValue(mode)}");
             if (ModeWork == mode) return this;
             Logger.Error("Режим не установлен.");
             throw new Exception("Режим не установлен.");
@@ -342,7 +342,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         }
         public MainN3300 SetOutputState(State state)
         {
-            this.WriteLine(state.GetStringValue());
+            this.WriteLine(EnumExtensions.GetStringValue(state));
             Thread.Sleep(10);  
             if(StateOutput!=state) throw new Exception("Состояние выхода не изменено.");
             return this;
@@ -438,7 +438,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             if(value < 0)
                 throw new ArgumentException("Значение меньше 0");
 
-            var val = value * (decimal)mult.GetDoubleValue();
+            var val = value * (decimal)EnumExtensions.GetDoubleValue(mult);
             var res = Ranges.FirstOrDefault(q => q.Value <= (double)val);
 
             if(res == null)
@@ -472,7 +472,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             if(value < 0)
                 throw new ArgumentException("Значение меньше 0");
 
-            var val = value * (decimal)mult.GetDoubleValue();
+            var val = value * (decimal)EnumExtensions.GetDoubleValue(mult);
             _mainN3300.WriteLine($@"RESistance { this.JoinValueMult(val, mult)}");
             return _mainN3300;
         }

@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.IO.Ports;
+using System.Threading;
 using NLog;
 
 namespace ASMC.Devices.Port
@@ -20,7 +21,7 @@ namespace ASMC.Devices.Port
 
         protected virtual void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-           //если мы сюда попали, это нормально? 
+           
 
         }
         public string StringConnection
@@ -105,8 +106,8 @@ namespace ASMC.Devices.Port
         /// Позволяет задать или получить терменал окончания строки.
         /// </summary>
         public string EndLineTerm {
-            set { _sp.NewLine = value; }
-            get { return _sp.NewLine; }
+            set => _sp.NewLine = value;
+            get => _sp.NewLine;
         }
         /// <summary>
         /// Открывает соединение с Com портом.
@@ -155,11 +156,11 @@ namespace ASMC.Devices.Port
         /// Считывает строку оканчивающуюся терминальнм символом из ComPort.
         /// </summary>
         /// <returns>Возвращает рузультат чтения</returns>
-        public string ReadLine(bool closePort = true)
+        public string ReadLine()
         {
-            Open();
+            
 
-            if (!_sp.IsOpen) return null;
+            if (Open()) return null;
             try
             {
                 return _sp.ReadLine();
@@ -174,14 +175,14 @@ namespace ASMC.Devices.Port
             }
             finally
             {
-               if (closePort) Close();
+                Close();
             }
 
             return null;
         }
         protected void Write(byte[] sendData, int v, int length)
         {
-            if (!_sp.IsOpen)
+            if (!Open())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{sendData} не выполнена");
                 return;
@@ -199,7 +200,7 @@ namespace ASMC.Devices.Port
         /// <param name="data"></param>
         public void Write(string data)
         {
-            if(!_sp.IsOpen)
+            if(!Open())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
                 return;
@@ -210,17 +211,38 @@ namespace ASMC.Devices.Port
         /// Записывает строку оканчивающуюся терминальнм символом в ComPort.
         /// </summary>
         /// <returns>Возвращает рузультат чтения</returns>
-        public void WriteLine(string data, bool closePort = true)
+        public void WriteLine(string data)
         {
-            Open();
-            if (!_sp.IsOpen)
+            if (!Open())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
                 return;
             }
             _sp.WriteLine(data);
-            if (closePort) Close();
+             Close();
         }
+
+        public string QueryLine(string inStrData)
+        {
+            if (!Open())
+            {
+                Logger.Warn($@"Запись в порт {_sp.PortName} данных: {inStrData} не выполнена");
+                throw new IOException($"Последовательный порт {_sp.PortName} не удалось открыть.");
+                
+            }
+
+            _sp.WriteLine(inStrData);
+            Thread.Sleep(200);
+            
+            string answer = _sp.ReadLine();
+            Close();
+
+            if (answer.Length==0) throw  new IOException($"Данные с поседовательного порта {_sp.PortName} считать не удалось.");
+
+            return answer;
+
+        }
+
         public static string[] GetPortName()
         {
             return SerialPort.GetPortNames();

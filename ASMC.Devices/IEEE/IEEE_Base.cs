@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
@@ -337,7 +338,7 @@ namespace ASMC.Devices.IEEE
         /// Считывает строку
         /// </summary>
         /// <returns>Возвращает считанаю строку</returns>
-        public string ReadLine(bool closePort = true)
+        public string ReadLine()
         {
             if(!Open()) return null;
             string date = null;
@@ -349,7 +350,7 @@ namespace ASMC.Devices.IEEE
             {
                 Logger.Error(e);
             }
-            if (closePort) Close();
+             Close();
             return date;
         }
         /// <summary>
@@ -413,12 +414,32 @@ namespace ASMC.Devices.IEEE
         /// Отправляет полученную команду, без изменений
         /// </summary>
         /// <param name = "str">Принимает текст команды в VBS формате</param>
-        public void WriteLine(string data, bool closePort = true)
+        public void WriteLine(string data )
         {
             if(!Open()) return;
             Session.FormattedIO.WriteLine(data);
             Thread.Sleep(_dealySending);
-            if (closePort)Close();
+            Close();
+        }
+
+        public string QueryLine(string inStrData)
+        {
+            if (!Open())
+            {
+                Logger.Warn($@"Запись в устройство {Session.ResourceName} данных: {inStrData} не выполнена");
+                throw new IOException($"Не удалось получить доступ к утсройству {Session.ResourceName}");
+
+            }
+
+            Session.FormattedIO.WriteLine(inStrData);
+            Thread.Sleep(200);
+
+            string answer = Session.FormattedIO.ReadLine();
+            Close();
+
+            if (answer.Length == 0) throw new IOException($"Данные с устройства {Session.ResourceName} считать не удалось.");
+
+            return answer;
         }
 
         /// <summary>

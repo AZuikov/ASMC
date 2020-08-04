@@ -1,4 +1,5 @@
 ﻿using AP.Reports.Utils;
+using AP.Utils.Data;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad

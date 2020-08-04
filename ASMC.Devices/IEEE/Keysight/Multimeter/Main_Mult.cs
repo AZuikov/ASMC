@@ -885,8 +885,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
         {
             var val = Math.Abs(value);
-            val *= multipliers.GetDoubleValue();
-            var res = Ranges.FirstOrDefault(q => q.Value <= val);
+             val *= multipliers.GetDoubleValue();
+            var res = Ranges.OrderBy(o=>o.Value).FirstOrDefault(q => q.Value <= val);
 
             if(res == null)
             {

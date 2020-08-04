@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO.Ports;
 using System.Threading;
-using AP.Reports.Utils;
+using AP.Utils.Data;
+
 //using System.Globalization;
 //using System.Text.RegularExpressions;
 
@@ -101,7 +102,7 @@ namespace ASMC.Devices.Port.Profigrupp
         public decimal TolleranceFormulaVolt(decimal value, Multipliers mult = Multipliers.None)
         {
 
-            value *= (decimal)mult.GetDoubleValue();
+            value *= (decimal)EnumExtensions.GetDoubleValue(mult);
             return (decimal)0.002 * value + (decimal)0.1;
         }
 
@@ -111,7 +112,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns>Погрешность в амперах</returns>
         public decimal TolleranceFormulaCurrent(decimal value, Multipliers mult = Multipliers.None)
         {
-            value *= (decimal)mult.GetDoubleValue();
+            value *= (decimal)EnumExtensions.GetDoubleValue(mult);
             return (decimal)0.01 * value + (decimal)0.05;
         }
 
@@ -134,10 +135,8 @@ namespace ASMC.Devices.Port.Profigrupp
             this.Reset();
 
             //Переводим в режим дистанционного управления. При этом работают клавиши на панели прибора.
-            this.WriteLine(RemoteState.PcAndFrontPanel.GetStringValue(),false);
-            Thread.Sleep(500);
             //В ответ на команду перевода врежим дистанционного управления прибор должен прислать сообщение "EIC"
-            string answer = this.ReadLine();
+            string answer = this.QueryLine(EnumExtensions.GetStringValue(RemoteState.PcAndFrontPanel));
             
             if (String.Equals(answer, "EIC"))
                 return this;
@@ -195,8 +194,8 @@ namespace ASMC.Devices.Port.Profigrupp
                 //если порт не открыт нужно бросить исключение
                 if (!this.Open()) return null;
 
-            this.WriteLine("R");
-                string answer = this.ReadLine();
+            
+                string answer = this.QueryLine("R");
                 var arrStr = answer.Split('R');
 
             this.Close();
@@ -229,7 +228,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// </summary>
         public  void Reset()
         {
-            this.WriteLine(RemoteState.ResetBp.GetStringValue());
+            this.WriteLine(EnumExtensions.GetStringValue(RemoteState.ResetBp));
             Thread.Sleep(2000);
         }
 
@@ -245,7 +244,7 @@ namespace ASMC.Devices.Port.Profigrupp
         public  B571Pro SetStateCurr(decimal inCurr, Multipliers mult = Multipliers.None)
         {
 
-            decimal inCurrToDevice = inCurr * (decimal)(mult.GetDoubleValue() * 1E3);
+            decimal inCurrToDevice = inCurr * (decimal)(EnumExtensions.GetDoubleValue(mult) * 1E4);
 
             string resultStr = AP.Math.MathStatistics.Round(ref inCurrToDevice, 0, true);
 
@@ -253,11 +252,9 @@ namespace ASMC.Devices.Port.Profigrupp
 
             for (; resultStr.Length < 6;)
                 resultStr = resultStr.Insert(0, "0");
-
-            this.WriteLine("I" + resultStr);
+            
+            string answer = this.QueryLine("I" + resultStr);
             Thread.Sleep(2000);
-            string answer = this.ReadLine();
-           
             if (string.Equals(answer, "I")) return this;
 
             throw new ArgumentException($"Неверное значение уставки по току: {inCurr} => {inCurrToDevice}");
@@ -274,7 +271,7 @@ namespace ASMC.Devices.Port.Profigrupp
         {
            
             //блок питания понимает значения только в милливольтах
-           decimal inVoltToDevice = inVolt * (decimal) (mult.GetDoubleValue() * 1E3);
+           decimal inVoltToDevice = inVolt * (decimal) (EnumExtensions.GetDoubleValue(mult) * 1E3);
            
             string resultStr = AP.Math.MathStatistics.Round(ref inVoltToDevice, 0, true);
 
@@ -282,12 +279,9 @@ namespace ASMC.Devices.Port.Profigrupp
 
             for (; resultStr.Length < 6;)
                 resultStr = resultStr.Insert(0, "0");
-
-
-            this.WriteLine("U" + resultStr);
-            Thread.Sleep(2000);
-            string answer = this.ReadLine();
             
+            string answer = this.QueryLine("U" + resultStr);
+            Thread.Sleep(2000);
 
             if (string.Equals(answer, "U")) return this;
 
@@ -300,10 +294,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns>Если от прибора получен положительный ответ, то вернет true. В противном случае false.</returns>
         public B571Pro OnOutput()
         {
-            
-            this.WriteLine("Y");
-            Thread.Sleep(700);
-            string answer = this.ReadLine();
+           string answer = this.QueryLine("Y");
            
             if (string.Equals(answer, "Y")) return this;
 
@@ -316,11 +307,9 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns>Если от прибора получен положительный ответ, то вернет true. В противном случае false.</returns>
         public B571Pro OffOutput()
         {
-            this.WriteLine("N");
-            Thread.Sleep(700);
-            string answer = this.ReadLine();
+           
+            string answer = this.QueryLine("N");
             
-
             if (string.Equals(answer, "N")) return this;
 
             throw new Exception("Блок питания не отвечает на команду выключения выхода");

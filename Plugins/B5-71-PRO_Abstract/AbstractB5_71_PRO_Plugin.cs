@@ -251,10 +251,11 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            var operation = new BasicOperationVerefication<decimal>();
+          
             
             foreach (var point in MyPoint)
             {
+                var operation = new BasicOperationVerefication<decimal>();
                 operation.InitWork = async () =>
                 {
                     try
@@ -330,7 +331,7 @@ namespace B5_71_PRO_Abstract
                     finally
                     {
                         Mult.Close();
-                        
+                        Load.Close();
                         Bp.Close();
                     }
                 };
