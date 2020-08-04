@@ -486,8 +486,12 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (_chekShem == null)  return () => default(Task<bool>);
-                ;
+                if (_chekShem == null)
+                {
+#pragma warning disable 1998
+                    return async () => true ;
+#pragma warning restore 1998
+                };
                 return _chekShem;
              }
             set => _chekShem = value;

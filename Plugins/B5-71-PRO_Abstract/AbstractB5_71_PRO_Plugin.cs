@@ -757,64 +757,74 @@ namespace B5_71_PRO_Abstract
         {
             var operation = new BasicOperationVerefication<decimal>();
 
-            try
-            {
+           
                 operation.InitWork = async () =>
                 {
-
-                    Mult.StringConnection = GetStringConnect(Mult);
-                    Load.StringConnection = GetStringConnect(Load);
-                    Bp.StringConnection = GetStringConnect(Bp);
-
-
-                    
-                    Load.FindThisModule();
-                    
-                    //если модуль нагрузки найти не удалось
-                    if (Load.ChanelNumber <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-                    await Task.Factory.StartNew(() =>
+                    try
                     {
-                        var point = Bp.VoltMax / ((decimal)0.9 * Bp.CurrMax);
-                        Load.SetWorkingChanel()
-                            .SetModeWork(MainN3300.ModeWorks.Resistance)
-                            .Resistance.SetResistanceRange(point)
-                            .Resistance.Set(point)
-                            .SetOutputState(MainN3300.State.On);
-                        
-                       
-
-                        Bp.InitDevice();
-                        Bp.SetStateVolt(Bp.VoltMax);
-                        Bp.SetStateCurr(Bp.CurrMax);
-                        Bp.OnOutput();
-                    });
+                     await Task.Factory.StartNew(() =>
+                          {
+                           Mult.StringConnection = GetStringConnect(Mult);
+                           Load.StringConnection = GetStringConnect(Load);
+                           Bp.StringConnection = GetStringConnect(Bp);
 
 
-                    Mult.Open();
-                    while (Mult.IsTerminal)
-                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                               " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
-                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                               MessageResult.OK);
 
-                    this.UserItemOperation.ServicePack.MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения",
-                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                           MessageResult.OK);
+                           Load.FindThisModule();
+
+                           //если модуль нагрузки найти не удалось
+                           if (Load.ChanelNumber <= 0)
+                               throw new
+                                   ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+
+                           var point = Bp.VoltMax / ((decimal)0.9 * Bp.CurrMax);
+                           Load.SetWorkingChanel()
+                               .SetModeWork(MainN3300.ModeWorks.Resistance)
+                               .Resistance.SetResistanceRange(point)
+                               .Resistance.Set(point)
+                               .SetOutputState(MainN3300.State.On);
+                      
+                      
+
+                           Bp.InitDevice();
+                           Bp.SetStateVolt(Bp.VoltMax);
+                           Bp.SetStateCurr(Bp.CurrMax);
+                           Bp.OnOutput();
+                         });
+
+                        Mult.Open();
+                        while (Mult.IsTerminal)
+                            this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                                                                               " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                MessageResult.OK);
+
+                        this.UserItemOperation.ServicePack.MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения",
+                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                            MessageResult.OK);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+
+                   
+
+
+                   
                 };
 
-                operation.BodyWork = Test;
-
-                void Test()
+            operation.BodyWork = () =>
+            {
+                try
                 {
                     Thread.Sleep(5000);
 
                     Mult.Dc.Voltage.Range.Set(100);
                     var voltPulsV357 = (decimal)Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal) 0.99, 0, 3);
+                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
                     MathStatistics.Round(ref voltPulsV357, 2);
 
                     Bp.OffOutput();
@@ -828,17 +838,19 @@ namespace B5_71_PRO_Abstract
                         (operation.Expected >= operation.LowerTolerance) &
                         (operation.Expected < operation.UpperTolerance);
 
-                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-
-                    DataRow.Add(operation);
+                    
                 }
-            }
-            finally
-            {
-                Bp.OffOutput();
-                Bp.Close();
-                Mult.Close();
-            }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+
+                
+            };
+            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            DataRow.Add(operation);
+
+
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -857,6 +869,7 @@ namespace B5_71_PRO_Abstract
 
         public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
 
@@ -1416,63 +1429,71 @@ namespace B5_71_PRO_Abstract
         protected override void InitWork()
         {
             var operation = new BasicOperationVerefication<decimal>();
-            try
-            {
+            
                 operation.InitWork = async () =>
                 {
-                    Bp.StringConnection = GetStringConnect(Bp);
-                    Load.StringConnection = GetStringConnect(Load);
-                    Mult.StringConnection = GetStringConnect(Mult);
-
-
-                    Load.FindThisModule();
-
-                    //если модуль нагрузки найти не удалось
-                    if (Load.ChanelNumber <= 0)
-                        throw new
-                            ArgumentException(
-                                $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-                    void ConfigDeviseAsync()
+                    try
                     {
-
-                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                        var point = (decimal) 0.9 * Bp.VoltMax / Bp.CurrMax;
-                        Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
-                        Load.SetOutputState(MainN3300.State.On);
+                        Bp.StringConnection = GetStringConnect(Bp);
+                        Load.StringConnection = GetStringConnect(Load);
+                        Mult.StringConnection = GetStringConnect(Mult);
 
 
-                        //инициализация блока питания
-                        Bp.InitDevice();
-                        Bp.SetStateCurr(Bp.CurrMax);
-                        Bp.SetStateVolt(Bp.VoltMax);
-                        Bp.OnOutput();
-                    }
+                        Load.FindThisModule();
 
-                    await Task.Factory.StartNew(ConfigDeviseAsync);
+                        //если модуль нагрузки найти не удалось
+                        if (Load.ChanelNumber <= 0)
+                            throw new
+                                ArgumentException(
+                                    $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-                    Mult.Open();
-                    while (Mult.IsTerminal)
-                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                                           " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                        void ConfigDeviseAsync()
+                        {
+
+                            Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                            var point = (decimal)0.9 * Bp.VoltMax / Bp.CurrMax;
+                            Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
+                            Load.SetOutputState(MainN3300.State.On);
+
+
+                            //инициализация блока питания
+                            Bp.InitDevice();
+                            Bp.SetStateCurr(Bp.CurrMax);
+                            Bp.SetStateVolt(Bp.VoltMax);
+                            Bp.OnOutput();
+                        }
+
+                        await Task.Factory.StartNew(ConfigDeviseAsync);
+
+                        Mult.Open();
+                        while (Mult.IsTerminal)
+                            this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                                                                               " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                MessageResult.OK);
+
+                        this.UserItemOperation.ServicePack.MessageBox.Show(
+                            "Установите на В3-57 подходящий предел измерения напряжения",
                             "Указание оператору", MessageButton.OK, MessageIcon.Information,
                             MessageResult.OK);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
 
-                    this.UserItemOperation.ServicePack.MessageBox.Show(
-                        "Установите на В3-57 подходящий предел измерения напряжения",
-                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                        MessageResult.OK);
+                    
                 };
 
-                operation.BodyWork = Test;
-
-                void Test()
+            operation.BodyWork = () =>
+            {
+                try
                 {
                     //нужно дать время В3-57
                     Thread.Sleep(5000);
                     Mult.Dc.Voltage.Range.Set(100);
-                    var currPuls34401 = (decimal) Mult.GetMeasValue();
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99, 0, 3);
+                    var currPuls34401 = (decimal)Mult.GetMeasValue();
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
@@ -1488,15 +1509,18 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
-                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                    
 
-                    DataRow.Add(operation);
                 }
-            }
-            catch (Exception e)
-            {
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
 
-            }
+             };
+            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            DataRow.Add(operation);
+
 
         }
 
@@ -1519,6 +1543,7 @@ namespace B5_71_PRO_Abstract
 
         public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
