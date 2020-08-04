@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 
@@ -78,8 +80,12 @@ namespace ASMC.Common.ViewModel
 
         #region Methods
 
-     
-        
+        protected override void OnInitializing()
+        {
+            base.OnInitializing();
+           
+        }  
+
 
         /// <summary>
         /// Возвращает значение, задающее

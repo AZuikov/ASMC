@@ -87,6 +87,9 @@
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\ClosableViewModel.cs" />
     <Compile Include="ViewModel\FromBaseViewModel.cs" />
+    <Compile Include="View\FormView.xaml.cs">
+      <DependentUpon>FormView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\WriteText.xaml.cs">
       <DependentUpon>WriteText.xaml</DependentUpon>
     </Compile>
@@ -95,6 +98,10 @@
     <Resource Include="Image\CharacterGrowFont.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\FormView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\WriteText.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

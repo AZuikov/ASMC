@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Windows;
+using ASMC.Common.UI;
 using ASMC.Core.ViewModel;
 using DevExpress.Mvvm.UI;
 
