@@ -181,7 +181,7 @@ namespace ASMC.Devices.IEEE
         /// <inheritdoc />
         public void Close()
         {
-            Session.Clear();
+            //Session.Clear();
             Session?.Dispose();
         }
 
@@ -193,8 +193,8 @@ namespace ASMC.Devices.IEEE
             {
                 Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 60000;
-                Session.Clear();
-                Thread.Sleep(10);
+                //Session.Clear();
+                Thread.Sleep(100);
 
             }
             catch (Exception e)
@@ -337,7 +337,7 @@ namespace ASMC.Devices.IEEE
         /// Считывает строку
         /// </summary>
         /// <returns>Возвращает считанаю строку</returns>
-        public string ReadLine()
+        public string ReadLine(bool closePort = true)
         {
             if(!Open()) return null;
             string date = null;
@@ -349,7 +349,7 @@ namespace ASMC.Devices.IEEE
             {
                 Logger.Error(e);
             }
-            Close();
+            if (closePort) Close();
             return date;
         }
         /// <summary>
@@ -413,12 +413,12 @@ namespace ASMC.Devices.IEEE
         /// Отправляет полученную команду, без изменений
         /// </summary>
         /// <param name = "str">Принимает текст команды в VBS формате</param>
-        public void WriteLine(string str)
+        public void WriteLine(string data, bool closePort = true)
         {
             if(!Open()) return;
-            Session.FormattedIO.WriteLine(str);
+            Session.FormattedIO.WriteLine(data);
             Thread.Sleep(_dealySending);
-            Close();
+            if (closePort)Close();
         }
 
         /// <summary>

@@ -129,11 +129,12 @@ namespace ASMC.Devices.Port.Profigrupp
             this.StopBit = StopBits.One;
             this.EndLineTerm = "\r";
 
+            
             //перезагружаем блок питания
             this.Reset();
 
             //Переводим в режим дистанционного управления. При этом работают клавиши на панели прибора.
-            this.WriteLine(RemoteState.PcAndFrontPanel.GetStringValue());
+            this.WriteLine(RemoteState.PcAndFrontPanel.GetStringValue(),false);
             Thread.Sleep(500);
             //В ответ на команду перевода врежим дистанционного управления прибор должен прислать сообщение "EIC"
             string answer = this.ReadLine();
@@ -228,7 +229,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// </summary>
         public  void Reset()
         {
-            this.WriteLine(RemoteState.ResetBp.ToString());
+            this.WriteLine(RemoteState.ResetBp.GetStringValue());
             Thread.Sleep(2000);
         }
 

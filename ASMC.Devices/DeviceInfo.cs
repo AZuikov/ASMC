@@ -33,11 +33,12 @@ namespace ASMC.Devices
 
         #endregion
 
-        string ReadLine();
+        string ReadLine(bool closePort = true);
+
         /// <summary>
         /// Отправляет полученную команду, без изменений
         /// </summary>
-        void WriteLine(string str);
+        void WriteLine(string data, bool closePort = true);
     }
 
     /// <summary>
