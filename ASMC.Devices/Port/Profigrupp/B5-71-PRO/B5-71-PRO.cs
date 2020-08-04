@@ -153,15 +153,10 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns></returns>
         private string[] GetMeasVal()
         {
-           
-            //если порт не открыт нужно бросить исключение
-            if (!this.Open()) return null;
 
-            this.Write("M");
-            string answer = this.ReadLine();
+            string answer = this.QueryLine("M");
             var strArr = answer.Split('M');
-
-            this.Close();
+            
             return strArr;
         }
 
@@ -190,16 +185,10 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns></returns>
         private string[] GetStateVal()
         {
-                
-                //если порт не открыт нужно бросить исключение
-                if (!this.Open()) return null;
-
-            
+               
                 string answer = this.QueryLine("R");
                 var arrStr = answer.Split('R');
-
-            this.Close();
-
+            
             return arrStr;
         }
 
