@@ -29,6 +29,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             Resistance = new Resistance(this);
             Meas = new Meas(this);
             this.UserType = "N3300A";
+            Current = new Current(this);
         }
 
         public enum VoltMultipliers
@@ -113,8 +114,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public  MainN3300 SetWorkingChanel()
         {    
             this.WriteLine("CHAN:LOAD " + _chanNum);
-            this.WriteLine("CHAN:LOAD?");
-            if (int.Parse(this.ReadLine()) == ChanelNumber) return this;
+            if (int.Parse(this.QueryLine("CHAN:LOAD?")) == ChanelNumber) return this;
             Logger.Error("Канал не устанавлен");
             throw new NullReferenceException("Канал не устанавлен");
         }
@@ -155,10 +155,11 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             get
             {
-                this.WriteLine("FUNC?");
+                string answer = this.QueryLine("FUNC?");
+
                 foreach (ModeWorks mode in Enum.GetValues(typeof(ModeWorks)) )
                 {
-                    if (EnumExtensions.GetStringValue(mode).Equals(this.ReadLine(), StringComparison.CurrentCultureIgnoreCase))
+                    if (EnumExtensions.GetStringValue(mode).Equals(answer, StringComparison.CurrentCultureIgnoreCase))
                         return mode;
                 }
                 Logger.Error("Режим не определен.");
@@ -357,9 +358,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             }
         }
 
-
-       
-
+        public Current Current { get; protected set; }
     }
     public class Meas     :HelpIeeeBase
     {
@@ -368,6 +367,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public Meas(MainN3300 mainN3300)
         {
             this._mainN3300 = mainN3300;
+            
         }
 
         /// <summary>
@@ -377,22 +377,21 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             get
             {
-                _mainN3300.WriteLine("MEAS:VOLT?");
-                return (decimal) this.DataStrToDoubleMind(_mainN3300.ReadLine());
+                return (decimal) this.DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:VOLT?"));
             }
         }
         /// <summary>
         /// Возвращает измеренное значение тока в цепи
         /// </summary>
-        public decimal Current
-        {
-            get
-            {
-                _mainN3300.WriteLine("MEAS:CURR?");
+        //public decimal Current
+        //{
+        //    get
+        //    {
+                
 
-                return (decimal)this.DataStrToDoubleMind(_mainN3300.ReadLine());
-            }
-        }
+        //        return (decimal)this.DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:CURR?"));
+        //    }
+        //}
         public decimal Power
         {
             get
@@ -418,6 +417,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public Resistance(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
+            Multipliers = _mainN3300.Multipliers;
         }
         /// <summary>
         /// Возвращает маскимальное значение сопротивление на этой нагрузке
@@ -432,14 +432,16 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// Устанавливает ПРЕДЕЛ сопротивления для режима CR 
         /// </summary>
         /// <param name="value">Значение сопротивления, которое нужно установить</param>
-        public MainN3300 SetRange(decimal value, Multipliers mult = Devices.Multipliers.None)
+        public MainN3300 SetResistanceRange(decimal value, Multipliers mult = Devices.Multipliers.None)
         {
 
             if(value < 0)
                 throw new ArgumentException("Значение меньше 0");
 
+            
+
             var val = value * (decimal)EnumExtensions.GetDoubleValue(mult);
-            var res = Ranges.FirstOrDefault(q => q.Value <= (double)val);
+            var res = Ranges.FirstOrDefault(q => q.Value >= (double)val);
 
             if(res == null)
             {
@@ -482,9 +484,17 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
     {
 
     }
-    public class Current
+    public class Current:HelpIeeeBase
     {
+        private MainN3300 _mainN3300;
 
+
+        public Current(MainN3300 mainN3300)
+        {
+            _mainN3300 = mainN3300;
+            Multipliers = _mainN3300.Multipliers;
+        }
+        public decimal MeasCurrent { get { return  (decimal)this.DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:CURR?")); } }
     }
 
 }

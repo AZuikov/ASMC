@@ -326,12 +326,7 @@ namespace B5_71_PRO_Abstract
                     {
                         Logger.Error(e);
                     }
-                    finally
-                    {
-                        Mult.Close();
-                        Load.Close();
-                        Bp.Close();
-                    }
+                    
                 };
                 operation.CompliteWork = () =>  Task.FromResult(operation.IsGood());
                 DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -505,13 +500,7 @@ namespace B5_71_PRO_Abstract
                     {
                         Logger.Error(e);
                     }
-                    finally
-                    {
-                        Mult.Close();
-                        Bp.OffOutput();
-                        Bp.Close();
-                        Load.Close();
-                    }
+                    
 
 
                 };
@@ -558,13 +547,13 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //это точки для нагрузки в Омах
-
         public static readonly decimal[] ArrСoefVoltUnstable = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
 
         #region Property
 
-        //порт нужно спрашивать у интерфейса
+        
         protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
@@ -600,47 +589,57 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
+            
             var operation = new BasicOperationVerefication<decimal>();
-
-            try
+            operation.InitWork = async () =>
             {
-                operation.InitWork = () =>
+                try
                 {
-                    Mult.StringConnection = GetStringConnect(Mult);
-                    Load.StringConnection = GetStringConnect(Load);
-                    Bp.StringConnection = GetStringConnect(Bp);
+                    await Task.Run(() =>
+                    {
+                        Mult.StringConnection = GetStringConnect(Mult);
+                        Load.StringConnection = GetStringConnect(Load);
+                        Bp.StringConnection = GetStringConnect(Bp);
 
-                    
-                    Load.FindThisModule();
-                    
-                    //если модуль нагрузки найти не удалось
-                    if (Load.ChanelNumber <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-                    Mult.Open();
-                    while (Mult.IsTerminal == false)
+                        Load.FindThisModule();
+
+                        //если модуль нагрузки найти не удалось
+                        if (Load.ChanelNumber <= 0)
+                            throw new
+                                ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+
+
+                    });
+
+                    while (!Mult.IsTerminal)
                         this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                               " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
-                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                               MessageResult.OK);
-                    return Task.CompletedTask;
-                };
-                operation.BodyWork = Test;
-
-                void Test()
+                                                                           " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                            MessageResult.OK);
+                }
+                catch (Exception e)
                 {
-                   
+                    Logger.Error(e);
+                }
+            };
+
+            operation.BodyWork = () =>
+            {
+                try
+                {
                     Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
                     Bp.InitDevice();
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    Bp.SetStateCurr(Bp.CurrMax);
-
+                    Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax);
+                    
                     // ------ настроим нагрузку
                     Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
 
-                    Load.Resistance.SetMaxResistanceRange()
-                        .Resistance.Set(Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]))
+                    decimal pointResistance = Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]);
+                    MathStatistics.Round(ref pointResistance, 3);
+
+                    Load.Resistance.SetResistanceRange(pointResistance).
+                        Resistance.Set(pointResistance)
                         .SetOutputState(MainN3300.State.On);
 
                     //сюда запишем результаты
@@ -650,14 +649,14 @@ namespace B5_71_PRO_Abstract
 
                     foreach (var coef in ArrСoefVoltUnstable)
                     {
-                        
+
                         var resistance = Bp.VoltMax / (coef * Bp.CurrMax);
-                        Load.Resistance.SetRange(resistance).Resistance.Set(resistance); //ставим сопротивление
+                        Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance); //ставим сопротивление
 
                         // время выдержки
                         Thread.Sleep(1000);
                         // записываем результаты
-                        voltUnstableList.Add((decimal)Mult.Dc.Voltage.Range.Set(100).GetMeasValue());
+                        voltUnstableList.Add((decimal)Mult.Dc.Voltage.Range.Set((double)Bp.VoltMax).GetMeasValue());
                     }
 
                     Bp.OffOutput();
@@ -675,16 +674,24 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
-                    DataRow.Add(operation);
+                    Load.SetOutputState(MainN3300.State.Off);
+
+                    
                 }
-            }
-            finally
-            {
-                Bp.OffOutput();
-                Bp.Close();
-                
-                Mult.Close();
-            }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+              
+
+
+            };
+            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            DataRow.Add(DataRow.IndexOf(operation) == -1
+                ? operation
+                : (BasicOperationVerefication<decimal>)operation.Clone());
+
+
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -705,6 +712,7 @@ namespace B5_71_PRO_Abstract
 
         public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
@@ -714,6 +722,7 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27, (decimal) 37.5, (decimal) 187.5};
 
@@ -771,7 +780,7 @@ namespace B5_71_PRO_Abstract
                         var point = Bp.VoltMax / ((decimal)0.9 * Bp.CurrMax);
                         Load.SetWorkingChanel()
                             .SetModeWork(MainN3300.ModeWorks.Resistance)
-                            .Resistance.SetRange(point)
+                            .Resistance.SetResistanceRange(point)
                             .Resistance.Set(point)
                             .SetOutputState(MainN3300.State.On);
                         
@@ -866,6 +875,9 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper6DciOutput : ParagraphBase, IUserItemOperation<decimal>
     {
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
 
@@ -915,49 +927,57 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            var operation = new BasicOperationVerefication<decimal>();
-
-
-            try
+            foreach (var coef in MyPoint)
             {
-                operation.InitWork = () =>
+                var operation = new BasicOperationVerefication<decimal>();
+                
+                operation.InitWork = async () =>
                 {
-                    Load.StringConnection = GetStringConnect(Load);
-                    Bp.StringConnection = GetStringConnect(Bp);
-
-                    
-                    Load.FindThisModule();
-                    
-                    //если модуль нагрузки найти не удалось
-                    if (Load.ChanelNumber <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-                    return Task.CompletedTask;
-                };
-                operation.BodyWork = Test;
-
-                void Test()
-                {
-
-                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                    var resist = Bp.VoltMax / Bp.CurrMax - 3;
-                    Load.Resistance.SetRange(resist).Resistance.Set(resist);
-                    Load.SetOutputState(MainN3300.State.On);
-
-                    Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax);
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    Bp.OnOutput();
-
-                    foreach (var coef in MyPoint)
+                    try
                     {
+                        await Task.Run(() =>
+                        {
+                            Load.StringConnection = GetStringConnect(Load);
+                            Bp.StringConnection = GetStringConnect(Bp);
+                        
+                            Load.FindThisModule();
+                        //если модуль нагрузки найти не удалось
+                            if (Load.ChanelNumber <= 0)
+                           throw new ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                                            
+                        });
+
+                       
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+
+                    
+                    
+                };
+
+                operation.BodyWork = () =>
+                {
+                    try
+                    {
+                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                        var resist = Bp.VoltMax / Bp.CurrMax - 3;
+                        Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                        Load.SetOutputState(MainN3300.State.On);
+
+                        Bp.InitDevice();
+                        Bp.SetStateVolt(Bp.VoltMax);
+                        Bp.OnOutput();
+
                         var setPoint = coef * Bp.CurrMax;
                         //ставим значение тока
                         Bp.SetStateCurr(setPoint);
                         Thread.Sleep(1000);
                         //измеряем ток
-                        
-                        var result = Load.Meas.Current;
+
+                        var result = Load.Current.MeasCurrent;
 
                         MathStatistics.Round(ref result, 3);
 
@@ -969,20 +989,32 @@ namespace B5_71_PRO_Abstract
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
                         operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        var a = (BasicOperationVerefication<decimal>) operation.Clone();
+                       
 
-                        DataRow.Add(a);
+                        
+
+
+                        Bp.OffOutput();
                     }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+                   
 
-                    Bp.OffOutput();
-                }
+                    
+                };
+                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                    ? operation
+                    : (BasicOperationVerefication<decimal>)operation.Clone());
+
             }
-            finally
-            {
-                Bp.OffOutput();
-                Bp.Close();
-                
-            }
+
+            
+
+
+            
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -1006,6 +1038,7 @@ namespace B5_71_PRO_Abstract
 
         public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
@@ -1015,6 +1048,8 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper7DciMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
 
@@ -1068,52 +1103,56 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            var operation = new BasicOperationVerefication<decimal>();
-
-            try
+            foreach (var coef in MyPoint)
             {
-                operation.InitWork = () =>
+                var operation = new BasicOperationVerefication<decimal>();
+                 operation.InitWork = async () =>
+                  {
+                      try
+                      {
+                          await Task.Run(() =>
+                          {
+                             Bp.StringConnection = GetStringConnect(Bp);
+                             Load.StringConnection = GetStringConnect(Load);
+                      
+                             Load.FindThisModule();
+                  
+                             //если модуль нагрузки найти не удалось
+                             if (Load.ChanelNumber <= 0)
+                                 throw new
+                                     ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                          });
+                      }
+                      catch (Exception e)
+                      {
+                          Logger.Error(e);
+                      }
+
+                     
+                     
+                  };
+
+
+                operation.BodyWork = () =>
                 {
-                    Bp.StringConnection = GetStringConnect(Bp);
-                    Load.StringConnection = GetStringConnect(Load);
-
-
-                    
-                    Load.FindThisModule();
-                    
-                    //если модуль нагрузки найти не удалось
-                    if (Load.ChanelNumber <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-                    return Task.CompletedTask;
-                };
-                operation.BodyWork = Test;
-
-                void Test()
-                {
-
-                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                    var resist = Bp.VoltMax / Bp.CurrMax - 3;
-                    Load.Resistance.SetRange(resist).Resistance.Set(resist);
-                    Load.SetOutputState(MainN3300.State.On);
-                    
-
-                    Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax);
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    Bp.OnOutput();
-
-                    
-
-                    foreach (var coef in MyPoint)
+                    try
                     {
+                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                        var resist = Bp.VoltMax / Bp.CurrMax - 3;
+                        Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                        Load.SetOutputState(MainN3300.State.On);
+
+
+                        Bp.InitDevice();
+                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax);
+                        Bp.OnOutput();
+
                         var setPoint = coef * Bp.CurrMax;
                         //ставим точку напряжения
                         Bp.SetStateCurr(setPoint);
                         Thread.Sleep(1000);
                         //измеряем ток
-                        var resultN3300 = Load.Meas.Current;
-
+                        var resultN3300 = Load.Current.MeasCurrent;
                         MathStatistics.Round(ref resultN3300, 3);
 
                         var resultBpCurr = Bp.GetMeasureCurr();
@@ -1126,22 +1165,30 @@ namespace B5_71_PRO_Abstract
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                        var a = (BasicOperationVerefication<decimal>) operation.Clone();
+                       
 
-                        DataRow.Add(a);
+
+
+                        Bp.OffOutput();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
                     }
 
+                   
+                };
+                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                    ? operation
+                    : (BasicOperationVerefication<decimal>)operation.Clone());
 
-                    Bp.OffOutput();
-                }
             }
-            finally
-            {
-                Bp.OffOutput();
-                Bp.Close();
-                
-            }
+
+            
+
+           
+            
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -1165,6 +1212,7 @@ namespace B5_71_PRO_Abstract
 
         public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
@@ -1174,6 +1222,8 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper8DciUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         //список точек поверки (процент от максимальных значений блока питания  )
         public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
 
@@ -1215,32 +1265,36 @@ namespace B5_71_PRO_Abstract
         protected override void InitWork()
         {
             var operation = new BasicOperationVerefication<decimal>();
+             operation.InitWork = async () =>
+              {
+                  try
+                  {
+                      Bp.StringConnection = GetStringConnect(Bp);
+                      Load.StringConnection = GetStringConnect(Load);
+                      
+                      Load.FindThisModule();
 
-            try
+                      //если модуль нагрузки найти не удалось
+                      if (Load.ChanelNumber <= 0)
+                          throw new
+                              ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                  }
+                  catch (Exception e)
+                  {
+                      Logger.Error(e);
+                  }
+                  
+              };
+
+            operation.BodyWork = () =>
             {
-                operation.InitWork = () =>
-                {
-                    Bp.StringConnection = GetStringConnect(Bp);
-                    Load.StringConnection = GetStringConnect(Load);
-
-                    
-                    Load.FindThisModule();
-                    
-                    //если модуль нагрузки найти не удалось
-                    if (Load.ChanelNumber <= 0)
-                        throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-                    return Task.CompletedTask;
-                };
-                operation.BodyWork = Test;
-
-                void Test()
+                try
                 {
                     Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                     var point = Bp.VoltMax * MyPoint[2] / Bp.CurrMax;
-                    Load.Resistance.SetRange(point).Resistance.Set(point);
+                    Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
                     Load.SetOutputState(MainN3300.State.On);
-                    
+
 
                     ////инициализация блока питания
                     Bp.InitDevice();
@@ -1252,11 +1306,11 @@ namespace B5_71_PRO_Abstract
 
                     foreach (var coef in MyPoint)
                     {
-                        
+
                         var resistance = coef * Bp.VoltMax / Bp.CurrMax;
-                        Load.Resistance.SetRange(resistance).Resistance.Set(resistance);
+                        Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance);
                         Thread.Sleep(1000);
-                        currUnstableList.Add(Load.Meas.Current);
+                        currUnstableList.Add(Load.Current.MeasCurrent);
                     }
 
                     Bp.OffOutput();
@@ -1271,16 +1325,23 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
-                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-                    DataRow.Add(operation);
+                   
                 }
-            }
-            finally
-            {
-                Bp.OffOutput();
-                Bp.Close();
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+
                 
-            }
+            };
+            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            DataRow.Add(DataRow.IndexOf(operation) == -1
+                ? operation
+                : (BasicOperationVerefication<decimal>)operation.Clone());
+
+
+
+
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -1302,6 +1363,7 @@ namespace B5_71_PRO_Abstract
 
         public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
     }
@@ -1311,6 +1373,8 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper9DciPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         #region Property
 
         protected B571Pro Bp { get; set; }
@@ -1360,22 +1424,23 @@ namespace B5_71_PRO_Abstract
                     Load.StringConnection = GetStringConnect(Load);
                     Mult.StringConnection = GetStringConnect(Mult);
 
-                    
+
                     Load.FindThisModule();
-                    
+
                     //если модуль нагрузки найти не удалось
                     if (Load.ChanelNumber <= 0)
                         throw new
-                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                            ArgumentException(
+                                $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                     void ConfigDeviseAsync()
                     {
-                        
+
                         Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                         var point = (decimal) 0.9 * Bp.VoltMax / Bp.CurrMax;
-                        Load.Resistance.SetRange(point).Resistance.Set(point);
+                        Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
                         Load.SetOutputState(MainN3300.State.On);
-                        
+
 
                         //инициализация блока питания
                         Bp.InitDevice();
@@ -1389,13 +1454,14 @@ namespace B5_71_PRO_Abstract
                     Mult.Open();
                     while (Mult.IsTerminal)
                         this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                               " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
-                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                               MessageResult.OK);
+                                                                           " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                            MessageResult.OK);
 
-                    this.UserItemOperation.ServicePack.MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения",
-                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                           MessageResult.OK);
+                    this.UserItemOperation.ServicePack.MessageBox.Show(
+                        "Установите на В3-57 подходящий предел измерения напряжения",
+                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                        MessageResult.OK);
                 };
 
                 operation.BodyWork = Test;
@@ -1405,7 +1471,7 @@ namespace B5_71_PRO_Abstract
                     //нужно дать время В3-57
                     Thread.Sleep(5000);
                     Mult.Dc.Voltage.Range.Set(100);
-                    var currPuls34401 = (decimal)Mult.GetMeasValue();
+                    var currPuls34401 = (decimal) Mult.GetMeasValue();
                     var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99, 0, 3);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
@@ -1427,12 +1493,11 @@ namespace B5_71_PRO_Abstract
                     DataRow.Add(operation);
                 }
             }
-            finally
+            catch (Exception e)
             {
-                Bp.OffOutput();
-                Bp.Close();
-                Mult.Close();
+
             }
+
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)

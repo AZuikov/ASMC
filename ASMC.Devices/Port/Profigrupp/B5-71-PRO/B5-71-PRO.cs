@@ -47,28 +47,16 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Погрешность нестабильности выходного напряжения.
         /// </summary>
         private decimal tolVoltUnstable;
-        public decimal TolleranceVoltageUnstability
-        {
-            get { return tolVoltUnstable;}
-            protected set
-            {
-                tolVoltUnstable = TollUnstable(VoltMax, (decimal)0.02); 
-            }
-        }
+        public decimal TolleranceVoltageUnstability => TollUnstable(VoltMax, (decimal)0.02);
 
         /// <summary>
         /// Погрешность нетсабильности выходного тока.
         /// </summary>
 
         private decimal tolCurrUnstable;
-        public decimal TolleranceCurrentUnstability
-        {
-            get { return tolCurrUnstable;}
-            protected set
-            {
-                tolCurrUnstable = TollUnstable(CurrMax, (decimal)0.05); 
-            }
-        }
+
+        public decimal TolleranceCurrentUnstability => TollUnstable(CurrMax, (decimal) 0.05);
+        
 
         /// <summary>
         /// формулы расчета погрешности нестабильности тока/напряжения

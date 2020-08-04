@@ -434,7 +434,7 @@ namespace ASMC.Devices.IEEE
             Session.FormattedIO.WriteLine(inStrData);
             Thread.Sleep(200);
 
-            string answer = Session.FormattedIO.ReadLine();
+            string answer = Session.FormattedIO.ReadLine().TrimEnd('\n');
             Close();
 
             if (answer.Length == 0) throw new IOException($"Данные с устройства {Session.ResourceName} считать не удалось.");
@@ -551,7 +551,7 @@ namespace ASMC.Devices.IEEE
         }
         public string JoinValueMult(decimal value, Multipliers mult)
         {
-            return value.ToString("#17", CultureInfo.GetCultureInfo("en-US")) +
+            return value.ToString("G", CultureInfo.GetCultureInfo("en-US")) +
                    GetMultiplier(mult).StrCommand;
         }
     }
