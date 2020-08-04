@@ -1,39 +1,40 @@
-﻿<UserControl  x:Class="ASMC.Core.View.QuestionTextView"
+﻿<UserControl x:Class="ASMC.Core.View.QuestionTextView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:xceed="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:view1="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
-             mc:Ignorable="d" Width="400" Height="600" >
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="355*"/>
-            <ColumnDefinition Width="209*"/>
-        </Grid.ColumnDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      HorizontalAlignment="Left" Grid.ColumnSpan="2">
-            <StackPanel>
-                <xceed:RichTextBox Text="{Binding InputUserText}"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Column="0" Content="dfsadasdsadsa" IsChecked="True"/>
-                    <RadioButton Grid.Column="1" Content="dfsadas"/>
-                </Grid>
-                <!--<view1:WriteText />-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Command="{Binding Send}" CommandParameter="{Binding Data}" Content="Принять" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="10" />
-                    <Button Grid.Column="1" Content="Закрыть" HorizontalAlignment="Right" Margin="10" Padding="5"/>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ASMC.Core.View"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:view="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="355*"/>
+      <ColumnDefinition Width="209*"/>
+    </Grid.ColumnDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalAlignment="Left" Grid.ColumnSpan="2">
+      <StackPanel>
+        <xctk:RichTextBox Text="{Binding InputUserText}"/>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <RadioButton Grid.Column="0" Content="dfsadasdsadsa" IsChecked="True"/>
+          <RadioButton Grid.Column="1" Content="dfsadas"/>
+        </Grid>
+        <view:WriteText />
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Command="{Binding Send}" CommandParameter="{Binding Data}" Content="Принять" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="10" />
+          <Button Grid.Column="1" Content="Закрыть" HorizontalAlignment="Right" Margin="10" Padding="5"/>
+        </Grid>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
 </UserControl>

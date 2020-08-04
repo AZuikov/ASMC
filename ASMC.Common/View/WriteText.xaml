@@ -55,7 +55,7 @@
             <Image Source="../Image/ListNumbering.png"></Image>
           </Button>
         </ToolBar>
-        <xceed:RichTextBox  Text="{Binding Document, Mode=TwoWay}"  SpellCheck.IsEnabled="True" MinHeight="100" />
+        <xceed:RichTextBox  Text="{Binding Document, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  SpellCheck.IsEnabled="True" MinHeight="100" />
       </DockPanel>
     </Grid>
   </StackPanel>

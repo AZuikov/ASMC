@@ -6,7 +6,7 @@ namespace ASMC.Common
     internal class NativeMethods
     {
         private const string User32 = "user32.dll";
-
+        private const string Kernel32 = "kernel32.dll";
         public const int GWL_EXSTYLE = -20;
         public const int WS_EX_DLGMODALFRAME = 0x0001;
         public const int SWP_NOSIZE = 0x0001;
@@ -14,6 +14,8 @@ namespace ASMC.Common
         public const int SWP_NOZORDER = 0x0004;
         public const int SWP_FRAMECHANGED = 0x0020;
         public const uint WM_SETICON = 0x0080;
+        [DllImport(Kernel32)]
+        public static extern bool Beep(uint frequency, uint durarion);
 
         [DllImport(User32)]
         public static extern int GetWindowLong(IntPtr hwnd, int index);

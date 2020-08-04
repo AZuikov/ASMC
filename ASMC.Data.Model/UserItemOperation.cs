@@ -171,6 +171,7 @@ namespace ASMC.Data.Model
     /// </summary>
     public class OperationMetrControlBase
     {
+      
         /// <summary>
         /// Содержит перечесления типов операции.
         /// </summary>
@@ -256,7 +257,7 @@ namespace ASMC.Data.Model
         #endregion
         protected ShemeImage LastShem { get; set; }
 
-        private void ShowShem(ShemeImage sheme)
+        private async void ShowShem(ShemeImage sheme)
         {
 
             if (sheme == null||LastShem?.Number == sheme.Number) return;
@@ -268,7 +269,11 @@ namespace ASMC.Data.Model
                 throw new NullReferenceException("Сервис не найден");
             }
             ser.Entity = sheme;
-            ser.Show();
+            do
+            {
+                ser.Show();
+
+            } while (!await sheme.ChekShem());
 
         }
 
@@ -477,9 +482,21 @@ namespace ASMC.Data.Model
 
     public class ShemeImage
     {
+        public Func<Task<bool>> ChekShem
+        {
+            get
+            {
+                if (_chekShem == null)  return () => default(Task<bool>);
+                ;
+                return _chekShem;
+             }
+            set => _chekShem = value;
+        }
+
         private string _fileName;
         private string _fileNameDescription;
         private string _extendedDescription;
+        private Func<Task<bool>> _chekShem;
 
         #region Property
         /// <summary>

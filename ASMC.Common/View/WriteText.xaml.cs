@@ -9,13 +9,13 @@ namespace ASMC.Common.View
     /// </summary>
     public partial class WriteText : UserControl
     {
-        public static readonly DependencyProperty DocumentProperty = DependencyProperty.Register("Document", typeof(FlowDocument), typeof(WriteText), new FrameworkPropertyMetadata(null));
+        public static readonly DependencyProperty DocumentProperty = DependencyProperty.Register("Document", typeof(string), typeof(WriteText), new FrameworkPropertyMetadata(null));
        
-        public FlowDocument Document
+        public string Document
         {
             get
             {
-                return (FlowDocument)GetValue(DocumentProperty);
+                return (string) GetValue(DocumentProperty);
             }
             set
             {
@@ -24,7 +24,7 @@ namespace ASMC.Common.View
         }    
         public WriteText()
         {
-            //InitializeComponent();
+            InitializeComponent();
             //RichTextBox dsad = new RichTextBox();
             //TextRange tr = new TextRange(dsad.Document.ContentStart, dsad.Document.ContentEnd);
             //using(var stream = new FileStream(@"\\zrto.int\ogmetr\AutoMeas\AutoMeas\PatchInfo — копия.rtf", FileMode.Open))

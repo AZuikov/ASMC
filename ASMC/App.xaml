@@ -1,11 +1,6 @@
 ﻿<Application x:Class="ASMC.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-          
-             xmlns:asmc="clr-namespace:ASMC"
-             xmlns:ps="http://schemas.palitra-system.ru/winfx/xaml/core"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
              xmlns:ui1="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common">
     <Application.Resources>
         <ResourceDictionary>

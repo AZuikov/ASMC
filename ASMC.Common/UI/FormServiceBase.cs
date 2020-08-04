@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using ASMC.Common.Settings;
@@ -193,15 +195,14 @@ namespace ASMC.Common.UI
             
             try
             {
-                //SubscribeWindowServiceEvents(wndService);
+                SubscribeWindowServiceEvents(wndService);
                 wndService.Show("FormView", viewModel, Parameter, null);
-                //wndService.Show(viewModel.GetType().Name.TrimEnd(Convert.ToChar("Model")), viewModel, null, null);
             }
             finally
             {
                 ViewInjectionManager.Default.Remove(cb?.RegionName, null);
 
-                //UnsubscribeWindowServiceEvents(wndService);
+                UnsubscribeWindowServiceEvents(wndService);
                 if (cb != null)
                 {
                     ClearBinding(EntityProperty);
@@ -212,7 +213,88 @@ namespace ASMC.Common.UI
             return _dialogResult == true;
         }
 
-     
+        protected virtual void UnsubscribeWindowServiceEvents(WindowService wndService)
+        {
+            _source.Cancel(); 
+            _timer.Stop();
+            _timer.Dispose();
+        }
+
+        private System.Timers.Timer _timer;
+        private CancellationTokenSource _source;
+        protected virtual void SubscribeWindowServiceEvents(WindowService wndService)
+        {
+            _source= new CancellationTokenSource();
+            _timer = new System.Timers.Timer();
+           
+                _timer.Elapsed += (sender, args) =>
+                    Task.Factory.StartNew(() =>
+                    {
+                        for(var i = 0; i < 5; i++)
+                        {
+                           if(_source.Token.IsCancellationRequested )  return;
+                            NativeMethods.Beep(600, 500);
+                            Thread.Sleep(1000);
+                        }
+                        Thread.Sleep(120000);
+                        if(_source.Token.IsCancellationRequested)
+                            return;
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(932, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(1047, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(699, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(740, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(932, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(1047, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(784, 150);
+                        Thread.Sleep(300);
+                        NativeMethods.Beep(699, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(740, 150);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(932, 150);
+                        NativeMethods.Beep(784, 150);
+                        NativeMethods.Beep(587, 1200);
+                        Thread.Sleep(75);
+                        NativeMethods.Beep(932, 150);
+                        NativeMethods.Beep(784, 150);
+                        NativeMethods.Beep(554, 1200);
+                        Thread.Sleep(75);
+                        NativeMethods.Beep(932, 150);
+                        NativeMethods.Beep(784, 150);
+                        NativeMethods.Beep(523, 1200);
+                        Thread.Sleep(150);
+                        NativeMethods.Beep(466, 150);
+                        NativeMethods.Beep(523, 150);
+                    }, _source.Token);
+        
+           
+            
+            _timer.AutoReset = false;
+            _timer.Interval = 10000;
+            _timer.Start();
+        }
+
+
         private void ClearBinding(DependencyProperty targetProperty)
         {
             BindingOperations.ClearBinding(this, targetProperty);
