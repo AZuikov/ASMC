@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Common.ViewModel;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
 using NLog;
@@ -379,6 +380,8 @@ namespace ASMC.Data.Model
         /// </summary>
         ShemeImage Sheme { get; }
 
+        TransactionDetails TransactionDetails
+        { get;} 
         #endregion
 
         #region Methods
@@ -464,6 +467,9 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public ShemeImage Sheme { get; set; }
+
+        public TransactionDetails TransactionDetails { get; protected set; }
+
 
         /// <inheritdoc />
         public bool? IsGood { get; set; }
@@ -560,5 +566,26 @@ namespace ASMC.Data.Model
         }
 
         #endregion
+    }
+
+    public class TransactionDetails : BaseViewModel
+    {
+        private int _count;
+        private int _countReady;
+        public event CountUpdateHandler Notify;
+        public delegate void CountUpdateHandler();
+        public int Count {
+            get => _count;
+          internal   set => SetProperty(ref _count, value, nameof(Count), ChangedCallback);
+        }
+        public int CountReady
+        {
+            get => _countReady;
+            internal set => SetProperty(ref _countReady, value, nameof(CountReady), ChangedCallback);
+        }   
+        private void ChangedCallback()
+        {
+            Notify?.Invoke();
+        }
     }
 }

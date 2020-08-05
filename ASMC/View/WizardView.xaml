@@ -59,6 +59,7 @@
         <Border Background="LightGray" Padding="0,10,0,10">
           <Grid IsSharedSizeScope="True" Margin="0,0,10,0">
             <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
               <ColumnDefinition />
               <ColumnDefinition SharedSizeGroup="Button" MinWidth="80" Width="Auto" />
               <ColumnDefinition Width="{StaticResource Gap}" />
@@ -66,24 +67,28 @@
               <ColumnDefinition Width="{StaticResource Gap}" />
               <ColumnDefinition SharedSizeGroup="Button" />
             </Grid.ColumnDefinitions>
-           <Grid HorizontalAlignment="Left" Margin="20,0,0,0">
-             <Grid.ColumnDefinitions>
-                <ColumnDefinition SharedSizeGroup="Button"/>
-               <ColumnDefinition Width="{StaticResource Gap}" />
-                <ColumnDefinition SharedSizeGroup="Button"/>
-               <ColumnDefinition Width="{StaticResource Gap}" />
-                <ColumnDefinition SharedSizeGroup="Button"/>
-             </Grid.ColumnDefinitions>
-              <Button Grid.Column="0" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}" 
+            <Grid  HorizontalAlignment="Left" Margin="20,0,0,0" IsSharedSizeScope="True" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}"
+                    Visibility="{DXBinding '@s.IsEnabled?`Visible`:`Hidden`'}">
+               <Grid.ColumnDefinitions>
+                 <ColumnDefinition SharedSizeGroup="Button"/>
+                 <ColumnDefinition Width="{StaticResource Gap}" />
+                 <ColumnDefinition SharedSizeGroup="Button"/>
+                 <ColumnDefinition Width="{StaticResource Gap}" />
+                 <ColumnDefinition SharedSizeGroup="Button"/>
+                </Grid.ColumnDefinitions>
+               <Button Grid.Column="0" 
                       Content="Запустить" Command="{Binding StartCommand}"  />
-              <Button Grid.Column="2" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}" 
+              <Button Grid.Column="2" 
                      Content="Пауза" Command="{Binding PauseCommand}" />
-              <Button Grid.Column="4" IsEnabled="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}"  Command="{Binding StopCommand}" 
+              <Button Grid.Column="4" Command="{Binding StopCommand}" 
                      Content="Отмена" />
-            </Grid>
-            <Button Grid.Column="1" Content="Назад" Command="{Binding BackCommand}"  />
-            <Button Grid.Column="3" Content="Далее" Command="{Binding NextCommand}" />
-            <Button Grid.Column="5" Content="Готово" />
+               </Grid>
+
+            <Grid Grid.Column="1" Margin="20,3,20,0" >
+              <ProgressBar Value="{Binding TransactionDetails.Count}" Maximum="{Binding TransactionDetails.CountReady}"/> </Grid>
+            <Button Grid.Column="2" Content="Назад" Command="{Binding BackCommand}"  />
+            <Button Grid.Column="4" Content="Далее" Command="{Binding NextCommand}" />
+            <Button Grid.Column="6" Content="Готово" />
           </Grid>
         </Border>
       </StackPanel>

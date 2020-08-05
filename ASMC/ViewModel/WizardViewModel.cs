@@ -88,6 +88,7 @@ namespace ASMC.ViewModel
         private StateWork _stateWorkFlag;
         private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
+        private TransactionDetails _transactionDetails;
 
         #endregion
 
@@ -171,6 +172,11 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _settingViewModel, value, nameof(SettingViewModel));
         }
 
+        public TransactionDetails TransactionDetails
+        {
+            get => _transactionDetails;
+            set => SetProperty(ref _transactionDetails, value, nameof(TransactionDetails));
+    }
         public StateWork StateWorkFlag
         {
             get => _stateWorkFlag;
@@ -200,7 +206,8 @@ namespace ASMC.ViewModel
 
         public WizardViewModel()
         {
-            StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
+           
+        StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
             NextCommand =
                 new DelegateCommand(OnNextCommand,
                                     () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
@@ -270,22 +277,6 @@ namespace ASMC.ViewModel
 
         private void LoadPlugins()
         {
-            //var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
-            //if (!Directory.Exists(path)) return;
-
-            //var files = Directory.GetFiles(path);
-            //try
-            //{
-            //    foreach (var file in files)
-            //        if (file.EndsWith(".dll"))
-            //            Assembly.LoadFile(Path.GetFullPath(file));
-            //}
-            //catch (Exception e)
-            //{
-            //    Logger.Error(e);
-            //}
-
-            //if (files.Length <= 0) return;
             var interfaceType = typeof(IProgram);
             Type[] types = null;
             try
@@ -398,9 +389,11 @@ namespace ASMC.ViewModel
         private async void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
+            var sum = SelectProgram.Operation.SelectedOperation.UserItemOperation.Select(q => q?.TransactionDetails?.Count).Sum();
             if (SelectionItemOperation == null)
             {
                 await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
+      
             }
             StateWorkFlag = StateWork.Stop;
         }
