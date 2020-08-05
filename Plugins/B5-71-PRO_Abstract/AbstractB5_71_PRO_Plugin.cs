@@ -328,7 +328,24 @@ namespace B5_71_PRO_Abstract
                     }
                     
                 };
-                operation.CompliteWork = () =>  Task.FromResult(operation.IsGood());
+                operation.CompliteWork = () =>
+                {
+                    if (!operation.IsGood())
+                    {
+                        var answer =this.UserItemOperation.ServicePack.MessageBox.Show($"Текущая точка {operation.Expected} не проходит по допуску:\n"+
+                                                                           $"Минимально допустимое значение {operation.LowerTolerance}\n"+
+                                                                           $"Максимально допустимое значение {operation.UpperTolerance}\n"+
+                                                                           $"Допустимое значение погрешности {operation.Error}\n"+
+                                                                           $"ИЗМЕРЕННОЕ значение {operation.Getting}\n" +
+                                                                           $"ФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n"+
+                                                                           "Повторить измерение этой точки?",
+                                                                           "Информация по текущему измерению",MessageButton.YesNo, MessageIcon.Question,MessageResult.Yes);
+                       
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    return Task.FromResult(operation.IsGood());
+                };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<decimal>) operation.Clone());
@@ -1017,7 +1034,10 @@ namespace B5_71_PRO_Abstract
 
                     
                 };
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                operation.CompliteWork = () =>
+                {
+                    return Task.FromResult(operation.IsGood());
+                };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                     ? operation
                     : (BasicOperationVerefication<decimal>)operation.Clone());

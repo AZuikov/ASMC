@@ -3,6 +3,7 @@ using System.IO.Ports;
 using System.Threading;
 using AP.Utils.Data;
 
+
 //using System.Globalization;
 //using System.Text.RegularExpressions;
 
@@ -304,106 +305,5 @@ namespace ASMC.Devices.Port.Profigrupp
            
         }
     }
-
-
-
-
-    //public abstract class AbstractB571Pro :ComPort
-    //{
- 
-
-      
-    //    /// <summary>
-    //    /// Проверка подключения к источнику питания 
-    //    /// </summary>
-        
-    //   public abstract void Init ();
-    //    /// <summary>
-    //    /// Сброс блока к настройкам по умолчанию.
-    //    /// </summary>
-    //    public abstract void Reset();
-
-    //    //========================
-    //    //  Режимы функционирования блока
-    //    // 1. Работа тольк от ПК с блокировкой кнопок cont_ps_ext
-    //    // 2. Управление от ПК и с клавиатуры прибора cps_int_ext
-    //    // 3. Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int 
-    //    //========================
-
-
-    //    /// <summary>
-    //    /// Вовращает уставку постоянного тока блока питания.
-    //    /// </summary>
-    //    public abstract decimal GetStateCurr();
-
-    //    /// <summary>
-    //    /// Задает уставку тока блока питания
-    //    /// </summary>
-    //    /// <param name="inCurr">величина уставки тока</param>
-    //    /// <param name="inUnitCurrMultipliers">единицы измерения тока, по умолчанию амперы</param>
-    //    /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
-    //    public abstract bool SetStateCurr(decimal inCurr, CurrMultipliers inUnitCurrMultipliers = CurrMultipliers.Si);
-
-
-    //    /// <summary>
-    //    /// Измеренное блоком значение тока в цепи.
-    //    /// </summary>
-    //    public abstract decimal GetMeasureCurr();
-
-
-    //    /// <summary>
-    //    /// Возвращает уставку постоянного напряжения блока питания.
-    //    /// </summary>
-    //    public abstract decimal GetStateVolt();
-
-    //    /// <summary>
-    //    /// Задает уставку напряжения блока питания
-    //    /// </summary>
-    //    /// <param name="inVolt">значения устанавливаемого напряжения</param>
-    //    /// <param name="inUnitVoltMultipliers">единицы измерения устанавливаемого напряжения</param>
-    //    /// <returns>возвращает true в случае успешной установки значения на приборе, в противном случае false.</returns>
-    //    public abstract bool SetStateVolt(decimal inVolt, VoltMultipliers inUnitVoltMultipliers = VoltMultipliers.Si);
-
-    //    /// <summary>
-    //    /// Измеренное блоком питания постоянное напряжение.
-    //    /// </summary>
-    //    public abstract decimal GetMeasureVolt();
-
-    //    /// <summary>
-    //    /// Включает выход источника питания.
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    public abstract bool OnOutput();
-
-    //    /// <summary>
-    //    /// Выключает выход источника питания.
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    public abstract bool OffOutput();
-
-    //    protected AbstractB571Pro()
-    //    {
-            
-    //    }
-
-    //    protected AbstractB571Pro(string portName) : base(portName)
-    //    {
-    //    }
-
-    //    protected AbstractB571Pro(string portName, SpeedRate bautRate) : base(portName, bautRate)
-    //    {
-    //    }
-
-    //    protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity) : base(portName, bautRate, parity)
-    //    {
-    //    }
-
-    //    protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit) : base(portName, bautRate, parity, databit)
-    //    {
-    //    }
-
-    //    protected AbstractB571Pro(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits) : base(portName, bautRate, parity, databit, stopbits)
-    //    {
-    //    }
-    //}
+    
 }
