@@ -22,10 +22,11 @@ namespace ASMC.Common.UI
         /// Задает немодальное окно.
         /// </summary>
         Default,
+
         /// <summary>
         /// Задает диалоговое окно.
         /// </summary>
-        Dialog,
+        Dialog
     }
 
     /// <summary>
@@ -34,238 +35,111 @@ namespace ASMC.Common.UI
     /// </summary>
     public class WindowService : ViewServiceBase, IWindowService
     {
-        #region Fields
-
-        #region Dependency Properties
-
-        private static readonly DependencyPropertyKey ActualSettingsPropertyKey =
-            DependencyProperty.RegisterReadOnly(
-                nameof(ActualSettings),
-                typeof(object),
-                typeof(WindowService),
-                null);
-
-
-        private static readonly DependencyPropertyKey IsWindowAlivePropertyKey =
-            DependencyProperty.RegisterReadOnly(
-                nameof(IsWindowAlive),
-                typeof(bool),
-                typeof(WindowService),
-                null);
-
-        public static readonly DependencyProperty ActualSettingsProperty = ActualSettingsPropertyKey.DependencyProperty;
-
-        public static readonly DependencyProperty IsWindowAliveProperty = IsWindowAlivePropertyKey.DependencyProperty;
-
-
-        public static readonly DependencyProperty SettingsSelectorProperty =
-            DependencyProperty.Register(
-                "SettingsSelector",
-                typeof(SettingsSelector),
-                typeof(WindowService));
-
-        public static readonly DependencyProperty SettingsProperty =
-            DependencyProperty.Register(
-                "Settings",
-                typeof(IWindowSettings),
-                typeof(WindowService));
-
-        public static readonly DependencyProperty UseWaitCursorProperty =
-            DependencyProperty.Register(
-                "UseWaitCursor",
-                typeof(bool),
-                typeof(WindowService),
-                new PropertyMetadata(true));
-
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(
-                "Title",
-                typeof(string),
-                typeof(WindowService));
-
-        public static readonly DependencyProperty WindowTypeProperty =
-            DependencyProperty.Register(
-                "WindowType",
-                typeof(Type),
-                typeof(WindowService),
-                new PropertyMetadata(typeof(Window)));
-
-        public static readonly DependencyProperty WindowShowModeProperty =
-            DependencyProperty.Register(
-                "WindowShowMode",
-                typeof(WindowShowMode),
-                typeof(WindowService),
-                new PropertyMetadata(WindowShowMode.Dialog));
-
-        public static readonly DependencyProperty WindowStartupLocationProperty =
-            DependencyProperty.Register(
-                "WindowStartupLocation",
-                typeof(WindowStartupLocation),
-                typeof(WindowService),
-                new PropertyMetadata(WindowStartupLocation.CenterOwner));
-
-        public static readonly DependencyProperty WindowStyleProperty =
-            DependencyProperty.Register(
-                "WindowStyle",
-                typeof(Style),
-                typeof(WindowService),
-                new PropertyMetadata(null));
-
-        public static readonly DependencyProperty MinWidthProperty =
-            FrameworkElement.MinWidthProperty.AddOwner(
-                typeof(WindowService),
-                new PropertyMetadata(200d));
-
-        public static readonly DependencyProperty MinHeightProperty =
-            FrameworkElement.MinHeightProperty.AddOwner(
-                typeof(WindowService),
-                new PropertyMetadata(200d));
-
-        public static readonly DependencyProperty MaxWidthProperty =
-            FrameworkElement.MaxWidthProperty.AddOwner(
-                typeof(WindowService));
-
-        public static readonly DependencyProperty MaxHeightProperty =
-            FrameworkElement.MaxHeightProperty.AddOwner(
-                typeof(WindowService));
-
-        public static readonly DependencyProperty ResizeModeProperty =
-            Window.ResizeModeProperty.AddOwner(
-                typeof(WindowService));
-
-        public static readonly DependencyProperty SizeToContentProperty =
-            Window.SizeToContentProperty.AddOwner(
-                typeof(WindowService));
-
-        #endregion
-
         private static readonly Hashtable WindowPosition = new Hashtable();
 
+        #region Fields
 
         private Window _window;
 
         #endregion
 
-        #region Properties
+        #region Methods
 
-        /// <summary>
-        /// Возвращает используемые пользовательские
-        /// параметры окна.
-        /// </summary>
-        public object ActualSettings
+        private static void SetBinding(object source, string path, DependencyObject target, DependencyProperty property,
+            BindingMode mode = BindingMode.TwoWay)
         {
-            get => GetValue(ActualSettingsProperty);
-            private set => SetValue(ActualSettingsPropertyKey, value);
+            var bnd = new Binding
+            {
+                Source = source,
+                Path = new PropertyPath(path),
+                Mode = mode,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+            BindingOperations.SetBinding(target, property, bnd);
         }
 
-        /// <summary>
-        /// Возвращает или задает
-        /// пользовательские
-        /// параметры окна.
-        /// </summary>
-        public IWindowSettings Settings
+        private Window CreateWindow(object view)
         {
-            get => (IWindowSettings)GetValue(SettingsProperty);
-            set => SetValue(SettingsProperty, value);
+            var window = (Window) Activator.CreateInstance(WindowType);
+
+            if (WindowShowMode == WindowShowMode.Dialog)
+                WindowAttachedProperties.SetShowIcon(window, false);
+
+            window.Content = view;
+            window.Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(wnd => wnd.IsActive);
+
+            InitializeDocumentContainer(window, ContentControl.ContentProperty, WindowStyle);
+            window.WindowStartupLocation = WindowStartupLocation;
+
+            SetBinding(this, nameof(MinWidth), window, FrameworkElement.MinWidthProperty, BindingMode.OneWay);
+            SetBinding(this, nameof(MinHeight), window, FrameworkElement.MinHeightProperty, BindingMode.OneWay);
+            SetBinding(this, nameof(MaxWidth), window, FrameworkElement.MaxWidthProperty, BindingMode.OneWay);
+            SetBinding(this, nameof(MaxHeight), window, FrameworkElement.MaxHeightProperty, BindingMode.OneWay);
+            SetBinding(this, nameof(ResizeMode), window, Window.ResizeModeProperty, BindingMode.OneWay);
+            SetBinding(this, nameof(SizeToContent), window, Window.SizeToContentProperty, BindingMode.OneWay);
+            SetBinding(this, nameof(Title), window, Window.TitleProperty, BindingMode.OneWay);
+
+            return window;
         }
 
-        /// <summary>
-        /// Возвращает или задает
-        /// селектор пользовательских
-        /// параметров окна.
-        /// </summary>
-        public SettingsSelector SettingsSelector
+        private void ViewModel_RequestClose(object sender, EventArgs e)
         {
-            get => (SettingsSelector)GetValue(SettingsSelectorProperty);
-            set => SetValue(SettingsSelectorProperty, value);
+            _window?.Close();
         }
 
-        /// <summary>
-        /// Возвращает или задает значение, задающее
-        /// использование иконки ожидания на курсоре
-        /// до полной загрузки окна.
-        /// </summary>
-        public bool UseWaitCursor
+        private void WindowClosed(object sender, EventArgs e)
         {
-            get => (bool)GetValue(UseWaitCursorProperty);
-            set => SetValue(UseWaitCursorProperty, value);
+            var window = (Window) sender;
+
+            var viewModel = window.DataContext;
+            if (viewModel != null)
+            {
+                if (viewModel is ISupportClose sc)
+                    sc.RequestClose -= ViewModel_RequestClose;
+
+                WindowPosition[viewModel.GetType()] = new Point(window.Left, window.Top);
+            }
+
+            window.Closing -= WindowClosing;
+            window.Closed -= WindowClosed;
+
+            _window = null;
+            IsWindowAlive = false;
+
+            window.Owner?.Activate();
         }
 
-        public double MinWidth
+        private void WindowClosing(object sender, CancelEventArgs e)
         {
-            get => (double)GetValue(MinWidthProperty);
-            set => SetValue(MinWidthProperty, value);
+            var window = (Window) sender;
+            if (window.Tag is Action<CancelEventArgs> ac)
+                ac(e);
+
+            if (window.DataContext is ISupportClose scw)
+                e.Cancel = !scw.CanClose(null);
         }
 
-        public double MinHeight
+        private void WindowContentRendered(object sender, EventArgs e)
         {
-            get => (double)GetValue(MinHeightProperty);
-            set => SetValue(MinHeightProperty, value);
+            var window = (Window) sender;
+            if (window.DataContext is ISupportDialog sdw)
+                sdw.Initialize();
+            else if (window.DataContext is BaseViewModel bvm)
+                bvm.Initialize();
+
+            window.ContentRendered -= WindowContentRendered;
         }
 
-        public double MaxWidth
+        private void WindowLoaded(object sender, EventArgs e)
         {
-            get => (double)GetValue(MaxWidthProperty);
-            set => SetValue(MaxWidthProperty, value);
-        }
+            var window = (Window) sender;
+            if (UseWaitCursor)
+                Mouse.OverrideCursor = null;
 
-        public double MaxHeight
-        {
-            get => (double)GetValue(MaxHeightProperty);
-            set => SetValue(MaxHeightProperty, value);
-        }
-
-        public ResizeMode ResizeMode
-        {
-            get => (ResizeMode)GetValue(ResizeModeProperty);
-            set => SetValue(ResizeModeProperty, value);
-        }
-
-        public SizeToContent SizeToContent
-        {
-            get => (SizeToContent)GetValue(SizeToContentProperty);
-            set => SetValue(SizeToContentProperty, value);
-        }
-
-        public string Title
-        {
-            get => (string)GetValue(TitleProperty);
-            set => SetValue(TitleProperty, value);
-        }
-
-        public bool IsWindowAlive
-        {
-            get => (bool)GetValue(IsWindowAliveProperty);
-            private set => SetValue(IsWindowAlivePropertyKey, value);
-        }
-
-        public WindowShowMode WindowShowMode
-        {
-            get => (WindowShowMode)GetValue(WindowShowModeProperty);
-            set => SetValue(WindowShowModeProperty, value);
-        }
-
-        public WindowStartupLocation WindowStartupLocation
-        {
-            get => (WindowStartupLocation)GetValue(WindowStartupLocationProperty);
-            set => SetValue(WindowStartupLocationProperty, value);
-        }
-
-        public Style WindowStyle
-        {
-            get => (Style)GetValue(WindowStyleProperty);
-            set => SetValue(WindowStyleProperty, value);
-        }
-
-        public Type WindowType
-        {
-            get => (Type)GetValue(WindowTypeProperty);
-            set => SetValue(WindowTypeProperty, value);
+            window.Loaded -= WindowLoaded;
         }
 
         #endregion
-
-        #region Methods
 
         public void Activate()
         {
@@ -289,26 +163,26 @@ namespace ASMC.Common.UI
 
         public void SetWindowState(WindowState state)
         {
-            if(_window != null)
+            if (_window != null)
                 _window.WindowState = state;
         }
 
         /// <summary>
         /// Отображает окно.
         /// </summary>
-        /// <param name="documentType">Строка, содержащая имя представления окна.</param>
-        /// <param name="viewModel">Модель представления, используемая как содержимое</param>
-        /// <param name="parameter">Дополнительная информация, передаваемая при инициализации окна.</param>
-        /// <param name="parentViewModel"></param>
+        /// <param name = "documentType">Строка, содержащая имя представления окна.</param>
+        /// <param name = "viewModel">Модель представления, используемая как содержимое</param>
+        /// <param name = "parameter">Дополнительная информация, передаваемая при инициализации окна.</param>
+        /// <param name = "parentViewModel"></param>
         public void Show(string documentType, object viewModel, object parameter, object parentViewModel)
         {
-            if(_window != null)
+            if (_window != null)
             {
                 _window.Activate();
                 return;
             }
 
-            if(UseWaitCursor)
+            if (UseWaitCursor)
                 Mouse.OverrideCursor = Cursors.Wait;
 
             var view = CreateAndInitializeView(documentType, viewModel, parameter, parentViewModel);
@@ -325,140 +199,269 @@ namespace ASMC.Common.UI
             var settings = Settings ?? SettingsSelector?.SelectSettings(viewModel, view as DependencyObject);
             ViewExtensions.SetActualSettings(_window, settings);
 
-            if(settings is IWindowSettings && SizeToContent != SizeToContent.WidthAndHeight)
+            if (settings is IWindowSettings && SizeToContent != SizeToContent.WidthAndHeight)
             {
-                if(SizeToContent != SizeToContent.Width)
+                if (SizeToContent != SizeToContent.Width)
                     SetBinding(settings, "Width", _window, FrameworkElement.WidthProperty);
-                if(SizeToContent != SizeToContent.Height)
+                if (SizeToContent != SizeToContent.Height)
                     SetBinding(settings, "Height", _window, FrameworkElement.HeightProperty);
             }
-            SetBinding(this, nameof(SettingsSelector), _window, ViewExtensions.SettingsSelectorProperty, BindingMode.OneWay);
+
+            SetBinding(this, nameof(SettingsSelector), _window, ViewExtensions.SettingsSelectorProperty,
+                       BindingMode.OneWay);
             SetBinding(this, nameof(Settings), _window, ViewExtensions.SettingsProperty, BindingMode.OneWay);
 
             //Settings = settings as IWindowSettings;
-            if(viewModel != null)
+            if (viewModel != null)
             {
-                if(viewModel is BaseViewModel bvm)
+                if (viewModel is BaseViewModel bvm)
                     bvm.Settings = settings;
-                if(WindowPosition.ContainsKey(viewModel.GetType()))
+                if (WindowPosition.ContainsKey(viewModel.GetType()))
                 {
-                    var pos = (Point)WindowPosition[viewModel.GetType()];
+                    var pos = (Point) WindowPosition[viewModel.GetType()];
 
                     _window.WindowStartupLocation = WindowStartupLocation.Manual;
                     _window.Top = pos.Y;
                     _window.Left = pos.X;
                 }
 
-                if(viewModel is ISupportDialog)
+                if (viewModel is ISupportDialog)
                     SetBinding(viewModel, nameof(ISupportDialog.DialogResult), _window,
-                        WindowAttachedProperties.DialogResultProperty, BindingMode.OneWay);
+                               WindowAttachedProperties.DialogResultProperty, BindingMode.OneWay);
 
-                if(viewModel is ISupportClose sc)
+                if (viewModel is ISupportClose sc)
                     sc.RequestClose += ViewModel_RequestClose;
             }
 
-            if(WindowShowMode == WindowShowMode.Dialog)
+            if (WindowShowMode == WindowShowMode.Dialog)
             {
                 _window.ShowInTaskbar = _window.Owner == null;
                 _window.ShowDialog();
             }
             else
+            {
                 _window.Show();
-        }
-
-        private Window CreateWindow(object view)
-        {
-            var window = (Window)Activator.CreateInstance(WindowType);
-
-            if(WindowShowMode == WindowShowMode.Dialog)
-                WindowAttachedProperties.SetShowIcon(window, false);   
-
-            window.Content = view;
-            window.Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(wnd => wnd.IsActive);
-
-            InitializeDocumentContainer(window, ContentControl.ContentProperty, WindowStyle);
-            window.WindowStartupLocation = WindowStartupLocation;
-
-            SetBinding(this, nameof(MinWidth), window, FrameworkElement.MinWidthProperty, BindingMode.OneWay);
-            SetBinding(this, nameof(MinHeight), window, FrameworkElement.MinHeightProperty, BindingMode.OneWay);
-            SetBinding(this, nameof(MaxWidth), window, FrameworkElement.MaxWidthProperty, BindingMode.OneWay);
-            SetBinding(this, nameof(MaxHeight), window, FrameworkElement.MaxHeightProperty, BindingMode.OneWay);
-            SetBinding(this, nameof(ResizeMode), window, Window.ResizeModeProperty, BindingMode.OneWay);
-            SetBinding(this, nameof(SizeToContent), window, Window.SizeToContentProperty, BindingMode.OneWay);
-            SetBinding(this, nameof(Title), window, Window.TitleProperty, BindingMode.OneWay);
-
-            return window;
-        }
-
-        private static void SetBinding(object source, string path, DependencyObject target, DependencyProperty property, BindingMode mode = BindingMode.TwoWay)
-        {
-            var bnd = new Binding
-            {
-                Source = source,
-                Path = new PropertyPath(path),
-                Mode = mode,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            };
-            BindingOperations.SetBinding(target, property, bnd);
-        }
-
-        private void WindowLoaded(object sender, EventArgs e)
-        {
-            var window = (Window)sender;
-            if(UseWaitCursor)
-                Mouse.OverrideCursor = null;
-
-            window.Loaded -= WindowLoaded;
-        }
-
-        private void WindowContentRendered(object sender, EventArgs e)
-        {
-            var window = (Window)sender;
-            if(window.DataContext is ISupportDialog sdw)
-                sdw.Initialize();
-            else if(window.DataContext is BaseViewModel bvm)
-                bvm.Initialize();
-
-            window.ContentRendered -= WindowContentRendered;
-        }
-
-        private void WindowClosing(object sender, CancelEventArgs e)
-        {
-            var window = (Window)sender;
-            if(window.Tag is Action<CancelEventArgs> ac)
-                ac(e);
-
-            if(window.DataContext is ISupportClose scw)
-                e.Cancel = !scw.CanClose(null);
-        }
-
-        private void WindowClosed(object sender, EventArgs e)
-        {
-            var window = (Window)sender;
-
-            var viewModel = window.DataContext;
-            if(viewModel != null)
-            {
-                if(viewModel is ISupportClose sc)
-                    sc.RequestClose -= ViewModel_RequestClose;
-
-                WindowPosition[viewModel.GetType()] = new Point(window.Left, window.Top);
             }
-
-            window.Closing -= WindowClosing;
-            window.Closed -= WindowClosed;
-
-            _window = null;
-            IsWindowAlive = false;
-
-            window.Owner?.Activate();
         }
 
-        private void ViewModel_RequestClose(object sender, EventArgs e)
+        #region Dependency Properties
+
+        private static readonly DependencyPropertyKey ActualSettingsPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                                                nameof(ActualSettings),
+                                                typeof(object),
+                                                typeof(WindowService),
+                                                null);
+
+        private static readonly DependencyPropertyKey IsWindowAlivePropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                                                nameof(IsWindowAlive),
+                                                typeof(bool),
+                                                typeof(WindowService),
+                                                null);
+
+        public static readonly DependencyProperty ActualSettingsProperty = ActualSettingsPropertyKey.DependencyProperty;
+
+        public static readonly DependencyProperty IsWindowAliveProperty = IsWindowAlivePropertyKey.DependencyProperty;
+
+        public static readonly DependencyProperty SettingsSelectorProperty =
+            DependencyProperty.Register(
+                                        "SettingsSelector",
+                                        typeof(SettingsSelector),
+                                        typeof(WindowService));
+
+        public static readonly DependencyProperty SettingsProperty =
+            DependencyProperty.Register(
+                                        "Settings",
+                                        typeof(IWindowSettings),
+                                        typeof(WindowService));
+
+        public static readonly DependencyProperty UseWaitCursorProperty =
+            DependencyProperty.Register(
+                                        "UseWaitCursor",
+                                        typeof(bool),
+                                        typeof(WindowService),
+                                        new PropertyMetadata(true));
+
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register(
+                                        "Title",
+                                        typeof(string),
+                                        typeof(WindowService));
+
+        public static readonly DependencyProperty WindowTypeProperty =
+            DependencyProperty.Register(
+                                        "WindowType",
+                                        typeof(Type),
+                                        typeof(WindowService),
+                                        new PropertyMetadata(typeof(Window)));
+
+        public static readonly DependencyProperty WindowShowModeProperty =
+            DependencyProperty.Register(
+                                        "WindowShowMode",
+                                        typeof(WindowShowMode),
+                                        typeof(WindowService),
+                                        new PropertyMetadata(WindowShowMode.Dialog));
+
+        public static readonly DependencyProperty WindowStartupLocationProperty =
+            DependencyProperty.Register(
+                                        "WindowStartupLocation",
+                                        typeof(WindowStartupLocation),
+                                        typeof(WindowService),
+                                        new PropertyMetadata(WindowStartupLocation.CenterOwner));
+
+        public static readonly DependencyProperty WindowStyleProperty =
+            DependencyProperty.Register(
+                                        "WindowStyle",
+                                        typeof(Style),
+                                        typeof(WindowService),
+                                        new PropertyMetadata(null));
+
+        public static readonly DependencyProperty MinWidthProperty =
+            FrameworkElement.MinWidthProperty.AddOwner(
+                                                       typeof(WindowService),
+                                                       new PropertyMetadata(200d));
+
+        public static readonly DependencyProperty MinHeightProperty =
+            FrameworkElement.MinHeightProperty.AddOwner(
+                                                        typeof(WindowService),
+                                                        new PropertyMetadata(200d));
+
+        public static readonly DependencyProperty MaxWidthProperty =
+            FrameworkElement.MaxWidthProperty.AddOwner(
+                                                       typeof(WindowService));
+
+        public static readonly DependencyProperty MaxHeightProperty =
+            FrameworkElement.MaxHeightProperty.AddOwner(
+                                                        typeof(WindowService));
+
+        public static readonly DependencyProperty ResizeModeProperty =
+            Window.ResizeModeProperty.AddOwner(
+                                               typeof(WindowService));
+
+        public static readonly DependencyProperty SizeToContentProperty =
+            Window.SizeToContentProperty.AddOwner(
+                                                  typeof(WindowService));
+
+        #endregion Dependency Properties
+
+        #region Properties
+
+        /// <summary>
+        /// Возвращает используемые пользовательские
+        /// параметры окна.
+        /// </summary>
+        public object ActualSettings
         {
-            _window?.Close();
+            get => GetValue(ActualSettingsProperty);
+            private set => SetValue(ActualSettingsPropertyKey, value);
         }
 
-        #endregion
+        /// <summary>
+        /// Возвращает или задает
+        /// пользовательские
+        /// параметры окна.
+        /// </summary>
+        public IWindowSettings Settings
+        {
+            get => (IWindowSettings) GetValue(SettingsProperty);
+            set => SetValue(SettingsProperty, value);
+        }
+
+        /// <summary>
+        /// Возвращает или задает
+        /// селектор пользовательских
+        /// параметров окна.
+        /// </summary>
+        public SettingsSelector SettingsSelector
+        {
+            get => (SettingsSelector) GetValue(SettingsSelectorProperty);
+            set => SetValue(SettingsSelectorProperty, value);
+        }
+
+        /// <summary>
+        /// Возвращает или задает значение, задающее
+        /// использование иконки ожидания на курсоре
+        /// до полной загрузки окна.
+        /// </summary>
+        public bool UseWaitCursor
+        {
+            get => (bool) GetValue(UseWaitCursorProperty);
+            set => SetValue(UseWaitCursorProperty, value);
+        }
+
+        public double MinWidth
+        {
+            get => (double) GetValue(MinWidthProperty);
+            set => SetValue(MinWidthProperty, value);
+        }
+
+        public double MinHeight
+        {
+            get => (double) GetValue(MinHeightProperty);
+            set => SetValue(MinHeightProperty, value);
+        }
+
+        public double MaxWidth
+        {
+            get => (double) GetValue(MaxWidthProperty);
+            set => SetValue(MaxWidthProperty, value);
+        }
+
+        public double MaxHeight
+        {
+            get => (double) GetValue(MaxHeightProperty);
+            set => SetValue(MaxHeightProperty, value);
+        }
+
+        public ResizeMode ResizeMode
+        {
+            get => (ResizeMode) GetValue(ResizeModeProperty);
+            set => SetValue(ResizeModeProperty, value);
+        }
+
+        public SizeToContent SizeToContent
+        {
+            get => (SizeToContent) GetValue(SizeToContentProperty);
+            set => SetValue(SizeToContentProperty, value);
+        }
+
+        public string Title
+        {
+            get => (string) GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
+        }
+
+        public bool IsWindowAlive
+        {
+            get => (bool) GetValue(IsWindowAliveProperty);
+            private set => SetValue(IsWindowAlivePropertyKey, value);
+        }
+
+        public WindowShowMode WindowShowMode
+        {
+            get => (WindowShowMode) GetValue(WindowShowModeProperty);
+            set => SetValue(WindowShowModeProperty, value);
+        }
+
+        public WindowStartupLocation WindowStartupLocation
+        {
+            get => (WindowStartupLocation) GetValue(WindowStartupLocationProperty);
+            set => SetValue(WindowStartupLocationProperty, value);
+        }
+
+        public Style WindowStyle
+        {
+            get => (Style) GetValue(WindowStyleProperty);
+            set => SetValue(WindowStyleProperty, value);
+        }
+
+        public Type WindowType
+        {
+            get => (Type) GetValue(WindowTypeProperty);
+            set => SetValue(WindowTypeProperty, value);
+        }
+
+        #endregion Properties
     }
 }
