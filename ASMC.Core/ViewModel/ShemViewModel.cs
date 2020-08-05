@@ -37,12 +37,6 @@ namespace ASMC.Core.ViewModel
             set => SetProperty(ref _pathImage, value, nameof(PathImage));
         }
 
-        protected override void OnInitializing()
-        {
-            
-            base.OnInitializing();
-        }
-
         private void ChangedCallback()
         {
           

@@ -65,7 +65,7 @@ namespace ASMC.Data.Model
                 }
                 await InitWork(); 
                 await Task.Factory.StartNew(BodyWork, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
-            } while (!CompliteWork().Result);
+            } while (!await CompliteWork());
         }
 
         /// <inheritdoc />
