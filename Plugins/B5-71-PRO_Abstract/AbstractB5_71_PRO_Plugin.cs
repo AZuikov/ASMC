@@ -218,7 +218,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности установки выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage{Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст"};
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -400,7 +400,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности измерения выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -588,7 +588,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение нестабильности выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -765,7 +765,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение уровня пульсаций по напряжению";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -862,7 +862,7 @@ namespace B5_71_PRO_Abstract
                     var voltPulsV357 = (decimal)Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
                     voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
-                    MathStatistics.Round(ref voltPulsV357, 2);
+                    MathStatistics.Round(ref voltPulsV357, Bp.TolleranceVoltPuls.ToString());
 
                     Bp.OffOutput();
 
@@ -953,7 +953,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности установки выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -1141,7 +1141,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности измерения выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -1322,7 +1322,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение нестабильности выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -1484,7 +1484,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение уровня пульсаций постоянного тока";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -1580,7 +1580,7 @@ namespace B5_71_PRO_Abstract
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
                     currPulsV357 = currPulsV357 / measResist;
-                    MathStatistics.Round(ref currPulsV357, 3);
+                    MathStatistics.Round(ref currPulsV357, Bp.TolleranceCurrentPuls.ToString());
 
                     Bp.OffOutput();
 
@@ -1638,5 +1638,10 @@ namespace B5_71_PRO_Abstract
             InitWork();
             foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
+    }
+
+    static class ShemeTemplate
+    {
+        public static ShemeImage TemplateSheme = new ShemeImage { Description = "Измерительная схема", Number = 1, FileName = @"B5-71-1_2-PRO_N3306_34401_v3-57.jpg", ExtendedDescription = "Соберите измерительную схему, согласно рисунку" };
     }
 }

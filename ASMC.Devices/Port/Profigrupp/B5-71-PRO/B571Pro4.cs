@@ -12,7 +12,7 @@
             UserType = "Б5-71/4-ПРО";
             VoltMax = 75;
             CurrMax = 4;
-            TolleranceCurrentPuls = 5;
+            
         }
 
         public B571Pro4(string PortName) : base(PortName)

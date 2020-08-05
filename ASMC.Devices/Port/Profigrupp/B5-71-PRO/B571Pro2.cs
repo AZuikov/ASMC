@@ -8,6 +8,7 @@
     {
         public B571Pro2()
         {
+            UserType = "Б5-71/2-ПРО";
             VoltMax = 50;
             CurrMax = 6;
             

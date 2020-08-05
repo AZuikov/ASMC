@@ -62,12 +62,12 @@ namespace B5_71_4_PRO
                 //new Oper1Oprobovanie(this),
                 new Oper2DcvOutput(this),
                 new Oper3DcvMeasure(this),
-                //new Oper4VoltUnstable(this),
-                //new Oper6DciOutput(this),
-                //new Oper7DciMeasure(this),
-                //new Oper8DciUnstable(this),
-                //new Oper5VoltPulsation(this),
-                //new Oper9DciPulsation(this)
+                new Oper4VoltUnstable(this),
+                new Oper6DciOutput(this),
+                new Oper7DciMeasure(this),
+                new Oper8DciUnstable(this),
+                new Oper5VoltPulsation(this),
+                new Oper9DciPulsation(this)
             };
         }
     }
@@ -106,6 +106,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
     }
 
@@ -119,6 +120,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
 
     }
@@ -133,6 +135,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
     }
 
@@ -146,6 +149,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
     }
     /// <summary>
@@ -157,6 +161,7 @@ namespace B5_71_4_PRO
         {
             Bp = new B571Pro4();
           Load = new N3303A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
     }
 
@@ -169,11 +174,10 @@ namespace B5_71_4_PRO
         {
             Bp = new B571Pro4();
             Load = new N3303A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
     }
-
-
-
+    
 
     /// <summary>
     /// Определение нестабильности выходного тока
@@ -184,6 +188,7 @@ namespace B5_71_4_PRO
         {
             Bp = new B571Pro4();
             Load = new N3303A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
     }
 
@@ -198,11 +203,15 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Load = new N3303A();
             Mult = new Mult_34401A();
+            Sheme = ShemeTemplate.TemplateSheme;
         }
     }
 
 
-
+    static class ShemeTemplate
+    {
+        public static ShemeImage TemplateSheme = new ShemeImage { Description = "Измерительная схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "Соберите измерительную схему, согласно рисунку" };
+    }
 
 
 }
