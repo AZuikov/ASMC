@@ -67,6 +67,10 @@
       <Name>ASMC.Devices</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
+    <ProjectReference Include="..\B5-71-PRO_Abstract\B5-71-PRO_Abstract.csproj">
+      <Project>{9E15A5E6-F812-4E56-BF83-2B5C0D247F96}</Project>
+      <Name>B5-71-PRO_Abstract</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using AP.Math;
 using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
-using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
-using DevExpress.Mvvm;
+
 
 // !!!!!!!! Внимание !!!!!!!!!
 //  Имя последовательного порта прописано жестко!!!!
