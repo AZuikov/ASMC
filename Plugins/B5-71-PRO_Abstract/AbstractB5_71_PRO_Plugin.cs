@@ -1484,15 +1484,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение уровня пульсаций постоянного тока";
             DataRow = new List<IBasicOperation<decimal>>();
-            //Sheme = new ShemeImage();
-            //Sheme.ChekShem = () =>
-            //{
-            //    Bp.StringConnection = GetStringConnect(Bp);
-            //    Load.StringConnection = GetStringConnect(Load);
-            //    Mult.StringConnection = GetStringConnect(Mult);
-
-
-            //};
+            
             Sheme =  ShemeTemplate.TemplateSheme;
         }
 
@@ -1658,11 +1650,7 @@ namespace B5_71_PRO_Abstract
             TemplateSheme = new ShemeImage { Description = "Измерительная схема",
                 Number = 1, FileName = @"B5-71-1_2-PRO_N3306_34401_v3-57.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"};
-            //TemplateSheme.ChekShem = () =>
-            //{
-                
-                
-            //};
+            
         }
         
 

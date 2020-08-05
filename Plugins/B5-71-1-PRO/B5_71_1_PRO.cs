@@ -55,6 +55,7 @@ namespace B5_71_1_PRO
             };
 
             TestDevices = new IDevice[] { new Device { Name = new[] { "Б5-71/1-ПРО" }, Description = "источник питания" } };
+            
 
             //Необходимые аксесуары
             Accessories = new[]
