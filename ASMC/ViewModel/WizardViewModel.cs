@@ -393,8 +393,9 @@ namespace ASMC.ViewModel
             if (SelectionItemOperation == null)
             {
                 await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
-      
+                Logger.Debug(this.ToString()+" Конец  операций");
             }
+            Logger.Debug("Stop");
             StateWorkFlag = StateWork.Stop;
         }
 

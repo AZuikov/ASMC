@@ -252,10 +252,11 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-          
-            
+
+            DataRow.Clear();
             foreach (var point in MyPoint)
             {
+
                 var operation = new BasicOperationVerefication<decimal>();
                 operation.InitWork = async () =>
                 {
@@ -399,6 +400,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности измерения выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
         }
 
         #region Methods
@@ -434,6 +436,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
+            DataRow.Clear();
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -502,9 +505,9 @@ namespace B5_71_PRO_Abstract
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                        
-                        
-                        
+
+
+                        Bp.OffOutput();
 
                     }
                     catch (Exception e)
@@ -585,6 +588,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение нестабильности выходного напряжения";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
         }
 
         #region Methods
@@ -610,7 +614,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            
+            DataRow.Clear();
             var operation = new BasicOperationVerefication<decimal>();
             operation.InitWork = async () =>
             {
@@ -761,6 +765,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение уровня пульсаций по напряжению";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
         }
 
         #region Methods
@@ -786,6 +791,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
+            DataRow.Clear();
             var operation = new BasicOperationVerefication<decimal>();
 
            
@@ -947,6 +953,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности установки выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
         }
 
         #region Methods
@@ -981,6 +988,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
+            DataRow.Clear();
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -1133,6 +1141,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение погрешности измерения выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
         }
 
         #region Methods
@@ -1167,6 +1176,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
+            DataRow.Clear();
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -1312,6 +1322,7 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение нестабильности выходного тока";
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
         }
 
         #region Methods
@@ -1338,6 +1349,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
+            DataRow.Clear();
             var operation = new BasicOperationVerefication<decimal>();
              operation.InitWork = async () =>
               {
@@ -1471,8 +1483,8 @@ namespace B5_71_PRO_Abstract
         protected Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций постоянного тока";
-
             DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage { Description = "Схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "свободный текст" };
         }
 
         #region Methods
@@ -1499,6 +1511,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
+            DataRow.Clear();
             var operation = new BasicOperationVerefication<decimal>();
             
                 operation.InitWork = async () =>

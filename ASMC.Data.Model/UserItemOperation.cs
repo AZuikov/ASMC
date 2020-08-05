@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using ASMC.Common.ViewModel;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
@@ -293,7 +294,8 @@ namespace ASMC.Data.Model
                 {
                     ShowShem(opertion.Sheme);
                     await opertion.StartWork(source.Token);
-                   
+                    
+
                 }
                 catch (Exception e)
                 {
@@ -301,7 +303,9 @@ namespace ASMC.Data.Model
                     source.Token.ThrowIfCancellationRequested();
                     Logger.Error(e);
                 }
+                Logger.Debug(opertion.ToString);
             }
+            Logger.Debug("Конец  операций");
         }
 
         #endregion
