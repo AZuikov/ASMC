@@ -64,7 +64,7 @@ namespace B5_71_PRO_Abstract
         }
         protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
-           
+            this.DocumentName = "Б5-71_1";
         }
     }
 
@@ -1484,7 +1484,16 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Определение уровня пульсаций постоянного тока";
             DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = ShemeTemplate.TemplateSheme;
+            //Sheme = new ShemeImage();
+            //Sheme.ChekShem = () =>
+            //{
+            //    Bp.StringConnection = GetStringConnect(Bp);
+            //    Load.StringConnection = GetStringConnect(Load);
+            //    Mult.StringConnection = GetStringConnect(Mult);
+
+
+            //};
+            Sheme =  ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
@@ -1642,6 +1651,20 @@ namespace B5_71_PRO_Abstract
 
     static class ShemeTemplate
     {
-        public static ShemeImage TemplateSheme = new ShemeImage { Description = "Измерительная схема", Number = 1, FileName = @"B5-71-1_2-PRO_N3306_34401_v3-57.jpg", ExtendedDescription = "Соберите измерительную схему, согласно рисунку" };
+        public static readonly ShemeImage TemplateSheme; 
+
+         static ShemeTemplate()
+        {
+            TemplateSheme = new ShemeImage { Description = "Измерительная схема",
+                Number = 1, FileName = @"B5-71-1_2-PRO_N3306_34401_v3-57.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"};
+            //TemplateSheme.ChekShem = () =>
+            //{
+                
+                
+            //};
+        }
+        
+
     }
 }
