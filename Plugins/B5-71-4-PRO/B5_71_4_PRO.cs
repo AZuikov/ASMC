@@ -8,9 +8,6 @@ using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
 
 
-// !!!!!!!! Внимание !!!!!!!!!
-//  Имя последовательного порта прописано жестко!!!!
-// Необходимо реализовать его настройку из ВНЕ - через интрефейс ASMC
 
 namespace B5_71_4_PRO
 {
@@ -63,14 +60,14 @@ namespace B5_71_4_PRO
             {
                 //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                new Oper2DcvOutput(this),
+                //new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
                 //new Oper6DciOutput(this),
                 //new Oper7DciMeasure(this),
                 //new Oper8DciUnstable(this),
-                //new Oper5VoltPulsation(this),
-                //new Oper9DciPulsation(this)
+                new Oper5VoltPulsation(this),
+                new Oper9DciPulsation(this)
             };
         }
     }

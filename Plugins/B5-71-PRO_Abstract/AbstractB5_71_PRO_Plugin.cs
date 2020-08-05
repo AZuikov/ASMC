@@ -13,6 +13,7 @@ using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using DevExpress.Mvvm;
 using NLog;
+using ASMC.Core.Helps;
 
 namespace B5_71_PRO_Abstract
 {
@@ -198,7 +199,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public abstract class Oper2DcvOutput : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper2DcvOutput : TolleranceDialog, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -332,14 +333,7 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer =this.UserItemOperation.ServicePack.MessageBox.Show($"Текущая точка {operation.Expected} не проходит по допуску:\n"+
-                                                                           $"Минимально допустимое значение {operation.LowerTolerance}\n"+
-                                                                           $"Максимально допустимое значение {operation.UpperTolerance}\n"+
-                                                                           $"Допустимое значение погрешности {operation.Error}\n"+
-                                                                           $"ИЗМЕРЕННОЕ значение {operation.Getting}\n" +
-                                                                           $"ФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n"+
-                                                                           "Повторить измерение этой точки?",
-                                                                           "Информация по текущему измерению",MessageButton.YesNo, MessageIcon.Question,MessageResult.Yes);
+                        var answer = ShowTolleranceDialog(operation);
                        
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -384,7 +378,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Измерение постоянного напряжения
     /// </summary>
-    public abstract class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper3DcvMeasure : TolleranceDialog, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -522,7 +516,17 @@ namespace B5_71_PRO_Abstract
 
                 };
 
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                operation.CompliteWork = () =>
+                {
+                    if (!operation.IsGood())
+                    {
+                        var answer = ShowTolleranceDialog(operation);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    return Task.FromResult(operation.IsGood());
+                };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                     ? operation
                     : (BasicOperationVerefication<decimal>)operation.Clone());
@@ -562,7 +566,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public abstract class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper4VoltUnstable : TolleranceDialog, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //это точки для нагрузки в Омах
@@ -703,7 +707,17 @@ namespace B5_71_PRO_Abstract
 
 
             };
-            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            operation.CompliteWork = () =>
+            {
+                if (!operation.IsGood())
+                {
+                    var answer = ShowTolleranceDialog(operation);
+
+                    if (answer == MessageResult.No) return Task.FromResult(true);
+                }
+
+                return Task.FromResult(operation.IsGood());
+            };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                 ? operation
                 : (BasicOperationVerefication<decimal>)operation.Clone());
@@ -737,7 +751,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public abstract class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper5VoltPulsation : TolleranceDialog, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //это точки для нагрузки в Омах
@@ -779,7 +793,7 @@ namespace B5_71_PRO_Abstract
                 {
                     try
                     {
-                     await Task.Factory.StartNew(() =>
+                     await Task.Run(() =>
                           {
                            Mult.StringConnection = GetStringConnect(Mult);
                            Load.StringConnection = GetStringConnect(Load);
@@ -864,7 +878,17 @@ namespace B5_71_PRO_Abstract
 
                 
             };
-            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            operation.CompliteWork = () =>
+            {
+                if (!operation.IsGood())
+                {
+                    var answer = ShowTolleranceDialog(operation);
+
+                    if (answer == MessageResult.No) return Task.FromResult(true);
+                }
+
+                return Task.FromResult(operation.IsGood());
+            };
             DataRow.Add(operation);
 
 
@@ -903,7 +927,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public abstract class Oper6DciOutput : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper6DciOutput : TolleranceDialog, IUserItemOperation<decimal>
     {
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -1036,6 +1060,13 @@ namespace B5_71_PRO_Abstract
                 };
                 operation.CompliteWork = () =>
                 {
+                    if (!operation.IsGood())
+                    {
+                        var answer = ShowTolleranceDialog(operation);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
                     return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -1079,7 +1110,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public abstract class Oper7DciMeasure : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper7DciMeasure : TolleranceDialog, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1211,7 +1242,17 @@ namespace B5_71_PRO_Abstract
 
                    
                 };
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                operation.CompliteWork = () =>
+                {
+                    if (!operation.IsGood())
+                    {
+                        var answer = ShowTolleranceDialog(operation);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    return Task.FromResult(operation.IsGood());
+                };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                     ? operation
                     : (BasicOperationVerefication<decimal>)operation.Clone());
@@ -1253,7 +1294,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public abstract class Oper8DciUnstable : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper8DciUnstable : TolleranceDialog, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1367,7 +1408,17 @@ namespace B5_71_PRO_Abstract
 
                 
             };
-            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            operation.CompliteWork = () =>
+            {
+                if (!operation.IsGood())
+                {
+                    var answer = ShowTolleranceDialog(operation);
+
+                    if (answer == MessageResult.No) return Task.FromResult(true);
+                }
+
+                return Task.FromResult(operation.IsGood());
+            };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                 ? operation
                 : (BasicOperationVerefication<decimal>)operation.Clone());
@@ -1404,7 +1455,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public abstract class Oper9DciPulsation : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper9DciPulsation : TolleranceDialog, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1454,21 +1505,20 @@ namespace B5_71_PRO_Abstract
                 {
                     try
                     {
-                        Bp.StringConnection = GetStringConnect(Bp);
-                        Load.StringConnection = GetStringConnect(Load);
-                        Mult.StringConnection = GetStringConnect(Mult);
-
-
-                        Load.FindThisModule();
-
-                        //если модуль нагрузки найти не удалось
-                        if (Load.ChanelNumber <= 0)
-                            throw new
-                                ArgumentException(
-                                    $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-
-                        void ConfigDeviseAsync()
+                        await Task.Run(() =>
                         {
+                            Bp.StringConnection = GetStringConnect(Bp);
+                            Load.StringConnection = GetStringConnect(Load);
+                            Mult.StringConnection = GetStringConnect(Mult);
+
+
+                            Load.FindThisModule();
+
+                            //если модуль нагрузки найти не удалось
+                            if (Load.ChanelNumber <= 0)
+                                throw new
+                                    ArgumentException(
+                                        $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                             Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                             var point = (decimal)0.9 * Bp.VoltMax / Bp.CurrMax;
@@ -1481,11 +1531,10 @@ namespace B5_71_PRO_Abstract
                             Bp.SetStateCurr(Bp.CurrMax);
                             Bp.SetStateVolt(Bp.VoltMax);
                             Bp.OnOutput();
-                        }
 
-                        await Task.Factory.StartNew(ConfigDeviseAsync);
-
-                        Mult.Open();
+                        });
+                        
+                       
                         while (Mult.IsTerminal)
                             this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
                                                                                " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
@@ -1538,7 +1587,17 @@ namespace B5_71_PRO_Abstract
                 }
 
              };
-            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            operation.CompliteWork = () =>
+            {
+                if (!operation.IsGood())
+                {
+                    var answer = ShowTolleranceDialog(operation);
+
+                    if (answer == MessageResult.No) return Task.FromResult(true);
+                }
+
+                return Task.FromResult(operation.IsGood());
+            };
             DataRow.Add(operation);
 
 
