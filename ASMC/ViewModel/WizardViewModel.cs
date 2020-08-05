@@ -5,18 +5,16 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AP.Reports.AutoDocumets;
 using ASMC.Common;
 using ASMC.Common.ViewModel;
-using ASMC.Core;
-using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
+using DevExpress.Xpf.Core.Native;
 using NLog;
 
 namespace ASMC.ViewModel
@@ -71,10 +69,9 @@ namespace ASMC.ViewModel
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        #region  Fields
+        #region Fields
 
         private readonly CancellationTokenSource _isWorkToken = new CancellationTokenSource();
-
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
@@ -83,12 +80,11 @@ namespace ASMC.ViewModel
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
         private IProgram _selectProgram;
-
         private SettingViewModel _settingViewModel = new SettingViewModel();
         private StateWork _stateWorkFlag;
+        private TransactionDetails _transactionDetails;
         private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
-        private TransactionDetails _transactionDetails;
 
         #endregion
 
@@ -102,7 +98,6 @@ namespace ASMC.ViewModel
 
         public ICommand CreatDocumetCommandCommand { get; }
 
-
         public IUserItemOperationBase CurentItemOperation
         {
             get => _curentItemOperation;
@@ -114,7 +109,6 @@ namespace ASMC.ViewModel
             get => _dataOperation;
             set => SetProperty(ref _dataOperation, value, nameof(DataOperation));
         }
-
 
         public OperationMetrControlBase.TypeOpeation? EnableOpeation
         {
@@ -132,7 +126,6 @@ namespace ASMC.ViewModel
         }
 
         public ICommand PauseCommand { get; }
-
 
         /// <summary>
         /// Позволяет получать коллекцию программ
@@ -172,17 +165,17 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _settingViewModel, value, nameof(SettingViewModel));
         }
 
-        public TransactionDetails TransactionDetails
-        {
-            get => _transactionDetails;
-            set => SetProperty(ref _transactionDetails, value, nameof(TransactionDetails));
-    }
         public StateWork StateWorkFlag
         {
             get => _stateWorkFlag;
             set => SetProperty(ref _stateWorkFlag, value, nameof(StateWorkFlag));
         }
 
+        public TransactionDetails TransactionDetails
+        {
+            get => _transactionDetails;
+            set => SetProperty(ref _transactionDetails, value, nameof(TransactionDetails));
+        }
 
         /// <summary>
         /// Позволяет получать или задавать тип выбранной операции МК.
@@ -206,8 +199,7 @@ namespace ASMC.ViewModel
 
         public WizardViewModel()
         {
-           
-        StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
+            StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
             NextCommand =
                 new DelegateCommand(OnNextCommand,
                                     () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
@@ -274,7 +266,6 @@ namespace ASMC.ViewModel
             if (EnableOpeation != null) TypeOpertion = EnableOpeation.Value;
         }
 
-
         private void LoadPlugins()
         {
             var interfaceType = typeof(IProgram);
@@ -293,25 +284,30 @@ namespace ASMC.ViewModel
             {
                 MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
                 ShemForm = GetService<IFormService>("ImageService"),
-                QuestionText= GetService<IFormService>("QuestionTextService")
+                QuestionText = GetService<IFormService>("QuestionTextService")
             };
             if (types == null) return;
-            foreach (var type in types)
-            {
-                Prog.Add((IProgram)Activator.CreateInstance(type, servicePack));
-            }
-               
+            foreach (var type in types) Prog.Add((IProgram) Activator.CreateInstance(type, servicePack));
         }
 
         private void OnBackCommand()
         {
             SelectedTabItem = SelectedTabItem - 1;
         }
-
+        //todo:Добавить окно формирования документа и сделать асинхронно.
         private void OnCreatDocumetCommand()
         {
+
+            string document = SelectProgram.Operation.SelectedOperation.DocumentName + @".dotx";
+
+            var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
+            if (!Directory.Exists(path))
+                return;
+            document = Directory.GetFiles(path, document, SearchOption.AllDirectories).FirstOrDefault();
+            if (document == null) throw new NullReferenceException($"Шаблон {document} не найден!");
+            
             var report = new Word();
-            report.OpenDocument(@"D:\Б5-71_1.docx");
+            report.OpenDocument(document);
             var a = new Document.ConditionalFormatting
             {
                 Color = Color.IndianRed,
@@ -319,9 +315,7 @@ namespace ASMC.ViewModel
                 Region = Document.ConditionalFormatting.RegionAction.Row,
                 Value = "Брак",
                 NameColumn = "Результат"
-            };
-
-            foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
+            };      foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
                 report.FillTableToBookmark(uio.Data.TableName, uio.Data, false, a);
 
             var path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
@@ -360,7 +354,7 @@ namespace ASMC.ViewModel
                 Alert(e);
             }
 
-            SettingViewModel.AddresDivece = SelectProgram.Operation.SelectedOperation.AddresDivece;
+            SettingViewModel.AddresDivece = SelectProgram.Operation.SelectedOperation.AddresDevice;
         }
 
         private void OnSelectProgramCallback()
@@ -389,12 +383,14 @@ namespace ASMC.ViewModel
         private async void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
-            var sum = SelectProgram.Operation.SelectedOperation.UserItemOperation.Select(q => q?.TransactionDetails?.Count).Sum();
+            var sum = SelectProgram.Operation.SelectedOperation.UserItemOperation
+                                   .Select(q => q?.TransactionDetails?.Count).Sum();
             if (SelectionItemOperation == null)
             {
                 await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
-                Logger.Debug(this.ToString()+" Конец  операций");
+                Logger.Debug(ToString() + " Конец  операций");
             }
+
             Logger.Debug("Stop");
             StateWorkFlag = StateWork.Stop;
         }
@@ -410,7 +406,6 @@ namespace ASMC.ViewModel
             SelectProgram.Operation.SelectedOperation.ControlDevices = SettingViewModel.ControlDevices;
             SelectProgram.Operation.SelectedOperation.TestDevices = SettingViewModel.TestDevices;
         }
-
 
         private void TabItemChanged()
         {
@@ -434,6 +429,6 @@ namespace ASMC.ViewModel
 
         public ICommand NextCommand { get; }
 
-        #endregion
+        #endregion Command
     }
 }

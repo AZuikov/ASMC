@@ -60,7 +60,7 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         public override void RefreshDevice()
         {
-            AddresDivece = IeeeBase.AllStringConnect;
+            AddresDevice = IeeeBase.AllStringConnect;
         }
         protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
