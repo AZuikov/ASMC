@@ -100,7 +100,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Возвращает все доступные подключения
         /// </summary>
-        string[] AddresDivece { get; set; }
+        string[] AddresDevice { get; set; }
 
         /// <summary>
         /// Возвращает перечень устройст используемых для МК подключаемых устройств.
@@ -118,6 +118,10 @@ namespace ASMC.Data.Model
         /// Возвращает перечень операций
         /// </summary>
         IUserItemOperationBase[] UserItemOperation { get; }
+        /// <summary>
+        /// Имя документа который будет формироватся без формата файла.
+        /// </summary>
+        string DocumentName { get;  }
 
         #endregion
 
@@ -146,12 +150,14 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public IUserItemOperationBase[] UserItemOperation { get; set; }
+        /// <inheritdoc />
+        public string DocumentName { get; protected set; }
 
         /// <inheritdoc />
         public string[] Accessories { get; protected set; }
 
         /// <inheritdoc />
-        public string[] AddresDivece { get; set; }
+        public string[] AddresDevice { get; set; }
 
         /// <inheritdoc />
         public IDevice[] ControlDevices { get; set; }
