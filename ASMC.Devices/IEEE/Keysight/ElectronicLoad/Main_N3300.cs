@@ -9,7 +9,7 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 {
-    public abstract class MainN3300 : IeeeBase
+    public abstract class MainN3300 : DeviceBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -360,7 +360,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         public Current Current { get; protected set; }
     }
-    public class Meas     :HelpIeeeBase
+    public class Meas     :HelpDeviceBase
     {
         private readonly MainN3300 _mainN3300;
 
@@ -403,7 +403,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         }
     }
 
-    public class Resistance : HelpIeeeBase
+    public class Resistance : HelpDeviceBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly MainN3300 _mainN3300;
@@ -484,7 +484,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
     {
 
     }
-    public class Current:HelpIeeeBase
+    public class Current:HelpDeviceBase
     {
         private MainN3300 _mainN3300;
 

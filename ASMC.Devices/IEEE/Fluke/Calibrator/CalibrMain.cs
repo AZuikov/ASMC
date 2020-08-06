@@ -7,7 +7,7 @@ using AP.Utils.Data;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public abstract class CalibrMain: IeeeBase
+    public abstract class CalibrMain: DeviceBase
     {
         protected CalibrMain()
         {
@@ -77,7 +77,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <summary>
                     /// Содержит команды позволяющие устанавливть на выходе переменное напряжение
                     /// </summary>
-                    public class CDc :HelpIeeeBase
+                    public class CDc :HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
 
@@ -106,7 +106,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <summary>
                     /// Содержит набор команд по установке переменного напряжения
                     /// </summary>
-                    public class CAc : HelpIeeeBase
+                    public class CAc : HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
 
@@ -173,7 +173,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <summary>
                     /// Содержит набор команд по установке постоянного тока
                     /// </summary>
-                    public class CDc : HelpIeeeBase
+                    public class CDc : HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
 
@@ -194,7 +194,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <summary>
                     /// Содержит набор команд по установке переменного тока
                     /// </summary>
-                    public class CAc:HelpIeeeBase
+                    public class CAc:HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
                                                                                                                                           
@@ -224,7 +224,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// <summary>
                 /// Содержит набор команд по установке сопротивления
                 /// </summary>
-                public class CResistance :HelpIeeeBase
+                public class CResistance :HelpDeviceBase
                 {
                     private readonly CalibrMain _calibrMain;
 
@@ -269,7 +269,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// <summary>
                 /// Содержит набор команд по установке емкости
                 /// </summary>
-                public class CCapacitance : HelpIeeeBase
+                public class CCapacitance : HelpDeviceBase
                 {
                     private readonly CalibrMain _calibrMain;
 
