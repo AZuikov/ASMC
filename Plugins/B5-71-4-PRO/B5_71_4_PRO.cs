@@ -1,13 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ASMC.Data.Model;
+﻿using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
-
-
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace B5_71_4_PRO
 {
@@ -23,7 +21,7 @@ namespace B5_71_4_PRO
 
     public class Operation : OperationMetrControlBase
     {
-        public Operation(ServicePack servicePack) 
+        public Operation(ServicePack servicePack)
         {
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
             //здесь периодическая поверка, но набор операций такой же
@@ -40,7 +38,6 @@ namespace B5_71_4_PRO
                 new Device { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
                 new Device{ Name = new []{"34401A"},  Description = "Мультиметр"},
                 new Device{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
-
             };
 
             TestDevices = new IDevice[] { new Device { Name = new[] { "Б5-71/4-ПРО" }, Description = "источник питания" } };
@@ -111,7 +108,7 @@ namespace B5_71_4_PRO
     }
 
     /// <summary>
-    /// Измерение постоянного напряжения 
+    /// Измерение постоянного напряжения
     /// </summary>
     public class Oper3DcvMeasure : B5_71_PRO_Abstract.Oper3DcvMeasure
     {
@@ -122,7 +119,6 @@ namespace B5_71_4_PRO
             Load = new N3303A();
             Sheme = ShemeTemplate.TemplateSheme;
         }
-
     }
 
     /// <summary>
@@ -152,6 +148,7 @@ namespace B5_71_4_PRO
             Sheme = ShemeTemplate.TemplateSheme;
         }
     }
+
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
@@ -160,7 +157,7 @@ namespace B5_71_4_PRO
         public Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro4();
-          Load = new N3303A();
+            Load = new N3303A();
             Sheme = ShemeTemplate.TemplateSheme;
         }
     }
@@ -177,7 +174,6 @@ namespace B5_71_4_PRO
             Sheme = ShemeTemplate.TemplateSheme;
         }
     }
-    
 
     /// <summary>
     /// Определение нестабильности выходного тока
@@ -191,7 +187,6 @@ namespace B5_71_4_PRO
             Sheme = ShemeTemplate.TemplateSheme;
         }
     }
-
 
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
@@ -207,11 +202,8 @@ namespace B5_71_4_PRO
         }
     }
 
-
-    static class ShemeTemplate
+    internal static class ShemeTemplate
     {
         public static ShemeImage TemplateSheme = new ShemeImage { Description = "Измерительная схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "Соберите измерительную схему, согласно рисунку" };
     }
-
-
 }
