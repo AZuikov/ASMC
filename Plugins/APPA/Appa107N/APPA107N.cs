@@ -6,7 +6,7 @@ namespace Appa107N
     public class APPA107N :Appa107N109NBasePlugin
     {
         
-        public APPA107N() 
+        public APPA107N(ServicePack servicePack): base(servicePack) 
         {
             this.Type = "APPA-107N";
             this.Range = "Пост. напр. 0 - 1000 В, пер. напр. 0 - 750 В,\n" +
@@ -17,7 +17,7 @@ namespace Appa107N
         }
     }
 
-    public class OpertionFirsVerf : APPA_107N_109N.OpertionFirsVerf
+    public class OpertionFirsVerf : APPA_107N_109N
     {
         public OpertionFirsVerf()
         {

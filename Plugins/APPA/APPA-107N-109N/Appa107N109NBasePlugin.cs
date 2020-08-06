@@ -18,20 +18,16 @@ namespace APPA_107N_109N
     public class Appa107N109NBasePlugin : Program
 
     {
-        public Appa107N109NBasePlugin()
+        public Appa107N109NBasePlugin(ServicePack service) : base(service)
         {
             
             Grsi = "20085-11";
             
         }
 
-        public string Type { get; protected set; }
-        public string Grsi { get; }
-        public string Range { get; protected set; }
-        public string Accuracy { get; protected set; }
-        public IMessageBoxService TaskMessageService { get; set; }
-        public OperationMetrControlBase Operation { get; }
+       
     }
+
 
     public class Operation : OperationMetrControlBase
     {
@@ -45,23 +41,9 @@ namespace APPA_107N_109N
         }
     }
 
-    public class UsedDevices : IDevice
-    {
-        public bool IsCanStringConnect { get; set; }
-        public string Description { get; set; }
-        public string[] Name { get; set; }
-        public string SelectedName { get; set; }
-        public string StringConnect { get; set; }
+    
 
-        public void Setting()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool? IsConnect { get; }
-    }
-
-    public abstract class OpertionFirsVerf : IUserItemOperation
+    public abstract class OpertionFirsVerf : ASMC.Data.Model.Operation
     {
         public string[] Accessories { get; }
         public string[] AddresDivece { get; set; }
