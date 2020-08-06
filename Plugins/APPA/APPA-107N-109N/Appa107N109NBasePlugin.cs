@@ -45,18 +45,12 @@ namespace APPA_107N_109N
 
     public abstract class OpertionFirsVerf : ASMC.Data.Model.Operation
     {
-        public string[] Accessories { get; }
-        public string[] AddresDivece { get; set; }
-        public IDevice[] ControlDevices { get; set; }
-        public IDevice[] TestDevices { get; set; }
-        public IDevice[] Device { get; }
-        public IUserItemOperationBase[] UserItemOperation { get; set; }
-
-        public OpertionFirsVerf()
+        
+        public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             //Необходимые устройства
-            ControlDevices = new IDevice[] { new UsedDevices {Name = new []{"5522A"}, Description = "Многофунциональный калибратор"}};
-            TestDevices = new IDevice[]{ new UsedDevices { Name = new[] { "Appa-107N" }, Description = "Цифровой портативный мультиметр" } };
+            ControlDevices = new IDevice[] { new Device {Name = new []{"5522A"}, Description = "Многофунциональный калибратор"}};
+            TestDevices = new IDevice[]{ new Device { Name = new[] { "Appa-107N" }, Description = "Цифровой портативный мультиметр" } };
 
 
             Accessories = new[]
@@ -66,16 +60,16 @@ namespace APPA_107N_109N
                 "Интерфейсный кабель для прибора APPA-107N/APPA-109N USB-COM инфракрасный."
             };
 
-            
+            this.DocumentName = "appa";
         }
 
-        public void RefreshDevice()
+        public override void RefreshDevice()
         {
-            AddresDivece = new IeeeBase().AllStringConnect.ToArray();
+            AddresDevice = IeeeBase.AllStringConnect;
 
         }
 
-        public void FindDivice()
+        public override void FindDivice()
         {
             throw new NotImplementedException();
         }
@@ -94,10 +88,24 @@ namespace APPA_107N_109N
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            var data = new DataTable();
+            data.Columns.Add("Результат внешнего осмотра");
+            var dataRow = data.NewRow();
+            var dds = DataRow[0] as BasicOperation<bool>;
+            // ReSharper disable once PossibleNullReferenceException
+            dataRow[0] = dds.Getting;
+            data.Rows.Add(dataRow);
+            return data;
         }
 
-       
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
+        }
+
+
 
         public override async Task StartWork(CancellationTokenSource token)
         {

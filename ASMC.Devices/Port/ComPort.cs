@@ -180,14 +180,14 @@ namespace ASMC.Devices.Port
 
             return null;
         }
-        protected void Write(byte[] sendData, int v, int length)
+        protected void Write(byte[] sendData, int offset, int length)
         {
             if (!Open())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{sendData} не выполнена");
                 return;
             }
-            _sp.Write(sendData, v, length);
+            _sp.Write(sendData, offset, length);
         }
 
         protected void DiscardInBuffer()
@@ -248,7 +248,7 @@ namespace ASMC.Devices.Port
             return SerialPort.GetPortNames();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             _sp.DataReceived -= SerialPort_DataReceived;
             _sp?.Dispose();
