@@ -8,7 +8,7 @@ using MathNet.Numerics.Statistics;
 
 namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 {
-    public class Calibr9500B : IeeeBase
+    public class Calibr9500B : DeviceBase
     {
         public Calibr9500B()
         {
@@ -113,7 +113,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// <summary>
         /// Настройка выхода
         /// </summary>
-        public class CSource :HelpIeeeBase
+        public class CSource :HelpDeviceBase
         {
             private readonly Calibr9500B _calibrMain;
 
