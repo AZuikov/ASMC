@@ -6,6 +6,9 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="30"/>
@@ -27,11 +30,17 @@
                   Margin="11"
                   Orientation="Horizontal"
                   HorizontalAlignment="Right">
-        <Button Content="Закрыть"
-                IsCancel="True"
-                Command="{Binding CloseCommand}"
-                Margin="5,0,0,0"
-                MinWidth="80" />
+          <Button Content="Выбрать"
+                  IsCancel="True"
+                  Visibility="{Binding AllowSelect, Converter={StaticResource BooleanToVisibilityConverter}}"
+                  Command="{Binding SelectCommand}"
+                  Margin="5,0,0,0"
+                  MinWidth="80" />
+            <Button Content="Закрыть"
+                  IsCancel="True"
+                  Command="{Binding CloseCommand}"
+                  Margin="5,0,0,0"
+                  MinWidth="80" />
       </StackPanel>
   </Grid>
 </UserControl>

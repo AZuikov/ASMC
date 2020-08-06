@@ -318,7 +318,7 @@ namespace ASMC.ViewModel
             };      foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
                 report.FillTableToBookmark(uio.Data.TableName, uio.Data, false, a);
 
-            var path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
+            path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
             report.SaveAs(path);
             report.Close();
             Process.Start(path);

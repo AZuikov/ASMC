@@ -25,15 +25,7 @@
           <RadioButton Grid.Column="0" Content="dfsadasdsadsa" IsChecked="True"/>
           <RadioButton Grid.Column="1" Content="dfsadas"/>
         </Grid>
-        <view:WriteText />
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-          </Grid.ColumnDefinitions>
-          <Button Grid.Column="0" Command="{Binding Send}" CommandParameter="{Binding Data}" Content="Принять" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="10" />
-          <Button Grid.Column="1" Content="Закрыть" HorizontalAlignment="Right" Margin="10" Padding="5"/>
-        </Grid>
+                <StackPanel><TextBox/></StackPanel>
       </StackPanel>
     </ScrollViewer>
   </Grid>

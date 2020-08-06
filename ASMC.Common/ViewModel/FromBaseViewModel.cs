@@ -13,6 +13,7 @@ namespace ASMC.Common.ViewModel
         private bool _allowChanges;
         private bool _allowSearch = true;
         private bool? _dialogResult;
+        private bool _allowSelect;
 
         #endregion
 
@@ -75,17 +76,21 @@ namespace ASMC.Common.ViewModel
         /// </summary>
         protected FromBaseViewModel()
         {
+           
             SelectCommand = new DelegateCommand(OnSelectCommand, CanSelectCommand);
+        }
+        /// <summary>
+        /// Задает 
+        /// </summary>
+        public bool AllowSelect
+        {
+            get => _allowSelect;
+            set => SetProperty(ref _allowSelect, value, nameof(AllowSelect));
         }
 
         #region Methods
 
-        protected override void OnInitializing()
-        {
-            base.OnInitializing();
-           
-        }  
-
+    
 
         /// <summary>
         /// Возвращает значение, задающее

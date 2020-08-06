@@ -54,6 +54,9 @@
       <Name>APPA-107N-109N</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\ASMC\bin\Debug\Plugins" /Y</PostBuildEvent>
