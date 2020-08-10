@@ -82,18 +82,20 @@ namespace B5_71_PRO_Abstract
         {
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
-            operation.IsGood = () => operation.Getting == operation.Expected;
+            operation.IsGood = () => Equals(operation.Getting, operation.Expected) ;
             operation.InitWork = () =>
             {
                 var service = this.UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
                 service.Entity = (Document: "Документ", Assembly: Assembly.GetExecutingAssembly());
                 service.Show();
-                operation.Getting = true;
+                var res = (ValueTuple<string, bool>)service.Entity;
+                operation.Getting = res.Item2;
+                operation.Comment = res.Item1;
                 return Task.CompletedTask;
             };
 
-            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            //operation.CompliteWork = () => Task.FromResult(operation.IsGood());
             DataRow.Add(operation);
         }
 

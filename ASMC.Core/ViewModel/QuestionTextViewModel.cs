@@ -10,7 +10,7 @@ namespace ASMC.Core.ViewModel
     public class QuestionTextViewModel : FromBaseViewModel
     {
         private string _resultStr;
-        private bool _checkBox;
+        private bool _checkBox=true;
         private string _description;
         private string _fileNameDescription;
         private string AssemblyLocalName { get; set; }
@@ -41,7 +41,7 @@ namespace ASMC.Core.ViewModel
 
         private void ChangedSelected()
         {
-            Entity = (document: ResultStr, check: CheckBox);
+            Entity = (document: !CheckBox?"Не соответствует, по причине: "+ ResultStr:"Соответствует", check: CheckBox);
         }
 
         public bool CheckBox
