@@ -14,7 +14,6 @@ using ASMC.Common.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
-using DevExpress.Xpf.Core.Native;
 using NLog;
 
 namespace ASMC.ViewModel

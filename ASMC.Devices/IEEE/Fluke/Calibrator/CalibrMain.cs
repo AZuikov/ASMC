@@ -7,7 +7,7 @@ using AP.Utils.Data;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public abstract class CalibrMain: DeviceBase
+    public abstract class CalibrMain: IeeeBase
     {
         protected CalibrMain()
         {

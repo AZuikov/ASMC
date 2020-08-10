@@ -9,7 +9,7 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 {
-    public abstract class MainN3300 : DeviceBase
+    public abstract class MainN3300 : IeeeBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

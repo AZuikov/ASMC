@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -86,6 +87,7 @@ namespace B5_71_PRO_Abstract
             {
                 var service = this.UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
+                service.Entity = (Document: "Документ", Assembly: Assembly.GetExecutingAssembly());
                 service.Show();
                 operation.Getting = true;
                 return Task.CompletedTask;

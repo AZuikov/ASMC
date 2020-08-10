@@ -41,7 +41,7 @@ namespace ASMC.Core.ViewModel
         {
           
             
-            var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
+            var path = $@"{Directory.GetCurrentDirectory()}\Plugins\{Shema.AssemblyLocalName}";
             if(!Directory.Exists(path))
                 return;
             PathImage = Directory.GetFiles(path, Shema.FileName, SearchOption.AllDirectories).FirstOrDefault();

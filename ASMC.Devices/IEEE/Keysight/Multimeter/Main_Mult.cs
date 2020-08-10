@@ -11,7 +11,7 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public abstract class MultMain : DeviceBase
+    public abstract class MultMain : IeeeBase
     {
        
         /// <summary>
