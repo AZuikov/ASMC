@@ -80,7 +80,7 @@ namespace ASMC.Common.ViewModel
             SelectCommand = new DelegateCommand(OnSelectCommand, CanSelectCommand);
         }
         /// <summary>
-        /// Задает 
+        /// Указывает возможность отображения кнопки выбора. 
         /// </summary>
         public bool AllowSelect
         {

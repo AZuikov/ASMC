@@ -520,6 +520,10 @@ namespace ASMC.Data.Model
 
         #region Property
         /// <summary>
+        /// Позволяет получать или задавать имя сборки-папки где и искать файл
+        /// </summary>
+        public string AssemblyLocalName { get; set; }
+        /// <summary>
         /// Позволяет получать или задавать описание(заголовок) схемы
         /// </summary>
         public string Description { get; set; }

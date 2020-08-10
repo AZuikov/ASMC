@@ -15,7 +15,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace ASMC.Devices.IEEE
 {
-    public class DeviceBase : HelpDeviceBase, IDevice
+    public class IeeeBase : HelpDeviceBase, IDevice
     {
        
         /// <summary>
@@ -129,7 +129,7 @@ namespace ASMC.Devices.IEEE
 
         #endregion
 
-        public DeviceBase()
+        public IeeeBase()
         {     
             /*50ms задежка*/
             _dealySending = 50;

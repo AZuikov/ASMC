@@ -14,6 +14,7 @@ namespace ASMC.Core.Helps
     /// <summary>
     /// Класс используется для вывода информации о забракованной точке.
     /// </summary>
+    [Obsolete("Бесполезный класс")]
     public class TolleranceDialog : ParagraphBase
     {
         public TolleranceDialog(IUserItemOperation userItemOperation):base(userItemOperation)
