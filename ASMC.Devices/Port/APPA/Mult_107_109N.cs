@@ -1,56 +1,56 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+using AP.Utils.Data;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 using System.Timers;
-using AP.Utils.Data;
-using NLog;
 using Timer = System.Timers.Timer;
+using ASMC.Devices;
 
 namespace ASMC.Devices.Port.APPA
 {
     // ReSharper disable once InconsistentNaming
     public class Mult107_109N : ComPort
     {
-
         /// <summary>
         /// Единицы измерения мультиметра
         /// </summary>
         public enum Units
         {
-            [StringValue("")]None,
-            [StringValue("В")]V,
-            [StringValue("мВ")]mV,
-            [StringValue("А")]A,
-            [StringValue("мА")]mA,
-            [StringValue("дБ")]dB,
-            [StringValue("дБм")]dBm,
-            [StringValue("нФ")]nF,
-            [StringValue("мкФ")]uF,
-            [StringValue("мФ")]mF,
-            [StringValue("Ом")]Ohm,
-            [StringValue("кОм")]KOhm,
-            [StringValue("МОм")]MOhm,
-            [StringValue("ГОм")]GOhm,
-            [StringValue("%")]Percent,
-            [StringValue("Гц")]Hz,
-            [StringValue("кГц")]KHz,
-            [StringValue("МГц")]MHz,
-            [StringValue("℃")]CelciumGrad,
-            [StringValue("℉")]FaringeitGrad,
-            [StringValue("сек")]Sec,
-            [StringValue("мсек")]mSec,
-            [StringValue("нсек")]nSec,
-            [StringValue("В")]Volt,
-            [StringValue("мВ")]mVolt,
-            [StringValue("А")]Amp,
-            [StringValue("мА")]mAmp,
-            [StringValue("Ом")]Ohm2,
-            [StringValue("кОм")]KOhm2,
-            [StringValue("МОм")]MOhm3
+            [StringValue("")] None,
+            [StringValue("В")] V,
+            [StringValue("мВ")] mV,
+            [StringValue("А")] A,
+            [StringValue("мА")] mA,
+            [StringValue("дБ")] dB,
+            [StringValue("дБм")] dBm,
+            [StringValue("нФ")] nF,
+            [StringValue("мкФ")] uF,
+            [StringValue("мФ")] mF,
+            [StringValue("Ом")] Ohm,
+            [StringValue("кОм")] KOhm,
+            [StringValue("МОм")] MOhm,
+            [StringValue("ГОм")] GOhm,
+            [StringValue("%")] Percent,
+            [StringValue("Гц")] Hz,
+            [StringValue("кГц")] KHz,
+            [StringValue("МГц")] MHz,
+            [StringValue("℃")] CelciumGrad,
+            [StringValue("℉")] FaringeitGrad,
+            [StringValue("сек")] Sec,
+            [StringValue("мсек")] mSec,
+            [StringValue("нсек")] nSec,
+            [StringValue("В")] Volt,
+            [StringValue("мВ")] mVolt,
+            [StringValue("А")] Amp,
+            [StringValue("мА")] mAmp,
+            [StringValue("Ом")] Ohm2,
+            [StringValue("кОм")] KOhm2,
+            [StringValue("МОм")] MOhm3
         }
 
         public enum BlueState
@@ -130,16 +130,16 @@ namespace ASMC.Devices.Port.APPA
         /// </summary>
         public enum Rotor
         {
-           OFF = 0x00,
-           [StringValue("В")] V = 0x01,
-           [StringValue("мВ")] mV = 0x02,
-           [StringValue("Ом")] Ohm = 0x03,
-           [StringValue("В")] Diode = 0x04,
-           [StringValue("мА")] mA = 0x05,
-           [StringValue("А")] A = 0x06,
-           [StringValue("Ф")] Cap = 0x07,
-           [StringValue("Гц")] Hz = 0x08,
-           Temp = 0x09
+            OFF = 0x00,
+            [StringValue("В")] V = 0x01,
+            [StringValue("мВ")] mV = 0x02,
+            [StringValue("Ом")] Ohm = 0x03,
+            [StringValue("В")] Diode = 0x04,
+            [StringValue("мА")] mA = 0x05,
+            [StringValue("А")] A = 0x06,
+            [StringValue("Ф")] Cap = 0x07,
+            [StringValue("Гц")] Hz = 0x08,
+            Temp = 0x09
         }
 
         //размер посылаемых данных от прибора
@@ -155,23 +155,35 @@ namespace ASMC.Devices.Port.APPA
         private readonly List<byte> _readingBuffer;
 
         //данные для начало обмена информацией с прибором
-        private readonly byte[] _sendData = {0x55, 0x55, 0x00, 0x00, 0xAA};
+        private readonly byte[] _sendData = { 0x55, 0x55, 0x00, 0x00, 0xAA };
+
         private readonly Timer _wait;
         private List<byte> _data;
         private bool _flagTimeout;
 
-        #endregion
+        #endregion Fields
 
         #region Property
 
         /// <summary>
-        /// Позволяет получить информацию о текущих единицах измерения.
+        /// Позволяет получить информацию о текущих единицах измерения с основного экрана.
         /// </summary>
-        public Units GetMeasureUnit
+        public Units GetGeneralMeasureUnit
         {
             get
             {
                 return (Units)(_data[11] >> 3);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает единицы измерения со второго экрана.
+        /// </summary>
+        public Units GeSubMeasureUnit
+        {
+            get
+            {
+                return (Units)(_data[16] >> 3);
             }
         }
 
@@ -187,8 +199,8 @@ namespace ASMC.Devices.Port.APPA
                     throw new TimeoutException();
                 }
 
-                Logger.Info(((BlueState) _data[5]).ToString());
-                return (BlueState) _data[5];
+                Logger.Info(((BlueState)_data[5]).ToString());
+                return (BlueState)_data[5];
             }
         }
 
@@ -204,62 +216,122 @@ namespace ASMC.Devices.Port.APPA
                     throw new TimeoutException();
                 }
 
-                Logger.Info(((Function) _data[12]).ToString());
-                return (Function) _data[12];
+                Logger.Info(((Function)_data[12]).ToString());
+                return (Function)_data[12];
             }
         }
 
         /// <summary>
-        /// Измеренное значение на основном экране
+        /// Возвращает измеренное значение с прибора, приведенное к единицам в соответствии с множителем mult
         /// </summary>
-        public double GetGeneralValue
+        /// <param name="mult">Множитель единицы измерения.</param>
+        /// <param name="generalDsiplay">Если флаг true, тогда возвращаются показания с основного экрана прибора. Иначе с второстепенного.</param>
+        /// <returns></returns>
+        public double GetValue(Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
         {
-            get
+            SendQuery();
+            double value;
+            WaitEvent.WaitOne();
+            if (_flagTimeout)
             {
-                SendQuery();
-                double value;
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-
-
-
+                _flagTimeout = false;
+                throw new TimeoutException();
+            }
+            // по умолчанию запрашиваем показания с главного экрана
+            if (generalDsiplay)
+            {
                 if (_data[10] == 255)
                     value = ~((0xff - _data[10] << 16) | (0xff - _data[9] << 8) | (0xff - _data[8])) - 1;
                 else value = ((_data[10] << 16) | (_data[9] << 8) | _data[8]);
-
-                switch (_data[11] & 0x07)
-                {
-                    case (int) Point.None:
-                        break;
-
-                    case (int) Point.Point1:
-                        value /=  10.0;
-                        break;
-
-                    case (int) Point.Point2:
-                        value /=  100.0;
-                        break;
-
-                    case (int) Point.Point3:
-                        value /=  1000.0;
-                        break;
-
-                    case (int) Point.Point4:
-                        value /=  10000.0;
-                        break;
-
-                    default:
-                        return 0;
-                }
-
-                Logger.Info(value);
-                return value;
+                value= GetPointInfo(value, _data[11]);
+             
             }
+            //если запрашиваются показания со второго экрана
+            else
+            {
+                if (_data[15] == 255)
+                    value = ~((0xff - _data[15] << 16) | (0xff - _data[14] << 8) | (0xff - _data[13])) - 1;
+                else value = ((_data[15] << 16) | (_data[14] << 8) | _data[13]);
+                value = GetPointInfo(value, _data[16]);
+            }
+
+            double GetPointInfo(double val,byte addres)
+            {
+                switch (addres & 0x07)
+                {
+                    case (int)Point.Point1:
+                        return val /= 10.0;
+                        
+
+                    case (int)Point.Point2:
+                        return val /= 100.0;
+                        
+
+                    case (int)Point.Point3:
+                        return val /= 1000.0;
+                       
+                    case (int)Point.Point4:
+                      return val /= 10000.0;
+                    default:
+                        return val;
+
+                }
+            }
+
+
+            Logger.Info(value);
+            return DoubleToDoubleMind(value, mult);
         }
+
+        ///// <summary>
+        ///// Измеренное значение на основном экране
+        ///// </summary>
+        //public double GetGeneralValue
+        //{
+        //    get
+        //    {
+        //        SendQuery();
+        //        double value;
+        //        WaitEvent.WaitOne();
+        //        if (_flagTimeout)
+        //        {
+        //            _flagTimeout = false;
+        //            throw new TimeoutException();
+        //        }
+
+        //        if (_data[10] == 255)
+        //            value = ~((0xff - _data[10] << 16) | (0xff - _data[9] << 8) | (0xff - _data[8])) - 1;
+        //        else value = ((_data[10] << 16) | (_data[9] << 8) | _data[8]);
+
+        //        switch (_data[11] & 0x07)
+        //        {
+        //            case (int)Point.None:
+        //                break;
+
+        //            case (int)Point.Point1:
+        //                value /= 10.0;
+        //                break;
+
+        //            case (int)Point.Point2:
+        //                value /= 100.0;
+        //                break;
+
+        //            case (int)Point.Point3:
+        //                value /= 1000.0;
+        //                break;
+
+        //            case (int)Point.Point4:
+        //                value /= 10000.0;
+        //                break;
+
+        //            default:
+        //                return 0;
+        //        }
+
+        //        Logger.Info(value);
+        //        return value;
+        //    }
+        //}
 
         public Range GetRange
         {
@@ -273,8 +345,8 @@ namespace ASMC.Devices.Port.APPA
                     throw new TimeoutException();
                 }
 
-                Logger.Info(((Range) _data[7]).ToString());
-                return (Range) _data[7];
+                Logger.Info(((Range)_data[7]).ToString());
+                return (Range)_data[7];
             }
         }
 
@@ -290,8 +362,8 @@ namespace ASMC.Devices.Port.APPA
                     throw new TimeoutException();
                 }
 
-                Logger.Info(((Rotor) _data[4]).ToString());
-                return (Rotor) _data[4];
+                Logger.Info(((Rotor)_data[4]).ToString());
+                return (Rotor)_data[4];
             }
         }
 
@@ -307,59 +379,59 @@ namespace ASMC.Devices.Port.APPA
                     throw new TimeoutException();
                 }
 
-                Logger.Info(((Function) _data[17]).ToString());
-                return (Function) _data[17];
+                Logger.Info(((Function)_data[17]).ToString());
+                return (Function)_data[17];
             }
         }
 
-        /// <summary>
-        /// Значение со второй строки экрана (верхняя с мелким шрифтом)
-        /// </summary>
-        public double GetSubValue
-        {
-            get
-            {
-                SendQuery();
-                double value;
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
+        ///// <summary>
+        ///// Значение со второй строки экрана (верхняя с мелким шрифтом)
+        ///// </summary>
+        //public double GetSubValue
+        //{
+        //    get
+        //    {
+        //        SendQuery();
+        //        double value;
+        //        WaitEvent.WaitOne();
+        //        if (_flagTimeout)
+        //        {
+        //            _flagTimeout = false;
+        //            throw new TimeoutException();
+        //        }
 
-                switch (_data[16] & 0x07)
-                {
-                    case (int) Point.None:
-                        value = (_data[15] << 8) | (_data[14] << 8) | _data[13];
-                        break;
+        //        switch (_data[16] & 0x07)
+        //        {
+        //            case (int)Point.None:
+        //                value = (_data[15] << 8) | (_data[14] << 8) | _data[13];
+        //                break;
 
-                    case (int) Point.Point1:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10.0;
-                        break;
+        //            case (int)Point.Point1:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10.0;
+        //                break;
 
-                    case (int) Point.Point2:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 100.0;
-                        break;
+        //            case (int)Point.Point2:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 100.0;
+        //                break;
 
-                    case (int) Point.Point3:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 1000.0;
-                        break;
+        //            case (int)Point.Point3:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 1000.0;
+        //                break;
 
-                    case (int) Point.Point4:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10000.0;
-                        break;
+        //            case (int)Point.Point4:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10000.0;
+        //                break;
 
-                    default:
-                        return 0;
-                }
+        //            default:
+        //                return 0;
+        //        }
 
-                Logger.Info(value);
-                return value;
-            }
-        }
+        //        Logger.Info(value);
+        //        return value;
+        //    }
+        //}
 
-        #endregion
+        #endregion Property
 
         public Mult107_109N()
         {
@@ -406,14 +478,14 @@ namespace ASMC.Devices.Port.APPA
         protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             _readingBuffer.Clear();
-            var port = (SerialPort) sender;
+            var port = (SerialPort)sender;
             try
             {
-                var bt = (byte) port.ReadByte();
+                var bt = (byte)port.ReadByte();
                 _readingBuffer.Add(bt);
                 while (_readingBuffer.Count < Cadr)
                     if (0x55 == _readingBuffer[0])
-                        _readingBuffer.Add((byte) port.ReadByte());
+                        _readingBuffer.Add((byte)port.ReadByte());
                 DiscardInBuffer();
                 CheckControlSumm();
                 //Sp.DataReceived -= SerialPort_DataReceived;
@@ -452,6 +524,6 @@ namespace ASMC.Devices.Port.APPA
             WaitEvent.Set();
         }
 
-        #endregion
+        #endregion Methods
     }
 }

@@ -34,7 +34,7 @@ namespace ASMC.Devices
         /// <param name="inDouble">Числовое значение для перевода</param>
         /// <param name="mult">множитель единицы измерения (милли, кило и т.д.).</param>
         /// <returns></returns>
-        public double DataStrToDoubleMind(double inDouble, Multipliers mult = Devices.Multipliers.None)
+        public double DoubleToDoubleMind(double inDouble, Multipliers mult = Devices.Multipliers.None)
         {
             return mult == Devices.Multipliers.None ? inDouble : inDouble * mult.GetDoubleValue();
         }
