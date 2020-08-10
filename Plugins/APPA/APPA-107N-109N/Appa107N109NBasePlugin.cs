@@ -107,7 +107,7 @@ namespace APPA_107N_109N
 
 
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
            
         }
@@ -136,12 +136,12 @@ namespace APPA_107N_109N
             return data;
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
        
         {
             var bo = new BasicOperation<bool> { Expected = true };
@@ -183,16 +183,16 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
        
         {
             
-            flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
+            //flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
             //тут нужно проверять, если прибор не подключен, тогда прекращаем работу
             if (flkCalib5522A.Open())
             {
@@ -228,7 +228,7 @@ namespace APPA_107N_109N
                     do
                     {
                         for (int j = 0; j < countMeas; )
-                            valuesMeasure.Add((decimal)appa107N.Value);
+                            valuesMeasure.Add((decimal)appa107N.GetValue());
 
                     } while (!AP.Math.MathStatistics.IntoTreeSigma(valuesMeasure.ToArray())); // пока показания не стабилизировались будут проводиться измерения
                     //Теперь уберем выбросы
@@ -277,12 +277,12 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
        
         {
             throw new NotImplementedException();
@@ -300,12 +300,12 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -322,12 +322,12 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -344,12 +344,12 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -366,12 +366,12 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -388,12 +388,12 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -410,12 +410,12 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         
         {
             throw new NotImplementedException();
