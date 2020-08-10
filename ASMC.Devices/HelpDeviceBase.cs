@@ -29,6 +29,19 @@ namespace ASMC.Devices
         }
 
         /// <summary>
+        /// Принимает число inDouble и переводит его согласно множителю едииц mult.
+        /// </summary>
+        /// <param name="inDouble">Числовое значение для перевода</param>
+        /// <param name="mult">множитель единицы измерения (милли, кило и т.д.).</param>
+        /// <returns></returns>
+        public double DataStrToDoubleMind(double inDouble, Multipliers mult = Devices.Multipliers.None)
+        {
+            return mult == Devices.Multipliers.None ? inDouble : inDouble * mult.GetDoubleValue();
+        }
+
+       
+
+        /// <summary>
         /// Возвращает множитель единицы измерения (милли, кило и т.д.).
         /// </summary>
         /// <param name="mult"></param>
@@ -47,6 +60,13 @@ namespace ASMC.Devices
             return res;
         }
 
+
+        /// <summary>
+        /// Преобразует строкове значение double. Принимает так же числа в виде "2.345E-5".
+        /// </summary>
+        /// <param name="date">Число для преобразования в виде строки.</param>
+        /// <param name="mult">Множитель единицы измерения (милли, кило и т.д.).</param>
+        /// <returns></returns>
         private static double StrToDoubleMindMind(string date, ICommand mult = null)
         {
             var dDate = new double[2];
@@ -60,10 +80,17 @@ namespace ASMC.Devices
                 return val * Math.Pow(10, exponent) / m?.Value ?? 1.0;
             }
         }
+
         public string JoinValueMult(double value, Multipliers mult)
         {
             return JoinValueMult((decimal)value, mult);
         }
+        /// <summary>
+        /// Преобразует числовое значени в строку с указанными единицами измерения.
+        /// </summary>
+        /// <param name="value">Числовое значение которео нужно преобразовать.</param>
+        /// <param name="mult"> Множитель единицы измерения (млии, кило и т.д.).</param>
+        /// <returns></returns>
         public string JoinValueMult(decimal value, Multipliers mult)
         {
             return value.ToString("G", CultureInfo.GetCultureInfo("en-US")) +
