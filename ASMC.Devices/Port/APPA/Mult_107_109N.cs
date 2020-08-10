@@ -21,36 +21,36 @@ namespace ASMC.Devices.Port.APPA
         /// </summary>
         public enum Units
         {
-            [StringValue("")] None,
-            [StringValue("В")] V,
-            [StringValue("мВ")] mV,
-            [StringValue("А")] A,
-            [StringValue("мА")] mA,
-            [StringValue("дБ")] dB,
-            [StringValue("дБм")] dBm,
-            [StringValue("нФ")] nF,
-            [StringValue("мкФ")] uF,
-            [StringValue("мФ")] mF,
-            [StringValue("Ом")] Ohm,
-            [StringValue("кОм")] KOhm,
-            [StringValue("МОм")] MOhm,
-            [StringValue("ГОм")] GOhm,
-            [StringValue("%")] Percent,
-            [StringValue("Гц")] Hz,
-            [StringValue("кГц")] KHz,
-            [StringValue("МГц")] MHz,
-            [StringValue("℃")] CelciumGrad,
-            [StringValue("℉")] FaringeitGrad,
-            [StringValue("сек")] Sec,
-            [StringValue("мсек")] mSec,
-            [StringValue("нсек")] nSec,
-            [StringValue("В")] Volt,
-            [StringValue("мВ")] mVolt,
-            [StringValue("А")] Amp,
-            [StringValue("мА")] mAmp,
-            [StringValue("Ом")] Ohm2,
-            [StringValue("кОм")] KOhm2,
-            [StringValue("МОм")] MOhm3
+            [DoubleValue(1)][StringValue("")] None,
+            [DoubleValue(1)][StringValue("В")] V,
+            [DoubleValue(1E-3)][StringValue("мВ")] mV,
+            [DoubleValue(1)][StringValue("А")] A,
+            [DoubleValue(1E-3)][StringValue("мА")] mA,
+            [DoubleValue(1)][StringValue("дБ")] dB,
+            [DoubleValue(1)][StringValue("дБм")] dBm,
+            [DoubleValue(1E-9)][StringValue("нФ")] nF,
+            [DoubleValue(1E-6)][StringValue("мкФ")] uF,
+            [DoubleValue(1E-3)][StringValue("мФ")] mF,
+            [DoubleValue(1)][StringValue("Ом")] Ohm,
+            [DoubleValue(1E3)][StringValue("кОм")] KOhm,
+            [DoubleValue(1E6)][StringValue("МОм")] MOhm,
+            [DoubleValue(1E9)][StringValue("ГОм")] GOhm,
+            [DoubleValue(1)][StringValue("%")] Percent,
+            [DoubleValue(1)][StringValue("Гц")] Hz,
+            [DoubleValue(1E3)][StringValue("кГц")] KHz,
+            [DoubleValue(1E6)][StringValue("МГц")] MHz,
+            [DoubleValue(1)][StringValue("℃")] CelciumGrad,
+            [DoubleValue(1)][StringValue("℉")] FaringeitGrad,
+            [DoubleValue(1)][StringValue("сек")] Sec,
+            [DoubleValue(1E-3)][StringValue("мсек")] mSec,
+            [DoubleValue(1E-9)][StringValue("нсек")] nSec,
+            [DoubleValue(1)][StringValue("В")] Volt,
+            [DoubleValue(1E-3)][StringValue("мВ")] mVolt,
+            [DoubleValue(1)][StringValue("А")] Amp,
+            [DoubleValue(1E-3)][StringValue("мА")] mAmp,
+            [DoubleValue(1)][StringValue("Ом")] Ohm2,
+            [DoubleValue(1E3)][StringValue("кОм")] KOhm2,
+            [DoubleValue(1E6)] [StringValue("МОм")] MOhm3
         }
 
         public enum BlueState
@@ -280,6 +280,9 @@ namespace ASMC.Devices.Port.APPA
 
 
             Logger.Info(value);
+
+            value *= GetGeneralMeasureUnit.GetDoubleValue();
+
             return DoubleToDoubleMind(value, mult);
         }
 

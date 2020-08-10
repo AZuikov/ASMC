@@ -36,7 +36,7 @@ namespace ASMC.Devices
         /// <returns></returns>
         public double DoubleToDoubleMind(double inDouble, Multipliers mult = Devices.Multipliers.None)
         {
-            return mult == Devices.Multipliers.None ? inDouble : inDouble * mult.GetDoubleValue();
+            return mult == Devices.Multipliers.None ? inDouble : inDouble / mult.GetDoubleValue();
         }
 
        

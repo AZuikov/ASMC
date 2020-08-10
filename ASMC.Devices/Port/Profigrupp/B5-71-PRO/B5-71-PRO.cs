@@ -200,7 +200,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name = "inCurr">Ток который необходимо задать.</param>
         /// <param name = "inUnitCurrMultipliers">Единицы измерения тока (милли, кило, амперы).</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public B571Pro SetStateCurr(decimal inCurr, Multipliers mult = Multipliers.None)
+        public B571Pro SetStateCurr(decimal inCurr, Multipliers mult = Devices.Multipliers.None )
         {
             var inCurrToDevice = inCurr * (decimal) (mult.GetDoubleValue() * 1E4);
 
@@ -224,7 +224,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name = "inVolt">Значение напряжения.</param>
         /// <param name = "inUnitVoltMultipliers">Единицы измерения напряжения (милли, кило, вольты)</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public B571Pro SetStateVolt(decimal inVolt, Multipliers mult = Multipliers.None)
+        public B571Pro SetStateVolt(decimal inVolt, Multipliers mult = Devices.Multipliers.None)
         {
             //блок питания понимает значения только в милливольтах
             var inVoltToDevice = inVolt * (decimal) (mult.GetDoubleValue() * 1E3);
@@ -248,7 +248,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// Формула расчета погрешности по воспроизведению и измерению тока источника питания.
         /// </summary>
         /// <returns>Погрешность в амперах</returns>
-        public decimal TolleranceFormulaCurrent(decimal value, Multipliers mult = Multipliers.None)
+        public decimal TolleranceFormulaCurrent(decimal value, Multipliers mult = Devices.Multipliers.None)
         {
             value *= (decimal) mult.GetDoubleValue();
             return (decimal) 0.01 * value + (decimal) 0.05;
@@ -260,7 +260,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <param name = "value">Поверяемая точка. В вольтах</param>
         /// <param name = "mult"></param>
         /// <returns>Погрешность в вольтах.</returns>
-        public decimal TolleranceFormulaVolt(decimal value, Multipliers mult = Multipliers.None)
+        public decimal TolleranceFormulaVolt(decimal value, Multipliers mult = Devices.Multipliers.None)
         {
             value *= (decimal) mult.GetDoubleValue();
             return (decimal) 0.002 * value + (decimal) 0.1;
