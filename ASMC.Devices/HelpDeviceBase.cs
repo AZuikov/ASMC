@@ -13,14 +13,14 @@ namespace ASMC.Devices
             get; protected set;
         }
         /// <summary>
-        /// Преобразут данные в нужных единицах
+        /// Преобразут строку в double, может принимать строку с перечисленными значениями через запятую.
         /// </summary>
-        /// <param name = "date">The date.</param>
-        /// <param name = "mult">The mult.</param>
+        /// <param name = "date">Одно значение или перечисление значений через запятую. Разделитель целой и дробной части точка.</param>
+        /// <param name = "mult">Множитель единицы измерения, в которую нужно преобразовать входные данные (милли, кило и т.д.). </param>
         /// <returns></returns>
         public double DataStrToDoubleMind(string date, Multipliers mult = Devices.Multipliers.None)
         {
-
+            
             var value = date.Split(',');
             var a = new double[value.Length];
             for(var i = 0; i < value.Length; i++)
@@ -28,6 +28,11 @@ namespace ASMC.Devices
             return a.Mean() < 0 ? a.RootMeanSquare() * -1 : a.RootMeanSquare();
         }
 
+        /// <summary>
+        /// Возвращает множитель единицы измерения (милли, кило и т.д.).
+        /// </summary>
+        /// <param name="mult"></param>
+        /// <returns></returns>
         protected Multipliers GetMultiplier(ICommand mult)
         {
             var res = Enum.GetValues(typeof(Multipliers)).Cast<Multipliers>()

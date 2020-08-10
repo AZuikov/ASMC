@@ -65,7 +65,7 @@ namespace APPA_107N_109N
 
         public override void RefreshDevice()
         {
-            AddresDevice = IeeeBase.AllStringConnect;
+            AddresDevice = DeviceBase.AllStringConnect;
 
         }
 
