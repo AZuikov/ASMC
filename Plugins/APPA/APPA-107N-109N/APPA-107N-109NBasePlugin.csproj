@@ -34,6 +34,9 @@
     <Reference Include="DevExpress.Mvvm.v17.2">
       <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

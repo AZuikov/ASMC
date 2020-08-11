@@ -96,7 +96,7 @@ namespace ASMC.Devices.Port.APPA
             LoginStamp = 0x33
         }
 
-        public enum Point
+          private enum Point
         {
             None = 0,
             Point1 = 0x01,
@@ -105,7 +105,31 @@ namespace ASMC.Devices.Port.APPA
             Point4 = 0x04
         }
 
-        public enum Range
+        
+          public enum RangeMode
+          {
+              Manual=0x80,
+              Auto=0x00
+          }
+
+          /// <summary>
+          /// Позволяет получить режим переключения пределов Auto/Manual
+          /// </summary>
+          public RangeMode GetRangeMode
+          {
+              get
+              {
+                  
+                  if (((int)GetRangeCode & (int)RangeMode.Manual) == (int)RangeMode.Manual) 
+                      return RangeMode.Manual;
+                  return RangeMode.Auto;
+              }
+          }
+
+          /// <summary>
+          /// Коды переключатля прибора
+          /// </summary>
+          public enum RangeCode
         {
             Range1Manual = 0x80,
             Range2Manual = 0x81,
@@ -125,7 +149,253 @@ namespace ASMC.Devices.Port.APPA
             Range8Auto = 0x07
         }
 
-        /// <summary>
+          /// <summary>
+          /// Допустимые номиналы пределов измерения
+          /// </summary>
+          public enum RangeNominal
+          {
+              [StringValue("20 мВ")]Range20mV,
+              [StringValue("200 мВ")]Range200mV,
+              [StringValue("2 В")]Range2V, 
+              [StringValue("20 В ")]Range20V, 
+              [StringValue("200 В")]Range200V,
+              [StringValue("750 В")]Range750V, 
+              [StringValue("1000 В")]Range1000V,
+              [StringValue("20 мА")]Range20mA,
+              [StringValue("200 мА")]Range200mA,
+              [StringValue("400 мА")]Range400mA,
+              [StringValue("2 А")]Range2A,
+              [StringValue("10 А")]Range10A,
+              [StringValue("200 Ом")]Range200Ohm,
+              [StringValue("2 кОм")]Range2kOhm,
+              [StringValue("20 кОм")]Range20kOhm,
+              [StringValue("200 кОм")]Range200kOhm,
+              [StringValue("2 МОм")]Range2Mohm,
+              [StringValue("20 МОм")]Range20Mohm,
+              [StringValue("200 МОм")]Range200Mohm,
+              [StringValue("2 ГОм")]Range2Gohm,
+              [StringValue("4 нФ")]Range4nF,
+              [StringValue("40 нФ")]Range40nF,
+              [StringValue("400 нФ")]Range400nF,
+              [StringValue("4 мкФ")]Range4uF,
+              [StringValue("40 мкФ")]Range40uF,
+              [StringValue("400 мкФ")]Range400uF,
+              [StringValue("4 мФ")]Range4mF,
+              [StringValue("40 мФ")]Range40mF,
+              [StringValue("20 Гц")]Range20Hz,
+              [StringValue("200 Гц ")]Range200Hz,
+              [StringValue("2 кГц")]Range2kHz,
+              [StringValue("20 кГц")]Range20kHz,
+              [StringValue("200 кГц")]Range200kHz,
+              [StringValue("1 МГц")]Range1MHz,
+              [StringValue("400 ℃")]Range400degC, 
+              [StringValue("400 ℉")]Range400degF,
+              [StringValue("1200 ℃")]Range1200degC,
+              [StringValue("2192 ℉")]Range2192degF,
+              [StringValue("предел не установлен")]RangeNone
+
+        }
+
+          /// <summary>
+          /// Допустимые режимы змерения
+          /// </summary>
+          public enum MeasureMode {
+            [StringValue("Переменное напряжение")]ACV,
+            [StringValue("Переменное напряжение")]ACmV,
+            [StringValue("Постоянное напряжение")]DCV,
+            [StringValue("Постоянное напряжение")]DCmV,
+            [StringValue("Переменное ток")] ACI,
+            [StringValue("Переменное ток")] ACmA,
+            [StringValue("Постоянное ток")] DCI,
+            [StringValue("Постоянное ток")] DCmA,
+            [StringValue("Измерение переменного напряжения со смещением")]AC_DC_V,
+            [StringValue("Измерение переменного напряжения со смещением")]AC_DC_mV,
+            [StringValue("Измерение переменного тока со смещением")]AC_DC_I,
+            [StringValue("Измерение переменного тока со смещением")]AC_DC_mA,
+            [StringValue("Измерение сопртивления")]Ohm,
+            [StringValue("Измерение сопротивления малым напряжением")]LowOhm,
+            [StringValue("Испытание p-n переходов")]Diode,
+            [StringValue("Прозвонка цепей")]Beeper,
+            [StringValue("Измерение ёмкости")]Cap,
+            [StringValue("Измерение частоты")]Herz,
+            [StringValue("Измерение коэффициента заполнения")]DutyFactor,
+            [StringValue("Измерение температуры в град. Цельсия")]degC,
+            [StringValue("Измерение температуры в град. Фарингейта")]DegF,
+            [StringValue("Неизвестный режим")]None
+        }
+
+         /// <summary>
+         /// Возвращает информацию о текущем режиме измерения прибора
+         /// </summary>
+        public MeasureMode GetMeasureMode
+        {
+            get
+            {
+                Rotor currRotor = GetRotor;
+                BlueState currBlueState = GetBlueState;
+
+                if (currRotor == Rotor.V && currBlueState == BlueState.NoPress) return MeasureMode.ACV;
+                if (currRotor == Rotor.V && currBlueState == BlueState.OnPress) return MeasureMode.DCV;
+                if (currRotor == Rotor.V && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_V;
+
+                if (currRotor == Rotor.mV && currBlueState == BlueState.NoPress) return MeasureMode.ACmV;
+                if (currRotor == Rotor.mV && currBlueState == BlueState.OnPress) return MeasureMode.DCmV;
+                if (currRotor == Rotor.mV && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_mV;
+
+                if (currRotor == Rotor.Ohm && currBlueState == BlueState.NoPress) return MeasureMode.Ohm;
+                if (currRotor == Rotor.Ohm && currBlueState == BlueState.OnPress) return MeasureMode.LowOhm;
+
+                if (currRotor == Rotor.Diode && currBlueState == BlueState.NoPress) return MeasureMode.Diode;
+                if (currRotor == Rotor.Diode && currBlueState == BlueState.OnPress) return MeasureMode.Beeper;
+
+                if (currRotor == Rotor.mA && currBlueState == BlueState.NoPress) return MeasureMode.ACmA;
+                if (currRotor == Rotor.mA && currBlueState == BlueState.OnPress) return MeasureMode.DCmA;
+                if (currRotor == Rotor.mA && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_mA;
+
+                if (currRotor == Rotor.A && currBlueState == BlueState.NoPress) return MeasureMode.ACI;
+                if (currRotor == Rotor.A && currBlueState == BlueState.OnPress) return MeasureMode.DCI;
+                if (currRotor == Rotor.A && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_I;
+
+                if (currRotor == Rotor.Cap && currBlueState == BlueState.NoPress) return MeasureMode.Cap;
+
+                if (currRotor == Rotor.Hz && currBlueState == BlueState.NoPress) return MeasureMode.Herz;
+                if (currRotor == Rotor.Hz && currBlueState == BlueState.OnPress) return MeasureMode.DutyFactor;
+
+                if (currRotor == Rotor.Temp && currBlueState == BlueState.NoPress) return MeasureMode.degC;
+                if (currRotor == Rotor.Temp && currBlueState == BlueState.OnPress) return MeasureMode.DegF;
+
+                return MeasureMode.None;
+
+            }
+            
+        }
+
+         /// <summary>
+         /// Возвращает номинал текущего предела измерения
+         /// </summary>
+         public RangeNominal GetRangeNominal
+         {
+             get
+             {
+                 MeasureMode currMode = GetMeasureMode;
+                 RangeCode currRangeCode = GetRangeCode;
+
+                 if (currMode == MeasureMode.DCV)
+                 {
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range1000V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    return RangeNominal.Range2V;
+                 }
+
+                 if (currMode == MeasureMode.ACV)
+                 {
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    return RangeNominal.Range2V;
+                 }
+
+                 if (currMode == MeasureMode.AC_DC_V)
+                 {
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    return RangeNominal.Range2V;
+                 }
+                 
+                 if (currMode == MeasureMode.DCmV || currMode == MeasureMode.ACmV || currMode == MeasureMode.AC_DC_mV)
+                 {
+                    
+                     if (((int) currRangeCode & 1) == 1) return RangeNominal.Range200mV;
+                     return RangeNominal.Range20mV;
+                 }
+                 
+                
+                if (currMode == MeasureMode.DCmA || currMode == MeasureMode.ACmA || currMode == MeasureMode.AC_DC_mA)
+                {
+                    
+                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range200mA;
+                    return RangeNominal.Range20mA;
+                }
+                
+                if (currMode == MeasureMode.DCI || currMode == MeasureMode.ACI || currMode == MeasureMode.AC_DC_I)
+                {
+                    
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range10A;
+                    return RangeNominal.Range2A;
+                }
+                
+                if (currMode == MeasureMode.Ohm)
+                {
+                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range2Gohm;
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range200Mohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range20Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range2Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1)== 1) return RangeNominal.Range2kOhm;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range20kOhm;
+                    return RangeNominal.Range200Ohm;
+                }
+
+                
+                if (currMode == MeasureMode.LowOhm)
+                {
+
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range2Gohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range200Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range20Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range2Mohm;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20kOhm;
+                    return RangeNominal.Range2kOhm;
+                }
+               
+                if (currMode == MeasureMode.Cap)
+                {
+                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range40mF;
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range4mF;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range400uF;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range40uF;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range4uF;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range400nF;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range40nF;
+                    return RangeNominal.Range4nF;
+                }
+                
+                
+                if (currMode == MeasureMode.Herz)
+                {
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range1MHz;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range200kHz;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range20kHz;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range2kHz;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200Hz;
+                    return RangeNominal.Range20Hz;
+                }
+                
+
+                if (currMode == MeasureMode.degC)
+                {
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range1200degC;
+                    return RangeNominal.Range400degC;
+                }
+                
+
+                if (currMode == MeasureMode.DegF)
+                {
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range2192degF;
+                    return RangeNominal.Range400degF;
+
+                }
+
+                
+
+                return RangeNominal.RangeNone;
+             }
+         }
+
+         /// <summary>
         /// Положение переключатиля
         /// </summary>
         public enum Rotor
@@ -204,6 +474,9 @@ namespace ASMC.Devices.Port.APPA
             }
         }
 
+        /// <summary>
+        /// Позволяет получить статус включенных дополнительных функций прибора
+        /// </summary>
         public Function GetGeneralFunction
         {
             get
@@ -286,57 +559,9 @@ namespace ASMC.Devices.Port.APPA
             return DoubleToDoubleMind(value, mult);
         }
 
-        ///// <summary>
-        ///// Измеренное значение на основном экране
-        ///// </summary>
-        //public double GetGeneralValue
-        //{
-        //    get
-        //    {
-        //        SendQuery();
-        //        double value;
-        //        WaitEvent.WaitOne();
-        //        if (_flagTimeout)
-        //        {
-        //            _flagTimeout = false;
-        //            throw new TimeoutException();
-        //        }
+        
 
-        //        if (_data[10] == 255)
-        //            value = ~((0xff - _data[10] << 16) | (0xff - _data[9] << 8) | (0xff - _data[8])) - 1;
-        //        else value = ((_data[10] << 16) | (_data[9] << 8) | _data[8]);
-
-        //        switch (_data[11] & 0x07)
-        //        {
-        //            case (int)Point.None:
-        //                break;
-
-        //            case (int)Point.Point1:
-        //                value /= 10.0;
-        //                break;
-
-        //            case (int)Point.Point2:
-        //                value /= 100.0;
-        //                break;
-
-        //            case (int)Point.Point3:
-        //                value /= 1000.0;
-        //                break;
-
-        //            case (int)Point.Point4:
-        //                value /= 10000.0;
-        //                break;
-
-        //            default:
-        //                return 0;
-        //        }
-
-        //        Logger.Info(value);
-        //        return value;
-        //    }
-        //}
-
-        public Range GetRange
+        public RangeCode GetRangeCode
         {
             get
             {
@@ -348,8 +573,8 @@ namespace ASMC.Devices.Port.APPA
                     throw new TimeoutException();
                 }
 
-                Logger.Info(((Range)_data[7]).ToString());
-                return (Range)_data[7];
+                Logger.Info(((RangeCode)_data[7]).ToString());
+                return (RangeCode)_data[7];
             }
         }
 
@@ -370,6 +595,9 @@ namespace ASMC.Devices.Port.APPA
             }
         }
 
+        /// <summary>
+        /// Позволяет получить дополнительные функции, включенные на дополнительном экране.
+        /// </summary>
         public Function GetSubFunction
         {
             get

@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AP.Utils.Data;
+using NLog;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -65,7 +65,7 @@ namespace APPA_107N_109N
 
         public override void RefreshDevice()
         {
-            AddresDevice = DeviceBase.AllStringConnect;
+            AddresDevice = IeeeBase.AllStringConnect;
 
         }
 
@@ -155,12 +155,18 @@ namespace APPA_107N_109N
 
     public abstract class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         #region Fields
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //список точек из методики поверки
-        readonly decimal[] _pointsArr = { (decimal)0.004, (decimal)0.008, (decimal)0.012, (decimal)0.016, (decimal)0.018, (decimal)-0.018 };
-        //множитель, соответсвующий пределу измерения
-        readonly decimal[] _multArr = { 1, 10, 100, 1000, 10000};
+        //базовые точки
+        static decimal[] basePoint = { (decimal)0.004, (decimal)0.008, (decimal)0.012, (decimal)0.016, (decimal)0.018, (decimal)-0.018 };
+        decimal[] dopPoint1000V = { 100, 200, 400, 700, 900, -900 };
+        //множители для пределов
+        decimal[] baseMultipliers = { 1, 10, 100, 1000, 10000 };
+        //итоговая таблица с точками
+        decimal[,] points = new decimal[basePoint.Length, basePoint.Length]; // это двумерный квадратный массив
+
         //эталон
         protected Calib5522A flkCalib5522A;
         //контрлируемый прибор
@@ -177,10 +183,43 @@ namespace APPA_107N_109N
            
         }
 
+        protected override void InitWork()
+        {
+            DataRow.Clear();
+            //создаем таблицу точек
+            //точки для пределов в вольтах
+            //от 20 мВ до 200 В
+            for (int i = 0; i < baseMultipliers.Length; i++)
+            for (int j = 0; j < basePoint.Length; j++)
+                points[i, j] = basePoint[j] * baseMultipliers[i];
+            //дописываем точки на предел 1000 В
+            for (int i = 0; i < dopPoint1000V.Length; i++)
+                points[5, i] = dopPoint1000V[i];
+
+            //теперь бежим по точкам
+            for(int i =0; i < basePoint.Length;i++)
+                for (int j = 0; j < basePoint.Length; j++)
+                {
+                    var operation = new BasicOperationVerefication<decimal>();
+                    operation.InitWork = async () =>
+                    {
+                        try
+                        {
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                        }
+                    };
+                }
+
+        }
+
 
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
+            
         }
 
         public override Task StartSinglWork(CancellationToken token, Guid guid)
@@ -192,18 +231,8 @@ namespace APPA_107N_109N
        
         {
             
-            //flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
-            //тут нужно проверять, если прибор не подключен, тогда прекращаем работу
-            if (flkCalib5522A.Open())
-            {
-                
-                return;
-            }
-            flkCalib5522A.Close();
-
-
             
-            
+            flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
             appa107N.StringConnection = GetStringConnect(appa107N);
             appa107N.Open();
 
@@ -222,8 +251,7 @@ namespace APPA_107N_109N
                 foreach (var t in _pointsArr)
                 {
                     flkCalib5522A.Out.Set.Voltage.Dc.SetValue(t * multiplaisArr[point]);
-
-
+                    
                     var valuesMeasure = new List<decimal>();
                     do
                     {

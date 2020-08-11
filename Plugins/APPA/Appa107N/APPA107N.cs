@@ -17,9 +17,9 @@ namespace Appa107N
         }
     }
 
-    public class OpertionFirsVerf : APPA_107N_109N
+    public class OpertionFirsVerf : ASMC.Data.Model.Operation
     {
-        public OpertionFirsVerf()
+        public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             UserItemOperation = new IUserItemOperationBase[]
             {
@@ -34,6 +34,16 @@ namespace Appa107N
                 new Oper9FarMeasure(this),
                 new Oper10TemperatureMeasure(this),
             };
+        }
+
+        public override void RefreshDevice()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void FindDivice()
+        {
+            throw new System.NotImplementedException();
         }
     }
 
