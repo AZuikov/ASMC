@@ -165,7 +165,7 @@ namespace ASMC.Devices.Port.APPA
               [StringValue("1000 В")]Range1000V,
               [StringValue("20 мА")]Range20mA,
               [StringValue("200 мА")]Range200mA,
-              //[StringValue("400 мА")]Range400mA,
+              [StringValue("400 мА")]Range400mA,
               [StringValue("2 А")]Range2A,
               [StringValue("10 А")]Range10A,
               [StringValue("200 Ом")]Range200Ohm,

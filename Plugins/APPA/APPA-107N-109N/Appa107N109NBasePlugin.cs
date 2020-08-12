@@ -177,11 +177,22 @@ namespace APPA_107N_109N
          public Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
 
          /// <summary>
+         /// Код предела измерения на приборе
+         /// </summary>
+        public Mult107_109N.RangeCode OperationDcRangeCode { get; protected set; }
+
+         /// <summary>
+         /// Режим операции измерения прибора
+         /// </summary>
+         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
+
+         /// <summary>
          /// Множитель единицы измерения текущей операции
          /// </summary>
          public Multipliers OpMultipliers { get; protected set; }
 
-
+         
+   
 
          public List<IBasicOperation<decimal>> DataRow { get; set; }
          //контрлируемый прибор
@@ -191,18 +202,19 @@ namespace APPA_107N_109N
 
         public Oper3DcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-                Name = "Определение погрешности измерения постоянного напряжения";
-                for (int i = 0; i < baseMultipliers.Length; i++)
-                    for (int j = 0; j < basePoint.Length; j++)
-                        points[i, j] = basePoint[j] * baseMultipliers[i];
+            Name = "Определение погрешности измерения постоянного напряжения";
+            for (int i = 0; i < baseMultipliers.Length; i++)
+                for (int j = 0; j < basePoint.Length; j++)
+                    points[i,j] = basePoint[j] * baseMultipliers[i];
 
-                for (int i = 0; i < dopPoint1000V.Length; i++)
-                    points[5, i] = dopPoint1000V[i];
+            for (int i = 0; i < dopPoint1000V.Length; i++)
+                points[5,i] = dopPoint1000V[i];
 
             DataRow = new List<IBasicOperation<decimal>>();
-                Sheme = ShemeTemplate.TemplateSheme;
-                //OperationDcRangeNominal = inRange; //номер предела в перечислении поверяемого прибора,это номер строки масиива с точками
-             }
+            Sheme = ShemeTemplate.TemplateSheme;
+            OpMultipliers = Multipliers.None;
+            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
+        }
 
              protected override DataTable FillData()
              {
@@ -226,10 +238,24 @@ namespace APPA_107N_109N
 
                         flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.Off);
 
-                        while (!this.Name.Equals(appa107N.GetRangeNominal.GetStringValue()))
-                            this.UserItemOperation.ServicePack.MessageBox.Show($"Установите режим измерения DCV, предел измерения {this.Name}",
+                        while (this.OperMeasureMode != appa107N.GetMeasureMode)
+                            this.UserItemOperation.ServicePack.MessageBox.Show($"Установите режим измерения DCV",
                                                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                                                MessageResult.OK);
+
+                        while (!this.Name.Equals(appa107N.GetRangeNominal.GetStringValue()) )
+                        {
+                            var curRange = (int) appa107N.GetRangeCode & 128;
+                            var targetRange = (int) this.OperationDcRangeCode & 128;
+                            int countPushRangeButton = 4 - curRange + (targetRange < curRange ? curRange : 0);
+
+                            this.UserItemOperation.ServicePack.MessageBox.Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {this.Name} "+
+                                                                              $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                                               MessageResult.OK);
+                        }
+
+                        
                     }
                     catch (Exception e)
                     {
@@ -303,6 +329,7 @@ namespace APPA_107N_109N
             //Жестко забиваем конкретный предел измерения
             Name = Mult107_109N.RangeNominal.Range2V.GetStringValue();
             OperationDcRangeNominal = inRangeNominal;
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
         }
     }
 
@@ -312,6 +339,7 @@ namespace APPA_107N_109N
         {
             //Жестко забиваем конкретный предел измерения
             Name = Mult107_109N.RangeNominal.Range20V.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationDcRangeNominal = inRangeNominal;
         }
     }
@@ -322,6 +350,7 @@ namespace APPA_107N_109N
         {
             //Жестко забиваем конкретный предел измерения
             Name = Mult107_109N.RangeNominal.Range200V.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationDcRangeNominal = inRangeNominal;
         }
 
@@ -333,6 +362,7 @@ namespace APPA_107N_109N
         {
             //Жестко забиваем конкретный предел измерения
             Name = Mult107_109N.RangeNominal.Range1000V.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationDcRangeNominal = inRangeNominal;
         }
     }
@@ -343,7 +373,9 @@ namespace APPA_107N_109N
         {
             //Жестко забиваем конкретный предел измерения
             Name = Mult107_109N.RangeNominal.Range20mV.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
+            this.OpMultipliers = Multipliers.Mili;
         }
     }
 
@@ -353,7 +385,9 @@ namespace APPA_107N_109N
         {
             //Жестко забиваем конкретный предел измерения
             Name = Mult107_109N.RangeNominal.Range200mV.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationDcRangeNominal = inRangeNominal;
+            this.OpMultipliers = Multipliers.Mili;
         }
     }
 
