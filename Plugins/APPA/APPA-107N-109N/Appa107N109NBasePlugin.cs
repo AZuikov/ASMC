@@ -205,6 +205,8 @@ namespace APPA_107N_109N
                     {
                         try
                         {
+                            flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
+                            appa107N.StringConnection = GetStringConnect(appa107N);
                         }
                         catch (Exception e)
                         {
@@ -230,17 +232,10 @@ namespace APPA_107N_109N
         public override async Task StartWork(CancellationToken cancellationToken)
        
         {
-            
-            
-            flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
-            appa107N.StringConnection = GetStringConnect(appa107N);
-            appa107N.Open();
-
-            
-
+           
             decimal[] multiplaisArr = { (decimal)0.1, 1, 10, (decimal)0.001, (decimal)0.01 };
             var ranges = new[]
-                {Mult107_109N.Range.Range1Manual, Mult107_109N.Range.Range2Manual, Mult107_109N.Range.Range3Manual};
+                {Mult107_109N.RangeCode.Range1Manual, Mult107_109N.RangeCode.Range2Manual, Mult107_109N.RangeCode.Range3Manual};
 
             decimal DcvMeas(int point)
             {
@@ -275,7 +270,7 @@ namespace APPA_107N_109N
                 do
                 {
                     //вывод окна сообщения о включении предела измерения  
-                } while (appa107N.GetRange != ranges[i]);
+                } while (appa107N.GetRangeCode != ranges[i]);
                 DcvMeas(i);
             }
 
