@@ -21,9 +21,11 @@ namespace Appa107N
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
+            var hghgh = new Oper1VisualTest(this);
+            hghgh.Nodes.Add(new Oper2Oprobovanie(this));
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new Oper1VisualTest(this),
+                hghgh,
                 new Oper2Oprobovanie(this),
                 new Oper3DcvMeasure(this),
                 new Oper4AcvMeasure(this),
@@ -58,6 +60,7 @@ namespace Appa107N
     {
         public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            this.Parent.
         }
     }
 

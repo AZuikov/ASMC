@@ -195,7 +195,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public abstract class Oper2DcvOutput : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper2DcvOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -320,7 +320,9 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = ShowTolleranceDialog(operation);
+                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                        "Повторить измерение этой точки?",
+                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -362,7 +364,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Измерение постоянного напряжения
     /// </summary>
-    public abstract class Oper3DcvMeasure : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -492,7 +494,9 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = ShowTolleranceDialog(operation);
+                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                        "Повторить измерение этой точки?",
+                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -534,7 +538,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public abstract class Oper4VoltUnstable : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -671,7 +675,9 @@ namespace B5_71_PRO_Abstract
             {
                 if (!operation.IsGood())
                 {
-                    var answer = ShowTolleranceDialog(operation);
+                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                    "Повторить измерение этой точки?",
+                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
@@ -709,7 +715,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public abstract class Oper5VoltPulsation : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -828,7 +834,9 @@ namespace B5_71_PRO_Abstract
             {
                 if (!operation.IsGood())
                 {
-                    var answer = ShowTolleranceDialog(operation);
+                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                    "Повторить измерение этой точки?",
+                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
@@ -871,7 +879,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public abstract class Oper6DciOutput : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper6DciOutput : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -991,7 +999,9 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = ShowTolleranceDialog(operation);
+                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                        "Повторить измерение этой точки?",
+                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -1033,7 +1043,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public abstract class Oper7DciMeasure : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper7DciMeasure : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1159,7 +1169,9 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = ShowTolleranceDialog(operation);
+                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                        "Повторить измерение этой точки?",
+                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -1200,7 +1212,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public abstract class Oper8DciUnstable : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper8DciUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1313,7 +1325,9 @@ namespace B5_71_PRO_Abstract
             {
                 if (!operation.IsGood())
                 {
-                    var answer = ShowTolleranceDialog(operation);
+                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                    "Повторить измерение этой точки?",
+                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
@@ -1351,7 +1365,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public abstract class Oper9DciPulsation : TolleranceDialog, IUserItemOperation<decimal>
+    public abstract class Oper9DciPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1478,7 +1492,9 @@ namespace B5_71_PRO_Abstract
             {
                 if (!operation.IsGood())
                 {
-                    var answer = ShowTolleranceDialog(operation);
+                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                    "Повторить измерение этой точки?",
+                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
