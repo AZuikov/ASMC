@@ -5,13 +5,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Math;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Port.APPA;
 using DevExpress.Mvvm;
 using NLog;
+using IDevice = ASMC.Data.Model.IDevice;
 
 namespace APPA_107N_109N
 {
@@ -155,20 +158,50 @@ namespace APPA_107N_109N
 
     #region DCV
 
-    public  class Oper3DcvMeasureBase : ParagraphBase
+    public  class Oper3DcvMeasureBase : ParagraphBase, IUserItemOperation<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //базовые точки
         public  readonly decimal[] basePoint =
             {(decimal) 0.004, (decimal) 0.008, (decimal) 0.012, (decimal) 0.016, (decimal) 0.018, (decimal) -0.018};
-        //множители для пределов
+        //множители для пределов.
+        //порядок множителей соответствует порядку пределов в перечислении мультиметров
         public  readonly decimal[] baseMultipliers = { 1, 10, 100, 1000, 10000 };
         //конкретные точки для последнего предела измерения 1000 В
          public  readonly decimal[] dopPoint1000V = { 100, 200, 400, 700, 900, -900 };
-         
+         public readonly  decimal[,] points = new decimal[6,6];
 
-             public Oper3DcvMeasureBase()
-             {
+         /// <summary>
+         /// Предел измерения поверяемого прибора, необходимый для работы
+         /// </summary>
+         public Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+
+         /// <summary>
+         /// Множитель единицы измерения текущей операции
+         /// </summary>
+         public Multipliers OpMultipliers { get; protected set; }
+
+
+
+         public List<IBasicOperation<decimal>> DataRow { get; set; }
+         //контрлируемый прибор
+         protected Mult107_109N appa107N;
+         //эталон
+         protected Calib5522A flkCalib5522A;
+
+        public Oper3DcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
                 Name = "Определение погрешности измерения постоянного напряжения";
+                for (int i = 0; i < baseMultipliers.Length; i++)
+                    for (int j = 0; j < basePoint.Length; j++)
+                        points[i, j] = basePoint[j] * baseMultipliers[i];
+
+                for (int i = 0; i < dopPoint1000V.Length; i++)
+                    points[5, i] = dopPoint1000V[i];
+
+            DataRow = new List<IBasicOperation<decimal>>();
+                Sheme = ShemeTemplate.TemplateSheme;
+                //OperationDcRangeNominal = inRange; //номер предела в перечислении поверяемого прибора,это номер строки масиива с точками
              }
 
              protected override DataTable FillData()
@@ -176,78 +209,11 @@ namespace APPA_107N_109N
                  return null;
              }
 
-             protected override void InitWork()
-             {
-                 return;
-             }
-
-             public override async Task StartSinglWork(CancellationToken token, Guid guid)
-             {
-                return;
-             }
-
-             public override async Task StartWork(CancellationToken token)
-             {
-                 return;
-             }
-    }
-
-    public class Oper3_1DC_2V_Measure : ParagraphBase, IUserItemOperationBase
-    {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //контрлируемый прибор
-        protected Mult107_109N appa107N;
-        //эталон
-        protected Calib5522A flkCalib5522A;
-    }
-
-    public class Oper3_1DC_20V_Measure : ParagraphBase, IUserItemOperationBase
-    {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //контрлируемый прибор
-        protected Mult107_109N appa107N;
-        //эталон
-        protected Calib5522A flkCalib5522A;
-    }
-
-    public class Oper3_1DC_200V_Measure : ParagraphBase, IUserItemOperationBase
-    {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //контрлируемый прибор
-        protected Mult107_109N appa107N;
-        //эталон
-        protected Calib5522A flkCalib5522A;
-    }
-
-    public class Oper3_1DC_1000V_Measure : ParagraphBase, IUserItemOperation<decimal>
-    {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //контрлируемый прибор
-        protected Mult107_109N appa107N;
-        //эталон
-        protected Calib5522A flkCalib5522A;
-
-        public Oper3_1DC_1000V_Measure()
-        {
-            Name = "1000 В";
-            DataRow = new List<IBasicOperation<decimal>>();
-            Sheme = ShemeTemplate.TemplateSheme;
-        }
-
-        protected override DataTable FillData()
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void InitWork()
         {
             DataRow.Clear();
             var par = Parent as Oper3DcvMeasureBase;
-            foreach (decimal currPoint in par.dopPoint1000V  )
+            foreach (decimal currPoint in par.dopPoint1000V)
             {
 
                 var operation = new BasicOperationVerefication<decimal>();
@@ -259,6 +225,11 @@ namespace APPA_107N_109N
                         flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
 
                         flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.Off);
+
+                        while (!this.Name.Equals(appa107N.GetRangeNominal.GetStringValue()))
+                            this.UserItemOperation.ServicePack.MessageBox.Show($"Установите режим измерения DCV, предел измерения {this.Name}",
+                                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                                               MessageResult.OK);
                     }
                     catch (Exception e)
                     {
@@ -271,7 +242,11 @@ namespace APPA_107N_109N
                     try
                     {
                         flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint);
+                        flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.On);
+                        Thread.Sleep(1000);
                         decimal measurePoint = (decimal)appa107N.GetValue();
+
+                        flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.Off);
 
                         operation.Getting = measurePoint;
                         operation.Expected = currPoint;
@@ -293,87 +268,92 @@ namespace APPA_107N_109N
                     {
                         var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                                         "Повторить измерение этой точки?",
-                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes) ;
+                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
 
                     return Task.FromResult(operation.IsGood());
                 };
-
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<decimal>)operation.Clone());
 
             }
         }
 
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
-            throw new NotImplementedException();
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
         }
 
-        public override async Task StartWork(CancellationToken token)
+             public override async Task StartWork(CancellationToken token)
+             {
+                InitWork();
+                foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(token);
+             }
+    }
+
+    public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            InitWork();
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range2V.GetStringValue();
+            OperationDcRangeNominal = inRangeNominal;
         }
     }
 
-    public  class Oper3_1DC_20mV_Measure : ParagraphBase, IUserItemOperationBase
+    public class Oper3_1DC_20V_Measure : Oper3DcvMeasureBase
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //контрлируемый прибор
-        protected Mult107_109N appa107N;
-        //эталон
-        protected Calib5522A flkCalib5522A;
-        private string range = "200 мВ";
-        protected override DataTable FillData()
+        public Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override void InitWork()
-        {
-            DataRow.Clear();
-        }
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range20V.GetStringValue();
+            OperationDcRangeNominal = inRangeNominal;
         }
     }
 
-    public  class Oper3_1DC_200mV_Measure : ParagraphBase, IUserItemOperationBase
+    public class Oper3_1DC_200V_Measure : Oper3DcvMeasureBase
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //контрлируемый прибор
-        protected Mult107_109N appa107N;
-        //эталон
-        protected Calib5522A flkCalib5522A;
-
-
-        protected override DataTable FillData()
+        public Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            throw new NotImplementedException();
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range200V.GetStringValue();
+            OperationDcRangeNominal = inRangeNominal;
         }
 
-        protected override void InitWork()
-        {
-            throw new NotImplementedException();
-        }
+    }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+    public class Oper3_1DC_1000V_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation):base(userItemOperation) 
         {
-            throw new NotImplementedException();
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range1000V.GetStringValue();
+            OperationDcRangeNominal = inRangeNominal;
         }
+    }
 
-        public override async Task StartWork(CancellationToken token)
+    public  class Oper3_1DC_20mV_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            throw new NotImplementedException();
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range20mV.GetStringValue();
+            OperationDcRangeNominal = inRangeNominal;
+        }
+    }
+
+    public  class Oper3_1DC_200mV_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range200mV.GetStringValue();
+            OperationDcRangeNominal = inRangeNominal;
         }
     }
 

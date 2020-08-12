@@ -105,8 +105,10 @@ namespace ASMC.Devices.Port.APPA
             Point4 = 0x04
         }
 
-        
-          public enum RangeMode
+        /// <summary>
+        /// Режимы переключения пределов ручной/авто.
+        /// </summary>
+          public enum RangeSwitchMode
           {
               Manual=0x80,
               Auto=0x00
@@ -115,14 +117,14 @@ namespace ASMC.Devices.Port.APPA
           /// <summary>
           /// Позволяет получить режим переключения пределов Auto/Manual
           /// </summary>
-          public RangeMode GetRangeMode
+          public RangeSwitchMode GetRangeSwitchMode
           {
               get
               {
                   
-                  if (((int)GetRangeCode & (int)RangeMode.Manual) == (int)RangeMode.Manual) 
-                      return RangeMode.Manual;
-                  return RangeMode.Auto;
+                  if (((int)GetRangeCode & (int)RangeSwitchMode.Manual) == (int)RangeSwitchMode.Manual) 
+                      return RangeSwitchMode.Manual;
+                  return RangeSwitchMode.Auto;
               }
           }
 
@@ -163,7 +165,7 @@ namespace ASMC.Devices.Port.APPA
               [StringValue("1000 В")]Range1000V,
               [StringValue("20 мА")]Range20mA,
               [StringValue("200 мА")]Range200mA,
-              [StringValue("400 мА")]Range400mA,
+              //[StringValue("400 мА")]Range400mA,
               [StringValue("2 А")]Range2A,
               [StringValue("10 А")]Range10A,
               [StringValue("200 Ом")]Range200Ohm,

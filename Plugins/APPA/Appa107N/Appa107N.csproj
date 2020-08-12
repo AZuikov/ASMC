@@ -49,6 +49,10 @@
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\ASMC.Devices\ASMC.Devices.csproj">
+      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
+      <Name>ASMC.Devices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\APPA-107N-109N\APPA-107N-109NBasePlugin.csproj">
       <Project>{2bc759a0-2e5f-46ef-aa23-555d6475ea6c}</Project>
       <Name>APPA-107N-109NBasePlugin</Name>

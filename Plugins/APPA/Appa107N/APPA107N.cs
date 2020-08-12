@@ -1,5 +1,6 @@
 ﻿using APPA_107N_109N;
 using ASMC.Data.Model;
+using ASMC.Devices.Port.APPA;
 
 namespace Appa107N
 {
@@ -21,13 +22,22 @@ namespace Appa107N
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
-            var hghgh = new Oper1VisualTest(this);
-            hghgh.Nodes.Add(new Oper2Oprobovanie(this));
-            UserItemOperation = new IUserItemOperationBase[]
+
+            var DcvMode = new Oper3DcvMeasureBase(this);
+                DcvMode.Nodes.Add(new Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal.Range1000V,this));
+                DcvMode.Nodes.Add(new Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal.Range200V, this));
+                DcvMode.Nodes.Add(new Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal.Range20V, this));
+                DcvMode.Nodes.Add(new Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
+                DcvMode.Nodes.Add(new Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
+                DcvMode.Nodes.Add(new Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal.Range200mV, this));
+
+
+                UserItemOperation = new IUserItemOperationBase[]
             {
-                hghgh,
+                new Oper1VisualTest(this),
+                
                 new Oper2Oprobovanie(this),
-                new Oper3DcvMeasure(this),
+                DcvMode,
                 new Oper4AcvMeasure(this),
                 new Oper5DcIMeasure(this),
                 new Oper6AcIMeasure(this),
@@ -60,7 +70,7 @@ namespace Appa107N
     {
         public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            this.Parent.
+           
         }
     }
 
