@@ -218,6 +218,10 @@
       <Project>{8056D2DD-58E0-4FE8-9FF2-95F11AE8A4AC}</Project>
       <Name>ASMC.Interpreter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Plugins\APPA\APPA-107N-109N\APPA-107N-109NBasePlugin.csproj">
+      <Project>{2bc759a0-2e5f-46ef-aa23-555d6475ea6c}</Project>
+      <Name>APPA-107N-109NBasePlugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Plugins\B5-71-PRO_Abstract\B5-71-PRO_Abstract.csproj">
       <Project>{9e15a5e6-f812-4e56-bf83-2b5c0d247f96}</Project>
       <Name>B5-71-PRO_Abstract</Name>

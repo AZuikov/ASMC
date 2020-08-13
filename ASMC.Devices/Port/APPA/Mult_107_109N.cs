@@ -4,6 +4,7 @@
 using AP.Utils.Data;
 using NLog;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
@@ -783,5 +784,21 @@ namespace ASMC.Devices.Port.APPA
         }
 
         #endregion Methods
+    }
+
+    public class MultAPPA107N : Mult107_109N
+    {
+        public MultAPPA107N()
+        {
+            UserType = "APPA-107N";
+        }
+    }
+
+    public class MultAPPA109N : Mult107_109N
+    {
+        public MultAPPA109N()
+        {
+            UserType = "APPA-109N";
+        }
     }
 }

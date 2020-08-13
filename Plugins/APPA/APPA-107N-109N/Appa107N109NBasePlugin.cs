@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Math;
@@ -47,7 +48,7 @@ namespace APPA_107N_109N
             ControlDevices = new IDevice[]
                 {new Device {Name = new[] {"5522A"}, Description = "Многофунциональный калибратор"}};
             TestDevices = new IDevice[]
-                {new Device {Name = new[] {"Appa-107N"}, Description = "Цифровой портативный мультиметр"}};
+                {new Device {Name = new[] {"APPA-107N"}, Description = "Цифровой портативный мультиметр"}};
 
             Accessories = new[]
             {
@@ -56,7 +57,7 @@ namespace APPA_107N_109N
                 "Интерфейсный кабель для прибора APPA-107N/APPA-109N USB-COM инфракрасный."
             };
 
-            DocumentName = "appa";
+            DocumentName = "APPA_107N_109N";
         }
 
         #region Methods
@@ -82,8 +83,28 @@ namespace APPA_107N_109N
             DataRow = new List<IBasicOperation<bool>>();
         }
 
+        protected override void InitWork()
+        {
+            var operation = new BasicOperation<bool>();
+            operation.Expected = true;
+            operation.IsGood = () => operation.Getting == operation.Expected;
+            operation.InitWork = () =>
+            {
+                var service = this.UserItemOperation.ServicePack.QuestionText;
+                service.Title = "Внешний осмотр";
+                service.Entity = (Document: "Документ", Assembly: Assembly.GetExecutingAssembly());
+                service.Show();
+                operation.Getting = true;
+                return Task.CompletedTask;
+            };
+
+            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            DataRow.Add(operation);
+        }
+
         #region Methods
 
+        /// <inheritdoc />
         protected override DataTable FillData()
         {
             var data = new DataTable();
@@ -96,10 +117,11 @@ namespace APPA_107N_109N
             return data;
         }
 
-        #endregion
+        #endregion Methods
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
+        /// <inheritdoc />
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
@@ -107,8 +129,12 @@ namespace APPA_107N_109N
                 await a.WorkAsync(token);
         }
 
-        public override async Task StartWork(CancellationToken cancellationToken)
+        /// <inheritdoc />
+        public override async Task StartWork(CancellationToken token)
         {
+            InitWork();
+            foreach (var dr in DataRow)
+                await dr.WorkAsync(token);
         }
     }
 
@@ -196,9 +222,9 @@ namespace APPA_107N_109N
 
          public List<IBasicOperation<decimal>> DataRow { get; set; }
          //контрлируемый прибор
-         protected Mult107_109N appa107N;
+         protected Mult107_109N appa107N { get; set; }
          //эталон
-         protected Calib5522A flkCalib5522A;
+         protected Calib5522A flkCalib5522A { get; set; }
 
         public Oper3DcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
