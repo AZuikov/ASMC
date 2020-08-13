@@ -96,6 +96,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         public CalibrMain SetValue(decimal value, Multipliers mult = Devices.Multipliers.None)
                         {
                             _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}V, 0{ JoinValueMult((double)0, Devices.Multipliers.None)}HZ");
+                            _calibrMain.Sinchronization();
                             return _calibrMain;
                         }
 

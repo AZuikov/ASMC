@@ -133,6 +133,7 @@ namespace AP.Math
             }
 
             values = valueList.Count < 3 ? null : valueList.ToArray();
+            //values =  valueList.ToArray();
             return numberOfDeleted > 0;
         }
 
@@ -160,8 +161,8 @@ namespace AP.Math
         /// </summary>
         /// <param name="graph">График, заданный координатами Y точек</param>
         /// <param name="pointY">Координата Y точки</param>
-        /// <param name="pointX">Координата Y точки</param>
-        /// <param name="min">Допустимое положительное смещение вниз от графика</param>
+        /// <param name="pointX">Координата X точки</param>
+        /// <param name="min">Допустимое отрицательное смещение вниз от графика</param>
         /// <param name="max">Допустимое положительное смещение вверх от графика</param>
         /// <returns></returns>
         public static bool IsPointNearGraph(decimal[] graph, decimal pointY, int pointX, decimal min, decimal max)

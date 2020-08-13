@@ -9,7 +9,7 @@ using System.IO.Ports;
 using System.Threading;
 using System.Timers;
 using Timer = System.Timers.Timer;
-using ASMC.Devices;
+
 
 namespace ASMC.Devices.Port.APPA
 {
@@ -497,12 +497,37 @@ namespace ASMC.Devices.Port.APPA
         }
 
         /// <summary>
-        /// Возвращает измеренное значение с прибора, приведенное к единицам в соответствии с множителем mult
+        /// Возвращает среднее арифметическое после countOfMeasure измерений. Исключает из выборки выбросы.
+        /// </summary>
+        /// <param name="countOfMeasure">Число необходимых измерений.</param>
+        /// <param name="mult">Множитель единицы измерений (миллиб кило и т.д.)</param>
+        /// <param name="generalDsiplay">Если флаг true, тогда возвращаются показания с основного экрана прибора. Иначе с второстепенного.</param>
+        /// <returns>Среднее арифметическое на основе выборки из countOfMeasure измерений.</returns>
+        public double GetValue(int countOfMeasure=10,Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
+        {
+            double resultValue;
+
+            decimal[] valBuffer = new decimal[countOfMeasure];
+            do
+            {
+                for (int i = 0; i < valBuffer.Length; i++)
+                    valBuffer[i] = (decimal)GetSingleValue(mult, generalDsiplay);
+            } while ( AP.Math.MathStatistics.IntoTreeSigma(valBuffer) );
+           
+
+            AP.Math.MathStatistics.Grubbs(ref valBuffer);
+            resultValue = (double)AP.Math.MathStatistics.GetArithmeticalMean(valBuffer);
+
+            return resultValue;
+        }
+
+        /// <summary>
+        /// Возвращает одно измеренное значение с прибора, приведенное к единицам в соответствии с множителем mult
         /// </summary>
         /// <param name="mult">Множитель единицы измерения.</param>
         /// <param name="generalDsiplay">Если флаг true, тогда возвращаются показания с основного экрана прибора. Иначе с второстепенного.</param>
         /// <returns></returns>
-        public double GetValue(Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
+        public double GetSingleValue(Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
         {
             SendQuery();
             double value;

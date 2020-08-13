@@ -279,7 +279,7 @@ namespace APPA_107N_109N
                         flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint);
                         flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.On);
                         Thread.Sleep(1000);
-                        decimal measurePoint = (decimal)appa107N.GetValue();
+                        decimal measurePoint = (decimal)appa107N.GetSingleValue();
 
                         flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.Off);
 
