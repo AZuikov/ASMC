@@ -332,7 +332,7 @@ namespace B5_71_PRO_Abstract
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<decimal>)operation.Clone());
-            };
+            }
         }
 
         private decimal ErrorCalculation(decimal inA)

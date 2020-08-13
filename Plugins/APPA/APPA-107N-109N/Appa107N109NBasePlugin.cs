@@ -245,14 +245,23 @@ namespace APPA_107N_109N
 
                         while (!this.Name.Equals(appa107N.GetRangeNominal.GetStringValue()) )
                         {
-                            var curRange = (int) appa107N.GetRangeCode & 128;
-                            var targetRange = (int) this.OperationDcRangeCode & 128;
-                            int countPushRangeButton = 4 - curRange + (targetRange < curRange ? curRange : 0);
+                            if (this.OpMultipliers == Multipliers.Mili)
+                                this.UserItemOperation.ServicePack.MessageBox.Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {this.Name} " +
+                                                                                   $"Нажмите на приборе клавишу Range 1 раз.",
+                                                                                   "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                                                   MessageResult.OK);
+                            else
+                            {
+                                var curRange = (int)appa107N.GetRangeCode & 128;
+                                var targetRange = (int)this.OperationDcRangeCode & 128;
+                                int countPushRangeButton = 4 - curRange + (targetRange < curRange ? curRange : 0);
 
-                            this.UserItemOperation.ServicePack.MessageBox.Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {this.Name} "+
-                                                                              $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                                               MessageResult.OK);
+                                this.UserItemOperation.ServicePack.MessageBox.Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {this.Name} " +
+                                                                                   $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                                                   "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                                                   MessageResult.OK);
+                            }
+                            
                         }
 
                         
