@@ -83,14 +83,15 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                         public CDc(CalibrMain calibrMain)
                         {
+                            Multipliers = calibrMain.Multipliers;
                             this._calibrMain = calibrMain;
                         }
 
                         /// <summary>
-                        /// Генерирует команду становки постоянного напряжения с указаным значением
+                        /// Генерирует команду установки постоянного напряжения с указаным значением
                         /// </summary>
-                        /// <param name="value">The value со</param>
-                        /// <param name = "mult"></param>
+                        /// <param name="value">Значение величины, которое необходимо установить.</param>
+                        /// <param name = "mult">Множитель единицы измрения (нано, кило, милли и т.д.)</param>
                         /// <returns>Сформированую команду</returns>
                         public CalibrMain SetValue(decimal value, Multipliers mult = Devices.Multipliers.None)
                         {

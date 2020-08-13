@@ -8,10 +8,18 @@ namespace ASMC.Devices
 {
     public abstract class HelpDeviceBase
     {
+        private ICommand[] _multipliers;
+
         public ICommand[] Multipliers
         {
-            get; protected set;
+            get { 
+                if(_multipliers==null) throw  new  NullReferenceException("Multipliers не инициализирован");
+                return _multipliers;
+
+            }
+            protected set =>  _multipliers = value;
         }
+
         /// <summary>
         /// Преобразут строку в double, может принимать строку с перечисленными значениями через запятую.
         /// </summary>

@@ -8,6 +8,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public Calib5522A()
         {
             UserType = "5522A";
+            
         } 
     }
 }
