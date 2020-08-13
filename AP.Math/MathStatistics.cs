@@ -132,8 +132,8 @@ namespace AP.Math
                 numberOfDeleted++;
             }
 
-            values = valueList.Count < 3 ? null : valueList.ToArray();
-            //values =  valueList.ToArray();
+            //values = valueList.Count < 3 ? null : valueList.ToArray();
+            values =  valueList.ToArray();
             return numberOfDeleted > 0;
         }
 
