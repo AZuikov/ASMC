@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AP.Math;
-using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
-using ASMC.Devices.IEEE;
+﻿using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
-using DevExpress.Mvvm;
-
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 //TODO:       Имя последовательного порта прописано жестко!!!!     Необходимо реализовать его настройку из ВНЕ - через интрефейс ASMC
 // ReSharper disable once CheckNamespace
@@ -27,10 +19,8 @@ namespace B5_71_1_PRO
             Operation = new Operation(service);
             Type = "Б5-71/1-ПРО";
             Range = "0 - 30 В; 0 - 10 А";
-
         }
     }
-
 
     public class Operation : OperationMetrControlBase
     {
@@ -51,11 +41,9 @@ namespace B5_71_1_PRO
                 new Device { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
                 new Device{ Name = new []{"34401A"},  Description = "Мультиметр"},
                 new Device{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
-
             };
 
             TestDevices = new IDevice[] { new Device { Name = new[] { "Б5-71/1-ПРО" }, Description = "источник питания" } };
-            
 
             //Необходимые аксесуары
             Accessories = new[]
@@ -71,15 +59,15 @@ namespace B5_71_1_PRO
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new Oper0VisualTest(this),
-                ////new Oper1Oprobovanie(this),
-                //new Oper2DcvOutput(this),
-                //new Oper3DcvMeasure(this),
-                //new Oper4VoltUnstable(this),
-                //new Oper6DciOutput(this),
-                //new Oper7DciMeasure(this),
-                //new Oper8DciUnstable(this),
-                //new Oper5VoltPulsation(this),
-                //new Oper9DciPulsation(this)
+                new Oper1Oprobovanie(this),
+                new Oper2DcvOutput(this),
+                new Oper3DcvMeasure(this),
+                new Oper4VoltUnstable(this),
+                new Oper6DciOutput(this),
+                new Oper7DciMeasure(this),
+                new Oper8DciUnstable(this),
+                new Oper5VoltPulsation(this),
+                new Oper9DciPulsation(this)
             };
         }
     }
@@ -118,12 +106,11 @@ namespace B5_71_1_PRO
             Bp = new B571Pro1();
             Mult = new Mult_34401A();
             Load = new N3306A();
-
         }
     }
 
     /// <summary>
-    /// Измерение постоянного напряжения 
+    /// Измерение постоянного напряжения
     /// </summary>
     public class Oper3DcvMeasure : B5_71_PRO_Abstract.Oper3DcvMeasure
     {
@@ -132,9 +119,7 @@ namespace B5_71_1_PRO
             Bp = new B571Pro1();
             Mult = new Mult_34401A();
             Load = new N3306A();
-
         }
-
     }
 
     /// <summary>
@@ -147,7 +132,6 @@ namespace B5_71_1_PRO
             Bp = new B571Pro1();
             Mult = new Mult_34401A();
             Load = new N3306A();
-
         }
     }
 
@@ -161,9 +145,9 @@ namespace B5_71_1_PRO
             Bp = new B571Pro1();
             Mult = new Mult_34401A();
             Load = new N3306A();
-
         }
     }
+
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
@@ -173,7 +157,6 @@ namespace B5_71_1_PRO
         {
             Bp = new B571Pro1();
             Load = new N3306A();
-
         }
     }
 
@@ -186,10 +169,8 @@ namespace B5_71_1_PRO
         {
             Bp = new B571Pro1();
             Load = new N3306A();
-
         }
     }
-
 
     /// <summary>
     /// Определение нестабильности выходного тока
@@ -200,10 +181,8 @@ namespace B5_71_1_PRO
         {
             Bp = new B571Pro1();
             Load = new N3306A();
-
         }
     }
-
 
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
@@ -215,11 +194,6 @@ namespace B5_71_1_PRO
             Bp = new B571Pro1();
             Load = new N3306A();
             Mult = new Mult_34401A();
-
         }
     }
-
-
-
-
 }

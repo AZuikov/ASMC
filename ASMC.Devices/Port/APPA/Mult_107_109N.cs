@@ -1,195 +1,64 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+using AP.Utils.Data;
+using NLog;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
-using NLog;
+using System.Timers;
+using Timer = System.Timers.Timer;
+
 
 namespace ASMC.Devices.Port.APPA
 {
     // ReSharper disable once InconsistentNaming
     public class Mult107_109N : ComPort
     {
-        private readonly System.Timers.Timer _wait;
-        private bool _flagTimeout;
-        private List<byte> _data;
-        //размер посылаемых данных от прибора
-        private const byte Cadr = 19;
-        //хранит считанные с прибора данные
-        private readonly List<byte> _readingBuffer;
-        //данные для начало обмена информацией с прибором
-        private readonly byte[] _sendData = { 0x55, 0x55, 0x00, 0x00, 0xAA };
-        private static readonly AutoResetEvent WaitEvent = new AutoResetEvent(false);
-
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _wait?.Dispose();
-            }
-        }
-
-        public override void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
-        /// Измеренное значение на основном экране
+        /// Единицы измерения мультиметра
         /// </summary>
-        public double GetGeneralValue
+        public enum Units
         {
-            get
-            {
-                SendQuery();
-                double value;
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-                switch (_data[11] & 0x07)
-                {
-                    case (int)Point.None:
-                        value = (_data[10] << 8) | (_data[9] << 8) | _data[8];
-                        break;
-                    case (int)Point.Point1:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 10.0;
-                        break;
-                    case (int)Point.Point2:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 100.0;
-                        break;
-                    case (int)Point.Point3:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 1000.0;
-                        break;
-                    case (int)Point.Point4:
-                        value = ((_data[10] << 8) | (_data[9] << 8) | _data[8]) / 10000.0;
-                        break;
-                    default:
-                        return 0;
-                }
-                Logger.Info(value);
-                return value; 
-            }
+            [DoubleValue(1)][StringValue("")] None,
+            [DoubleValue(1)][StringValue("В")] V,
+            [DoubleValue(1E-3)][StringValue("мВ")] mV,
+            [DoubleValue(1)][StringValue("А")] A,
+            [DoubleValue(1E-3)][StringValue("мА")] mA,
+            [DoubleValue(1)][StringValue("дБ")] dB,
+            [DoubleValue(1)][StringValue("дБм")] dBm,
+            [DoubleValue(1E-9)][StringValue("нФ")] nF,
+            [DoubleValue(1E-6)][StringValue("мкФ")] uF,
+            [DoubleValue(1E-3)][StringValue("мФ")] mF,
+            [DoubleValue(1)][StringValue("Ом")] Ohm,
+            [DoubleValue(1E3)][StringValue("кОм")] KOhm,
+            [DoubleValue(1E6)][StringValue("МОм")] MOhm,
+            [DoubleValue(1E9)][StringValue("ГОм")] GOhm,
+            [DoubleValue(1)][StringValue("%")] Percent,
+            [DoubleValue(1)][StringValue("Гц")] Hz,
+            [DoubleValue(1E3)][StringValue("кГц")] KHz,
+            [DoubleValue(1E6)][StringValue("МГц")] MHz,
+            [DoubleValue(1)][StringValue("℃")] CelciumGrad,
+            [DoubleValue(1)][StringValue("℉")] FaringeitGrad,
+            [DoubleValue(1)][StringValue("сек")] Sec,
+            [DoubleValue(1E-3)][StringValue("мсек")] mSec,
+            [DoubleValue(1E-9)][StringValue("нсек")] nSec,
+            [DoubleValue(1)][StringValue("В")] Volt,
+            [DoubleValue(1E-3)][StringValue("мВ")] mVolt,
+            [DoubleValue(1)][StringValue("А")] Amp,
+            [DoubleValue(1E-3)][StringValue("мА")] mAmp,
+            [DoubleValue(1)][StringValue("Ом")] Ohm2,
+            [DoubleValue(1E3)][StringValue("кОм")] KOhm2,
+            [DoubleValue(1E6)] [StringValue("МОм")] MOhm3
         }
 
-        /// <summary>
-        /// Значение со второй строки экрана (верхняя с мелким шрифтом)
-        /// </summary>
-        public double GetSubValue
+        public enum BlueState
         {
-            get
-            {
-                SendQuery();
-                double value;
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-                switch (_data[16] & 0x07)
-                {
-                    case (int)Point.None:
-                        value = (_data[15] << 8) | (_data[14] << 8) | _data[13];
-                        break;
-                    case (int)Point.Point1:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10.0;
-                        break;
-                    case (int)Point.Point2:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 100.0;
-                        break;
-                    case (int)Point.Point3:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 1000.0;
-                        break;
-                    case (int)Point.Point4:
-                        value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10000.0;
-                        break;
-                    default:
-                        return 0;
-                }
-                Logger.Info(value);
-                return value;
-            }
-        }
-
-        public Mult107_109N() 
-        {
-            _wait = new System.Timers.Timer();
-            _readingBuffer = new List<byte>();
-            _data = new List<byte>();
-            _flagTimeout = false;
-            _wait.Interval = 35000;
-            _wait.Elapsed += TWait_Elapsed;
-            _wait.AutoReset = false;
-        }
-        private void TWait_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            _flagTimeout = true;
-            WaitEvent.Set();
-        }
-        public void SendQuery()
-        {
-
-            if (Open())
-            {
-                Write(_sendData, 0, _sendData.Length);
-                _wait.Start();
-            }
-            else Close();
-
-        }
-
-      
-        /// <summary>
-        /// Положение переключатиля
-        /// </summary>
-        public enum Rotor
-        {
-            OFF = 0x00,
-            V = 0x01,
-            MV = 0x02,
-            Ohm = 0x03,
-            Diode = 0x04,
-            MA = 0x05,
-            A = 0x06,
-            Cap = 0x07,
-            Hz = 0x08,
-            Temp = 0x09
-        }
-        public enum Point
-        {
-            None = 0,
-            Point1 = 0x01,
-            Point2 = 0x02,
-            Point3 = 0x03,
-            Point4 = 0x04
-        }
-        public enum Range
-        {
-            Range1Manual = 0x80,
-            Range2Manual = 0x81,
-            Range3Manual = 0x82,
-            Range4Manual = 0x83,
-            Range5Manual = 0x84,
-            Range6Manual = 0x85,
-            Range7Manual = 0x86,
-            Range8Manual = 0x87,
-            Range1Auto = 0,
-            Range2Auto = 0x01,
-            Range3Auto = 0x02,
-            Range4Auto = 0x03,
-            Range5Auto = 0x04,
-            Range6Auto = 0x05,
-            Range7Auto = 0x06,
-            Range8Auto = 0x07
-
+            NoPress = 0,
+            OnPress = 0x01,
+            DoublePress = 0x02
         }
 
         public enum Function
@@ -228,73 +97,370 @@ namespace ASMC.Devices.Port.APPA
             LoginStamp = 0x33
         }
 
-        public enum BlueState
+          private enum Point
         {
-            NoPress = 0,
-            OnPress = 0x01,
-            DoublePress = 0x02
+            None = 0,
+            Point1 = 0x01,
+            Point2 = 0x02,
+            Point3 = 0x03,
+            Point4 = 0x04
         }
 
-
-
         /// <summary>
-        /// Получает данные с прибора, записывает их в буфер для проверки контрольной суммы.
+        /// Режимы переключения пределов ручной/авто.
         /// </summary>
-        /// <param name="sender">Устройство передающее данные</param>
-        /// <param name="e"></param>
-        protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+          public enum RangeSwitchMode
+          {
+              Manual=0x80,
+              Auto=0x00
+          }
+
+          /// <summary>
+          /// Позволяет получить режим переключения пределов Auto/Manual
+          /// </summary>
+          public RangeSwitchMode GetRangeSwitchMode
+          {
+              get
+              {
+                  
+                  if (((int)GetRangeCode & (int)RangeSwitchMode.Manual) == (int)RangeSwitchMode.Manual) 
+                      return RangeSwitchMode.Manual;
+                  return RangeSwitchMode.Auto;
+              }
+          }
+
+          /// <summary>
+          /// Коды переключатля прибора
+          /// </summary>
+          public enum RangeCode
         {
-            _readingBuffer.Clear();
-            var port = (SerialPort)sender;
-            try
+            Range1Manual = 0x80,
+            Range2Manual = 0x81,
+            Range3Manual = 0x82,
+            Range4Manual = 0x83,
+            Range5Manual = 0x84,
+            Range6Manual = 0x85,
+            Range7Manual = 0x86,
+            Range8Manual = 0x87,
+            Range1Auto = 0,
+            Range2Auto = 0x01,
+            Range3Auto = 0x02,
+            Range4Auto = 0x03,
+            Range5Auto = 0x04,
+            Range6Auto = 0x05,
+            Range7Auto = 0x06,
+            Range8Auto = 0x07
+        }
+
+          /// <summary>
+          /// Допустимые номиналы пределов измерения
+          /// </summary>
+          public enum RangeNominal
+          {
+              [StringValue("20 мВ")]Range20mV,
+              [StringValue("200 мВ")]Range200mV,
+              [StringValue("2 В")]Range2V, 
+              [StringValue("20 В ")]Range20V, 
+              [StringValue("200 В")]Range200V,
+              [StringValue("750 В")]Range750V, 
+              [StringValue("1000 В")]Range1000V,
+              [StringValue("20 мА")]Range20mA,
+              [StringValue("200 мА")]Range200mA,
+              [StringValue("400 мА")]Range400mA,
+              [StringValue("2 А")]Range2A,
+              [StringValue("10 А")]Range10A,
+              [StringValue("200 Ом")]Range200Ohm,
+              [StringValue("2 кОм")]Range2kOhm,
+              [StringValue("20 кОм")]Range20kOhm,
+              [StringValue("200 кОм")]Range200kOhm,
+              [StringValue("2 МОм")]Range2Mohm,
+              [StringValue("20 МОм")]Range20Mohm,
+              [StringValue("200 МОм")]Range200Mohm,
+              [StringValue("2 ГОм")]Range2Gohm,
+              [StringValue("4 нФ")]Range4nF,
+              [StringValue("40 нФ")]Range40nF,
+              [StringValue("400 нФ")]Range400nF,
+              [StringValue("4 мкФ")]Range4uF,
+              [StringValue("40 мкФ")]Range40uF,
+              [StringValue("400 мкФ")]Range400uF,
+              [StringValue("4 мФ")]Range4mF,
+              [StringValue("40 мФ")]Range40mF,
+              [StringValue("20 Гц")]Range20Hz,
+              [StringValue("200 Гц ")]Range200Hz,
+              [StringValue("2 кГц")]Range2kHz,
+              [StringValue("20 кГц")]Range20kHz,
+              [StringValue("200 кГц")]Range200kHz,
+              [StringValue("1 МГц")]Range1MHz,
+              [StringValue("400 ℃")]Range400degC, 
+              [StringValue("400 ℉")]Range400degF,
+              [StringValue("1200 ℃")]Range1200degC,
+              [StringValue("2192 ℉")]Range2192degF,
+              [StringValue("предел не установлен")]RangeNone
+
+        }
+
+          /// <summary>
+          /// Допустимые режимы змерения
+          /// </summary>
+          public enum MeasureMode {
+            [StringValue("Переменное напряжение")]ACV,
+            [StringValue("Переменное напряжение")]ACmV,
+            [StringValue("Постоянное напряжение")]DCV,
+            [StringValue("Постоянное напряжение")]DCmV,
+            [StringValue("Переменное ток")] ACI,
+            [StringValue("Переменное ток")] ACmA,
+            [StringValue("Постоянное ток")] DCI,
+            [StringValue("Постоянное ток")] DCmA,
+            [StringValue("Измерение переменного напряжения со смещением")]AC_DC_V,
+            [StringValue("Измерение переменного напряжения со смещением")]AC_DC_mV,
+            [StringValue("Измерение переменного тока со смещением")]AC_DC_I,
+            [StringValue("Измерение переменного тока со смещением")]AC_DC_mA,
+            [StringValue("Измерение сопртивления")]Ohm,
+            [StringValue("Измерение сопротивления малым напряжением")]LowOhm,
+            [StringValue("Испытание p-n переходов")]Diode,
+            [StringValue("Прозвонка цепей")]Beeper,
+            [StringValue("Измерение ёмкости")]Cap,
+            [StringValue("Измерение частоты")]Herz,
+            [StringValue("Измерение коэффициента заполнения")]DutyFactor,
+            [StringValue("Измерение температуры в град. Цельсия")]degC,
+            [StringValue("Измерение температуры в град. Фарингейта")]DegF,
+            [StringValue("Неизвестный режим")]None
+        }
+
+         /// <summary>
+         /// Возвращает информацию о текущем режиме измерения прибора
+         /// </summary>
+        public MeasureMode GetMeasureMode
+        {
+            get
             {
-                byte bt = (byte)port.ReadByte();
-                _readingBuffer.Add(bt);
-                while (_readingBuffer.Count < Cadr)
+                Rotor currRotor = GetRotor;
+                BlueState currBlueState = GetBlueState;
+
+                if (currRotor == Rotor.V && currBlueState == BlueState.NoPress) return MeasureMode.ACV;
+                if (currRotor == Rotor.V && currBlueState == BlueState.OnPress) return MeasureMode.DCV;
+                if (currRotor == Rotor.V && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_V;
+
+                if (currRotor == Rotor.mV && currBlueState == BlueState.NoPress) return MeasureMode.ACmV;
+                if (currRotor == Rotor.mV && currBlueState == BlueState.OnPress) return MeasureMode.DCmV;
+                if (currRotor == Rotor.mV && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_mV;
+
+                if (currRotor == Rotor.Ohm && currBlueState == BlueState.NoPress) return MeasureMode.Ohm;
+                if (currRotor == Rotor.Ohm && currBlueState == BlueState.OnPress) return MeasureMode.LowOhm;
+
+                if (currRotor == Rotor.Diode && currBlueState == BlueState.NoPress) return MeasureMode.Diode;
+                if (currRotor == Rotor.Diode && currBlueState == BlueState.OnPress) return MeasureMode.Beeper;
+
+                if (currRotor == Rotor.mA && currBlueState == BlueState.NoPress) return MeasureMode.ACmA;
+                if (currRotor == Rotor.mA && currBlueState == BlueState.OnPress) return MeasureMode.DCmA;
+                if (currRotor == Rotor.mA && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_mA;
+
+                if (currRotor == Rotor.A && currBlueState == BlueState.NoPress) return MeasureMode.ACI;
+                if (currRotor == Rotor.A && currBlueState == BlueState.OnPress) return MeasureMode.DCI;
+                if (currRotor == Rotor.A && currBlueState == BlueState.DoublePress) return MeasureMode.AC_DC_I;
+
+                if (currRotor == Rotor.Cap && currBlueState == BlueState.NoPress) return MeasureMode.Cap;
+
+                if (currRotor == Rotor.Hz && currBlueState == BlueState.NoPress) return MeasureMode.Herz;
+                if (currRotor == Rotor.Hz && currBlueState == BlueState.OnPress) return MeasureMode.DutyFactor;
+
+                if (currRotor == Rotor.Temp && currBlueState == BlueState.NoPress) return MeasureMode.degC;
+                if (currRotor == Rotor.Temp && currBlueState == BlueState.OnPress) return MeasureMode.DegF;
+
+                return MeasureMode.None;
+
+            }
+            
+        }
+
+         /// <summary>
+         /// Возвращает номинал текущего предела измерения
+         /// </summary>
+         public RangeNominal GetRangeNominal
+         {
+             get
+             {
+                 MeasureMode currMode = GetMeasureMode;
+                 RangeCode currRangeCode = GetRangeCode;
+
+                 if (currMode == MeasureMode.DCV)
+                 {
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range1000V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    return RangeNominal.Range2V;
+                 }
+
+                 if (currMode == MeasureMode.ACV)
+                 {
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    return RangeNominal.Range2V;
+                 }
+
+                 if (currMode == MeasureMode.AC_DC_V)
+                 {
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    return RangeNominal.Range2V;
+                 }
+                 
+                 if (currMode == MeasureMode.DCmV || currMode == MeasureMode.ACmV || currMode == MeasureMode.AC_DC_mV)
+                 {
+                    
+                     if (((int) currRangeCode & 1) == 1) return RangeNominal.Range200mV;
+                     return RangeNominal.Range20mV;
+                 }
+                 
+                
+                if (currMode == MeasureMode.DCmA || currMode == MeasureMode.ACmA || currMode == MeasureMode.AC_DC_mA)
                 {
-                    if (0x55 == _readingBuffer[0])
-                    {
-                        _readingBuffer.Add((byte)port.ReadByte());
-                    }
+                    
+                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range200mA;
+                    return RangeNominal.Range20mA;
                 }
-                DiscardInBuffer();
-                CheckControlSumm();
-                //Sp.DataReceived -= SerialPort_DataReceived;
-            }
-            catch (Exception a)
-            {
-                Logger.Error(a);
-            }
+                
+                if (currMode == MeasureMode.DCI || currMode == MeasureMode.ACI || currMode == MeasureMode.AC_DC_I)
+                {
+                    
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range10A;
+                    return RangeNominal.Range2A;
+                }
+                
+                if (currMode == MeasureMode.Ohm)
+                {
+                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range2Gohm;
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range200Mohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range20Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range2Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1)== 1) return RangeNominal.Range2kOhm;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range20kOhm;
+                    return RangeNominal.Range200Ohm;
+                }
 
+                
+                if (currMode == MeasureMode.LowOhm)
+                {
+
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range2Gohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range200Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range20Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range2Mohm;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20kOhm;
+                    return RangeNominal.Range2kOhm;
+                }
+               
+                if (currMode == MeasureMode.Cap)
+                {
+                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range40mF;
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range4mF;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range400uF;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range40uF;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range4uF;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range400nF;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range40nF;
+                    return RangeNominal.Range4nF;
+                }
+                
+                
+                if (currMode == MeasureMode.Herz)
+                {
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range1MHz;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range200kHz;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range20kHz;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range2kHz;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200Hz;
+                    return RangeNominal.Range20Hz;
+                }
+                
+
+                if (currMode == MeasureMode.degC)
+                {
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range1200degC;
+                    return RangeNominal.Range400degC;
+                }
+                
+
+                if (currMode == MeasureMode.DegF)
+                {
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range2192degF;
+                    return RangeNominal.Range400degF;
+
+                }
+
+                
+
+                return RangeNominal.RangeNone;
+             }
+         }
+
+         /// <summary>
+        /// Положение переключатиля
+        /// </summary>
+        public enum Rotor
+        {
+            OFF = 0x00,
+            [StringValue("В")] V = 0x01,
+            [StringValue("мВ")] mV = 0x02,
+            [StringValue("Ом")] Ohm = 0x03,
+            [StringValue("В")] Diode = 0x04,
+            [StringValue("мА")] mA = 0x05,
+            [StringValue("А")] A = 0x06,
+            [StringValue("Ф")] Cap = 0x07,
+            [StringValue("Гц")] Hz = 0x08,
+            Temp = 0x09
+        }
+
+        //размер посылаемых данных от прибора
+        private const byte Cadr = 19;
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private static readonly AutoResetEvent WaitEvent = new AutoResetEvent(false);
+
+        #region Fields
+
+        //хранит считанные с прибора данные
+        private readonly List<byte> _readingBuffer;
+
+        //данные для начало обмена информацией с прибором
+        private readonly byte[] _sendData = { 0x55, 0x55, 0x00, 0x00, 0xAA };
+
+        private readonly Timer _wait;
+        private List<byte> _data;
+        private bool _flagTimeout;
+
+        #endregion Fields
+
+        #region Property
+
+        /// <summary>
+        /// Позволяет получить информацию о текущих единицах измерения с основного экрана.
+        /// </summary>
+        public Units GetGeneralMeasureUnit
+        {
+            get
+            {
+                return (Units)(_data[11] >> 3);
+            }
         }
 
         /// <summary>
-        /// Проверка контрольной суммы полученных данных
+        /// Возвращает единицы измерения со второго экрана.
         /// </summary>
-        /// <returns></returns>
-        private void CheckControlSumm()
+        public Units GeSubMeasureUnit
         {
-            if (_readingBuffer.Count != Cadr) return ;
-            var chechSum = 0;
-            for (var i = 0; i < _readingBuffer.Count - 1; i++)
+            get
             {
-                chechSum = chechSum + _readingBuffer[i];
+                return (Units)(_data[16] >> 3);
             }
-            if (_readingBuffer[_readingBuffer.Count - 1] != (chechSum & 0xFF))
-            {
-                SendQuery();
-                WaitEvent.Reset();
-                return ;
-            }
-            //если сумма совпадает тогда считанные данные из буфера пишем в поле
-            _data = _readingBuffer;
-            _wait.Stop();
-            WaitEvent.Set();
-
         }
-        
 
-        public Range GetRange
+        public BlueState GetBlueState
         {
             get
             {
@@ -305,27 +471,15 @@ namespace ASMC.Devices.Port.APPA
                     _flagTimeout = false;
                     throw new TimeoutException();
                 }
-                Logger.Info(((Range)_data[7]).ToString());
-                return (Range)_data[7];
+
+                Logger.Info(((BlueState)_data[5]).ToString());
+                return (BlueState)_data[5];
             }
         }
 
-        public Function GetSubFunction
-        {
-            get
-            {
-                SendQuery();
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-                Logger.Info(((Function)_data[17]).ToString());
-                return (Function)_data[17];
-            }
-        }
-
+        /// <summary>
+        /// Позволяет получить статус включенных дополнительных функций прибора
+        /// </summary>
         public Function GetGeneralFunction
         {
             get
@@ -337,8 +491,118 @@ namespace ASMC.Devices.Port.APPA
                     _flagTimeout = false;
                     throw new TimeoutException();
                 }
+
                 Logger.Info(((Function)_data[12]).ToString());
                 return (Function)_data[12];
+            }
+        }
+
+        /// <summary>
+        /// Возвращает среднее арифметическое после countOfMeasure измерений. Исключает из выборки выбросы.
+        /// </summary>
+        /// <param name="countOfMeasure">Число необходимых измерений.</param>
+        /// <param name="mult">Множитель единицы измерений (миллиб кило и т.д.)</param>
+        /// <param name="generalDsiplay">Если флаг true, тогда возвращаются показания с основного экрана прибора. Иначе с второстепенного.</param>
+        /// <returns>Среднее арифметическое на основе выборки из countOfMeasure измерений.</returns>
+        public double GetValue(int countOfMeasure=10,Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
+        {
+            double resultValue;
+
+            decimal[] valBuffer = new decimal[countOfMeasure];
+            do
+            {
+                for (int i = 0; i < valBuffer.Length; i++)
+                    valBuffer[i] = (decimal)GetSingleValue(mult, generalDsiplay);
+            } while ( AP.Math.MathStatistics.IntoTreeSigma(valBuffer) );
+           
+
+            AP.Math.MathStatistics.Grubbs(ref valBuffer);
+            resultValue = (double)AP.Math.MathStatistics.GetArithmeticalMean(valBuffer);
+
+            return resultValue;
+        }
+
+        /// <summary>
+        /// Возвращает одно измеренное значение с прибора, приведенное к единицам в соответствии с множителем mult
+        /// </summary>
+        /// <param name="mult">Множитель единицы измерения.</param>
+        /// <param name="generalDsiplay">Если флаг true, тогда возвращаются показания с основного экрана прибора. Иначе с второстепенного.</param>
+        /// <returns></returns>
+        public double GetSingleValue(Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
+        {
+            SendQuery();
+            double value;
+            WaitEvent.WaitOne();
+            if (_flagTimeout)
+            {
+                _flagTimeout = false;
+                throw new TimeoutException();
+            }
+            // по умолчанию запрашиваем показания с главного экрана
+            if (generalDsiplay)
+            {
+                if (_data[10] == 255)
+                    value = ~((0xff - _data[10] << 16) | (0xff - _data[9] << 8) | (0xff - _data[8])) - 1;
+                else value = ((_data[10] << 16) | (_data[9] << 8) | _data[8]);
+                value= GetPointInfo(value, _data[11]);
+             
+            }
+            //если запрашиваются показания со второго экрана
+            else
+            {
+                if (_data[15] == 255)
+                    value = ~((0xff - _data[15] << 16) | (0xff - _data[14] << 8) | (0xff - _data[13])) - 1;
+                else value = ((_data[15] << 16) | (_data[14] << 8) | _data[13]);
+                value = GetPointInfo(value, _data[16]);
+            }
+
+            double GetPointInfo(double val,byte addres)
+            {
+                switch (addres & 0x07)
+                {
+                    case (int)Point.Point1:
+                        return val /= 10.0;
+                        
+
+                    case (int)Point.Point2:
+                        return val /= 100.0;
+                        
+
+                    case (int)Point.Point3:
+                        return val /= 1000.0;
+                       
+                    case (int)Point.Point4:
+                      return val /= 10000.0;
+                    default:
+                        return val;
+
+                }
+            }
+
+
+            Logger.Info(value);
+
+            value *= GetGeneralMeasureUnit.GetDoubleValue();
+
+            return DoubleToDoubleMind(value, mult);
+        }
+
+        
+
+        public RangeCode GetRangeCode
+        {
+            get
+            {
+                SendQuery();
+                WaitEvent.WaitOne();
+                if (_flagTimeout)
+                {
+                    _flagTimeout = false;
+                    throw new TimeoutException();
+                }
+
+                Logger.Info(((RangeCode)_data[7]).ToString());
+                return (RangeCode)_data[7];
             }
         }
 
@@ -353,11 +617,16 @@ namespace ASMC.Devices.Port.APPA
                     _flagTimeout = false;
                     throw new TimeoutException();
                 }
+
                 Logger.Info(((Rotor)_data[4]).ToString());
                 return (Rotor)_data[4];
             }
         }
-        public BlueState GetBlueState
+
+        /// <summary>
+        /// Позволяет получить дополнительные функции, включенные на дополнительном экране.
+        /// </summary>
+        public Function GetSubFunction
         {
             get
             {
@@ -368,9 +637,168 @@ namespace ASMC.Devices.Port.APPA
                     _flagTimeout = false;
                     throw new TimeoutException();
                 }
-                Logger.Info(((BlueState)_data[5]).ToString());
-                return (BlueState)_data[5];
+
+                Logger.Info(((Function)_data[17]).ToString());
+                return (Function)_data[17];
             }
+        }
+
+        ///// <summary>
+        ///// Значение со второй строки экрана (верхняя с мелким шрифтом)
+        ///// </summary>
+        //public double GetSubValue
+        //{
+        //    get
+        //    {
+        //        SendQuery();
+        //        double value;
+        //        WaitEvent.WaitOne();
+        //        if (_flagTimeout)
+        //        {
+        //            _flagTimeout = false;
+        //            throw new TimeoutException();
+        //        }
+
+        //        switch (_data[16] & 0x07)
+        //        {
+        //            case (int)Point.None:
+        //                value = (_data[15] << 8) | (_data[14] << 8) | _data[13];
+        //                break;
+
+        //            case (int)Point.Point1:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10.0;
+        //                break;
+
+        //            case (int)Point.Point2:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 100.0;
+        //                break;
+
+        //            case (int)Point.Point3:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 1000.0;
+        //                break;
+
+        //            case (int)Point.Point4:
+        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10000.0;
+        //                break;
+
+        //            default:
+        //                return 0;
+        //        }
+
+        //        Logger.Info(value);
+        //        return value;
+        //    }
+        //}
+
+        #endregion Property
+
+        public Mult107_109N()
+        {
+            _wait = new Timer();
+            _readingBuffer = new List<byte>();
+            _data = new List<byte>();
+            _flagTimeout = false;
+            _wait.Interval = 35000;
+            _wait.Elapsed += TWait_Elapsed;
+            _wait.AutoReset = false;
+        }
+
+        #region Methods
+
+        public override void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public void SendQuery()
+        {
+            if (Open())
+            {
+                Write(_sendData, 0, _sendData.Length);
+                _wait.Start();
+            }
+            else
+            {
+                Close();
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing) _wait?.Dispose();
+        }
+
+        /// <summary>
+        /// Получает данные с прибора, записывает их в буфер для проверки контрольной суммы.
+        /// </summary>
+        /// <param name = "sender">Устройство передающее данные</param>
+        /// <param name = "e"></param>
+        protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            _readingBuffer.Clear();
+            var port = (SerialPort)sender;
+            try
+            {
+                var bt = (byte)port.ReadByte();
+                _readingBuffer.Add(bt);
+                while (_readingBuffer.Count < Cadr)
+                    if (0x55 == _readingBuffer[0])
+                        _readingBuffer.Add((byte)port.ReadByte());
+                DiscardInBuffer();
+                CheckControlSumm();
+                //Sp.DataReceived -= SerialPort_DataReceived;
+            }
+            catch (Exception a)
+            {
+                Logger.Error(a);
+            }
+        }
+
+        /// <summary>
+        /// Проверка контрольной суммы полученных данных
+        /// </summary>
+        /// <returns></returns>
+        private void CheckControlSumm()
+        {
+            if (_readingBuffer.Count != Cadr) return;
+            var chechSum = 0;
+            for (var i = 0; i < _readingBuffer.Count - 1; i++) chechSum = chechSum + _readingBuffer[i];
+            if (_readingBuffer[_readingBuffer.Count - 1] != (chechSum & 0xFF))
+            {
+                SendQuery();
+                WaitEvent.Reset();
+                return;
+            }
+
+            //если сумма совпадает тогда считанные данные из буфера пишем в поле
+            _data = _readingBuffer;
+            _wait.Stop();
+            WaitEvent.Set();
+        }
+
+        private void TWait_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _flagTimeout = true;
+            WaitEvent.Set();
+        }
+
+        #endregion Methods
+    }
+
+    public class MultAPPA107N : Mult107_109N
+    {
+        public MultAPPA107N()
+        {
+            UserType = "APPA-107N";
+        }
+    }
+
+    public class MultAPPA109N : Mult107_109N
+    {
+        public MultAPPA109N()
+        {
+            UserType = "APPA-109N";
         }
     }
 }

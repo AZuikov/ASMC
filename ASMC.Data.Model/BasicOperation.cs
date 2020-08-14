@@ -126,5 +126,14 @@ namespace ASMC.Data.Model
             var @base = (MeasuringOperation<T>)base.Clone();
             return new BasicOperationVerefication<T> { LowerTolerance = LowerTolerance, UpperTolerance = UpperTolerance, ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
+
+        public override string ToString()
+        {
+            return $"Текущая точка {this.Expected} не проходит по допуску:\n" +
+                   $"Минимально допустимое значение {this.LowerTolerance}\n" +
+                   $"Максимально допустимое значение {this.UpperTolerance}\n" +
+                   $"Допустимое значение погрешности {this.Error}\n" +
+                   $"ИЗМЕРЕННОЕ значение {this.Getting}\n\n";
+        }
     }
 }

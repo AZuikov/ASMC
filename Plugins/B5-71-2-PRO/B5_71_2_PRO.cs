@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ASMC.Data.Model;
+﻿using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
-
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 // !!!!!!!! Внимание !!!!!!!!!
 //  Имя последовательного порта прописано жестко!!!!
@@ -21,10 +20,7 @@ namespace B5_71_2_PRO
             Type = "Б5-71/2-ПРО";
             Range = "0 - 50 В; 0 - 6 А";
             Operation = new Operation(service);
-
         }
-        
-       
     }
 
     public class Operation : OperationMetrControlBase
@@ -46,7 +42,6 @@ namespace B5_71_2_PRO
                 new Device { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
                 new Device{ Name = new []{"34401A"},  Description = "Мультиметр"},
                 new Device{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
-
             };
 
             TestDevices = new IDevice[] { new Device { Name = new[] { "Б5-71/2-ПРО" }, Description = "источник питания" } };
@@ -112,12 +107,11 @@ namespace B5_71_2_PRO
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
             Load = new N3306A();
-            
         }
     }
 
     /// <summary>
-    /// Измерение постоянного напряжения 
+    /// Измерение постоянного напряжения
     /// </summary>
     public class Oper3DcvMeasure : B5_71_PRO_Abstract.Oper3DcvMeasure
     {
@@ -126,9 +120,7 @@ namespace B5_71_2_PRO
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
             Load = new N3306A();
-            
         }
-
     }
 
     /// <summary>
@@ -141,7 +133,6 @@ namespace B5_71_2_PRO
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
             Load = new N3306A();
-            
         }
     }
 
@@ -155,9 +146,9 @@ namespace B5_71_2_PRO
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
             Load = new N3306A();
-            
         }
     }
+
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
@@ -167,7 +158,6 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Load = new N3306A();
-            
         }
     }
 
@@ -180,10 +170,8 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Load = new N3306A();
-            
         }
     }
-
 
     /// <summary>
     /// Определение нестабильности выходного тока
@@ -194,10 +182,8 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Load = new N3306A();
-            
         }
     }
-
 
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
@@ -209,12 +195,6 @@ namespace B5_71_2_PRO
             Bp = new B571Pro2();
             Load = new N3306A();
             Mult = new Mult_34401A();
-            
         }
     }
-
-
-
-
-
 }

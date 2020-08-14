@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Math;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Port.APPA;
 using DevExpress.Mvvm;
-
+using NLog;
+using IDevice = ASMC.Data.Model.IDevice;
 
 namespace APPA_107N_109N
 {
@@ -20,14 +24,9 @@ namespace APPA_107N_109N
     {
         public Appa107N109NBasePlugin(ServicePack service) : base(service)
         {
-            
             Grsi = "20085-11";
-            
         }
-
-       
     }
-
 
     public class Operation : OperationMetrControlBase
     {
@@ -41,17 +40,15 @@ namespace APPA_107N_109N
         }
     }
 
-    
-
     public abstract class OpertionFirsVerf : ASMC.Data.Model.Operation
     {
-        
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             //Необходимые устройства
-            ControlDevices = new IDevice[] { new Device {Name = new []{"5522A"}, Description = "Многофунциональный калибратор"}};
-            TestDevices = new IDevice[]{ new Device { Name = new[] { "Appa-107N" }, Description = "Цифровой портативный мультиметр" } };
-
+            ControlDevices = new IDevice[]
+                {new Device {Name = new[] {"5522A"}, Description = "Многофунциональный калибратор"}};
+            TestDevices = new IDevice[]
+                {new Device {Name = new[] {"APPA-107N"}, Description = "Цифровой портативный мультиметр"}};
 
             Accessories = new[]
             {
@@ -60,32 +57,54 @@ namespace APPA_107N_109N
                 "Интерфейсный кабель для прибора APPA-107N/APPA-109N USB-COM инфракрасный."
             };
 
-            this.DocumentName = "appa";
+            DocumentName = "APPA_107N_109N";
         }
 
-        public override void RefreshDevice()
-        {
-            AddresDevice = IeeeBase.AllStringConnect;
-
-        }
+        #region Methods
 
         public override void FindDivice()
         {
             throw new NotImplementedException();
         }
+
+        public override void RefreshDevice()
+        {
+            AddresDevice = IeeeBase.AllStringConnect;
+        }
+
+        #endregion
     }
- 
 
     public abstract class Oper1VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
-        public List<IBasicOperation<bool>> DataRow { get; set; }
-
         public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Внешний осмотр";
             DataRow = new List<IBasicOperation<bool>>();
         }
 
+        protected override void InitWork()
+        {
+            var operation = new BasicOperation<bool>();
+            operation.Expected = true;
+            operation.IsGood = () => operation.Getting == operation.Expected;
+            operation.InitWork = () =>
+            {
+                var service = this.UserItemOperation.ServicePack.QuestionText;
+                service.Title = "Внешний осмотр";
+                service.Entity = (Document: "Документ", Assembly: Assembly.GetExecutingAssembly());
+                service.Show();
+                operation.Getting = true;
+                return Task.CompletedTask;
+            };
+
+            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+            DataRow.Add(operation);
+        }
+
+        #region Methods
+
+        /// <inheritdoc />
         protected override DataTable FillData()
         {
             var data = new DataTable();
@@ -98,6 +117,11 @@ namespace APPA_107N_109N
             return data;
         }
 
+        #endregion Methods
+
+        public List<IBasicOperation<bool>> DataRow { get; set; }
+
+        /// <inheritdoc />
         public override async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
@@ -105,25 +129,24 @@ namespace APPA_107N_109N
                 await a.WorkAsync(token);
         }
 
-
-
-        public override async Task StartWork(CancellationTokenSource token)
+        /// <inheritdoc />
+        public override async Task StartWork(CancellationToken token)
         {
-           
+            InitWork();
+            foreach (var dr in DataRow)
+                await dr.WorkAsync(token);
         }
-
-        
     }
 
     public abstract class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
-        public List<IBasicOperation<bool>> DataRow { get; set; }
-
         public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
             DataRow = new List<IBasicOperation<bool>>();
         }
+
+        #region Methods
 
         protected override DataTable FillData()
         {
@@ -136,291 +159,522 @@ namespace APPA_107N_109N
             return data;
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public List<IBasicOperation<bool>> DataRow { get; set; }
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
-       
+        public override async Task StartWork(CancellationToken cancellationToken)
+
         {
-            var bo = new BasicOperation<bool> { Expected = true };
+            var bo = new BasicOperation<bool> {Expected = true};
             //bo.IsGood = s => bo.Getting;
 
             DataRow.Add(bo);
         }
-
-        
     }
 
-    public abstract class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
+
+
+    //////////////////////////////******DCV*******///////////////////////////////
+
+    #region DCV
+
+    public  class Oper3DcvMeasureBase : ParagraphBase, IUserItemOperation<decimal>
     {
-        #region Fields
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
-        //список точек из методики поверки
-        readonly decimal[] _pointsArr = { (decimal)0.004, (decimal)0.008, (decimal)0.012, (decimal)0.016, (decimal)0.018, (decimal)-0.018 };
-        //множитель, соответсвующий пределу измерения
-        readonly decimal[] _multArr = { 1, 10, 100, 1000, 10000};
-        //эталон
-        protected Calib5522A flkCalib5522A;
-        //контрлируемый прибор
-        protected Mult107_109N appa107N;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        //базовые точки
+        public  readonly decimal[] basePoint =
+            {(decimal) 0.004, (decimal) 0.008, (decimal) 0.012, (decimal) 0.016, (decimal) 0.018, (decimal) -0.018};
+        //множители для пределов.
+        //порядок множителей соответствует порядку пределов в перечислении мультиметров
+        public  readonly decimal[] baseMultipliers = { 1, 10, 100, 1000, 10000 };
+        //конкретные точки для последнего предела измерения 1000 В
+         public  readonly decimal[] dopPoint1000V = { 100, 200, 400, 700, 900, -900 };
+         public readonly  decimal[,] points = new decimal[6,6];
 
+         /// <summary>
+         /// Предел измерения поверяемого прибора, необходимый для работы
+         /// </summary>
+         public Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
 
-        #endregion
+         /// <summary>
+         /// Код предела измерения на приборе
+         /// </summary>
+        public Mult107_109N.RangeCode OperationDcRangeCode { get; protected set; }
 
+         /// <summary>
+         /// Режим операции измерения прибора
+         /// </summary>
+         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
-        public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+         /// <summary>
+         /// Множитель единицы измерения текущей операции
+         /// </summary>
+         public Multipliers OpMultipliers { get; protected set; }
+
+         
+   
+
+         public List<IBasicOperation<decimal>> DataRow { get; set; }
+         //контрлируемый прибор
+         protected Mult107_109N appa107N { get; set; }
+         //эталон
+         protected Calib5522A flkCalib5522A { get; set; }
+
+        public Oper3DcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения постоянного напряжения";
+            for (int i = 0; i < baseMultipliers.Length; i++)
+                for (int j = 0; j < basePoint.Length; j++)
+                    points[i,j] = basePoint[j] * baseMultipliers[i];
+
+            for (int i = 0; i < dopPoint1000V.Length; i++)
+                points[5,i] = dopPoint1000V[i];
+
             DataRow = new List<IBasicOperation<decimal>>();
-           
+            Sheme = ShemeTemplate.TemplateSheme;
+            OpMultipliers = Multipliers.None;
+            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
 
+             protected override DataTable FillData()
+             {
+                 return null;
+             }
 
-        protected override DataTable FillData()
+        protected override void InitWork()
         {
-            throw new NotImplementedException();
-        }
-
-        public override void StartSinglWork(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationTokenSource token)
-       
-        {
-            
-            flkCalib5522A.SetStringconection(this.UserItemOperation.ControlDevices.First().StringConnect);
-            //тут нужно проверять, если прибор не подключен, тогда прекращаем работу
-            if (flkCalib5522A.Open())
+            DataRow.Clear();
+            var par = Parent as Oper3DcvMeasureBase;
+            foreach (decimal currPoint in par.dopPoint1000V)
             {
-                
-                return;
-            }
-            flkCalib5522A.Close();
 
-
-            
-            
-            appa107N.StringConnection = GetStringConnect(appa107N);
-            appa107N.Open();
-
-            
-
-            decimal[] multiplaisArr = { (decimal)0.1, 1, 10, (decimal)0.001, (decimal)0.01 };
-            var ranges = new[]
-                {Mult107_109N.Range.Range1Manual, Mult107_109N.Range.Range2Manual, Mult107_109N.Range.Range3Manual};
-
-            decimal DcvMeas(int point)
-            {
-                var countMeas = 10;
-                decimal resultVal = 0;
-                flkCalib5522A.Out.Set.Voltage.Dc.SetValue(0).Out.SetOutput(CalibrMain.COut.State.On);  
-
-                foreach (var t in _pointsArr)
+                var operation = new BasicOperationVerefication<decimal>();
+                operation.InitWork = async () =>
                 {
-                    flkCalib5522A.Out.Set.Voltage.Dc.SetValue(t * multiplaisArr[point]);
-
-
-                    var valuesMeasure = new List<decimal>();
-                    do
+                    try
                     {
-                        for (int j = 0; j < countMeas; )
-                            valuesMeasure.Add((decimal)appa107N.Value);
+                        appa107N.StringConnection = GetStringConnect(appa107N);
+                        flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
 
-                    } while (!AP.Math.MathStatistics.IntoTreeSigma(valuesMeasure.ToArray())); // пока показания не стабилизировались будут проводиться измерения
-                    //Теперь уберем выбросы
-                    var array = valuesMeasure.ToArray();
-                    AP.Math.MathStatistics.Grubbs(ref array);
-                    //вычисляем среднее значение и округляем
-                    resultVal = AP.Math.MathStatistics.GetArithmeticalMean(array);
-                    AP.Math.MathStatistics.Round(ref resultVal, 4);
-                }
+                        flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.Off);
 
-                return resultVal;
-            }
+                        while (this.OperMeasureMode != appa107N.GetMeasureMode)
+                            this.UserItemOperation.ServicePack.MessageBox.Show($"Установите режим измерения DCV",
+                                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                                               MessageResult.OK);
 
-            for (int i = 0; i < 3; i++)
-            {
-                do
+                        while (!this.Name.Equals(appa107N.GetRangeNominal.GetStringValue()) )
+                        {
+                            if (this.OpMultipliers == Multipliers.Mili)
+                                this.UserItemOperation.ServicePack.MessageBox.Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {this.Name} " +
+                                                                                   $"Нажмите на приборе клавишу Range 1 раз.",
+                                                                                   "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                                                   MessageResult.OK);
+                            else
+                            {
+                                var curRange = (int)appa107N.GetRangeCode & 128;
+                                var targetRange = (int)this.OperationDcRangeCode & 128;
+                                int countPushRangeButton = 4 - curRange + (targetRange < curRange ? curRange : 0);
+
+                                this.UserItemOperation.ServicePack.MessageBox.Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {this.Name} " +
+                                                                                   $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                                                   "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                                                   MessageResult.OK);
+                            }
+                            
+                        }
+
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+                };
+
+                operation.BodyWork = () =>
                 {
-                    //вывод окна сообщения о включении предела измерения  
-                } while (appa107N.GetRange != ranges[i]);
-                DcvMeas(i);
+                    try
+                    {
+                        flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint);
+                        flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.On);
+                        Thread.Sleep(1000);
+                        decimal measurePoint = (decimal)appa107N.GetSingleValue();
+
+                        flkCalib5522A.Out.SetOutput(Calib5522A.COut.State.Off);
+
+                        operation.Getting = measurePoint;
+                        operation.Expected = currPoint;
+                        operation.ErrorCalculation = (decimal inA, decimal inB) => (decimal)0.0006 * currPoint + (decimal)(10 * 0.1);
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                                                 (operation.Getting > operation.LowerTolerance);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+                operation.CompliteWork = () =>
+                {
+                    if (!operation.IsGood())
+                    {
+                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                        "Повторить измерение этой точки?",
+                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    return Task.FromResult(operation.IsGood());
+                };
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<decimal>)operation.Clone());
+
             }
-
-
-
-
-
-
-
-
-
-
         }
 
-        
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
+        }
+
+             public override async Task StartWork(CancellationToken token)
+             {
+                InitWork();
+                foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(token);
+             }
     }
+
+    public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range2V.GetStringValue();
+            OperationDcRangeNominal = inRangeNominal;
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
+        }
+    }
+
+    public class Oper3_1DC_20V_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range20V.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range2Manual;
+            OperationDcRangeNominal = inRangeNominal;
+        }
+    }
+
+    public class Oper3_1DC_200V_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range200V.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range3Manual;
+            OperationDcRangeNominal = inRangeNominal;
+        }
+
+    }
+
+    public class Oper3_1DC_1000V_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation):base(userItemOperation) 
+        {
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range1000V.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range4Manual;
+            OperationDcRangeNominal = inRangeNominal;
+        }
+    }
+
+    public  class Oper3_1DC_20mV_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range20mV.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
+            OperationDcRangeNominal = inRangeNominal;
+            this.OpMultipliers = Multipliers.Mili;
+        }
+    }
+
+    public  class Oper3_1DC_200mV_Measure : Oper3DcvMeasureBase
+    {
+        public Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            //Жестко забиваем конкретный предел измерения
+            Name = Mult107_109N.RangeNominal.Range200mV.GetStringValue();
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range2Manual;
+            OperationDcRangeNominal = inRangeNominal;
+            this.OpMultipliers = Multipliers.Mili;
+        }
+    }
+
+    internal static class ShemeTemplate
+    {
+        public static readonly ShemeImage TemplateSheme;
+
+        static ShemeTemplate()
+        {
+            TemplateSheme = new ShemeImage
+            {
+                Description = "Измерительная схема",
+                Number = 1,
+                FileName = @"APPA107N_109N_5522A_DCV.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
+        }
+    }
+
+    #endregion
+
+
+
+
+
+    //////////////////////////////******ACV*******///////////////////////////////
+
+    #region ACV
 
     public abstract class Oper4AcvMeasure : ParagraphBase, IUserItemOperationBase
     {
-        public Oper4AcvMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        public Oper4AcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
+
+        #region Methods
 
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
-       
+        public override async Task StartWork(CancellationToken cancellationToken)
+
         {
             throw new NotImplementedException();
         }
     }
+
+    #endregion
+
+    //////////////////////////////******DCI*******///////////////////////////////
+
+    #region DCI
 
     public abstract class Oper5DcIMeasure : ParagraphBase, IUserItemOperationBase
     {
-        public Oper5DcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        public Oper5DcIMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
+
+        #region Methods
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
     }
+
+    #endregion
+
+    //////////////////////////////******ACI*******///////////////////////////////
+
+    #region ACI
 
     public abstract class Oper6AcIMeasure : ParagraphBase, IUserItemOperationBase
     {
-        public Oper6AcIMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        public Oper6AcIMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
+
+        #region Methods
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
     }
 
-    public abstract class Oper7FreqMeasure : ParagraphBase, IUserItemOperationBase
+    #endregion
+
+    //////////////////////////////******FREQ*******///////////////////////////////
+
+    #region FREQ
+
+     public abstract class Oper7FreqMeasure : ParagraphBase, IUserItemOperationBase
     {
-        public Oper7FreqMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        public Oper7FreqMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
+
+        #region Methods
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
     }
 
-    public abstract class Oper8OhmMeasure : ParagraphBase, IUserItemOperationBase
+    #endregion
+
+
+    //////////////////////////////******OHM*******///////////////////////////////
+
+    #region OHM
+
+ public abstract class Oper8OhmMeasure : ParagraphBase, IUserItemOperationBase
     {
-        public Oper8OhmMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        public Oper8OhmMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
+
+        #region Methods
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
     }
+
+    #endregion
+
+
+    //////////////////////////////******FAR*******///////////////////////////////
+
+    #region FAR
 
     public abstract class Oper9FarMeasure : ParagraphBase, IUserItemOperationBase
     {
-        public Oper9FarMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        public Oper9FarMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
+
+        #region Methods
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
+        public override async Task StartWork(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
     }
+
+    #endregion
+
+
+    //////////////////////////////******TEMP*******///////////////////////////////
+
+    #region TEMP
 
     public abstract class Oper10TemperatureMeasure : ParagraphBase, IUserItemOperationBase
     {
-        public Oper10TemperatureMeasure(IUserItemOperation userItemOperation):base(userItemOperation)
+        public Oper10TemperatureMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
+
+        #region Methods
+
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
         }
 
-        public override void StartSinglWork(Guid guid)
+        #endregion
+
+        public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task StartWork(CancellationTokenSource token)
-        
+        public override async Task StartWork(CancellationToken cancellationToken)
+
         {
             throw new NotImplementedException();
         }
     }
 
-
+    #endregion
+    
 }
