@@ -4,14 +4,16 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Runtime.CompilerServices;
 using ASMC.Devices.Annotations;
+using DevExpress.Mvvm;
 using Palsys.Data.Model.Metr;
 using Palsys.Utils.Data;
 
 namespace ASMC.Devices.SimpleScada.Parametr
 {
-    public class ScadaParametr : IParametrScada, INotifyPropertyChanged
+    public class ScadaParametr :ViewModelBase, IParametrScada, INotifyPropertyChanged
     {
         private  MeasuredValue _measuredValue;
+        private bool _isChecked;
 
         public ScadaParametr(int id, IDataProvider dataProvider) : this(dataProvider)
         {
@@ -39,7 +41,13 @@ namespace ASMC.Devices.SimpleScada.Parametr
         }
 
         public IDataProvider DataProvider { get; }
-        public bool IsChecked { get; set; }
+
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set =>SetProperty(ref _isChecked,value,nameof(IsChecked));
+        }
+
         public int Id { get; protected set; }
         public double Value { get; set; }
         public string Name { get; set; }
