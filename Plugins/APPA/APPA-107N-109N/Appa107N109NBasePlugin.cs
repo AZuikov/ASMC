@@ -106,7 +106,7 @@ namespace APPA_107N_109N
             {
                 var service = UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
-                service.Entity = (Document: "Документ", Assembly: Assembly.GetExecutingAssembly());
+                service.Entity = (Document: "B5VisualTestText", "");
                 service.Show();
                 operation.Getting = true;
                 return Task.CompletedTask;

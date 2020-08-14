@@ -23,8 +23,8 @@ namespace ASMC.Core.ViewModel
         protected override void OnEntityChanged()
         {
             base.OnEntityChanged();
-            var enter = Entity as (string, Assembly)? ?? (null, null);
-            AssemblyLocalName = Path.GetFileNameWithoutExtension(enter.Item2?.ManifestModule.Name);
+            var enter = Entity as (string, string)? ?? (null, null);
+            AssemblyLocalName = Path.GetFileNameWithoutExtension(enter.Item2);
             FileNameDescription = enter.Item1;
         }
 

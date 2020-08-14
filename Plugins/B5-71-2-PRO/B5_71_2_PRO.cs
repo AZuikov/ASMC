@@ -59,10 +59,10 @@ namespace B5_71_2_PRO
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                //new Oper0VisualTest(this),
+                new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
-                new Oper2DcvOutput(this),
-                new Oper3DcvMeasure(this),
+                //new Oper2DcvOutput(this),
+                //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
                 //new Oper6DciOutput(this),
                 //new Oper7DciMeasure(this),
@@ -78,6 +78,8 @@ namespace B5_71_2_PRO
         public Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
         }
+
+
     }
 
     public class Oper1Oprobovanie : B5_71_PRO_Abstract.Oper1Oprobovanie

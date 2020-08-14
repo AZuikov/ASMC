@@ -87,7 +87,7 @@ namespace B5_71_PRO_Abstract
             {
                 var service = this.UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
-                service.Entity = (Document: "Документ", Assembly: Assembly.GetExecutingAssembly());
+                service.Entity = (Document: "VisualTestText",string.Empty);
                 service.Show();
                 operation.Getting = true;
                 return Task.CompletedTask;
