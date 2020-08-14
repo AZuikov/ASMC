@@ -166,32 +166,6 @@
                       </GridView>
                     </ListView.View>
                   </ListView>
-                  <!--<DataGrid AutoGenerateColumns="False" ItemsSource="{Binding DeviceInterface}"   CanUserReorderColumns="False" CanUserSortColumns="False" SelectionUnit="Cell" >
-                <DataGrid.Columns  >
-                <DataGridTemplateColumn Header="Имя устройства"  MinWidth="100">
-                   <DataGridTemplateColumn.CellTemplate>
-                     <DataTemplate>
-                      <ComboBox Margin="5,10,5,10" ItemsSource="{Binding Path=Name}"></ComboBox>
-                     </DataTemplate>
-                   </DataGridTemplateColumn.CellTemplate>
-                 </DataGridTemplateColumn>
-                  <DataGridTemplateColumn Header="Адрес устройства" MinWidth="160">
-                    <DataGridTemplateColumn.CellTemplate>
-                      <DataTemplate>
-                      <ComboBox Margin="5,10,5,10" ItemsSource="{Binding Path=Aray}"></ComboBox>
-                      </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                  </DataGridTemplateColumn>
-                  <DataGridTemplateColumn Header="Статус"  MinWidth="50">
-                    <DataGridTemplateColumn.CellTemplate>
-                      <DataTemplate>
-                        <TextBlock Margin="5,10,5,10" Text="Подключен"></TextBlock>
-                      </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                  </DataGridTemplateColumn>
-              </DataGrid.Columns>
-            </DataGrid>-->
-
                 </StackPanel>
               </GroupBox>
             </StackPanel>
@@ -357,7 +331,8 @@
                   <ColumnDefinition Width="Auto"  />
                   <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Name="MyPalen" >
+                                <view:OperationView/>
+                <!--<StackPanel Grid.Column="0" Name="MyPalen" >
                   <TreeView ItemsSource="{Binding UserItemOperation, Mode=TwoWay}">
                     <TreeView.ItemTemplate>
                       <DataTemplate>
@@ -367,11 +342,11 @@
                         Content="{Binding Path= Name}"/>
                       </DataTemplate>
                     </TreeView.ItemTemplate>
-                    <!--<i:Interaction.Behaviors>
+                    --><!--<i:Interaction.Behaviors>
                       <behavior:BindableSelectedItemBeheavior SelectItem ="{Binding SelectionItemOperation, Mode=TwoWay}"/>
-                    </i:Interaction.Behaviors>-->
+                    </i:Interaction.Behaviors>--><!--
                   </TreeView>
-                </StackPanel>
+                </StackPanel>-->
                 <GridSplitter Grid.Column="1" Width="2"></GridSplitter>
                 <DataGrid HorizontalAlignment="Stretch" CanUserAddRows="False" AutoGenerateColumns="True" ItemsSource="{Binding DataOperation}" Grid.Column="2"></DataGrid>
               </Grid>

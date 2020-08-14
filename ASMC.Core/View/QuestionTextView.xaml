@@ -23,7 +23,7 @@
                 <TextBlock Text="{Binding Description}"
                            Visibility="{Binding FileNameDescription,Converter={StaticResource ObjectToVisibilityConverter}}" Height="300" />
 
-                <xctk:RichTextBox  Text="{Binding Description}" VerticalScrollBarVisibility="Auto" Visibility="{Binding FileNameDescription,Converter={StaticResource InvertObjectToVisibilityConverter}}" Height="300" IsReadOnly="True"/>
+                <xctk:RichTextBox IsReadOnlyCaretVisible="True" Text="{Binding Description}" VerticalScrollBarVisibility="Auto" Visibility="{Binding FileNameDescription,Converter={StaticResource InvertObjectToVisibilityConverter}}" Height="300" IsReadOnly="True"/>
                 <Grid Margin="20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
