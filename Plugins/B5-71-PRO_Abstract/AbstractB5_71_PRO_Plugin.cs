@@ -150,6 +150,8 @@ namespace B5_71_PRO_Abstract
         {
             Name = "Опробование";
             DataRow = new List<IBasicOperation<bool>>();
+            Sheme = ShemeTemplate.TemplateSheme;
+
         }
 
         #region Methods
