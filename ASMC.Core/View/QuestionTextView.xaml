@@ -13,33 +13,30 @@
         <dx:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter" />
         <dx:ObjectToVisibilityConverter x:Key="InvertObjectToVisibilityConverter" Invert="True" />
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="10,0,10,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="355*" />
             <ColumnDefinition Width="209*" />
         </Grid.ColumnDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      HorizontalAlignment="Left" Grid.ColumnSpan="2">
+        <StackPanel HorizontalAlignment="Left" Grid.ColumnSpan="2">
             <StackPanel>
-                <!--<TextBlock Text="{Binding Description}"
-                           Visibility="{Binding FileNameDescription,Converter={StaticResource InvertObjectToVisibilityConverter}}" />-->
+                <TextBlock Text="{Binding Description}"
+                           Visibility="{Binding FileNameDescription,Converter={StaticResource ObjectToVisibilityConverter}}" Height="300" />
 
-                <xctk:RichTextBox  Text="{Binding Description}"
-                                  Height ="200" />
-
-                <Grid>
+                <xctk:RichTextBox IsReadOnlyCaretVisible="True" Text="{Binding Description}" VerticalScrollBarVisibility="Auto" Visibility="{Binding FileNameDescription,Converter={StaticResource InvertObjectToVisibilityConverter}}" Height="300" IsReadOnly="True"/>
+                <Grid Margin="20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Column="0" Content="Соответствует"
-                                 IsChecked="{Binding CheckBox, Converter={StaticResource BooleanNegationConverter}}" />
-                    <RadioButton Grid.Column="1" Content="Не соответствует" IsChecked="{Binding CheckBox}" />
+                    <RadioButton Grid.Column="0" Content="Соответствует" IsChecked="{Binding CheckBox}" 
+                               />
+                    <RadioButton Grid.Column="1" Content="Не соответствует"   IsChecked="{Binding CheckBox, Converter={StaticResource BooleanNegationConverter}}" />
                 </Grid>
                 <StackPanel>
-                    <TextBox Text="{Binding ResultStr}" TextWrapping="Wrap" />
+                    <TextBox Height="150"  Text="{Binding ResultStr}" IsEnabled="{Binding CheckBox, Converter={StaticResource BooleanNegationConverter}}" TextWrapping="Wrap" />
                 </StackPanel>
             </StackPanel>
-        </ScrollViewer>
+        </StackPanel>
     </Grid>
 </UserControl>

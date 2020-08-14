@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Devices.SimpleScada;
+using DevExpress.Mvvm;
 
 namespace ASMC.Devices
 {
@@ -11,7 +13,7 @@ namespace ASMC.Devices
     /// <summary>
     /// Описывает датчики
     /// </summary>
-    public abstract class Sensor
+    public abstract class Sensor: ViewModelBase
     {
         /// <summary>
         /// Наименование датчика
@@ -30,7 +32,7 @@ namespace ASMC.Devices
         /// <value>
         /// The parametrs.
         /// </value>
-        public virtual List<IParametr> Parametrs
+        public virtual BindingList<IParametr> Parametrs
         {
             get; set;
         }

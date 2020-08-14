@@ -35,7 +35,10 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (_compliteWork == null) return () => default(Task<bool>);
+                if (_compliteWork == null)
+#pragma warning disable 1998
+                return async () => true;
+#pragma warning restore 1998
                 return _compliteWork;
             }
 

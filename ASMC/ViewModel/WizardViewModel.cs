@@ -84,6 +84,7 @@ namespace ASMC.ViewModel
         private TransactionDetails _transactionDetails;
         private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
+        private bool _isManual;
 
         #endregion
 
@@ -213,6 +214,12 @@ namespace ASMC.ViewModel
             CreatDocumetCommandCommand =
                 new DelegateCommand(OnCreatDocumetCommand);
             PauseCommand = new DelegateCommand(OnPauseCommand);
+        }
+
+        public bool IsManual
+        {
+            get => _isManual;
+            set => SetProperty(ref _isManual, value, nameof(IsManual));
         }
 
         #region Methods

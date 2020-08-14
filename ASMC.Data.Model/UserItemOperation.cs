@@ -298,9 +298,11 @@ namespace ASMC.Data.Model
                 CurrentUserItemOperationBase = opertion;
                 try
                 {
-                    ShowShem(opertion.Sheme);
-                    await opertion.StartWork(source.Token);
-                    
+                    if ( opertion.IsCheked == null || (bool) opertion.IsCheked)
+                    {
+                        ShowShem(opertion.Sheme);
+                        await opertion.StartWork(source.Token);
+                    }
 
                 }
                 catch (Exception e)
@@ -362,6 +364,8 @@ namespace ASMC.Data.Model
     /// </summary>
     public interface IUserItemOperationBase
     {
+        //
+        bool? IsCheked { get; set; }
         #region Property
 
         /// <summary>
@@ -491,6 +495,9 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public abstract Task StartWork(CancellationToken token);
 
+
+        /// <inheritdoc />
+        public bool? IsCheked { get; set; }
 
         /// <inheritdoc />
         public DataTable Data => FillData();
