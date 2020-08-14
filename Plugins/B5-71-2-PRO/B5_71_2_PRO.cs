@@ -59,16 +59,16 @@ namespace B5_71_2_PRO
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new Oper0VisualTest(this),
+                //new Oper0VisualTest(this),
                 //new Oper1Oprobovanie(this),
                 //new Oper2DcvOutput(this),
                 //new Oper3DcvMeasure(this),
                 //new Oper4VoltUnstable(this),
-                //new Oper6DciOutput(this),
-                //new Oper7DciMeasure(this),
-                //new Oper8DciUnstable(this),
-                //new Oper5VoltPulsation(this),
-                //new Oper9DciPulsation(this)
+                new Oper6DciOutput(this),
+                new Oper7DciMeasure(this),
+                new Oper8DciUnstable(this),
+                new Oper5VoltPulsation(this),
+                new Oper9DciPulsation(this)
             };
         }
     }
@@ -77,6 +77,7 @@ namespace B5_71_2_PRO
     {
         public Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            
         }
 
 
@@ -86,17 +87,12 @@ namespace B5_71_2_PRO
     {
         public Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Bp = new B571Pro2();
+            Mult = new Mult_34401A();
+            Load = new N3306A();
         }
 
-        protected override void InitWork()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     /// <summary>

@@ -58,7 +58,7 @@ namespace B5_71_1_PRO
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new Oper0VisualTest(this),
+                //new Oper0VisualTest(this),
                 new Oper1Oprobovanie(this),
                 new Oper2DcvOutput(this),
                 new Oper3DcvMeasure(this),
@@ -83,6 +83,9 @@ namespace B5_71_1_PRO
     {
         public Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Bp = new B571Pro2();
+            Mult = new Mult_34401A();
+            Load = new N3306A();
         }
 
         protected override void InitWork()
