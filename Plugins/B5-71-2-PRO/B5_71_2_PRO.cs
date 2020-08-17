@@ -3,9 +3,6 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 // !!!!!!!! Внимание !!!!!!!!!
 //  Имя последовательного порта прописано жестко!!!!
@@ -27,9 +24,9 @@ namespace B5_71_2_PRO
     {
         public Operation(ServicePack servicePack)
         {
-            this.UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
             //здесь периодическая поверка, но набор операций такой же
-            this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
+            UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
         }
     }
 
@@ -39,17 +36,17 @@ namespace B5_71_2_PRO
         {
             ControlDevices = new IDevice[]
             {
-                new Device { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
-                new Device{ Name = new []{"34401A"},  Description = "Мультиметр"},
-                new Device{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
+                new Device {Name = new[] {"N3300A"}, Description = "Электронная нагрузка"},
+                new Device {Name = new[] {"34401A"}, Description = "Мультиметр"},
+                new Device {Name = new[] {"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
             };
 
-            TestDevices = new IDevice[] { new Device { Name = new[] { "Б5-71/2-ПРО" }, Description = "источник питания" } };
+            TestDevices = new IDevice[] {new Device {Name = new[] {"Б5-71/2-ПРО"}, Description = "источник питания"}};
 
             //Необходимые аксесуары
             Accessories = new[]
             {
-                "Нагрузка электронная Keysight N3300A с модулем n3306a",
+                "Нагрузка электронная Keysight N3300A с модулем N3303A",
                 "Мультиметр цифровой Agilent/Keysight 34401A",
                 "Преобразователь интерфесов National Instruments GPIB-USB",
                 "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
@@ -60,10 +57,10 @@ namespace B5_71_2_PRO
             UserItemOperation = new IUserItemOperationBase[]
             {
                 //new Oper0VisualTest(this),
-                //new Oper1Oprobovanie(this),
-                //new Oper2DcvOutput(this),
-                //new Oper3DcvMeasure(this),
-                //new Oper4VoltUnstable(this),
+                new Oper1Oprobovanie(this),
+                new Oper2DcvOutput(this),
+                new Oper3DcvMeasure(this),
+                new Oper4VoltUnstable(this),
                 new Oper6DciOutput(this),
                 new Oper7DciMeasure(this),
                 new Oper8DciUnstable(this),
@@ -77,10 +74,7 @@ namespace B5_71_2_PRO
     {
         public Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            
         }
-
-
     }
 
     public class Oper1Oprobovanie : B5_71_PRO_Abstract.Oper1Oprobovanie
@@ -89,10 +83,8 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
-            Load = new N3306A();
+            Load = new N3303A();
         }
-
-       
     }
 
     /// <summary>
@@ -104,7 +96,7 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
-            Load = new N3306A();
+            Load = new N3303A();
         }
     }
 
@@ -117,7 +109,7 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
-            Load = new N3306A();
+            Load = new N3303A();
         }
     }
 
@@ -130,7 +122,7 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
-            Load = new N3306A();
+            Load = new N3303A();
         }
     }
 
@@ -143,7 +135,7 @@ namespace B5_71_2_PRO
         {
             Bp = new B571Pro2();
             Mult = new Mult_34401A();
-            Load = new N3306A();
+            Load = new N3303A();
         }
     }
 
@@ -155,7 +147,7 @@ namespace B5_71_2_PRO
         public Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro2();
-            Load = new N3306A();
+            Load = new N3303A();
         }
     }
 
@@ -167,7 +159,7 @@ namespace B5_71_2_PRO
         public Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro2();
-            Load = new N3306A();
+            Load = new N3303A();
         }
     }
 
@@ -179,7 +171,7 @@ namespace B5_71_2_PRO
         public Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro2();
-            Load = new N3306A();
+            Load = new N3303A();
         }
     }
 
@@ -191,7 +183,7 @@ namespace B5_71_2_PRO
         public Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro2();
-            Load = new N3306A();
+            Load = new N3303A();
             Mult = new Mult_34401A();
         }
     }

@@ -1687,7 +1687,7 @@ namespace B5_71_PRO_Abstract
             {
                 Description = "Измерительная схема",
                 Number = 1,
-                FileName = @"B5-71-1_2-PRO_N3306_34401_v3-57.jpg",
+                FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
