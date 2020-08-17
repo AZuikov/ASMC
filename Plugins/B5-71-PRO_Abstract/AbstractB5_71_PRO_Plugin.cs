@@ -204,11 +204,11 @@ namespace B5_71_PRO_Abstract
                                 ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                     });
 
-                    while (!Mult.IsTerminal)
-                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                                           " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
-                                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                                           MessageResult.OK);
+                    //while (!Mult.IsTerminal)
+                    //    this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                    //                                                       " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                    //                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                    //                                                       MessageResult.OK);
                 }
                 catch (Exception e)
                 {
@@ -263,7 +263,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(500);
                         //измеряем напряжение
                         
-                        decimal measCurr = Math.Abs(Load.Current.MeasCurrent);
+                        decimal measCurr = Math.Abs(Load.Current.MeasureCurrent);
                         operation.IsGood = () => { return (Bp.CurrMax / measCurr) >= (decimal)0.7; };
 
                         if (!operation.IsGood())
@@ -298,7 +298,7 @@ namespace B5_71_PRO_Abstract
                 if (answer == MessageResult.No)
                 {
                     operation.IsGood = () => { return false; };
-                    Logger.Error($"Не горит индикация стабилизации тока на источнике питания");
+                    Logger.Error($"режим CC: Не горит индикация стабилизации тока на источнике питания.");
                     return Task.FromResult(false);
                 }
 
@@ -311,7 +311,7 @@ namespace B5_71_PRO_Abstract
                 if (answer == MessageResult.No)
                 {
                     operation.IsGood = () => { return false; };
-                    Logger.Error($"Не горит индикация стабилизации тока на источнике питания");
+                    Logger.Error($"режим CV: На источнике питания индикатор стабилизации тока должен не должен гореть.");
                     return Task.FromResult(false);
                 }
 
@@ -1125,7 +1125,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1000);
                         //измеряем ток
 
-                        var result = Load.Current.MeasCurrent;
+                        var result = Load.Current.MeasureCurrent;
 
                         MathStatistics.Round(ref result, 3);
 
@@ -1294,7 +1294,7 @@ namespace B5_71_PRO_Abstract
                         Bp.SetStateCurr(setPoint);
                         Thread.Sleep(1000);
                         //измеряем ток
-                        var resultN3300 = Load.Current.MeasCurrent;
+                        var resultN3300 = Load.Current.MeasureCurrent;
                         MathStatistics.Round(ref resultN3300, 3);
 
                         var resultBpCurr = Bp.GetMeasureCurr();
@@ -1450,7 +1450,7 @@ namespace B5_71_PRO_Abstract
                         var resistance = coef * Bp.VoltMax / Bp.CurrMax;
                         Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance);
                         Thread.Sleep(1000);
-                        currUnstableList.Add(Load.Current.MeasCurrent);
+                        currUnstableList.Add(Load.Current.MeasureCurrent);
                     }
 
                     Bp.OffOutput();

@@ -63,10 +63,9 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public int ChanelNumber => _chanNum;
 
         public Current Current { get; protected set; }
-        public Voltage Voltage { get; protected set; }
-        public Meas Meas { get; protected set; }
 
         public string GetModuleModel => ModuleModel;
+        //public Meas Meas { get; protected set; }
 
         //public Meas Meas { get; }
 
@@ -98,12 +97,14 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             }
         }
 
+        public Voltage Voltage { get; protected set; }
+
         #endregion
 
         protected MainN3300()
         {
             Resistance = new Resistance(this);
-            Meas = new Meas(this);
+            //Meas = new Meas(this);
             UserType = "N3300A";
             Current = new Current(this);
             Voltage = new Voltage(this);
@@ -355,6 +356,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public Meas(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
+            Multipliers = mainN3300.Multipliers;
         }
     }
 
@@ -395,8 +397,8 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <summary>
         /// Устанавливает ВЕЛИЧИНУ сопротивления для режима CR
         /// </summary>
-        /// <param name = "value"></param>
-        /// <param name = "mult"></param>
+        /// <param name = "value">Номирнал напряжения.</param>
+        /// <param name = "mult">Множитель единицы измерения (милли, кило т.д.).</param>
         public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
         {
             if (value < 0)
@@ -451,13 +453,37 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
+        #region Property
+
+        public decimal MeasureVolt => (decimal) DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:VOLT?"));
+
+        #endregion
+
         public Voltage(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = _mainN3300.Multipliers;
         }
 
-         public decimal MeasureVolt { get { return (decimal)this.DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:VOLT?")); } }
+        #region Methods
+
+        /// <summary>
+        /// Устанавливает значения напряжения (ограничение напряжения) для режима CV.
+        /// </summary>
+        /// <param name = "value">Номирнал напряжения.</param>
+        /// <param name = "mult">Множитель единицы измерения (милли, кило т.д.).</param>
+        /// <returns></returns>
+        public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
+        {
+            if (value < 0)
+                throw new ArgumentException("Значение меньше 0");
+
+            var val = value * (decimal) mult.GetDoubleValue();
+            _mainN3300.WriteLine($@"VOLTage {JoinValueMult(val, mult)}");
+            return _mainN3300;
+        }
+
+        #endregion
     }
 
     public class Current : HelpDeviceBase
@@ -468,13 +494,36 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
+        #region Property
+
+        public decimal MeasureCurrent => (decimal) DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:CURR?"));
+
+        #endregion
+
         public Current(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = _mainN3300.Multipliers;
         }
 
-        public decimal MeasCurrent { get { return (decimal)this.DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:CURR?")); } }
+        #region Methods
+
+        /// <summary>
+        /// Устанавливает ВЕЛИЧИНУ тока для режима CC (ограничение тока).
+        /// </summary>
+        /// <param name = "value">Номирнал напряжения.</param>
+        /// <param name = "mult">Множитель единицы измерения (милли, кило т.д.).</param>
+        public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
+        {
+            if (value < 0)
+                throw new ArgumentException("Значение меньше 0");
+
+            var val = value * (decimal) mult.GetDoubleValue();
+            _mainN3300.WriteLine($@"CURRent {JoinValueMult(val, mult)}");
+            return _mainN3300;
+        }
+
+        #endregion
     }
 
     public class Power : HelpDeviceBase
@@ -485,12 +534,16 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
+        #region Property
+
+        public decimal MeasPower => (decimal) DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:POWer?"));
+
+        #endregion
+
         public Power(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = _mainN3300.Multipliers;
         }
-
-        public decimal MeasPower { get { return (decimal)this.DataStrToDoubleMind(_mainN3300.QueryLine("MEAS:POWer?")); } }
     }
 }

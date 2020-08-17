@@ -7,7 +7,7 @@ using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
 
-//TODO:       Имя последовательного порта прописано жестко!!!!     Необходимо реализовать его настройку из ВНЕ - через интрефейс ASMC
+
 // ReSharper disable once CheckNamespace
 namespace B5_71_1_PRO
 {
@@ -59,7 +59,7 @@ namespace B5_71_1_PRO
             UserItemOperation = new IUserItemOperationBase[]
             {
                 //new Oper0VisualTest(this),
-                new Oper1Oprobovanie(this),
+                 new Oper1Oprobovanie(this),
                 new Oper2DcvOutput(this),
                 new Oper3DcvMeasure(this),
                 new Oper4VoltUnstable(this),
