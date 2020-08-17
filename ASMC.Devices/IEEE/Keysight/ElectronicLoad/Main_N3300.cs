@@ -8,8 +8,10 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 {
-    public abstract class MainN3300 : IeeeBase
+    public  class MainN3300 : IeeeBase
     {
+
+       
         public enum ModeWorks
         {
             /// <summary>
@@ -104,7 +106,6 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         protected MainN3300()
         {
             Resistance = new Resistance(this);
-            //Meas = new Meas(this);
             UserType = "N3300A";
             Current = new Current(this);
             Voltage = new Voltage(this);
@@ -173,14 +174,14 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// Возвращает массив с моделями установленных вставок нагрузки
         /// </summary>
         /// <returns></returns>
-        public Model[] GetInstalledModulesName()
+        public ModuleInfo[] GetInstalledModulesName()
         {
             WriteLine("*RDT?");
             Thread.Sleep(10);
             var answer = ReadLine().TrimEnd('\n');
             var reg = new Regex(@"(?<=.+)\d+");
             return answer.Split(';').Select(mod => mod.Split(':'))
-                         .Select(s => new Model {Channel = int.Parse(reg.Match(s[0]).Value), Type = s[1]}).ToArray();
+                         .Select(s => new ModuleInfo {Channel = int.Parse(reg.Match(s[0]).Value), Type = s[1]}).ToArray();
         }
 
         /// <summary>
@@ -315,7 +316,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
-        public struct Model
+        public struct ModuleInfo
         {
             /// <summary>
             /// Позволяет задать или получить номер канала.

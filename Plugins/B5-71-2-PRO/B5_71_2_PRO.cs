@@ -43,16 +43,7 @@ namespace B5_71_2_PRO
 
             TestDevices = new IDevice[] {new Device {Name = new[] {"Б5-71/2-ПРО"}, Description = "источник питания"}};
 
-            //Необходимые аксесуары
-            Accessories = new[]
-            {
-                "Нагрузка электронная Keysight N3300A с модулем N3303A",
-                "Мультиметр цифровой Agilent/Keysight 34401A",
-                "Преобразователь интерфесов National Instruments GPIB-USB",
-                "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
-                "Кабель banana - banana 6 шт.",
-                "Кабель BNC - banan для В3-57"
-            };
+           
 
             UserItemOperation = new IUserItemOperationBase[]
             {

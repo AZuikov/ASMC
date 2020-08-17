@@ -1,5 +1,4 @@
 ﻿using AP.Math;
-using ASMC.Core.Helps;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -12,11 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
-using NLog.Fluent;
+
 
 namespace B5_71_PRO_Abstract
 {
@@ -69,6 +66,16 @@ namespace B5_71_PRO_Abstract
         protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             this.DocumentName = "Б5-71_1";
+            //Необходимые аксесуары
+            Accessories = new[]
+            {
+                "Нагрузка электронная Keysight N3300A с модулем N3303A",
+                "Мультиметр цифровой Agilent/Keysight 34401A",
+                "Преобразователь интерфесов National Instruments GPIB-USB",
+                "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
+                "Кабель banana - banana 6 шт.",
+                "Кабель BNC - banan для В3-57"
+            };
         }
     }
 
@@ -582,6 +589,7 @@ namespace B5_71_PRO_Abstract
                             Load.StringConnection = GetStringConnect(Load);
                             Bp.StringConnection = GetStringConnect(Bp);
 
+                            //узнаем на каком канале стоит модуль нагрузки
                             Load.FindThisModule();
 
                             //если модуль нагрузки найти не удалось

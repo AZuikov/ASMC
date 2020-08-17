@@ -175,7 +175,7 @@ namespace ASMC.Data.Model
 
 
     /// <summary>
-    /// Содержет доступныйе виды Метрологического контроля.
+    /// Содержит доступныйе виды Метрологического контроля.
     /// </summary>
     public class OperationMetrControlBase
     {
@@ -450,7 +450,7 @@ namespace ASMC.Data.Model
         /// Прибор из списка контрольных (эталонов) или контролируемых (поверяемых/проверяемых)
         /// приборов.
         /// </param>
-        /// <returns></returns>
+        /// <returns>Возвращает строку подключения для устройства.</returns>
         protected string GetStringConnect(Devices.IDevice currentDevice)
         {
             var connect = UserItemOperation.ControlDevices
