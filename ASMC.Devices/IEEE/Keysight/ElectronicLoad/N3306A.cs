@@ -14,6 +14,7 @@
             };
             this.RangeVoltArr = new decimal[2] { 6, 60 };
             this.RangeCurrentArr = new decimal[2] { 12, 120 };
+            
         }
 
 

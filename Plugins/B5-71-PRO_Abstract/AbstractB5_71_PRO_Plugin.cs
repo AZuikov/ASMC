@@ -1,5 +1,4 @@
 ﻿using AP.Math;
-using ASMC.Core.Helps;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -12,9 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace B5_71_PRO_Abstract
 {
@@ -67,6 +66,16 @@ namespace B5_71_PRO_Abstract
         protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             this.DocumentName = "Б5-71_1";
+            //Необходимые аксесуары
+            Accessories = new[]
+            {
+                "Нагрузка электронная Keysight N3300A с модулем N3303A",
+                "Мультиметр цифровой Agilent/Keysight 34401A",
+                "Преобразователь интерфесов National Instruments GPIB-USB",
+                "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
+                "Кабель banana - banana 6 шт.",
+                "Кабель BNC - banan для В3-57"
+            };
         }
     }
 
@@ -147,11 +156,21 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper1Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        #region Property
+
+        protected B571Pro Bp { get; set; }
+        protected MainN3300 Load { get; set; }
+        protected Mult_34401A Mult { get; set; }
+
+        #endregion Property
 
         protected Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
             DataRow = new List<IBasicOperation<bool>>();
+            Sheme = ShemeTemplate.TemplateSheme;
+
         }
 
         #region Methods
@@ -168,27 +187,163 @@ namespace B5_71_PRO_Abstract
             return data;
         }
 
+        protected override void InitWork()
+        {
+            DataRow.Clear();
+            
+
+            var operation = new BasicOperationVerefication<bool>();
+            operation.InitWork = async () =>
+            {
+                try
+                {
+                    await Task.Run(() =>
+                    {
+                        Mult.StringConnection = GetStringConnect(Mult);
+                        Load.StringConnection = GetStringConnect(Load);
+                        Bp.StringConnection = GetStringConnect(Bp);
+
+                        Load.FindThisModule();
+
+                        //если модуль нагрузки найти не удалось
+                        if (Load.ChanelNumber <= 0)
+                            throw new
+                                ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                    });
+
+                    //while (!Mult.IsTerminal)
+                    //    this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                    //                                                       " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                    //                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                    //                                                       MessageResult.OK);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+            };
+            operation.BodyWork = () =>
+            {
+                try
+                {
+
+                    Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
+                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                    var resist = Bp.VoltMax / Bp.CurrMax + 3;
+                    Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                    Load.SetOutputState(MainN3300.State.On);
+
+                    Bp.InitDevice();
+                    Bp.SetStateCurr(Bp.CurrMax).OnOutput();
+                    foreach (decimal pointMult in MyPoint)
+                    {
+                        var setPoint = pointMult * Bp.VoltMax;
+
+                        //ставим точку напряжения
+                        Bp.SetStateVolt(setPoint);
+                        Thread.Sleep(500);
+
+                        //измеряем напряжение
+                       
+                        decimal measVolt = Math.Abs(Load.Voltage.MeasureVolt);
+                        
+                        operation.IsGood = () => { return (Bp.VoltMax / measVolt) >= (decimal)0.7; };
+
+                        if (!operation.IsGood())
+                        {
+                            Logger.Error($"Операция опробования не прошла по напряжению в точке {setPoint} В, измерено {operation.Getting} В");
+                            return;
+                        }
+                    }
+
+                        
+                   
+
+                    resist = Bp.VoltMax / Bp.CurrMax - 3;
+                    Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                    Bp.SetStateVolt(Bp.VoltMax);
+                    foreach (decimal pointMult in MyPoint)
+                    {
+                        var setPoint = pointMult * Bp.CurrMax;
+                        //ставим точку напряжения
+                        Bp.SetStateCurr(setPoint);
+                        Thread.Sleep(500);
+                        //измеряем напряжение
+                        
+                        decimal measCurr = Math.Abs(Load.Current.MeasureCurrent);
+                        operation.IsGood = () => { return (Bp.CurrMax / measCurr) >= (decimal)0.7; };
+
+                        if (!operation.IsGood())
+                        {
+                            Logger.Error($"Операция опробования не прошла по току в точке {setPoint} А, измерено {operation.Getting} А");
+                            return  ;
+                        }
+                    }
+
+                    
+
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+                finally
+                {
+                    Load.SetOutputState(MainN3300.State.Off);
+                    Bp.OffOutput();
+                }
+            };
+            operation.CompliteWork = () =>
+            {
+                Load.SetOutputState(MainN3300.State.On);
+                Bp.OnOutput();
+
+                //Теперь проверим внешнюю индикацию режимов
+                var answer = this.UserItemOperation.ServicePack.MessageBox.Show("Сейчас на лицевой панели блока питания индикатор \"СТАБ.ТОКА\" горит?",
+                                                                                "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+
+                if (answer == MessageResult.No)
+                {
+                    operation.IsGood = () => { return false; };
+                    Logger.Error($"режим CC: Не горит индикация стабилизации тока на источнике питания.");
+                    return Task.FromResult(false);
+                }
+
+                decimal resist = Bp.VoltMax / Bp.CurrMax + 3;
+                Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+
+                answer = this.UserItemOperation.ServicePack.MessageBox.Show("Сейчас на лицевой панели прибора индикатор \"СТАБ.ТОКА\" НЕ горит?",
+                                                                            "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+
+                if (answer == MessageResult.No)
+                {
+                    operation.IsGood = () => { return false; };
+                    Logger.Error($"режим CV: На источнике питания индикатор стабилизации тока должен не должен гореть.");
+                    return Task.FromResult(false);
+                }
+
+                Load.SetOutputState(MainN3300.State.Off);
+                Bp.OffOutput();
+
+                operation.IsGood = () => { return true; };
+                return  Task.FromResult(true);
+            };
+            DataRow.Add(operation);
+        }
+
         #endregion Methods
+
+        public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+            if (a != null)
+                await a.WorkAsync(token);
+        }
 
         public override async Task StartWork(CancellationToken token)
         {
-            var bo = new BasicOperation<bool> { Expected = true };
-            bo.IsGood = () => bo.Getting;
-            bo.InitWork = () =>
-            {
-                this.UserItemOperation.ServicePack.MessageBox.Show("Начало операции", "Начало операции2", MessageButton.OK, MessageIcon.Information,
-                                       MessageResult.No);
-                return Task.CompletedTask;
-            };
-            bo.CompliteWork = () =>
-            {
-                this.UserItemOperation.ServicePack.MessageBox.Show("Конец операции", "Конец операции2", MessageButton.OK, MessageIcon.Information,
-                                       MessageResult.No);
-                return Task.FromResult(true);
-            };
-            bo.BodyWork = () => { Thread.Sleep(100); };
-            await bo.WorkAsync(token);
-            DataRow.Add(bo);
+            InitWork();
+            foreach (var dr in DataRow) await dr.WorkAsync(token);
         }
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
@@ -434,6 +589,7 @@ namespace B5_71_PRO_Abstract
                             Load.StringConnection = GetStringConnect(Load);
                             Bp.StringConnection = GetStringConnect(Bp);
 
+                            //узнаем на каком канале стоит модуль нагрузки
                             Load.FindThisModule();
 
                             //если модуль нагрузки найти не удалось
@@ -977,7 +1133,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1000);
                         //измеряем ток
 
-                        var result = Load.Current.MeasCurrent;
+                        var result = Load.Current.MeasureCurrent;
 
                         MathStatistics.Round(ref result, 3);
 
@@ -1146,7 +1302,7 @@ namespace B5_71_PRO_Abstract
                         Bp.SetStateCurr(setPoint);
                         Thread.Sleep(1000);
                         //измеряем ток
-                        var resultN3300 = Load.Current.MeasCurrent;
+                        var resultN3300 = Load.Current.MeasureCurrent;
                         MathStatistics.Round(ref resultN3300, 3);
 
                         var resultBpCurr = Bp.GetMeasureCurr();
@@ -1302,7 +1458,7 @@ namespace B5_71_PRO_Abstract
                         var resistance = coef * Bp.VoltMax / Bp.CurrMax;
                         Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance);
                         Thread.Sleep(1000);
-                        currUnstableList.Add(Load.Current.MeasCurrent);
+                        currUnstableList.Add(Load.Current.MeasureCurrent);
                     }
 
                     Bp.OffOutput();
@@ -1539,7 +1695,7 @@ namespace B5_71_PRO_Abstract
             {
                 Description = "Измерительная схема",
                 Number = 1,
-                FileName = @"B5-71-1_2-PRO_N3306_34401_v3-57.jpg",
+                FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }

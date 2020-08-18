@@ -33,17 +33,19 @@ namespace Appa107N
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
-            var DcvMode = new Oper3DcvMeasureBase(this);
-            DcvMode.Nodes.Add(new Oper3_1DC_1000V_Measure(MultAPPA107N.RangeNominal.Range1000V, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_200V_Measure(MultAPPA107N.RangeNominal.Range200V, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_20V_Measure(MultAPPA107N.RangeNominal.Range20V, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_2V_Measure(MultAPPA107N.RangeNominal.Range2V, this));
+            var DcvMode = new APPA_107N_109N.Oper3DcvMeasureBase(this);
             DcvMode.Nodes.Add(new Oper3_1DC_20mV_Measure(MultAPPA107N.RangeNominal.Range20mV, this));
             DcvMode.Nodes.Add(new Oper3_1DC_200mV_Measure(MultAPPA107N.RangeNominal.Range200mV, this));
+            DcvMode.Nodes.Add(new Oper3_1DC_2V_Measure(MultAPPA107N.RangeNominal.Range2V, this));
+            DcvMode.Nodes.Add(new Oper3_1DC_20V_Measure(MultAPPA107N.RangeNominal.Range20V, this));
+            DcvMode.Nodes.Add(new Oper3_1DC_200V_Measure(MultAPPA107N.RangeNominal.Range200V, this));
+            DcvMode.Nodes.Add(new Oper3_1DC_1000V_Measure(MultAPPA107N.RangeNominal.Range1000V, this));
+           
+           
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new Oper1VisualTest(this),
+                //new Oper1VisualTest(this),
 
                 //new Oper2Oprobovanie(this),
 
@@ -64,14 +66,14 @@ namespace Appa107N
         }
     }
 
-    public class Oper3DcvMeasureBase : APPA_107N_109N.Oper3DcvMeasureBase
-    {
-        public Oper3DcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
-        {
-            appa107N = new MultAPPA107N();
-            flkCalib5522A = new Calib5522A();
-        }
-    }
+    //public class Oper3DcvMeasureBase : APPA_107N_109N.Oper3DcvMeasureBase
+    //{
+    //    public Oper3DcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
+    //    {
+    //        appa107N = new MultAPPA107N();
+    //        flkCalib5522A = new Calib5522A();
+    //    }
+    //}
 
     public class Oper1VisualTest : APPA_107N_109N.Oper1VisualTest
     {
@@ -86,6 +88,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.DCmV;
         }
     }
 
@@ -95,6 +98,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.DCmV;
         }
     }
 
@@ -104,6 +108,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
     }
 
@@ -113,6 +118,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
     }
 
@@ -122,6 +128,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
     }
 
@@ -131,6 +138,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
     }
 }

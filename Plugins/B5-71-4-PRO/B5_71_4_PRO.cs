@@ -1,11 +1,11 @@
-﻿using ASMC.Data.Model;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using B5_71_PRO_Abstract;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace B5_71_4_PRO
 {
@@ -13,8 +13,8 @@ namespace B5_71_4_PRO
     {
         public B5_71_4PRO(ServicePack service) : base(service)
         {
-            this.Range = "0 - 75 В, 0 - 4 А";
-            this.Type = "Б5-71/4-ПРО";
+            Range = "0 - 75 В, 0 - 4 А";
+            Type = "Б5-71/4-ПРО";
             Operation = new Operation(service);
         }
     }
@@ -23,9 +23,9 @@ namespace B5_71_4_PRO
     {
         public Operation(ServicePack servicePack)
         {
-            this.UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
             //здесь периодическая поверка, но набор операций такой же
-            this.UserItemOperationPeriodicVerf = this.UserItemOperationPrimaryVerf;
+            UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
         }
     }
 
@@ -35,28 +35,18 @@ namespace B5_71_4_PRO
         {
             ControlDevices = new IDevice[]
             {
-                new Device { Name = new []{"N3300A"},  Description = "Электронная нагрузка"},
-                new Device{ Name = new []{"34401A"},  Description = "Мультиметр"},
-                new Device{ Name = new []{"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
+                new Device {Name = new[] {"N3300A"}, Description = "Электронная нагрузка"},
+                new Device {Name = new[] {"34401A"}, Description = "Мультиметр"},
+                new Device {Name = new[] {"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
             };
 
-            TestDevices = new IDevice[] { new Device { Name = new[] { "Б5-71/4-ПРО" }, Description = "источник питания" } };
+            TestDevices = new IDevice[] {new Device {Name = new[] {"Б5-71/4-ПРО"}, Description = "источник питания"}};
 
-            //Необходимые аксесуары
-            Accessories = new[]
-            {
-                "Нагрузка электронная Keysight N3300A с модулем n3303a",
-                "Мультиметр цифровой Agilent/Keysight 34401A",
-                "Преобразователь интерфесов National Instruments GPIB-USB",
-                "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
-                "Кабель banana - banana 6 шт.",
-                "Кабель BNC - banan для В3-57"
-            };
-
+            
             UserItemOperation = new IUserItemOperationBase[]
             {
                 //new Oper0VisualTest(this),
-                //new Oper1Oprobovanie(this),
+                new Oper1Oprobovanie(this),
                 new Oper2DcvOutput(this),
                 new Oper3DcvMeasure(this),
                 new Oper4VoltUnstable(this),
@@ -80,17 +70,13 @@ namespace B5_71_4_PRO
     {
         public Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Bp = new B571Pro4();
+            Mult = new Mult_34401A();
+            Load = new N3303A();
+            
         }
 
-        protected override void InitWork()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     /// <summary>
@@ -103,7 +89,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
@@ -117,7 +103,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
@@ -131,7 +117,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
@@ -145,7 +131,7 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Mult = new Mult_34401A();
             Load = new N3303A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
@@ -158,7 +144,7 @@ namespace B5_71_4_PRO
         {
             Bp = new B571Pro4();
             Load = new N3303A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
@@ -171,7 +157,7 @@ namespace B5_71_4_PRO
         {
             Bp = new B571Pro4();
             Load = new N3303A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
@@ -184,7 +170,7 @@ namespace B5_71_4_PRO
         {
             Bp = new B571Pro4();
             Load = new N3303A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
@@ -198,12 +184,9 @@ namespace B5_71_4_PRO
             Bp = new B571Pro4();
             Load = new N3303A();
             Mult = new Mult_34401A();
-            Sheme = ShemeTemplate.TemplateSheme;
+            
         }
     }
 
-    internal static class ShemeTemplate
-    {
-        public static ShemeImage TemplateSheme = new ShemeImage { Description = "Измерительная схема", Number = 1, FileName = @"B5-71-4-PRO_N3303_34401_v3-57.jpg", ExtendedDescription = "Соберите измерительную схему, согласно рисунку" };
-    }
+    
 }

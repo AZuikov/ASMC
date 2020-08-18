@@ -1,15 +1,13 @@
-﻿using System;
+﻿using ASMC.Common.ViewModel;
+using ASMC.Data.Model.Interface;
+using NLog;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using ASMC.Common.ViewModel;
-using ASMC.Data.Model.Interface;
-using DevExpress.Mvvm;
-using NLog;
 
 namespace ASMC.Data.Model
 {
@@ -19,7 +17,7 @@ namespace ASMC.Data.Model
 
         List<IBasicOperation<T>> DataRow { get; set; }
 
-        #endregion
+        #endregion Property
     }
 
     /// <summary>
@@ -59,7 +57,7 @@ namespace ASMC.Data.Model
         /// </summary>
         string StringConnect { get; set; }
 
-        #endregion
+        #endregion Property
     }
 
     /// <inheritdoc />
@@ -118,12 +116,13 @@ namespace ASMC.Data.Model
         /// Возвращает перечень операций
         /// </summary>
         IUserItemOperationBase[] UserItemOperation { get; }
+
         /// <summary>
         /// Имя документа который будет формироватся без формата файла.
         /// </summary>
-        string DocumentName { get;  }
+        string DocumentName { get; }
 
-        #endregion
+        #endregion Property
 
         #region Methods
 
@@ -134,7 +133,7 @@ namespace ASMC.Data.Model
         /// </summary>
         void RefreshDevice();
 
-        #endregion
+        #endregion Methods
     }
 
     /// <inheritdoc />
@@ -150,6 +149,7 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public IUserItemOperationBase[] UserItemOperation { get; set; }
+
         /// <inheritdoc />
         public string DocumentName { get; protected set; }
 
@@ -173,13 +173,11 @@ namespace ASMC.Data.Model
         public ServicePack ServicePack { get; set; }
     }
 
-
     /// <summary>
-    /// Содержет доступныйе виды Метрологического контроля.
+    /// Содержит доступныйе виды Метрологического контроля.
     /// </summary>
     public class OperationMetrControlBase
     {
-      
         /// <summary>
         /// Содержит перечесления типов операции.
         /// </summary>
@@ -257,21 +255,20 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Позволяет задать или получить тип операции.
         /// </summary>
-        public TypeOpeation SelectedTypeOpeation { get; set; } 
+        public TypeOpeation SelectedTypeOpeation { get; set; }
 
+        
 
-        private IUserItemOperationBase CurrentUserItemOperationBase { get; set; }
+        #endregion Property
 
-        #endregion
         protected ShemeImage LastShem { get; set; }
 
         private async void ShowShem(ShemeImage sheme)
         {
-
-            if (sheme == null||LastShem?.Number == sheme.Number) return;
+            if (sheme == null || LastShem?.Number == sheme.Number) return;
             LastShem = sheme;
             var ser = SelectedOperation.ServicePack.ShemForm;
-            if (ser==null) 
+            if (ser == null)
             {
                 Logger.Error("Сервис не найден");
                 throw new NullReferenceException("Сервис не найден");
@@ -280,9 +277,7 @@ namespace ASMC.Data.Model
             do
             {
                 ser.Show();
-
             } while (!await sheme.ChekShem());
-
         }
 
         #region Methods
@@ -293,17 +288,44 @@ namespace ASMC.Data.Model
         /// <returns></returns>
         public async Task StartWorkAsync(CancellationTokenSource source)
         {
-            foreach (var opertion in SelectedOperation.UserItemOperation)
-            {
-                CurrentUserItemOperationBase = opertion;
+            foreach (IUserItemOperationBase lonleyTreeNode in SelectedOperation.UserItemOperation)
+                clrNode(lonleyTreeNode, source);
+
+
+            /////////    старая реализация метода    //////////////////////
+            //foreach (var opertion in SelectedOperation.UserItemOperation)
+            //{
+            //    CurrentUserItemOperationBase = opertion;
+            //    try
+            //    {
+            //        if (opertion.IsCheked == null || (bool)opertion.IsCheked)
+            //        {
+            //            ShowShem(opertion.Sheme);
+            //            await opertion.StartWork(source.Token);
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        source.Cancel();
+            //        source.Token.ThrowIfCancellationRequested();
+            //        Logger.Error(e);
+            //    }
+            //    Logger.Debug(opertion.ToString);
+            //}
+            //Logger.Debug("Конец  операций");
+        }
+
+        private async void clrNode(IUserItemOperationBase OperationsArr, CancellationTokenSource source)
+        {
+                
+
                 try
                 {
-                    if ( opertion.IsCheked == null || (bool) opertion.IsCheked)
+                    if (OperationsArr.IsCheked == null || (bool)OperationsArr.IsCheked)
                     {
-                        ShowShem(opertion.Sheme);
-                        await opertion.StartWork(source.Token);
+                        ShowShem(OperationsArr.Sheme);
+                        await OperationsArr.StartWork(source.Token);
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -311,12 +333,16 @@ namespace ASMC.Data.Model
                     source.Token.ThrowIfCancellationRequested();
                     Logger.Error(e);
                 }
-                Logger.Debug(opertion.ToString);
-            }
-            Logger.Debug("Конец  операций");
+                Logger.Debug(OperationsArr.ToString);
+
+                TreeNode tree = (TreeNode) OperationsArr;
+
+                if (tree.Nodes.Count!=0) 
+                    for (int i = 0; i < tree.Nodes.Count; i++)
+                     clrNode((IUserItemOperationBase)tree.Nodes[i],source);
         }
 
-        #endregion
+        #endregion Methods
 
         #region Operations
 
@@ -355,9 +381,8 @@ namespace ASMC.Data.Model
         /// </summary>
         protected IUserItemOperation UserItemOperationPrimaryVerf { get; set; }
 
-        #endregion
+        #endregion Operations
     }
-
 
     /// <summary>
     /// Предоставляет интерфес пункта(параграфа) операции
@@ -366,6 +391,7 @@ namespace ASMC.Data.Model
     {
         //
         bool? IsCheked { get; set; }
+
         #region Property
 
         /// <summary>
@@ -383,7 +409,6 @@ namespace ASMC.Data.Model
         /// </summary>
         bool? IsGood { get; set; }
 
-
         /// <summary>
         /// Предоставляет наименование операции
         /// </summary>
@@ -395,8 +420,9 @@ namespace ASMC.Data.Model
         ShemeImage Sheme { get; }
 
         TransactionDetails TransactionDetails
-        { get;} 
-        #endregion
+        { get; }
+
+        #endregion Property
 
         #region Methods
 
@@ -410,7 +436,7 @@ namespace ASMC.Data.Model
         /// </summary>
         Task StartWork(CancellationToken token);
 
-        #endregion
+        #endregion Methods
     }
 
     public abstract class ParagraphBase : TreeNode, IUserItemOperationBase
@@ -424,10 +450,9 @@ namespace ASMC.Data.Model
         /// </summary>
         public bool IsSpeedWork { get; set; }
 
-
         protected IUserItemOperation UserItemOperation { get; }
 
-        #endregion
+        #endregion Property
 
         protected ParagraphBase()
         {
@@ -450,7 +475,7 @@ namespace ASMC.Data.Model
         /// Прибор из списка контрольных (эталонов) или контролируемых (поверяемых/проверяемых)
         /// приборов.
         /// </param>
-        /// <returns></returns>
+        /// <returns>Возвращает строку подключения для устройства.</returns>
         protected string GetStringConnect(Devices.IDevice currentDevice)
         {
             var connect = UserItemOperation.ControlDevices
@@ -472,7 +497,7 @@ namespace ASMC.Data.Model
 
         protected abstract void InitWork();
 
-        #endregion
+        #endregion Methods
 
         /// <summary>
         /// Позволяет получить гуид операции.
@@ -484,17 +509,14 @@ namespace ASMC.Data.Model
 
         public TransactionDetails TransactionDetails { get; protected set; }
 
-
         /// <inheritdoc />
         public bool? IsGood { get; set; }
-
 
         /// <inheritdoc />
         public abstract Task StartSinglWork(CancellationToken token, Guid guid);
 
         /// <inheritdoc />
         public abstract Task StartWork(CancellationToken token);
-
 
         /// <inheritdoc />
         public bool? IsCheked { get; set; }
@@ -512,11 +534,11 @@ namespace ASMC.Data.Model
                 if (_chekShem == null)
                 {
 #pragma warning disable 1998
-                    return async () => true ;
+                    return async () => true;
 #pragma warning restore 1998
                 };
                 return _chekShem;
-             }
+            }
             set => _chekShem = value;
         }
 
@@ -526,14 +548,17 @@ namespace ASMC.Data.Model
         private Func<Task<bool>> _chekShem;
 
         #region Property
+
         /// <summary>
         /// Позволяет получать или задавать имя сборки-папки где и искать файл
         /// </summary>
         public string AssemblyLocalName { get; set; }
+
         /// <summary>
         /// Позволяет получать или задавать описание(заголовок) схемы
         /// </summary>
         public string Description { get; set; }
+
         /// <summary>
         /// Позволяет задать или получить разширенное описание.
         /// </summary>
@@ -542,7 +567,7 @@ namespace ASMC.Data.Model
             get => _extendedDescription;
             set
             {
-                if(!string.IsNullOrWhiteSpace(value))
+                if (!string.IsNullOrWhiteSpace(value))
                 {
                     FileNameDescription = null;
                 }
@@ -559,13 +584,14 @@ namespace ASMC.Data.Model
             set
             {
                 var format = Path.GetExtension(value);
-                if("".Equals(format)&& !string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException($@"Разширение файла не обнаружино");
+                if ("".Equals(format) && !string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException($@"Разширение файла не обнаружино");
 
-                if (!string.IsNullOrWhiteSpace(value) && format != null && !format.Equals(".rtf", StringComparison.CurrentCultureIgnoreCase))  throw new ArgumentNullException($@"Расширение файла не RTF");
-                    ExtendedDescription = null;
+                if (!string.IsNullOrWhiteSpace(value) && format != null && !format.Equals(".rtf", StringComparison.CurrentCultureIgnoreCase)) throw new ArgumentNullException($@"Расширение файла не RTF");
+                ExtendedDescription = null;
                 _fileNameDescription = value;
             }
         }
+
         /// <summary>
         /// Позволяет получать или задавать номер схемы. Используется для контроля отображения схем.
         /// </summary>
@@ -580,30 +606,36 @@ namespace ASMC.Data.Model
             set
             {
                 var format = Path.GetExtension(value);
-                if("".Equals(format)&& !string.IsNullOrWhiteSpace(value))
+                if ("".Equals(format) && !string.IsNullOrWhiteSpace(value))
                     throw new ArgumentNullException($@"Разширение файла не обнаружино");
                 _fileName = value;
             }
         }
 
-        #endregion
+        #endregion Property
     }
 
     public class TransactionDetails : BaseViewModel
     {
         private int _count;
         private int _countReady;
+
         public event CountUpdateHandler Notify;
+
         public delegate void CountUpdateHandler();
-        public int Count {
+
+        public int Count
+        {
             get => _count;
-          internal   set => SetProperty(ref _count, value, nameof(Count), ChangedCallback);
+            internal set => SetProperty(ref _count, value, nameof(Count), ChangedCallback);
         }
+
         public int CountReady
         {
             get => _countReady;
             internal set => SetProperty(ref _countReady, value, nameof(CountReady), ChangedCallback);
-        }   
+        }
+
         private void ChangedCallback()
         {
             Notify?.Invoke();

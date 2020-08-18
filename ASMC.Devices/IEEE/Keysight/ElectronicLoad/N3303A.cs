@@ -9,7 +9,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public N3303A() 
         {
             ModuleModel = "N3303A";
-
+            
             //Пределы воспроизведения сопротивлений в режиме CR
 
             this.RangeVoltArr = new decimal[2] { 24, 240 };
