@@ -235,6 +235,11 @@ namespace APPA_107N_109N
         public Oper3DcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения постоянного напряжения";
+            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
+            OpMultipliers = Multipliers.None;
+            OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
+            OperationDcRangeNominal = Mult107_109N.RangeNominal.RangeNone;
+
             for (var i = 0; i < baseMultipliers.Length; i++)
             for (var j = 0; j < basePoint.Length; j++)
                 points[i, j] = basePoint[j] * baseMultipliers[i];
@@ -245,7 +250,7 @@ namespace APPA_107N_109N
             DataRow = new List<IBasicOperation<decimal>>();
             Sheme = ShemeTemplateDefault.TemplateSheme;
             OpMultipliers = Multipliers.None;
-            OperMeasureMode = Mult107_109N.MeasureMode.DCV;
+            
         }
 
         #region Methods
@@ -257,6 +262,8 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            if (appa107N==null || flkCalib5522A == null) return;
+           
             DataRow.Clear();
             var par = Parent as Oper3DcvMeasureBase;
             foreach (var currPoint in par.dopPoint1000V)
@@ -271,15 +278,24 @@ namespace APPA_107N_109N
 
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox.Show("Установите режим измерения DCV",
-                                                                          "Указание оператору", MessageButton.OK,
-                                                                          MessageIcon.Information,
-                                                                          MessageResult.OK);
+                        
+                         
+                          while (OperMeasureMode != appa107N.GetMeasureMode)
+                          {
+                              var appaMode = appa107N.GetMeasureMode;
+                            UserItemOperation.ServicePack.MessageBox.Show($"Установите режим измерения {OperMeasureMode}",
+                                                                                "Указание оператору", MessageButton.OK,
+                                                                                MessageIcon.Information,
+                                                                                MessageResult.OK);
+                          }
+                                  
 
+
+                          
                         while (OperationDcRangeNominal != appa107N.GetRangeNominal)
                             if (OpMultipliers == Multipliers.Mili)
                             {
+                                var appaCurr = appa107N.GetRangeNominal;
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
                                                        "Нажмите на приборе клавишу Range 1 раз.",
@@ -421,8 +437,7 @@ namespace APPA_107N_109N
 
     public class Oper3_1DC_20mV_Measure : Oper3DcvMeasureBase
     {
-        public Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
-            base(userItemOperation)
+        public Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             //Жестко забиваем конкретный предел измерения
             Name = Mult107_109N.RangeNominal.Range20mV.GetStringValue();
@@ -523,14 +538,14 @@ namespace APPA_107N_109N
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         #endregion
 
         public override Task StartSinglWork(CancellationToken token, Guid guid)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override async Task StartWork(CancellationToken cancellationToken)
