@@ -266,7 +266,7 @@ namespace APPA_107N_109N
            
             DataRow.Clear();
             var par = Parent as Oper3DcvMeasureBase;
-            foreach (var currPoint in par.dopPoint1000V)
+            foreach (var currPoint in points)
             {
                 var operation = new BasicOperationVerefication<decimal>();
                 operation.InitWork = async () =>
@@ -503,6 +503,8 @@ namespace APPA_107N_109N
         private AcPoint _volt;
         private AcPoint _herz;
 
+        
+
         public AcPoint VAcPoint
         {
             get { return _volt; }
@@ -528,6 +530,7 @@ namespace APPA_107N_109N
 
     public abstract class Oper4AcvMeasureBase : ParagraphBase, IUserItemOperationBase
     {
+        
 
 
         public Oper4AcvMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)

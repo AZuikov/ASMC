@@ -257,7 +257,7 @@ namespace ASMC.Data.Model
         /// </summary>
         public TypeOpeation SelectedTypeOpeation { get; set; }
 
-        private IUserItemOperationBase CurrentUserItemOperationBase { get; set; }
+        
 
         #endregion Property
 
@@ -291,19 +291,18 @@ namespace ASMC.Data.Model
             foreach (IUserItemOperationBase lonleyTreeNode in SelectedOperation.UserItemOperation)
                 clrNode(lonleyTreeNode, source);
 
-            //clrNode(operation, source);
 
+            /////////    старая реализация метода    //////////////////////
             //foreach (var opertion in SelectedOperation.UserItemOperation)
             //{
             //    CurrentUserItemOperationBase = opertion;
             //    try
             //    {
-            //        if ( opertion.IsCheked == null || (bool) opertion.IsCheked)
+            //        if (opertion.IsCheked == null || (bool)opertion.IsCheked)
             //        {
             //            ShowShem(opertion.Sheme);
             //            await opertion.StartWork(source.Token);
             //        }
-
             //    }
             //    catch (Exception e)
             //    {
@@ -318,14 +317,14 @@ namespace ASMC.Data.Model
 
         private async void clrNode(IUserItemOperationBase OperationsArr, CancellationTokenSource source)
         {
-                CurrentUserItemOperationBase = OperationsArr;
+                
 
                 try
                 {
-                    if (CurrentUserItemOperationBase.IsCheked == null || (bool)CurrentUserItemOperationBase.IsCheked)
+                    if (OperationsArr.IsCheked == null || (bool)OperationsArr.IsCheked)
                     {
-                        ShowShem(CurrentUserItemOperationBase.Sheme);
-                        //await CurrentUserItemOperationBase.StartWork(source.Token);
+                        ShowShem(OperationsArr.Sheme);
+                        await OperationsArr.StartWork(source.Token);
                     }
                 }
                 catch (Exception e)
@@ -334,7 +333,7 @@ namespace ASMC.Data.Model
                     source.Token.ThrowIfCancellationRequested();
                     Logger.Error(e);
                 }
-                Logger.Debug(CurrentUserItemOperationBase.ToString);
+                Logger.Debug(OperationsArr.ToString);
 
                 TreeNode tree = (TreeNode) OperationsArr;
 
