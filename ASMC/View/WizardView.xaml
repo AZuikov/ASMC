@@ -325,31 +325,7 @@
           </TabItem>
           <TabItem Header="Операции" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}">
             <StackPanel>
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto"/>
-                  <ColumnDefinition Width="Auto"  />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                                <view:OperationView/>
-                <!--<StackPanel Grid.Column="0" Name="MyPalen" >
-                  <TreeView ItemsSource="{Binding UserItemOperation, Mode=TwoWay}">
-                    <TreeView.ItemTemplate>
-                      <DataTemplate>
-                        <CheckBox
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="{Binding Path= Name}"/>
-                      </DataTemplate>
-                    </TreeView.ItemTemplate>
-                    --><!--<i:Interaction.Behaviors>
-                      <behavior:BindableSelectedItemBeheavior SelectItem ="{Binding SelectionItemOperation, Mode=TwoWay}"/>
-                    </i:Interaction.Behaviors>--><!--
-                  </TreeView>
-                </StackPanel>-->
-                <GridSplitter Grid.Column="1" Width="2"></GridSplitter>
-                <DataGrid HorizontalAlignment="Stretch" CanUserAddRows="False" AutoGenerateColumns="True" ItemsSource="{Binding DataOperation}" Grid.Column="2"></DataGrid>
-              </Grid>
+                <view:OperationView/>
             </StackPanel>
           </TabItem>
           <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}">

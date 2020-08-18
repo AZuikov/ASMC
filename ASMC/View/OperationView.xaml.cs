@@ -20,7 +20,12 @@ namespace ASMC.View
     /// </summary>
     public partial class OperationView : UserControl
     {
-       
+        public readonly DependencyProperty IsManualPropery = DependencyProperty.Register(nameof(IsManual), typeof(bool), typeof(OperationView),new FrameworkPropertyMetadata(true));
+       public bool IsManual
+       {
+           get { return (bool) GetValue(IsManualPropery);}
+           set{SetValue(IsManualPropery,value);}
+       }
         public OperationView()
         {
             InitializeComponent();

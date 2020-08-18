@@ -29,8 +29,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Column="0" Content="Соответствует" IsChecked="{Binding CheckBox}" 
-                               />
+                    <RadioButton Grid.Column="0" Content="Соответствует" IsChecked="{Binding CheckBox}"/>
                     <RadioButton Grid.Column="1" Content="Не соответствует"   IsChecked="{Binding CheckBox, Converter={StaticResource BooleanNegationConverter}}" />
                 </Grid>
                 <StackPanel>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Documents;
@@ -23,9 +24,11 @@ namespace ASMC.Core.ViewModel
         protected override void OnEntityChanged()
         {
             base.OnEntityChanged();
-            var enter = Entity as (string, string)? ?? (null, null);
-            AssemblyLocalName = Path.GetFileNameWithoutExtension(enter.Item2);
-            FileNameDescription = enter.Item1;
+                var enter = Entity as Tuple<string, Assembly>;
+                if (enter==null) return;
+                AssemblyLocalName = Path.GetFileNameWithoutExtension(enter.Item2?.ManifestModule.Name);
+                FileNameDescription = enter.Item1;
+
         }
 
         public string Description
@@ -41,7 +44,7 @@ namespace ASMC.Core.ViewModel
 
         private void ChangedSelected()
         {
-            Entity = (document: !CheckBox?"Не соответствует, по причине: "+ ResultStr:"Соответствует", check: CheckBox);
+            Entity = new Tuple<string,bool>(!CheckBox ? "Не соответствует, по причине: " + ResultStr : "Соответствует", CheckBox);
         }
 
         public bool CheckBox
