@@ -317,8 +317,6 @@ namespace ASMC.Data.Model
 
         private async void clrNode(IUserItemOperationBase OperationsArr, CancellationTokenSource source)
         {
-                
-
                 try
                 {
                     if (OperationsArr.IsCheked == null || (bool)OperationsArr.IsCheked)
