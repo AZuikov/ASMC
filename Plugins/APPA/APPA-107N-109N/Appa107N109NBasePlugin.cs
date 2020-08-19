@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Utils.Data;
@@ -214,6 +215,10 @@ namespace APPA_107N_109N
         protected AcVPoint[] _voltPoint;
 
         protected AcVPoint _rangeResolution;
+        /// <summary>
+        /// довесок к формуле погрешности- единица младшего разряда
+        /// </summary>
+        public int EdMlRaz = 10; //значение для пределов свыше 200 мВ
 
         /// <summary>
         /// Режим операции измерения прибора
@@ -274,22 +279,27 @@ namespace APPA_107N_109N
                         var testMeasureModde = appa107N.GetMeasureMode;
                         while (OperMeasureMode != appa107N.GetMeasureMode)
                         {
-                            var appaMode = appa107N.GetMeasureMode;
+                            
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
+
                         }
 
                         var testRangeNominal = appa107N.GetRangeNominal;
                         while (OperationDcRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton = appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto ? 1 : 0;
+                            
+
                             if (OpMultipliers == Multipliers.Mili)
                             {
-                                var appaCurr = appa107N.GetRangeNominal;
+                                
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
-                                                       "Нажмите на приборе клавишу Range 1 раз.",
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton+1} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                        MessageResult.OK);
                             }
@@ -297,7 +307,7 @@ namespace APPA_107N_109N
                             {
                                 var curRange = (int) appa107N.GetRangeCode & 128;
                                 var targetRange = (int) OperationDcRangeCode & 128;
-                                var countPushRangeButton = 4 - curRange + (targetRange < curRange ? curRange : 0);
+                                 countPushRangeButton = countPushRangeButton + 4 - curRange + (targetRange < curRange ? curRange : 0);
 
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
@@ -305,6 +315,8 @@ namespace APPA_107N_109N
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                        MessageResult.OK);
                             }
+                        }
+                            
                     }
                     catch (Exception e)
                     {
@@ -316,21 +328,20 @@ namespace APPA_107N_109N
                     try
                     {
                         //расчитем, какое значение отправлять накалибратор
-                        decimal SetAndExpectedPoint = currPoint._volt._nominalVal *
-                                                      (decimal) currPoint._volt._multipliersUnit.GetDoubleValue();
+                        decimal SetAndExpectedPoint = currPoint._volt._nominalVal;
                         flkCalib5522A.Out.Set.Voltage.Dc.SetValue(SetAndExpectedPoint);
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                        Thread.Sleep(1000);
+                        Thread.Sleep(2000);
                         //измеряем
                         var measurePoint = (decimal) appa107N.GetSingleValue();
 
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                         operation.Getting = measurePoint;
-                        operation.Expected = SetAndExpectedPoint;
+                        operation.Expected = currPoint._volt._nominalVal / (decimal)currPoint._volt._multipliersUnit.GetDoubleValue();
                         //расчет погрешности для конкретной точки предела измерения
-                        operation.ErrorCalculation = (inA, inB) => (decimal) 0.0006 * operation.Expected +  (_rangeResolution._volt._nominalVal * 
-                                                                                                 (decimal)(currPoint._volt._multipliersUnit.GetDoubleValue()/ _rangeResolution._volt._multipliersUnit.GetDoubleValue()));
+                        operation.ErrorCalculation = (inA, inB) => (decimal) 0.0006 * operation.Expected +  (EdMlRaz*_rangeResolution._volt._nominalVal * 
+                                                                                                             (decimal)(_rangeResolution._volt._multipliersUnit.GetDoubleValue() / currPoint._volt._multipliersUnit.GetDoubleValue() ));
                         operation.LowerTolerance = operation.Expected - operation.Error;
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
@@ -482,6 +493,7 @@ namespace APPA_107N_109N
             _rangeResolution = new AcVPoint(1, Multipliers.Micro);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
+            EdMlRaz = 60;
 
             _baseMultipliers = 1;
          _voltPoint  = new AcVPoint[6];
@@ -505,6 +517,7 @@ namespace APPA_107N_109N
             _rangeResolution = new AcVPoint(10, Multipliers.Micro);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
+            EdMlRaz = 20;
 
             _baseMultipliers = 10;
             _voltPoint = new AcVPoint[6];

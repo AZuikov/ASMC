@@ -582,9 +582,10 @@ namespace ASMC.Devices.Port.APPA
 
             Logger.Info(value);
 
-            value *= GetGeneralMeasureUnit.GetDoubleValue();
+            //value *= GetGeneralMeasureUnit.GetDoubleValue();
 
-            return DoubleToDoubleMind(value, mult);
+            //return DoubleToDoubleMind(value, mult);
+            return value;
         }
 
         
