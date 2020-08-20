@@ -10,6 +10,7 @@
              xmlns:common="clr-namespace:ASMC.Common;assembly=ASMC.Common"
              xmlns:ui2="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
              xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
+             xmlns:converters="clr-namespace:ASMC.View.Converters"
 
              mc:Ignorable="d"
              d:DesignHeight="650" d:DesignWidth="800" MinWidth="800">
@@ -17,6 +18,7 @@
     <ResourceDictionary>
       <dx:EnumToBoolConverter x:Key="EnumToBoolConverter" />
       <common:EnumFlagToBoolConverter x:Key="EnumFlagToBoolConverter" />
+            <converters:SpecialBooToStringConverter x:Key="SpecialBooToStringConverter"/>
       <GridLength x:Key="Gap">20</GridLength>
       <Style TargetType="Button">
         <Setter Property="Margin" Value="0,5,0,0" />
@@ -42,9 +44,16 @@
       </MenuItem>
       <MenuItem Header="Инструменты">
         <MenuItem Header="Выбрать режим">
-          <MenuItem>
-            <ComboBox />
-          </MenuItem>
+                    <StackPanel>
+                        <ComboBox ItemsSource="{Binding ModeWork}" SelectedValue="{Binding IsManual}" HorizontalAlignment="Stretch" >
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ., Converter={StaticResource SpecialBooToStringConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            
+                        </ComboBox>
+                    </StackPanel>
         </MenuItem>
         <MenuItem Header="Сокращенные операции" IsCheckable="True" />
         <MenuItem Header="Игноировать не соответствия" IsCheckable="True" />
@@ -325,7 +334,7 @@
           </TabItem>
           <TabItem Header="Операции" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}">
             <StackPanel>
-                <view:OperationView/>
+                            <view:OperationView IsManual="{Binding IsManual}"/>
             </StackPanel>
           </TabItem>
           <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}">
