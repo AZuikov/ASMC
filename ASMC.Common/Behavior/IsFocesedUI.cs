@@ -11,8 +11,9 @@ namespace ASMC.Common.Behavior
 
         public object SelectValue
         {
-            get { return SelectValueProperty; }
-            set {SetValue(SelectValueProperty, value);} }
+            get => SelectValueProperty;
+            set => SetValue(SelectValueProperty, value);
+        }
 
 
         protected override void OnAttached()

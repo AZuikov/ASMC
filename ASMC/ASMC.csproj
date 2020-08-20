@@ -125,6 +125,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="View\Converters\SpecialBooToStringConverter.cs" />
     <Compile Include="Properties\AssemblySettings.cs" />
     <Compile Include="ViewModel\DeviceViewModel.cs" />
     <Compile Include="ViewModel\SettingViewModel.cs" />

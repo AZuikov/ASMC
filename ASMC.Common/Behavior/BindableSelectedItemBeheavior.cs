@@ -7,24 +7,18 @@ namespace ASMC.Common.Behavior
     public class BindableSelectedItemBeheavior : Behavior<TreeView>
     {
         public static readonly DependencyProperty SelectItemProperty = DependencyProperty.Register(nameof(SelectItem),
-            typeof(object), typeof(BindableSelectedItemBeheavior), new UIPropertyMetadata(null, PropertyChangedCallback));
+            typeof(object), typeof(BindableSelectedItemBeheavior), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        private static void PropertyChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-        {
-            if(!(e.NewValue is TreeViewItem item)) return;
-            item.SetValue(TreeViewItem.IsSelectedProperty, true);
-        }
+        //private static void PropertyChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        //{
+        //    if(!(e.NewValue is TreeViewItem item)) return;
+        //    item.SetValue(TreeViewItem.IsSelectedProperty, true);
+        //}
 
         public object SelectItem
         {
-            get
-            {
-                return SelectItemProperty;
-            }
-            set
-            {
-                SetValue(SelectItemProperty, value);
-            }
+            get => SelectItemProperty;
+            set => SetValue(SelectItemProperty, value);
         }
 
 

@@ -216,10 +216,17 @@ namespace ASMC.ViewModel
             PauseCommand = new DelegateCommand(OnPauseCommand);
         }
 
+        public bool[] ModeWork { get; set; } = new[] {true, false};
+
         public bool IsManual
         {
             get => _isManual;
-            set => SetProperty(ref _isManual, value, nameof(IsManual));
+            set => SetProperty(ref _isManual, value, nameof(IsManual),
+                               () =>
+                               {
+                                   if (SelectProgram==null) return;
+                                   SelectProgram.Operation.IsManual = IsManual;
+                               });
         }
 
         #region Methods

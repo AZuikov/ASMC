@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ASMC.Data.Model;
 
 namespace ASMC.View
 {
@@ -20,12 +9,34 @@ namespace ASMC.View
     /// </summary>
     public partial class OperationView : UserControl
     {
-        public readonly DependencyProperty IsManualPropery = DependencyProperty.Register(nameof(IsManual), typeof(bool), typeof(OperationView),new FrameworkPropertyMetadata(true));
-       public bool IsManual
-       {
-           get { return (bool) GetValue(IsManualPropery);}
-           set{SetValue(IsManualPropery,value);}
-       }
+        #region Fields
+
+        public static readonly DependencyProperty IsManualPropery =
+            DependencyProperty.Register(nameof(IsManual), typeof(bool), typeof(OperationView),
+                                        new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        //public readonly DependencyProperty SelectItemTestPropery =
+        //    DependencyProperty.Register(nameof(SelectItemTest), typeof(object), typeof(OperationView),
+        //                                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        #endregion
+
+        #region Property
+
+        public bool IsManual
+        {
+            get => (bool) GetValue(IsManualPropery);
+            set => SetValue(IsManualPropery, value);
+        }
+        public IUserItemOperationBase SelectItemTest { get; set; }
+        //public object SelectItemTest
+        //{
+        //    get => (object)GetValue(SelectItemTestPropery);
+        //    set => SetValue(SelectItemTestPropery, value);
+        //}
+
+        #endregion
+
         public OperationView()
         {
             InitializeComponent();
