@@ -48,7 +48,7 @@ namespace Appa107N
             AcvMode.Nodes.Add(new Ope4_1_AcV_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
             AcvMode.Nodes.Add(new Ope4_1_AcV_20V_Measure(Mult107_109N.RangeNominal.Range20V, this));
             AcvMode.Nodes.Add(new Ope4_1_AcV_200V_Measure(Mult107_109N.RangeNominal.Range200V, this));
-            AcvMode.Nodes.Add(new Ope4_1_AcV_1000V_Measure(Mult107_109N.RangeNominal.Range1000V, this));
+            AcvMode.Nodes.Add(new Ope41AcV750VMeasure(Mult107_109N.RangeNominal.Range1000V, this));
 
             UserItemOperation = new IUserItemOperationBase[]
             {
@@ -207,9 +207,9 @@ namespace Appa107N
         }
     }
 
-    public class Ope4_1_AcV_1000V_Measure : APPA_107N_109N.Ope4_1_AcV_1000V_Measure
+    public class Ope41AcV750VMeasure : APPA_107N_109N.Ope4_1_AcV_750V_Measure
     {
-        public Ope4_1_AcV_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal,
+        public Ope41AcV750VMeasure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
         {
