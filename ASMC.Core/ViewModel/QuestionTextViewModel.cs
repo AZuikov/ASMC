@@ -25,10 +25,16 @@ namespace ASMC.Core.ViewModel
         {
             base.OnEntityChanged();
                 var enter = Entity as Tuple<string, Assembly>;
-                if (enter==null) return;
-                AssemblyLocalName = Path.GetFileNameWithoutExtension(enter.Item2?.ManifestModule.Name);
-                FileNameDescription = enter.Item1;
-
+                if (enter != null)
+                {
+                    AssemblyLocalName = Path.GetFileNameWithoutExtension(enter.Item2?.ManifestModule.Name);
+                    FileNameDescription = enter.Item1;
+                }
+                else
+                {
+                    Entity = new Tuple<string, bool>(null, true);
+                }
+           
         }
 
         public string Description

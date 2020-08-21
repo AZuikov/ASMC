@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ASMC.Core;
@@ -98,9 +99,9 @@ namespace B5_71_PRO_Abstract
             {
                 var service = this.UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
-                service.Entity = (Document: "VisualTestText",string.Empty);
+                service.Entity = new Tuple<string,Assembly>("VisualTestText",null);
                 service.Show();
-                var res = (ValueTuple<string, bool>)service.Entity;
+                var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
                 operation.Comment = res.Item1;
                 return Task.CompletedTask;
