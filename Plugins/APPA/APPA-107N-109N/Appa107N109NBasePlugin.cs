@@ -121,20 +121,7 @@ namespace APPA_107N_109N
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
         /// <inheritdoc />
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        /// <inheritdoc />
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow)
-                await dr.WorkAsync(token);
-        }
+        
     }
 
     public abstract class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
@@ -162,19 +149,7 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-
-        {
-            var bo = new BasicOperation<bool> {Expected = true};
-            //bo.IsGood = s => bo.Getting;
-
-            DataRow.Add(bo);
-        }
+       
     }
 
     //////////////////////////////******DCV*******///////////////////////////////
@@ -396,18 +371,7 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(token);
-        }
+       
     }
 
     public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
@@ -891,17 +855,7 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            return null;
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-
-        {
-            InitWork();
-            foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(cancellationToken);
-        }
+       
 
         #region TolleranceFormula
 
@@ -1317,25 +1271,25 @@ namespace APPA_107N_109N
                     flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                     Thread.Sleep(2000);
                     //измеряем
-                    var measurePoint = (decimal)appa107N.GetSingleValue();
+                    var measurePoint = (decimal) appa107N.GetSingleValue();
 
                     flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                     operation.Getting = measurePoint;
                     operation.Expected = currPoint.VariableBaseValueAcPoint._nominalVal /
-                                         (decimal)currPoint
+                                         (decimal) currPoint
                                                   .VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue();
                     //расчет погрешности для конкретной точки предела измерения
                     operation.ErrorCalculation = (inA, inB) =>
                     {
                         var result = BaseTolCoeff * operation.Expected + EdMlRaz *
                             RangeResolution.VariableBaseValueAcPoint._nominalVal *
-                            (decimal)(RangeResolution
+                            (decimal) (RangeResolution
                                       .VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue() /
                                        currPoint.VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue()
                             );
                         var mantisa =
-                            MathStatistics.GetMantissa((decimal)(RangeResolution
+                            MathStatistics.GetMantissa((decimal) (RangeResolution
                                                                  .VariableBaseValueAcPoint._multipliersUnit
                                                                  .GetDoubleValue() /
                                                                   currPoint.VariableBaseValueAcPoint
@@ -1344,6 +1298,8 @@ namespace APPA_107N_109N
                         MathStatistics.Round(ref result, mantisa);
                         return result;
                     };
+
+                };
                 operation.CompliteWork = () =>
                 {
                     if (!operation.IsGood())
@@ -1363,22 +1319,13 @@ namespace APPA_107N_109N
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<decimal>) operation.Clone());
+                                : (BasicOperationVerefication<decimal>)operation.Clone());
             }
         }
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            InitWork();
-            foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(cancellationToken);
-        }
+       
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
@@ -1404,15 +1351,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion ACI
@@ -1436,15 +1375,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion FREQ
@@ -1517,15 +1448,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion OHM
@@ -1549,15 +1472,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion FAR
@@ -1581,16 +1496,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion TEMP
