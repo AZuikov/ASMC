@@ -30,7 +30,6 @@ namespace ASMC
         #region Fields
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static Mutex _mutex;
 
         #endregion
 
@@ -117,7 +116,6 @@ namespace ASMC
                 ShowMessage(error.Message, MessageBoxImage.Error, MessageBoxButton.OK);
             }
 
-            _mutex?.Dispose();
 
             base.OnExit(e);
         }
