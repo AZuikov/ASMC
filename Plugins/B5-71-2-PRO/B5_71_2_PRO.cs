@@ -1,4 +1,5 @@
-﻿using ASMC.Data.Model;
+﻿using ASMC.Core.Model;
+using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;

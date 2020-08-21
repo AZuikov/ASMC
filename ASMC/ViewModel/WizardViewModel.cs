@@ -11,6 +11,7 @@ using System.Windows.Input;
 using AP.Reports.AutoDocumets;
 using ASMC.Common;
 using ASMC.Common.ViewModel;
+using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
@@ -81,7 +82,6 @@ namespace ASMC.ViewModel
         private IProgram _selectProgram;
         private SettingViewModel _settingViewModel = new SettingViewModel();
         private StateWork _stateWorkFlag;
-        private TransactionDetails _transactionDetails;
         private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
         private bool _isManual;
@@ -169,12 +169,6 @@ namespace ASMC.ViewModel
         {
             get => _stateWorkFlag;
             set => SetProperty(ref _stateWorkFlag, value, nameof(StateWorkFlag));
-        }
-
-        public TransactionDetails TransactionDetails
-        {
-            get => _transactionDetails;
-            set => SetProperty(ref _transactionDetails, value, nameof(TransactionDetails));
         }
 
         /// <summary>
@@ -397,8 +391,7 @@ namespace ASMC.ViewModel
         private async void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
-            var sum = SelectProgram.Operation.SelectedOperation.UserItemOperation
-                                   .Select(q => q?.TransactionDetails?.Count).Sum();
+         
             if (SelectionItemOperation == null)
             {
                 await SelectProgram.Operation.StartWorkAsync(_isWorkToken);

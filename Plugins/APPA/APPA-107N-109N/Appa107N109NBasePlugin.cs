@@ -8,6 +8,7 @@ using AP.Math;
 using AP.Utils.Data;
 using AP.Utils.Helps;
 using ASMC.Core;
+using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices;
@@ -42,7 +43,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class OpertionFirsVerf : ASMC.Data.Model.Operation
+    public abstract class OpertionFirsVerf : ASMC.Core.Model.Operation
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {

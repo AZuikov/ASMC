@@ -37,6 +37,7 @@
     <Reference Include="NLog">
       <HintPath>..\..\..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -65,6 +66,10 @@
     <ProjectReference Include="..\..\..\ASMC.Common\ASMC.Common.csproj">
       <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
       <Name>ASMC.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{adb547eb-33aa-4c07-a493-c80729632a8b}</Project>
+      <Name>ASMC.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
       <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>

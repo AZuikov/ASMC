@@ -55,11 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractProgram.cs" />
     <Compile Include="BasicOperation.cs" />
     <Compile Include="IDevice.cs" />
     <Compile Include="Interface\IBasicOperation.cs" />
-    <Compile Include="Interface\IProgram.cs" />
     <Compile Include="MeasurePointAndMeasUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeNode.cs" />
@@ -69,10 +67,6 @@
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ASMC.Common\ASMC.Common.csproj">
-      <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
-      <Name>ASMC.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

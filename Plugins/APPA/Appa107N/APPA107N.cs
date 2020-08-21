@@ -1,5 +1,6 @@
 ﻿using System;
 using APPA_107N_109N;
+using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Port.APPA;
