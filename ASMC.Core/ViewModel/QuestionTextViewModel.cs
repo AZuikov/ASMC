@@ -29,12 +29,7 @@ namespace ASMC.Core.ViewModel
                 {
                     AssemblyLocalName = Path.GetFileNameWithoutExtension(enter.Item2?.ManifestModule.Name);
                     FileNameDescription = enter.Item1;
-                }
-                else
-                {
-                    Entity = new Tuple<string, bool>(null, true);
-                }
-           
+            }
         }
 
         public string Description
@@ -78,5 +73,12 @@ namespace ASMC.Core.ViewModel
             }
         }
 
+        /// <inheritdoc />
+        protected override void OnInitializing()
+        {
+            base.OnInitializing();
+
+            Entity = new Tuple<string, bool>(null, true);
+        }
     }
 }
