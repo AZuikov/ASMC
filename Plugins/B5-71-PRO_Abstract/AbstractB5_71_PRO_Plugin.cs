@@ -133,21 +133,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        /// <inheritdoc />
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        /// <inheritdoc />
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow)
-                await dr.WorkAsync(token);
-        }
+    
     }
 
     /// <summary>
@@ -333,19 +319,7 @@ namespace B5_71_PRO_Abstract
 
         #endregion Methods
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
-
+     
         public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
@@ -502,20 +476,10 @@ namespace B5_71_PRO_Abstract
 
         #endregion Methods
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
+      
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+    
     }
 
     /// <summary>
@@ -679,18 +643,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+       
     }
 
     /// <summary>
@@ -856,18 +809,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+       
     }
 
     /// <summary>
@@ -1011,18 +953,7 @@ namespace B5_71_PRO_Abstract
 
         #endregion Methods
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+     
 
         #region Fileds
 
@@ -1184,18 +1115,9 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+
+        
     }
 
     /// <summary>
@@ -1353,18 +1275,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+       
     }
 
     /// <summary>
@@ -1506,18 +1417,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+       
     }
 
     /// <summary>
@@ -1671,18 +1571,7 @@ namespace B5_71_PRO_Abstract
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow) await dr.WorkAsync(token);
-        }
+     
     }
 
     internal static class ShemeTemplate

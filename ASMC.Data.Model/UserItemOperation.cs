@@ -1,13 +1,14 @@
-﻿using System;
+﻿using ASMC.Common.ViewModel;
+using ASMC.Data.Model.Interface;
+using NLog;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ASMC.Common.ViewModel;
-using ASMC.Data.Model.Interface;
-using NLog;
 
 namespace ASMC.Data.Model
 {
@@ -275,28 +276,6 @@ namespace ASMC.Data.Model
         {
             foreach (var lonleyTreeNode in SelectedOperation.UserItemOperation)
                 clrNode(lonleyTreeNode, source);
-
-            /////////    старая реализация метода    //////////////////////
-            //foreach (var opertion in SelectedOperation.UserItemOperation)
-            //{
-            //    CurrentUserItemOperationBase = opertion;
-            //    try
-            //    {
-            //        if (opertion.IsCheked == null || (bool)opertion.IsCheked)
-            //        {
-            //            ShowShem(opertion.Sheme);
-            //            await opertion.StartWork(source.Token);
-            //        }
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        source.Cancel();
-            //        source.Token.ThrowIfCancellationRequested();
-            //        Logger.Error(e);
-            //    }
-            //    Logger.Debug(opertion.ToString);
-            //}
-            //Logger.Debug("Конец  операций");
         }
 
         private async void clrNode(IUserItemOperationBase OperationsArr, CancellationTokenSource source)
@@ -409,11 +388,13 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Флаг указывающий, что данная операция выполняется в текущий момент.
         /// </summary>
+        // ReSharper disable once UnusedMember.Global
         bool IsWork { get; }
 
         /// <summary>
         /// Предоставляет результат операции
         /// </summary>
+        // ReSharper disable once UnusedMember.Global
         bool? IsGood { get; set; }
 
         /// <summary>
@@ -445,17 +426,21 @@ namespace ASMC.Data.Model
         #endregion
     }
 
+    /// <summary>
+    ///  Предоставляет базовый клас для пункта операции.
+    /// </summary>
     public abstract class ParagraphBase : TreeNode, IUserItemOperationBase
     {
         #region Property
-
-        public Func<CancellationToken, Task> BodyWork { get; set; }
 
         /// <summary>
         /// Позволяет задать и получить признак ускоренного выполнения операций.
         /// </summary>
         public bool IsSpeedWork { get; set; }
 
+        /// <summary>
+        /// Позволяет получить операции и необходимые настройки для ее выполнения.
+        /// </summary>
         protected IUserItemOperation UserItemOperation { get; }
 
         #endregion
@@ -466,7 +451,10 @@ namespace ASMC.Data.Model
         }
 
         #region Methods
-
+        /// <summary>
+        /// Заполняет свойство <see cref="Data"/>.
+        /// </summary>
+        /// <returns></returns>
         protected abstract DataTable FillData();
 
         /// <summary>
@@ -496,7 +484,9 @@ namespace ASMC.Data.Model
 
             return connect;
         }
-
+        /// <summary>
+        /// Проводит инициализацию необходимую для реализации интерфейса <see cref="IUserItemOperation<T>"/> 
+        /// </summary>
         protected abstract void InitWork();
 
         #endregion
@@ -518,10 +508,35 @@ namespace ASMC.Data.Model
         public bool? IsGood { get; set; }
 
         /// <inheritdoc />
-        public abstract Task StartSinglWork(CancellationToken token, Guid guid);
+        public async Task StartSinglWork(CancellationToken token, Guid guid)
+        {
+            InitWork();
+            var res= GetProperty().FirstOrDefault(q => Equals(((IBasicOperation<object>) q).Guid, guid));
+           var metod = res.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
+            await (Task)metod.Invoke(res, new Object[] { token });
+        }
+
+        private IEnumerable<object> GetProperty()
+        {
+            var findname = typeof(IUserItemOperation<object>).GetProperties().FirstOrDefault()?.Name;
+            var reult = this.GetType().GetProperties().FirstOrDefault(q => q.Name.Equals(findname)).GetValue(this);
+            return ((IList)reult).Cast<object>();
+
+        }
 
         /// <inheritdoc />
-        public abstract Task StartWork(CancellationToken token);
+        public async Task StartWork(CancellationToken token)
+        {
+            InitWork();
+            foreach (var row in GetProperty())
+            {
+             var metod=   row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
+            await (Task) metod.Invoke(row, new Object []{token});
+            }
+
+
+           
+        }
 
         /// <inheritdoc />
         public bool IsCheked { get; set; }
