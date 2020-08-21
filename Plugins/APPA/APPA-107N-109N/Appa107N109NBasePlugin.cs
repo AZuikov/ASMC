@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Math;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -190,16 +191,6 @@ namespace APPA_107N_109N
         public decimal BaseMultipliers;
 
         /// <summary>
-        /// Разарешение пределеа измерения (последний значащий разряд)
-        /// </summary>
-        protected AcVPoint RangeResolution;
-
-        /// <summary>
-        /// Массив поверяемых точек напряжения.
-        /// </summary>
-        protected AcVPoint[] VoltPoint;
-
-        /// <summary>
         /// Процент от измеряемой точки для расчета погрешности (уже переведе в абсолютные единицы).
         /// </summary>
         public decimal BaseTolCoeff = (decimal) 0.0006;
@@ -208,6 +199,16 @@ namespace APPA_107N_109N
         /// довесок к формуле погрешности- число единиц младшего разряда
         /// </summary>
         public int EdMlRaz = 10; //значение для пределов свыше 200 мВ
+
+        /// <summary>
+        /// Разарешение пределеа измерения (последний значащий разряд)
+        /// </summary>
+        protected AcVariablePoint RangeResolution;
+
+        /// <summary>
+        /// Массив поверяемых точек напряжения.
+        /// </summary>
+        protected AcVariablePoint[] VoltPoint;
 
         #endregion
 
@@ -282,7 +283,7 @@ namespace APPA_107N_109N
                         var testMeasureModde = appa107N.GetMeasureMode;
                         while (OperMeasureMode != appa107N.GetMeasureMode)
                             UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения {OperMeasureMode}",
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
@@ -325,7 +326,7 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                        flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint._volt._nominalVal);
+                        flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint.VariableBaseValueAcPoint._nominalVal);
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                         Thread.Sleep(2000);
                         //измеряем
@@ -334,23 +335,29 @@ namespace APPA_107N_109N
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                         operation.Getting = measurePoint;
-                        operation.Expected = currPoint._volt._nominalVal /
-                                             (decimal) currPoint._volt._multipliersUnit.GetDoubleValue();
+                        operation.Expected = currPoint.VariableBaseValueAcPoint._nominalVal /
+                                             (decimal) currPoint
+                                                      .VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue();
                         //расчет погрешности для конкретной точки предела измерения
                         operation.ErrorCalculation = (inA, inB) =>
                         {
-                            decimal result = BaseTolCoeff * operation.Expected + EdMlRaz * RangeResolution._volt._nominalVal *
-                            (decimal) (RangeResolution._volt._multipliersUnit.GetDoubleValue() /
-                                       currPoint._volt._multipliersUnit.GetDoubleValue());
-                            int mantisa =
-                                AP.Math.MathStatistics.GetMantissa((decimal)(RangeResolution
-                                                                            ._volt._multipliersUnit.GetDoubleValue() /
-                                                                             currPoint._volt._multipliersUnit
-                                                                                     .GetDoubleValue()));
-                            AP.Math.MathStatistics.Round(ref result, mantisa, false);
+                            var result = BaseTolCoeff * operation.Expected + EdMlRaz *
+                                RangeResolution.VariableBaseValueAcPoint._nominalVal *
+                                (decimal) (RangeResolution
+                                          .VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue() /
+                                           currPoint.VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue()
+                                );
+                            var mantisa =
+                                MathStatistics.GetMantissa((decimal) (RangeResolution
+                                                                     .VariableBaseValueAcPoint._multipliersUnit
+                                                                     .GetDoubleValue() /
+                                                                      currPoint.VariableBaseValueAcPoint
+                                                                               ._multipliersUnit
+                                                                               .GetDoubleValue()));
+                            MathStatistics.Round(ref result, mantisa);
                             return result;
                         };
-                            
+
                         operation.LowerTolerance = operation.Expected - operation.Error;
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
@@ -410,18 +417,18 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVPoint(100, Multipliers.Micro);
+            RangeResolution = new AcVariablePoint(100, Multipliers.Micro);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
 
             BaseMultipliers = 100;
-            VoltPoint = new AcVPoint[6];
-            VoltPoint[0] = new AcVPoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
-            VoltPoint[1] = new AcVPoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
-            VoltPoint[2] = new AcVPoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
-            VoltPoint[3] = new AcVPoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
-            VoltPoint[4] = new AcVPoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
-            VoltPoint[5] = new AcVPoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint = new AcVariablePoint[6];
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
         }
     }
 
@@ -432,18 +439,18 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVPoint(1, Multipliers.Mili);
+            RangeResolution = new AcVariablePoint(1, Multipliers.Mili);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
 
             BaseMultipliers = 1000;
-            VoltPoint = new AcVPoint[6];
-            VoltPoint[0] = new AcVPoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
-            VoltPoint[1] = new AcVPoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
-            VoltPoint[2] = new AcVPoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
-            VoltPoint[3] = new AcVPoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
-            VoltPoint[4] = new AcVPoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
-            VoltPoint[5] = new AcVPoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint = new AcVariablePoint[6];
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
         }
     }
 
@@ -454,18 +461,18 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVPoint(10, Multipliers.Mili);
+            RangeResolution = new AcVariablePoint(10, Multipliers.Mili);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
 
             BaseMultipliers = 10000;
-            VoltPoint = new AcVPoint[6];
-            VoltPoint[0] = new AcVPoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
-            VoltPoint[1] = new AcVPoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
-            VoltPoint[2] = new AcVPoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
-            VoltPoint[3] = new AcVPoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
-            VoltPoint[4] = new AcVPoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
-            VoltPoint[5] = new AcVPoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint = new AcVariablePoint[6];
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
         }
     }
 
@@ -476,18 +483,18 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVPoint(100, Multipliers.Mili);
+            RangeResolution = new AcVariablePoint(100, Multipliers.Mili);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
 
             BaseMultipliers = 1;
-            VoltPoint = new AcVPoint[6];
-            VoltPoint[0] = new AcVPoint(100 * BaseMultipliers, OpMultipliers);
-            VoltPoint[1] = new AcVPoint(200 * BaseMultipliers, OpMultipliers);
-            VoltPoint[2] = new AcVPoint(400 * BaseMultipliers, OpMultipliers);
-            VoltPoint[3] = new AcVPoint(700 * BaseMultipliers, OpMultipliers);
-            VoltPoint[4] = new AcVPoint(900 * BaseMultipliers, OpMultipliers);
-            VoltPoint[5] = new AcVPoint(-900 * BaseMultipliers, OpMultipliers);
+            VoltPoint = new AcVariablePoint[6];
+            VoltPoint[0] = new AcVariablePoint(100 * BaseMultipliers, OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint(200 * BaseMultipliers, OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint(400 * BaseMultipliers, OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint(700 * BaseMultipliers, OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint(900 * BaseMultipliers, OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint(-900 * BaseMultipliers, OpMultipliers);
         }
     }
 
@@ -498,20 +505,20 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVPoint(1, Multipliers.Micro);
+            RangeResolution = new AcVariablePoint(1, Multipliers.Micro);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
 
-            RangeResolution = new AcVPoint(1, Multipliers.Micro);
+            RangeResolution = new AcVariablePoint(1, Multipliers.Micro);
 
             BaseMultipliers = 1;
-            VoltPoint = new AcVPoint[6];
-            VoltPoint[0] = new AcVPoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
-            VoltPoint[1] = new AcVPoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
-            VoltPoint[2] = new AcVPoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
-            VoltPoint[3] = new AcVPoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
-            VoltPoint[4] = new AcVPoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
-            VoltPoint[5] = new AcVPoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint = new AcVariablePoint[6];
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
         }
     }
 
@@ -522,20 +529,20 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVPoint(10, Multipliers.Micro);
+            RangeResolution = new AcVariablePoint(10, Multipliers.Micro);
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
 
-            RangeResolution = new AcVPoint(10, Multipliers.Micro);
+            RangeResolution = new AcVariablePoint(10, Multipliers.Micro);
 
             BaseMultipliers = 10;
-            VoltPoint = new AcVPoint[6];
-            VoltPoint[0] = new AcVPoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
-            VoltPoint[1] = new AcVPoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
-            VoltPoint[2] = new AcVPoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
-            VoltPoint[3] = new AcVPoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
-            VoltPoint[4] = new AcVPoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
-            VoltPoint[5] = new AcVPoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint = new AcVariablePoint[6];
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, OpMultipliers);
         }
     }
 
@@ -562,7 +569,8 @@ namespace APPA_107N_109N
     #region ACV
 
     /// <summary>
-    /// Класс точки для переменной величины (например переменное напряжение). К примеру нужно задать напряжение и частоту
+    /// Класс точки для переменной величины (например переменное напряжение). К примеру нужно задать напряжение совместно
+    /// частотой.
     /// </summary>
     public class AcPoint
     {
@@ -578,14 +586,20 @@ namespace APPA_107N_109N
     }
 
     /// <summary>
-    /// Точка для переменного напряжения
+    /// Точка для переменного величины с дополнительным параметром. Например для переменного напряжения/тока.
     /// </summary>
-    public class AcVPoint
+    public class AcVariablePoint
     {
         #region Fields
 
-        internal readonly AcPoint _volt = new AcPoint();
+        /// <summary>
+        /// Основное значение точки (тока/напряжения).
+        /// </summary>
+        internal readonly AcPoint VariableBaseValueAcPoint = new AcPoint();
 
+        /// <summary>
+        /// Массив частот для данной точки.
+        /// </summary>
         internal AcPoint[] _herz;
 
         #endregion
@@ -595,7 +609,8 @@ namespace APPA_107N_109N
         /// </summary>
         /// <param name = "inNominal">Предел измерения прибора.</param>
         /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
-        public AcVPoint(decimal inNominal, Multipliers inMultipliersUnit) : this(inNominal, inMultipliersUnit, null)
+        public AcVariablePoint(decimal inNominal, Multipliers inMultipliersUnit) : this(inNominal, inMultipliersUnit,
+                                                                                        null)
         {
         }
 
@@ -605,12 +620,11 @@ namespace APPA_107N_109N
         /// <param name = "inNominal">номинал предела измерения.</param>
         /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
         /// <param name = "inHerzArr">Массив частот для данной точки.</param>
-        public AcVPoint(decimal inNominal, Multipliers inMultipliersUnit, AcPoint[] inHerzArr)
+        public AcVariablePoint(decimal inNominal, Multipliers inMultipliersUnit, AcPoint[] inHerzArr)
         {
-            //номинал напряжения
-            _volt._nominalVal = inNominal;
-            _volt._multipliersUnit = inMultipliersUnit;
-            //вложенный массив с частотами для данной точки
+            VariableBaseValueAcPoint._nominalVal = inNominal;
+            VariableBaseValueAcPoint._multipliersUnit = inMultipliersUnit;
+
             _herz = inHerzArr;
         }
     }
@@ -634,7 +648,7 @@ namespace APPA_107N_109N
         /// <summary>
         /// Итоговый массив поверяемых точек. У каждого номинала напряжения вложены номиналы частот для текущей точки.
         /// </summary>
-        public AcVPoint[] VoltPoint;
+        public AcVariablePoint[] VoltPoint;
 
         #endregion
 
@@ -682,6 +696,7 @@ namespace APPA_107N_109N
 
         /// <summary>
         /// Метод выбирает необходимый значения коэффициентов для формулы погрешности, исходя из предела измерения и диапазона
+        /// частот.
         /// частот.
         /// </summary>
         /// <returns>Результат вычисления.</returns>
@@ -771,7 +786,7 @@ namespace APPA_107N_109N
                         var testMeasureModde = appa107N.GetMeasureMode;
                         while (OperMeasureMode != appa107N.GetMeasureMode)
                             UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения {OperMeasureMode}",
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
@@ -812,8 +827,9 @@ namespace APPA_107N_109N
                 };
                 operation.BodyWork = () =>
                 {
-                    flkCalib5522A.Out.Set.Voltage.Ac.SetValue(volPoint._volt._nominalVal, freqPoint._nominalVal,
-                                                              volPoint._volt._multipliersUnit,
+                    flkCalib5522A.Out.Set.Voltage.Ac.SetValue(volPoint.VariableBaseValueAcPoint._nominalVal,
+                                                              freqPoint._nominalVal,
+                                                              volPoint.VariableBaseValueAcPoint._multipliersUnit,
                                                               freqPoint._multipliersUnit);
                     flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                     Thread.Sleep(2000);
@@ -821,25 +837,28 @@ namespace APPA_107N_109N
                     var measurePoint = (decimal) appa107N.GetSingleValue();
                     operation.Getting = measurePoint;
 
-                    operation.Expected = volPoint._volt._nominalVal /
-                                         (decimal) volPoint._volt._multipliersUnit.GetDoubleValue();
+                    operation.Expected = volPoint.VariableBaseValueAcPoint._nominalVal /
+                                         (decimal) volPoint.VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue();
 
                     //расчет погрешности для конкретной точки предела измерения
                     ConstructTooleranceFormula(freqPoint); // функция подбирает коэффициенты для формулы погрешности
                     operation.ErrorCalculation = (inA, inB) =>
                     {
-                        decimal result = BaseTolCoeff * operation.Expected + EdMlRaz * RangeResolution._volt._nominalVal *
-                                         (decimal) (RangeResolution._volt._multipliersUnit.GetDoubleValue() /
-                                                    volPoint._volt._multipliersUnit.GetDoubleValue());
-                        int mantisa =
-                            AP.Math.MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                         ._volt._multipliersUnit.GetDoubleValue() /
-                                                                          volPoint._volt._multipliersUnit
-                                                                                  .GetDoubleValue()));
-                        AP.Math.MathStatistics.Round(ref result, mantisa,false);
+                        var result = BaseTolCoeff * operation.Expected + EdMlRaz *
+                            RangeResolution.VariableBaseValueAcPoint._nominalVal *
+                            (decimal) (RangeResolution
+                                      .VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue() /
+                                       volPoint.VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue());
+                        var mantisa =
+                            MathStatistics.GetMantissa((decimal) (RangeResolution
+                                                                 .VariableBaseValueAcPoint._multipliersUnit
+                                                                 .GetDoubleValue() /
+                                                                  volPoint.VariableBaseValueAcPoint._multipliersUnit
+                                                                          .GetDoubleValue()));
+                        MathStatistics.Round(ref result, mantisa);
                         return result;
                     };
-                       
+
                     operation.LowerTolerance = operation.Expected - operation.Error;
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
@@ -862,6 +881,9 @@ namespace APPA_107N_109N
 
                     return Task.FromResult(operation.IsGood());
                 };
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<decimal>) operation.Clone());
             }
         }
 
@@ -877,7 +899,8 @@ namespace APPA_107N_109N
         public override async Task StartWork(CancellationToken cancellationToken)
 
         {
-            throw new NotImplementedException();
+            InitWork();
+            foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(cancellationToken);
         }
 
         #region TolleranceFormula
@@ -895,7 +918,7 @@ namespace APPA_107N_109N
         /// <summary>
         /// Разарешение пределеа измерения (последний значащий разряд)
         /// </summary>
-        protected AcVPoint RangeResolution;
+        protected AcVariablePoint RangeResolution;
 
         #endregion TolleranceFormula
     }
@@ -914,7 +937,7 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 1;
 
-            RangeResolution = new AcVPoint(1, Multipliers.Micro);
+            RangeResolution = new AcVariablePoint(1, Multipliers.Micro);
 
             HerzVPoint = new AcPoint[2];
             HerzVPoint[0] = new AcPoint();
@@ -925,10 +948,10 @@ namespace APPA_107N_109N
             HerzVPoint[1]._multipliersUnit = Multipliers.None;
             HerzVPoint[1]._nominalVal = 1000;
 
-            VoltPoint = new AcVPoint[3];
-            VoltPoint[0] = new AcVPoint(4 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[1] = new AcVPoint(10 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[2] = new AcVPoint(18 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint = new AcVariablePoint[3];
+            VoltPoint[0] = new AcVariablePoint(4 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[1] = new AcVariablePoint(10 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[2] = new AcVariablePoint(18 * VoltMultipliers, OpMultipliers, HerzVPoint);
         }
     }
 
@@ -946,7 +969,7 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 10;
 
-            RangeResolution = new AcVPoint(10, Multipliers.Micro);
+            RangeResolution = new AcVariablePoint(10, Multipliers.Micro);
 
             HerzVPoint = new AcPoint[2];
             HerzVPoint[0] = new AcPoint();
@@ -957,10 +980,10 @@ namespace APPA_107N_109N
             HerzVPoint[1]._multipliersUnit = Multipliers.None;
             HerzVPoint[1]._nominalVal = 1000;
 
-            VoltPoint = new AcVPoint[3];
-            VoltPoint[0] = new AcVPoint(4 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[1] = new AcVPoint(10 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[2] = new AcVPoint(18 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint = new AcVariablePoint[3];
+            VoltPoint[0] = new AcVariablePoint(4 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[1] = new AcVariablePoint(10 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[2] = new AcVariablePoint(18 * VoltMultipliers, OpMultipliers, HerzVPoint);
         }
     }
 
@@ -978,7 +1001,7 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 1;
 
-            RangeResolution = new AcVPoint((decimal) 0.1, Multipliers.Mili);
+            RangeResolution = new AcVariablePoint((decimal) 0.1, Multipliers.Mili);
 
             HerzVPoint = new AcPoint[6];
             HerzVPoint[0] = new AcPoint();
@@ -1001,13 +1024,13 @@ namespace APPA_107N_109N
             HerzVPoint[5]._nominalVal = 100 * VoltMultipliers;
             HerzVPoint[5]._multipliersUnit = Multipliers.Kilo;
 
-            VoltPoint = new AcVPoint[3];
+            VoltPoint = new AcVariablePoint[3];
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
             var trimHerzArr = new AcPoint[4];
             Array.Copy(HerzVPoint, trimHerzArr, 4);
-            VoltPoint[0] = new AcVPoint((decimal) 0.2, OpMultipliers, trimHerzArr);
-            VoltPoint[1] = new AcVPoint(1, OpMultipliers, HerzVPoint);
-            VoltPoint[2] = new AcVPoint((decimal) 1.8, OpMultipliers, HerzVPoint);
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.2, OpMultipliers, trimHerzArr);
+            VoltPoint[1] = new AcVariablePoint(1, OpMultipliers, HerzVPoint);
+            VoltPoint[2] = new AcVariablePoint((decimal) 1.8, OpMultipliers, HerzVPoint);
         }
     }
 
@@ -1025,7 +1048,7 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 10;
 
-            RangeResolution = new AcVPoint(1, Multipliers.Mili);
+            RangeResolution = new AcVariablePoint(1, Multipliers.Mili);
 
             HerzVPoint = new AcPoint[6];
             HerzVPoint[0] = new AcPoint();
@@ -1048,13 +1071,13 @@ namespace APPA_107N_109N
             HerzVPoint[5]._nominalVal = 100;
             HerzVPoint[5]._multipliersUnit = Multipliers.Kilo;
 
-            VoltPoint = new AcVPoint[3];
+            VoltPoint = new AcVariablePoint[3];
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
             var trimHerzArr = new AcPoint[4];
             Array.Copy(HerzVPoint, trimHerzArr, 4);
-            VoltPoint[0] = new AcVPoint((decimal) 0.2 * VoltMultipliers, OpMultipliers, trimHerzArr);
-            VoltPoint[1] = new AcVPoint(1 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[2] = new AcVPoint((decimal) 1.8 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.2 * VoltMultipliers, OpMultipliers, trimHerzArr);
+            VoltPoint[1] = new AcVariablePoint(1 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[2] = new AcVariablePoint((decimal) 1.8 * VoltMultipliers, OpMultipliers, HerzVPoint);
         }
     }
 
@@ -1072,7 +1095,7 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 100;
 
-            RangeResolution = new AcVPoint(10, Multipliers.Mili);
+            RangeResolution = new AcVariablePoint(10, Multipliers.Mili);
 
             HerzVPoint = new AcPoint[6];
             HerzVPoint[0] = new AcPoint();
@@ -1095,13 +1118,13 @@ namespace APPA_107N_109N
             HerzVPoint[5]._nominalVal = 100;
             HerzVPoint[5]._multipliersUnit = Multipliers.Kilo;
 
-            VoltPoint = new AcVPoint[3];
+            VoltPoint = new AcVariablePoint[3];
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
             var trimHerzArr = new AcPoint[4];
             Array.Copy(HerzVPoint, trimHerzArr, 4);
-            VoltPoint[0] = new AcVPoint((decimal) 0.2 * VoltMultipliers, OpMultipliers, trimHerzArr);
-            VoltPoint[1] = new AcVPoint(1 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[2] = new AcVPoint((decimal) 1.8 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.2 * VoltMultipliers, OpMultipliers, trimHerzArr);
+            VoltPoint[1] = new AcVariablePoint(1 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[2] = new AcVariablePoint((decimal) 1.8 * VoltMultipliers, OpMultipliers, HerzVPoint);
         }
     }
 
@@ -1119,7 +1142,7 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 1;
 
-            RangeResolution = new AcVPoint(100, Multipliers.Mili);
+            RangeResolution = new AcVariablePoint(100, Multipliers.Mili);
 
             HerzVPoint = new AcPoint[2];
             HerzVPoint[0] = new AcPoint();
@@ -1129,10 +1152,10 @@ namespace APPA_107N_109N
             HerzVPoint[1]._nominalVal = 1000;
             HerzVPoint[1]._multipliersUnit = Multipliers.None;
 
-            VoltPoint = new AcVPoint[3];
-            VoltPoint[0] = new AcVPoint(100 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[1] = new AcVPoint(400 * VoltMultipliers, OpMultipliers, HerzVPoint);
-            VoltPoint[2] = new AcVPoint(700 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint = new AcVariablePoint[3];
+            VoltPoint[0] = new AcVariablePoint(100 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[1] = new AcVariablePoint(400 * VoltMultipliers, OpMultipliers, HerzVPoint);
+            VoltPoint[2] = new AcVariablePoint(700 * VoltMultipliers, OpMultipliers, HerzVPoint);
         }
     }
 
@@ -1142,10 +1165,82 @@ namespace APPA_107N_109N
 
     #region DCI
 
-    public abstract class Oper5DcIMeasure : ParagraphBase, IUserItemOperationBase
+    public abstract class Oper5DciMeasureBase : ParagraphBase, IUserItemOperation<decimal>
     {
-        public Oper5DcIMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
+        //множители для пределов.
+        public decimal BaseMultipliers;
+
+        /// <summary>
+        /// Процент от измеряемой точки для расчета погрешности (уже переведе в абсолютные единицы).
+        /// </summary>
+        public decimal BaseTolCoeff;
+
+        /// <summary>
+        /// Массив поверяемых точек напряжения.
+        /// </summary>
+        protected AcVariablePoint[] CurrentDciPoint;
+
+        /// <summary>
+        /// довесок к формуле погрешности- число единиц младшего разряда
+        /// </summary>
+        public int EdMlRaz; //значение для пределов свыше 200 мВ
+
+        /// <summary>
+        /// Разарешение пределеа измерения (последний значащий разряд)
+        /// </summary>
+        protected AcVariablePoint RangeResolution;
+
+        #endregion
+
+        #region Property
+
+        /// <summary>
+        /// Код предела измерения на приборе
+        /// </summary>
+        public Mult107_109N.RangeCode OperationDciRangeCode { get; protected set; }
+
+        /// <summary>
+        /// Предел измерения поверяемого прибора, необходимый для работы
+        /// </summary>
+        public Mult107_109N.RangeNominal OperationDciRangeNominal { get; protected set; }
+
+        /// <summary>
+        /// Режим операции измерения прибора
+        /// </summary>
+        public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
+
+        /// <summary>
+        /// Множитель единицы измерения текущей операции
+        /// </summary>
+        public Multipliers OpMultipliers { get; protected set; }
+
+        //контрлируемый прибор
+        protected Mult107_109N appa107N { get; set; }
+
+        //эталон
+        protected Calib5522A flkCalib5522A { get; set; }
+
+        #endregion
+
+        public Oper5DciMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Name = "Определение погрешности измерения постоянного тока";
+            OperMeasureMode = Mult107_109N.MeasureMode.DCmA;
+            OpMultipliers = Multipliers.None;
+            OperationDciRangeCode = Mult107_109N.RangeCode.Range1Manual;
+            OperationDciRangeNominal = Mult107_109N.RangeNominal.RangeNone;
+            DataRow = new List<IBasicOperation<decimal>>();
+            Sheme = new ShemeImage
+            {
+                Description = "Измерительная схема",
+                Number = 1,
+                FileName = "appa_10XN_ma_5522A.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
         }
 
         #region Methods
@@ -1153,6 +1248,123 @@ namespace APPA_107N_109N
         protected override DataTable FillData()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void InitWork()
+        {
+            if (appa107N == null || flkCalib5522A == null) return;
+
+            DataRow.Clear();
+
+            foreach (var currPoint in CurrentDciPoint)
+            {
+                var operation = new BasicOperationVerefication<decimal>();
+                DataRow.Clear();
+                operation.InitWork = async () =>
+                {
+                    try
+                    {
+                        appa107N.StringConnection = GetStringConnect(appa107N);
+                        flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
+
+                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+
+                        var testMeasureModde = appa107N.GetMeasureMode;
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
+
+                        var testRangeNominal = appa107N.GetRangeNominal;
+                        while (OperationDciRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            var countPushRangeButton =
+                                appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto ? 1 : 0;
+
+                            if (OpMultipliers == Multipliers.Mili)
+                            {
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDciRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton + 1} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                            else
+                            {
+                                var curRange = (int) appa107N.GetRangeCode & 128;
+                                var targetRange = (int) OperationDciRangeCode & 128;
+                                countPushRangeButton = countPushRangeButton + 4 - curRange +
+                                                       (targetRange < curRange ? curRange : 0);
+
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDciRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+                };
+                operation.BodyWork = () =>
+                {
+                    flkCalib5522A.Out.Set.Current.Dc.SetValue(currPoint.VariableBaseValueAcPoint._nominalVal);
+                    flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                    Thread.Sleep(2000);
+                    //измеряем
+                    var measurePoint = (decimal)appa107N.GetSingleValue();
+
+                    flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+
+                    operation.Getting = measurePoint;
+                    operation.Expected = currPoint.VariableBaseValueAcPoint._nominalVal /
+                                         (decimal)currPoint
+                                                  .VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue();
+                    //расчет погрешности для конкретной точки предела измерения
+                    operation.ErrorCalculation = (inA, inB) =>
+                    {
+                        var result = BaseTolCoeff * operation.Expected + EdMlRaz *
+                            RangeResolution.VariableBaseValueAcPoint._nominalVal *
+                            (decimal)(RangeResolution
+                                      .VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue() /
+                                       currPoint.VariableBaseValueAcPoint._multipliersUnit.GetDoubleValue()
+                            );
+                        var mantisa =
+                            MathStatistics.GetMantissa((decimal)(RangeResolution
+                                                                 .VariableBaseValueAcPoint._multipliersUnit
+                                                                 .GetDoubleValue() /
+                                                                  currPoint.VariableBaseValueAcPoint
+                                                                           ._multipliersUnit
+                                                                           .GetDoubleValue()));
+                        MathStatistics.Round(ref result, mantisa);
+                        return result;
+                    };
+                operation.CompliteWork = () =>
+                {
+                    if (!operation.IsGood())
+                    {
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                          $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                          "Повторить измерение этой точки?",
+                                                                          "Информация по текущему измерению",
+                                                                          MessageButton.YesNo, MessageIcon.Question,
+                                                                          MessageResult.Yes);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    return Task.FromResult(operation.IsGood());
+                };
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<decimal>) operation.Clone());
+            }
         }
 
         #endregion
@@ -1164,8 +1376,11 @@ namespace APPA_107N_109N
 
         public override async Task StartWork(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            InitWork();
+            foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(cancellationToken);
         }
+
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
 
     #endregion DCI
@@ -1248,9 +1463,9 @@ namespace APPA_107N_109N
         /// <summary>
         /// Массив поверяемых точек напряжения.
         /// </summary>
-        protected AcVPoint[] _ohmPoint;
+        protected AcVariablePoint[] _ohmPoint;
 
-        protected AcVPoint _rangeResolution;
+        protected AcVariablePoint _rangeResolution;
 
         /// <summary>
         /// довесок к формуле погрешности- единица младшего разряда

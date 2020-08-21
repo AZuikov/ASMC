@@ -594,13 +594,13 @@ namespace ASMC.Data.Model
             {
                 var format = Path.GetExtension(value);
                 if ("".Equals(format) && !string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentNullException(@"Разширение файла не обнаружино");
+                    throw new ArgumentNullException(@"Раcширение файла не обнаружино");
                 _fileName = value;
             }
         }
 
         /// <summary>
-        /// Позволяет получать или задавать имя файла разширеного описания.
+        /// Позволяет получать или задавать имя файла раcширеного описания.
         /// </summary>
         public string FileNameDescription
         {
@@ -609,7 +609,7 @@ namespace ASMC.Data.Model
             {
                 var format = Path.GetExtension(value);
                 if ("".Equals(format) && !string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentNullException(@"Разширение файла не обнаружино");
+                    throw new ArgumentNullException(@"Раcширение файла не обнаружино");
 
                 if (!string.IsNullOrWhiteSpace(value) && format != null &&
                     !format.Equals(".rtf", StringComparison.CurrentCultureIgnoreCase))
