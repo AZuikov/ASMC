@@ -1,7 +1,4 @@
-﻿using ASMC.Common.ViewModel;
-using ASMC.Data.Model.Interface;
-using NLog;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -9,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Common.ViewModel;
+using ASMC.Data.Model.Interface;
+using NLog;
 
 namespace ASMC.Data.Model
 {
@@ -190,10 +190,6 @@ namespace ASMC.Data.Model
             Calibration = 4,
             Adjustment = 8
         }
-        /// <summary>
-        /// Признак автоматического прохода всех операций.
-        /// </summary>
-        public bool IsManual { get; set; }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -227,6 +223,11 @@ namespace ASMC.Data.Model
                 return res;
             }
         }
+
+        /// <summary>
+        /// Признак автоматического прохода всех операций.
+        /// </summary>
+        public bool IsManual { get; set; }
 
         /// <summary>
         /// Позволяет задать или получить признак определяющий ускоренную работу(ПРОВЕРКА).
@@ -272,20 +273,21 @@ namespace ASMC.Data.Model
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public async Task StartWorkAsync(CancellationTokenSource source)
+        public Task StartWorkAsync(CancellationTokenSource source)
         {
             foreach (var lonleyTreeNode in SelectedOperation.UserItemOperation)
-                clrNode(lonleyTreeNode, source);
+                ClrNode(lonleyTreeNode, source);
+            return Task.CompletedTask;
         }
 
-        private async void clrNode(IUserItemOperationBase OperationsArr, CancellationTokenSource source)
+        private async void ClrNode(IUserItemOperationBase operationsArr, CancellationTokenSource source)
         {
             try
             {
-                if ( OperationsArr.IsCheked|| !IsManual)
+                if (operationsArr.IsCheked || !IsManual)
                 {
-                    ShowShem(OperationsArr.Sheme);
-                    await OperationsArr.StartWork(source.Token);
+                    ShowShem(operationsArr.Sheme);
+                    await operationsArr.StartWork(source.Token);
                 }
             }
             catch (Exception e)
@@ -295,13 +297,13 @@ namespace ASMC.Data.Model
                 Logger.Error(e);
             }
 
-            Logger.Debug(OperationsArr.ToString);
+            Logger.Debug(operationsArr.ToString);
 
-            var tree = (TreeNode) OperationsArr;
+            var tree = (TreeNode) operationsArr;
 
             if (tree.Nodes.Count != 0)
                 for (var i = 0; i < tree.Nodes.Count; i++)
-                    clrNode((IUserItemOperationBase) tree.Nodes[i], source);
+                    ClrNode((IUserItemOperationBase) tree.Nodes[i], source);
         }
 
         private async void ShowShem(ShemeImage sheme)
@@ -385,17 +387,18 @@ namespace ASMC.Data.Model
         /// Флаг необходимости выполнения данной операции
         /// </summary>
         bool IsCheked { get; set; }
-        /// <summary>
-        /// Флаг указывающий, что данная операция выполняется в текущий момент.
-        /// </summary>
-        // ReSharper disable once UnusedMember.Global
-        bool IsWork { get; }
 
         /// <summary>
         /// Предоставляет результат операции
         /// </summary>
         // ReSharper disable once UnusedMember.Global
         bool? IsGood { get; set; }
+
+        /// <summary>
+        /// Флаг указывающий, что данная операция выполняется в текущий момент.
+        /// </summary>
+        // ReSharper disable once UnusedMember.Global
+        bool IsWork { get; }
 
         /// <summary>
         /// Предоставляет наименование операции
@@ -427,7 +430,7 @@ namespace ASMC.Data.Model
     }
 
     /// <summary>
-    ///  Предоставляет базовый клас для пункта операции.
+    /// Предоставляет базовый клас для пункта операции.
     /// </summary>
     public abstract class ParagraphBase : TreeNode, IUserItemOperationBase
     {
@@ -451,8 +454,9 @@ namespace ASMC.Data.Model
         }
 
         #region Methods
+
         /// <summary>
-        /// Заполняет свойство <see cref="Data"/>.
+        /// Заполняет свойство <see cref = "Data" />.
         /// </summary>
         /// <returns></returns>
         protected abstract DataTable FillData();
@@ -484,10 +488,18 @@ namespace ASMC.Data.Model
 
             return connect;
         }
+
         /// <summary>
-        /// Проводит инициализацию необходимую для реализации интерфейса <see cref="IUserItemOperation<T>"/> 
+        /// Проводит инициализацию необходимую для реализации интерфейса <see cref = "IUserItemOperation&lt; T &gt;" />
         /// </summary>
         protected abstract void InitWork();
+
+        private IEnumerable<object> GetProperty()
+        {
+            var findname = typeof(IUserItemOperation<object>).GetProperties().FirstOrDefault()?.Name;
+            var reult = GetType().GetProperties().FirstOrDefault(q => q.Name.Equals(findname))?.GetValue(this);
+            return ((IList) reult)?.Cast<object>();
+        }
 
         #endregion
 
@@ -502,7 +514,7 @@ namespace ASMC.Data.Model
         public TransactionDetails TransactionDetails { get; protected set; }
 
         /// <inheritdoc />
-        public bool IsWork { get; }
+        public bool IsWork { get; private set; }
 
         /// <inheritdoc />
         public bool? IsGood { get; set; }
@@ -511,31 +523,40 @@ namespace ASMC.Data.Model
         public async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             InitWork();
-            var res= GetProperty().FirstOrDefault(q => Equals(((IBasicOperation<object>) q).Guid, guid));
-           var metod = res.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
-            await (Task)metod.Invoke(res, new Object[] { token });
-        }
-
-        private IEnumerable<object> GetProperty()
-        {
-            var findname = typeof(IUserItemOperation<object>).GetProperties().FirstOrDefault()?.Name;
-            var reult = this.GetType().GetProperties().FirstOrDefault(q => q.Name.Equals(findname)).GetValue(this);
-            return ((IList)reult).Cast<object>();
-
+            IsWork = true;
+            try
+            {
+                var res = GetProperty().FirstOrDefault(q => Equals(((IBasicOperation<object>) q).Guid, guid));
+                if (res != null)
+                {
+                    var metod = res.GetType().GetMethods()
+                                   .FirstOrDefault(q => q.Name.Equals(nameof(IBasicOperation<object>.WorkAsync)));
+                    if (metod != null) await (Task) metod.Invoke(res, new object[] {token});
+                }
+            }
+            finally
+            {
+                IsWork = false;
+            }
         }
 
         /// <inheritdoc />
         public async Task StartWork(CancellationToken token)
         {
             InitWork();
-            foreach (var row in GetProperty())
+            IsWork = true;
+            try
             {
-             var metod=   row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
-            await (Task) metod.Invoke(row, new Object []{token});
+                foreach (var row in GetProperty())
+                {
+                    var metod = row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
+                    if (metod != null) await (Task) metod.Invoke(row, new object[] {token});
+                }
             }
-
-
-           
+            finally
+            {
+                IsWork = false;
+            }
         }
 
         /// <inheritdoc />
@@ -544,7 +565,9 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public DataTable Data => FillData();
     }
-
+    /// <summary>
+    /// предоставляет реализицию отборажаемые схемы.
+    /// </summary>
     public class ShemeImage
     {
         #region Fields
@@ -563,7 +586,9 @@ namespace ASMC.Data.Model
         /// Позволяет получать или задавать имя сборки-папки где и искать файл
         /// </summary>
         public string AssemblyLocalName { get; set; }
-
+        /// <summary>
+        /// Функция выполняемая для проверки правельности собранной схемы.
+        /// </summary>
         public Func<Task<bool>> ChekShem
         {
             get
@@ -575,7 +600,6 @@ namespace ASMC.Data.Model
 #pragma warning restore 1998
                 }
 
-                ;
                 return _chekShem;
             }
             set => _chekShem = value;
@@ -641,7 +665,9 @@ namespace ASMC.Data.Model
 
         #endregion
     }
-
+    /// <summary>
+    /// Предоставляет информацию о количестве операций
+    /// </summary>
     public class TransactionDetails : BaseViewModel
     {
         public delegate void CountUpdateHandler();

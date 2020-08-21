@@ -8,12 +8,10 @@ namespace ASMC.ViewModel
     {
         public delegate void ChangePropery();
 
-        #region  Fields
+        #region Fields
 
         private string[] _addresDivece;
-
         private IDevice[] _controlDevices;
-        private DeviceViewModel _controlDeviceVm;
         private IDevice[] _testDevices;
 
         #endregion
