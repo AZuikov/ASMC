@@ -120,21 +120,7 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        /// <inheritdoc />
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
-
-        /// <inheritdoc />
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var dr in DataRow)
-                await dr.WorkAsync(token);
-        }
+       
     }
 
     public abstract class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
@@ -162,19 +148,7 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-
-        {
-            var bo = new BasicOperation<bool> {Expected = true};
-            //bo.IsGood = s => bo.Getting;
-
-            DataRow.Add(bo);
-        }
+      
     }
 
     //////////////////////////////******DCV*******///////////////////////////////
@@ -373,18 +347,18 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
 
-        public override async Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
-            if (a != null)
-                await a.WorkAsync(token);
-        }
+        //public override async Task StartSinglWork(CancellationToken token, Guid guid)
+        //{
+        //    var a = DataRow.FirstOrDefault(q => Equals(q.Guid, guid));
+        //    if (a != null)
+        //        await a.WorkAsync(token);
+        //}
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            InitWork();
-            foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(token);
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    InitWork();
+        //    foreach (var doThisPoint in DataRow) await doThisPoint.WorkAsync(token);
+        //}
     }
 
     public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
@@ -546,16 +520,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            return null;
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 
     #endregion ACV
@@ -579,15 +544,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 
     #endregion DCI
@@ -611,15 +568,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion ACI
@@ -643,15 +592,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion FREQ
@@ -675,15 +616,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion OHM
@@ -707,15 +640,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
     #endregion FAR
@@ -739,16 +664,7 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override Task StartSinglWork(CancellationToken token, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StartWork(CancellationToken cancellationToken)
-
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 
     #endregion TEMP

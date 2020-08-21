@@ -216,7 +216,8 @@ namespace ASMC.ViewModel
             PauseCommand = new DelegateCommand(OnPauseCommand);
         }
 
-        public bool[] ModeWork { get; set; } = new[] {true, false};
+        // ReSharper disable once UnusedMember.Global
+        public bool[] ModeWork { get; set; } = {true, false};
 
         public bool IsManual
         {
