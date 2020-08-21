@@ -34,14 +34,14 @@ namespace B5_71_2_PRO
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
-            ControlDevices = new IDevice[]
+            ControlDevices = new IDeviceUi[]
             {
                 new Device {Name = new[] {"N3300A"}, Description = "Электронная нагрузка"},
                 new Device {Name = new[] {"34401A"}, Description = "Мультиметр"},
                 new Device {Name = new[] {"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
             };
 
-            TestDevices = new IDevice[] {new Device {Name = new[] {"Б5-71/2-ПРО"}, Description = "источник питания"}};
+            TestDevices = new IDeviceUi[] {new Device {Name = new[] {"Б5-71/2-ПРО"}, Description = "источник питания"}};
 
            
 

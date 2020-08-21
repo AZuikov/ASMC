@@ -45,6 +45,10 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="Palsys.Data.Model, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Palitra System\Metr7\Palsys.Data.Model.dll</HintPath>
+    </Reference>
     <Reference Include="Palsys.Utils, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Palitra System\Metr7\Palsys.Utils.dll</HintPath>

@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AP.Math;
 using AP.Utils.Data;
+using AP.Utils.Helps;
+using ASMC.Core;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices;
@@ -45,9 +47,9 @@ namespace APPA_107N_109N
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             //Необходимые устройства
-            ControlDevices = new IDevice[]
+            ControlDevices = new IDeviceUi[]
                 {new Device {Name = new[] {"5522A"}, Description = "Многофунциональный калибратор"}};
-            TestDevices = new IDevice[]
+            TestDevices = new IDeviceUi[]
                 {new Device {Name = new[] {"APPA-107N"}, Description = "Цифровой портативный мультиметр"}};
 
             Accessories = new[]
@@ -121,7 +123,6 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
 
-        /// <inheritdoc />
         
     }
 

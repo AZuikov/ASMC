@@ -11,8 +11,8 @@ namespace ASMC.ViewModel
         #region Fields
 
         private string[] _addresDivece;
-        private IDevice[] _controlDevices;
-        private IDevice[] _testDevices;
+        private IDeviceUi[] _controlDevices;
+        private IDeviceUi[] _testDevices;
 
         #endregion
 
@@ -32,7 +32,7 @@ namespace ASMC.ViewModel
 
         public BindingList<DeviceViewModel> ControlDevice { get; }
 
-        public IDevice[] ControlDevices
+        public IDeviceUi[] ControlDevices
         {
             get => _controlDevices;
             set => SetProperty(ref _controlDevices, value, nameof(ControlDevices), ChangedCallback);
@@ -40,7 +40,7 @@ namespace ASMC.ViewModel
 
         public BindingList<DeviceViewModel> TestDevice { get; }
 
-        public IDevice[] TestDevices
+        public IDeviceUi[] TestDevices
         {
             get => _testDevices;
             set => SetProperty(ref _testDevices, value, nameof(TestDevices), ChangedCallback1);

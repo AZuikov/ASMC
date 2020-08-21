@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Windows.Forms;
+using ASMC.Data.Model;
 using Ivi.Visa;
 using NLog;
 using Timer = System.Windows.Forms.Timer;

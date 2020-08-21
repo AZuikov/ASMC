@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using AP.Utils.Data;
+using AP.Utils.Helps;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
@@ -400,7 +401,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// </summary>
         /// <param name = "value">Номирнал напряжения.</param>
         /// <param name = "mult">Множитель единицы измерения (милли, кило т.д.).</param>
-        public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
+        public MainN3300 Set(decimal value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
         {
             if (value < 0)
                 throw new ArgumentException("Значение меньше 0");
@@ -424,7 +425,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// Устанавливает ПРЕДЕЛ сопротивления для режима CR
         /// </summary>
         /// <param name = "value">Значение сопротивления, которое нужно установить</param>
-        public MainN3300 SetResistanceRange(decimal value, Multipliers mult = Devices.Multipliers.None)
+        public MainN3300 SetResistanceRange(decimal value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
         {
             if (value < 0)
                 throw new ArgumentException("Значение меньше 0");
@@ -474,7 +475,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <param name = "value">Номирнал напряжения.</param>
         /// <param name = "mult">Множитель единицы измерения (милли, кило т.д.).</param>
         /// <returns></returns>
-        public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
+        public MainN3300 Set(decimal value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
         {
             if (value < 0)
                 throw new ArgumentException("Значение меньше 0");
@@ -514,7 +515,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// </summary>
         /// <param name = "value">Номирнал напряжения.</param>
         /// <param name = "mult">Множитель единицы измерения (милли, кило т.д.).</param>
-        public MainN3300 Set(decimal value, Multipliers mult = Devices.Multipliers.None)
+        public MainN3300 Set(decimal value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
         {
             if (value < 0)
                 throw new ArgumentException("Значение меньше 0");

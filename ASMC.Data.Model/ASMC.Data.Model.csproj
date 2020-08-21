@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="AbstractProgram.cs" />
     <Compile Include="BasicOperation.cs" />
+    <Compile Include="IDevice.cs" />
     <Compile Include="Interface\IBasicOperation.cs" />
     <Compile Include="Interface\IProgram.cs" />
     <Compile Include="MeasurePointAndMeasUtils.cs" />

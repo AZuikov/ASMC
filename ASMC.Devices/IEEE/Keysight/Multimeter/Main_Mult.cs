@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using AP.Utils.Data;
+using AP.Utils.Helps;
 using MathNet.Numerics.Statistics;
 using NLog;
 
@@ -28,7 +29,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// </summary>
         /// <param name="multipliers">Желаемый множитель.</param>
         /// <returns>Возвращает значение с желаемым множителем.</returns>
-        public double GetMeasValue(Multipliers multipliers = Devices.Multipliers.None)
+        public double GetMeasValue(Multipliers multipliers= AP.Utils.Helps.Multipliers.None)
         {   var sw = new Stopwatch();
             sw.Start();
             WriteLine(QueryValue);
@@ -526,7 +527,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <param name = "value">Входное значение.</param>
         /// <param name = "multipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
         {
             var val = Math.Abs(value);
             val *= multipliers.GetDoubleValue();
@@ -724,7 +725,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <param name = "value">Входное значение.</param>
         /// <param name = "multipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
         {
             var val = Math.Abs(value);
             val *= multipliers.GetDoubleValue();
@@ -882,7 +883,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <param name = "value">Входное значение.</param>
         /// <param name = "multipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
         {
             var val = Math.Abs(value);
              val *= multipliers.GetDoubleValue();
@@ -947,7 +948,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <param name = "value">Входное значение.</param>
         /// <param name = "multipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Devices.Multipliers.None)
+        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
         {
             var val = Math.Abs(value);
             val *= multipliers.GetDoubleValue();
