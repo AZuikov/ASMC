@@ -4,11 +4,11 @@
 using AP.Utils.Data;
 using NLog;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 using System.Timers;
+using ASMC.Data.Model;
 using Timer = System.Timers.Timer;
 
 
@@ -504,8 +504,10 @@ namespace ASMC.Devices.Port.APPA
         /// <param name="mult">Множитель единицы измерений (миллиб кило и т.д.)</param>
         /// <param name="generalDsiplay">Если флаг true, тогда возвращаются показания с основного экрана прибора. Иначе с второстепенного.</param>
         /// <returns>Среднее арифметическое на основе выборки из countOfMeasure измерений.</returns>
-        public double GetValue(int countOfMeasure=10,Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
+        public double GetValue(int countOfMeasure = 10, Multipliers mult = Data.Model.Multipliers.None, bool generalDsiplay = true)
         {
+            
+            
             double resultValue;
 
             decimal[] valBuffer = new decimal[countOfMeasure];
@@ -528,7 +530,7 @@ namespace ASMC.Devices.Port.APPA
         /// <param name="mult">Множитель единицы измерения.</param>
         /// <param name="generalDsiplay">Если флаг true, тогда возвращаются показания с основного экрана прибора. Иначе с второстепенного.</param>
         /// <returns></returns>
-        public double GetSingleValue(Multipliers mult = Devices.Multipliers.None, bool generalDsiplay = true)
+        public double GetSingleValue(Multipliers mult  = Data.Model.Multipliers.None, bool generalDsiplay = true)
         {
             SendQuery();
             double value;

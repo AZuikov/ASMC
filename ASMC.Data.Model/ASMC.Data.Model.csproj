@@ -38,17 +38,6 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="Palsys.Data.Model">
-      <HintPath>..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Data.Model.dll</HintPath>
-    </Reference>
-    <Reference Include="Palsys.Report, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Report.dll</HintPath>
-    </Reference>
-    <Reference Include="Palsys.Utils, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Utils.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -83,10 +72,6 @@
     <ProjectReference Include="..\ASMC.Common\ASMC.Common.csproj">
       <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
       <Name>ASMC.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ASMC.Devices\ASMC.Devices.csproj">
-      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
-      <Name>ASMC.Devices</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

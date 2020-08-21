@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using AP.Utils.Data;
+using ASMC.Data.Model;
 using MathNet.Numerics.Statistics;
 
 namespace ASMC.Devices
@@ -26,7 +27,7 @@ namespace ASMC.Devices
         /// <param name = "date">Одно значение или перечисление значений через запятую. Разделитель целой и дробной части точка.</param>
         /// <param name = "mult">Множитель единицы измерения, в которую нужно преобразовать входные данные (милли, кило и т.д.). </param>
         /// <returns></returns>
-        public double DataStrToDoubleMind(string date, Multipliers mult = Devices.Multipliers.None)
+        public double DataStrToDoubleMind(string date, Multipliers mult = Data.Model.Multipliers.None)
         {
             
             var value = date.Split(',');
@@ -42,9 +43,9 @@ namespace ASMC.Devices
         /// <param name="inDouble">Числовое значение для перевода</param>
         /// <param name="mult">множитель единицы измерения (милли, кило и т.д.).</param>
         /// <returns></returns>
-        public double DoubleToDoubleMind(double inDouble, Multipliers mult = Devices.Multipliers.None)
+        public double DoubleToDoubleMind(double inDouble, Multipliers mult = Data.Model.Multipliers.None)
         {
-            return mult == Devices.Multipliers.None ? inDouble : inDouble / mult.GetDoubleValue();
+            return mult == Data.Model.Multipliers.None ? inDouble : inDouble / mult.GetDoubleValue();
         }
 
        

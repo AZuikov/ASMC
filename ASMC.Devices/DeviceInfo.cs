@@ -54,46 +54,7 @@ namespace ASMC.Devices
         #endregion
     }
 
-    /// <summary>
-    /// Содержит доступные множители и их обозначения.
-    /// </summary>
-    public enum Multipliers
-    {
-        /// <summary>
-        /// Множетель нано 1Е-9.
-        /// </summary>
-        [StringValue("н")] [DoubleValue(1E-9)] Nano,
-
-        /// <summary>
-        /// Множетель микро 1Е-6.
-        /// </summary>
-        [StringValue("мк")] [DoubleValue(1E-6)] Micro,
-
-        /// <summary>
-        /// Множетель мили 1Е-3.
-        /// </summary>
-        [StringValue("м")] [DoubleValue(1E-3)] Mili,
-
-        /// <summary>
-        /// Без множителя.
-        /// </summary>
-        [StringValue("")] [DoubleValue(1)] None,
-
-        /// <summary>
-        /// Множитель кило 1Е3
-        /// </summary>
-        [StringValue("к")] [DoubleValue(1E3)] Kilo,
-
-        /// <summary>
-        /// Мноэитель мега 1Е6
-        /// </summary>
-        [StringValue("М")] [DoubleValue(1E6)] Mega,
-
-        /// <summary>
-        /// Мноэитель мега 1Е6
-        /// </summary>
-        [StringValue("Г")] [DoubleValue(1E9)] Giga
-    }
+   
     /// <summary>
     /// Описывает информацию об устройстве.
     /// </summary>
