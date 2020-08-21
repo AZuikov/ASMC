@@ -13,6 +13,8 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Core;
+using ASMC.Core.Model;
 
 
 namespace B5_71_PRO_Abstract
@@ -49,7 +51,7 @@ namespace B5_71_PRO_Abstract
         }
     }
 
-    public abstract class OpertionFirsVerf : ASMC.Data.Model.Operation
+    public abstract class OpertionFirsVerf : ASMC.Core.Model.Operation
     {
         /// <inheritdoc />
         public override void FindDivice()

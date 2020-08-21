@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DevExpress.Mvvm;
-
-namespace ASMC.Data.Model.Interface
+﻿namespace ASMC.Core.Model
 {
     public interface IProgram
     {

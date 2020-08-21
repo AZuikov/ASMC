@@ -63,6 +63,10 @@
       <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
       <Name>AP.Math</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\AP.Utils\AP.Utils.csproj">
+      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
+      <Name>AP.Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ASMC.Common\ASMC.Common.csproj">
       <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
       <Name>ASMC.Common</Name>
@@ -83,6 +87,13 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Resources\B5VisualTestText.rtf" />
+    <None Include="Resources\Б5-71_1.dotx" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\B5-71-1_2-PRO_N3306_34401_v3-57.jpg" />
+    <Content Include="Resources\B5-71-4-PRO_N3303_34401_v3-57.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

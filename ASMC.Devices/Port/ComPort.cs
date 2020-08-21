@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Ports;
 using System.Threading;
+using ASMC.Data.Model;
 using NLog;
 
 namespace ASMC.Devices.Port

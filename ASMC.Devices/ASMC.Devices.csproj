@@ -45,8 +45,9 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="Palsys.Data.Model">
-      <HintPath>..\..\..\..\ASU MS 7\Старые библиотеки, не удалять\Palsys.Data.Model.dll</HintPath>
+    <Reference Include="Palsys.Data.Model, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Palitra System\Metr7\Palsys.Data.Model.dll</HintPath>
     </Reference>
     <Reference Include="Palsys.Utils, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -124,6 +125,10 @@
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
+      <Name>ASMC.Data.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

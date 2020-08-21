@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.Threading;
+using AP.Utils.Helps;
 using MathNet.Numerics.Statistics;
 
 namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
@@ -312,7 +313,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name="value">The value.</param>
             /// <param name="mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetVoltage(double value, Multipliers mult= Devices.Multipliers.None)
+            public Calibr9500B SetVoltage(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:VOLT {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -323,7 +324,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name="value">The value.</param>
             /// <param name="mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetFreq(double value, Multipliers mult = Devices.Multipliers.None)
+            public Calibr9500B SetFreq(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -334,7 +335,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name="value">The value.</param>
             /// <param name="mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetPeriod(double value, Multipliers mult = Devices.Multipliers.None)
+            public Calibr9500B SetPeriod(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:PER {JoinValueMult(value, mult)}");
                 return _calibrMain;
