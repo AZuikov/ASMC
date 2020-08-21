@@ -83,6 +83,13 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Resources\B5VisualTestText.rtf" />
+    <None Include="Resources\Б5-71_1.dotx" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\B5-71-1_2-PRO_N3306_34401_v3-57.jpg" />
+    <Content Include="Resources\B5-71-4-PRO_N3303_34401_v3-57.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
