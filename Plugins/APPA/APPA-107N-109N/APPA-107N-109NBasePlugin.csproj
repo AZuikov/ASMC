@@ -78,6 +78,14 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Resources\APPA_107N_109N.dotx" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\appa_10XN_20A_5522A.jpg" />
+    <Content Include="Resources\appa_10XN_A_Aux_5522A.jpg" />
+    <Content Include="Resources\appa_10XN_ma_5522A.jpg" />
+    <Content Include="Resources\appa_10XN_volt_hz_5522A.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
