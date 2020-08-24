@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -292,10 +294,25 @@ namespace ASMC.ViewModel
             {
                 MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
                 ShemForm = GetService<IFormService>("ImageService"),
-                QuestionText = GetService<IFormService>("QuestionTextService")
+                QuestionText = GetService<IFormService>("QuestionTextService"),
+                FreeWindow = GetService<IWindowService>("FreeWindow")
             };
             if (types == null) return;
-            foreach (var type in types) Prog.Add((IProgram) Activator.CreateInstance(type, servicePack));
+            foreach (var type in types)
+            {
+                try
+                {
+                    Prog.Add((IProgram) Activator.CreateInstance(type, servicePack));
+                }
+                catch (InvalidCastException e)
+                {
+                    Logger.Error(e, $@"Не соответствует интерфейсу {type}");
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+            }
         }
 
         private void OnBackCommand()
@@ -313,9 +330,6 @@ namespace ASMC.ViewModel
                 return;
             document = Directory.GetFiles(path, document, SearchOption.AllDirectories).FirstOrDefault();
             if (document == null) throw new NullReferenceException($"Шаблон {document} не найден!");
-            
-            var report = new Word();
-            report.OpenDocument(document);
             var a = new Document.ConditionalFormatting
             {
                 Color = Color.IndianRed,
@@ -323,13 +337,64 @@ namespace ASMC.ViewModel
                 Region = Document.ConditionalFormatting.RegionAction.Row,
                 Value = "Брак",
                 NameColumn = "Результат"
-            };      foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
-                report.FillTableToBookmark(uio.Data.TableName, uio.Data, false, a);
+            };
+            using (var report = new Word())
+            {
+                report.OpenDocument(document);
 
-            path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
-            report.SaveAs(path);
-            report.Close();
+                var regInsTextByMark = new Regex(@"(^ITBm\w.+)");
+                var regInsTextByReplase = new Regex(@"(^RepT\w.+)");
+                var regInTableByMark = new Regex(@"(^ITabBm\w.+)");
+                var regFillTableByMark = new Regex(@"(^FillTabBm\w.+)");
+                foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
+                {
+                    var markName = uio.Data.TableName;
+                    if (regInsTextByMark.IsMatch(markName))
+                    {
+                        report.InsertTextToBookmark(markName, TableToStringConvert(uio.Data));
+                    }
+                    else if (regInsTextByReplase.IsMatch(markName))
+                    {
+                        report.FindStringAndReplace(markName, TableToStringConvert(uio.Data));
+                    }
+                    else if (regInTableByMark.IsMatch(markName))
+                    {
+                        report.InsertNewTableToBookmark(markName, uio.Data, a);
+                    }
+                    else if (regFillTableByMark.IsMatch(markName))
+                    {
+                        report.FillTableToBookmark(uio.Data.TableName, uio.Data, true, a);
+                    }
+                    else
+                    {
+                        Logger.Error($@"Имя {markName} не распознано");
+                    }
+                }
+                path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
+                report.SaveAs(path);
+            }
             Process.Start(path);
+
+
+            string TableToStringConvert(DataTable dt)
+            {
+                var dataStr = new StringBuilder();
+                foreach (DataRow row in dt.Rows)
+                {
+                    foreach (var cell in row.ItemArray)
+                    {
+                        dataStr.Append(cell).Append(" ");
+                    }
+                    if (dataStr.Length > 0)
+                    {
+                        dataStr.Remove(dataStr.Length, 1);
+                    }
+                    dataStr.AppendLine();
+                }
+                return  dataStr.ToString().TrimEnd('\n');
+            }
+
+      
         }
 
         private void OnIsSpeedWorkCallback()

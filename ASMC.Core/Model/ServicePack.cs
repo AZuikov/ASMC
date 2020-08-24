@@ -17,5 +17,7 @@ namespace ASMC.Core.Model
         /// Позволяет получать или задавать сервис диалога опробования или внешнего осмотра.
         /// </summary>
         public IFormService QuestionText { get; set; }
+
+        public IWindowService FreeWindow { get; set; }
     }
 }

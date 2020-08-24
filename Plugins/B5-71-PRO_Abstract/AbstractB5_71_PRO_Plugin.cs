@@ -16,6 +16,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ASMC.Core;
 using ASMC.Core.Model;
+using DevExpress.Mvvm.UI;
+using WindowService = ASMC.Common.UI.WindowService;
 
 
 namespace B5_71_PRO_Abstract
@@ -97,7 +99,7 @@ namespace B5_71_PRO_Abstract
             operation.IsGood = () => Equals(operation.Getting, operation.Expected) ;
             operation.InitWork = () =>
             {
-                var service = this.UserItemOperation.ServicePack.QuestionText;
+                var service = UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
                 service.Entity = new Tuple<string,Assembly>("VisualTestText",null);
                 service.Show();
@@ -862,6 +864,11 @@ namespace B5_71_PRO_Abstract
             {
                 try
                 {
+                    var windows = (WindowService)this.UserItemOperation.ServicePack.FreeWindow;
+                    var vm = new SelectRangeViewModel();
+                    windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                    windows.Show("SelectRangeView", vm);
+                   var a= vm.SelectRange;
                     await Task.Run(() =>
                              {
                           Mult.StringConnection = GetStringConnect(Mult);
@@ -887,8 +894,8 @@ namespace B5_71_PRO_Abstract
                           Bp.SetStateCurr(Bp.CurrMax);
                           Bp.OnOutput();
                       });
-
-                    Mult.Open();
+                  
+                         Mult.Open();
                     while (Mult.IsTerminal)
                         this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
                                                                            " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",

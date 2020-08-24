@@ -230,6 +230,10 @@
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ASMC.Devices.UInterface\ASMC.Devices.UInterface.csproj">
+      <Project>{e9310a9c-14ab-4c55-83b9-83fe13e1ec3b}</Project>
+      <Name>ASMC.Devices.UInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ASMC.Devices\ASMC.Devices.csproj">
       <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
       <Name>ASMC.Devices</Name>

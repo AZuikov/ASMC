@@ -33,6 +33,7 @@
     <ui:ImageService x:Name="ImageService"/>
     <ui2:MessageBoxService/>
     <ui2:TaskMessageService/>
+    <ui2:WindowService x:Name="FreeWindow"/>
   </dxmvvm:Interaction.Behaviors>
   <StackPanel>
     <Menu Margin="0,0,0,10">

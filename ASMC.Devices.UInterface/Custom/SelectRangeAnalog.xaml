@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="ASMC.Devices.UInterface.Custom.SelectRangeAnalog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ASMC.Devices.UInterface.Custom"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <dxmvvm:BooleanToVisibilityConverter Inverse="True" x:Key="NegativeBooleanToVisibilityConverter"/>
+        <dxmvvm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <StackPanel>
+        <ComboBox ItemsSource="{Binding Ranges}" SelectedItem="{Binding SelectRange}" DisplayMemberPath="Description" Visibility="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=IsComboBox, Converter={StaticResource BooleanToVisibilityConverter} }"/>
+        <ItemsControl ItemsSource="{Binding Ranges}" Visibility="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=IsComboBox, Converter={StaticResource NegativeBooleanToVisibilityConverter}}"   >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <RadioButton GroupName="Range" Content="{Binding Path=Description}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            </ItemsControl>
+    </StackPanel>
+</UserControl>
