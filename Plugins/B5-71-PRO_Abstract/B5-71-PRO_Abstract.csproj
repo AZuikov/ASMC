@@ -31,12 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevExpress.Data.v17.2">
+      <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Data.v17.2.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Mvvm.v17.2">
       <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
+    <Reference Include="DevExpress.Xpf.Core.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -47,16 +53,22 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractB5_71_PRO_Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SelectRangeView.xaml.cs">
+      <DependentUpon>SelectRangeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SelectRangeViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AP.Math\AP.Math.csproj">
@@ -79,6 +91,10 @@
       <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ASMC.Devices.UInterface\ASMC.Devices.UInterface.csproj">
+      <Project>{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}</Project>
+      <Name>ASMC.Devices.UInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ASMC.Devices\ASMC.Devices.csproj">
       <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
       <Name>ASMC.Devices</Name>
@@ -90,7 +106,12 @@
     <None Include="Resources\B5VisualTestText.rtf" />
     <None Include="Resources\Б5-71_1.dotx" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="SelectRangeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\B5-71-1_2-PRO_N3306_34401_v3-57.jpg" />
     <Content Include="Resources\B5-71-4-PRO_N3303_34401_v3-57.jpg" />

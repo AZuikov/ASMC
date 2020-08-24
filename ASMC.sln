@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMC", "ASMC\ASMC.csproj", "{0F3A4BF6-B35C-4F85-80F2-A756F3495A77}"
 EndProject
@@ -54,6 +54,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Appa109N", "Plugins\APPA\Appa109N\Appa109N.csproj", "{B49AD766-BD4A-4729-B4FC-D83F70661D07}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMC.Common", "ASMC.Common\ASMC.Common.csproj", "{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMC.Devices.UInterface", "ASMC.Devices.UInterface\ASMC.Devices.UInterface.csproj", "{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -239,6 +241,14 @@ Global
 		{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}.Release|x86.ActiveCfg = Release|Any CPU
 		{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}.Release|x86.Build.0 = Release|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Debug|x86.Build.0 = Debug|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Release|x86.ActiveCfg = Release|Any CPU
+		{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

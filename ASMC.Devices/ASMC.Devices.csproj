@@ -103,6 +103,7 @@
     <Compile Include="SimpleScada\Dv2TsSensor.cs" />
     <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
     <Compile Include="VirtMeasInst\VirtualSensor.cs" />
+    <Compile Include="WithoutInterface\Voltmetr\B5_57.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
