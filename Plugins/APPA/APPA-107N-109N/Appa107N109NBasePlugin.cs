@@ -988,8 +988,8 @@ namespace APPA_107N_109N
             RangeResolution = new AcVariablePoint(100, Multipliers.Mili);
 
             HerzVPoint = new MeasPoint[2];
-            HerzVPoint[0] = new MeasPoint(MeasureUnits.V, Multipliers.None, 40);
-            HerzVPoint[1] = new MeasPoint(MeasureUnits.V, Multipliers.None, 1000);
+            HerzVPoint[0] = new MeasPoint(MeasureUnits.V, OpMultipliers, 40);
+            HerzVPoint[1] = new MeasPoint(MeasureUnits.V, OpMultipliers, 1000);
             
 
             VoltPoint = new AcVariablePoint[3];
@@ -1267,7 +1267,7 @@ namespace APPA_107N_109N
     {
         public Oper8_1Resistance_200Ohm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            OperationOhmRangeCode = Mult107_109N.RangeCode.Range3Manual;
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationOhmRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(10, Multipliers.Mili);
             Name = OperationOhmRangeNominal.GetStringValue();
@@ -1275,65 +1275,142 @@ namespace APPA_107N_109N
 
             BaseMultipliers = 1;
             OhmPoint = new MeasPoint[3];
-            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, Multipliers.None, 50);
-            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, Multipliers.None, 100);
-            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, Multipliers.None, 200);
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 50 * BaseMultipliers);
+            OhmPoint[1] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 100 * BaseMultipliers);
+            OhmPoint[2] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 200 * BaseMultipliers);
         }
     }
 
     public class Oper8_1Resistance_2kOhm_Measure : Oper8ResistanceMeasureBase
     {
-        public Oper8_1Resistance_2kOhm_Measure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper8_1Resistance_2kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range2Manual;
+            OperationOhmRangeNominal = inRangeNominal;
+            RangeResolution = new AcVariablePoint(100, Multipliers.Mili);
+            Name = OperationOhmRangeNominal.GetStringValue();
+            OpMultipliers = Multipliers.Kilo;
+
+            BaseMultipliers = 1;
+            OhmPoint = new MeasPoint[5];
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.4 * BaseMultipliers);
+            OhmPoint[1] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.8 * BaseMultipliers);
+            OhmPoint[2] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1 * BaseMultipliers);
+            OhmPoint[3] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.5 * BaseMultipliers);
+            OhmPoint[4] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.8 * BaseMultipliers);
 
         }
     }
 
     public class Oper8_1Resistance_20kOhm_Measure : Oper8ResistanceMeasureBase
     {
-        public Oper8_1Resistance_20kOhm_Measure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper8_1Resistance_20kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range3Manual;
+            OperationOhmRangeNominal = inRangeNominal;
+            RangeResolution = new AcVariablePoint(1, Multipliers.None);
+            Name = OperationOhmRangeNominal.GetStringValue();
+            OpMultipliers = Multipliers.Kilo;
 
+            BaseMultipliers = 10;
+            OhmPoint = new MeasPoint[5];
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.4 * BaseMultipliers);
+            OhmPoint[1] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.8 * BaseMultipliers);
+            OhmPoint[2] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1 * BaseMultipliers);
+            OhmPoint[3] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.5 * BaseMultipliers);
+            OhmPoint[4] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.8 * BaseMultipliers);
         }
     }
 
     public class Oper8_1Resistance_200kOhm_Measure : Oper8ResistanceMeasureBase
     {
-        public Oper8_1Resistance_200kOhm_Measure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper8_1Resistance_200kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range4Manual;
+            OperationOhmRangeNominal = inRangeNominal;
+            RangeResolution = new AcVariablePoint(10, Multipliers.None);
+            Name = OperationOhmRangeNominal.GetStringValue();
+            OpMultipliers = Multipliers.Kilo;
 
+            BaseMultipliers = 100;
+            OhmPoint = new MeasPoint[5];
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.4 * BaseMultipliers);
+            OhmPoint[1] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.8 * BaseMultipliers);
+            OhmPoint[2] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1 * BaseMultipliers);
+            OhmPoint[3] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.5 * BaseMultipliers);
+            OhmPoint[4] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.8 * BaseMultipliers);
         }
     }
 
     public class Oper8_1Resistance_2MOhm_Measure : Oper8ResistanceMeasureBase
     {
-        public Oper8_1Resistance_2MOhm_Measure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper8_1Resistance_2MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range5Manual;
+            OperationOhmRangeNominal = inRangeNominal;
+            RangeResolution = new AcVariablePoint(10, Multipliers.None);
+            Name = OperationOhmRangeNominal.GetStringValue();
+            OpMultipliers = Multipliers.Mega;
 
+            BaseMultipliers = 1000;
+            OhmPoint = new MeasPoint[5];
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.4 * BaseMultipliers);
+            OhmPoint[1] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)0.8 * BaseMultipliers);
+            OhmPoint[2] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1 * BaseMultipliers);
+            OhmPoint[3] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.5 * BaseMultipliers);
+            OhmPoint[4] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal)1.8 * BaseMultipliers);
         }
     }
 
     public class Oper8_1Resistance_20MOhm_Measure : Oper8ResistanceMeasureBase
     {
-        public Oper8_1Resistance_20MOhm_Measure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper8_1Resistance_20MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range6Manual;
+            OperationOhmRangeNominal = inRangeNominal;
+            RangeResolution = new AcVariablePoint(10, Multipliers.Mili);
+            Name = OperationOhmRangeNominal.GetStringValue();
+            OpMultipliers = Multipliers.Mega;
 
+            BaseMultipliers = 1;
+            OhmPoint = new MeasPoint[3];
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 5 * BaseMultipliers);
+            OhmPoint[1] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 10 * BaseMultipliers);
+            OhmPoint[2] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 20 * BaseMultipliers);
         }
     }
 
     public class Oper8_1Resistance_200MOhm_Measure : Oper8ResistanceMeasureBase
     {
-        public Oper8_1Resistance_200MOhm_Measure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper8_1Resistance_200MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range7Manual;
+            OperationOhmRangeNominal = inRangeNominal;
+            RangeResolution = new AcVariablePoint(10, Multipliers.Mili);
+            Name = OperationOhmRangeNominal.GetStringValue();
+            OpMultipliers = Multipliers.Mega;
 
+            BaseMultipliers = 10;
+            OhmPoint = new MeasPoint[3];
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 5 * BaseMultipliers);
+            OhmPoint[1] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 10 * BaseMultipliers);
+            OhmPoint[2] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, 20 * BaseMultipliers);
         }
     }
 
     public class Oper8_1Resistance_2GOhm_Measure : Oper8ResistanceMeasureBase
     {
-        public Oper8_1Resistance_2GOhm_Measure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper8_1Resistance_2GOhm_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            OperationOhmRangeCode = Mult107_109N.RangeCode.Range8Manual;
+            OperationOhmRangeNominal = inRangeNominal;
+            RangeResolution = new AcVariablePoint(10, Multipliers.Mili);
+            Name = OperationOhmRangeNominal.GetStringValue();
+            OpMultipliers = Multipliers.Giga;
 
+            
+            OhmPoint = new MeasPoint[1];
+            OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal) 0.9);
         }
     }
     
