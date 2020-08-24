@@ -172,6 +172,9 @@ namespace Appa107N
         public Ope4_1_AcV_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
         {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACmV;
         }
     }
 
@@ -181,6 +184,9 @@ namespace Appa107N
             IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
         {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACmV;
         }
     }
 
@@ -189,6 +195,9 @@ namespace Appa107N
         public Ope4_1_AcV_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
         {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACV;
         }
     }
 
@@ -197,6 +206,9 @@ namespace Appa107N
         public Ope4_1_AcV_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
         {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACV;
         }
     }
 
@@ -205,6 +217,9 @@ namespace Appa107N
         public Ope4_1_AcV_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
         {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACV;
         }
     }
 
@@ -214,8 +229,18 @@ namespace Appa107N
             IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
         {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACV;
         }
     }
 
     #endregion ACV
+
+
+    #region OHM
+
+    
+
+    #endregion
 }
