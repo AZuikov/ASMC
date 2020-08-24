@@ -7,7 +7,7 @@ using AP.Utils.Helps;
 
 namespace ASMC.Devices.WithoutInterface.Voltmetr
 {
-    public class B5_57:HelpDeviceBase
+    public class B3_57:HelpDeviceBase
     {
         public double AnalogOutput3 { get; set; }
         public double AnalogOutput1 { get; set; }
@@ -18,13 +18,14 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
 
         public Multipliers[] MultipliersEnum { get; } = {AP.Utils.Helps.Multipliers.None, AP.Utils.Helps.Multipliers.Mili};
 
-        public B5_57()
+        public B3_57()
         {
             Multipliers = new ICommand[]
             {
                 new Command("", "дБ", 1),
                 new Command("", "В", 1),
-                new Command("", "м", 1E-3)
+                new Command("", "мВ", 1E-3)
+                
             };
             Ranges = new[]
             {

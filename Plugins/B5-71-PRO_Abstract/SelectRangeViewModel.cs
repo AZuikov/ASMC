@@ -33,7 +33,7 @@ namespace B5_71_PRO_Abstract
         }
         public SelectRangeViewModel()
         {
-            var sdas = new B5_57();
+            var sdas = new B3_57();
             Ranges = sdas.Ranges;
         }
     }
