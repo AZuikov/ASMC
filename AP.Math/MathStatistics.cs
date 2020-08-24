@@ -77,19 +77,20 @@ namespace AP.Math
 
 
         /// <summary>
-        ///     Возвращает среднеквадратичное отклонение
+        /// Возвращает среднеквадратичное отклонение.
         /// </summary>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="values">Массив значений для обраотки.</param>
+        /// <returns>Возвращает расчитанной значение СКО.</returns>
         public static decimal GetStandartDeviation(decimal[] values)
         {
             if (!values.Any())
                 return 0; //Избегаем деления на 0
             decimal sum = 0;
             var arithmeticalMean = GetArithmeticalMean(values);
-            foreach (var value in values)  sum += (value - arithmeticalMean) / values.Length * (value - arithmeticalMean);
+            
+            foreach (var value in values)  sum += (value - arithmeticalMean) * (value - arithmeticalMean) / values.Length;
 
-            return sum;
+            return (decimal)System.Math.Sqrt((double)sum);
         }
 
         /// <summary>

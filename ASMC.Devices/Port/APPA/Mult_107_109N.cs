@@ -41,8 +41,8 @@ namespace ASMC.Devices.Port.APPA
             [DoubleValue(1)][StringValue("Гц")] Hz,
             [DoubleValue(1E3)][StringValue("кГц")] KHz,
             [DoubleValue(1E6)][StringValue("МГц")] MHz,
-            [DoubleValue(1)][StringValue("℃")] CelciumGrad,
-            [DoubleValue(1)][StringValue("℉")] FaringeitGrad,
+            [DoubleValue(1)][StringValue("⁰C")] CelciumGrad,
+            [DoubleValue(1)][StringValue("⁰F")] FaringeitGrad,
             [DoubleValue(1)][StringValue("сек")] Sec,
             [DoubleValue(1E-3)][StringValue("мсек")] mSec,
             [DoubleValue(1E-9)][StringValue("нсек")] nSec,
@@ -516,7 +516,7 @@ namespace ASMC.Devices.Port.APPA
             {
                 for (int i = 0; i < valBuffer.Length; i++)
                     valBuffer[i] = (decimal)GetSingleValue(mult, generalDsiplay);
-            } while ( AP.Math.MathStatistics.IntoTreeSigma(valBuffer) );
+            } while ( !AP.Math.MathStatistics.IntoTreeSigma(valBuffer) );
            
 
             AP.Math.MathStatistics.Grubbs(ref valBuffer);
