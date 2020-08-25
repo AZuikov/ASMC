@@ -1181,7 +1181,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcvMeasure"};
+            var dataTable = new DataTable {TableName = "FillTabBmDcIMeasure" };
             dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
             dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
