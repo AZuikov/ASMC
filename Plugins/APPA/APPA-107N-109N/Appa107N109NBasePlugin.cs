@@ -1643,6 +1643,11 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
+        protected override void InitWork()
+        {
+            
+        }
+
         #endregion
     }
 

@@ -92,10 +92,12 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper0VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        
+        public List<IBasicOperation<bool>> DataRow { get; set; }
+
 
         protected override void InitWork()
         {
+            DataRow.Clear();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected) ;
@@ -108,10 +110,13 @@ namespace B5_71_PRO_Abstract
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
                 operation.Comment = res.Item1;
+                operation.IsGood = () => operation.Getting;
+
                 return Task.CompletedTask;
             };
 
-            //operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+
+            operation.CompliteWork = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
 
@@ -138,7 +143,7 @@ namespace B5_71_PRO_Abstract
 
         #endregion Methods
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
+       
 
     
     }
@@ -150,6 +155,7 @@ namespace B5_71_PRO_Abstract
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        public List<IBasicOperation<bool>> DataRow { get; set; }
         #region Property
 
         protected B571Pro Bp { get; set; }
@@ -174,7 +180,7 @@ namespace B5_71_PRO_Abstract
             data.Columns.Add("Результат опробования");
             var dataRow = data.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<bool>;
-            // ReSharper disable once PossibleNullReferenceException
+            //ReSharper disable once PossibleNullReferenceException
             dataRow[0] = dds.Getting;
             data.Rows.Add(dataRow);
             return data;
@@ -183,8 +189,6 @@ namespace B5_71_PRO_Abstract
         protected override void InitWork()
         {
             DataRow.Clear();
-            
-
             var operation = new BasicOperationVerefication<bool>();
             operation.InitWork = async () =>
             {
@@ -248,10 +252,6 @@ namespace B5_71_PRO_Abstract
                             return;
                         }
                     }
-
-                        
-                   
-
                     resist = Bp.VoltMax / Bp.CurrMax - 3;
                     Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
                     Bp.SetStateVolt(Bp.VoltMax);
@@ -327,7 +327,7 @@ namespace B5_71_PRO_Abstract
         #endregion Methods
 
      
-        public List<IBasicOperation<bool>> DataRow { get; set; }
+        
     }
 
     /// <summary>
