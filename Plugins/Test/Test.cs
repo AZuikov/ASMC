@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices.IEEE;
 
 namespace Plugins.Test
 {
@@ -52,7 +53,7 @@ namespace Plugins.Test
         /// <inheritdoc />
         public override void RefreshDevice()
         {
-           return;
+            AddresDevice = IeeeBase.AllStringConnect;
         }
 
         /// <inheritdoc />
