@@ -557,6 +557,7 @@ namespace AP.Reports.AutoDocumets
             }
 
             DocumentPosition = _document.Bookmarks[bm].Range.Start;
+            _document.InsertText(DocumentPosition, text);
         }
 
         /// <inheritdoc />

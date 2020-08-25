@@ -385,7 +385,7 @@ namespace ASMC.ViewModel
                     }
                     if (dataStr.Length > 0)
                     {
-                        dataStr.Remove(dataStr.Length, 1);
+                        dataStr.Remove(dataStr.Length-1, 1);
                     }
                     dataStr.AppendLine();
                 }

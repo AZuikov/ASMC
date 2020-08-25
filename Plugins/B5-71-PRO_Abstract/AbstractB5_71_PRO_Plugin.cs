@@ -1,4 +1,13 @@
-﻿using AP.Math;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using AP.Math;
+using AP.Utils.Data;
+using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -6,19 +15,9 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
 using DevExpress.Mvvm;
-using NLog;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using ASMC.Core;
-using ASMC.Core.Model;
 using DevExpress.Mvvm.UI;
+using NLog;
 using WindowService = ASMC.Common.UI.WindowService;
-
 
 namespace B5_71_PRO_Abstract
 {
@@ -32,9 +31,7 @@ namespace B5_71_PRO_Abstract
 
         public OperationMetrControlBase AbstraktOperation { get; protected set; }
 
-        #endregion Property
-
-
+        #endregion
 
         protected AbstractB571ProPlugin(ServicePack service) : base(service)
         {
@@ -56,6 +53,23 @@ namespace B5_71_PRO_Abstract
 
     public abstract class OpertionFirsVerf : ASMC.Core.Model.Operation
     {
+        protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
+        {
+            DocumentName = "Б5-71_1";
+            //Необходимые аксесуары
+            Accessories = new[]
+            {
+                "Нагрузка электронная Keysight N3300A с модулем N3303A",
+                "Мультиметр цифровой Agilent/Keysight 34401A",
+                "Преобразователь интерфесов National Instruments GPIB-USB",
+                "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
+                "Кабель banana - banana 6 шт.",
+                "Кабель BNC - banan для В3-57"
+            };
+        }
+
+        #region Methods
+
         /// <inheritdoc />
         public override void FindDivice()
         {
@@ -68,20 +82,7 @@ namespace B5_71_PRO_Abstract
             AddresDevice = IeeeBase.AllStringConnect;
         }
 
-        protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
-        {
-            this.DocumentName = "Б5-71_1";
-            //Необходимые аксесуары
-            Accessories = new[]
-            {
-                "Нагрузка электронная Keysight N3300A с модулем N3303A",
-                "Мультиметр цифровой Agilent/Keysight 34401A",
-                "Преобразователь интерфесов National Instruments GPIB-USB",
-                "Преобразователь интерфесов USB - RS-232 + нуль-модемный кабель",
-                "Кабель banana - banana 6 шт.",
-                "Кабель BNC - banan для В3-57"
-            };
-        }
+        #endregion
     }
 
     /// <summary>
@@ -90,28 +91,6 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper0VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        
-
-        protected override void InitWork()
-        {
-            var operation = new BasicOperation<bool>();
-            operation.Expected = true;
-            operation.IsGood = () => Equals(operation.Getting, operation.Expected) ;
-            operation.InitWork = () =>
-            {
-                var service = UserItemOperation.ServicePack.QuestionText;
-                service.Title = "Внешний осмотр";
-                service.Entity = new Tuple<string,Assembly>("VisualTestText",null);
-                service.Show();
-                var res = service.Entity as Tuple<string, bool>;
-                operation.Getting = res.Item2;
-                operation.Comment = res.Item1;
-                return Task.CompletedTask;
-            };
-
-            //operation.CompliteWork = () => Task.FromResult(operation.IsGood());
-            DataRow.Add(operation);
-        }
 
         protected Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -124,21 +103,48 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override DataTable FillData()
         {
-            var data = new DataTable();
+            var data = new DataTable {TableName = "ITBmVisualTest"};
+            ;
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
-            var dds = DataRow[0] as BasicOperation<bool>;
-            // ReSharper disable once PossibleNullReferenceException
-            dataRow[0] = dds.Getting;
-            data.Rows.Add(dataRow);
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
             return data;
         }
 
-        #endregion Methods
+        protected override void InitWork()
+        {
+            DataRow.Clear();
+            var operation = new BasicOperation<bool>();
+            operation.Expected = true;
+            operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+            operation.InitWork = () =>
+            {
+                var service = UserItemOperation.ServicePack.QuestionText;
+                service.Title = "Внешний осмотр";
+                service.Entity = new Tuple<string, Assembly>("VisualTestText", null);
+                service.Show();
+                var res = service.Entity as Tuple<string, bool>;
+                operation.Getting = res.Item2;
+                operation.Comment = res.Item1;
+                operation.IsGood = () => operation.Getting;
+
+                return Task.CompletedTask;
+            };
+
+            operation.CompliteWork = () => { return Task.FromResult(true); };
+            DataRow.Add(operation);
+        }
+
+        #endregion
 
         public List<IBasicOperation<bool>> DataRow { get; set; }
-
-    
     }
 
     /// <summary>
@@ -147,42 +153,44 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper1Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        private static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
+
         #region Property
 
         protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion Property
+        #endregion
 
         protected Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
             DataRow = new List<IBasicOperation<bool>>();
             Sheme = ShemeTemplate.TemplateSheme;
-
         }
 
         #region Methods
 
         protected override DataTable FillData()
         {
-            var data = new DataTable();
+            var data = new DataTable {TableName = "ITBmOprobovanie"};
             data.Columns.Add("Результат опробования");
             var dataRow = data.NewRow();
-            var dds = DataRow[0] as BasicOperationVerefication<bool>;
-            // ReSharper disable once PossibleNullReferenceException
-            dataRow[0] = dds.Getting;
-            data.Rows.Add(dataRow);
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperationVerefication<bool>;
+                //ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.IsGood() ? "Соответствует" :dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
             return data;
         }
 
         protected override void InitWork()
         {
             DataRow.Clear();
-            
-
             var operation = new BasicOperationVerefication<bool>();
             operation.InitWork = async () =>
             {
@@ -217,7 +225,6 @@ namespace B5_71_PRO_Abstract
             {
                 try
                 {
-
                     Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
                     Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                     var resist = Bp.VoltMax / Bp.CurrMax + 3;
@@ -226,7 +233,7 @@ namespace B5_71_PRO_Abstract
 
                     Bp.InitDevice();
                     Bp.SetStateCurr(Bp.CurrMax).OnOutput();
-                    foreach (decimal pointMult in MyPoint)
+                    foreach (var pointMult in MyPoint)
                     {
                         var setPoint = pointMult * Bp.VoltMax;
 
@@ -235,10 +242,10 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(500);
 
                         //измеряем напряжение
-                       
-                        decimal measVolt = Math.Abs(Load.Voltage.MeasureVolt);
-                        
-                        operation.IsGood = () => { return (Bp.VoltMax / measVolt) >= (decimal)0.7; };
+
+                        var measVolt = Math.Abs(Load.Voltage.MeasureVolt);
+
+                        operation.IsGood = () => { return Bp.VoltMax / measVolt >= (decimal) 0.7; };
 
                         if (!operation.IsGood())
                         {
@@ -247,32 +254,26 @@ namespace B5_71_PRO_Abstract
                         }
                     }
 
-                        
-                   
-
                     resist = Bp.VoltMax / Bp.CurrMax - 3;
                     Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
                     Bp.SetStateVolt(Bp.VoltMax);
-                    foreach (decimal pointMult in MyPoint)
+                    foreach (var pointMult in MyPoint)
                     {
                         var setPoint = pointMult * Bp.CurrMax;
                         //ставим точку напряжения
                         Bp.SetStateCurr(setPoint);
                         Thread.Sleep(500);
                         //измеряем напряжение
-                        
-                        decimal measCurr = Math.Abs(Load.Current.MeasureCurrent);
-                        operation.IsGood = () => { return (Bp.CurrMax / measCurr) >= (decimal)0.7; };
+
+                        var measCurr = Math.Abs(Load.Current.MeasureCurrent);
+                        operation.IsGood = () => { return Bp.CurrMax / measCurr >= (decimal) 0.7; };
 
                         if (!operation.IsGood())
                         {
                             Logger.Error($"Операция опробования не прошла по току в точке {setPoint} А, измерено {operation.Getting} А");
-                            return  ;
+                            return;
                         }
                     }
-
-                    
-
                 }
                 catch (Exception e)
                 {
@@ -290,26 +291,30 @@ namespace B5_71_PRO_Abstract
                 Bp.OnOutput();
 
                 //Теперь проверим внешнюю индикацию режимов
-                var answer = this.UserItemOperation.ServicePack.MessageBox.Show("Сейчас на лицевой панели блока питания индикатор \"СТАБ.ТОКА\" горит?",
-                                                                                "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                var answer =
+                    UserItemOperation.ServicePack.MessageBox
+                                     .Show("Сейчас на лицевой панели блока питания индикатор \"СТАБ.ТОКА\" горит?",
+                                           "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                 if (answer == MessageResult.No)
                 {
                     operation.IsGood = () => { return false; };
-                    Logger.Error($"режим CC: Не горит индикация стабилизации тока на источнике питания.");
+                    Logger.Error("режим CC: Не горит индикация стабилизации тока на источнике питания.");
                     return Task.FromResult(false);
                 }
 
-                decimal resist = Bp.VoltMax / Bp.CurrMax + 3;
+                var resist = Bp.VoltMax / Bp.CurrMax + 3;
                 Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
 
-                answer = this.UserItemOperation.ServicePack.MessageBox.Show("Сейчас на лицевой панели прибора индикатор \"СТАБ.ТОКА\" НЕ горит?",
-                                                                            "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                answer =
+                    UserItemOperation.ServicePack.MessageBox
+                                     .Show("Сейчас на лицевой панели прибора индикатор \"СТАБ.ТОКА\" НЕ горит?",
+                                           "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
                 if (answer == MessageResult.No)
                 {
                     operation.IsGood = () => { return false; };
-                    Logger.Error($"режим CV: На источнике питания индикатор стабилизации тока должен не должен гореть.");
+                    Logger.Error("режим CV: На источнике питания индикатор стабилизации тока должен не должен гореть.");
                     return Task.FromResult(false);
                 }
 
@@ -317,14 +322,13 @@ namespace B5_71_PRO_Abstract
                 Bp.OffOutput();
 
                 operation.IsGood = () => { return true; };
-                return  Task.FromResult(true);
+                return Task.FromResult(true);
             };
             DataRow.Add(operation);
         }
 
-        #endregion Methods
+        #endregion
 
-     
         public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
@@ -336,7 +340,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        private static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        private static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
 
         #region Property
 
@@ -344,7 +348,7 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion Property
+        #endregion
 
         protected Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -357,7 +361,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table2" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcvOutput"};
             dataTable.Columns.Add("Установленное значение напряжения, В");
             dataTable.Columns.Add("Измеренное значение, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
@@ -405,10 +409,11 @@ namespace B5_71_PRO_Abstract
                         });
 
                         while (!Mult.IsTerminal)
-                            this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                     " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
-                                                     "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                     MessageResult.OK);
+                            UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                                                                          " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                                                                          "Указание оператору", MessageButton.OK,
+                                                                          MessageIcon.Information,
+                                                                          MessageResult.OK);
                     }
                     catch (Exception e)
                     {
@@ -430,13 +435,13 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        var result = Mult.Dc.Voltage.Range.Set((double)setPoint).GetMeasValue();
+                        var result = Mult.Dc.Voltage.Range.Set((double) setPoint).GetMeasValue();
                         MathStatistics.Round(ref result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
                         operation.Expected = setPoint;
-                        operation.Getting = (decimal)result;
+                        operation.Getting = (decimal) result;
                         //operation.Error = Bp.tolleranceFormulaVolt(setPoint);
                         operation.ErrorCalculation = (c, b) => ErrorCalculation(setPoint);
                         operation.LowerTolerance = operation.Expected - operation.Error;
@@ -456,9 +461,13 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                        "Повторить измерение этой точки?",
-                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                          $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                          "Повторить измерение этой точки?",
+                                                                          "Информация по текущему измерению",
+                                                                          MessageButton.YesNo, MessageIcon.Question,
+                                                                          MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -467,7 +476,7 @@ namespace B5_71_PRO_Abstract
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<decimal>)operation.Clone());
+                                : (BasicOperationVerefication<decimal>) operation.Clone());
             }
         }
 
@@ -479,12 +488,9 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion Methods
+        #endregion
 
-      
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-    
     }
 
     /// <summary>
@@ -495,7 +501,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
 
         #region Property
 
@@ -505,7 +511,7 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion Property
+        #endregion
 
         protected Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -518,7 +524,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table3" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcvMeasure"};
             dataTable.Columns.Add("Измеренное эталонным мультиметром значение, В");
             dataTable.Columns.Add("Измеренное источником питания значение, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
@@ -568,10 +574,11 @@ namespace B5_71_PRO_Abstract
                         });
 
                         while (!Mult.IsTerminal)
-                            this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                                               " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
-                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                MessageResult.OK);
+                            UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                                                                          " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                                                                          "Указание оператору", MessageButton.OK,
+                                                                          MessageIcon.Information,
+                                                                          MessageResult.OK);
                     }
                     catch (Exception e)
                     {
@@ -593,7 +600,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        var resultMult = Mult.Dc.Voltage.Range.Set((double)setPoint).GetMeasValue();
+                        var resultMult = Mult.Dc.Voltage.Range.Set((double) setPoint).GetMeasValue();
                         var resultBp = Bp.GetMeasureVolt();
 
                         MathStatistics.Round(ref resultMult, 3);
@@ -601,7 +608,7 @@ namespace B5_71_PRO_Abstract
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
-                        operation.Expected = (decimal)resultMult;
+                        operation.Expected = (decimal) resultMult;
                         operation.Getting = resultBp;
                         operation.ErrorCalculation = ErrorCalculation;
                         operation.LowerTolerance = operation.Expected - operation.Error;
@@ -621,9 +628,13 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                        "Повторить измерение этой точки?",
-                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                          $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                          "Повторить измерение этой точки?",
+                                                                          "Информация по текущему измерению",
+                                                                          MessageButton.YesNo, MessageIcon.Question,
+                                                                          MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -631,8 +642,8 @@ namespace B5_71_PRO_Abstract
                     return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
-                    ? operation
-                    : (BasicOperationVerefication<decimal>)operation.Clone());
+                                ? operation
+                                : (BasicOperationVerefication<decimal>) operation.Clone());
             }
         }
 
@@ -644,11 +655,9 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion Methods
+        #endregion
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-       
     }
 
     /// <summary>
@@ -656,10 +665,9 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         //это точки для нагрузки в Омах
-        public static readonly decimal[] ArrСoefVoltUnstable = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
+        public static readonly decimal[] ArrСoefVoltUnstable = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
 
@@ -667,7 +675,7 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion Property
+        #endregion
 
         protected Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -680,19 +688,21 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table4" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcvUnstable"};
             dataTable.Columns.Add("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В");
             dataTable.Columns.Add("Допустимое значение, В");
             dataTable.Columns.Add("Результат");
+            if (DataRow.Count == 1)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting + " В";
+                dataRow[1] = dds.Error + " В";
+                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
 
-            var dataRow = dataTable.NewRow();
-            var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            // ReSharper disable once PossibleNullReferenceException
-            dataRow[0] = dds.Getting + " В";
-            dataRow[1] = dds.Error + " В";
-            dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
-
-            dataTable.Rows.Add(dataRow);
+                dataTable.Rows.Add(dataRow);
+            }
 
             return dataTable;
         }
@@ -720,10 +730,11 @@ namespace B5_71_PRO_Abstract
                     });
 
                     while (!Mult.IsTerminal)
-                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                                           " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
-                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                            MessageResult.OK);
+                        UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                                                                      " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
+                                                                      "Указание оператору", MessageButton.OK,
+                                                                      MessageIcon.Information,
+                                                                      MessageResult.OK);
                 }
                 catch (Exception e)
                 {
@@ -742,11 +753,10 @@ namespace B5_71_PRO_Abstract
                     // ------ настроим нагрузку
                     Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
 
-                    decimal pointResistance = Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]);
+                    var pointResistance = Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]);
                     MathStatistics.Round(ref pointResistance, 3);
 
-                    Load.Resistance.SetResistanceRange(pointResistance).
-                        Resistance.Set(pointResistance)
+                    Load.Resistance.SetResistanceRange(pointResistance).Resistance.Set(pointResistance)
                         .SetOutputState(MainN3300.State.On);
 
                     //сюда запишем результаты
@@ -757,12 +767,13 @@ namespace B5_71_PRO_Abstract
                     foreach (var coef in ArrСoefVoltUnstable)
                     {
                         var resistance = Bp.VoltMax / (coef * Bp.CurrMax);
-                        Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance); //ставим сопротивление
+                        Load.Resistance.SetResistanceRange(resistance).Resistance
+                            .Set(resistance); //ставим сопротивление
 
                         // время выдержки
                         Thread.Sleep(1000);
                         // записываем результаты
-                        voltUnstableList.Add((decimal)Mult.Dc.Voltage.Range.Set((double)Bp.VoltMax).GetMeasValue());
+                        voltUnstableList.Add((decimal) Mult.Dc.Voltage.Range.Set((double) Bp.VoltMax).GetMeasValue());
                     }
 
                     Bp.OffOutput();
@@ -791,9 +802,13 @@ namespace B5_71_PRO_Abstract
             {
                 if (!operation.IsGood())
                 {
-                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                    "Повторить измерение этой точки?",
-                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                    var answer =
+                        UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                      "Повторить измерение этой точки?",
+                                                                      "Информация по текущему измерению",
+                                                                      MessageButton.YesNo, MessageIcon.Question,
+                                                                      MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
@@ -801,8 +816,8 @@ namespace B5_71_PRO_Abstract
                 return Task.FromResult(operation.IsGood());
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
-                ? operation
-                : (BasicOperationVerefication<decimal>)operation.Clone());
+                            ? operation
+                            : (BasicOperationVerefication<decimal>) operation.Clone());
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -810,11 +825,9 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceVoltageUnstability;
         }
 
-        #endregion Methods
+        #endregion
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-       
     }
 
     /// <summary>
@@ -822,10 +835,9 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public abstract class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         //это точки для нагрузки в Омах
-        public static readonly decimal[] ArrResistanceVoltUnstable = { (decimal)20.27, (decimal)37.5, (decimal)187.5 };
+        public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27, (decimal) 37.5, (decimal) 187.5};
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -838,19 +850,22 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table5" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcvPulsation"};
             dataTable.Columns.Add("Измеренное значение пульсаций, мВ");
             dataTable.Columns.Add("Допустимое значение пульсаций, мВ");
             dataTable.Columns.Add("Результат");
 
-            var dataRow = dataTable.NewRow();
-            var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+            if (DataRow.Count == 1)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = DataRow[0] as BasicOperationVerefication<decimal>;
 
-            // ReSharper disable once PossibleNullReferenceException
-            dataRow[0] = dds.Getting + " мВ";
-            dataRow[1] = dds.Error + " мВ";
-            dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
-            dataTable.Rows.Add(dataRow);
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting + " мВ";
+                dataRow[1] = dds.Error + " мВ";
+                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+                dataTable.Rows.Add(dataRow);
+            }
 
             return dataTable;
         }
@@ -864,64 +879,62 @@ namespace B5_71_PRO_Abstract
             {
                 try
                 {
-                    var windows = (WindowService)this.UserItemOperation.ServicePack.FreeWindow;
+                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow;
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                    windows.Title = "Выбор предела измерения В3-57";
+                    windows.MaxHeight = 200;
+                    windows.MaxWidth = 350;
                     windows.Show("SelectRangeView", vm);
-                   var a= vm.SelectRange;
+
+                    var a = vm.SelectRange;
+
                     await Task.Run(() =>
-                             {
-                          Mult.StringConnection = GetStringConnect(Mult);
-                          Load.StringConnection = GetStringConnect(Load);
-                          Bp.StringConnection = GetStringConnect(Bp);
+                    {
+                        Mult.StringConnection = GetStringConnect(Mult);
+                        Load.StringConnection = GetStringConnect(Load);
+                        Bp.StringConnection = GetStringConnect(Bp);
 
-                          Load.FindThisModule();
+                        Load.FindThisModule();
 
-                              //если модуль нагрузки найти не удалось
-                              if (Load.ChanelNumber <= 0)
-                              throw new
-                                      ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                        //если модуль нагрузки найти не удалось
+                        if (Load.ChanelNumber <= 0)
+                            throw new
+                                ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-                          var point = Bp.VoltMax / ((decimal)0.9 * Bp.CurrMax);
-                          Load.SetWorkingChanel()
-                                  .SetModeWork(MainN3300.ModeWorks.Resistance)
-                                  .Resistance.SetResistanceRange(point)
-                                  .Resistance.Set(point)
-                                  .SetOutputState(MainN3300.State.On);
+                        var point = Bp.VoltMax / ((decimal) 0.9 * Bp.CurrMax);
+                        Load.SetWorkingChanel()
+                            .SetModeWork(MainN3300.ModeWorks.Resistance)
+                            .Resistance.SetResistanceRange(point)
+                            .Resistance.Set(point)
+                            .SetOutputState(MainN3300.State.On);
 
-                          Bp.InitDevice();
-                          Bp.SetStateVolt(Bp.VoltMax);
-                          Bp.SetStateCurr(Bp.CurrMax);
-                          Bp.OnOutput();
-                      });
-                  
-                         Mult.Open();
+                        Bp.InitDevice();
+                        Bp.SetStateVolt(Bp.VoltMax);
+                        Bp.SetStateCurr(Bp.CurrMax);
+                        Bp.OnOutput();
+                    });
+
+                    Mult.Open();
                     while (Mult.IsTerminal)
-                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                                           " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
-                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                            MessageResult.OK);
+                        UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                                                                      " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                                                                      "Указание оператору", MessageButton.OK,
+                                                                      MessageIcon.Information,
+                                                                      MessageResult.OK);
 
-                    this.UserItemOperation.ServicePack.MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения",
-                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                        MessageResult.OK);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                }
-            };
+                    UserItemOperation.ServicePack.MessageBox
+                                     .Show("Установите на В3-57 подходящий предел измерения напряжения",
+                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                           MessageResult.OK);
 
-            operation.BodyWork = () =>
-            {
-                try
-                {
                     Thread.Sleep(5000);
 
                     Mult.Dc.Voltage.Range.Set(100);
-                    var voltPulsV357 = (decimal)Mult.GetMeasValue();
+                    var voltPulsV357 = (decimal) Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
+                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal) 0.99, 0,
+                                                          a.NominalVal * (decimal) a.MultipliersUnit.GetDoubleValue());
                     MathStatistics.Round(ref voltPulsV357, Bp.TolleranceVoltPuls.ToString());
 
                     Bp.OffOutput();
@@ -940,13 +953,19 @@ namespace B5_71_PRO_Abstract
                     Logger.Error(e);
                 }
             };
+
+            operation.BodyWork = () => { };
             operation.CompliteWork = () =>
             {
                 if (!operation.IsGood())
                 {
-                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                    "Повторить измерение этой точки?",
-                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                    var answer =
+                        UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                      "Повторить измерение этой точки?",
+                                                                      "Информация по текущему измерению",
+                                                                      MessageButton.YesNo, MessageIcon.Question,
+                                                                      MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
@@ -961,9 +980,7 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceVoltPuls;
         }
 
-        #endregion Methods
-
-     
+        #endregion
 
         #region Fileds
 
@@ -983,14 +1000,14 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
 
         #region Property
 
         protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
 
-        #endregion Property
+        #endregion
 
         protected Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1003,7 +1020,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table6" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcIOutput"};
             dataTable.Columns.Add("Установленное значение тока, А");
             dataTable.Columns.Add("Измеренное значение, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
@@ -1046,7 +1063,8 @@ namespace B5_71_PRO_Abstract
                             Load.FindThisModule();
                             //если модуль нагрузки найти не удалось
                             if (Load.ChanelNumber <= 0)
-                                throw new ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                                throw new
+                                    ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                         });
                     }
                     catch (Exception e)
@@ -1098,9 +1116,13 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                        "Повторить измерение этой точки?",
-                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                          $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                          "Повторить измерение этой точки?",
+                                                                          "Информация по текущему измерению",
+                                                                          MessageButton.YesNo, MessageIcon.Question,
+                                                                          MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -1108,8 +1130,8 @@ namespace B5_71_PRO_Abstract
                     return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
-                    ? operation
-                    : (BasicOperationVerefication<decimal>)operation.Clone());
+                                ? operation
+                                : (BasicOperationVerefication<decimal>) operation.Clone());
             }
         }
 
@@ -1121,13 +1143,9 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion Methods
+        #endregion
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-
-
-        
     }
 
     /// <summary>
@@ -1138,19 +1156,19 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, 1 };
+        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
 
         #region Fields
 
         protected B571Pro Bp;
 
-        #endregion Fields
+        #endregion
 
         #region Property
 
         protected MainN3300 Load { get; set; }
 
-        #endregion Property
+        #endregion
 
         protected Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1163,7 +1181,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table7" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcIMeasure" };
             dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
             dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
@@ -1194,27 +1212,27 @@ namespace B5_71_PRO_Abstract
             {
                 var operation = new BasicOperationVerefication<decimal>();
                 operation.InitWork = async () =>
-                 {
-                     try
-                     {
-                         await Task.Run(() =>
-                         {
-                             Bp.StringConnection = GetStringConnect(Bp);
-                             Load.StringConnection = GetStringConnect(Load);
+                {
+                    try
+                    {
+                        await Task.Run(() =>
+                        {
+                            Bp.StringConnection = GetStringConnect(Bp);
+                            Load.StringConnection = GetStringConnect(Load);
 
-                             Load.FindThisModule();
+                            Load.FindThisModule();
 
-                              //если модуль нагрузки найти не удалось
-                              if (Load.ChanelNumber <= 0)
-                                 throw new
-                                      ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-                         });
-                     }
-                     catch (Exception e)
-                     {
-                         Logger.Error(e);
-                     }
-                 };
+                            //если модуль нагрузки найти не удалось
+                            if (Load.ChanelNumber <= 0)
+                                throw new
+                                    ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                    }
+                };
 
                 operation.BodyWork = () =>
                 {
@@ -1259,9 +1277,13 @@ namespace B5_71_PRO_Abstract
                 {
                     if (!operation.IsGood())
                     {
-                        var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                        "Повторить измерение этой точки?",
-                                                                                        "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                          $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                          "Повторить измерение этой точки?",
+                                                                          "Информация по текущему измерению",
+                                                                          MessageButton.YesNo, MessageIcon.Question,
+                                                                          MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
@@ -1269,8 +1291,8 @@ namespace B5_71_PRO_Abstract
                     return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
-                    ? operation
-                    : (BasicOperationVerefication<decimal>)operation.Clone());
+                                ? operation
+                                : (BasicOperationVerefication<decimal>) operation.Clone());
             }
         }
 
@@ -1281,11 +1303,9 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion Methods
+        #endregion
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-       
     }
 
     /// <summary>
@@ -1296,14 +1316,14 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = { (decimal)0.1, (decimal)0.5, (decimal)0.9 };
+        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
 
         #region Fields
 
         protected B571Pro Bp;
         protected MainN3300 Load;
 
-        #endregion Fields
+        #endregion
 
         protected Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1316,19 +1336,22 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table8" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcIUnstable"};
             dataTable.Columns.Add("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А");
             dataTable.Columns.Add("Допустимое значение, А");
             dataTable.Columns.Add("Результат");
 
-            var dataRow = dataTable.NewRow();
-            var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            // ReSharper disable once PossibleNullReferenceException
-            dataRow[0] = dds.Getting + " А";
-            dataRow[1] = dds.Error + " А";
-            dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+            if (DataRow.Count == 1)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting + " А";
+                dataRow[1] = dds.Error + " А";
+                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
 
-            dataTable.Rows.Add(dataRow);
+                dataTable.Rows.Add(dataRow);
+            }
 
             return dataTable;
         }
@@ -1338,24 +1361,24 @@ namespace B5_71_PRO_Abstract
             DataRow.Clear();
             var operation = new BasicOperationVerefication<decimal>();
             operation.InitWork = async () =>
-             {
-                 try
-                 {
-                     Bp.StringConnection = GetStringConnect(Bp);
-                     Load.StringConnection = GetStringConnect(Load);
+            {
+                try
+                {
+                    Bp.StringConnection = GetStringConnect(Bp);
+                    Load.StringConnection = GetStringConnect(Load);
 
-                     Load.FindThisModule();
+                    Load.FindThisModule();
 
-                      //если модуль нагрузки найти не удалось
-                      if (Load.ChanelNumber <= 0)
-                         throw new
-                             ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
-                 }
-                 catch (Exception e)
-                 {
-                     Logger.Error(e);
-                 }
-             };
+                    //если модуль нагрузки найти не удалось
+                    if (Load.ChanelNumber <= 0)
+                        throw new
+                            ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+            };
 
             operation.BodyWork = () =>
             {
@@ -1404,9 +1427,13 @@ namespace B5_71_PRO_Abstract
             {
                 if (!operation.IsGood())
                 {
-                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                    "Повторить измерение этой точки?",
-                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                    var answer =
+                        UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                      "Повторить измерение этой точки?",
+                                                                      "Информация по текущему измерению",
+                                                                      MessageButton.YesNo, MessageIcon.Question,
+                                                                      MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
@@ -1414,8 +1441,8 @@ namespace B5_71_PRO_Abstract
                 return Task.FromResult(operation.IsGood());
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
-                ? operation
-                : (BasicOperationVerefication<decimal>)operation.Clone());
+                            ? operation
+                            : (BasicOperationVerefication<decimal>) operation.Clone());
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -1423,11 +1450,9 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceCurrentUnstability;
         }
 
-        #endregion Methods
+        #endregion
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-       
     }
 
     /// <summary>
@@ -1443,7 +1468,7 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion Property
+        #endregion
 
         protected Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1457,19 +1482,22 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table9" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcIPulsation"};
 
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");
             dataTable.Columns.Add("Результат");
 
-            var dataRow = dataTable.NewRow();
-            var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-            dataRow[0] = dds.Getting + " мА";
-            dataRow[1] = dds.Error + " мА";
-            dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+            if (DataRow.Count == 1)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+                dataRow[0] = dds.Getting + " мА";
+                dataRow[1] = dds.Error + " мА";
+                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
 
-            dataTable.Rows.Add(dataRow);
+                dataTable.Rows.Add(dataRow);
+            }
 
             return dataTable;
         }
@@ -1491,34 +1519,36 @@ namespace B5_71_PRO_Abstract
 
                         Load.FindThisModule();
 
-                            //если модуль нагрузки найти не удалось
-                            if (Load.ChanelNumber <= 0)
+                        //если модуль нагрузки найти не удалось
+                        if (Load.ChanelNumber <= 0)
                             throw new
                                 ArgumentException(
-                                    $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
+                                                  $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                         Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                        var point = (decimal)0.9 * Bp.VoltMax / Bp.CurrMax;
+                        var point = (decimal) 0.9 * Bp.VoltMax / Bp.CurrMax;
                         Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
                         Load.SetOutputState(MainN3300.State.On);
 
-                            //инициализация блока питания
-                            Bp.InitDevice();
+                        //инициализация блока питания
+                        Bp.InitDevice();
                         Bp.SetStateCurr(Bp.CurrMax);
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.OnOutput();
                     });
 
                     while (Mult.IsTerminal)
-                        this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                                           " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
-                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                            MessageResult.OK);
+                        UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                                                                      " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                                                                      "Указание оператору", MessageButton.OK,
+                                                                      MessageIcon.Information,
+                                                                      MessageResult.OK);
 
-                    this.UserItemOperation.ServicePack.MessageBox.Show(
-                        "Установите на В3-57 подходящий предел измерения напряжения",
-                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                        MessageResult.OK);
+                    UserItemOperation.ServicePack.MessageBox.Show(
+                                                                  "Установите на В3-57 подходящий предел измерения напряжения",
+                                                                  "Указание оператору", MessageButton.OK,
+                                                                  MessageIcon.Information,
+                                                                  MessageResult.OK);
                 }
                 catch (Exception e)
                 {
@@ -1533,8 +1563,8 @@ namespace B5_71_PRO_Abstract
                     //нужно дать время В3-57
                     Thread.Sleep(5000);
                     Mult.Dc.Voltage.Range.Set(100);
-                    var currPuls34401 = (decimal)Mult.GetMeasValue();
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, 3);
+                    var currPuls34401 = (decimal) Mult.GetMeasValue();
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99, 0, 3);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
@@ -1560,9 +1590,13 @@ namespace B5_71_PRO_Abstract
             {
                 if (!operation.IsGood())
                 {
-                    var answer = this.UserItemOperation.ServicePack.MessageBox.Show(operation + $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                                    "Повторить измерение этой точки?",
-                                                                                    "Информация по текущему измерению", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
+                    var answer =
+                        UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                      "Повторить измерение этой точки?",
+                                                                      "Информация по текущему измерению",
+                                                                      MessageButton.YesNo, MessageIcon.Question,
+                                                                      MessageResult.Yes);
 
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
@@ -1577,11 +1611,9 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceCurrentPuls;
         }
 
-        #endregion Methods
+        #endregion
 
         public List<IBasicOperation<decimal>> DataRow { get; set; }
-
-     
     }
 
     internal static class ShemeTemplate
