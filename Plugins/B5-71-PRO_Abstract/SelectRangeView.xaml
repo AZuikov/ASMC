@@ -6,16 +6,18 @@
              xmlns:local="clr-namespace:B5_71_PRO_Abstract"
              xmlns:custom="clr-namespace:ASMC.Devices.UInterface.Custom;assembly=ASMC.Devices.UInterface"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             Height="130" Width="300">
+
     <StackPanel>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="{Binding Description}"/>
-            <custom:SelectRangeAnalog Grid.Row="1"/>
+            <TextBlock Grid.Row ="0"  Text="{Binding Description}" Width="290"/>
+            <custom:SelectRangeAnalog Grid.Row="1" MinWidth="80" MaxWidth="400" Width="250" Height="25" />
+            <Button Grid.Row="2" x:Name="OK" MinWidth="80" MaxWidth="150" Height="25"  Content="OK" />
         </Grid>
-     
     </StackPanel>
 </UserControl>

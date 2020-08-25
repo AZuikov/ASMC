@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using ASMC.Core;
 using ASMC.Core.Model;
 using DevExpress.Mvvm.UI;
@@ -867,11 +868,17 @@ namespace B5_71_PRO_Abstract
                     var windows = (WindowService)this.UserItemOperation.ServicePack.FreeWindow;
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                    windows.Title = "Выбор предела измерения В3-57";
+                    windows.MaxHeight = 200;
+                    windows.MaxWidth = 350;
+                   // windows.SizeToContent = SizeToContent.Width;
                     windows.Show("SelectRangeView", vm);
-                   var a= vm.SelectRange;
+                    
+                    var a = vm.SelectRange;
+
                     await Task.Run(() =>
                              {
-                          Mult.StringConnection = GetStringConnect(Mult);
+                                 Mult.StringConnection = GetStringConnect(Mult);
                           Load.StringConnection = GetStringConnect(Load);
                           Bp.StringConnection = GetStringConnect(Bp);
 
@@ -905,23 +912,16 @@ namespace B5_71_PRO_Abstract
                     this.UserItemOperation.ServicePack.MessageBox.Show("Установите на В3-57 подходящий предел измерения напряжения",
                         "Указание оператору", MessageButton.OK, MessageIcon.Information,
                         MessageResult.OK);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                }
-            };
 
-            operation.BodyWork = () =>
-            {
-                try
-                {
+
                     Thread.Sleep(5000);
+
+                    
 
                     Mult.Dc.Voltage.Range.Set(100);
                     var voltPulsV357 = (decimal)Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, 3);
+                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, a.NominalVal);
                     MathStatistics.Round(ref voltPulsV357, Bp.TolleranceVoltPuls.ToString());
 
                     Bp.OffOutput();
@@ -934,11 +934,18 @@ namespace B5_71_PRO_Abstract
                     operation.IsGood = () =>
                         (operation.Expected >= operation.LowerTolerance) &
                         (operation.Expected < operation.UpperTolerance);
+
+
                 }
                 catch (Exception e)
                 {
                     Logger.Error(e);
                 }
+            };
+
+            operation.BodyWork = () =>
+            {
+               
             };
             operation.CompliteWork = () =>
             {

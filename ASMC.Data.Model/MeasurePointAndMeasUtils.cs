@@ -21,6 +21,17 @@ namespace ASMC.Data.Model
         //номинал величины
         public decimal NominalVal { get; set; }
 
+        /// <summary>
+        /// Строковое описание измерительной точки вида: "номинальное значение" "единицы измерения".
+        /// </summary>
+        public string Description
+        {
+            get
+            {
+                return ToString();
+            }
+        }
+
         #endregion
 
         public MeasPoint()
