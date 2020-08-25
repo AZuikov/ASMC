@@ -1629,10 +1629,11 @@ namespace APPA_107N_109N
 
     #region FAR
 
-    public abstract class Oper9FarMeasure : ParagraphBase, IUserItemOperationBase
+    public abstract class Oper9FarMeasureBase : ParagraphBase, IUserItemOperationBase
     {
-        public Oper9FarMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oper9FarMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+
         }
 
         #region Methods

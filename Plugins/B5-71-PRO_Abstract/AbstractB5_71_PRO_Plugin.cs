@@ -126,7 +126,7 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override DataTable FillData()
         {
-            var data = new DataTable();
+            var data = new DataTable { TableName = "ITBmVisualTest" }; ;
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
             var dds = DataRow[0] as BasicOperation<bool>;
@@ -170,7 +170,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var data = new DataTable();
+            var data = new DataTable {TableName = "ITBmOprobovanie" };
             data.Columns.Add("Результат опробования");
             var dataRow = data.NewRow();
             var dds = DataRow[0] as BasicOperationVerefication<bool>;
@@ -359,7 +359,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table2" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcvOutput" };
             dataTable.Columns.Add("Установленное значение напряжения, В");
             dataTable.Columns.Add("Измеренное значение, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
@@ -520,7 +520,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table3" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcvMeasure" };
             dataTable.Columns.Add("Измеренное эталонным мультиметром значение, В");
             dataTable.Columns.Add("Измеренное источником питания значение, В");
             dataTable.Columns.Add("Минимальное допустимое значение, В");
@@ -682,7 +682,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table4" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcvUnstable" };
             dataTable.Columns.Add("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В");
             dataTable.Columns.Add("Допустимое значение, В");
             dataTable.Columns.Add("Результат");
@@ -840,7 +840,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table5" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcvPulsation" };
             dataTable.Columns.Add("Измеренное значение пульсаций, мВ");
             dataTable.Columns.Add("Допустимое значение пульсаций, мВ");
             dataTable.Columns.Add("Результат");
@@ -1010,7 +1010,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table6" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcIOutput" };
             dataTable.Columns.Add("Установленное значение тока, А");
             dataTable.Columns.Add("Измеренное значение, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
@@ -1170,7 +1170,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table7" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcvMeasure" };
             dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
             dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
@@ -1323,7 +1323,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table8" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcIUnstable" };
             dataTable.Columns.Add("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А");
             dataTable.Columns.Add("Допустимое значение, А");
             dataTable.Columns.Add("Результат");
@@ -1464,7 +1464,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "table9" };
+            var dataTable = new DataTable { TableName = "FillTabBmDcIPulsation" };
 
             dataTable.Columns.Add("Измеренное значение пульсаций, мА");
             dataTable.Columns.Add("Допустимое значение пульсаций, мА");
