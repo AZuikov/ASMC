@@ -69,7 +69,7 @@
             <GridViewColumn Header="Статус" Width="50" >
               <GridViewColumn.CellTemplate >
                 <DataTemplate>
-                  <TextBlock  Margin="5,10,5,10" Text="Подключен" />
+                                    <TextBlock  Margin="5,10,5,10" Text="{Binding IsConnect}" />
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>

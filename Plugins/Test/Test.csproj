@@ -46,10 +46,19 @@
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
+      <Name>ASMC.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
+mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
