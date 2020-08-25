@@ -180,7 +180,8 @@
               </GroupBox>
             </StackPanel>
           </TabItem>
-          <TabItem Header="Вид МО" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ChoiceTypeMc}">
+          <TabItem Header="Вид МО" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ChoiceTypeMc}"
+                   IsEnabled="{DXBinding 'SelectProgram != null'}">
             <StackPanel>
               <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsCheckWork}" />
               <GroupBox Header="Выберете вид МО:" Padding="10,0,10,10" VerticalAlignment="Top">
@@ -208,12 +209,15 @@
             </StackPanel>
 
           </TabItem>
-          <TabItem Header="Рабочее место" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Workplace}">
+          <TabItem Header="Рабочее место" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Workplace}"
+                   IsEnabled="{DXBinding 'SelectProgram != null'}" >
             <GroupBox Header="Перечень необходимого основного и вспомогательного оборудования:">
               <ListBox Margin="5,10,5,10" ItemsSource="{Binding AccessoriesList}"/>
             </GroupBox>
           </TabItem>
-          <TabItem Header="Настройка" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Settings}" MaxHeight="{Binding ElementName=TabControl1, Path=ActualHeight}" >
+          <TabItem Header="Настройка" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Settings}" 
+                   MaxHeight="{Binding ElementName=TabControl1, Path=ActualHeight}"
+                   IsEnabled="{DXBinding 'SelectProgram != null'}">
             <ScrollViewer >
               <StackPanel>
                 <Grid Margin="10" HorizontalAlignment="Left" IsSharedSizeScope="True">
@@ -333,12 +337,14 @@
             </ScrollViewer>
 
           </TabItem>
-          <TabItem Header="Операции" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}">
+          <TabItem Header="Операции" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}"
+                   IsEnabled="{DXBinding 'SelectProgram != null'}">
             <StackPanel>
                             <view:OperationView IsManual="{Binding IsManual}"/>
             </StackPanel>
           </TabItem>
-          <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}">
+          <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}"
+                   IsEnabled="{DXBinding 'SelectProgram != null'}">
                         <Button Content="Протокол" Command="{Binding CreatDocumetCommandCommand}"/>
           </TabItem>
         </TabControl>
