@@ -8,7 +8,9 @@
              mc:Ignorable="d" 
              Height="130" Width="300">
 
-    <StackPanel>
+    
+
+            <StackPanel  >
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
@@ -16,8 +18,32 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row ="0"  Text="{Binding Description}" Width="290"/>
-            <custom:SelectRangeAnalog Grid.Row="1" MinWidth="80" MaxWidth="400" Width="250" Height="25" />
-            <Button Grid.Row="2" x:Name="OK" MinWidth="80" MaxWidth="150" Height="25"  Content="OK" />
+            <custom:SelectRangeAnalog 
+                Grid.Row="1" 
+                MinWidth="80" 
+                MaxWidth="400" 
+                Width="250" 
+                Height="25"
+                Name="RangeComboBox">
+                <!--<EventTrigger>
+                   <BeginStoryboard>
+                       <Storyboard>
+                           <ThicknessAnimation
+                               BeginTime=""/>
+                           <Setter Property="FocusManager.FocusedElement" Value="RangeComboBox"/>
+                            </Storyboard>
+                   </BeginStoryboard>
+                    
+                </EventTrigger>-->
+            </custom:SelectRangeAnalog>
+            <Button 
+                Grid.Row="2" 
+                x:Name="OkButton" 
+                MinWidth="80" 
+                MaxWidth="150" 
+                Height="25"  
+                Content="OK"
+                Command="{Binding CloseCommand}"/>
         </Grid>
     </StackPanel>
 </UserControl>

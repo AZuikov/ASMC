@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using AP.Utils.Data;
 using ASMC.Core;
 using ASMC.Core.Model;
 using DevExpress.Mvvm.UI;
@@ -871,7 +872,6 @@ namespace B5_71_PRO_Abstract
                     windows.Title = "Выбор предела измерения В3-57";
                     windows.MaxHeight = 200;
                     windows.MaxWidth = 350;
-                   // windows.SizeToContent = SizeToContent.Width;
                     windows.Show("SelectRangeView", vm);
                     
                     var a = vm.SelectRange;
@@ -921,7 +921,7 @@ namespace B5_71_PRO_Abstract
                     Mult.Dc.Voltage.Range.Set(100);
                     var voltPulsV357 = (decimal)Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, a.NominalVal);
+                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99, 0, a.NominalVal * (decimal)a.MultipliersUnit.GetDoubleValue());
                     MathStatistics.Round(ref voltPulsV357, Bp.TolleranceVoltPuls.ToString());
 
                     Bp.OffOutput();

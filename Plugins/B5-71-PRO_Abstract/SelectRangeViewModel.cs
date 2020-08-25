@@ -18,28 +18,39 @@ namespace B5_71_PRO_Abstract
         private List<MeasPoint> _ranges;
         private MeasPoint _SelectRange;
 
+        /// <summary>
+        /// Текст комментария для пользователя.
+        /// </summary>
         public string Description
         {
             get => _description;
             set => SetProperty(ref _description, value, nameof(Description));
         }
 
+        /// <summary>
+        /// Списко пределов, в выпадающем списке.
+        /// </summary>
         public List<MeasPoint> Ranges
         {
             get => _ranges;
             set => SetProperty(ref _ranges, value, nameof(Ranges));
         }
 
+        /// <summary>
+        /// Выбранный пользователем предел.
+        /// </summary>
         public MeasPoint SelectRange
         {
             get => _SelectRange;
             set => SetProperty(ref _SelectRange, value, nameof(SelectRange));
         }
+
         public SelectRangeViewModel()
         {
             var b357 = new B3_57();
            _ranges = new List<MeasPoint>(b357.Ranges);
-           
+           SelectRange = Ranges.FirstOrDefault();
+
         }
     }
 
