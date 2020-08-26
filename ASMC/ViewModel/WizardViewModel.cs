@@ -15,7 +15,6 @@ using ASMC.Common;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
 using NLog;
 
@@ -214,7 +213,6 @@ namespace ASMC.ViewModel
 
         // ReSharper disable once UnusedMember.Global
         public bool[] ModeWork { get; set; } = {true, false};
-
         public bool IsManual
         {
             get => _isManual;
@@ -393,8 +391,6 @@ namespace ASMC.ViewModel
                 }
                 return  dataStr.ToString().TrimEnd('\n');
             }
-
-      
         }
 
         private void OnIsSpeedWorkCallback()

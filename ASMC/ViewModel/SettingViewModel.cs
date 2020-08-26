@@ -67,7 +67,8 @@ namespace ASMC.ViewModel
                     Name = device.Name,
                     AddresDivece = AddresDivece,
                     StringConnect = device.StringConnect,
-                    IsCanStringConnect = device.IsCanStringConnect
+                    IsCanStringConnect = device.IsCanStringConnect,
+                    IsConnect = device.IsConnect
                 });
         }
 
@@ -80,7 +81,8 @@ namespace ASMC.ViewModel
                     Name = device.Name,
                     AddresDivece = AddresDivece,
                     StringConnect = device.StringConnect,
-                    IsCanStringConnect = device.IsCanStringConnect
+                    IsCanStringConnect = device.IsCanStringConnect,
+                    IsConnect = device.IsConnect
                 });
         }
 
