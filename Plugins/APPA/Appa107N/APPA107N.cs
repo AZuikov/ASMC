@@ -78,6 +78,13 @@ namespace Appa107N
             DciMode.Nodes.Add(new Oper5_2_1Dci_10A_Measure(Mult107_109N.RangeNominal.Range10A, this));
             DciMode.Nodes.Add(new Oper5_2_2Dci_10A_Measure(Mult107_109N.RangeNominal.Range10A, this));
 
+            var AciMode = new Oper6AciMeasureBase(this);
+            AciMode.Nodes.Add(new Oper6_1Aci_20mA_Measure(Mult107_109N.RangeNominal.Range20mA, this));
+            AciMode.Nodes.Add(new Oper6_1Aci_200mA_Measure(Mult107_109N.RangeNominal.Range200mA, this));
+            AciMode.Nodes.Add(new Oper6_1Aci_2A_Measure(Mult107_109N.RangeNominal.Range2A, this));
+            AciMode.Nodes.Add(new Oper6_2_1Aci_10A_Measure(Mult107_109N.RangeNominal.Range10A,this));
+            AciMode.Nodes.Add(new Oper6_2_2Aci_10A_Measure(Mult107_109N.RangeNominal.Range10A,this));
+
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new Oper1VisualTest(this),
@@ -86,7 +93,8 @@ namespace Appa107N
                 AcvMode, 
                 OhmMode,
                 FarMode,
-                DciMode
+                DciMode,
+                AciMode
                 
             };
         }
@@ -505,4 +513,65 @@ namespace Appa107N
     }
 
     #endregion DCI
+
+    #region ACI
+
+    public class Oper6_1Aci_20mA_Measure : APPA_107N_109N.Oper6_1Aci_20mA_Measure
+    {
+        public Oper6_1Aci_20mA_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACmA;
+        }
+    }
+
+    public class Oper6_1Aci_200mA_Measure : APPA_107N_109N.Oper6_1Aci_200mA_Measure
+    
+    {
+        public Oper6_1Aci_200mA_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACmA;
+        }
+    }
+
+    public class Oper6_1Aci_2A_Measure : APPA_107N_109N.Oper6_1Aci_2A_Measure
+    {
+        public Oper6_1Aci_2A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACI;
+        }
+    }
+
+    public class Oper6_2_1Aci_10A_Measure : APPA_107N_109N.Oper6_2_1Aci_10A_Measure
+    {
+        public Oper6_2_1Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACI;
+        }
+    }
+
+    public class Oper6_2_2Aci_10A_Measure : APPA_107N_109N.Oper6_2_2Aci_10A_Measure
+    {
+        public Oper6_2_2Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.ACI;
+        }
+    }
+
+
+    #endregion
 }
