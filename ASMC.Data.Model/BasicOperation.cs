@@ -24,7 +24,7 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (_initWork == null) return () =>  default(Task);
+                if (_initWork == null) return () =>  Task.CompletedTask;
                 return _initWork;
             }
             set => _initWork = value;

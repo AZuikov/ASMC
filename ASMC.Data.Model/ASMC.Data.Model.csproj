@@ -60,7 +60,6 @@
     <Compile Include="Interface\IBasicOperation.cs" />
     <Compile Include="MeasurePointAndMeasUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TreeNode.cs" />
     <Compile Include="UserItemOperation.cs" />
   </ItemGroup>
   <ItemGroup>

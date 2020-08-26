@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Common.Model;
 using ASMC.Data.Model;
 using NLog;
 

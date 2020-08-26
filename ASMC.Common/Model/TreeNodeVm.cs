@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ASMC.Common.ViewModel;
 
-namespace ASMC.Data.Model
+namespace ASMC.Common.Model
 {
     /// <summary>
     /// Сущность предоставляющая реализацию дерева
     /// </summary>
-    public class TreeNode
+    public class TreeNode:BaseViewModel
     {
         /// <summary>
         /// Позволяет получать и задавать имя узла.

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Common.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 
@@ -15,6 +16,9 @@ namespace ASMC.Core.Model
     /// </summary>
     public abstract class ParagraphBase : TreeNode, IUserItemOperationBase
     {
+        private bool _isWork;
+        private bool? _isGood;
+
         #region Property
 
         /// <summary>
@@ -77,8 +81,7 @@ namespace ASMC.Core.Model
 
         private IEnumerable<object> GetProperty()
         {
-            var findname = typeof(IUserItemOperation<object>).GetProperties().FirstOrDefault()?.Name;
-            var reult = GetType().GetProperties().FirstOrDefault(q => q.Name.Equals(findname))?.GetValue(this);
+            var reult = GetType().GetProperties().FirstOrDefault(q => q.Name.Equals(nameof(IUserItemOperation<object>.DataRow)))?.GetValue(this);
             return ((IList) reult)?.Cast<object>();
         }
 
@@ -92,13 +95,22 @@ namespace ASMC.Core.Model
         /// <inheritdoc />
         public ShemeImage Sheme { get; set; }
 
-        
+
 
         /// <inheritdoc />
-        public bool IsWork { get; private set; }
+        public bool IsWork
+        {
+
+            get => _isWork;
+            private set=>SetProperty(ref _isWork, value, nameof(IsWork));
+        }
 
         /// <inheritdoc />
-        public bool? IsGood { get; set; }
+        public bool? IsGood
+        {
+            get => _isWork;
+            set => SetProperty(ref _isGood, value, nameof(IsGood));
+        }
 
         /// <inheritdoc />
         public async Task StartSinglWork(CancellationToken token, Guid guid)
@@ -126,16 +138,21 @@ namespace ASMC.Core.Model
         {
             InitWork();
             IsWork = true;
+            IsGood = null;
+            var checkResult = new List<Func<bool>>();
             try
             {
                 foreach (var row in GetProperty())
                 {
                     var metod = row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
                     if (metod != null) await (Task) metod.Invoke(row, new object[] {token});
+                    checkResult.Add((Func<bool>) row.GetType().GetProperty(nameof(IBasicOperation<object>.IsGood))
+                                                    .GetValue(row));
                 }
             }
             finally
             {
+               IsGood= checkResult.All(q => q != null && q.Invoke());
                 IsWork = false;
             }
         }
