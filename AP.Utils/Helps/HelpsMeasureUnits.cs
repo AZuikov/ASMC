@@ -28,6 +28,11 @@ namespace AP.Utils.Helps
     public enum Multipliers
     {
         /// <summary>
+        ///  Множетель пико 1Е-12.
+        /// </summary>
+        [StringValue("п")] [DoubleValue(1E-12)] Pico,
+
+        /// <summary>
         /// Множетель нано 1Е-9.
         /// </summary>
         [StringValue("н")] [DoubleValue(1E-9)] Nano,
