@@ -9,6 +9,10 @@ using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
+using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
+using DevExpress.Mvvm;
+using MessageButton = DevExpress.Mvvm.MessageButton;
+using MessageIcon = DevExpress.Mvvm.MessageIcon;
 
 namespace Plugins.Test
 {
@@ -42,7 +46,11 @@ namespace Plugins.Test
                 new DeviceInterface {Name = new[] {"34401A"}, Description = "Мультиметр"},
                 new DeviceInterface {Name = new[] {"В3"}, Description = "Микровольтметр", IsCanStringConnect = false}
             };
-            this.UserItemOperation = new IUserItemOperationBase[] {new Operation1(this)};
+            var a = new Operation1(this);
+            a.Nodes.Add(new Operation1(this));
+
+            a.Nodes.Add(new Operation1(this));
+            this.UserItemOperation = new IUserItemOperationBase[] {new Operation1(this), new Operation1(this) , a };
                 Accessories = new[]
             {
                 "Мультиметр цифровой Agilent/Keysight 34401A",
@@ -101,11 +109,36 @@ namespace Plugins.Test
         /// <inheritdoc />
         protected override void InitWork()
         {
-         return;
+
+            DataRow.Clear();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var operation = new BasicOperation<double>();
+                operation.InitWork = () =>
+                {
+                   var a=  this.UserItemOperation.ServicePack.MessageBox;
+                   a.Show(this.Name, "", MessageButton.OK, MessageIcon.None, MessageResult.Cancel);
+                    return Task.CompletedTask;
+                };
+                operation.BodyWork = () =>
+                {
+
+                    Thread.Sleep(1000);
+                    operation.Expected = new Random().NextDouble();
+                    operation.Getting = new Random().NextDouble();
+                    operation.IsGood = () =>false;
+                };
+
+              
+                DataRow.Add(operation);
+            }
+             
         }
 
         /// <inheritdoc />
         public List<IBasicOperation<double>> DataRow { get; set; }
     }
+
 
 }

@@ -25,7 +25,59 @@
                             <CheckBox IsChecked="{Binding Path=IsCheked}"
                                       HorizontalAlignment="Left"
                                       VerticalAlignment="Center"  Visibility="{Binding IsManual, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding Path= Name}"  />
+                            <TextBlock Text="{Binding Path= Name}" >
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path= IsWork}"  Value="false"/>
+                                                    <Condition Binding="{Binding Path= IsGood}"  Value="{x:Null}"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.Setters>
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </MultiDataTrigger.Setters>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path= IsWork}"  Value="true"/>
+                                                    <Condition Binding="{Binding Path= IsGood}"  Value="{x:Null}"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.Setters>
+                                                    <Setter Property="Foreground" Value="Blue"/>
+                                                </MultiDataTrigger.Setters>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path= IsWork}"  Value="false"/>
+                                                    <Condition Binding="{Binding Path= IsGood}"  Value="true"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.Setters>
+                                                    <Setter Property="Foreground" Value="Green"/>
+                                                </MultiDataTrigger.Setters>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path= IsWork}"  Value="false"/>
+                                                    <Condition Binding="{Binding Path= IsGood}"  Value="false"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.Setters>
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </MultiDataTrigger.Setters>
+                                            </MultiDataTrigger>
+                                          
+                                            <!--<DataTrigger Binding="{Binding Path= IsWork, Mode=OneWay}" Value="true">
+                                                <Setter Property="Foreground" Value="Blue"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path= IsWork, Mode=OneWay}" Value="false">
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </DataTrigger>-->
+                                        </Style.Triggers>
+                                    </Style>
+                                   
+                                </TextBlock.Style>
+                               
+                            </TextBlock>
                         </StackPanel>
                     </HierarchicalDataTemplate>
                     <!--<DataTemplate>
