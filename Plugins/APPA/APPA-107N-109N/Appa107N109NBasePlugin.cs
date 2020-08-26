@@ -61,7 +61,7 @@ namespace APPA_107N_109N
 
         #region Methods
 
-        public override void FindDivice()
+        public override void FindDevice()
         {
             throw new NotImplementedException();
         }
@@ -602,9 +602,7 @@ namespace APPA_107N_109N
         #region Methods
 
         /// <summary>
-        /// Метод выбирает необходимый значения коэффициентов для формулы погрешности, исходя из предела измерения и диапазона
-        /// частот.
-        /// частот.
+        /// Метод выбирает необходимый значения коэффициентов для формулы погрешности, исходя из предела измерения и диапазона частот.
         /// </summary>
         /// <returns>Результат вычисления.</returns>
         protected void ConstructTooleranceFormula(MeasPoint inFreq)
@@ -1291,7 +1289,7 @@ namespace APPA_107N_109N
         public Oper5_2_1Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation)
             : base(userItemOperation)
         {
-            OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
+            OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(1, Multipliers.Mili);
 
@@ -1317,7 +1315,7 @@ namespace APPA_107N_109N
         public Oper5_2_2Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation)
             : base(userItemOperation)
         {
-            OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
+            OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(1, Multipliers.Mili);
             Name = OperationRangeNominal.GetStringValue();
@@ -1344,10 +1342,86 @@ namespace APPA_107N_109N
 
     #region ACI
 
-    public abstract class Oper6AcIMeasure : ParagraphBase, IUserItemOperationBase
+    public class Oper6AciMeasureBase : ParagraphBase, IUserItemOperation<decimal>
     {
-        public Oper6AcIMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
+        /// <summary>
+        /// Набор частот, характерный для данного предела измерения
+        /// </summary>
+        protected MeasPoint[] HerzPoint;
+
+        /// <summary>
+        /// Множитель для поверяемых точек. (Если точки можно посчитать простым умножением).
+        /// </summary>
+        protected decimal CurrentMultipliers;
+
+        /// <summary>
+        /// Итоговый массив поверяемых точек. У каждого номинала напряжения вложены номиналы частот для текущей точки.
+        /// </summary>
+        public AcVariablePoint[] AciPoint;
+
+        #endregion
+
+        #region Property
+
+        /// <summary>
+        /// Код предела измерения на приборе
+        /// </summary>
+        public Mult107_109N.RangeCode OperationRangeCode { get; protected set; }
+
+        /// <summary>
+        /// Предел измерения поверяемого прибора, необходимый для работы
+        /// </summary>
+        public Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+
+        /// <summary>
+        /// Режим операции измерения прибора
+        /// </summary>
+        public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
+
+        /// <summary>
+        /// Множитель единицы измерения текущей операции
+        /// </summary>
+        public Multipliers OpMultipliers { get; protected set; }
+
+        //контрлируемый прибор
+        protected Mult107_109N appa107N { get; set; }
+
+        //эталон
+        protected Calib5522A flkCalib5522A { get; set; }
+
+        #endregion
+
+        #region TolleranceFormula
+
+        /// <summary>
+        /// Процент от измеряемой точки для расчета погрешности (уже переведе в абсолютные единицы).
+        /// </summary>
+        public decimal BaseTolCoeff;
+
+        /// <summary>
+        /// довесок к формуле погрешности- число единиц младшего разряда
+        /// </summary>
+        public int EdMlRaz;
+
+        /// <summary>
+        /// Разарешение пределеа измерения (последний значащий разряд)
+        /// </summary>
+        protected AcVariablePoint RangeResolution;
+
+        #endregion TolleranceFormula
+
+        public Oper6AciMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Name = "Определение погрешности измерения переменного напряжения";
+            OperMeasureMode = Mult107_109N.MeasureMode.ACV;
+            OpMultipliers = Multipliers.None;
+            OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
+            OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
+            DataRow = new List<IBasicOperation<decimal>>();
         }
 
         #region Methods
@@ -1357,7 +1431,183 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Метод выбирает необходимый значения коэффициентов для формулы погрешности, исходя из предела измерения и диапазона частот.
+        /// </summary>
+        /// <returns>Результат вычисления.</returns>
+        protected void ConstructTooleranceFormula(MeasPoint inFreq)
+        {
+            if (OperationRangeNominal == Mult107_109N.RangeNominal.Range20mA &&
+                inFreq.MultipliersUnit == Multipliers.None)
+            {
+                if (inFreq.NominalVal >= 40 && inFreq.NominalVal < 500)
+                {
+                    BaseTolCoeff = (decimal)0.008;
+                    EdMlRaz = 50;
+                }
+
+                if (inFreq.NominalVal >= 500 && inFreq.NominalVal < 1000)
+                {
+                    BaseTolCoeff = (decimal)0.012;
+                    EdMlRaz = 80;
+                }
+            }
+            else if (OperationRangeNominal == Mult107_109N.RangeNominal.Range200mA ||
+                     OperationRangeNominal == Mult107_109N.RangeNominal.Range2A ||
+                     OperationRangeNominal == Mult107_109N.RangeNominal.Range10A)
+                 {
+                     if (inFreq.NominalVal>=40 && inFreq.NominalVal < 500)
+                     {
+                         BaseTolCoeff = (decimal)0.008;
+                         EdMlRaz = 50;
+                     }
+                     else if (inFreq.NominalVal >= 500 && inFreq.NominalVal < 1000)
+                     {
+                         BaseTolCoeff = (decimal)0.012;
+                         EdMlRaz = 80;
+                     }
+                     else if (inFreq.NominalVal >= 1000 && inFreq.NominalVal <= 3000)
+                     {
+                         BaseTolCoeff = (decimal)0.02;
+                         EdMlRaz = 80;
+                     }
+                 }
+            
+
+        }
+
+        protected override void InitWork()
+        {
+            if (flkCalib5522A == null || appa107N == null) return;
+            DataRow.Clear();
+
+            foreach (var dciCurr in AciPoint)
+            {
+                foreach (var freqPoint in dciCurr.Herz)
+                {
+                    var operation = new BasicOperationVerefication<decimal>();
+                    operation.InitWork = async () =>
+                    {
+                        try
+                        {
+                            appa107N.StringConnection = GetStringConnect(appa107N);
+                            flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
+
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+
+                            var testMeasureModde = appa107N.GetMeasureMode;
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
+                                                       MessageResult.OK);
+
+                            var testRangeNominal = appa107N.GetRangeNominal;
+                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                            {
+                                var countPushRangeButton =
+                                    appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto ? 1 : 0;
+
+                                if (OpMultipliers == Multipliers.Mili)
+                                {
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton + 1} раз.",
+                                                           "Указание оператору", MessageButton.OK,
+                                                           MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
+                                else
+                                {
+                                    var curRange = (int) appa107N.GetRangeCode & 128;
+                                    var targetRange = (int) OperationRangeCode & 128;
+                                    countPushRangeButton = countPushRangeButton + 4 - curRange +
+                                                           (targetRange < curRange ? curRange : 0);
+
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                           "Указание оператору", MessageButton.OK,
+                                                           MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                        }
+                    };
+
+                    operation.BodyWork = () =>
+                    {
+                        flkCalib5522A.Out.Set.Current.Ac.SetValue(dciCurr.VariableBaseValueMeasPoint.NominalVal,
+                                                                  freqPoint.NominalVal,
+                                                                  dciCurr.VariableBaseValueMeasPoint.MultipliersUnit,
+                                                                  freqPoint.MultipliersUnit);
+                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                        Thread.Sleep(2000);
+                        //измеряем
+                        var measurePoint = (decimal) appa107N.GetValue();
+                        operation.Getting = measurePoint;
+
+                        operation.Expected = dciCurr.VariableBaseValueMeasPoint.NominalVal /
+                                             (decimal) dciCurr
+                                                      .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue();
+
+                        //расчет погрешности для конкретной точки предела измерения
+                        ConstructTooleranceFormula(freqPoint); // функция подбирает коэффициенты для формулы погрешности
+                        operation.ErrorCalculation = (inA, inB) =>
+                        {
+                            var result = BaseTolCoeff * operation.Expected + EdMlRaz *
+                                RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                                (decimal) (RangeResolution
+                                          .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
+                                           dciCurr.VariableBaseValueMeasPoint.MultipliersUnit
+                                                  .GetDoubleValue());
+                            var mantisa =
+                                MathStatistics.GetMantissa((decimal) (RangeResolution
+                                                                     .VariableBaseValueMeasPoint.MultipliersUnit
+                                                                     .GetDoubleValue() /
+                                                                      dciCurr.VariableBaseValueMeasPoint.MultipliersUnit
+                                                                             .GetDoubleValue()));
+                            MathStatistics.Round(ref result, mantisa);
+                            return result;
+                        };
+
+                       
+                    };
+
+                    operation.CompliteWork = () =>
+                    {
+                        if (!operation.IsGood())
+                        {
+                            var answer =
+                                UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                              $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                              "Повторить измерение этой точки?",
+                                                                              "Информация по текущему измерению",
+                                                                              MessageButton.YesNo,
+                                                                              MessageIcon.Question,
+                                                                              MessageResult.Yes);
+
+                            if (answer == MessageResult.No) return Task.FromResult(true);
+                        }
+
+                        return Task.FromResult(operation.IsGood());
+                    };
+                    DataRow.Add(DataRow.IndexOf(operation) == -1
+                                    ? operation
+                                    : (BasicOperationVerefication<decimal>)operation.Clone());
+                }
+
+            }
+        }
+
         #endregion
+
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
 
     #endregion ACI

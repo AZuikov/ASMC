@@ -71,7 +71,7 @@ namespace B5_71_PRO_Abstract
         #region Methods
 
         /// <inheritdoc />
-        public override void FindDivice()
+        public override void FindDevice()
         {
             throw new NotImplementedException();
         }
@@ -879,15 +879,7 @@ namespace B5_71_PRO_Abstract
             {
                 try
                 {
-                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow;
-                    var vm = new SelectRangeViewModel();
-                    windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                    windows.Title = "Выбор предела измерения В3-57";
-                    windows.MaxHeight = 200;
-                    windows.MaxWidth = 350;
-                    windows.Show("SelectRangeView", vm);
-
-                    var a = vm.SelectRange;
+                    
 
                     await Task.Run(() =>
                     {
@@ -923,18 +915,27 @@ namespace B5_71_PRO_Abstract
                                                                       MessageIcon.Information,
                                                                       MessageResult.OK);
 
+                    Thread.Sleep(5000);
                     UserItemOperation.ServicePack.MessageBox
                                      .Show("Установите на В3-57 подходящий предел измерения напряжения",
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
 
-                    Thread.Sleep(5000);
+                    var windows = (WindowService)UserItemOperation.ServicePack.FreeWindow;
+                    var vm = new SelectRangeViewModel();
+                    windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                    windows.Title = "Выбор предела измерения В3-57";
+                    windows.MaxHeight = 200;
+                    windows.MaxWidth = 350;
+                    windows.Show("SelectRangeView", vm);
+
+                    var a = vm.SelectRange;
 
                     Mult.Dc.Voltage.Range.Set(100);
                     var voltPulsV357 = (decimal) Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
                     voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal) 0.99, 0,
-                                                          a.NominalVal * (decimal) a.MultipliersUnit.GetDoubleValue());
+                                                          a.NominalVal);
                     MathStatistics.Round(ref voltPulsV357, Bp.TolleranceVoltPuls.ToString());
 
                     Bp.OffOutput();
@@ -1544,27 +1545,28 @@ namespace B5_71_PRO_Abstract
                                                                       MessageIcon.Information,
                                                                       MessageResult.OK);
 
+                    //нужно дать время В3-57
+                    Thread.Sleep(5000);
+
                     UserItemOperation.ServicePack.MessageBox.Show(
                                                                   "Установите на В3-57 подходящий предел измерения напряжения",
                                                                   "Указание оператору", MessageButton.OK,
                                                                   MessageIcon.Information,
                                                                   MessageResult.OK);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                }
-            };
 
-            operation.BodyWork = () =>
-            {
-                try
-                {
-                    //нужно дать время В3-57
-                    Thread.Sleep(5000);
+                    var windows = (WindowService)UserItemOperation.ServicePack.FreeWindow;
+                    var vm = new SelectRangeViewModel();
+                    windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                    windows.Title = "Выбор предела измерения В3-57";
+                    windows.MaxHeight = 200;
+                    windows.MaxWidth = 350;
+                    windows.Show("SelectRangeView", vm);
+
+                    var a = vm.SelectRange;
+                    
                     Mult.Dc.Voltage.Range.Set(100);
-                    var currPuls34401 = (decimal) Mult.GetMeasValue();
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99, 0, 3);
+                    var currPuls34401 = (decimal)Mult.GetMeasValue();
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, a.NominalVal);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
@@ -1580,12 +1582,14 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
+
                 }
                 catch (Exception e)
                 {
                     Logger.Error(e);
                 }
             };
+            
             operation.CompliteWork = () =>
             {
                 if (!operation.IsGood())

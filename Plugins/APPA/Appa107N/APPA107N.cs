@@ -82,22 +82,18 @@ namespace Appa107N
             {
                 new Oper1VisualTest(this),
                 //new Oper2Oprobovanie(this),
-
-                DcvMode
-                //AcvMode
-                //new Oper4AcvMeasure(this),
-                //new Oper5DcIMeasure(this),
-                //new Oper6AcIMeasure(this),
-                //new Oper7FreqMeasure(this),
-                //new Oper8OhmMeasure(this),
-                //new Oper9FarMeasure(this),
-                //new Oper10TemperatureMeasure(this),
+                DcvMode,
+                AcvMode, 
+                OhmMode,
+                FarMode,
+                DciMode
+                
             };
         }
 
         #region Methods
 
-        public override void FindDivice()
+        public override void FindDevice()
         {
             throw new NotImplementedException();
         }

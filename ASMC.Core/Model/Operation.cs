@@ -34,7 +34,7 @@ namespace ASMC.Core.Model
         public abstract void RefreshDevice();
 
         /// <inheritdoc />
-        public abstract void FindDivice();
+        public abstract void FindDevice();
 
         public ServicePack ServicePack { get; set; }
     }
