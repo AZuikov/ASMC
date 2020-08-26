@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ASMC.Common.Model;
 using ASMC.Data.Model;
 using NLog;
 
@@ -132,7 +131,8 @@ namespace ASMC.Core.Model
 
             Logger.Debug(operationsArr.ToString);
 
-            var tree = (TreeNode) operationsArr;
+            
+            var tree = (ITreeNode) operationsArr;
 
             if (tree.Nodes.Count != 0)
                 for (var i = 0; i < tree.Nodes.Count; i++)

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ASMC.Common.ViewModel;
 
-namespace ASMC.Common.Model
+namespace ASMC.Data.Model
 {
     /// <summary>
     /// Сущность предоставляющая реализацию дерева
     /// </summary>
-    public class TreeNode:BaseViewModel
+    public class TreeNode: ITreeNode
     {
         /// <summary>
         /// Позволяет получать и задавать имя узла.
@@ -23,7 +22,7 @@ namespace ASMC.Common.Model
         {
             get
             {
-                return Nodes.First();
+                return (TreeNode) Nodes.First();
             }
         }
         /// <summary>
@@ -33,7 +32,7 @@ namespace ASMC.Common.Model
         {
             get
             {
-                return Nodes.Last();
+                return (TreeNode) Nodes.Last();
             }
         }
         /// <summary>
@@ -51,12 +50,12 @@ namespace ASMC.Common.Model
             get;
         }
 
-        protected TreeNode()
+        public TreeNode()
         {
             Nodes = new CollectionNode(this);
         }
     }
-    public class CollectionNode : List<TreeNode>
+    public class CollectionNode : List<ITreeNode>
     {
         public TreeNode Parent
         {
@@ -65,6 +64,43 @@ namespace ASMC.Common.Model
         public CollectionNode(TreeNode parent)
         {
             Parent = parent;
+        }
+    }
+
+
+    public interface ITreeNode
+    {
+        /// <summary>
+        /// Позволяет получать и задавать имя узла.
+        /// </summary>
+         string Name
+        {
+            get; set;
+        }
+        /// <summary>
+        /// Позволяет получить первый узел.
+        /// </summary>
+         TreeNode FirstNode
+        {
+            get;
+        }
+        /// <summary>
+        /// Позволяет получить последний узел
+        /// </summary>
+         TreeNode LastNode
+        {
+            get;
+        }
+        /// <summary>
+        /// Позволяет получить родительский узел.
+        /// </summary>
+         TreeNode Parent
+        {
+            get;
+        }
+         CollectionNode Nodes
+        {
+            get;
         }
     }
 }

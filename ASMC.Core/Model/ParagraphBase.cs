@@ -5,17 +5,18 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ASMC.Common.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using DevExpress.Mvvm;
 
 namespace ASMC.Core.Model
 {
     /// <summary>
     /// Предоставляет базовый клас для пункта операции.
     /// </summary>
-    public abstract class ParagraphBase : TreeNode, IUserItemOperationBase
+    public abstract class ParagraphBase : ViewModelBase, IUserItemOperationBase, ITreeNode
     {
+        private readonly TreeNode TreeNode;
         private bool _isWork;
         private bool? _isGood;
 
@@ -36,6 +37,7 @@ namespace ASMC.Core.Model
         protected ParagraphBase(IUserItemOperation userItemOperation)
         {
             UserItemOperation = userItemOperation;
+            TreeNode = new TreeNode();
         }
 
         #region Methods
@@ -104,6 +106,30 @@ namespace ASMC.Core.Model
             get => _isWork;
             private set=>SetProperty(ref _isWork, value, nameof(IsWork));
         }
+
+        /// <inheritdoc />
+        public string Name
+        { get=> TreeNode.Name;
+            set => TreeNode.Name = value;
+        }
+
+        /// <inheritdoc />
+        public TreeNode FirstNode
+        {
+            get => TreeNode.FirstNode;
+        }
+
+        /// <inheritdoc />
+        public TreeNode LastNode
+        {
+            get => TreeNode.LastNode;
+        }
+
+        /// <inheritdoc />
+        public TreeNode Parent { get => TreeNode.Parent; }
+
+        /// <inheritdoc />
+        public CollectionNode Nodes { get => TreeNode.Nodes; }
 
         /// <inheritdoc />
         public bool? IsGood
