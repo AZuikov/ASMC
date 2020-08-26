@@ -90,7 +90,6 @@
     <Compile Include="ISupportSettings.cs" />
     <Compile Include="ITaskMessageService.cs" />
     <Compile Include="Keys.cs" />
-    <Compile Include="Model\TreeNodeVm.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\IWindowSettings.cs" />
