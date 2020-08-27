@@ -1,11 +1,15 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
 using ASMC.Common.ViewModel;
+using NLog;
 
 namespace ASMC.ViewModel
 {
     public class DeviceViewModel : BaseViewModel
     {
-        #region  Fields
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
 
         private string[] _addresDivece;
         private string _description;
@@ -63,5 +67,26 @@ namespace ASMC.ViewModel
         }
 
         #endregion
+
+        public DeviceViewModel()
+        {
+            PropertyChanged += DeviceViewModel_PropertyChanged;
+        }
+
+        #region Methods
+
+        private void DeviceViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals(nameof(StringConnect)))
+                Logger.Info($@"Для устройства {SelectedName} указано подключение: {StringConnect}");
+            else if (e.PropertyName.Equals(nameof(SelectedName))) Logger.Info($@"Выбранно устройство: {SelectedName}");
+        }
+
+        #endregion
+
+        ~DeviceViewModel()
+        {
+            PropertyChanged -= DeviceViewModel_PropertyChanged;
+        }
     }
 }
