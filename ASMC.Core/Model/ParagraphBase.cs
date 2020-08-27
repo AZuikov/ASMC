@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.Native;
 using NLog;
 
 namespace ASMC.Core.Model
@@ -177,6 +178,7 @@ namespace ASMC.Core.Model
         /// <inheritdoc />
         public async Task StartWork(CancellationToken token)
         {
+            Logger.Info($@"Выполняется пункт {Name}");
             InitWork();
             IsWork = true;
             IsGood = null;
@@ -187,6 +189,8 @@ namespace ASMC.Core.Model
                 Count = array.Length;
                 foreach (var row in array)
                 {
+                   
+                    Logger.Debug($@"Выполняется строка №{Array.IndexOf(array, row)}");
                     var metod = row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
                     if (metod != null) await (Task) metod.Invoke(row, new object[] {token});
                     checkResult.Add((Func<bool>) row.GetType().GetProperty(nameof(IBasicOperation<object>.IsGood))
@@ -197,7 +201,7 @@ namespace ASMC.Core.Model
             {
                IsGood= checkResult.All(q => q != null && q.Invoke());
                 IsWork = false;
-                Logger.Debug(IsGood.ToString());
+                Logger.Info($@"Пункт выполнелся с результатом {IsGood}");
             }
         }
 

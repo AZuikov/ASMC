@@ -83,7 +83,6 @@ namespace ASMC.Core.Model
                     res = IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
                 else if (SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment))
                     res = SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment) ? UserItemOperationAdjustment : null;
-                Logger.Info($@"Выбранная операция {res}");
                 return res;
             }
         }
@@ -93,6 +92,9 @@ namespace ASMC.Core.Model
         /// </summary>
         public TypeOpeation SelectedTypeOpeation { get; set; }
 
+        /// <summary>
+        /// Позволяет получить или задать последунюю отображенную схему.
+        /// </summary>
         protected ShemeImage LastShem { get; set; }
 
         #endregion
@@ -121,16 +123,14 @@ namespace ASMC.Core.Model
                 catch (Exception e)
                 {
                     source.Cancel();
-                    source.Token.ThrowIfCancellationRequested();
                     Logger.Error(e);
+                    throw;
                 }
 
-                Logger.Debug(userItemOperationBase.ToString);
-                var tree = (ITreeNode)userItemOperationBase;
-                foreach (var node in tree.Nodes) await ClrNode((IUserItemOperationBase)node);
+                var tree = (ITreeNode) userItemOperationBase;
+                foreach (var node in tree.Nodes) await ClrNode((IUserItemOperationBase) node);
             }
         }
-
 
         private async void ShowShem(ShemeImage sheme)
         {
@@ -147,6 +147,7 @@ namespace ASMC.Core.Model
             do
             {
                 ser.Show();
+                Logger.Debug($@"Была показана схема №{sheme.Number}");
             } while (!await sheme.ChekShem());
         }
 
