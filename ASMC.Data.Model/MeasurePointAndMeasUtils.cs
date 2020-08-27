@@ -80,8 +80,8 @@ namespace ASMC.Data.Model
         /// </summary>
         /// <param name = "inNominal">Предел измерения прибора.</param>
         /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
-        public AcVariablePoint(decimal inNominal, Multipliers inMultipliersUnit) : this(inNominal, inMultipliersUnit,
-                                                                                        null)
+        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit) : this(inNominal, inMeasureUnits, inMultipliersUnit,
+                                                                                                                     null)
         {
         }
 

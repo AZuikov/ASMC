@@ -85,18 +85,35 @@ namespace Appa107N
             AciMode.Nodes.Add(new Oper6_2_1Aci_10A_Measure(Mult107_109N.RangeNominal.Range10A,this));
             AciMode.Nodes.Add(new Oper6_2_2Aci_10A_Measure(Mult107_109N.RangeNominal.Range10A,this));
 
-            UserItemOperation = new IUserItemOperationBase[]
-            {
-                new Oper1VisualTest(this),
-                //new Oper2Oprobovanie(this),
-                DcvMode,
-                AcvMode, 
-                OhmMode,
-                FarMode,
-                DciMode,
-                AciMode
-                
-            };
+            var FreqMode = new Oper7FreqMeasureBase(this);
+            FreqMode.Nodes.Add(new Oper71Freq20HzMeasureBase(Mult107_109N.RangeNominal.Range20Hz,this));
+            FreqMode.Nodes.Add(new Oper71Freq200HzMeasureBase(Mult107_109N.RangeNominal.Range200Hz,this));
+            FreqMode.Nodes.Add(new Oper71Freq2kHzMeasureBase(Mult107_109N.RangeNominal.Range2kHz,this));
+            FreqMode.Nodes.Add(new Oper71Freq20kHzMeasureBase(Mult107_109N.RangeNominal.Range20kHz,this));
+            FreqMode.Nodes.Add(new Oper71Freq200kHzMeasureBase(Mult107_109N.RangeNominal.Range200kHz,this));
+            FreqMode.Nodes.Add(new Oper71Freq1MHzMeasureBase(Mult107_109N.RangeNominal.Range1MHz,this));
+
+            var TempMode = new Oper10TemperatureMeasureBase(this);
+            TempMode.Nodes.Add(new Oper10_1Temperature_Minus200_Minus100_Measure(Mult107_109N.RangeNominal.Range400degC,this));
+            TempMode.Nodes.Add(new Oper10_1Temperature_Minus100_400_Measure(Mult107_109N.RangeNominal.Range400degC,this));
+            TempMode.Nodes.Add(new Oper10_1Temperature_400_1200_Measure(Mult107_109N.RangeNominal.Range1200degC,this));
+            
+            
+
+                UserItemOperation = new IUserItemOperationBase[]
+                {
+                    new Oper1VisualTest(this),
+                    //new Oper2Oprobovanie(this),
+                    DcvMode,
+                    AcvMode, 
+                    OhmMode,
+                    FarMode,
+                    TempMode,
+                    FreqMode,
+                    DciMode,
+                    AciMode
+                    
+                };
         }
 
         #region Methods
@@ -572,6 +589,119 @@ namespace Appa107N
         }
     }
 
+
+    #endregion
+
+    #region Freq
+
+    public class Oper71Freq20HzMeasureBase : APPA_107N_109N.Oper71Freq20HzMeasureBase
+    {
+        public Oper71Freq20HzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.Herz;
+        }
+
+    }
+
+    public class Oper71Freq200HzMeasureBase : APPA_107N_109N.Oper71Freq200HzMeasureBase
+    {
+        public Oper71Freq200HzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.Herz;
+        }
+
+    }
+
+    public class Oper71Freq2kHzMeasureBase : APPA_107N_109N.Oper71Freq2kHzMeasureBase
+    {
+        public Oper71Freq2kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.Herz;
+        }
+
+    }
+
+    public class Oper71Freq20kHzMeasureBase : APPA_107N_109N.Oper71Freq20kHzMeasureBase
+    {
+        public Oper71Freq20kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.Herz;
+        }
+
+    }
+
+    public class Oper71Freq200kHzMeasureBase : APPA_107N_109N.Oper71Freq200kHzMeasureBase
+    {
+        public Oper71Freq200kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.Herz;
+        }
+
+    }
+
+    public class Oper71Freq1MHzMeasureBase : APPA_107N_109N.Oper71Freq1MHzMeasureBase
+    {
+        public Oper71Freq1MHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.Herz;
+        }
+
+    }
+
+    #endregion
+
+    #region TEMP
+
+    public class Oper10_1Temperature_Minus200_Minus100_Measure : APPA_107N_109N.Oper10_1Temperature_Minus200_Minus100_Measure
+    {
+        public Oper10_1Temperature_Minus200_Minus100_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.degC;
+        }
+    }
+
+    public class Oper10_1Temperature_Minus100_400_Measure : APPA_107N_109N.Oper10_1Temperature_Minus100_400_Measure
+    {
+        public Oper10_1Temperature_Minus100_400_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.degC;
+        }
+    }
+
+    public class Oper10_1Temperature_400_1200_Measure : APPA_107N_109N.Oper10_1Temperature_400_1200_Measure
+    {
+        public Oper10_1Temperature_400_1200_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+            base(inRangeNominal, userItemOperation)
+        {
+            appa107N = new MultAPPA107N();
+            flkCalib5522A = new Calib5522A();
+            OperMeasureMode = Mult107_109N.MeasureMode.degC;
+        }
+    }
 
     #endregion
 }

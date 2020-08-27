@@ -55,7 +55,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     Resistance = new CResistance(calibrMain);
                     Voltage= new CVoltage(calibrMain);
                     Current = new CCurrent(calibrMain);
+                    Temperature = new СTemperature(calibrMain);
+
                 }
+
+               
 
                 public CVoltage Voltage { get; }
 
@@ -305,15 +309,28 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         return _calibrMain;
                     }
                 }
+                
+                
+                
+                public СTemperature Temperature { get; }
+
+
                 /// <summary>
                 /// Содержит набор команд по установке температуры
                 /// </summary>
-                public class Temperature
+                public class СTemperature
                 {
+                    private readonly CalibrMain _calibrMain;
+
+                    public СTemperature(CalibrMain calibrMain)
+                    {
+                        _calibrMain = calibrMain;
+                    }
+
                     /// <summary>
                     /// Содержит достумные виды преобразователей
                     /// </summary>
-                    public enum TypeTermocuple
+                    public enum TypeTermocouple
                     {
                         [StringValue("B")] B,
                         [StringValue("C")] C,
@@ -329,22 +346,24 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         [StringValue("Z")] LinOut1mV 
                     }
                     /// <summary>
-                    /// Установка выбранноего типа преобразователя
+                    /// Установка выбранноего типа термо-преобразователя.
                     /// </summary>
-                    /// <param name="type">The type.</param>
+                    /// <param name="type">Тип термопары.</param>
                     /// <returns></returns>
-                    public static string SetTermocuple(string type)
+                    public  CalibrMain SetTermocouple(TypeTermocouple type)
                     {
-                        return "TC_TYPE " + type;
+                        _calibrMain.WriteLine("TC_TYPE " + type.GetStringValue());
+                        return _calibrMain;
                     }
                     /// <summary>
                     /// Установить знаечние температуры
                     /// </summary>
                     /// <param name="value">Значение</param>
                     /// <returns></returns>
-                    public static string SetValue(double value)
+                    public  CalibrMain SetValue(double value)
                     {
-                        return "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + "CEL";
+                        _calibrMain.WriteLine("OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + "CEL");
+                        return _calibrMain;
                     }
                 }
             }
