@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -256,8 +257,9 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                        appa107N.StringConnection = GetStringConnect(appa107N);
-                        flkCalib5522A.StringConnection = GetStringConnect(flkCalib5522A);
+                        
+                        if (appa107N.StringConnection.Equals("COM1")) appa107N.StringConnection = GetStringConnect(appa107N);
+                        flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
@@ -307,7 +309,7 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                        flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint.VariableBaseValueMeasPoint.NominalVal);
+                        flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint.VariableBaseValueMeasPoint.NominalVal * (decimal)currPoint.VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue());
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                         Thread.Sleep(2000);
                         //измеряем
@@ -316,9 +318,7 @@ namespace APPA_107N_109N
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                         operation.Getting = measurePoint;
-                        operation.Expected = currPoint.VariableBaseValueMeasPoint.NominalVal /
-                                             (decimal) currPoint
-                                                      .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue();
+                        operation.Expected = currPoint.VariableBaseValueMeasPoint.NominalVal;
                         //расчет погрешности для конкретной точки предела измерения
                         operation.ErrorCalculation = (inA, inB) =>
                         {
@@ -335,7 +335,7 @@ namespace APPA_107N_109N
                                                                      .GetDoubleValue() /
                                                                       currPoint.VariableBaseValueMeasPoint
                                                                                .MultipliersUnit
-                                                                               .GetDoubleValue()));
+                                                                               .GetDoubleValue()), CultureInfo.CurrentCulture);
                             MathStatistics.Round(ref result, mantisa);
                             return result;
                         };
@@ -371,6 +371,8 @@ namespace APPA_107N_109N
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<decimal>) operation.Clone());
+                
+                
             }
         }
 
@@ -396,12 +398,12 @@ namespace APPA_107N_109N
 
             BaseMultipliers = 100;
             VoltPoint = new AcVariablePoint[6];
-            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, MeasureUnits.V, OpMultipliers);
+            VoltPoint[0] = new AcVariablePoint((decimal) 0.4 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 0.8 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 1.2 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 1.6 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 1.8 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -1.8, MeasureUnits.V, OpMultipliers);
         }
     }
 
@@ -418,12 +420,12 @@ namespace APPA_107N_109N
 
             BaseMultipliers = 1000;
             VoltPoint = new AcVariablePoint[6];
-            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, MeasureUnits.V, OpMultipliers);
+            VoltPoint[0] = new AcVariablePoint( 4 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint( 8 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint( 12, MeasureUnits.V,OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint( 16, MeasureUnits.V,OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint( 18, MeasureUnits.V,OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint( -18 , MeasureUnits.V, OpMultipliers);
         }
     }
 
@@ -444,12 +446,12 @@ namespace APPA_107N_109N
 
             BaseMultipliers = 10000;
             VoltPoint = new AcVariablePoint[6];
-            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, MeasureUnits.V, OpMultipliers);
+            VoltPoint[0] = new AcVariablePoint((decimal) 40 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 80 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 120 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 160 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 180 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -180, MeasureUnits.V, OpMultipliers);
         }
     }
 
@@ -470,12 +472,12 @@ namespace APPA_107N_109N
 
             BaseMultipliers = 1;
             VoltPoint = new AcVariablePoint[6];
-            VoltPoint[0] = new AcVariablePoint(100 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[1] = new AcVariablePoint(200 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[2] = new AcVariablePoint(400 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[3] = new AcVariablePoint(700 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[4] = new AcVariablePoint(900 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[5] = new AcVariablePoint(-900 * BaseMultipliers, MeasureUnits.V, OpMultipliers);
+            VoltPoint[0] = new AcVariablePoint(100 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint(200 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint(400 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint(700 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint(900 , MeasureUnits.V,OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint(-900, MeasureUnits.V, OpMultipliers);
         }
     }
 
@@ -496,12 +498,12 @@ namespace APPA_107N_109N
 
             BaseMultipliers = 1;
             VoltPoint = new AcVariablePoint[6];
-            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, MeasureUnits.V, OpMultipliers);
+            VoltPoint[0] = new AcVariablePoint((decimal) 4   , MeasureUnits.V,OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal) 8   , MeasureUnits.V,OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal) 12  , MeasureUnits.V,OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal) 16  , MeasureUnits.V,OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal) 18  , MeasureUnits.V,OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal) -18 , MeasureUnits.V, OpMultipliers);
         }
     }
 
@@ -522,12 +524,12 @@ namespace APPA_107N_109N
 
             BaseMultipliers = 10;
             VoltPoint = new AcVariablePoint[6];
-            VoltPoint[0] = new AcVariablePoint((decimal) 0.004 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[1] = new AcVariablePoint((decimal) 0.008 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[2] = new AcVariablePoint((decimal) 0.012 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[3] = new AcVariablePoint((decimal) 0.016 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[4] = new AcVariablePoint((decimal) 0.018 * BaseMultipliers, MeasureUnits.V,OpMultipliers);
-            VoltPoint[5] = new AcVariablePoint((decimal) -0.018 * BaseMultipliers, MeasureUnits.V, OpMultipliers);
+            VoltPoint[0] = new AcVariablePoint((decimal)40, MeasureUnits.V, OpMultipliers);
+            VoltPoint[1] = new AcVariablePoint((decimal)80, MeasureUnits.V, OpMultipliers);
+            VoltPoint[2] = new AcVariablePoint((decimal)120, MeasureUnits.V, OpMultipliers);
+            VoltPoint[3] = new AcVariablePoint((decimal)160, MeasureUnits.V, OpMultipliers);
+            VoltPoint[4] = new AcVariablePoint((decimal)180, MeasureUnits.V, OpMultipliers);
+            VoltPoint[5] = new AcVariablePoint((decimal)-180, MeasureUnits.V, OpMultipliers);
         }
     }
 

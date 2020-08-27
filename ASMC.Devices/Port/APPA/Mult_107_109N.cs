@@ -235,8 +235,9 @@ namespace ASMC.Devices.Port.APPA
         {
             get
             {
-                Rotor currRotor = GetRotor;
                 BlueState currBlueState = GetBlueState;
+                Rotor currRotor = GetRotor;
+                
 
                 if (currRotor == Rotor.V && currBlueState == BlueState.NoPress) return MeasureMode.ACV;
                 if (currRotor == Rotor.V && currBlueState == BlueState.OnPress) return MeasureMode.DCV;
@@ -473,7 +474,7 @@ namespace ASMC.Devices.Port.APPA
                     throw new TimeoutException();
                 }
 
-                Logger.Info(((BlueState)_data[5]).ToString());
+                Logger.Debug(((BlueState)_data[5]).ToString());
                 return (BlueState)_data[5];
             }
         }
@@ -705,6 +706,7 @@ namespace ASMC.Devices.Port.APPA
             _wait.Interval = 35000;
             _wait.Elapsed += TWait_Elapsed;
             _wait.AutoReset = false;
+            //this.StringConnection = null;
         }
 
         #region Methods

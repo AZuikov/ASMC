@@ -75,7 +75,8 @@ namespace ASMC.Devices.Port
         public ComPort()
         {
             _sp= new SerialPort();
-          
+            
+
         }
         public ComPort(string portName)
         {
