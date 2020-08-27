@@ -147,7 +147,7 @@ namespace ASMC.Core.Model
         /// <inheritdoc />
         public bool? IsGood
         {
-            get => _isWork;
+            get => _isGood;
             set => SetProperty(ref _isGood, value, nameof(IsGood));
         }
 
@@ -201,7 +201,7 @@ namespace ASMC.Core.Model
             {
                IsGood= checkResult.All(q => q != null && q.Invoke());
                 IsWork = false;
-                Logger.Info($@"Пункт выполнелся с результатом {IsGood}");
+                Logger.Info($@"Пункт выполнился с результатом {IsGood}");
             }
         }
 

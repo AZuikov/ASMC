@@ -178,7 +178,7 @@ namespace ASMC.ViewModel
         public OperationMetrControlBase.TypeOpeation TypeOpertion
         {
             get => _typeOpertion;
-            set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion));
+            set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion),()=>Logger.Info($@"Выбранна операция {TypeOpertion}"));
         }
 
         /// <summary>
