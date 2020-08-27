@@ -285,7 +285,7 @@ namespace ASMC.ViewModel
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Warn(e);
             }
 
             var servicePack = new ServicePack
@@ -301,10 +301,11 @@ namespace ASMC.ViewModel
                 try
                 {
                     Prog.Add((IProgram) Activator.CreateInstance(type, servicePack));
+                    Logger.Debug($@"Загружена сборка {type}");
                 }
                 catch (InvalidCastException e)
                 {
-                    Logger.Error(e, $@"Не соответствует интерфейсу {type}");
+                    Logger.Warn(e, $@"Не соответствует интерфейсу {type}");
                 }
                 catch (Exception e)
                 {
@@ -320,7 +321,7 @@ namespace ASMC.ViewModel
         //todo:Добавить окно формирования документа и сделать асинхронно.
         private void OnCreatDocumetCommand()
         {
-
+            Logger.Info($@"Запущено формирование протокола");
             string document = SelectProgram.Operation.SelectedOperation.DocumentName + @".dotx";
 
             var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
@@ -396,6 +397,7 @@ namespace ASMC.ViewModel
         private void OnIsSpeedWorkCallback()
         {
             SelectProgram.Operation.IsSpeedWork = IsCheckWork;
+            Logger.Info($@"Активировани режим ПРОВЕРКИ {IsCheckWork}");
             OnSelectProgramCallback();
         }
 
@@ -429,6 +431,7 @@ namespace ASMC.ViewModel
         private void OnSelectProgramCallback()
         {
             if (SelectProgram == null) return;
+            Logger.Info($@"Выбранная операция {SelectProgram}");
             EnableOpeation = SelectProgram.Operation.EnabledOperation;
             foreach (Enum en in Enum.GetValues(typeof(OperationMetrControlBase.TypeOpeation)))
                 if (EnableOpeation != null && ((Enum) EnableOpeation).HasFlag(en))
@@ -455,11 +458,18 @@ namespace ASMC.ViewModel
          
             if (SelectionItemOperation == null)
             {
-                await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
-                Logger.Debug(ToString() + " Конец  операций");
+                Logger.Info("Программа МК запущена");
+                try
+                {
+                    await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                    Alert(e);
+                }
+                
             }
-
-            Logger.Debug("Stop");
             StateWorkFlag = StateWork.Stop;
         }
 

@@ -23,5 +23,11 @@ namespace ASMC.Core.Model
         public OperationMetrControlBase Operation { get; protected set; }
        
         public ServicePack Service { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $@"{Type} {Range} {Accuracy} {Grsi}";
+        }
     }
 }
