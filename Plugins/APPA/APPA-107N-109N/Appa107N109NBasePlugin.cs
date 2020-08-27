@@ -386,9 +386,13 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.V, Multipliers.Micro);
+            
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
+
+            BaseTolCoeff = (decimal)0.0006;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(100, MeasureUnits.V, Multipliers.Micro);
 
             BaseMultipliers = 100;
             VoltPoint = new AcVariablePoint[6];
@@ -430,9 +434,13 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.V, Multipliers.Mili);
+           
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
+
+            BaseTolCoeff = (decimal)0.0006;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.V, Multipliers.Mili);
 
             BaseMultipliers = 10000;
             VoltPoint = new AcVariablePoint[6];
@@ -452,9 +460,13 @@ namespace APPA_107N_109N
         {
             OperationDcRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationDcRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.V, Multipliers.Mili);
+            
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
+
+            BaseTolCoeff = (decimal)0.0006;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(100, MeasureUnits.V, Multipliers.Mili);
 
             BaseMultipliers = 1;
             VoltPoint = new AcVariablePoint[6];
@@ -478,6 +490,8 @@ namespace APPA_107N_109N
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
 
+            BaseTolCoeff = (decimal)0.0006;
+            EdMlRaz = 60;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.V, Multipliers.Micro);
 
             BaseMultipliers = 1;
@@ -502,6 +516,8 @@ namespace APPA_107N_109N
             Name = OperationDcRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
 
+            BaseTolCoeff = (decimal)0.0006;
+            EdMlRaz = 20;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.V, Multipliers.Micro);
 
             BaseMultipliers = 10;
@@ -1226,9 +1242,13 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.I, Multipliers.Micro);
+            
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
+
+            BaseTolCoeff = (decimal)0.002;
+            EdMlRaz = 40;                
+            RangeResolution = new AcVariablePoint(1, MeasureUnits.I, Multipliers.Micro);
 
             BaseMultipliers = 1;
             CurrentDciPoint = new MeasPoint[5];
@@ -1247,9 +1267,13 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.I, Multipliers.Micro);
+            
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
+
+            BaseTolCoeff = (decimal)0.002;
+            EdMlRaz = 40;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.I, Multipliers.Micro);
 
             BaseMultipliers = 10;
             CurrentDciPoint = new MeasPoint[5];
@@ -1268,9 +1292,13 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.I, Multipliers.Micro);
+            
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
+
+            BaseTolCoeff = (decimal)0.002;
+            EdMlRaz = 40;
+            RangeResolution = new AcVariablePoint(100, MeasureUnits.I, Multipliers.Micro);
 
             BaseMultipliers = (decimal) 0.1;
             CurrentDciPoint = new MeasPoint[5];
@@ -1297,10 +1325,12 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
+
+            BaseTolCoeff = (decimal)0.002;
+            EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.I, Multipliers.Mili);
 
             OpMultipliers = Multipliers.None;
-
             CurrentDciPoint = new MeasPoint[1];
             CurrentDciPoint[0] = new MeasPoint(MeasureUnits.I, OpMultipliers, 1);
 
@@ -1323,9 +1353,12 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.I, Multipliers.Mili);
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
+
+            BaseTolCoeff = (decimal)0.002;
+            EdMlRaz = 40;
+            RangeResolution = new AcVariablePoint(1, MeasureUnits.I, Multipliers.Mili);
 
             CurrentDciPoint = new MeasPoint[4];
             CurrentDciPoint[0] = new MeasPoint(MeasureUnits.I, OpMultipliers, 5);
@@ -1987,12 +2020,16 @@ namespace APPA_107N_109N
             base(userItemOperation)
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz,Multipliers.Mili);
+            
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
             OpMultipliers = Multipliers.None;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
+
+            BaseTolCoeff = (decimal)0.0001;
+            EdMlRaz = 50;
+            RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, Multipliers.Mili);
 
             HerzPoint = new MeasPoint[1];
             HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 10);
@@ -2009,12 +2046,15 @@ namespace APPA_107N_109N
             base(userItemOperation)
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, Multipliers.Mili);
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
             OpMultipliers = Multipliers.None;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
+
+            BaseTolCoeff = (decimal)0.0001;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, Multipliers.Mili);
 
             HerzPoint = new MeasPoint[1];
             HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 100);
@@ -2031,12 +2071,15 @@ namespace APPA_107N_109N
             base(userItemOperation)
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range3Manual;
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, Multipliers.Mili);
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
             OpMultipliers = Multipliers.Kilo;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
+
+            BaseTolCoeff = (decimal)0.0001;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, Multipliers.Mili);
 
             HerzPoint = new MeasPoint[1];
             HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 1);
@@ -2053,12 +2096,15 @@ namespace APPA_107N_109N
             base(userItemOperation)
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range4Manual;
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, Multipliers.None);
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
             OpMultipliers = Multipliers.Kilo;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
+
+            BaseTolCoeff = (decimal)0.0001;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, Multipliers.None);
 
             HerzPoint = new MeasPoint[1];
             HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 10);
@@ -2075,12 +2121,15 @@ namespace APPA_107N_109N
             base(userItemOperation)
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range5Manual;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, Multipliers.None);
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
             OpMultipliers = Multipliers.Kilo;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
+
+            BaseTolCoeff = (decimal)0.0001;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, Multipliers.None);
 
             HerzPoint = new MeasPoint[1];
             HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 100);
@@ -2097,12 +2146,15 @@ namespace APPA_107N_109N
             base(userItemOperation)
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range6Manual;
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, Multipliers.None);
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
             OpMultipliers = Multipliers.Mega;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
+
+            BaseTolCoeff = (decimal)0.0001;
+            EdMlRaz = 10;
+            RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, Multipliers.None);
 
             HerzPoint = new MeasPoint[1];
             HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 1);
@@ -2125,9 +2177,13 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
+            
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.None;
+
+            BaseTolCoeff = (decimal)0.003;
+            EdMlRaz = 30;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
 
             BaseMultipliers = 1;
             OhmPoint = new MeasPoint[3];
@@ -2144,9 +2200,12 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, Multipliers.Mili);
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Kilo;
+
+            BaseTolCoeff = (decimal)0.003;
+            EdMlRaz = 30;
+            RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, Multipliers.Mili);
 
             BaseMultipliers = 1;
             OhmPoint = new MeasPoint[5];
@@ -2165,9 +2224,13 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, Multipliers.None);
+            
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Kilo;
+
+            BaseTolCoeff = (decimal)0.003;
+            EdMlRaz = 30;
+            RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, Multipliers.None);
 
             BaseMultipliers = 10;
             OhmPoint = new MeasPoint[5];
@@ -2186,9 +2249,12 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.None);
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Kilo;
+
+            BaseTolCoeff = (decimal)0.003;
+            EdMlRaz = 30;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.None);
 
             BaseMultipliers = 100;
             OhmPoint = new MeasPoint[5];
@@ -2207,9 +2273,12 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range5Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.None);
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mega;
+
+            BaseTolCoeff = (decimal)0.003;
+            EdMlRaz = 50;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.None);
 
             BaseMultipliers = 1000;
             OhmPoint = new MeasPoint[5];
@@ -2228,9 +2297,12 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range6Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mega;
+
+            BaseTolCoeff = (decimal)0.05;
+            EdMlRaz = 50;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
 
             BaseMultipliers = 1;
             OhmPoint = new MeasPoint[3];
@@ -2247,9 +2319,12 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range7Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mega;
+
+            BaseTolCoeff = (decimal)0.05;
+            EdMlRaz = 20;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
 
             BaseMultipliers = 10;
             OhmPoint = new MeasPoint[3];
@@ -2266,9 +2341,12 @@ namespace APPA_107N_109N
         {
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range8Manual;
             OperationOhmRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
             Name = OperationOhmRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Giga;
+
+            BaseTolCoeff = (decimal)0.05;
+            EdMlRaz = 8;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, Multipliers.Mili);
 
             OhmPoint = new MeasPoint[1];
             OhmPoint[0] = new MeasPoint(MeasureUnits.Ohm, OpMultipliers, (decimal) 0.9);
@@ -2748,6 +2826,9 @@ namespace APPA_107N_109N
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Nano;
 
+            BaseTolCoeff = (decimal)0.009;
+            EdMlRaz = 5;
+
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(MeasureUnits.Far, OpMultipliers, 300);
         }
@@ -2761,9 +2842,12 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.Far, Multipliers.Nano);
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Micro;
+
+            BaseTolCoeff = (decimal)0.009;
+            EdMlRaz = 5;
+            RangeResolution = new AcVariablePoint(1, MeasureUnits.Far, Multipliers.Nano);
 
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(MeasureUnits.Far, OpMultipliers, 3);
@@ -2778,9 +2862,12 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range5Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Far, Multipliers.Nano);
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Micro;
+
+            BaseTolCoeff = (decimal)0.012;
+            EdMlRaz = 5;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Far, Multipliers.Nano);
 
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(MeasureUnits.Far, OpMultipliers, 30);
@@ -2795,9 +2882,12 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range6Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.Far, Multipliers.Nano);
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Micro;
+
+            BaseTolCoeff = (decimal)0.012;
+            EdMlRaz = 5;
+            RangeResolution = new AcVariablePoint(100, MeasureUnits.Far, Multipliers.Nano);
 
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(MeasureUnits.Far, OpMultipliers, 300);
@@ -2812,9 +2902,12 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range7Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.Far, Multipliers.Micro);
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
+
+            BaseTolCoeff = (decimal)0.015;
+            EdMlRaz = 5;
+            RangeResolution = new AcVariablePoint(1, MeasureUnits.Far, Multipliers.Micro);
 
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(MeasureUnits.Far, OpMultipliers, 3);
@@ -2829,9 +2922,12 @@ namespace APPA_107N_109N
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range8Manual;
             OperationRangeNominal = inRangeNominal;
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.Far, Multipliers.Micro);
             Name = OperationRangeNominal.GetStringValue();
             OpMultipliers = Multipliers.Mili;
+
+            BaseTolCoeff = (decimal)0.015;
+            EdMlRaz = 5;
+            RangeResolution = new AcVariablePoint(10, MeasureUnits.Far, Multipliers.Micro);
 
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(MeasureUnits.Far, OpMultipliers, 30);

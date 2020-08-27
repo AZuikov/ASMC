@@ -102,16 +102,16 @@ namespace Appa107N
 
                 UserItemOperation = new IUserItemOperationBase[]
                 {
-                    new Oper1VisualTest(this),
+                    //new Oper1VisualTest(this),
                     //new Oper2Oprobovanie(this),
                     DcvMode,
-                    AcvMode, 
-                    OhmMode,
-                    FarMode,
-                    TempMode,
-                    FreqMode,
-                    DciMode,
-                    AciMode
+                    //AcvMode, 
+                    //OhmMode,
+                    //FarMode,
+                    //TempMode,
+                    //FreqMode,
+                    //DciMode,
+                    //AciMode
                     
                 };
         }
