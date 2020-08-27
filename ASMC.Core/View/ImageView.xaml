@@ -19,7 +19,7 @@
       <RowDefinition Height="20*"/>
     </Grid.RowDefinitions>
     <TextBlock TextAlignment="Center" Visibility="{Binding Text, Converter={StaticResource ObjectToVisibilityConverter}}"   Text="{Binding Shema.Description}" FontWeight="Bold" FontSize="14"/>
-    <Image Grid.Row="1" Source="{Binding PathImage}" Stretch="UniformToFill" />
+    <Image Grid.Row="1" Source="{Binding PathImage}" Stretch="Uniform" />
     <StackPanel Grid.Row="2" >
       <TextBlock Visibility="{Binding Text, Converter={StaticResource ObjectToVisibilityConverterInverse}}"  Text="{Binding Shema.ExtendedDescription}"/>
       <toolkit:RichTextBox Visibility="{Binding Text, Converter={StaticResource ObjectToVisibilityConverter}}" IsReadOnly="True"  Text="{Binding Text}"  BorderThickness="0" VerticalScrollBarVisibility="Auto"/>
