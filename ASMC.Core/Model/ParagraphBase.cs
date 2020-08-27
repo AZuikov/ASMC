@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
+using NLog;
 
 namespace ASMC.Core.Model
 {
@@ -16,9 +17,11 @@ namespace ASMC.Core.Model
     /// </summary>
     public abstract class ParagraphBase : ViewModelBase, IUserItemOperationBase, ITreeNode
     {
-        private readonly TreeNode TreeNode;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly TreeNode _treeNode;
         private bool _isWork;
         private bool? _isGood;
+        private int _count;
 
         #region Property
 
@@ -37,7 +40,7 @@ namespace ASMC.Core.Model
         protected ParagraphBase(IUserItemOperation userItemOperation)
         {
             UserItemOperation = userItemOperation;
-            TreeNode = new TreeNode();
+            _treeNode = new TreeNode();
         }
 
         #region Methods
@@ -71,7 +74,11 @@ namespace ASMC.Core.Model
                                           ?.StringConnect;
 
             if (string.IsNullOrEmpty(connect))
+            {
+                Logger.Warn($@"Строка подключения не указана для {currentDevice.UserType}");
                 throw new ArgumentException($@"Строка подключения не указана для {currentDevice.UserType}");
+            }
+         
 
             return connect;
         }
@@ -81,10 +88,10 @@ namespace ASMC.Core.Model
         /// </summary>
         protected abstract void InitWork();
 
-        private IEnumerable<object> GetProperty()
+        private object[] GetProperty()
         {
             var reult = GetType().GetProperties().FirstOrDefault(q => q.Name.Equals(nameof(IUserItemOperation<object>.DataRow)))?.GetValue(this);
-            return ((IList) reult)?.Cast<object>();
+            return ((IList) reult)?.Cast<object>().ToArray();
         }
 
         #endregion
@@ -97,39 +104,44 @@ namespace ASMC.Core.Model
         /// <inheritdoc />
         public ShemeImage Sheme { get; set; }
 
+        /// <inheritdoc />
+        public int Count
+        {
+            get => _count;
+            protected set => SetProperty(ref _count, value, nameof(Count));
+        }
 
 
         /// <inheritdoc />
         public bool IsWork
         {
-
             get => _isWork;
             private set=>SetProperty(ref _isWork, value, nameof(IsWork));
         }
 
         /// <inheritdoc />
         public string Name
-        { get=> TreeNode.Name;
-            set => TreeNode.Name = value;
+        { get=> _treeNode.Name;
+            set => _treeNode.Name = value;
         }
 
         /// <inheritdoc />
         public TreeNode FirstNode
         {
-            get => TreeNode.FirstNode;
+            get => _treeNode.FirstNode;
         }
 
         /// <inheritdoc />
         public TreeNode LastNode
         {
-            get => TreeNode.LastNode;
+            get => _treeNode.LastNode;
         }
 
         /// <inheritdoc />
-        public TreeNode Parent { get => TreeNode.Parent; }
+        public TreeNode Parent { get => _treeNode.Parent; }
 
         /// <inheritdoc />
-        public CollectionNode Nodes { get => TreeNode.Nodes; }
+        public CollectionNode Nodes { get => _treeNode.Nodes; }
 
         /// <inheritdoc />
         public bool? IsGood
@@ -141,6 +153,7 @@ namespace ASMC.Core.Model
         /// <inheritdoc />
         public async Task StartSinglWork(CancellationToken token, Guid guid)
         {
+            Logger.Info($@"Начато выполнение пункта {Name}");
             InitWork();
             IsWork = true;
             try
@@ -148,9 +161,11 @@ namespace ASMC.Core.Model
                 var res = GetProperty().FirstOrDefault(q => Equals(((IBasicOperation<object>) q).Guid, guid));
                 if (res != null)
                 {
+                    Count = 1;
                     var metod = res.GetType().GetMethods()
                                    .FirstOrDefault(q => q.Name.Equals(nameof(IBasicOperation<object>.WorkAsync)));
                     if (metod != null) await (Task) metod.Invoke(res, new object[] {token});
+
                 }
             }
             finally
@@ -168,7 +183,9 @@ namespace ASMC.Core.Model
             var checkResult = new List<Func<bool>>();
             try
             {
-                foreach (var row in GetProperty())
+                var array = GetProperty().ToArray();
+                Count = array.Length;
+                foreach (var row in array)
                 {
                     var metod = row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
                     if (metod != null) await (Task) metod.Invoke(row, new object[] {token});
@@ -180,6 +197,7 @@ namespace ASMC.Core.Model
             {
                IsGood= checkResult.All(q => q != null && q.Invoke());
                 IsWork = false;
+                Logger.Debug(IsGood.ToString());
             }
         }
 

@@ -33,6 +33,7 @@ namespace Plugins.Test
         public Verefication(ServicePack servicePac)
         {
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePac);
+            this.UserItemOperationPeriodicVerf= UserItemOperationPrimaryVerf;
         }
     }
 
@@ -51,8 +52,8 @@ namespace Plugins.Test
 
             a.Nodes.Add(new Operation1(this));
             this.UserItemOperation = new IUserItemOperationBase[] {new Operation1(this), new Operation1(this) , a };
-                Accessories = new[]
-            {
+            Accessories = new[]
+        {
                 "Мультиметр цифровой Agilent/Keysight 34401A",
                 "Кабель banana"
             };
@@ -112,28 +113,28 @@ namespace Plugins.Test
 
             DataRow.Clear();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var operation = new BasicOperation<double>();
                 operation.InitWork = () =>
                 {
-                   var a=  this.UserItemOperation.ServicePack.MessageBox;
-                   a.Show(this.Name, "", MessageButton.OK, MessageIcon.None, MessageResult.Cancel);
+                    var a = this.UserItemOperation.ServicePack.MessageBox;
+                    a.Show(this.Name, "", MessageButton.OK, MessageIcon.None, MessageResult.Cancel);
                     return Task.CompletedTask;
                 };
                 operation.BodyWork = () =>
                 {
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10000);
                     operation.Expected = new Random().NextDouble();
                     operation.Getting = new Random().NextDouble();
-                    operation.IsGood = () =>false;
+                    operation.IsGood = () => false;
                 };
 
-              
+
                 DataRow.Add(operation);
             }
-             
+
         }
 
         /// <inheritdoc />

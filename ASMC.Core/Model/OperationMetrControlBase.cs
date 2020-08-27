@@ -52,6 +52,7 @@ namespace ASMC.Core.Model
                         res |= TypeOpeation.Adjustment;
                     else
                         res = TypeOpeation.Adjustment;
+                Logger.Debug($@"Активны операции {res}");
                 return res;
             }
         }
@@ -82,10 +83,7 @@ namespace ASMC.Core.Model
                     res = IsSpeedWork ? SpeedUserItemOperationCalibration : UserItemOperationCalibration;
                 else if (SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment))
                     res = SelectedTypeOpeation.HasFlag(TypeOpeation.Adjustment) ? UserItemOperationAdjustment : null;
-
-                //if (res?.UserItemOperation != null)
-                //    foreach (var t in res.UserItemOperation)
-                //        t.MessageBoxService = TaskMessageService;
+                Logger.Info($@"Выбранная операция {res}");
                 return res;
             }
         }
@@ -105,39 +103,34 @@ namespace ASMC.Core.Model
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public Task StartWorkAsync(CancellationTokenSource source)
+        public async Task StartWorkAsync(CancellationTokenSource source)
         {
-            foreach (var lonleyTreeNode in SelectedOperation.UserItemOperation)
-                ClrNode(lonleyTreeNode, source);
-            return Task.CompletedTask;
-        }
+            foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
+                await ClrNode(userItemOperationBase);
 
-        private async void ClrNode(IUserItemOperationBase operationsArr, CancellationTokenSource source)
-        {
-            try
+            async Task ClrNode(IUserItemOperationBase userItemOperationBase)
             {
-                if (operationsArr.IsCheked || !IsManual)
+                try
                 {
-                    ShowShem(operationsArr.Sheme);
-                    await operationsArr.StartWork(source.Token);
+                    if (userItemOperationBase.IsCheked || !IsManual)
+                    {
+                        ShowShem(userItemOperationBase.Sheme);
+                        await userItemOperationBase.StartWork(source.Token);
+                    }
                 }
+                catch (Exception e)
+                {
+                    source.Cancel();
+                    source.Token.ThrowIfCancellationRequested();
+                    Logger.Error(e);
+                }
+
+                Logger.Debug(userItemOperationBase.ToString);
+                var tree = (ITreeNode)userItemOperationBase;
+                foreach (var node in tree.Nodes) await ClrNode((IUserItemOperationBase)node);
             }
-            catch (Exception e)
-            {
-                source.Cancel();
-                source.Token.ThrowIfCancellationRequested();
-                Logger.Error(e);
-            }
-
-            Logger.Debug(operationsArr.ToString);
-
-            
-            var tree = (ITreeNode) operationsArr;
-
-            if (tree.Nodes.Count != 0)
-                for (var i = 0; i < tree.Nodes.Count; i++)
-                    ClrNode((IUserItemOperationBase) tree.Nodes[i], source);
         }
+
 
         private async void ShowShem(ShemeImage sheme)
         {
