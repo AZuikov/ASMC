@@ -22,7 +22,7 @@ namespace ASMC.Data.Model
         {
             get
             {
-                return (TreeNode) Nodes.First();
+                return (TreeNode) Nodes.FirstOrDefault();
             }
         }
         /// <summary>
@@ -32,7 +32,7 @@ namespace ASMC.Data.Model
         {
             get
             {
-                return (TreeNode) Nodes.Last();
+                return (TreeNode) Nodes.LastOrDefault();
             }
         }
         /// <summary>

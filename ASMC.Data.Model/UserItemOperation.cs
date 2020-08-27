@@ -122,6 +122,10 @@ namespace ASMC.Data.Model
         /// Предоставляет инструкцию для подключения.
         /// </summary>
         ShemeImage Sheme { get; }
+        /// <summary>
+        /// предоставляет количество операций в пункте
+        /// </summary>
+        int Count { get; }
 
       #endregion
 
