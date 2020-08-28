@@ -187,6 +187,8 @@ namespace ASMC.Core.Model
             {
                 var array = GetProperty().ToArray();
                 Count = array.Length;
+
+                Logger.Debug($@"Всего строк в оперции {Count}");
                 foreach (var row in array)
                 {
                    
