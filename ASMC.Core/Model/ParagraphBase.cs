@@ -152,7 +152,7 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public async Task StartSinglWork(CancellationToken token, Guid guid)
+        public virtual async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             Logger.Info($@"Начато выполнение пункта {Name}");
             InitWork();
@@ -176,7 +176,7 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public async Task StartWork(CancellationToken token)
+        public virtual async Task StartWork(CancellationToken token)
         {
             Logger.Info($@"Выполняется пункт {Name}");
             InitWork();

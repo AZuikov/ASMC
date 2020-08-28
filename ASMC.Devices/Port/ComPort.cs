@@ -75,7 +75,8 @@ namespace ASMC.Devices.Port
         public ComPort()
         {
             _sp= new SerialPort();
-          
+            
+
         }
         public ComPort(string portName)
         {
@@ -220,7 +221,8 @@ namespace ASMC.Devices.Port
                 return;
             }
             _sp.WriteLine(data);
-             Close();
+            Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
+            Close();
         }
 
         public string QueryLine(string inStrData)

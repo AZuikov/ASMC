@@ -46,7 +46,7 @@ namespace ASMC.Core.Model
 
         #region Methods
 
-        void FindDivice();
+        void FindDevice();
 
         /// <summary>
         /// Выполняет обнавление списка устройств.

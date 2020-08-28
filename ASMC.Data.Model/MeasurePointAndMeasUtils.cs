@@ -80,8 +80,8 @@ namespace ASMC.Data.Model
         /// </summary>
         /// <param name = "inNominal">Предел измерения прибора.</param>
         /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
-        public AcVariablePoint(decimal inNominal, Multipliers inMultipliersUnit) : this(inNominal, inMultipliersUnit,
-                                                                                        null)
+        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit) : this(inNominal, inMeasureUnits, inMultipliersUnit,
+                                                                                                                     null)
         {
         }
 
@@ -91,10 +91,11 @@ namespace ASMC.Data.Model
         /// <param name = "inNominal">номинал предела измерения.</param>
         /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
         /// <param name = "inHerzArr">Массив частот для данной точки.</param>
-        public AcVariablePoint(decimal inNominal, Multipliers inMultipliersUnit, MeasPoint[] inHerzArr)
+        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit, MeasPoint[] inHerzArr)
         {
             VariableBaseValueMeasPoint.NominalVal = inNominal;
             VariableBaseValueMeasPoint.MultipliersUnit = inMultipliersUnit;
+            VariableBaseValueMeasPoint.Units = inMeasureUnits;
 
             Herz = inHerzArr;
         }
