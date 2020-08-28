@@ -25,6 +25,7 @@ namespace Appa107N
     {
         public Operation(ServicePack servicePack)
         {
+            
             UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
@@ -36,12 +37,12 @@ namespace Appa107N
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             var DcvMode = new Oper3DcvMeasureBase(this);
-            DcvMode.Nodes.Add(new Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal.Range200mV, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal.Range20V, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal.Range200V, this));
-            DcvMode.Nodes.Add(new Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal.Range1000V, this));
+           // DcvMode.Nodes.Add(new Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
+           // DcvMode.Nodes.Add(new Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal.Range200mV, this));
+           // DcvMode.Nodes.Add(new Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
+           // DcvMode.Nodes.Add(new Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal.Range20V, this));
+           // DcvMode.Nodes.Add(new Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal.Range200V, this));
+           // DcvMode.Nodes.Add(new Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal.Range1000V, this));
 
             var AcvMode = new Oper4AcvMeasureBase(this);
             AcvMode.Nodes.Add(new Ope4_1_AcV_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
@@ -49,7 +50,7 @@ namespace Appa107N
             AcvMode.Nodes.Add(new Ope4_1_AcV_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
             AcvMode.Nodes.Add(new Ope4_1_AcV_20V_Measure(Mult107_109N.RangeNominal.Range20V, this));
             AcvMode.Nodes.Add(new Ope4_1_AcV_200V_Measure(Mult107_109N.RangeNominal.Range200V, this));
-            AcvMode.Nodes.Add(new Ope41AcV750VMeasure(Mult107_109N.RangeNominal.Range1000V, this));
+            AcvMode.Nodes.Add(new Ope41AcV750VMeasure(Mult107_109N.RangeNominal.Range750V, this));
 
             var FarMode = new Oper9FarMeasureBase(this);
             FarMode.Nodes.Add(new Oper9_1Far_4nF_Measure(Mult107_109N.RangeNominal.Range4nF, this));
@@ -104,8 +105,8 @@ namespace Appa107N
                 {
                     //new Oper1VisualTest(this),
                     //new Oper2Oprobovanie(this),
-                    DcvMode,
-                    //AcvMode, 
+                    //DcvMode,
+                    AcvMode, 
                     //OhmMode,
                     //FarMode,
                     //TempMode,
