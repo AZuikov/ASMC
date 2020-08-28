@@ -169,7 +169,10 @@ namespace ASMC.ViewModel
         public StateWork StateWorkFlag
         {
             get => _stateWorkFlag;
-            set => SetProperty(ref _stateWorkFlag, value, nameof(StateWorkFlag));
+            set => SetProperty(ref _stateWorkFlag, value, nameof(StateWorkFlag), () =>
+            {
+                if (StateWorkFlag == StateWork.Stop) Message("Программа завершена");
+            });
         }
 
         /// <summary>
@@ -178,7 +181,7 @@ namespace ASMC.ViewModel
         public OperationMetrControlBase.TypeOpeation TypeOpertion
         {
             get => _typeOpertion;
-            set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion));
+            set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion),()=>Logger.Info($@"Выбранна операция {TypeOpertion}"));
         }
 
         /// <summary>

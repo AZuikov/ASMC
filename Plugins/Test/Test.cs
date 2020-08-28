@@ -113,22 +113,21 @@ namespace Plugins.Test
 
             DataRow.Clear();
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i <20; i++)
             {
                 var operation = new BasicOperation<double>();
                 operation.InitWork = () =>
                 {
-                    var a = this.UserItemOperation.ServicePack.MessageBox;
-                    a.Show(this.Name, "", MessageButton.OK, MessageIcon.None, MessageResult.Cancel);
+                    
                     return Task.CompletedTask;
                 };
                 operation.BodyWork = () =>
                 {
 
-                    Thread.Sleep(10000);
+                    Thread.Sleep(50);
                     operation.Expected = new Random().NextDouble();
                     operation.Getting = new Random().NextDouble();
-                    operation.IsGood = () => false;
+                    operation.IsGood = () => true;
                 };
 
 
