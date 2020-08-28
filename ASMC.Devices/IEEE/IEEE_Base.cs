@@ -415,8 +415,10 @@ namespace ASMC.Devices.IEEE
         /// <param name = "str">Принимает текст команды в VBS формате</param>
         public void WriteLine(string data )
         {
+            
             if(!Open()) return;
             Session.FormattedIO.WriteLine(data);
+            Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
             Thread.Sleep(_dealySending);
             Close();
         }
