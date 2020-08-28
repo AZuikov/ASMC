@@ -107,8 +107,36 @@ namespace ASMC.Core.Model
         /// <returns></returns>
         public async Task StartWorkAsync(CancellationTokenSource source)
         {
+            var count = 0;
+            foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
+                count+=CountNode(userItemOperationBase);
+
+            Logger.Debug("dasdasda"+count);
             foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
                 await ClrNode(userItemOperationBase);
+
+            int CountNode(IUserItemOperationBase userItemOperationBase)
+            {
+                var cou = 0;
+                try
+                {
+                    if (userItemOperationBase.IsCheked || !IsManual)
+                    {
+                        cou= userItemOperationBase.Count;
+                    }
+                }
+                catch (Exception e)
+                {
+                    source.Cancel();
+                    Logger.Error(e);
+                    throw;
+                }
+
+                var tree = (ITreeNode)userItemOperationBase;
+                foreach (var node in tree.Nodes)
+                    cou+=CountNode((IUserItemOperationBase)node);
+                return cou;
+            }
 
             async Task ClrNode(IUserItemOperationBase userItemOperationBase)
             {

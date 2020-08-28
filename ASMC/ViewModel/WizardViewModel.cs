@@ -350,33 +350,52 @@ namespace ASMC.ViewModel
                 var regFillTableByMark = new Regex(@"(^FillTabBm\w.+)");
                 foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
                 {
-                    var markName = uio.Data.TableName;
-                    if (regInsTextByMark.IsMatch(markName))
-                    {
-                        report.InsertTextToBookmark(markName, TableToStringConvert(uio.Data));
-                    }
-                    else if (regInsTextByReplase.IsMatch(markName))
-                    {
-                        report.FindStringAndReplace(markName, TableToStringConvert(uio.Data));
-                    }
-                    else if (regInTableByMark.IsMatch(markName))
-                    {
-                        report.InsertNewTableToBookmark(markName, uio.Data, a);
-                    }
-                    else if (regFillTableByMark.IsMatch(markName))
-                    {
-                        report.FillTableToBookmark(uio.Data.TableName, uio.Data, true, a);
-                    }
-                    else
-                    {
-                        Logger.Error($@"Имя {markName} не распознано");
-                    }
+                    var tree= uio as ITreeNode;
+                    if (tree==null) continue;
+                    FillDoc(tree);
+                   
                 }
                 path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
                 report.SaveAs(path);
+                Logger.Info($@"Протокол сформирован по пути {path}");
+
+                void FillDoc(ITreeNode userItem)
+                {
+
+                    foreach (var node in userItem.Nodes)
+                    {
+
+                        var n = node as IUserItemOperationBase;
+                        if (n?.Data != null)
+                        {
+                            var markName = n.Data.TableName;
+                            if (regInsTextByMark.IsMatch(markName))
+                            {
+                                report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
+                            }
+                            else if (regInsTextByReplase.IsMatch(markName))
+                            {
+                                report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
+                            }
+                            else if (regInTableByMark.IsMatch(markName))
+                            {
+                                report.InsertNewTableToBookmark(markName, n.Data, a);
+                            }
+                            else if (regFillTableByMark.IsMatch(markName))
+                            {
+                                report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
+                            }
+                            else
+                            {
+                                Logger.Error($@"Имя {markName} не распознано");
+                            }
+                        }
+                        FillDoc(node);
+                    }
+                }
+
             }
             Process.Start(path);
-
 
             string TableToStringConvert(DataTable dt)
             {
