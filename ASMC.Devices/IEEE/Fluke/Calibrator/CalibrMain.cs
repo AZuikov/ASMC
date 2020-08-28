@@ -16,6 +16,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             Out = new COut(this);
         }
 
+        
+
         public COut Out { get; }
 
         /// <summary>
@@ -40,6 +42,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 return _calibrMain;
             }
             public CSet Set { get;  }
+
+            /// <summary>
+            /// Метод очищает регистры памяти калибратора.
+            /// </summary>
+            public void ClearMemoryRegister()
+            {
+                _calibrMain.WriteLine("*cls");
+            }
 
             /// <summary>
             /// Содержит команды позволяющие устанавливать значения на выходе

@@ -281,7 +281,7 @@ namespace APPA_107N_109N
                             {
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton + 1} раз.",
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                        MessageResult.OK);
                             }
@@ -310,6 +310,7 @@ namespace APPA_107N_109N
                     try
                     {
                         flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint.VariableBaseValueMeasPoint.NominalVal * (decimal)currPoint.VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue());
+                        flkCalib5522A.Out.ClearMemoryRegister();
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                         Thread.Sleep(2000);
                         //измеряем
@@ -322,7 +323,7 @@ namespace APPA_107N_109N
                         //расчет погрешности для конкретной точки предела измерения
                         operation.ErrorCalculation = (inA, inB) =>
                         {
-                            var result = BaseTolCoeff * operation.Expected + EdMlRaz *
+                            var result = BaseTolCoeff * Math.Abs(operation.Expected)  + EdMlRaz *
                                 RangeResolution.VariableBaseValueMeasPoint.NominalVal *
                                 (decimal) (RangeResolution
                                           .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
@@ -344,6 +345,8 @@ namespace APPA_107N_109N
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
+
+                       
                     }
                     catch (Exception e)
                     {
@@ -374,6 +377,13 @@ namespace APPA_107N_109N
                 
                 
             }
+            
+        }
+
+        public async override Task StartWork(CancellationToken token)
+        {
+            await base.StartWork(token);
+            appa107N?.Dispose();
         }
 
         #endregion

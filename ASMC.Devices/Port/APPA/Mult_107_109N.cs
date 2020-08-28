@@ -733,6 +733,7 @@ namespace ASMC.Devices.Port.APPA
         protected virtual void Dispose(bool disposing)
         {
             if (disposing) _wait?.Dispose();
+            base.Dispose();
         }
 
         /// <summary>
