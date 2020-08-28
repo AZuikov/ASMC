@@ -270,14 +270,14 @@ namespace APPA_107N_109N
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<decimal>;
+                var dds = row as BasicOperationVerefication<AcVariablePoint>;
                 // ReSharper disable once PossibleNullReferenceException
-
+                if(dds==null) continue;
                 dataRow[0] = OperationDcRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected;
-                dataRow[2] = dds.Getting;
-                dataRow[3] = dds.LowerTolerance;
-                dataRow[4] = dds.UpperTolerance;
+                dataRow[1] = dds.Expected.VariableBaseValueMeasPoint.Description;
+                dataRow[2] = dds.Getting.VariableBaseValueMeasPoint.Description;
+                dataRow[3] = dds.LowerTolerance.VariableBaseValueMeasPoint.Description;
+                dataRow[4] = dds.UpperTolerance.VariableBaseValueMeasPoint.Description;
                 dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }

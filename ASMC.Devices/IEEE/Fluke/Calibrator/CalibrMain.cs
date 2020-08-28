@@ -36,9 +36,15 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                
             }
 
+            /// <summary>
+            /// Позволяет задать статус выходных клемм калибратора. Вкл/Выкл.
+            /// </summary>
+            /// <param name="state"></param>
+            /// <returns></returns>
             public CalibrMain SetOutput(State state)
             {
                 _calibrMain.WriteLine(state.GetStringValue());
+                _calibrMain.Sinchronization();
                 return _calibrMain;
             }
             public CSet Set { get;  }
