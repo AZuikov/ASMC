@@ -140,9 +140,9 @@ namespace ASMC.Devices.Port
             {
                 if (!_sp.IsOpen)
                 {
-                Logger.Debug($"Порт {_sp.PortName} уже закрыт.");
-                return;
-                 }
+                    Logger.Debug($"Порт {_sp.PortName} уже закрыт.");
+                    return;
+                }
 
                 _sp.DataReceived -= SerialPort_DataReceived;
                 _sp.Close();

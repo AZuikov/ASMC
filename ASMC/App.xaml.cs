@@ -51,7 +51,7 @@ namespace ASMC
             // Prevents loading assembly DevExpress.Xpf.Themes.Office2016White.v17.2
             // by DevExpress.Xpf.Core.v17.2
             ApplicationThemeHelper.ApplicationThemeName = "None";
-
+            CultureInfo.CurrentCulture= new CultureInfo("ru-Ru");
             ViewLocator.Default = new ViewLocator(Assembly.GetExecutingAssembly());
         }
         private void LoadPlugins()
