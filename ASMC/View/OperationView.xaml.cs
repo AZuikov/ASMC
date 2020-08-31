@@ -29,6 +29,7 @@ namespace ASMC.View
             set => SetValue(IsManualPropery, value);
         }
         public IUserItemOperationBase SelectItemTest { get; set; }
+
         //public object SelectItemTest
         //{
         //    get => (object)GetValue(SelectItemTestPropery);

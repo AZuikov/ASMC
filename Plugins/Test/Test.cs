@@ -66,10 +66,12 @@ namespace Plugins.Test
         }
 
         /// <inheritdoc />
-        public override void FindDivice()
+        public override void FindDevice()
         {
             throw new NotImplementedException();
         }
+
+ 
     }
     public class DeviceInterface :  IDeviceUi
     {
@@ -104,7 +106,18 @@ namespace Plugins.Test
         /// <inheritdoc />
         protected override DataTable FillData()
         {
-            return null;
+            var dt = new DataTable("fdsfs");
+            dt.Columns.Add("Expected");
+            dt.Columns.Add("Getting");
+            foreach (var r in DataRow)
+            {
+                var row = dt.NewRow();
+                row[0] = r.Expected;
+                row[1] = r.Getting;
+                dt.Rows.Add(row);
+            }
+            
+            return dt;
         }
 
         /// <inheritdoc />

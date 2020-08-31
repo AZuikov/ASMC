@@ -59,41 +59,13 @@
                 </TreeView.ItemTemplate>
 
             </TreeView>
-            <DataGrid Grid.Column="1" ItemsSource="{Binding SelectItemTest.Data.Rows}" AutoGenerateColumns="True"/>
-            <!--<ListView ItemsSource="{Binding SelectItemTest.Data.Rows}">
-                <ListView.View>
-                    <GridView  AllowsColumnReorder="False">
-                        <GridViewColumn Header="Тип СИ"   >
-                            <GridViewColumn.CellTemplate >
-                                <DataTemplate>
-                                    <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Type}"    />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Госреестр"  >
-                            <GridViewColumn.CellTemplate >
-                                <DataTemplate>
-                                    <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Grsi}"    />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Диапазон"  >
-                            <GridViewColumn.CellTemplate >
-                                <DataTemplate>
-                                    <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Range}"    />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Характеристика точности" >
-                            <GridViewColumn.CellTemplate >
-                                <DataTemplate>
-                                    <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Accuracy}"    />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+            <!--<DataGrid   Grid.Column="1" ItemsSource="{Binding SelectItemTest.Data.Rows}"  AutoGenerateColumns="True"/>-->
+            <ListView Grid.Column="1" ItemsSource="{Binding SelectItemTest.Data}">
+                <ListView.View >
+                    <GridView ColumnCollection="{Binding Path=Column}" >
                     </GridView>
                 </ListView.View>
-            </ListView>-->
+            </ListView>
         </Grid>
         
     </StackPanel>
