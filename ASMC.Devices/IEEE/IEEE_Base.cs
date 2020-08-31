@@ -137,7 +137,7 @@ namespace ASMC.Devices.IEEE
             Multipliers = new ICommand[]{new Command("N","н", 1E-9),
                 new Command("N", "н", 1E-9),
                 new Command("U", "мк", 1E-6),
-                new Command("MA", "м", 1E-3),
+                new Command("M", "м", 1E-3),
                 new Command("", "", 1),
                 new Command("K", "к", 1E3),
                 new Command("MA", "М", 1E6),

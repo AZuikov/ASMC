@@ -228,7 +228,7 @@ namespace AP.Math
         /// <returns></returns>
         public static int GetMantissa<T>(T value, bool reduceZeros = false)
         {
-            return GetMantissa(Convert.ToString(value, CultureInfo.CurrentCulture), CultureInfo.InvariantCulture, reduceZeros);
+            return GetMantissa(Convert.ToString(value, CultureInfo.CurrentCulture), CultureInfo.CurrentCulture, reduceZeros);
         }
 
         /// <summary>

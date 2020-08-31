@@ -2,10 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Windows.Forms;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using AP.Utils.Helps;
 using ASMC.Data.Model;
+using NLog;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
@@ -36,9 +38,15 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                
             }
 
+            /// <summary>
+            /// Позволяет задать статус выходных клемм калибратора. Вкл/Выкл.
+            /// </summary>
+            /// <param name="state"></param>
+            /// <returns></returns>
             public CalibrMain SetOutput(State state)
             {
                 _calibrMain.WriteLine(state.GetStringValue());
+                _calibrMain.Sinchronization();
                 return _calibrMain;
             }
             public CSet Set { get;  }
@@ -99,7 +107,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                         public CDc(CalibrMain calibrMain)
                         {
-                            Multipliers = calibrMain.Multipliers;
+                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+                                new Command("N", "н", 1E-9),
+                                new Command("U", "мк", 1E-6),
+                                new Command("M", "м", 1E-3),
+                                new Command("", "", 1),
+                                new Command("K", "к", 1E3)};
+
+                            
                             this._calibrMain = calibrMain;
                         }
 
@@ -131,6 +146,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         public CAc(CalibrMain calibrMain)
                         {
                             this._calibrMain = calibrMain;
+                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+                                new Command("N", "н", 1E-9),
+                                new Command("U", "мк", 1E-6),
+                                new Command("M", "м", 1E-3),
+                                new Command("", "", 1),
+                                new Command("K", "к", 1E3)};
                         }
 
                         /// <summary>
@@ -145,7 +166,16 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         //todo: множитель для частоты нужно уточнить в документации и сделать перечисление
                         public CalibrMain SetValue(decimal value,decimal hertz, Multipliers voltMult, Multipliers herzMult = AP.Utils.Helps.Multipliers.None)
                         {
-                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, voltMult)}V, {JoinValueMult(hertz, herzMult)}HZ");
+                            string SendComand = $@"OUT {JoinValueMult(value, voltMult)}V, {JoinValueMult(hertz, herzMult)}HZ";
+                            _calibrMain.WriteLine(SendComand);
+                            _calibrMain.WriteLine("err?");
+                            string answer = _calibrMain.ReadLine();
+                            if (!answer.Equals("0,\"No Error\"\n"))
+                            {
+                                MessageBox.Show($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
+                                //throw  new Exception($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
+                            }
+
                             return _calibrMain;
                         }
 
@@ -198,6 +228,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         public CDc(CalibrMain calibrMain)
                         {
                             this._calibrMain = calibrMain;
+                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+                                new Command("N", "н", 1E-9),
+                                new Command("U", "мк", 1E-6),
+                                new Command("M", "м", 1E-3),
+                                new Command("", "", 1),
+                                new Command("K", "к", 1E3)};
                         }
                         /// <summary>
                         /// Генерирует команду установки постоянного тока указной величины
@@ -219,6 +255,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         public CAc(CalibrMain calibrMain)
                         {
                             this._calibrMain = calibrMain;
+                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+                                new Command("N", "н", 1E-9),
+                                new Command("U", "мк", 1E-6),
+                                new Command("M", "м", 1E-3),
+                                new Command("", "", 1),
+                                new Command("K", "к", 1E3)};
                         }
 
                         /// <summary>
@@ -249,6 +291,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     public CResistance(CalibrMain calibrMain)
                     {
                         this._calibrMain = calibrMain;
+                        Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+                            new Command("N", "н", 1E-9),
+                            new Command("U", "мк", 1E-6),
+                            new Command("M", "м", 1E-3),
+                            new Command("", "", 1),
+                            new Command("K", "к", 1E3),
+                            new Command("MA", "М", 1E6),
+                            new Command("G", "Г", 1E9)};
                     }
                     public enum Zcomp
                     {
@@ -294,6 +344,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     public CCapacitance(CalibrMain calibrMain)
                     {
                         this._calibrMain = calibrMain;
+                        Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+                            new Command("N", "н", 1E-9),
+                            new Command("U", "мк", 1E-6),
+                            new Command("M", "м", 1E-3),
+                            new Command("", "", 1)};
                     }
                     public enum Zcomp
                     {
@@ -328,13 +383,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// <summary>
                 /// Содержит набор команд по установке температуры
                 /// </summary>
-                public class СTemperature
+                public class СTemperature:HelpDeviceBase
                 {
                     private readonly CalibrMain _calibrMain;
 
                     public СTemperature(CalibrMain calibrMain)
                     {
                         _calibrMain = calibrMain;
+                        Multipliers = new ICommand[]{new Command("", "", 1)};
                     }
 
                     /// <summary>
@@ -360,7 +416,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// </summary>
                     /// <param name="type">Тип термопары.</param>
                     /// <returns></returns>
-                    public  CalibrMain SetTermocouple(TypeTermocouple type)
+                    public  CalibrMain SetTermoCouple(TypeTermocouple type)
                     {
                         _calibrMain.WriteLine("TC_TYPE " + type.GetStringValue());
                         return _calibrMain;
