@@ -106,13 +106,13 @@ namespace Appa107N
                     //new Oper1VisualTest(this),
                     //new Oper2Oprobovanie(this),
                     //DcvMode,
-                    AcvMode, 
+                    //AcvMode, 
                     //OhmMode,
                     //FarMode,
                     //TempMode,
                     //FreqMode,
                     //DciMode,
-                    //AciMode
+                    AciMode
                     
                 };
         }
