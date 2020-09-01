@@ -149,9 +149,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             Multipliers = new ICommand[]{new Command("N","н", 1E-9),
                                 new Command("N", "н", 1E-9),
                                 new Command("U", "мк", 1E-6),
-                                new Command("M", "м", 1E-3),
+                                new Command("m", "м", 1E-3),
                                 new Command("", "", 1),
-                                new Command("K", "к", 1E3)};
+                                new Command("K", "к", 1E3), 
+                                new Command("M", "М", 1E6)};
                         }
 
                         /// <summary>

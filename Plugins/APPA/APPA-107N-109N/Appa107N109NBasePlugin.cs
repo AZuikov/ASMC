@@ -1287,10 +1287,7 @@ namespace APPA_107N_109N
         /// </summary>
         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
-        /// <summary>
-        /// Множитель единицы измерения текущей операции
-        /// </summary>
-        public Multipliers OpMultipliers { get; protected set; }
+        
 
         //контрлируемый прибор
         protected Mult107_109N appa107N { get; set; }
@@ -1304,7 +1301,7 @@ namespace APPA_107N_109N
         {
             Name = "Определение погрешности измерения постоянного тока";
             OperMeasureMode = Mult107_109N.MeasureMode.DCmA;
-            OpMultipliers = Multipliers.None;
+            
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
             DataRow = new List<IBasicOperation<MeasPoint>>();
@@ -1511,7 +1508,7 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
 
             Name = OperationRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.Mili;
+            
 
             BaseTolCoeff = (decimal)0.002;
             EdMlRaz = 40;
@@ -1540,7 +1537,7 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
 
             Name = OperationRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.None;
+           
 
             BaseTolCoeff = (decimal)0.002;
             EdMlRaz = 40;
@@ -1582,7 +1579,7 @@ namespace APPA_107N_109N
 
             thisRangeUnits = new MeasPoint(MeasureUnits.I, Multipliers.None, 0);
 
-            OpMultipliers = Multipliers.None;
+            
             CurrentDciPoint = new MeasPoint[1];
             CurrentDciPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, 1);
 
@@ -1608,7 +1605,7 @@ namespace APPA_107N_109N
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.None;
+           
 
             BaseTolCoeff = (decimal)0.002;
             EdMlRaz = 40;
@@ -1693,10 +1690,7 @@ namespace APPA_107N_109N
         /// </summary>
         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
-        /// <summary>
-        /// Множитель единицы измерения текущей операции
-        /// </summary>
-        public Multipliers OpMultipliers { get; protected set; }
+        
 
         //контрлируемый прибор
         protected Mult107_109N appa107N { get; set; }
@@ -1710,7 +1704,7 @@ namespace APPA_107N_109N
         {
             Name = "Определение погрешности измерения переменного напряжения";
             OperMeasureMode = Mult107_109N.MeasureMode.ACV;
-            OpMultipliers = Multipliers.None;
+           
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
             DataRow = new List<IBasicOperation<AcVariablePoint>>();
@@ -2083,7 +2077,7 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.I, Multipliers.Micro);
             Name = OperationRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.None;
+           
             thisRangeUnits = new MeasPoint(MeasureUnits.I, Multipliers.None, 0);
             CurrentMultipliers = (decimal)0.1;
 
@@ -2177,7 +2171,7 @@ namespace APPA_107N_109N
 
     #region FREQ
 
-    public class Oper7FreqMeasureBase : ParagraphBase, IUserItemOperation<decimal>
+    public class Oper7FreqMeasureBase : ParagraphBase, IUserItemOperation<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -2237,10 +2231,7 @@ namespace APPA_107N_109N
         /// </summary>
         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
-        /// <summary>
-        /// Множитель единицы измерения текущей операции
-        /// </summary>
-        public Multipliers OpMultipliers { get; protected set; }
+       
 
         //контрлируемый прибор
         protected Mult107_109N appa107N { get; set; }
@@ -2254,20 +2245,43 @@ namespace APPA_107N_109N
         {
             Name = "Определение погрешности измерения частоты переменного напряжения";
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
-            OpMultipliers = Multipliers.None;
+           
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
-            DataRow = new List<IBasicOperation<decimal>>();
+            DataRow = new List<IBasicOperation<MeasPoint>>();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-            OpMultipliers = Multipliers.None;
+           
         }
 
         #region Methods
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            var dataTable = new DataTable { TableName = ReportTableName };
+            dataTable.Columns.Add("Предел измерения");
+            dataTable.Columns.Add("Поверяемая точка");
+            dataTable.Columns.Add("Измеренное значение");
+            dataTable.Columns.Add("Минимальное допустимое значение");
+            dataTable.Columns.Add("Максимальное допустимое значение");
+            dataTable.Columns.Add("Результат");
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow[0] = OperationRangeNominal.GetStringValue();
+                dataRow[1] = dds.Expected.Description;
+                dataRow[2] = dds.Getting.Description;
+                dataRow[3] = dds.LowerTolerance.Description;
+                dataRow[4] = dds.UpperTolerance.Description;
+                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
         }
 
         protected override void InitWork()
@@ -2278,7 +2292,7 @@ namespace APPA_107N_109N
             foreach (var voltPoint in VoltPoint)
                 foreach (var freqPoint in voltPoint.Herz)
                 {
-                    var operation = new BasicOperationVerefication<decimal>();
+                    var operation = new BasicOperationVerefication<MeasPoint>();
                     operation.InitWork = async () =>
                     {
                         try
@@ -2288,7 +2302,6 @@ namespace APPA_107N_109N
 
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            var testMeasureModde = appa107N.GetMeasureMode;
                             while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
@@ -2296,34 +2309,31 @@ namespace APPA_107N_109N
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
 
-                            var testRangeNominal = appa107N.GetRangeNominal;
-                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                            while (appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto)
                             {
-                                var countPushRangeButton =
-                                    appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto ? 1 : 0;
-
-                                if (OpMultipliers == Multipliers.Mili)
-                                {
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton + 1} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
-                                else
-                                {
-                                    var curRange = (int)appa107N.GetRangeCode & 128;
-                                    var targetRange = (int)OperationRangeCode & 128;
-                                    countPushRangeButton = countPushRangeButton + 4 - curRange +
-                                                           (targetRange < curRange ? curRange : 0);
-
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show("Установите автоматический режим переключения пределов.");
                             }
+
+                            //while (OperationRangeNominal != appa107N.GetRangeNominal)
+                            //{
+                            //    int countPushRangeButton;
+
+                                
+                            //        //работает только для ручного режима переключения пределов
+                            //        CountOfRanges = 6;
+                            //        int curRange = (int)appa107N.GetRangeCode - 127;
+                            //        int targetRange = (int)OperationRangeCode - 127;
+                            //        countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                            //        UserItemOperation.ServicePack.MessageBox
+                            //                         .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                            //                               $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                            //                               "Указание оператору", MessageButton.OK,
+                            //                               MessageIcon.Information,
+                            //                               MessageResult.OK);
+                                
+                            //}
                         }
                         catch (Exception e)
                         {
@@ -2339,40 +2349,41 @@ namespace APPA_107N_109N
                                                                       voltPoint.VariableBaseValueMeasPoint.MultipliersUnit,
                                                                       freqPoint.MultipliersUnit);
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(2000);
+                            Thread.Sleep(500);
                             //измеряем
                             var measurePoint = (decimal)appa107N.GetValue();
 
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            operation.Getting = measurePoint;
-                            operation.Expected = freqPoint.NominalVal /
-                                                 (decimal)freqPoint
-                                                          .MultipliersUnit.GetDoubleValue();
+                            operation.Getting = new MeasPoint(thisRangeUnits.Units,thisRangeUnits.MultipliersUnit, measurePoint);
+                            operation.Expected = freqPoint;
+
+                            var mantisa =
+                                MathStatistics.GetMantissa((decimal)(RangeResolution
+                                                                    .VariableBaseValueMeasPoint.MultipliersUnit
+                                                                    .GetDoubleValue() * (double)RangeResolution.VariableBaseValueMeasPoint.NominalVal /
+                                                                     freqPoint.MultipliersUnit
+                                                                              .GetDoubleValue()));
+
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
                                 {
-                                    var result = BaseTolCoeff * operation.Expected + EdMlRaz *
+                                    var result = BaseTolCoeff * operation.Expected.NominalVal + EdMlRaz *
                                         RangeResolution.VariableBaseValueMeasPoint.NominalVal *
                                         (decimal)(RangeResolution
                                                   .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                                    freqPoint.MultipliersUnit
                                                             .GetDoubleValue()
                                         );
-                                    var mantisa =
-                                        MathStatistics.GetMantissa((decimal)(RangeResolution
-                                                                             .VariableBaseValueMeasPoint.MultipliersUnit
-                                                                             .GetDoubleValue() /
-                                                                              freqPoint.MultipliersUnit
-                                                                                       .GetDoubleValue()));
+                                    
                                     MathStatistics.Round(ref result, mantisa);
-                                    return result;
+                                    return new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,result);
                                 };
 
-                            operation.LowerTolerance = operation.Expected - operation.Error;
-                            operation.UpperTolerance = operation.Expected + operation.Error;
-                            operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                     (operation.Getting > operation.LowerTolerance);
+                            operation.LowerTolerance =new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, operation.Expected.NominalVal - operation.Error.NominalVal);
+                            operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, operation.Expected.NominalVal + operation.Error.NominalVal);
+                            operation.IsGood = () => (operation.Getting.NominalVal < operation.UpperTolerance.NominalVal) &
+                                                     (operation.Getting.NominalVal > operation.LowerTolerance.NominalVal);
                         }
                         catch (Exception e)
                         {
@@ -2380,26 +2391,10 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.CompliteWork = () =>
-                    {
-                        if (!operation.IsGood())
-                        {
-                            var answer =
-                                UserItemOperation.ServicePack.MessageBox.Show(operation +
-                                                                              $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                              "Повторить измерение этой точки?",
-                                                                              "Информация по текущему измерению",
-                                                                              MessageButton.YesNo, MessageIcon.Question,
-                                                                              MessageResult.Yes);
-
-                            if (answer == MessageResult.No) return Task.FromResult(true);
-                        }
-
-                        return Task.FromResult(operation.IsGood());
-                    };
+                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<decimal>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint>)operation.Clone());
                 }
         }
 
@@ -2411,7 +2406,7 @@ namespace APPA_107N_109N
 
         #endregion Methods
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
     }
 
     public class Oper71Freq20HzMeasureBase : Oper7FreqMeasureBase
@@ -2420,20 +2415,21 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
+            ReportTableName = "FillTabBmOper71Freq20HzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
 
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
-            OpMultipliers = Multipliers.None;
+            
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-
+            thisRangeUnits = new MeasPoint(MeasureUnits.Herz, Multipliers.None,0);
             BaseTolCoeff = (decimal)0.0001;
             EdMlRaz = 50;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, Multipliers.Mili);
 
             HerzPoint = new MeasPoint[1];
-            HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 10);
+            HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, 10);
 
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, Multipliers.None, HerzPoint);
@@ -2446,19 +2442,20 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
+            ReportTableName = "FillTabBmOper71Freq200HzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
-            OpMultipliers = Multipliers.None;
+            
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-
+            thisRangeUnits = new MeasPoint(MeasureUnits.Herz, Multipliers.None, 0);
             BaseTolCoeff = (decimal)0.0001;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, Multipliers.Mili);
 
             HerzPoint = new MeasPoint[1];
-            HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 100);
+            HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, 100);
 
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, Multipliers.None, HerzPoint);
@@ -2471,19 +2468,20 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
+            ReportTableName = "FillTabBmOper71Freq2kHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
-            OpMultipliers = Multipliers.Kilo;
+            
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-
+            thisRangeUnits = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 0);
             BaseTolCoeff = (decimal)0.0001;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, Multipliers.Mili);
 
             HerzPoint = new MeasPoint[1];
-            HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 1);
+            HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, 1);
 
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, Multipliers.None, HerzPoint);
@@ -2496,19 +2494,20 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
+            ReportTableName = "FillTabBmOper71Freq20kHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
-            OpMultipliers = Multipliers.Kilo;
+            
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-
+            thisRangeUnits = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 0);
             BaseTolCoeff = (decimal)0.0001;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, Multipliers.None);
 
             HerzPoint = new MeasPoint[1];
-            HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 10);
+            HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, 10);
 
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, Multipliers.None, HerzPoint);
@@ -2521,19 +2520,20 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
+            ReportTableName = "FillTabBmOper71Freq200kHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range5Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
-            OpMultipliers = Multipliers.Kilo;
+            
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-
+            thisRangeUnits = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 0);
             BaseTolCoeff = (decimal)0.0001;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, Multipliers.None);
 
             HerzPoint = new MeasPoint[1];
-            HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 100);
+            HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, 100);
 
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, Multipliers.None, HerzPoint);
@@ -2546,19 +2546,20 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
+            ReportTableName = "FillTabBmOper71Freq1MHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range6Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
-            OpMultipliers = Multipliers.Mega;
+            
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-
+            thisRangeUnits = new MeasPoint(MeasureUnits.Herz, Multipliers.Mega, 0);
             BaseTolCoeff = (decimal)0.0001;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, Multipliers.None);
 
             HerzPoint = new MeasPoint[1];
-            HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, OpMultipliers, 1);
+            HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, 1);
 
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, Multipliers.None, HerzPoint);
@@ -2581,7 +2582,7 @@ namespace APPA_107N_109N
             OperationOhmRangeNominal = inRangeNominal;
 
             Name = OperationOhmRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.None;
+            
 
             BaseTolCoeff = (decimal)0.003;
             EdMlRaz = 30;
@@ -2633,7 +2634,7 @@ namespace APPA_107N_109N
             OperationOhmRangeNominal = inRangeNominal;
 
             Name = OperationOhmRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.Kilo;
+            
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, Multipliers.Kilo, 0);
 
@@ -2660,7 +2661,7 @@ namespace APPA_107N_109N
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.Kilo;
+            
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, Multipliers.Kilo, 0);
 
@@ -2687,7 +2688,7 @@ namespace APPA_107N_109N
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range5Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.Mega;
+            
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, Multipliers.Mega, 0);
 
@@ -2714,7 +2715,7 @@ namespace APPA_107N_109N
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range6Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.Mega;
+            
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, Multipliers.Mega, 0);
             BaseTolCoeff = (decimal)0.05;
@@ -2738,7 +2739,7 @@ namespace APPA_107N_109N
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range7Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.Mega;
+            
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, Multipliers.Mega, 0);
 
@@ -2835,10 +2836,7 @@ namespace APPA_107N_109N
         /// </summary>
         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
-        /// <summary>
-        /// Множитель единицы измерения текущей операции
-        /// </summary>
-        public Multipliers OpMultipliers { get; protected set; }
+       
 
         //контрлируемый прибор
         protected Mult107_109N appa107N { get; set; }
@@ -2852,13 +2850,13 @@ namespace APPA_107N_109N
         {
             Name = "Определение погрешности измерения электрического сопротивления";
             OperMeasureMode = Mult107_109N.MeasureMode.Ohm;
-            OpMultipliers = Multipliers.None;
+           
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationOhmRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
             DataRow = new List<IBasicOperation<MeasPoint>>();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-            OpMultipliers = Multipliers.None;
+            
         }
 
         #region Methods
@@ -3108,10 +3106,7 @@ namespace APPA_107N_109N
         /// </summary>
         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
-        /// <summary>
-        /// Множитель единицы измерения текущей операции
-        /// </summary>
-        public Multipliers OpMultipliers { get; protected set; }
+       
 
         //контрлируемый прибор
         protected Mult107_109N appa107N { get; set; }
@@ -3125,13 +3120,13 @@ namespace APPA_107N_109N
         {
             Name = "Определение погрешности измерения электрической ёмкости";
             OperMeasureMode = Mult107_109N.MeasureMode.Cap;
-            OpMultipliers = Multipliers.None;
+           
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
             DataRow = new List<IBasicOperation<MeasPoint>>();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-            OpMultipliers = Multipliers.None;
+            
             CountOfRanges = 8;
         }
 
@@ -3531,10 +3526,7 @@ namespace APPA_107N_109N
         /// </summary>
         public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
-        /// <summary>
-        /// Множитель единицы измерения текущей операции
-        /// </summary>
-        public Multipliers OpMultipliers { get; protected set; }
+        
 
         //контрлируемый прибор
         protected Mult107_109N appa107N { get; set; }
@@ -3548,13 +3540,13 @@ namespace APPA_107N_109N
         {
             Name = "Определение погрешности измерения температуры, градусы Цельсия";
             OperMeasureMode = Mult107_109N.MeasureMode.degC;
-            OpMultipliers = Multipliers.None;
+           
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
             DataRow = new List<IBasicOperation<decimal>>();
             Sheme = ShemeTemplateDefault.TemplateSheme;
-            OpMultipliers = Multipliers.None;
+           
         }
 
         #region Methods
@@ -3595,16 +3587,7 @@ namespace APPA_107N_109N
                             var countPushRangeButton =
                                 appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto ? 1 : 0;
 
-                            if (OpMultipliers == Multipliers.Mili)
-                            {
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton + 1} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
-                            }
-                            else
-                            {
+                           
                                 var curRange = (int)appa107N.GetRangeCode & 128;
                                 var targetRange = (int)OperationRangeCode & 128;
                                 countPushRangeButton = countPushRangeButton + 4 - curRange +
@@ -3615,7 +3598,7 @@ namespace APPA_107N_109N
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                        MessageResult.OK);
-                            }
+                            
                         }
                     }
                     catch (Exception e)
@@ -3711,12 +3694,12 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.degC, Multipliers.Mili);
             Name = OperationRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.None;
+            
 
             BaseTolCoeff = (decimal)0.001;
             EdMlRaz = 60;
 
-            DegC_Point = new AcVariablePoint[] { new AcVariablePoint((decimal)-200, MeasureUnits.degC, OpMultipliers) };
+            DegC_Point = new AcVariablePoint[] { new AcVariablePoint((decimal)-200, MeasureUnits.degC, Multipliers.None) };
         }
     }
 
@@ -3729,16 +3712,16 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.degC, Multipliers.Mili);
             Name = OperationRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.None;
+            
 
             BaseTolCoeff = (decimal)0.001;
             EdMlRaz = 30;
 
             DegC_Point = new AcVariablePoint[]
             {
-                new AcVariablePoint((decimal)-100, MeasureUnits.degC, OpMultipliers),
-                new AcVariablePoint((decimal)0, MeasureUnits.degC, OpMultipliers),
-                new AcVariablePoint((decimal)100, MeasureUnits.degC, OpMultipliers),
+                new AcVariablePoint((decimal)-100, MeasureUnits.degC, Multipliers.None),
+                new AcVariablePoint((decimal)0, MeasureUnits.degC,    Multipliers.None),
+                new AcVariablePoint((decimal)100, MeasureUnits.degC,  Multipliers.None),
             };
         }
     }
@@ -3752,16 +3735,16 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.degC, Multipliers.None);
             Name = OperationRangeNominal.GetStringValue();
-            OpMultipliers = Multipliers.None;
+            
 
             BaseTolCoeff = (decimal)0.001;
             EdMlRaz = 3;
 
             DegC_Point = new AcVariablePoint[]
             {
-                new AcVariablePoint((decimal)500, MeasureUnits.degC, OpMultipliers),
-                new AcVariablePoint((decimal)800, MeasureUnits.degC, OpMultipliers),
-                new AcVariablePoint((decimal)1200, MeasureUnits.degC, OpMultipliers),
+                new AcVariablePoint((decimal)500, MeasureUnits.degC, Multipliers.None),
+                new AcVariablePoint((decimal)800, MeasureUnits.degC, Multipliers.None),
+                new AcVariablePoint((decimal)1200, MeasureUnits.degC,Multipliers.None),
             };
         }
     }

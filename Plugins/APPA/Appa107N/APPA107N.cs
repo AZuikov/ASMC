@@ -110,9 +110,9 @@ namespace Appa107N
                     //OhmMode,
                     //FarMode,
                     //TempMode,
-                    //FreqMode,
+                    FreqMode,
                     //DciMode,
-                    AciMode
+                    //AciMode
                     
                 };
         }
