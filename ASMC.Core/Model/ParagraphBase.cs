@@ -41,6 +41,7 @@ namespace ASMC.Core.Model
         protected ParagraphBase(IUserItemOperation userItemOperation)
         {
             UserItemOperation = userItemOperation;
+            var sdsad= new System.Windows.Forms.TreeNode();
             _treeNode = new TreeNode();
         }
 
@@ -117,8 +118,10 @@ namespace ASMC.Core.Model
         public bool IsWork
         {
             get => _isWork;
-            private set=>SetProperty(ref _isWork, value, nameof(IsWork));
+            set=>SetProperty(ref _isWork, value, nameof(IsWork));
         }
+
+        
 
         /// <inheritdoc />
         public string Name
@@ -127,19 +130,21 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public TreeNode FirstNode
+        public ITreeNode FirstNode
         {
             get => _treeNode.FirstNode;
         }
 
         /// <inheritdoc />
-        public TreeNode LastNode
+        public ITreeNode LastNode
         {
             get => _treeNode.LastNode;
         }
 
         /// <inheritdoc />
-        public TreeNode Parent { get => _treeNode.Parent; }
+        public ITreeNode Parent { get => _treeNode.Parent;
+            set => _treeNode.Parent = value;
+        }
 
         /// <inheritdoc />
         public CollectionNode Nodes { get => _treeNode.Nodes; }
@@ -180,6 +185,7 @@ namespace ASMC.Core.Model
         {
             Logger.Info($@"Выполняется пункт {Name}");
             InitWork();
+            if (Parent != null) Parent.IsWork = true;
             IsWork = true;
             IsGood = null;
             var checkResult = new List<Func<bool>>();
@@ -202,8 +208,17 @@ namespace ASMC.Core.Model
             finally
             {
                IsGood= checkResult.All(q => q != null && q.Invoke());
-                IsWork = false;
-                Logger.Info($@"Пункт выполнился с результатом {IsGood}");
+               if (Parent != null)
+               {
+                   if (IsGood != true)
+                   {
+                       Parent.IsGood = false;
+                   }
+                   Parent.IsWork = false;
+               }
+                
+               IsWork = false;
+               Logger.Info($@"Пункт выполнился с результатом {IsGood}");
             }
         }
 
