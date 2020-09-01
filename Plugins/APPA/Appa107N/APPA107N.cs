@@ -108,10 +108,10 @@ namespace Appa107N
                     //DcvMode,
                     //AcvMode, 
                     //OhmMode,
-                    FarMode,
+                    //FarMode,
                     //TempMode,
                     //FreqMode,
-                    //DciMode,
+                    DciMode,
                     //AciMode
                     
                 };
@@ -479,7 +479,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+            
         }
     }
 
@@ -491,7 +491,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+           
         }
     }
 
@@ -502,7 +502,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+            
         }
     }
 
@@ -514,7 +514,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+           
         }
     }
 
@@ -526,7 +526,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+            
         }
     }
 

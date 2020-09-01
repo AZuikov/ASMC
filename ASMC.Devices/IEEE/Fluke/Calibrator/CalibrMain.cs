@@ -240,7 +240,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// </summary> 
                         public CalibrMain SetValue(decimal value, Multipliers mult= AP.Utils.Helps.Multipliers.None)
                         {
-                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}A 0HZ");
+                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}A, 0Hz");
                             return _calibrMain;
                         }
 
