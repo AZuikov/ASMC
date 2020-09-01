@@ -118,8 +118,8 @@
     <Compile Include="View\ImageView.xaml.cs">
       <DependentUpon>ImageView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\InputTableView.xaml.cs">
-      <DependentUpon>InputTableView.xaml</DependentUpon>
+    <Compile Include="View\InputTableControl.xaml.cs">
+      <DependentUpon>InputTableControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\QuestionTextView.xaml.cs">
       <DependentUpon>QuestionTextView.xaml</DependentUpon>
@@ -137,7 +137,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\InputTableView.xaml">
+    <Page Include="View\InputTableControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

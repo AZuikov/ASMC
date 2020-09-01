@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +12,10 @@ using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.UI;
 using MessageButton = DevExpress.Mvvm.MessageButton;
 using MessageIcon = DevExpress.Mvvm.MessageIcon;
+using WindowService = ASMC.Common.UI.WindowService;
 
 namespace Plugins.Test
 {
@@ -131,7 +134,10 @@ namespace Plugins.Test
                 var operation = new BasicOperation<double>();
                 operation.InitWork = () =>
                 {
-                    
+                    var wind = this.UserItemOperation.ServicePack.FreeWindow as WindowService;
+                    var a = new TableVm();
+                    wind.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                    wind.Show("Table", a);
                     return Task.CompletedTask;
                 };
                 operation.BodyWork = () =>

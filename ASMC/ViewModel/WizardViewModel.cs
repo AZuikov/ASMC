@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -229,38 +230,50 @@ namespace ASMC.ViewModel
 
         #region Methods
 
-        private static string GetUniqueFileName(string name, string format)
+        private static string GetUniqueFileName(string format)
         {
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\MaterialPass";
+            var systemFlober = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var asseblyName = Assembly.GetEntryAssembly().GetName().Name;
+            var path = Path.Combine(systemFlober, asseblyName);
 
-            var newFileName = path + @"\" + name + format;
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
-                                          @"\MaterialPass");
-            }
-            else
+            var newFileName = path + @"\" + Path.GetRandomFileName() + format;
+            try
             {
                 Directory.Delete(path, true);
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
-                                          @"\MaterialPass");
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Logger.Debug(e, $"Дериректория {path} не найдена.");
+            }
+            catch (IOException e)
+            {
+                Logger.Debug(e, "Файл используется");
+            }
+            finally
+            {
+                Directory.CreateDirectory(path);
             }
 
-            var tempFiles =
-                Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-            var i = 0;
-            while (true)
-            {
-                var fileExist = false;
-                foreach (var tempFile in tempFiles)
-                    if (tempFile == newFileName)
-                        fileExist = true;
-                if (fileExist == false)
-                    break;
-                newFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\" + name +
-                              "_" + i + format;
-                i++;
-            }
+            //var tempFiles =
+            //    Directory.GetFiles(path);
+
+            //foreach (var file in tempFiles)
+            //{
+            // Path.GetRandomFileName()   
+            //}
+            //var i = 0;
+            //while (true)
+            //{
+            //    var fileExist = false;
+            //    foreach (var tempFile in tempFiles)
+            //        if (tempFile == newFileName)
+            //            fileExist = true;
+            //    if (fileExist == false)
+            //        break;
+            //    newFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\" + name +
+            //                  "_" + i + format;
+            //    i++;
+            //}
 
             return newFileName;
         }
@@ -325,7 +338,21 @@ namespace ASMC.ViewModel
         private void OnCreatDocumetCommand()
         {
             Logger.Info($@"Запущено формирование протокола");
-            string document = SelectProgram.Operation.SelectedOperation.DocumentName + @".dotx";
+
+            try
+            {
+                GenerateDocument();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Протокол не был сформирован");
+                Alert(e);
+            }
+        }
+
+        private void GenerateDocument()
+        {
+            var document = SelectProgram.Operation.SelectedOperation.DocumentName + @".dotx";
 
             var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
             if (!Directory.Exists(path))
@@ -350,12 +377,12 @@ namespace ASMC.ViewModel
                 var regFillTableByMark = new Regex(@"(^FillTabBm\w.+)");
                 foreach (var uio in SelectProgram.Operation.SelectedOperation.UserItemOperation)
                 {
-                    var tree= uio as ITreeNode;
-                    if (tree==null) continue;
+                    var tree = uio as ITreeNode;
+                    if (tree == null) continue;
                     FillDoc(tree);
-                   
+
                 }
-                path = GetUniqueFileName(DateTime.Now.ToShortDateString(), ".docx");
+                path = GetUniqueFileName(".docx");
                 report.SaveAs(path);
                 Logger.Info($@"Протокол сформирован по пути {path}");
 
@@ -408,14 +435,13 @@ namespace ASMC.ViewModel
                     }
                     if (dataStr.Length > 0)
                     {
-                        dataStr.Remove(dataStr.Length-1, 1);
+                        dataStr.Remove(dataStr.Length - 1, 1);
                     }
                     dataStr.AppendLine();
                 }
-                return  dataStr.ToString().TrimEnd('\n');
+                return dataStr.ToString().TrimEnd('\n');
             }
         }
-
         private void OnIsSpeedWorkCallback()
         {
             SelectProgram.Operation.IsSpeedWork = IsCheckWork;
