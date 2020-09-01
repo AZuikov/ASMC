@@ -273,7 +273,18 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
                         public CalibrMain SetValue(decimal value, decimal hertz, Multipliers voltMult, Multipliers herzMult = AP.Utils.Helps.Multipliers.None)
                         {
-                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, voltMult)}A, {JoinValueMult(hertz, herzMult)}HZ");
+                            string SendComand =
+                                $@"OUT {JoinValueMult(value, voltMult)}A, {JoinValueMult(hertz, herzMult)}HZ";
+                            _calibrMain.WriteLine(SendComand);
+
+                            _calibrMain.WriteLine("err?");
+                            string answer = _calibrMain.ReadLine();
+                            if (!answer.Equals("0,\"No Error\"\n"))
+                            {
+                                MessageBox.Show($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
+                                //throw  new Exception($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
+                            }
+
                             return _calibrMain;
                         }
                     }
