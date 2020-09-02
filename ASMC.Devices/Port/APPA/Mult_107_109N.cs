@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 using System.Timers;
+using System.Windows.Forms.VisualStyles;
 using AP.Utils.Helps;
 using ASMC.Data.Model;
 using Timer = System.Timers.Timer;
@@ -599,15 +600,16 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
+                    WaitEvent.WaitOne();
+                    if (_flagTimeout)
+                    {
+                        _flagTimeout = false;
+                        throw new TimeoutException();
+                    }
 
-                Logger.Info(((RangeCode)_data[7]).ToString());
-                return (RangeCode)_data[7];
+                    Logger.Info(((RangeCode)_data[7]).ToString());
+                    return (RangeCode)_data[7];
+                
             }
         }
 
@@ -777,6 +779,8 @@ namespace ASMC.Devices.Port.APPA
                 WaitEvent.Reset();
                 return;
             }
+
+            Logger.Debug($"{this.StringConnection}:  Контрольная сумма считанных данных: {chechSum}");
 
             //если сумма совпадает тогда считанные данные из буфера пишем в поле
             _data = _readingBuffer;
