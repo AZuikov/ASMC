@@ -309,24 +309,40 @@ namespace ASMC.Devices.IEEE
         }
 
         /// <summary>
-        /// Получить список всех устройств
+        /// Получить список всех устройств.
         /// </summary>
         /// <returns></returns>
         public static string[] AllStringConnect
         {
             get
-            {  
-                var arr = GlobalResourceManager.Find().ToArray();
-                for (var i = 0; i < arr.Length; i++)
-                {
-                    if (!arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture)) continue;
+            {
+                var arr = GlobalResourceManager.Find().ToList();
 
-                    var replace = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
-                    arr[i] = replace;
-                } 
-                return arr;
+
+                for (var i = 0; i < arr.Count; i++)
+                {
+                    if (arr[i].Contains("INTFC"))
+                    {
+                        arr.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture))
+                    {
+                        arr[i] = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
+                    }
+                }
+                //{
+                   
+                //    if (!arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture)) continue;
+
+                //    var replace = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
+                //    arr[i] = replace;
+                //} 
+                return arr.ToArray();
             }
         }
+
           
         public List<string> GetOption()
         {
