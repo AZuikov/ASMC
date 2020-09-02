@@ -388,37 +388,38 @@ namespace ASMC.ViewModel
 
                 void FillDoc(ITreeNode userItem)
                 {
+                    var n = userItem as IUserItemOperationBase;
+                    if (n?.Data != null)
+                    {
+                        var markName = n.Data.TableName;
+                        if (regInsTextByMark.IsMatch(markName))
+                        {
+                            report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
+                        }
+                        else if (regInsTextByReplase.IsMatch(markName))
+                        {
+                            report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
+                        }
+                        else if (regInTableByMark.IsMatch(markName))
+                        {
+                            report.InsertNewTableToBookmark(markName, n.Data, a);
+                        }
+                        else if (regFillTableByMark.IsMatch(markName))
+                        {
+                            report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
+                        }
+                        else
+                        {
+                            Logger.Error($@"Имя {markName} не распознано");
+                        }
+                    }
 
                     foreach (var node in userItem.Nodes)
                     {
-
-                        var n = node as IUserItemOperationBase;
-                        if (n?.Data != null)
-                        {
-                            var markName = n.Data.TableName;
-                            if (regInsTextByMark.IsMatch(markName))
-                            {
-                                report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
-                            }
-                            else if (regInsTextByReplase.IsMatch(markName))
-                            {
-                                report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
-                            }
-                            else if (regInTableByMark.IsMatch(markName))
-                            {
-                                report.InsertNewTableToBookmark(markName, n.Data, a);
-                            }
-                            else if (regFillTableByMark.IsMatch(markName))
-                            {
-                                report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
-                            }
-                            else
-                            {
-                                Logger.Error($@"Имя {markName} не распознано");
-                            }
-                        }
                         FillDoc(node);
                     }
+
+                    
                 }
 
             }

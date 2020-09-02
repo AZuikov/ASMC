@@ -103,15 +103,15 @@ namespace Appa107N
 
                 UserItemOperation = new IUserItemOperationBase[]
                 {
-                    //new Oper1VisualTest(this),
-                    //new Oper2Oprobovanie(this),
-                    //DcvMode,
-                    //AcvMode, 
-                    //OhmMode,
-                    //FarMode,
-                    //FreqMode,
-                    //DciMode,
-                    //AciMode,
+                    new Oper1VisualTest(this),
+                    new Oper2Oprobovanie(this),
+                    DcvMode,
+                    AcvMode, 
+                    OhmMode,
+                    FarMode,
+                    FreqMode,
+                    DciMode,
+                    AciMode,
                     TempMode
                     
                 };
@@ -127,12 +127,7 @@ namespace Appa107N
         #endregion
     }
 
-    public class Oper1VisualTest : APPA_107N_109N.Oper1VisualTest
-    {
-        public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
-        {
-        }
-    }
+   
 
     #region DCV
 

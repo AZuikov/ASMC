@@ -143,7 +143,7 @@ namespace APPA_107N_109N
         #endregion Methods
     }
 
-    public abstract class Oper1VisualTest : ParagraphBase, IUserItemOperation<bool>
+    public  class Oper1VisualTest : ParagraphBase, IUserItemOperation<bool>
     {
         public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -157,7 +157,7 @@ namespace APPA_107N_109N
         protected override DataTable FillData()
         {
             var data = new DataTable { TableName = "ITBmVisualTest" };
-            ;
+            
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
             if (DataRow.Count == 1)
@@ -181,7 +181,7 @@ namespace APPA_107N_109N
             {
                 var service = UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
-                service.Entity = new Tuple<string, Assembly>("VisualTestText", null);
+                service.Entity = new Tuple<string, Assembly>("VisualTest", null);
                 service.Show();
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
@@ -200,7 +200,7 @@ namespace APPA_107N_109N
         public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
-    public abstract class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
+    public  class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
     {
         public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -212,13 +212,43 @@ namespace APPA_107N_109N
 
         protected override DataTable FillData()
         {
-            var data = new DataTable();
+            var data = new DataTable { TableName = "ITBmOprobovanie" };
+
+            
             data.Columns.Add("Результат опробования");
             var dataRow = data.NewRow();
-            var dds = DataRow[0] as BasicOperationVerefication<bool>;
-            dataRow[0] = dds.Getting;
-            data.Rows.Add(dataRow);
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                data.Rows.Add(dataRow);
+                
+            }
             return data;
+        }
+
+        protected override void InitWork()
+        {
+            DataRow.Clear();
+            var operation = new BasicOperation<bool>();
+            operation.Expected = true;
+            operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+            operation.InitWork = () =>
+            {
+                var service = UserItemOperation.ServicePack.QuestionText;
+                service.Title = "Опробование";
+                service.Entity = new Tuple<string, Assembly>("Oprobovanie", null);
+                service.Show();
+                var res = service.Entity as Tuple<string, bool>;
+                operation.Getting = res.Item2;
+                operation.Comment = res.Item1;
+                operation.IsGood = () => operation.Getting;
+
+                return Task.CompletedTask;
+            };
+
+            operation.CompliteWork = () => { return Task.FromResult(true); };
+            DataRow.Add(operation);
         }
 
         #endregion Methods
