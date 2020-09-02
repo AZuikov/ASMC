@@ -1208,7 +1208,7 @@ namespace APPA_107N_109N
             HerzVPoint[2] = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 10);
             HerzVPoint[3] = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 20);
             HerzVPoint[4] = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 50);
-            HerzVPoint[5] = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 100);
+            HerzVPoint[5] = new MeasPoint(MeasureUnits.Herz, Multipliers.Kilo, 100, true);
 
             VoltPoint = new AcVariablePoint[3];
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
@@ -1732,7 +1732,7 @@ namespace APPA_107N_109N
 
         public Oper6AciMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности измерения переменного напряжения";
+            Name = "Определение погрешности измерения переменного тока";
             OperMeasureMode = Mult107_109N.MeasureMode.ACV;
            
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
@@ -2379,7 +2379,7 @@ namespace APPA_107N_109N
                                                                       voltPoint.VariableBaseValueMeasPoint.MultipliersUnit,
                                                                       freqPoint.MultipliersUnit);
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(500);
+                            Thread.Sleep(100);
                             //измеряем
                             var measurePoint = (decimal)appa107N.GetValue();
 
@@ -3262,8 +3262,9 @@ namespace APPA_107N_109N
                                                                    (decimal)currPoint
                                                                             .MultipliersUnit.GetDoubleValue());
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                        if (thisRangeUnits.MultipliersUnit == Multipliers.Mili && appa107N.GetRangeNominal == Mult107_109N.RangeNominal.Range40mF) Thread.Sleep(60000);
-                        //else if (thisRangeUnits.MultipliersUnit == Multipliers.Micro) Thread.Sleep(12000);
+                        if (thisRangeUnits.MultipliersUnit == Multipliers.Mili && appa107N.GetRangeNominal == Mult107_109N.RangeNominal.Range40mF) 
+                            Thread.Sleep(90000);
+                        else if (thisRangeUnits.MultipliersUnit == Multipliers.Mili && appa107N.GetRangeNominal == Mult107_109N.RangeNominal.Range4mF) Thread.Sleep(12000);
                         else
                             Thread.Sleep(4000);
 
