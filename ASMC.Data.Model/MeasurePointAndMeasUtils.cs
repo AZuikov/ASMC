@@ -13,6 +13,11 @@ namespace ASMC.Data.Model
     {
         #region Property
 
+        /// <summary>
+        /// Флаг поддельной точки. Подразумевается, если значение false, значит точка НЕ поддельная.
+        /// </summary>
+        public bool fakePoinFlag { get; protected set; }
+
         public MeasureUnits Units { get; set; }
 
         //множитель единицы
@@ -39,13 +44,21 @@ namespace ASMC.Data.Model
             Units = MeasureUnits.V;
             MultipliersUnit = Multipliers.None;
             NominalVal = 0;
+            fakePoinFlag = false;
         }
-
-        public MeasPoint(MeasureUnits units, Multipliers multipliersUnit, decimal nominalVal)
+        /// <summary>
+        /// Измерительная точка.
+        /// </summary>
+        /// <param name="units">Единицы измерения величины.</param>
+        /// <param name="multipliersUnit">Множитель единицы измерения (килоб милли и т.д.).</param>
+        /// <param name="nominalVal">Номинальное значение величины.</param>
+        /// <param name="fakePoint">Точка реально подается на прибор (если false)</param>
+        public MeasPoint(MeasureUnits units, Multipliers multipliersUnit, decimal nominalVal, bool fakePoint  = false)
         {
             Units = units;
             MultipliersUnit = multipliersUnit;
             NominalVal = nominalVal;
+            fakePoinFlag = fakePoint;
         }
 
         public override string ToString()
@@ -62,6 +75,11 @@ namespace ASMC.Data.Model
     public class AcVariablePoint
     {
         #region Fields
+
+        /// <summary>
+        /// Флаг для поддельной точки.
+        /// </summary>
+        public bool fakePointFlag { get; protected set; }
 
         /// <summary>
         /// Основное значение точки (тока/напряжения).
@@ -91,12 +109,12 @@ namespace ASMC.Data.Model
         /// <param name = "inNominal">номинал предела измерения.</param>
         /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
         /// <param name = "inHerzArr">Массив частот для данной точки.</param>
-        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit, MeasPoint[] inHerzArr)
+        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit, MeasPoint[] inHerzArr, bool fakePoint = false)
         {
             VariableBaseValueMeasPoint.NominalVal = inNominal;
             VariableBaseValueMeasPoint.MultipliersUnit = inMultipliersUnit;
             VariableBaseValueMeasPoint.Units = inMeasureUnits;
-
+            fakePointFlag = fakePoint;
             Herz = inHerzArr;
         }
     }

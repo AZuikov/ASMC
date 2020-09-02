@@ -103,16 +103,16 @@ namespace Appa107N
 
                 UserItemOperation = new IUserItemOperationBase[]
                 {
-                    //new Oper1VisualTest(this),
-                    //new Oper2Oprobovanie(this),
-                    //DcvMode,
-                    //AcvMode, 
+                    new Oper1VisualTest(this),
+                    new Oper2Oprobovanie(this),
+                    DcvMode,
+                    AcvMode, 
                     OhmMode,
-                    //FarMode,
-                    //TempMode,
-                    //FreqMode,
-                    //DciMode,
-                    //AciMode
+                    FarMode,
+                    FreqMode,
+                    DciMode,
+                    AciMode,
+                    TempMode
                     
                 };
         }
@@ -127,12 +127,7 @@ namespace Appa107N
         #endregion
     }
 
-    public class Oper1VisualTest : APPA_107N_109N.Oper1VisualTest
-    {
-        public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
-        {
-        }
-    }
+   
 
     #region DCV
 
@@ -479,7 +474,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+            
         }
     }
 
@@ -491,7 +486,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+           
         }
     }
 
@@ -502,7 +497,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+            
         }
     }
 
@@ -514,7 +509,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+           
         }
     }
 
@@ -526,7 +521,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.DCI;
+            
         }
     }
 
@@ -541,7 +536,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.ACmA;
+            
         }
     }
 
@@ -553,7 +548,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.ACmA;
+            
         }
     }
 
@@ -564,7 +559,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.ACI;
+            
         }
     }
 
@@ -575,7 +570,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.ACI;
+            
         }
     }
 
@@ -586,7 +581,7 @@ namespace Appa107N
         {
             appa107N = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
-            OperMeasureMode = Mult107_109N.MeasureMode.ACI;
+            
         }
     }
 

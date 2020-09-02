@@ -149,9 +149,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             Multipliers = new ICommand[]{new Command("N","н", 1E-9),
                                 new Command("N", "н", 1E-9),
                                 new Command("U", "мк", 1E-6),
-                                new Command("M", "м", 1E-3),
+                                new Command("m", "м", 1E-3),
                                 new Command("", "", 1),
-                                new Command("K", "к", 1E3)};
+                                new Command("K", "к", 1E3), 
+                                new Command("M", "М", 1E6)};
                         }
 
                         /// <summary>
@@ -240,7 +241,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// </summary> 
                         public CalibrMain SetValue(decimal value, Multipliers mult= AP.Utils.Helps.Multipliers.None)
                         {
-                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}A 0HZ");
+                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}A, 0Hz");
                             return _calibrMain;
                         }
 
@@ -273,7 +274,18 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
                         public CalibrMain SetValue(decimal value, decimal hertz, Multipliers voltMult, Multipliers herzMult = AP.Utils.Helps.Multipliers.None)
                         {
-                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, voltMult)}A, {JoinValueMult(hertz, herzMult)}HZ");
+                            string SendComand =
+                                $@"OUT {JoinValueMult(value, voltMult)}A, {JoinValueMult(hertz, herzMult)}HZ";
+                            _calibrMain.WriteLine(SendComand);
+
+                            _calibrMain.WriteLine("err?");
+                            string answer = _calibrMain.ReadLine();
+                            if (!answer.Equals("0,\"No Error\"\n"))
+                            {
+                                MessageBox.Show($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
+                                //throw  new Exception($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
+                            }
+
                             return _calibrMain;
                         }
                     }

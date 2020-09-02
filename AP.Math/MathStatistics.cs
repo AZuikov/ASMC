@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,40 @@ namespace AP.Math
 {
     public static class MathStatistics
     {
+        /// <summary>
+        /// Случайное знаечние в диапазоне
+        /// </summary>
+        /// <param name="from">От</param>
+        /// <param name="to">До</param>
+        /// <returns>Случайно знаечние</returns>
+        public static double RandomToRange(double from, double to)
+        {
+            if (from >= to) throw new ArgumentOutOfRangeException($"Значение аргумента from({from}) больше значения to({to}).");
+            Random rand = new Random((int)Stopwatch.GetTimestamp());
+            if (from < 0 && to > 0)
+            {
+                var positive = rand.NextDouble() * (to - 0) + 0;
+                var negative = (rand.NextDouble() * (0 - from * -1) + from * -1) * -1;
+                return rand.Next(1) == 1 ? positive : negative;
+            }
+
+            if (from < 0 && to < 0)
+            {
+                return (rand.NextDouble() * (System.Math.Abs(from) - System.Math.Abs(to)) + System.Math.Abs(to)) * -1;
+            }
+
+            return rand.NextDouble() * (to - from) + from;
+
+
+        }
+
+
+        public static double ValueToRange(double StartRange, double EndRange, double min, double max, double value)
+        {
+            return (EndRange - StartRange) / (max - min) * value +
+                   ((StartRange * max - EndRange * min) / (max - min));
+        }
+
         public enum GrubbsLevel
         {
             MoreThen1Persent,
