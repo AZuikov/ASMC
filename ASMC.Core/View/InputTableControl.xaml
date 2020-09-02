@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:behavior="clr-namespace:ASMC.Common.Behavior;assembly=ASMC.Common"
+             xmlns:view="clr-namespace:ASMC.Core.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
       <StackPanel>
-          <ItemsControl ItemsSource="{Binding Cells}">
+        <ItemsControl ItemsSource="{Binding Path=Data, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}">
               <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
                       <Grid>
@@ -26,13 +27,21 @@
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemContainerStyle>
                   <Style>
-                    <Setter Property="Grid.Row" Value="{Binding RowCount}" />
-                      <Setter Property="Grid.Column" Value="{Binding ColumnIndex}" />
+                    <Setter Property="Grid.Row" Value="{Binding Path=RowIndex}" />
+                    <Setter Property="Grid.Column" Value="{Binding Path=ColumnIndex}" />
                   </Style>
               </ItemsControl.ItemContainerStyle>
               <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                      <TextBlock Text="{Binding Value}" />
+                          <Grid >
+                              <Grid.RowDefinitions>
+                                  <RowDefinition />
+                                  <RowDefinition />
+                              </Grid.RowDefinitions>
+                              <TextBlock Text="{Binding Path=Name}" />
+                        <TextBox Grid.Row="1" Text="{Binding Path=Value}" IsReadOnly="{Binding IsOnlyRead, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}" />
+                    </Grid>
+                     
                   </DataTemplate>
               </ItemsControl.ItemTemplate>
           </ItemsControl>

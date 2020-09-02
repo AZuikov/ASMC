@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using ASMC.Data.Model.Interface;
 
@@ -27,7 +28,7 @@ namespace ASMC.Core.View
         {
             RowCountPropery= DependencyProperty.Register(nameof(RowCount), typeof(int), typeof(InputTableControl), new UIPropertyMetadata(-1));
             DataProperty =
-                DependencyProperty.Register(nameof(Data), typeof(ICell[]), typeof(InputTableControl));
+                DependencyProperty.Register(nameof(Data), typeof(BindingList<ICell>), typeof(InputTableControl), new FrameworkPropertyMetadata(new BindingList<ICell>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
             IsOnlyReadProperty =
                 DependencyProperty.Register(nameof(IsOnlyRead), typeof(bool), typeof(InputTableControl), new PropertyMetadata(false));
         }
@@ -60,9 +61,10 @@ namespace ASMC.Core.View
                 SetValue(WidthCellProperty, value);
             }
         }
-        public ICell[] Data
+        public BindingList<ICell> Data
         {
-            get => (ICell[]) GetValue(DataProperty);
+
+            get => (BindingList<ICell>) GetValue(DataProperty);
             set
             {
                 SetValue(DataProperty, value);

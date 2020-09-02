@@ -23,5 +23,8 @@ namespace ASMC.Data.Model.Interface
         /// Описание ячейки
         /// </summary>
         string Description { get;  }
+
+        int RowIndex { get; }
+        int ColumnIndex { get; }
     }
 }
