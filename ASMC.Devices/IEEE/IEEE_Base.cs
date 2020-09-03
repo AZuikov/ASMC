@@ -331,21 +331,11 @@ namespace ASMC.Devices.IEEE
 
                     var devObj = (IMessageBasedSession)GlobalResourceManager.Open(arr[i]); 
 
-                    var regLpt = new Regex("LPT\\d+");
-                    var regCom = new Regex("COM\\d+");
-                    if (regLpt.IsMatch(devObj.HardwareInterfaceName))
-                    {
-                        arr[i] = "LPT" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
-                    }
-                    else if (regCom.IsMatch(devObj.HardwareInterfaceName))
-                    {
-                        arr[i] = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
-                    }
+                    string MyReEx = @"(com|lpt)\d+";
+                    Match m;
 
-                    //if (arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture))
-                    //{
-                    //    arr[i] = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
-                    //}
+                    m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                    if (m.Success) arr[i] = m.Value;
                 }
                 return arr.ToArray();
             }
