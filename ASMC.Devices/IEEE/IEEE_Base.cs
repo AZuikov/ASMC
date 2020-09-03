@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using ASMC.Data.Model;
@@ -317,6 +318,7 @@ namespace ASMC.Devices.IEEE
             get
             {
                 var arr = GlobalResourceManager.Find().ToList();
+                arr.Remove("INTFC");
 
 
                 for (var i = 0; i < arr.Count; i++)
@@ -327,18 +329,24 @@ namespace ASMC.Devices.IEEE
                         continue;
                     }
 
-                    if (arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture))
+                    var devObj = (IMessageBasedSession)GlobalResourceManager.Open(arr[i]); 
+
+                    var regLpt = new Regex("LPT\\d+");
+                    var regCom = new Regex("COM\\d+");
+                    if (regLpt.IsMatch(devObj.HardwareInterfaceName))
+                    {
+                        arr[i] = "LPT" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
+                    }
+                    else if (regCom.IsMatch(devObj.HardwareInterfaceName))
                     {
                         arr[i] = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
                     }
-                }
-                //{
-                   
-                //    if (!arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture)) continue;
 
-                //    var replace = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
-                //    arr[i] = replace;
-                //} 
+                    //if (arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture))
+                    //{
+                    //    arr[i] = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
+                    //}
+                }
                 return arr.ToArray();
             }
         }
