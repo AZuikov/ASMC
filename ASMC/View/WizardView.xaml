@@ -339,9 +339,7 @@
           </TabItem>
           <TabItem Header="Операции" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Operations}"
                    IsEnabled="{DXBinding 'SelectProgram != null'}">
-            <StackPanel MinHeight="366">
-                            <view:OperationView IsManual="{Binding IsManual}"/>
-            </StackPanel>
+                            <view:OperationView IsManual="{Binding IsManual}" Height="{Binding ActualHeight, ElementName=TabControl1}"/>
           </TabItem>
           <TabItem Header="Документы" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Documents}"
                    IsEnabled="{DXBinding 'SelectProgram != null'}">

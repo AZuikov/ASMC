@@ -8,9 +8,8 @@
              xmlns:behavior="clr-namespace:ASMC.Common.Behavior;assembly=ASMC.Common"
              xmlns:asmc="clr-namespace:ASMC"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <Grid>
+             d:DesignHeight="450" d:DesignWidth="800" Name="dasdasd">
+        <Grid >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -67,6 +66,4 @@
                 </ListView.View>
             </ListView>
         </Grid>
-        
-    </StackPanel>
 </UserControl>
