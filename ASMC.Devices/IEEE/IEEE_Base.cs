@@ -329,13 +329,24 @@ namespace ASMC.Devices.IEEE
                         continue;
                     }
 
-                    var devObj = (IMessageBasedSession)GlobalResourceManager.Open(arr[i]); 
+                    
 
                     string MyReEx = @"(com|lpt)\d+";
                     Match m;
+                    try
+                    {
+                        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
+                        
+                        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                        if (m.Success) arr[i] = m.Value;
+                    }
+                    catch (NativeVisaException e)
+                    {
+                        arr.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
 
-                    m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                    if (m.Success) arr[i] = m.Value;
                 }
                 return arr.ToArray();
             }

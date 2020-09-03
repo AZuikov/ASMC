@@ -936,7 +936,13 @@ namespace B5_71_PRO_Abstract
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
                     voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal) 0.99, 0,
                                                           a.NominalVal);
-                    MathStatistics.Round(ref voltPulsV357, Bp.TolleranceVoltPuls.ToString());
+                    MathStatistics.Round(ref voltPulsV357, 0);
+
+                    UserItemOperation.ServicePack.MessageBox.Show(
+                                                                  "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",
+                                                                  "Указание оператору", MessageButton.OK,
+                                                                  MessageIcon.Information,
+                                                                  MessageResult.OK);
 
                     Bp.OffOutput();
 
@@ -946,8 +952,8 @@ namespace B5_71_PRO_Abstract
                     operation.LowerTolerance = 0;
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () =>
-                        (operation.Expected >= operation.LowerTolerance) &
-                        (operation.Expected < operation.UpperTolerance);
+                        (operation.Getting >= operation.LowerTolerance) &
+                        (operation.Getting < operation.UpperTolerance);
                 }
                 catch (Exception e)
                 {
@@ -1104,7 +1110,7 @@ namespace B5_71_PRO_Abstract
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                        operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                       
 
                         Bp.OffOutput();
                     }
@@ -1533,9 +1539,13 @@ namespace B5_71_PRO_Abstract
 
                         //инициализация блока питания
                         Bp.InitDevice();
-                        Bp.SetStateCurr(Bp.CurrMax);
+                        Bp.SetStateCurr(Bp.CurrMax*(decimal)0.7);
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.OnOutput();
+
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.8);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.9);
+                        Bp.SetStateCurr(Bp.CurrMax);
                     });
 
                     while (Mult.IsTerminal)
@@ -1565,13 +1575,42 @@ namespace B5_71_PRO_Abstract
                     var a = vm.SelectRange;
                     
                     Mult.Dc.Voltage.Range.Set(100);
-                    var currPuls34401 = (decimal)Mult.GetMeasValue();
+                    decimal currPuls34401 = -1;
+                    while (currPuls34401<=0)
+                    {
+                        currPuls34401 = (decimal)Mult.GetMeasValue();
+                        if (currPuls34401 > 0) break;
+
+                        var answer = UserItemOperation.ServicePack.MessageBox.Show(
+                                                                      "Установите на В3-57 подходящий предел измерения напряжения",
+                                                                      "Указание оператору", MessageButton.OKCancel,
+                                                                      MessageIcon.Information,
+                                                                      MessageResult.OK);
+                        if (answer == MessageResult.Cancel)
+                        {
+                            UserItemOperation.ServicePack.MessageBox.Show(
+                                                                          "Операция измерения пульсаций прервана, измерения не выполнены.",
+                                                                          "Указание оператору", MessageButton.OKCancel,
+                                                                          MessageIcon.Information,
+                                                                          MessageResult.OK);
+
+                            return;
+                        }
+
+                    }
+                    
                     var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, a.NominalVal);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
                     currPulsV357 = currPulsV357 / measResist;
                     MathStatistics.Round(ref currPulsV357, Bp.TolleranceCurrentPuls.ToString());
+
+                    UserItemOperation.ServicePack.MessageBox.Show(
+                                                                  "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",
+                                                                  "Указание оператору", MessageButton.OK,
+                                                                  MessageIcon.Information,
+                                                                  MessageResult.OK);
 
                     Bp.OffOutput();
 
