@@ -5,13 +5,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/Generic.xaml" />
-        <ResourceDictionary Source="Resources/Resources.xaml"/>
+                <ResourceDictionary Source="Resources.xaml"/>
       </ResourceDictionary.MergedDictionaries>
             <ui1:WindowService x:Key="DefaultWindowService"
                               WindowStartupLocation="CenterScreen"
                               WindowShowMode="Default"
-                              Title=""
+                              Title="ASMC"
                               SizeToContent="WidthAndHeight">
                 <!--<dxmvvm:WindowService.SettingsSelector>
                     <asmc:ViewSettingsSelector />

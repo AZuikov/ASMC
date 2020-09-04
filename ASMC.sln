@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMC.Devices.UInterface", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Plugins\Test\Test.csproj", "{73947502-8419-482B-BBE6-651B2A170221}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AP.Themes", "AP.Themes\AP.Themes.csproj", "{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -259,6 +261,14 @@ Global
 		{73947502-8419-482B-BBE6-651B2A170221}.Release|Any CPU.Build.0 = Release|Any CPU
 		{73947502-8419-482B-BBE6-651B2A170221}.Release|x86.ActiveCfg = Release|Any CPU
 		{73947502-8419-482B-BBE6-651B2A170221}.Release|x86.Build.0 = Release|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Debug|x86.Build.0 = Debug|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Release|x86.ActiveCfg = Release|Any CPU
+		{14B0EE9A-3568-49E1-A675-7E4F65A4C7A1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

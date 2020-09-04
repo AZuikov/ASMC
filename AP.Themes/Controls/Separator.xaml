@@ -1,0 +1,53 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="DefaultSeparatorStyle" TargetType="Separator">
+        <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBorderBrush}" />
+        <Setter Property="Height" Value="0.7" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border BorderThickness="0,0.7,0,0"
+                  BorderBrush="{TemplateBinding BorderBrush}" 
+                  Background="{TemplateBinding Background}"
+                  Height="{TemplateBinding Height}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MenuItemSeparatorStyle" TargetType="Separator">
+        <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBorderBrush}" />
+        <Setter Property="Margin" Value="25,2,2,2" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border BorderThickness="0,0.7,0,0"
+                  BorderBrush="{TemplateBinding BorderBrush}" 
+                  Background="{TemplateBinding Background}"
+                  Height="0.7" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ToolBarSeparatorStyle" TargetType="Separator">
+        <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBorderBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                  BorderThickness="0.7,0,0,0" 
+                  Width="0.7"
+                  Background="{TemplateBinding Background}" 
+                  SnapsToDevicePixels="True" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
