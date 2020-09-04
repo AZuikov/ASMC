@@ -24,7 +24,7 @@ namespace ASMC.Data.Model
         public Multipliers MultipliersUnit { get; set; }
 
         //номинал величины
-        public decimal NominalVal { get; set; }
+        public decimal Value { get; set; }
 
         /// <summary>
         /// Строковое описание измерительной точки вида: "номинальное значение" "единицы измерения".
@@ -43,7 +43,7 @@ namespace ASMC.Data.Model
         {
             Units = MeasureUnits.V;
             MultipliersUnit = Multipliers.None;
-            NominalVal = 0;
+            Value = 0;
             fakePoinFlag = false;
         }
         /// <summary>
@@ -51,13 +51,13 @@ namespace ASMC.Data.Model
         /// </summary>
         /// <param name="units">Единицы измерения величины.</param>
         /// <param name="multipliersUnit">Множитель единицы измерения (килоб милли и т.д.).</param>
-        /// <param name="nominalVal">Номинальное значение величины.</param>
+        /// <param name="value">Номинальное значение величины.</param>
         /// <param name="fakePoint">Точка реально подается на прибор (если false)</param>
-        public MeasPoint(MeasureUnits units, Multipliers multipliersUnit, decimal nominalVal, bool fakePoint  = false)
+        public MeasPoint(MeasureUnits units, Multipliers multipliersUnit, decimal value, bool fakePoint  = false)
         {
             Units = units;
             MultipliersUnit = multipliersUnit;
-            NominalVal = nominalVal;
+            Value = value;
             fakePoinFlag = fakePoint;
         }
 
@@ -65,7 +65,7 @@ namespace ASMC.Data.Model
         {
 
             //todo: Необходимо верно конвертировать значение decimal в строку, что бы не появлялась подпись со степенью десятки.
-            return $"{NominalVal} {MultipliersUnit.GetStringValue()}{Units.GetStringValue()}";
+            return $"{Value} {MultipliersUnit.GetStringValue()}{Units.GetStringValue()}";
         }
     }
 
@@ -111,7 +111,7 @@ namespace ASMC.Data.Model
         /// <param name = "inHerzArr">Массив частот для данной точки.</param>
         public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit, MeasPoint[] inHerzArr, bool fakePoint = false)
         {
-            VariableBaseValueMeasPoint.NominalVal = inNominal;
+            VariableBaseValueMeasPoint.Value = inNominal;
             VariableBaseValueMeasPoint.MultipliersUnit = inMultipliersUnit;
             VariableBaseValueMeasPoint.Units = inMeasureUnits;
             fakePointFlag = fakePoint;
