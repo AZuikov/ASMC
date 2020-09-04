@@ -459,6 +459,8 @@ namespace ASMC.Devices.Port.APPA
         {
             get
             {
+                SendQuery();
+                Logger.Debug(((Units)(_data[16] >> 3)).ToString);
                 return (Units)(_data[16] >> 3);
             }
         }
@@ -468,13 +470,6 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-
                 Logger.Debug(((BlueState)_data[5]).ToString());
                 return (BlueState)_data[5];
             }
@@ -488,13 +483,6 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-
                 Logger.Info(((Function)_data[12]).ToString());
                 return (Function)_data[12];
             }
@@ -537,12 +525,7 @@ namespace ASMC.Devices.Port.APPA
         {
             SendQuery();
             double value;
-            WaitEvent.WaitOne();
-            if (_flagTimeout)
-            {
-                _flagTimeout = false;
-                throw new TimeoutException();
-            }
+            
             // по умолчанию запрашиваем показания с главного экрана
             if (generalDsiplay)
             {
@@ -586,10 +569,6 @@ namespace ASMC.Devices.Port.APPA
 
 
             Logger.Info(value);
-
-            //value *= GetGeneralMeasureUnit.GetDoubleValue();
-
-            //return DoubleToDoubleMind(value, mult);
             return value;
         }
 
@@ -600,15 +579,8 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                    WaitEvent.WaitOne();
-                    if (_flagTimeout)
-                    {
-                        _flagTimeout = false;
-                        throw new TimeoutException();
-                    }
-
-                    Logger.Info(((RangeCode)_data[7]).ToString());
-                    return (RangeCode)_data[7];
+                Logger.Info(((RangeCode)_data[7]).ToString());
+                 return (RangeCode)_data[7];
                 
             }
         }
@@ -618,13 +590,6 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-
                 Logger.Info(((Rotor)_data[4]).ToString());
                 return (Rotor)_data[4];
             }
@@ -638,13 +603,6 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                WaitEvent.WaitOne();
-                if (_flagTimeout)
-                {
-                    _flagTimeout = false;
-                    throw new TimeoutException();
-                }
-
                 Logger.Info(((Function)_data[17]).ToString());
                 return (Function)_data[17];
             }
@@ -730,6 +688,14 @@ namespace ASMC.Devices.Port.APPA
             {
                 Close();
             }
+
+            WaitEvent.WaitOne();
+            if (_flagTimeout)
+            {
+                _flagTimeout = false;
+                throw new TimeoutException();
+            }
+
         }
 
         protected virtual void Dispose(bool disposing)

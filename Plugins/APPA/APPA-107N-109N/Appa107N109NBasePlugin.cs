@@ -393,51 +393,57 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                        if (appa107N.StringConnection.Equals("COM1"))
-                            appa107N.StringConnection = GetStringConnect(appa107N);
-                        flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
+                            if (appa107N.StringConnection.Equals("COM1"))
+                                appa107N.StringConnection = GetStringConnect(appa107N);
+                            flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
-
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите ручной режим переключения пределов.");
-
-                        while (OperationDcRangeNominal != appa107N.GetRangeNominal)
-                        {
-                            int countPushRangeButton;
-
-                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                            await Task.Run(() =>
                             {
-                                CountOfRanges = 2;
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
-                            }
-                            else
-                            {
-                                //работает только для ручного режима переключения пределов
-                                CountOfRanges = 4;
-                                var curRange = (int) appa107N.GetRangeCode - 127;
-                                var targetRange = (int) OperationDcRangeCode - 127;
-                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
-                            }
-                        }
+                                while (OperMeasureMode != appa107N.GetMeasureMode)
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                           "Указание оператору", MessageButton.OK,
+                                                           MessageIcon.Information,
+                                                           MessageResult.OK);
+
+                                while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show("Установите ручной режим переключения пределов.");
+
+                                while (OperationDcRangeNominal != appa107N.GetRangeNominal)
+                                {
+                                    int countPushRangeButton;
+
+                                    if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                                    {
+                                        CountOfRanges = 2;
+                                        UserItemOperation.ServicePack.MessageBox
+                                                         .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                               $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                               MessageResult.OK);
+                                    }
+                                    else
+                                    {
+                                        //работает только для ручного режима переключения пределов
+                                        CountOfRanges = 4;
+                                        var curRange = (int)appa107N.GetRangeCode - 127;
+                                        var targetRange = (int)OperationDcRangeCode - 127;
+                                        countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                        UserItemOperation.ServicePack.MessageBox
+                                                         .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                               $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                               MessageResult.OK);
+                                    }
+                                }
+                            });
+                        
+
+                        
                     }
                     catch (Exception e)
                     {
@@ -838,47 +844,52 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                        var testMeasureModde = appa107N.GetMeasureMode;
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
-
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите ручной режим переключения пределов.");
-
-                        while (OperationAcRangeNominal != appa107N.GetRangeNominal)
+                        await Task.Run(() =>
                         {
-                            int countPushRangeButton;
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                            {
+                            var testMeasureModde = appa107N.GetMeasureMode;
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
                                                        MessageResult.OK);
-                            }
-                            else
-                            {
-                                //работает только для ручного режима переключения пределов
-                                CountOfRanges = 4;
-                                var curRange = (int) appa107N.GetRangeCode - 127;
-                                var targetRange = (int) OperationAcRangeCode - 127;
-                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
+                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
+                                                 .Show("Установите ручной режим переключения пределов.");
+
+                            while (OperationAcRangeNominal != appa107N.GetRangeNominal)
+                            {
+                                int countPushRangeButton;
+
+                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                                {
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
+                                else
+                                {
+                                    //работает только для ручного режима переключения пределов
+                                    CountOfRanges = 4;
+                                    var curRange = (int)appa107N.GetRangeCode - 127;
+                                    var targetRange = (int)OperationAcRangeCode - 127;
+                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
                             }
-                        }
+                        });
+
+                        
                     }
                     catch (Exception e)
                     {
@@ -1424,48 +1435,53 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                        var testMode = appa107N.GetMeasureMode;
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
-
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите ручной режим переключения пределов.");
-
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        await Task.Run(() =>
                         {
-                            int countPushRangeButton;
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                            {
-                                CountOfRanges = 2;
+                            var testMode = appa107N.GetMeasureMode;
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
                                                        MessageResult.OK);
-                            }
-                            else
-                            {
-                                //работает только для ручного режима переключения пределов
-                                CountOfRanges = 2;
-                                var curRange = (int) appa107N.GetRangeCode - 127;
-                                var targetRange = (int) OperationRangeCode - 127;
-                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
+                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
+                                                 .Show("Установите ручной режим переключения пределов.");
+
+                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                            {
+                                int countPushRangeButton;
+
+                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                                {
+                                    CountOfRanges = 2;
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
+                                else
+                                {
+                                    //работает только для ручного режима переключения пределов
+                                    CountOfRanges = 2;
+                                    var curRange = (int)appa107N.GetRangeCode - 127;
+                                    var targetRange = (int)OperationRangeCode - 127;
+                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
                             }
-                        }
+                        });
+
+                        
                     }
                     catch (Exception e)
                     {
@@ -1897,48 +1913,53 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                        var testMode = appa107N.GetMeasureMode;
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
-
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите ручной режим переключения пределов.");
-
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        await Task.Run(() =>
                         {
-                            int countPushRangeButton;
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                            {
-                                CountOfRanges = 2;
+                            var testMode = appa107N.GetMeasureMode;
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
                                                        MessageResult.OK);
-                            }
-                            else
-                            {
-                                //работает только для ручного режима переключения пределов
-                                CountOfRanges = 2;
-                                var curRange = (int) appa107N.GetRangeCode - 127;
-                                var targetRange = (int) OperationRangeCode - 127;
-                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
+                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
+                                                 .Show("Установите ручной режим переключения пределов.");
+
+                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                            {
+                                int countPushRangeButton;
+
+                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                                {
+                                    CountOfRanges = 2;
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
+                                else
+                                {
+                                    //работает только для ручного режима переключения пределов
+                                    CountOfRanges = 2;
+                                    var curRange = (int)appa107N.GetRangeCode - 127;
+                                    var targetRange = (int)OperationRangeCode - 127;
+                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
                             }
-                        }
+                        });
+
+                        
                     }
                     catch (Exception e)
                     {
@@ -2400,37 +2421,21 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        await Task.Run(() =>
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
+                                                       MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите автоматический режим переключения пределов.");
-
-                        //while (OperationRangeNominal != appa107N.GetRangeNominal)
-                        //{
-                        //    int countPushRangeButton;
-
-                        //        //работает только для ручного режима переключения пределов
-                        //        CountOfRanges = 6;
-                        //        int curRange = (int)appa107N.GetRangeCode - 127;
-                        //        int targetRange = (int)OperationRangeCode - 127;
-                        //        countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
-
-                        //        UserItemOperation.ServicePack.MessageBox
-                        //                         .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                        //                               $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                        //                               "Указание оператору", MessageButton.OK,
-                        //                               MessageIcon.Information,
-                        //                               MessageResult.OK);
-
-                        //}
+                            while (appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto)
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show("Установите автоматический режим переключения пределов.");
+                        });
                     }
                     catch (Exception e)
                     {
@@ -3014,48 +3019,51 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
-
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите ручной режим переключения пределов.");
-
-                        while (OperationOhmRangeNominal != appa107N.GetRangeNominal)
+                        await Task.Run(() =>
                         {
-                            int countPushRangeButton;
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                            {
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
-                            }
-                            else
-                            {
-                                //работает только для ручного режима переключения пределов
-                                CountOfRanges = 8;
-                                var curRange = (int) appa107N.GetRangeCode - 127;
-                                var targetRange = (int) OperationOhmRangeCode - 127;
-                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
+                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                       "Указание оператору", MessageButton.OK,
-                                                       MessageIcon.Information,
-                                                       MessageResult.OK);
+                                                 .Show("Установите ручной режим переключения пределов.");
+
+                            while (OperationOhmRangeNominal != appa107N.GetRangeNominal)
+                            {
+                                int countPushRangeButton;
+
+                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                                {
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                           "Указание оператору", MessageButton.OK,
+                                                           MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
+                                else
+                                {
+                                    //работает только для ручного режима переключения пределов
+                                    CountOfRanges = 8;
+                                    var curRange = (int)appa107N.GetRangeCode - 127;
+                                    var targetRange = (int)OperationOhmRangeCode - 127;
+                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                           "Указание оператору", MessageButton.OK,
+                                                           MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
                             }
-                        }
+                        });
                     }
                     catch (Exception e)
                     {
@@ -3291,47 +3299,38 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
-
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите ручной режим переключения пределов.");
-
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        await Task.Run(() =>
                         {
-                            int countPushRangeButton;
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            //if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                            //{
-                            //    CountOfRanges = 2;
-                            //    UserItemOperation.ServicePack.MessageBox
-                            //                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                            //                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                            //                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                            //                           MessageResult.OK);
-                            //}
-                            //else
-                            //{
-                            //работает только для ручного режима переключения пределов
-                            CountOfRanges = 8;
-                            var curRange = (int) appa107N.GetRangeCode - 127;
-                            var targetRange = (int) OperationRangeCode - 127;
-                            countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
+                                                       MessageResult.OK);
 
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                   $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                   "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                   MessageResult.OK);
-                            //}
-                        }
+                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show("Установите ручной режим переключения пределов.");
+
+                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                            {
+                                int countPushRangeButton;
+                                CountOfRanges = 8;
+                                var curRange = (int)appa107N.GetRangeCode - 127;
+                                var targetRange = (int)OperationRangeCode - 127;
+                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        });
+
+                        
                     }
                     catch (Exception e)
                     {
@@ -3737,47 +3736,51 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                   "Указание оператору", MessageButton.OK,
-                                                   MessageIcon.Information,
-                                                   MessageResult.OK);
-
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
-                                             .Show("Установите ручной режим переключения пределов.");
-
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        await Task.Run(() =>
                         {
-                            int countPushRangeButton;
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                            {
-                                CountOfRanges = 2;
+                            while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
                                                        MessageResult.OK);
-                            }
-                            else
-                            {
-                                //работает только для ручного режима переключения пределов
-                                CountOfRanges = 2;
-                                var curRange = (int) appa107N.GetRangeCode - 127;
-                                var targetRange = (int) OperationRangeCode - 127;
-                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
+                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
+                                                 .Show("Установите ручной режим переключения пределов.");
+
+                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                            {
+                                int countPushRangeButton;
+
+                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                                {
+                                    CountOfRanges = 2;
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
+                                else
+                                {
+                                    //работает только для ручного режима переключения пределов
+                                    CountOfRanges = 2;
+                                    var curRange = (int)appa107N.GetRangeCode - 127;
+                                    var targetRange = (int)OperationRangeCode - 127;
+                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                    UserItemOperation.ServicePack.MessageBox
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                           MessageResult.OK);
+                                }
                             }
-                        }
+                        });
+                        
                     }
                     catch (Exception e)
                     {

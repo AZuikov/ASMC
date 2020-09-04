@@ -390,7 +390,7 @@ namespace ASMC.Devices.IEEE
                 date = Session.FormattedIO.ReadString();
                 
             }
-            catch (TimeoutException e)
+            catch (IOTimeoutException e)
             {  
               Logger.Error(e);  
             } 
