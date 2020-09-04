@@ -176,7 +176,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Resources\Resources.xaml">
+    <Page Include="Resources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -213,6 +213,10 @@
     <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
       <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
       <Name>AP.Reports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AP.Themes\AP.Themes.csproj">
+      <Project>{14b0ee9a-3568-49e1-a675-7e4f65a4c7a1}</Project>
+      <Name>AP.Themes</Name>
     </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>

@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/AP.Themes;component/Controls/TextBox.xaml" />
+        <ResourceDictionary Source="/AP.Themes;component/Controls/Separator.xaml" />
+        <ResourceDictionary Source="/AP.Themes;component/Controls/MenuItem.xaml"/>
+        <ResourceDictionary Source="/AP.Themes;component/Controls/Menu.xaml"/>
+        <ResourceDictionary Source="/AP.Themes;component/Controls/TreeView.xaml"/>
+        <ResourceDictionary Source="/AP.Themes;component/Controls/Button.xaml"/>
+        <ResourceDictionary Source="/AP.Themes;component/Controls/Window.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}" />
+    <Style TargetType="Separator" BasedOn="{StaticResource DefaultSeparatorStyle}"/>
+    <Style TargetType="MenuItem" BasedOn="{StaticResource DefaultMenuItemStyle}"/>
+    <Style TargetType="TreeView" BasedOn="{StaticResource TreeViewStyle}" />
+    <Style TargetType="Menu" BasedOn="{StaticResource DefaultMenuStyle}" />
+    <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}" />
+    <Style TargetType="Window" BasedOn="{StaticResource WindowStyle}" />
+</ResourceDictionary>

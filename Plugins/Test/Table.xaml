@@ -8,6 +8,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <view:InputTableControl Data="{Binding TestData}" SelectValue="{Binding Selected}" RowCount="10"/> 
+        <view:InputTableControl Data="{Binding TestData}" SelectValue="{Binding Selected}" /> 
     </Grid>
 </UserControl>

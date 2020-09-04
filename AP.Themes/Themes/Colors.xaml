@@ -1,0 +1,26 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
+
+    <!-- Separator -->
+
+    <SolidColorBrush x:Key="SeparatorBrush" Color="Black" />
+    <SolidColorBrush x:Key="SeparatorBorderBrush" Color="Transparent" />
+
+    <!-- Menu -->
+
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="Black" />
+    <SolidColorBrush x:Key="MenuForegroundBrush" Color="White" />
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="#FFFFFF" />
+
+    <SolidColorBrush x:Key="ContextMenuBackgroundBrush" Color="Black" />
+    <SolidColorBrush x:Key="ContextMenuBorderBrush" Color="#FFFFFF" />
+    <Color x:Key="ContextMenuShadowColor" >#55CCCCCC</Color>
+    <SolidColorBrush x:Key="MenuItemHoverBackgroundBrush" Color="DarkOrange" />
+
+    <!-- OperationView -->
+    <SolidColorBrush x:Key="BadForegroundColor">Red</SolidColorBrush>
+    <SolidColorBrush x:Key="GoodForegroundColor">Green</SolidColorBrush>
+
+
+</ResourceDictionary>

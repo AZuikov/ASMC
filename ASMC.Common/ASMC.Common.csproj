@@ -99,6 +99,7 @@
     <Compile Include="UI\GridHelpers.cs" />
     <Compile Include="UI\MessageBoxService.cs" />
     <Compile Include="UI\TaskMessageService.cs" />
+    <Compile Include="UI\ValueContentControl.cs" />
     <Compile Include="UI\WindowAttachedProperties.cs" />
     <Compile Include="UI\WindowService.cs" />
     <Compile Include="ViewExtensions.cs" />
@@ -116,6 +117,10 @@
     <Resource Include="Image\CharacterGrowFont.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\ValueContentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\FormView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -146,6 +151,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

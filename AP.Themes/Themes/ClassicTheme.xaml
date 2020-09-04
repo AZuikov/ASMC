@@ -1,0 +1,118 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Window -->
+
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="Black"/>
+    <SolidColorBrush x:Key="WindowForegroundBrush" Color="LightGray"/>
+    <SolidColorBrush x:Key="WindowTitleForegroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowTitleBackgroundBrush" Color="DarkOrange"/>
+    <SolidColorBrush x:Key="WindowInactiveTitleBackgroundBrush" Color="#A0A0A0"/>
+    <SolidColorBrush x:Key="WindowGlowBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowBorderBrush" Color="DarkOrange"/>
+    <SolidColorBrush x:Key="WindowInactiveBorderBrush" Color="#A0A0A0"/>
+    <SolidColorBrush x:Key="WindowInactiveForegroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowInactiveBackgroundBrush" Color="#A0A0A0"/>
+
+    <SolidColorBrush x:Key="WindowButtonForegroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowButtonBackgroundBrush" Color="Transparent"/>
+    <SolidColorBrush x:Key="WindowButtonHoverForegroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowButtonHoverBackgroundBrush" Color="#666666" Opacity="0.35"/>
+    <SolidColorBrush x:Key="WindowButtonPressedForegroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowButtonPressedBackgroundBrush" Color="#666666" Opacity="0.5"/>
+
+    <SolidColorBrush x:Key="WindowCloseButtonHoverForegroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowCloseButtonHoverBackgroundBrush" Color="#E81123"/>
+    <SolidColorBrush x:Key="WindowCloseButtonPressedForegroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowCloseButtonPressedBackgroundBrush" Color="#E81123"/>
+
+    <!-- Label -->
+
+    <SolidColorBrush x:Key="LabelForegroundBrush" Color="LightGray" />
+    <SolidColorBrush x:Key="MainInstructionLabelForegroundBrush" Color="#2B579A" />
+    <SolidColorBrush x:Key="DescriptionLabelForegroundBrush" Color="#666666" />
+
+    <!-- Button -->
+
+    <SolidColorBrush x:Key="ButtonBorderBrush" Color="#A0A0A0" />
+    <SolidColorBrush x:Key="ButtonForegroundBrush" Color="Black" />
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="DarkOrange" />
+    <SolidColorBrush x:Key="ButtonDisabledBackgroundBrush" Color="Transparent" Opacity="0.5" />
+    <SolidColorBrush x:Key="ButtonDisabledBorderBrush" Color="#FF393636" Opacity="0.25" />
+    <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="#3399FF" />
+    <SolidColorBrush x:Key="ButtonHoverForegroundBrush" Color="#444444" />
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="LightGray" />
+    <SolidColorBrush x:Key="ButtonPressedBorderBrush" Color="#3399FF" />
+    <SolidColorBrush x:Key="ButtonPressedForegroundBrush" Color="#444444" />
+    <SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="White" />
+    <SolidColorBrush x:Key="ButtonFocusedBorderBrush" Color="#0078D7" />
+    <SolidColorBrush x:Key="ButtonInnerBorderBrush" Color="#FFFFFF" />
+  
+
+
+    <!-- TextBox -->
+
+    <SolidColorBrush x:Key="TextBoxForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="TextBoxSelectionBrush" Color="#3399FF" />
+    <SolidColorBrush x:Key="TextBoxBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextBoxBorderBrush" Color="#ABADB3" />
+    <SolidColorBrush x:Key="TextBoxHoverBorderBrush" Color="#3399FF" />
+    <SolidColorBrush x:Key="TextBoxHoverBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextBoxFocusedBorderBrush" Color="#3399FF" />
+    <SolidColorBrush x:Key="TextBoxFocusedBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextBoxDisabledBorderBrush" Color="#ABADB3" Opacity="0.25" />
+    <SolidColorBrush x:Key="TextBoxDisabledBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextBoxCaretBrush" Color="#0078D7" />
+    <SolidColorBrush x:Key="TextBoxWatermarkBrush" Color="#E2E4E7" />
+
+    <SolidColorBrush x:Key="TextBoxValidationErrorBorderBrush" Color="#ffc20a" />
+    <SolidColorBrush x:Key="TextBoxValidationErrorBackgroundBrush" Color="#10ffc20a" />
+
+    <SolidColorBrush x:Key="GreenTextBoxForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="GreenTextBoxBackgroundBrush" Color="#D2E8D2" />
+    <SolidColorBrush x:Key="GreenTextBoxBorderBrush" Color="#ABADB3" />
+    <SolidColorBrush x:Key="ReadOnlyTextBoxForegroundBrush" Color="LightGray" />
+    <SolidColorBrush x:Key="ReadOnlyTextBoxBackgroundBrush" Color="#444444" />
+    <SolidColorBrush x:Key="ReadOnlyTextBoxBorderBrush" Color="#ABADB3" />
+    <SolidColorBrush x:Key="ReadOnlyTextBoxDisabledBackgroundBrush" Color="#FFFFE1" Opacity="0.5" />
+    <SolidColorBrush x:Key="ReadOnlyTextBoxDisabledBorderBrush" Color="#ABADB3" Opacity="0.25" />
+
+    <SolidColorBrush x:Key="GrayTextBoxForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="GrayTextBoxBackgroundBrush" Color="#E3E3E3" />
+    <SolidColorBrush x:Key="GrayTextBoxBorderBrush" Color="#ABADB3" />
+
+    <SolidColorBrush x:Key="TextBoxToolBarBorderBrush" Color="#E2E4E7" />
+
+    <!-- RadioBox -->
+
+    <SolidColorBrush x:Key="RadioButtonBorderBrush" Color="#ABABAB" />
+    <SolidColorBrush x:Key="RadioButtonGlyphBrush" Color="#666666" />
+    <SolidColorBrush x:Key="RadioButtonHoverGlyphBrush" Color="#333333" />
+
+
+    <!-- TreeView -->
+
+    <SolidColorBrush x:Key="TreeViewBackgroundBrush" Color="Black" />
+    <SolidColorBrush x:Key="TreeViewBorderBrush" Color="#D4D4D4" />
+    <SolidColorBrush x:Key="TreeViewHoverBorderBrush" Color="DarkOrange" />
+    <SolidColorBrush x:Key="TreeViewFocusedBorderBrush" Color="#2A8DD4" />
+
+    <SolidColorBrush x:Key="TreeViewItemHoverBackgroundBrush" Color="DarkOrange" />
+    <SolidColorBrush x:Key="TreeViewItemHoverForegroundBrush" Color="White" />
+    <SolidColorBrush x:Key="TreeViewItemSelectedBackgroundBrush" Color="DarkOrange" />
+
+    <SolidColorBrush x:Key="TreeViewForegroundBrush" Color="DarkGray" />
+
+
+
+    <!-- TabControl -->
+
+    <SolidColorBrush x:Key="TabBackgroundBrush" Color="#E9E9E9"/>
+    <SolidColorBrush x:Key="TabBorderBrush" Color="#D6D7D9"/>
+    <SolidColorBrush x:Key="TabForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="TabHoverBackgroundBrush" Color="#FCFCFC"/>
+    <SolidColorBrush x:Key="TabHoverForegroundBrush" Color="#000000"/>
+    <SolidColorBrush x:Key="TabSelectedBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TabSelectedForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="TabSelectedBorderBrush" Color="#898C95" />
+    <SolidColorBrush x:Key="TabActiveForegroundBrush" Color="#2B579A" />
+</ResourceDictionary>

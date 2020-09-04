@@ -158,7 +158,6 @@ namespace ASMC
         {
             if(!(TryFindResource(serviceKey) is IWindowService windowService))
                 return false;
-
             windowService.Show("WizardView", CreateViewModel());
             return true;
         }

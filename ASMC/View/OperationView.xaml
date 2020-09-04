@@ -9,64 +9,56 @@
              xmlns:asmc="clr-namespace:ASMC"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" Name="ColumnDefinitionThree"/>
+                <ColumnDefinition Width="Auto" />
+            <ColumnDefinition  Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" >
             <TreeView ItemsSource="{Binding UserItemOperation, Mode=TwoWay}">
                 <dxmvvm:Interaction.Behaviors>
                     <behavior:BindableSelectedItemBeheavior SelectItem ="{Binding Path=SelectItemTest, RelativeSource={RelativeSource AncestorType={x:Type local:OperationView}}, Mode=TwoWay}" />
                 </dxmvvm:Interaction.Behaviors>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate  ItemsSource="{Binding Nodes}">
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox IsChecked="{Binding Path=IsCheked}"
+                        <StackPanel Orientation="Horizontal" >
+                            <CheckBox IsChecked="{Binding Path=IsCheked}" Grid.Column="0"
                                       HorizontalAlignment="Left"
                                       VerticalAlignment="Center"  Visibility="{Binding IsManual, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding Path= Name}" >
+                            <TextBlock Text="{Binding Path= Name}" Grid.Column="1" >
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
-                                            
                                             <DataTrigger Binding="{Binding Path= IsGood}"  Value="false">
-                                                <Setter Property="Foreground" Value="Red"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource BadForegroundColor}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path= IsGood}"  Value="true">
-                                                <Setter Property="Foreground" Value="Green"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource GoodForegroundColor}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path= IsGood}"  Value="{x:Null}">
-                                                <Setter Property="Foreground" Value="Black"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource TreeViewForegroundBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path= IsWork}"  Value="true">
                                                 <Setter Property="Foreground" Value="Blue"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                   
                                 </TextBlock.Style>
-                               
                             </TextBlock>
                         </StackPanel>
                     </HierarchicalDataTemplate>
-                    <!--<DataTemplate>
-                    <CheckBox
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="{Binding Path= Name}" />
-                </DataTemplate>-->
                 </TreeView.ItemTemplate>
-
             </TreeView>
+        </Grid>
+          <GridSplitter Grid.Column="1" Width="2"/>
             <!--<DataGrid   Grid.Column="1" ItemsSource="{Binding SelectItemTest.Data.Rows}"  AutoGenerateColumns="True"/>-->
-            <ListView Grid.Column="1" ItemsSource="{Binding SelectItemTest.Data}">
+            <ListView Grid.Column="2" ItemsSource="{Binding SelectItemTest.Data}">
                 <ListView.View >
                     <GridView ColumnCollection="{Binding Path=Column}" >
                     </GridView>
                 </ListView.View>
             </ListView>
         </Grid>
-        
-    </StackPanel>
 </UserControl>

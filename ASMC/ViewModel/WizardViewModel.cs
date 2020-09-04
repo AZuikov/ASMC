@@ -230,13 +230,13 @@ namespace ASMC.ViewModel
 
         #region Methods
 
-        private static string GetUniqueFileName(string format)
+        private string GetUniqueFileName(string format)
         {
             var systemFlober = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var asseblyName = Assembly.GetEntryAssembly().GetName().Name;
             var path = Path.Combine(systemFlober, asseblyName);
 
-            var newFileName = path + @"\" + Path.GetRandomFileName() + format;
+            var newFileName = path + @"\" + SelectProgram?.Type + Path.GetRandomFileName() +  format;
             try
             {
                 Directory.Delete(path, true);
@@ -247,34 +247,13 @@ namespace ASMC.ViewModel
             }
             catch (IOException e)
             {
-                Logger.Debug(e, "Файл используется");
+                Logger.Debug(e, "Очистить деректорию не получить по причиние, используются файлы.");
             }
             finally
             {
                 Directory.CreateDirectory(path);
             }
-
-            //var tempFiles =
-            //    Directory.GetFiles(path);
-
-            //foreach (var file in tempFiles)
-            //{
-            // Path.GetRandomFileName()   
-            //}
-            //var i = 0;
-            //while (true)
-            //{
-            //    var fileExist = false;
-            //    foreach (var tempFile in tempFiles)
-            //        if (tempFile == newFileName)
-            //            fileExist = true;
-            //    if (fileExist == false)
-            //        break;
-            //    newFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\" + name +
-            //                  "_" + i + format;
-            //    i++;
-            //}
-
+            
             return newFileName;
         }
 

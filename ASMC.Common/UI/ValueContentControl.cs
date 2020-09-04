@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace AP.Utils
+namespace ASMC.Common.UI
 {
     /// <summary>
     /// Представляет элемент отображения
