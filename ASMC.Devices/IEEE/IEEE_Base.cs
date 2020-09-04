@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using ASMC.Data.Model;
@@ -309,24 +310,48 @@ namespace ASMC.Devices.IEEE
         }
 
         /// <summary>
-        /// Получить список всех устройств
+        /// Получить список всех устройств.
         /// </summary>
         /// <returns></returns>
         public static string[] AllStringConnect
         {
             get
-            {  
-                var arr = GlobalResourceManager.Find().ToArray();
-                for (var i = 0; i < arr.Length; i++)
-                {
-                    if (!arr[i].StartsWith("ASRL", true, CultureInfo.InvariantCulture)) continue;
+            {
+                var arr = GlobalResourceManager.Find().ToList();
+                arr.Remove("INTFC");
 
-                    var replace = "COM" + arr[i].ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
-                    arr[i] = replace;
-                } 
-                return arr;
+
+                for (var i = 0; i < arr.Count; i++)
+                {
+                    if (arr[i].Contains("INTFC"))
+                    {
+                        arr.RemoveAt(i);
+                        continue;
+                    }
+
+                    
+
+                    string MyReEx = @"(com|lpt)\d+";
+                    Match m;
+                    try
+                    {
+                        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
+                        
+                        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                        if (m.Success) arr[i] = m.Value;
+                    }
+                    catch (NativeVisaException e)
+                    {
+                        arr.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+
+                }
+                return arr.ToArray();
             }
         }
+
           
         public List<string> GetOption()
         {
@@ -365,7 +390,7 @@ namespace ASMC.Devices.IEEE
                 date = Session.FormattedIO.ReadString();
                 
             }
-            catch (TimeoutException e)
+            catch (IOTimeoutException e)
             {  
               Logger.Error(e);  
             } 
