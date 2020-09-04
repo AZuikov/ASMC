@@ -693,6 +693,7 @@ namespace ASMC.Devices.Port.APPA
             if (_flagTimeout)
             {
                 _flagTimeout = false;
+                Logger.Debug("");
                 throw new TimeoutException();
             }
 
