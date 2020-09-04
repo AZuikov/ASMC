@@ -73,7 +73,7 @@ namespace APPA_107N_109N
                                            $"Максимально допустимое значение {operation.UpperTolerance.VariableBaseValueMeasPoint.Description}\n" +
                                            $"Допустимое значение погрешности {operation.Error.VariableBaseValueMeasPoint.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.VariableBaseValueMeasPoint.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.VariableBaseValueMeasPoint.NominalVal - operation.Getting.VariableBaseValueMeasPoint.NominalVal}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.VariableBaseValueMeasPoint.Value - operation.Getting.VariableBaseValueMeasPoint.Value}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -97,7 +97,7 @@ namespace APPA_107N_109N
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                            $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.NominalVal - operation.Getting.NominalVal}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.Value - operation.Getting.Value}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -451,7 +451,7 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                        flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint.VariableBaseValueMeasPoint.NominalVal *
+                        flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint.VariableBaseValueMeasPoint.Value *
                                                                   (decimal) currPoint
                                                                            .VariableBaseValueMeasPoint.MultipliersUnit
                                                                            .GetDoubleValue());
@@ -479,9 +479,9 @@ namespace APPA_107N_109N
                         operation.ErrorCalculation = (inA, inB) =>
                         {
                             var result =
-                                BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.NominalVal) +
+                                BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.Value) +
                                 EdMlRaz *
-                                RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                                RangeResolution.VariableBaseValueMeasPoint.Value *
                                 (decimal) (RangeResolution
                                           .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                            currPoint.VariableBaseValueMeasPoint.MultipliersUnit
@@ -498,22 +498,22 @@ namespace APPA_107N_109N
                         };
 
                         operation.LowerTolerance =
-                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.NominalVal -
-                                                operation.Error.VariableBaseValueMeasPoint.NominalVal,
+                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value -
+                                                operation.Error.VariableBaseValueMeasPoint.Value,
                                                 operation.Expected.VariableBaseValueMeasPoint.Units,
                                                 operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
                         //operation.Expected - operation.Error;
                         operation.UpperTolerance =
-                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.NominalVal +
-                                                operation.Error.VariableBaseValueMeasPoint.NominalVal,
+                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value +
+                                                operation.Error.VariableBaseValueMeasPoint.Value,
                                                 operation.Expected.VariableBaseValueMeasPoint.Units,
                                                 operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
                         //operation.Expected + operation.Error;
                         operation.IsGood = () =>
-                            (operation.Getting.VariableBaseValueMeasPoint.NominalVal <
-                             operation.UpperTolerance.VariableBaseValueMeasPoint.NominalVal) &
-                            (operation.Getting.VariableBaseValueMeasPoint.NominalVal >
-                             operation.LowerTolerance.VariableBaseValueMeasPoint.NominalVal);
+                            (operation.Getting.VariableBaseValueMeasPoint.Value <
+                             operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
+                            (operation.Getting.VariableBaseValueMeasPoint.Value >
+                             operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
                     }
                     catch (Exception e)
                     {
@@ -904,7 +904,7 @@ namespace APPA_107N_109N
                                                                       .MultipliersUnit
                                                                       .GetDoubleValue()));
 
-                    operation.Expected = new AcVariablePoint(volPoint.VariableBaseValueMeasPoint.NominalVal,
+                    operation.Expected = new AcVariablePoint(volPoint.VariableBaseValueMeasPoint.Value,
                                                              thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
                                                              new[] {freqPoint});
 
@@ -912,9 +912,9 @@ namespace APPA_107N_109N
                     ConstructTooleranceFormula(freqPoint); // функция подбирает коэффициенты для формулы погрешности
                     operation.ErrorCalculation = (inA, inB) =>
                     {
-                        var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.NominalVal) +
+                        var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.Value) +
                                      EdMlRaz *
-                                     RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                                     RangeResolution.VariableBaseValueMeasPoint.Value *
                                      (decimal) (RangeResolution
                                                .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                                 volPoint.VariableBaseValueMeasPoint.MultipliersUnit
@@ -926,22 +926,22 @@ namespace APPA_107N_109N
                     };
 
                     operation.LowerTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.NominalVal -
-                                            operation.Error.VariableBaseValueMeasPoint.NominalVal,
+                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value -
+                                            operation.Error.VariableBaseValueMeasPoint.Value,
                                             operation.Expected.VariableBaseValueMeasPoint.Units,
                                             operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
                     //operation.Expected - operation.Error;
                     operation.UpperTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.NominalVal +
-                                            operation.Error.VariableBaseValueMeasPoint.NominalVal,
+                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value +
+                                            operation.Error.VariableBaseValueMeasPoint.Value,
                                             operation.Expected.VariableBaseValueMeasPoint.Units,
                                             operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
                     //operation.Expected + operation.Error;
                     operation.IsGood = () =>
-                        (operation.Getting.VariableBaseValueMeasPoint.NominalVal <
-                         operation.UpperTolerance.VariableBaseValueMeasPoint.NominalVal) &
-                        (operation.Getting.VariableBaseValueMeasPoint.NominalVal >
-                         operation.LowerTolerance.VariableBaseValueMeasPoint.NominalVal);
+                        (operation.Getting.VariableBaseValueMeasPoint.Value <
+                         operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
+                        (operation.Getting.VariableBaseValueMeasPoint.Value >
+                         operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
 
                     decimal measurePoint = 0;
 
@@ -950,13 +950,13 @@ namespace APPA_107N_109N
                         measurePoint =
                             (decimal)
                             MathStatistics
-                               .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.NominalVal,
-                                              (double) operation.UpperTolerance.VariableBaseValueMeasPoint.NominalVal);
+                               .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.Value,
+                                              (double) operation.UpperTolerance.VariableBaseValueMeasPoint.Value);
                     }
                     else
                     {
-                        flkCalib5522A.Out.Set.Voltage.Ac.SetValue(volPoint.VariableBaseValueMeasPoint.NominalVal,
-                                                                  freqPoint.NominalVal,
+                        flkCalib5522A.Out.Set.Voltage.Ac.SetValue(volPoint.VariableBaseValueMeasPoint.Value,
+                                                                  freqPoint.Value,
                                                                   volPoint.VariableBaseValueMeasPoint.MultipliersUnit,
                                                                   freqPoint.MultipliersUnit);
                         flkCalib5522A.Out.ClearMemoryRegister();
@@ -995,8 +995,8 @@ namespace APPA_107N_109N
                 inFreq.MultipliersUnit == Multipliers.None)
             {
                 EdMlRaz = 80;
-                if (inFreq.NominalVal >= 40 && inFreq.NominalVal <= 100) BaseTolCoeff = (decimal) 0.007;
-                if (inFreq.NominalVal > 100 && inFreq.NominalVal <= 1000) BaseTolCoeff = (decimal) 0.01;
+                if (inFreq.Value >= 40 && inFreq.Value <= 100) BaseTolCoeff = (decimal) 0.007;
+                if (inFreq.Value > 100 && inFreq.Value <= 1000) BaseTolCoeff = (decimal) 0.01;
                 return;
             }
 
@@ -1007,35 +1007,35 @@ namespace APPA_107N_109N
                 if (inFreq.MultipliersUnit == Multipliers.None)
                 {
                     EdMlRaz = 50;
-                    if (inFreq.NominalVal >= 40 && inFreq.NominalVal <= 100) BaseTolCoeff = (decimal) 0.007;
-                    if (inFreq.NominalVal > 100 && inFreq.NominalVal <= 1000) BaseTolCoeff = (decimal) 0.01;
+                    if (inFreq.Value >= 40 && inFreq.Value <= 100) BaseTolCoeff = (decimal) 0.007;
+                    if (inFreq.Value > 100 && inFreq.Value <= 1000) BaseTolCoeff = (decimal) 0.01;
                     return;
                 }
 
                 if (inFreq.MultipliersUnit == Multipliers.Kilo)
                 {
-                    if (inFreq.NominalVal >= 1 && inFreq.NominalVal <= 10)
+                    if (inFreq.Value >= 1 && inFreq.Value <= 10)
                     {
                         BaseTolCoeff = (decimal) 0.02;
                         EdMlRaz = 60;
                         return;
                     }
 
-                    if (inFreq.NominalVal > 10 && inFreq.NominalVal <= 20)
+                    if (inFreq.Value > 10 && inFreq.Value <= 20)
                     {
                         BaseTolCoeff = (decimal) 0.03;
                         EdMlRaz = 70;
                         return;
                     }
 
-                    if (inFreq.NominalVal > 20 && inFreq.NominalVal <= 50)
+                    if (inFreq.Value > 20 && inFreq.Value <= 50)
                     {
                         BaseTolCoeff = (decimal) 0.05;
                         EdMlRaz = 80;
                         return;
                     }
 
-                    if (inFreq.NominalVal > 50 && inFreq.NominalVal <= 100)
+                    if (inFreq.Value > 50 && inFreq.Value <= 100)
                     {
                         BaseTolCoeff = (decimal) 0.1;
                         EdMlRaz = 100;
@@ -1047,8 +1047,8 @@ namespace APPA_107N_109N
             if (OperationAcRangeNominal == Mult107_109N.RangeNominal.Range750V)
             {
                 EdMlRaz = 50;
-                if (inFreq.NominalVal >= 40 && inFreq.NominalVal <= 100) BaseTolCoeff = (decimal) 0.007;
-                if (inFreq.NominalVal > 100 && inFreq.NominalVal <= 1000) BaseTolCoeff = (decimal) 0.01;
+                if (inFreq.Value >= 40 && inFreq.Value <= 100) BaseTolCoeff = (decimal) 0.007;
+                if (inFreq.Value > 100 && inFreq.Value <= 1000) BaseTolCoeff = (decimal) 0.01;
             }
         }
 
@@ -1487,7 +1487,7 @@ namespace APPA_107N_109N
                 };
                 operation.BodyWork = () =>
                 {
-                    flkCalib5522A.Out.Set.Current.Dc.SetValue(currPoint.NominalVal *
+                    flkCalib5522A.Out.Set.Current.Dc.SetValue(currPoint.Value *
                                                               (decimal) currPoint.MultipliersUnit.GetDoubleValue());
                     flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                     Thread.Sleep(2000);
@@ -1510,8 +1510,8 @@ namespace APPA_107N_109N
                     //расчет погрешности для конкретной точки предела измерения
                     operation.ErrorCalculation = (inA, inB) =>
                     {
-                        var result = BaseTolCoeff * Math.Abs(operation.Expected.NominalVal) + EdMlRaz *
-                            RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                        var result = BaseTolCoeff * Math.Abs(operation.Expected.Value) + EdMlRaz *
+                            RangeResolution.VariableBaseValueMeasPoint.Value *
                             (decimal) (RangeResolution
                                       .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                        currPoint.MultipliersUnit
@@ -1521,7 +1521,7 @@ namespace APPA_107N_109N
                                                                  .VariableBaseValueMeasPoint.MultipliersUnit
                                                                  .GetDoubleValue() *
                                                                   (double) RangeResolution
-                                                                          .VariableBaseValueMeasPoint.NominalVal /
+                                                                          .VariableBaseValueMeasPoint.Value /
                                                                   currPoint.MultipliersUnit
                                                                            .GetDoubleValue()));
                         MathStatistics.Round(ref result, mantisa);
@@ -1529,16 +1529,16 @@ namespace APPA_107N_109N
                     };
 
                     operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                             operation.Expected.NominalVal -
-                                                             operation.Error.NominalVal);
+                                                             operation.Expected.Value -
+                                                             operation.Error.Value);
 
                     operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                             operation.Expected.NominalVal +
-                                                             operation.Error.NominalVal);
+                                                             operation.Expected.Value +
+                                                             operation.Error.Value);
 
                     operation.IsGood = () =>
-                        (operation.Getting.NominalVal < operation.UpperTolerance.NominalVal) &
-                        (operation.Getting.NominalVal > operation.LowerTolerance.NominalVal);
+                        (operation.Getting.Value < operation.UpperTolerance.Value) &
+                        (operation.Getting.Value > operation.LowerTolerance.Value);
                 };
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -1828,13 +1828,13 @@ namespace APPA_107N_109N
             if (OperationRangeNominal == Mult107_109N.RangeNominal.Range20mA &&
                 inFreq.MultipliersUnit == Multipliers.None)
             {
-                if (inFreq.NominalVal >= 40 && inFreq.NominalVal < 500)
+                if (inFreq.Value >= 40 && inFreq.Value < 500)
                 {
                     BaseTolCoeff = (decimal) 0.008;
                     EdMlRaz = 50;
                 }
 
-                if (inFreq.NominalVal >= 500 && inFreq.NominalVal < 1000)
+                if (inFreq.Value >= 500 && inFreq.Value < 1000)
                 {
                     BaseTolCoeff = (decimal) 0.012;
                     EdMlRaz = 80;
@@ -1844,17 +1844,17 @@ namespace APPA_107N_109N
                      OperationRangeNominal == Mult107_109N.RangeNominal.Range2A ||
                      OperationRangeNominal == Mult107_109N.RangeNominal.Range10A)
             {
-                if (inFreq.NominalVal >= 40 && inFreq.NominalVal < 500)
+                if (inFreq.Value >= 40 && inFreq.Value < 500)
                 {
                     BaseTolCoeff = (decimal) 0.008;
                     EdMlRaz = 50;
                 }
-                else if (inFreq.NominalVal >= 500 && inFreq.NominalVal < 1000)
+                else if (inFreq.Value >= 500 && inFreq.Value < 1000)
                 {
                     BaseTolCoeff = (decimal) 0.012;
                     EdMlRaz = 80;
                 }
-                else if (inFreq.NominalVal >= 1000 && inFreq.NominalVal <= 3000)
+                else if (inFreq.Value >= 1000 && inFreq.Value <= 3000)
                 {
                     BaseTolCoeff = (decimal) 0.02;
                     EdMlRaz = 80;
@@ -1971,11 +1971,11 @@ namespace APPA_107N_109N
                                                              .VariableBaseValueMeasPoint.MultipliersUnit
                                                              .GetDoubleValue() * (double) RangeResolution
                                                                                          .VariableBaseValueMeasPoint
-                                                                                         .NominalVal /
+                                                                                         .Value /
                                                               curr.VariableBaseValueMeasPoint.MultipliersUnit
                                                                   .GetDoubleValue()), true);
 
-                    operation.Expected = new AcVariablePoint(curr.VariableBaseValueMeasPoint.NominalVal,
+                    operation.Expected = new AcVariablePoint(curr.VariableBaseValueMeasPoint.Value,
                                                              thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
                                                              new[] {freqPoint});
 
@@ -1983,9 +1983,9 @@ namespace APPA_107N_109N
                     TolleranceConstruct(freqPoint); // функция подбирает коэффициенты для формулы погрешности
                     operation.ErrorCalculation = (inA, inB) =>
                     {
-                        var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.NominalVal) +
+                        var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.Value) +
                                      EdMlRaz *
-                                     RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                                     RangeResolution.VariableBaseValueMeasPoint.Value *
                                      (decimal) (RangeResolution
                                                .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                                 curr.VariableBaseValueMeasPoint.MultipliersUnit
@@ -1996,22 +1996,22 @@ namespace APPA_107N_109N
                     };
 
                     operation.LowerTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.NominalVal -
-                                            operation.Error.VariableBaseValueMeasPoint.NominalVal,
+                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value -
+                                            operation.Error.VariableBaseValueMeasPoint.Value,
                                             operation.Expected.VariableBaseValueMeasPoint.Units,
                                             operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
                     //operation.Expected - operation.Error;
                     operation.UpperTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.NominalVal +
-                                            operation.Error.VariableBaseValueMeasPoint.NominalVal,
+                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value +
+                                            operation.Error.VariableBaseValueMeasPoint.Value,
                                             operation.Expected.VariableBaseValueMeasPoint.Units,
                                             operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
                     //operation.Expected + operation.Error;
                     operation.IsGood = () =>
-                        (operation.Getting.VariableBaseValueMeasPoint.NominalVal <
-                         operation.UpperTolerance.VariableBaseValueMeasPoint.NominalVal) &
-                        (operation.Getting.VariableBaseValueMeasPoint.NominalVal >
-                         operation.LowerTolerance.VariableBaseValueMeasPoint.NominalVal);
+                        (operation.Getting.VariableBaseValueMeasPoint.Value <
+                         operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
+                        (operation.Getting.VariableBaseValueMeasPoint.Value >
+                         operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
 
                     decimal measurePoint = 0;
                     if (freqPoint.fakePoinFlag)
@@ -2019,13 +2019,13 @@ namespace APPA_107N_109N
                         measurePoint =
                             (decimal)
                             MathStatistics
-                               .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.NominalVal,
-                                              (double) operation.UpperTolerance.VariableBaseValueMeasPoint.NominalVal);
+                               .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.Value,
+                                              (double) operation.UpperTolerance.VariableBaseValueMeasPoint.Value);
                     }
                     else
                     {
-                        flkCalib5522A.Out.Set.Current.Ac.SetValue(curr.VariableBaseValueMeasPoint.NominalVal,
-                                                                  freqPoint.NominalVal,
+                        flkCalib5522A.Out.Set.Current.Ac.SetValue(curr.VariableBaseValueMeasPoint.Value,
+                                                                  freqPoint.Value,
                                                                   curr.VariableBaseValueMeasPoint.MultipliersUnit,
                                                                   freqPoint.MultipliersUnit);
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
@@ -2055,7 +2055,7 @@ namespace APPA_107N_109N
         private void TolleranceConstruct(MeasPoint freqPoint)
         {
             //вычислим реальную частоту
-            var realFreq = freqPoint.NominalVal * (decimal) freqPoint.MultipliersUnit.GetDoubleValue();
+            var realFreq = freqPoint.Value * (decimal) freqPoint.MultipliersUnit.GetDoubleValue();
             if (OperationRangeNominal == Mult107_109N.RangeNominal.Range20mA)
             {
                 if (realFreq >= 40 && realFreq <= 500)
@@ -2443,8 +2443,8 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                        flkCalib5522A.Out.Set.Voltage.Ac.SetValue(voltPoint.VariableBaseValueMeasPoint.NominalVal,
-                                                                  freqPoint.NominalVal,
+                        flkCalib5522A.Out.Set.Voltage.Ac.SetValue(voltPoint.VariableBaseValueMeasPoint.Value,
+                                                                  freqPoint.Value,
                                                                   voltPoint.VariableBaseValueMeasPoint.MultipliersUnit,
                                                                   freqPoint.MultipliersUnit);
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
@@ -2463,15 +2463,15 @@ namespace APPA_107N_109N
                                                                  .VariableBaseValueMeasPoint.MultipliersUnit
                                                                  .GetDoubleValue() *
                                                                   (double) RangeResolution
-                                                                          .VariableBaseValueMeasPoint.NominalVal /
+                                                                          .VariableBaseValueMeasPoint.Value /
                                                                   freqPoint.MultipliersUnit
                                                                            .GetDoubleValue()));
 
                         //расчет погрешности для конкретной точки предела измерения
                         operation.ErrorCalculation = (inA, inB) =>
                         {
-                            var result = BaseTolCoeff * operation.Expected.NominalVal + EdMlRaz *
-                                RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                            var result = BaseTolCoeff * operation.Expected.Value + EdMlRaz *
+                                RangeResolution.VariableBaseValueMeasPoint.Value *
                                 (decimal) (RangeResolution
                                           .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                            freqPoint.MultipliersUnit
@@ -2483,13 +2483,13 @@ namespace APPA_107N_109N
                         };
 
                         operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal -
-                                                                 operation.Error.NominalVal);
+                                                                 operation.Expected.Value -
+                                                                 operation.Error.Value);
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal +
-                                                                 operation.Error.NominalVal);
-                        operation.IsGood = () => (operation.Getting.NominalVal < operation.UpperTolerance.NominalVal) &
-                                                 (operation.Getting.NominalVal > operation.LowerTolerance.NominalVal);
+                                                                 operation.Expected.Value +
+                                                                 operation.Error.Value);
+                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
                     }
                     catch (Exception e)
                     {
@@ -3082,7 +3082,7 @@ namespace APPA_107N_109N
                             refValue = (decimal) appa107N.GetValue();
                         }
 
-                        flkCalib5522A.Out.Set.Resistance.SetValue(currPoint.NominalVal *
+                        flkCalib5522A.Out.Set.Resistance.SetValue(currPoint.Value *
                                                                   (decimal) currPoint
                                                                            .MultipliersUnit.GetDoubleValue());
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
@@ -3101,7 +3101,7 @@ namespace APPA_107N_109N
                                                                  .VariableBaseValueMeasPoint.MultipliersUnit
                                                                  .GetDoubleValue() *
                                                                   (double) RangeResolution
-                                                                          .VariableBaseValueMeasPoint.NominalVal /
+                                                                          .VariableBaseValueMeasPoint.Value /
                                                                   currPoint.MultipliersUnit
                                                                            .GetDoubleValue()));
                         //округляем измерения
@@ -3113,8 +3113,8 @@ namespace APPA_107N_109N
                         //расчет погрешности для конкретной точки предела измерения
                         operation.ErrorCalculation = (inA, inB) =>
                         {
-                            var result = BaseTolCoeff * Math.Abs(operation.Expected.NominalVal) + EdMlRaz *
-                                RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                            var result = BaseTolCoeff * Math.Abs(operation.Expected.Value) + EdMlRaz *
+                                RangeResolution.VariableBaseValueMeasPoint.Value *
                                 (decimal) (RangeResolution
                                           .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                            currPoint.MultipliersUnit
@@ -3124,7 +3124,7 @@ namespace APPA_107N_109N
                                                                      .VariableBaseValueMeasPoint.MultipliersUnit
                                                                      .GetDoubleValue() *
                                                                       (double) RangeResolution
-                                                                              .VariableBaseValueMeasPoint.NominalVal /
+                                                                              .VariableBaseValueMeasPoint.Value /
                                                                       currPoint.MultipliersUnit
                                                                                .GetDoubleValue()));
                             MathStatistics.Round(ref result, mantisa);
@@ -3132,13 +3132,13 @@ namespace APPA_107N_109N
                         };
 
                         operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal -
-                                                                 operation.Error.NominalVal);
+                                                                 operation.Expected.Value -
+                                                                 operation.Error.Value);
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal +
-                                                                 operation.Error.NominalVal);
-                        operation.IsGood = () => (operation.Getting.NominalVal < operation.UpperTolerance.NominalVal) &
-                                                 (operation.Getting.NominalVal > operation.LowerTolerance.NominalVal);
+                                                                 operation.Expected.Value +
+                                                                 operation.Error.Value);
+                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
                     }
                     catch (Exception e)
                     {
@@ -3338,7 +3338,7 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                        flkCalib5522A.Out.Set.Capacitance.SetValue(currPoint.NominalVal *
+                        flkCalib5522A.Out.Set.Capacitance.SetValue(currPoint.Value *
                                                                    (decimal) currPoint
                                                                             .MultipliersUnit.GetDoubleValue());
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
@@ -3369,8 +3369,8 @@ namespace APPA_107N_109N
                         //расчет погрешности для конкретной точки предела измерения
                         operation.ErrorCalculation = (inA, inB) =>
                         {
-                            var result = BaseTolCoeff * Math.Abs(operation.Expected.NominalVal) + EdMlRaz *
-                                RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                            var result = BaseTolCoeff * Math.Abs(operation.Expected.Value) + EdMlRaz *
+                                RangeResolution.VariableBaseValueMeasPoint.Value *
                                 (decimal) (RangeResolution
                                           .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                            currPoint.MultipliersUnit
@@ -3387,13 +3387,13 @@ namespace APPA_107N_109N
                         };
 
                         operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal -
-                                                                 operation.Error.NominalVal);
+                                                                 operation.Expected.Value -
+                                                                 operation.Error.Value);
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal +
-                                                                 operation.Error.NominalVal);
-                        operation.IsGood = () => (operation.Getting.NominalVal < operation.UpperTolerance.NominalVal) &
-                                                 (operation.Getting.NominalVal > operation.LowerTolerance.NominalVal);
+                                                                 operation.Expected.Value +
+                                                                 operation.Error.Value);
+                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
                     }
                     catch (Exception e)
                     {
@@ -3790,7 +3790,7 @@ namespace APPA_107N_109N
                     {
                         flkCalib5522A.Out.Set.Temperature.SetTermoCouple(CalibrMain.COut.CSet.СTemperature
                                                                                    .TypeTermocouple.K);
-                        flkCalib5522A.Out.Set.Temperature.SetValue((double) currPoint.NominalVal);
+                        flkCalib5522A.Out.Set.Temperature.SetValue((double) currPoint.Value);
                         flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                         Thread.Sleep(3000);
                         //измеряем
@@ -3803,7 +3803,7 @@ namespace APPA_107N_109N
                                                                  .VariableBaseValueMeasPoint.MultipliersUnit
                                                                  .GetDoubleValue() *
                                                                   (double) RangeResolution
-                                                                          .VariableBaseValueMeasPoint.NominalVal /
+                                                                          .VariableBaseValueMeasPoint.Value /
                                                                   currPoint.MultipliersUnit.GetDoubleValue()), true);
                         //округляем измерения
                         MathStatistics.Round(ref measurePoint, mantisa);
@@ -3814,8 +3814,8 @@ namespace APPA_107N_109N
                         //расчет погрешности для конкретной точки предела измерения
                         operation.ErrorCalculation = (inA, inB) =>
                         {
-                            var result = BaseTolCoeff * operation.Expected.NominalVal + EdMlRaz *
-                                RangeResolution.VariableBaseValueMeasPoint.NominalVal *
+                            var result = BaseTolCoeff * operation.Expected.Value + EdMlRaz *
+                                RangeResolution.VariableBaseValueMeasPoint.Value *
                                 (decimal) (RangeResolution
                                           .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
                                            currPoint.MultipliersUnit.GetDoubleValue()
@@ -3826,13 +3826,13 @@ namespace APPA_107N_109N
                         };
 
                         operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal -
-                                                                 operation.Error.NominalVal);
+                                                                 operation.Expected.Value -
+                                                                 operation.Error.Value);
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                                 operation.Expected.NominalVal +
-                                                                 operation.Error.NominalVal);
-                        operation.IsGood = () => (operation.Getting.NominalVal < operation.UpperTolerance.NominalVal) &
-                                                 (operation.Getting.NominalVal > operation.LowerTolerance.NominalVal);
+                                                                 operation.Expected.Value +
+                                                                 operation.Error.Value);
+                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
                     }
                     catch (Exception e)
                     {

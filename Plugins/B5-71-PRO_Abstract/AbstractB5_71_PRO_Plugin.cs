@@ -935,7 +935,7 @@ namespace B5_71_PRO_Abstract
                     var voltPulsV357 = (decimal) Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
                     voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal) 0.99, 0,
-                                                          a.NominalVal);
+                                                          a.Value);
                     MathStatistics.Round(ref voltPulsV357, 0);
 
                     UserItemOperation.ServicePack.MessageBox.Show(
@@ -1599,7 +1599,7 @@ namespace B5_71_PRO_Abstract
 
                     }
                     
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, a.NominalVal);
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, a.Value);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
