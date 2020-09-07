@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASMC.Data.Model.Interface;
+using NLog;
 
 namespace ASMC.Data.Model
 {
@@ -15,6 +16,7 @@ namespace ASMC.Data.Model
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>, ICloneable
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private Func<Task<bool>> _compliteWork;
         private Func<Task> _initWork;
         private Action _bodyWork;
@@ -66,9 +68,15 @@ namespace ASMC.Data.Model
                 { 
                     token.ThrowIfCancellationRequested();
                 }
-                await InitWork(); 
+
+                Logger.Debug("Начата инициализация");
+                await InitWork();
+                Logger.Debug("Закончено выполнение инициализации");
+                Logger.Debug("Начато выполнение тела");
                 await Task.Factory.StartNew(BodyWork, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
+                Logger.Debug("Закончено выполнение тела");
             } while (!await CompliteWork());
+            Logger.Debug("Закончено точка");
         }
 
         /// <inheritdoc />

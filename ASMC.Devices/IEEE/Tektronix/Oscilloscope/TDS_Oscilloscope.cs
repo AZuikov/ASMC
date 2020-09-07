@@ -1,32 +1,17 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-using Common;
-using MathNet.Numerics.Statistics;
+
 using System.Globalization;
 using System.Threading;
+using AP.Utils.Data;
+using AP.Utils.Helps;
+using MathNet.Numerics.Statistics;
 
-namespace IEEE_488.Tektronix.Ocilloscope
+namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 {
-   public class TDS_Oscilloscope: Main
+   public class TDS_Oscilloscope: IeeeBase
    {
-        /// <summary>
-        /// Содержит доступные множители
-        /// </summary>
-        public enum Multipliers
-        {
-            [StringValue(" MA")]
-            Mega,
-            [StringValue(" M")]
-            Mili,
-            [StringValue(" N")]
-            Nano,
-            [StringValue(" K")]
-            Kilo,
-            [StringValue(" U")]
-            Micro,
-            [StringValue("")]
-            Si
-        }            
+       
         /// <summary>
         /// Перечень каналов
         /// </summary>
@@ -49,17 +34,8 @@ namespace IEEE_488.Tektronix.Ocilloscope
             /// </summary>
             CH4
         }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TDS_Oscilloscope"/> class.
-        /// </summary>       
-        public TDS_Oscilloscope() : base()
-        {
-
-        }
-        public TDS_Oscilloscope(string connect) : this()
-        {
-            Stringconection = connect;
-        }
+       
+       
         /// <summary>
         /// Состояние
         /// </summary>
@@ -291,7 +267,7 @@ namespace IEEE_488.Tektronix.Ocilloscope
             /// <returns></returns>
             public static string SetScale(SCAle sc)
             {
-                return "HORi:SCAL " + MyEnum.GetStringValue(sc);
+                return "HORi:SCAL " /*+ MyEnum.GetStringValue(sc)*/;
             }
             //HORizontal:DELay:POSition Position window
             //HORizontal:DELay:SCAle Set or query the window time base time/division
@@ -566,18 +542,18 @@ namespace IEEE_488.Tektronix.Ocilloscope
                 /// </summary>
                 NORM
             }
-            public static string SetTriger(Sours sur, Slope sp,Mode md= Mode.AUTO, double Level=0)
-            {
-                if (md!= Mode.AUTO)
-                {
-                    return "TRIG:MAIn:EDGE:SOU " + MyEnum.GetStringValue(sur) + "\nTRIG:MAI:EDGE:SLO " + sp.ToString() + "\nTRIG:MAI:MODe " + md.ToString()+ "\nTRIG:MAI:LEV " +Level;
-                }
-                else
-                {
-                    return "TRIG:MAIn:EDGE:SOU " + MyEnum.GetStringValue(sur) + "\nTRIG:MAI:EDGE:SLO " + sp.ToString() + "\nTRIG:MAI:MODe " + md.ToString();
-                }
+            //public static string SetTriger(Sours sur, Slope sp,Mode md= Mode.AUTO, double Level=0)
+            //{
+            //    if (md!= Mode.AUTO)
+            //    {
+            //        return "TRIG:MAIn:EDGE:SOU " + MyEnum.GetStringValue(sur) + "\nTRIG:MAI:EDGE:SLO " + sp.ToString() + "\nTRIG:MAI:MODe " + md.ToString()+ "\nTRIG:MAI:LEV " +Level;
+            //    }
+            //    else
+            //    {
+            //        return "TRIG:MAIn:EDGE:SOU " + MyEnum.GetStringValue(sur) + "\nTRIG:MAI:EDGE:SLO " + sp.ToString() + "\nTRIG:MAI:MODe " + md.ToString();
+            //    }
              
-            }
+            //}
         }
         /// <summary>
         /// Коэфициент отклонения
@@ -696,7 +672,7 @@ namespace IEEE_488.Tektronix.Ocilloscope
         /// <param name="date">The date.</param>
         /// <param name="Mult">The mult.</param>
         /// <returns></returns>
-        public double DataPreparationAndConvert(string date, Multipliers Mult = Multipliers.Si)
+        public double DataPreparationAndConvert(string date, Multipliers Mult = AP.Utils.Helps.Multipliers.None)
         {
             string[] Value = date.Split(',');
             double[] a = new double[Value.Length];
@@ -717,22 +693,22 @@ namespace IEEE_488.Tektronix.Ocilloscope
             dDate[1] = System.Convert.ToDouble(Value[1]);
             switch (Mult)
             {
-                case Multipliers.Mega:
+                case AP.Utils.Helps.Multipliers.Mega:
                     _return=(dDate[0] * System.Math.Pow(10, dDate[1])) * 1E-6;
                     break;
-                case Multipliers.Mili:
+                case AP.Utils.Helps.Multipliers.Mili:
                     _return=(dDate[0] * System.Math.Pow(10, dDate[1])) *1E3;
                     break;
-                case Multipliers.Nano:
+                case AP.Utils.Helps.Multipliers.Nano:
                     _return=(dDate[0] * System.Math.Pow(10, dDate[1])) * 1E9;
                     break;
-                case Multipliers.Kilo:
+                case AP.Utils.Helps.Multipliers.Kilo:
                     _return = (dDate[0] * System.Math.Pow(10, dDate[1])) * 1E-3;
                     break;
-                case Multipliers.Micro:
+                case AP.Utils.Helps.Multipliers.Micro:
                     _return=(dDate[0] * System.Math.Pow(10, dDate[1])) * 1E6;
                     break;
-                case Multipliers.Si:
+                case AP.Utils.Helps.Multipliers.None:
                     _return=(dDate[0] * System.Math.Pow(10, dDate[1]));
                     break;
             }
