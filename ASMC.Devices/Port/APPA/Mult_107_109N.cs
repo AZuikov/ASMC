@@ -432,6 +432,8 @@ namespace ASMC.Devices.Port.APPA
 
         //данные для начало обмена информацией с прибором
         private readonly byte[] _sendData = { 0x55, 0x55, 0x00, 0x00, 0xAA };
+        private readonly byte[] _readData = { 0x55, 0x55, 0x00, 0x0E};
+
 
         private readonly Timer _wait;
         private List<byte> _data;
@@ -448,6 +450,7 @@ namespace ASMC.Devices.Port.APPA
         {
             get
             {
+                Logger.Debug($"Единицы измерени на основном экране {((Units)(_data[11] >> 3)).ToString()}");
                 return (Units)(_data[11] >> 3);
             }
         }
@@ -460,7 +463,7 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Debug(((Units)(_data[16] >> 3)).ToString);
+                Logger.Debug($"Единицы измерения на втором экране {((Units)(_data[16] >> 3)).ToString()}");
                 return (Units)(_data[16] >> 3);
             }
         }
@@ -470,7 +473,7 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Debug(((BlueState)_data[5]).ToString());
+                Logger.Debug($"Статус синей клавиши {UserType} { ((BlueState)_data[5]).ToString() }");
                 return (BlueState)_data[5];
             }
         }
@@ -483,7 +486,7 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Info(((Function)_data[12]).ToString());
+                Logger.Info($"{UserType} дополнительная функция {((Function)_data[12]).ToString()}");
                 return (Function)_data[12];
             }
         }
@@ -568,7 +571,7 @@ namespace ASMC.Devices.Port.APPA
             }
 
 
-            Logger.Info(value);
+            Logger.Info($"{UserType} Измеренное значение {value}");
             return value;
         }
 
@@ -579,7 +582,7 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Info(((RangeCode)_data[7]).ToString());
+                Logger.Info($"{UserType} диапазон измерения {((RangeCode)_data[7]).ToString()}");
                  return (RangeCode)_data[7];
                 
             }
@@ -590,7 +593,7 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Info(((Rotor)_data[4]).ToString());
+                Logger.Info($"{UserType} положение переключателя {((Rotor)_data[4]).ToString()}");
                 return (Rotor)_data[4];
             }
         }
@@ -603,7 +606,7 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Info(((Function)_data[17]).ToString());
+                Logger.Info($"{UserType} дополнительные функции на втором экране {((Function)_data[17]).ToString()}");
                 return (Function)_data[17];
             }
         }
@@ -693,7 +696,8 @@ namespace ASMC.Devices.Port.APPA
             if (_flagTimeout)
             {
                 _flagTimeout = false;
-                throw new TimeoutException();
+                Logger.Debug($"{ UserType} не отвечает.");
+                throw new TimeoutException($"{UserType} не отвечает.");
             }
 
         }
@@ -711,15 +715,38 @@ namespace ASMC.Devices.Port.APPA
         /// <param name = "e"></param>
         protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            int CountResend = 0;
             _readingBuffer.Clear();
             var port = (SerialPort)sender;
             try
             {
-                var bt = (byte)port.ReadByte();
-                _readingBuffer.Add(bt);
+                for (int i=0; i< _readData.Length;i++)
+                {
+                    var bt = (byte)port.ReadByte();
+                    if (bt == _readData[i])_readingBuffer.Add(bt);
+                    else
+                    {
+                        DiscardInBuffer();
+                        _readingBuffer.Clear();
+                        CountResend++;
+                        SendQuery();
+                        if (CountResend == 5)
+                        {
+                            Logger.Error($"Было выполнено 5 неудачных попыток запроса данных с {UserType}");
+                            throw new TimeoutException($"Было выполнено 5 неудачных попыток запроса данных с {UserType}");
+
+                        }
+
+                        i = -1;
+                    }
+                    
+                }
+                
                 while (_readingBuffer.Count < Cadr)
-                    if (0x55 == _readingBuffer[0])
-                        _readingBuffer.Add((byte)port.ReadByte());
+                {
+                    _readingBuffer.Add((byte)port.ReadByte());
+                }
+                   
                 DiscardInBuffer();
                 CheckControlSumm();
                 //Sp.DataReceived -= SerialPort_DataReceived;
@@ -739,14 +766,26 @@ namespace ASMC.Devices.Port.APPA
             if (_readingBuffer.Count != Cadr) return;
             var chechSum = 0;
             for (var i = 0; i < _readingBuffer.Count - 1; i++) chechSum = chechSum + _readingBuffer[i];
-            if (_readingBuffer[_readingBuffer.Count - 1] != (chechSum & 0xFF))
+
+            /*берем последние биты*/
+            var match = chechSum & 0xFF;
+            Logger.Debug($"{this.StringConnection}:  Контрольная сумма считанных данных: {match.ToString("X")} а ожидается {_readingBuffer[_readingBuffer.Count - 1].ToString("X")}");
+            if ((match != _readingBuffer[_readingBuffer.Count - 1]))
             {
-                SendQuery();
                 WaitEvent.Reset();
+                SendQuery();
                 return;
             }
 
-            Logger.Debug($"{this.StringConnection}:  Контрольная сумма считанных данных: {chechSum}");
+            //for (var i = 0; i < _readingBuffer.Count - 2; i++) chechSum = chechSum + _readingBuffer[i];
+            //if (_readingBuffer[_readingBuffer.Count - 1] != (chechSum & 0xFF))
+            //{
+            //    SendQuery();
+            //    WaitEvent.Reset();
+            //    return;
+            //}
+
+           
 
             //если сумма совпадает тогда считанные данные из буфера пишем в поле
             _data = _readingBuffer;

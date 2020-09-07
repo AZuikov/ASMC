@@ -400,8 +400,9 @@ namespace APPA_107N_109N
                             await Task.Run(() =>
                             {
                                 flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            });
 
-                                while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
                                     UserItemOperation.ServicePack.MessageBox
                                                      .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                            "Указание оператору", MessageButton.OK,
@@ -440,7 +441,7 @@ namespace APPA_107N_109N
                                                                MessageResult.OK);
                                     }
                                 }
-                            });
+                           
                     }
                     catch (Exception e)
                     {
@@ -844,8 +845,9 @@ namespace APPA_107N_109N
                         await Task.Run(() =>
                         {
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        });
 
-                            var testMeasureModde = appa107N.GetMeasureMode;
+                        var testMeasureModde = appa107N.GetMeasureMode;
                             while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
@@ -884,7 +886,7 @@ namespace APPA_107N_109N
                                                            MessageResult.OK);
                                 }
                             }
-                        });
+                        
 
                         
                     }
@@ -947,6 +949,7 @@ namespace APPA_107N_109N
 
                     if (freqPoint.fakePoinFlag && volPoint.fakePointFlag)
                     {
+                        Logger.Info($"фальшивая точка {volPoint.ToString()} {freqPoint.Description}");
                         measurePoint =
                             (decimal)
                             MathStatistics
@@ -1435,8 +1438,9 @@ namespace APPA_107N_109N
                         await Task.Run(() =>
                         {
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        });
 
-                            var testMode = appa107N.GetMeasureMode;
+                        var testMode = appa107N.GetMeasureMode;
                             while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
@@ -1476,7 +1480,7 @@ namespace APPA_107N_109N
                                                            MessageResult.OK);
                                 }
                             }
-                        });
+                       
 
                         
                     }
@@ -1569,7 +1573,13 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
 
             Name = OperationRangeNominal.GetStringValue();
-
+            Sheme = new ShemeImage
+            {
+                Description = "Измерительная схема",
+                Number = 2,
+                FileName = @"appa_10XN_ma_5522A.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
             BaseTolCoeff = (decimal) 0.002;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.I, Multipliers.Micro);
@@ -1602,7 +1612,13 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
 
             Name = OperationRangeNominal.GetStringValue();
-
+            Sheme = new ShemeImage
+            {
+                Description = "Измерительная схема",
+                Number = 2,
+                FileName = @"appa_10XN_ma_5522A.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
             BaseTolCoeff = (decimal) 0.002;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.I, Multipliers.Micro);
@@ -1635,7 +1651,13 @@ namespace APPA_107N_109N
             OperationRangeNominal = inRangeNominal;
 
             Name = OperationRangeNominal.GetStringValue();
-
+            Sheme = new ShemeImage
+            {
+                Description = "Измерительная схема",
+                Number = 1,
+                FileName = @"appa_10XN_A_Aux_5522A.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
             BaseTolCoeff = (decimal) 0.002;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.I, Multipliers.Micro);
@@ -1913,8 +1935,9 @@ namespace APPA_107N_109N
                         await Task.Run(() =>
                         {
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        });
 
-                            var testMode = appa107N.GetMeasureMode;
+                        var testMode = appa107N.GetMeasureMode;
                             while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
@@ -1954,7 +1977,7 @@ namespace APPA_107N_109N
                                                            MessageResult.OK);
                                 }
                             }
-                        });
+                        
 
                         
                     }
@@ -2421,8 +2444,9 @@ namespace APPA_107N_109N
                         await Task.Run(() =>
                         {
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        });
 
-                            while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
@@ -2432,7 +2456,7 @@ namespace APPA_107N_109N
                             while (appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show("Установите автоматический режим переключения пределов.");
-                        });
+                        
                     }
                     catch (Exception e)
                     {
@@ -3019,8 +3043,9 @@ namespace APPA_107N_109N
                         await Task.Run(() =>
                         {
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        });
 
-                            while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
@@ -3060,7 +3085,7 @@ namespace APPA_107N_109N
                                                            MessageResult.OK);
                                 }
                             }
-                        });
+                       
                     }
                     catch (Exception e)
                     {
@@ -3299,8 +3324,9 @@ namespace APPA_107N_109N
                         await Task.Run(() =>
                         {
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        });
 
-                            while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
@@ -3325,7 +3351,7 @@ namespace APPA_107N_109N
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                        MessageResult.OK);
                             }
-                        });
+                       
 
                         
                     }
@@ -3736,8 +3762,9 @@ namespace APPA_107N_109N
                         await Task.Run(() =>
                         {
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        });
 
-                            while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
                                 UserItemOperation.ServicePack.MessageBox
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
@@ -3776,7 +3803,7 @@ namespace APPA_107N_109N
                                                            MessageResult.OK);
                                 }
                             }
-                        });
+                        
                         
                     }
                     catch (Exception e)

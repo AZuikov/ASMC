@@ -236,7 +236,14 @@ namespace ASMC.ViewModel
             var asseblyName = Assembly.GetEntryAssembly().GetName().Name;
             var path = Path.Combine(systemFlober, asseblyName);
 
-            var newFileName = path + @"\" + SelectProgram?.Type + Path.GetRandomFileName() +  format;
+            string PasteNameToPath = SelectProgram?.Type;
+            foreach (var chr in Path.GetInvalidFileNameChars())
+            {
+                PasteNameToPath=PasteNameToPath.Replace(chr, '_');
+            }
+            
+            var newFileName = path + @"\" + PasteNameToPath + Path.GetRandomFileName() +  format;
+           
             try
             {
                 Directory.Delete(path, true);
@@ -368,9 +375,15 @@ namespace ASMC.ViewModel
                 void FillDoc(ITreeNode userItem)
                 {
                     var n = userItem as IUserItemOperationBase;
-                    if (n?.Data != null)
+                    
+                    if (n?.Data != null )
                     {
+                       
+
                         var markName = n.Data.TableName;
+
+                        if (string.IsNullOrWhiteSpace(markName)) return;
+
                         if (regInsTextByMark.IsMatch(markName))
                         {
                             report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
