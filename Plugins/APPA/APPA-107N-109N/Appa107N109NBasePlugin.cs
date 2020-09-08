@@ -369,11 +369,14 @@ namespace APPA_107N_109N
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationDcRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected.VariableBaseValueMeasPoint.Description;
-                dataRow[2] = dds.Getting.VariableBaseValueMeasPoint.Description;
-                dataRow[3] = dds.LowerTolerance.VariableBaseValueMeasPoint.Description;
-                dataRow[4] = dds.UpperTolerance.VariableBaseValueMeasPoint.Description;
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[1] = dds.Expected?.VariableBaseValueMeasPoint.Description;
+                dataRow[2] = dds.Getting?.VariableBaseValueMeasPoint.Description;
+                dataRow[3] = dds.LowerTolerance?.VariableBaseValueMeasPoint.Description;
+                dataRow[4] = dds.UpperTolerance?.VariableBaseValueMeasPoint.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = "не выполнено";
+                else
+                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -393,59 +396,56 @@ namespace APPA_107N_109N
                 {
                     try
                     {
-                            if (appa107N.StringConnection.Equals("COM1"))
-                                appa107N.StringConnection = GetStringConnect(appa107N);
-                            flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
+                        if (appa107N.StringConnection.Equals("COM1"))
+                            appa107N.StringConnection = GetStringConnect(appa107N);
+                        flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() =>
-                            {
-                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                            });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != appa107N.GetMeasureMode)
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                           "Указание оператору", MessageButton.OK,
-                                                           MessageIcon.Information,
-                                                           MessageResult.OK);
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
 
-                                while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show("Установите ручной режим переключения пределов.");
+                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите ручной режим переключения пределов.");
 
-                                while (OperationDcRangeNominal != appa107N.GetRangeNominal)
-                                {
-                                    int countPushRangeButton;
+                        while (OperationDcRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton;
 
-                                    if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                                    {
-                                        CountOfRanges = 2;
-                                        UserItemOperation.ServicePack.MessageBox
-                                                         .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
-                                                               $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                               MessageResult.OK);
-                                    }
-                                    else
-                                    {
-                                        //работает только для ручного режима переключения пределов
-                                        CountOfRanges = 4;
-                                        var curRange = (int)appa107N.GetRangeCode - 127;
-                                        var targetRange = (int)OperationDcRangeCode - 127;
-                                        countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                            {
+                                CountOfRanges = 2;
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                            else
+                            {
+                                //работает только для ручного режима переключения пределов
+                                CountOfRanges = 4;
+                                var curRange = (int) appa107N.GetRangeCode - 127;
+                                var targetRange = (int) OperationDcRangeCode - 127;
+                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                        UserItemOperation.ServicePack.MessageBox
-                                                         .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
-                                                               $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                               MessageResult.OK);
-                                    }
-                                }
-                           
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
@@ -511,10 +511,14 @@ namespace APPA_107N_109N
                                                 operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
                         //operation.Expected + operation.Error;
                         operation.IsGood = () =>
-                            (operation.Getting.VariableBaseValueMeasPoint.Value <
-                             operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
-                            (operation.Getting.VariableBaseValueMeasPoint.Value >
-                             operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting.VariableBaseValueMeasPoint.Value <
+                                    operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
+                                   (operation.Getting.VariableBaseValueMeasPoint.Value >
+                                    operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
+                        };
                     }
                     catch (Exception e)
                     {
@@ -531,11 +535,11 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
 
         public List<IBasicOperation<AcVariablePoint>> DataRow { get; set; }
     }
@@ -703,6 +707,7 @@ namespace APPA_107N_109N
         {
             TemplateSheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 1,
                 FileName = @"appa_10XN_volt_hz_5522A.jpg",
@@ -812,13 +817,16 @@ namespace APPA_107N_109N
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationAcRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected.VariableBaseValueMeasPoint.Description;
+                dataRow[1] = dds.Expected?.VariableBaseValueMeasPoint.Description;
                 //тут может упасть!!!
-                dataRow[2] = dds.Expected.Herz[0].Description;
-                dataRow[3] = dds.Getting.VariableBaseValueMeasPoint.Description;
-                dataRow[4] = dds.LowerTolerance.VariableBaseValueMeasPoint.Description;
-                dataRow[5] = dds.UpperTolerance.VariableBaseValueMeasPoint.Description;
-                dataRow[6] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[2] = dds.Expected?.Herz[0].Description;
+                dataRow[3] = dds.Getting?.VariableBaseValueMeasPoint.Description;
+                dataRow[4] = dds.LowerTolerance?.VariableBaseValueMeasPoint.Description;
+                dataRow[5] = dds.UpperTolerance?.VariableBaseValueMeasPoint.Description;
+                if (dds.IsGood == null)
+                    dataRow[6] = "не выполнено";
+                else
+                    dataRow[6] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -842,140 +850,147 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        await Task.Run(() =>
-                        {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                        });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         var testMeasureModde = appa107N.GetMeasureMode;
-                            while (OperMeasureMode != appa107N.GetMeasureMode)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                       "Указание оператору", MessageButton.OK,
-                                                       MessageIcon.Information,
-                                                       MessageResult.OK);
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
 
-                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show("Установите ручной режим переключения пределов.");
+                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationAcRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationAcRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton;
+
+                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
                             {
-                                int countPushRangeButton;
-
-                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                                {
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
-                                else
-                                {
-                                    //работает только для ручного режима переключения пределов
-                                    CountOfRanges = 4;
-                                    var curRange = (int)appa107N.GetRangeCode - 127;
-                                    var targetRange = (int)OperationAcRangeCode - 127;
-                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
-
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
                             }
-                        
+                            else
+                            {
+                                //работает только для ручного режима переключения пределов
+                                CountOfRanges = 4;
+                                var curRange = (int) appa107N.GetRangeCode - 127;
+                                var targetRange = (int) OperationAcRangeCode - 127;
+                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                        
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
                 {
-                    //вычисляе на сколько знаков округлять
-                    var mantisa =
-                        MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                             .VariableBaseValueMeasPoint.MultipliersUnit
-                                                             .GetDoubleValue() /
-                                                              volPoint.VariableBaseValueMeasPoint
-                                                                      .MultipliersUnit
-                                                                      .GetDoubleValue()));
-
-                    operation.Expected = new AcVariablePoint(volPoint.VariableBaseValueMeasPoint.Value,
-                                                             thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                             new[] {freqPoint});
-
-                    //расчет погрешности для конкретной точки предела измерения
-                    ConstructTooleranceFormula(freqPoint); // функция подбирает коэффициенты для формулы погрешности
-                    operation.ErrorCalculation = (inA, inB) =>
+                    try
                     {
-                        var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.Value) +
-                                     EdMlRaz *
-                                     RangeResolution.VariableBaseValueMeasPoint.Value *
-                                     (decimal) (RangeResolution
-                                               .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
-                                                volPoint.VariableBaseValueMeasPoint.MultipliersUnit
-                                                        .GetDoubleValue()
-                                     );
+                        //вычисляе на сколько знаков округлять
+                        var mantisa =
+                            MathStatistics.GetMantissa((decimal) (RangeResolution
+                                                                 .VariableBaseValueMeasPoint.MultipliersUnit
+                                                                 .GetDoubleValue() /
+                                                                  volPoint.VariableBaseValueMeasPoint
+                                                                          .MultipliersUnit
+                                                                          .GetDoubleValue()));
 
-                        MathStatistics.Round(ref result, mantisa);
-                        return new AcVariablePoint(result, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
-                    };
+                        operation.Expected = new AcVariablePoint(volPoint.VariableBaseValueMeasPoint.Value,
+                                                                 thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
+                                                                 new[] {freqPoint});
 
-                    operation.LowerTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value -
-                                            operation.Error.VariableBaseValueMeasPoint.Value,
-                                            operation.Expected.VariableBaseValueMeasPoint.Units,
-                                            operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
-                    //operation.Expected - operation.Error;
-                    operation.UpperTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value +
-                                            operation.Error.VariableBaseValueMeasPoint.Value,
-                                            operation.Expected.VariableBaseValueMeasPoint.Units,
-                                            operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
-                    //operation.Expected + operation.Error;
-                    operation.IsGood = () =>
-                        (operation.Getting.VariableBaseValueMeasPoint.Value <
-                         operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
-                        (operation.Getting.VariableBaseValueMeasPoint.Value >
-                         operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
+                        //расчет погрешности для конкретной точки предела измерения
+                        ConstructTooleranceFormula(freqPoint); // функция подбирает коэффициенты для формулы погрешности
+                        operation.ErrorCalculation = (inA, inB) =>
+                        {
+                            var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.Value) +
+                                         EdMlRaz *
+                                         RangeResolution.VariableBaseValueMeasPoint.Value *
+                                         (decimal) (RangeResolution
+                                                   .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
+                                                    volPoint.VariableBaseValueMeasPoint.MultipliersUnit
+                                                            .GetDoubleValue()
+                                         );
 
-                    decimal measurePoint = 0;
+                            MathStatistics.Round(ref result, mantisa);
+                            return new AcVariablePoint(result, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
+                        };
 
-                    if (freqPoint.fakePoinFlag && volPoint.fakePointFlag)
-                    {
-                        Logger.Info($"фальшивая точка {volPoint.ToString()} {freqPoint.Description}");
-                        measurePoint =
-                            (decimal)
-                            MathStatistics
-                               .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.Value,
-                                              (double) operation.UpperTolerance.VariableBaseValueMeasPoint.Value);
+                        operation.LowerTolerance =
+                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value -
+                                                operation.Error.VariableBaseValueMeasPoint.Value,
+                                                operation.Expected.VariableBaseValueMeasPoint.Units,
+                                                operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
+                        //operation.Expected - operation.Error;
+                        operation.UpperTolerance =
+                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value +
+                                                operation.Error.VariableBaseValueMeasPoint.Value,
+                                                operation.Expected.VariableBaseValueMeasPoint.Units,
+                                                operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
+                        //operation.Expected + operation.Error;
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting.VariableBaseValueMeasPoint.Value <
+                                    operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
+                                   (operation.Getting.VariableBaseValueMeasPoint.Value >
+                                    operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
+                        };
+
+                        decimal measurePoint = 0;
+
+                        if (freqPoint.fakePoinFlag && volPoint.fakePointFlag)
+                        {
+                            Logger.Info($"фальшивая точка {volPoint} {freqPoint.Description}");
+                            measurePoint =
+                                (decimal)
+                                MathStatistics
+                                   .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.Value,
+                                                  (double) operation.UpperTolerance.VariableBaseValueMeasPoint.Value);
+                        }
+                        else
+                        {
+                            flkCalib5522A.Out.Set.Voltage.Ac.SetValue(volPoint.VariableBaseValueMeasPoint.Value,
+                                                                      freqPoint.Value,
+                                                                      volPoint.VariableBaseValueMeasPoint
+                                                                              .MultipliersUnit,
+                                                                      freqPoint.MultipliersUnit);
+                            flkCalib5522A.Out.ClearMemoryRegister();
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            Thread.Sleep(2000);
+                            //измеряем
+                            measurePoint = (decimal) appa107N.GetValue();
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        }
+
+                        //округляем измерения
+                        MathStatistics.Round(ref measurePoint, mantisa);
+
+                        operation.Getting =
+                            new AcVariablePoint(measurePoint, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        flkCalib5522A.Out.Set.Voltage.Ac.SetValue(volPoint.VariableBaseValueMeasPoint.Value,
-                                                                  freqPoint.Value,
-                                                                  volPoint.VariableBaseValueMeasPoint.MultipliersUnit,
-                                                                  freqPoint.MultipliersUnit);
-                        flkCalib5522A.Out.ClearMemoryRegister();
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                        Thread.Sleep(2000);
-                        //измеряем
-                        measurePoint = (decimal) appa107N.GetValue();
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        Logger.Error(e);
+                        throw;
                     }
-
-                    //округляем измерения
-                    MathStatistics.Round(ref measurePoint, mantisa);
-
-                    operation.Getting =
-                        new AcVariablePoint(measurePoint, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
-                    ;
                 };
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -1057,11 +1072,11 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
 
         public List<IBasicOperation<AcVariablePoint>> DataRow { get; set; }
 
@@ -1379,8 +1394,10 @@ namespace APPA_107N_109N
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
             DataRow = new List<IBasicOperation<MeasPoint>>();
+
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 2,
                 FileName = "appa_10XN_ma_5522A.jpg",
@@ -1407,11 +1424,14 @@ namespace APPA_107N_109N
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected.Description;
-                dataRow[2] = dds.Getting.Description;
-                dataRow[3] = dds.LowerTolerance.Description;
-                dataRow[4] = dds.UpperTolerance.Description;
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[1] = dds.Expected?.Description;
+                dataRow[2] = dds.Getting?.Description;
+                dataRow[3] = dds.LowerTolerance?.Description;
+                dataRow[4] = dds.UpperTolerance?.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = "не выполнено";
+                else
+                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1435,114 +1455,126 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        await Task.Run(() =>
-                        {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                        });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         var testMode = appa107N.GetMeasureMode;
-                            while (OperMeasureMode != appa107N.GetMeasureMode)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                       "Указание оператору", MessageButton.OK,
-                                                       MessageIcon.Information,
-                                                       MessageResult.OK);
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
 
-                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show("Установите ручной режим переключения пределов.");
+                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton;
+
+                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
                             {
-                                int countPushRangeButton;
-
-                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                                {
-                                    CountOfRanges = 2;
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
-                                else
-                                {
-                                    //работает только для ручного режима переключения пределов
-                                    CountOfRanges = 2;
-                                    var curRange = (int)appa107N.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
-                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
-
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
+                                CountOfRanges = 2;
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
                             }
-                       
+                            else
+                            {
+                                //работает только для ручного режима переключения пределов
+                                CountOfRanges = 2;
+                                var curRange = (int) appa107N.GetRangeCode - 127;
+                                var targetRange = (int) OperationRangeCode - 127;
+                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                        
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
                 {
-                    flkCalib5522A.Out.Set.Current.Dc.SetValue(currPoint.Value *
-                                                              (decimal) currPoint.MultipliersUnit.GetDoubleValue());
-                    flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                    Thread.Sleep(2000);
-                    //измеряем
-                    var measurePoint = (decimal) appa107N.GetValue();
-
-                    flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-
-                    var mantisa =
-                        MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                             .VariableBaseValueMeasPoint.MultipliersUnit
-                                                             .GetDoubleValue() /
-                                                              currPoint.MultipliersUnit.GetDoubleValue()));
-                    //округляем измерения
-                    MathStatistics.Round(ref measurePoint, mantisa);
-
-                    operation.Getting =
-                        new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, measurePoint);
-                    operation.Expected = currPoint;
-                    //расчет погрешности для конкретной точки предела измерения
-                    operation.ErrorCalculation = (inA, inB) =>
+                    try
                     {
-                        var result = BaseTolCoeff * Math.Abs(operation.Expected.Value) + EdMlRaz *
-                            RangeResolution.VariableBaseValueMeasPoint.Value *
-                            (decimal) (RangeResolution
-                                      .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
-                                       currPoint.MultipliersUnit
-                                                .GetDoubleValue());
+                        flkCalib5522A.Out.Set.Current.Dc.SetValue(currPoint.Value *
+                                                                  (decimal) currPoint.MultipliersUnit.GetDoubleValue());
+                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                        Thread.Sleep(2000);
+                        //измеряем
+                        var measurePoint = (decimal) appa107N.GetValue();
+
+                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+
                         var mantisa =
                             MathStatistics.GetMantissa((decimal) (RangeResolution
                                                                  .VariableBaseValueMeasPoint.MultipliersUnit
-                                                                 .GetDoubleValue() *
-                                                                  (double) RangeResolution
-                                                                          .VariableBaseValueMeasPoint.Value /
-                                                                  currPoint.MultipliersUnit
-                                                                           .GetDoubleValue()));
-                        MathStatistics.Round(ref result, mantisa);
-                        return new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, result);
-                    };
+                                                                 .GetDoubleValue() /
+                                                                  currPoint.MultipliersUnit.GetDoubleValue()));
+                        //округляем измерения
+                        MathStatistics.Round(ref measurePoint, mantisa);
 
-                    operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                             operation.Expected.Value -
-                                                             operation.Error.Value);
+                        operation.Getting =
+                            new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, measurePoint);
+                        operation.Expected = currPoint;
+                        //расчет погрешности для конкретной точки предела измерения
+                        operation.ErrorCalculation = (inA, inB) =>
+                        {
+                            var result = BaseTolCoeff * Math.Abs(operation.Expected.Value) + EdMlRaz *
+                                RangeResolution.VariableBaseValueMeasPoint.Value *
+                                (decimal) (RangeResolution
+                                          .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
+                                           currPoint.MultipliersUnit
+                                                    .GetDoubleValue());
+                            var mantisa =
+                                MathStatistics.GetMantissa((decimal) (RangeResolution
+                                                                     .VariableBaseValueMeasPoint.MultipliersUnit
+                                                                     .GetDoubleValue() *
+                                                                      (double) RangeResolution
+                                                                              .VariableBaseValueMeasPoint.Value /
+                                                                      currPoint.MultipliersUnit
+                                                                               .GetDoubleValue()));
+                            MathStatistics.Round(ref result, mantisa);
+                            return new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit, result);
+                        };
 
-                    operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                             operation.Expected.Value +
-                                                             operation.Error.Value);
+                        operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
+                                                                 operation.Expected.Value -
+                                                                 operation.Error.Value);
 
-                    operation.IsGood = () =>
-                        (operation.Getting.Value < operation.UpperTolerance.Value) &
-                        (operation.Getting.Value > operation.LowerTolerance.Value);
+                        operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
+                                                                 operation.Expected.Value +
+                                                                 operation.Error.Value);
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null)
+                            {
+                                return false;
+                            }
+
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                            ;
+                        };
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
                 };
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -1553,11 +1585,11 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
 
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
     }
@@ -1575,6 +1607,7 @@ namespace APPA_107N_109N
             Name = OperationRangeNominal.GetStringValue();
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 2,
                 FileName = @"appa_10XN_ma_5522A.jpg",
@@ -1614,6 +1647,7 @@ namespace APPA_107N_109N
             Name = OperationRangeNominal.GetStringValue();
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 2,
                 FileName = @"appa_10XN_ma_5522A.jpg",
@@ -1653,6 +1687,7 @@ namespace APPA_107N_109N
             Name = OperationRangeNominal.GetStringValue();
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 1,
                 FileName = @"appa_10XN_A_Aux_5522A.jpg",
@@ -1679,6 +1714,7 @@ namespace APPA_107N_109N
 
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 3,
                 FileName = "appa_10XN_A_Aux_5522A.jpg",
@@ -1710,6 +1746,7 @@ namespace APPA_107N_109N
 
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 3,
                 FileName = "appa_10XN_A_Aux_5522A.jpg",
@@ -1742,6 +1779,7 @@ namespace APPA_107N_109N
 
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 4,
                 FileName = "appa_10XN_20A_5522A.jpg",
@@ -1831,6 +1869,7 @@ namespace APPA_107N_109N
 
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 2,
                 FileName = "appa_10XN_ma_5522A.jpg",
@@ -1904,11 +1943,14 @@ namespace APPA_107N_109N
                 dataRow[0] = OperationRangeNominal.GetStringValue();
                 dataRow[1] = dds.Expected.VariableBaseValueMeasPoint.Description;
                 //тут может упасть!!!
-                dataRow[2] = dds.Expected.Herz[0].Description;
-                dataRow[3] = dds.Getting.VariableBaseValueMeasPoint.Description;
-                dataRow[4] = dds.LowerTolerance.VariableBaseValueMeasPoint.Description;
-                dataRow[5] = dds.UpperTolerance.VariableBaseValueMeasPoint.Description;
-                dataRow[6] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[2] = dds.Expected?.Herz[0].Description;
+                dataRow[3] = dds.Getting?.VariableBaseValueMeasPoint.Description;
+                dataRow[4] = dds.LowerTolerance?.VariableBaseValueMeasPoint.Description;
+                dataRow[5] = dds.UpperTolerance?.VariableBaseValueMeasPoint.Description;
+                if (dds.IsGood == null)
+                    dataRow[6] = "не выполнено";
+                else
+                    dataRow[6] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1932,137 +1974,147 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        await Task.Run(() =>
-                        {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                        });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         var testMode = appa107N.GetMeasureMode;
-                            while (OperMeasureMode != appa107N.GetMeasureMode)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                       "Указание оператору", MessageButton.OK,
-                                                       MessageIcon.Information,
-                                                       MessageResult.OK);
+                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
 
-                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show("Установите ручной режим переключения пределов.");
+                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton;
+
+                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
                             {
-                                int countPushRangeButton;
-
-                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                                {
-                                    CountOfRanges = 2;
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
-                                else
-                                {
-                                    //работает только для ручного режима переключения пределов
-                                    CountOfRanges = 2;
-                                    var curRange = (int)appa107N.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
-                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
-
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
+                                CountOfRanges = 2;
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
                             }
-                        
+                            else
+                            {
+                                //работает только для ручного режима переключения пределов
+                                CountOfRanges = 2;
+                                var curRange = (int) appa107N.GetRangeCode - 127;
+                                var targetRange = (int) OperationRangeCode - 127;
+                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                        
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
 
                 operation.BodyWork = () =>
                 {
-                    var mantisa =
-                        MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                             .VariableBaseValueMeasPoint.MultipliersUnit
-                                                             .GetDoubleValue() * (double) RangeResolution
-                                                                                         .VariableBaseValueMeasPoint
-                                                                                         .Value /
-                                                              curr.VariableBaseValueMeasPoint.MultipliersUnit
-                                                                  .GetDoubleValue()), true);
-
-                    operation.Expected = new AcVariablePoint(curr.VariableBaseValueMeasPoint.Value,
-                                                             thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
-                                                             new[] {freqPoint});
-
-                    //расчет погрешности для конкретной точки предела измерения
-                    TolleranceConstruct(freqPoint); // функция подбирает коэффициенты для формулы погрешности
-                    operation.ErrorCalculation = (inA, inB) =>
+                    try
                     {
-                        var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.Value) +
-                                     EdMlRaz *
-                                     RangeResolution.VariableBaseValueMeasPoint.Value *
-                                     (decimal) (RangeResolution
-                                               .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
-                                                curr.VariableBaseValueMeasPoint.MultipliersUnit
-                                                    .GetDoubleValue());
+                        var mantisa =
+                            MathStatistics.GetMantissa((decimal) (RangeResolution
+                                                                 .VariableBaseValueMeasPoint.MultipliersUnit
+                                                                 .GetDoubleValue() * (double) RangeResolution
+                                                                                             .VariableBaseValueMeasPoint
+                                                                                             .Value /
+                                                                  curr.VariableBaseValueMeasPoint.MultipliersUnit
+                                                                      .GetDoubleValue()), true);
 
-                        MathStatistics.Round(ref result, mantisa);
-                        return new AcVariablePoint(result, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
-                    };
+                        operation.Expected = new AcVariablePoint(curr.VariableBaseValueMeasPoint.Value,
+                                                                 thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
+                                                                 new[] {freqPoint});
 
-                    operation.LowerTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value -
-                                            operation.Error.VariableBaseValueMeasPoint.Value,
-                                            operation.Expected.VariableBaseValueMeasPoint.Units,
-                                            operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
-                    //operation.Expected - operation.Error;
-                    operation.UpperTolerance =
-                        new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value +
-                                            operation.Error.VariableBaseValueMeasPoint.Value,
-                                            operation.Expected.VariableBaseValueMeasPoint.Units,
-                                            operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
-                    //operation.Expected + operation.Error;
-                    operation.IsGood = () =>
-                        (operation.Getting.VariableBaseValueMeasPoint.Value <
-                         operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
-                        (operation.Getting.VariableBaseValueMeasPoint.Value >
-                         operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
+                        //расчет погрешности для конкретной точки предела измерения
+                        TolleranceConstruct(freqPoint); // функция подбирает коэффициенты для формулы погрешности
+                        operation.ErrorCalculation = (inA, inB) =>
+                        {
+                            var result = BaseTolCoeff * Math.Abs(operation.Expected.VariableBaseValueMeasPoint.Value) +
+                                         EdMlRaz *
+                                         RangeResolution.VariableBaseValueMeasPoint.Value *
+                                         (decimal) (RangeResolution
+                                                   .VariableBaseValueMeasPoint.MultipliersUnit.GetDoubleValue() /
+                                                    curr.VariableBaseValueMeasPoint.MultipliersUnit
+                                                        .GetDoubleValue());
 
-                    decimal measurePoint = 0;
-                    if (freqPoint.fakePoinFlag)
-                    {
-                        measurePoint =
-                            (decimal)
-                            MathStatistics
-                               .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.Value,
-                                              (double) operation.UpperTolerance.VariableBaseValueMeasPoint.Value);
+                            MathStatistics.Round(ref result, mantisa);
+                            return new AcVariablePoint(result, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
+                        };
+
+                        operation.LowerTolerance =
+                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value -
+                                                operation.Error.VariableBaseValueMeasPoint.Value,
+                                                operation.Expected.VariableBaseValueMeasPoint.Units,
+                                                operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
+                        //operation.Expected - operation.Error;
+                        operation.UpperTolerance =
+                            new AcVariablePoint(operation.Expected.VariableBaseValueMeasPoint.Value +
+                                                operation.Error.VariableBaseValueMeasPoint.Value,
+                                                operation.Expected.VariableBaseValueMeasPoint.Units,
+                                                operation.Expected.VariableBaseValueMeasPoint.MultipliersUnit);
+                        //operation.Expected + operation.Error;
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Expected.VariableBaseValueMeasPoint == null ||
+                                operation.Getting.VariableBaseValueMeasPoint == null ||
+                                operation.LowerTolerance.VariableBaseValueMeasPoint == null ||
+                                operation.UpperTolerance.VariableBaseValueMeasPoint == null) return false;
+
+                            return (operation.Getting.VariableBaseValueMeasPoint.Value <
+                                    operation.UpperTolerance.VariableBaseValueMeasPoint.Value) &
+                                   (operation.Getting.VariableBaseValueMeasPoint.Value >
+                                    operation.LowerTolerance.VariableBaseValueMeasPoint.Value);
+                        };
+
+                        decimal measurePoint = 0;
+                        if (freqPoint.fakePoinFlag)
+                        {
+                            measurePoint =
+                                (decimal)
+                                MathStatistics
+                                   .RandomToRange((double) operation.LowerTolerance.VariableBaseValueMeasPoint.Value,
+                                                  (double) operation.UpperTolerance.VariableBaseValueMeasPoint.Value);
+                        }
+                        else
+                        {
+                            flkCalib5522A.Out.Set.Current.Ac.SetValue(curr.VariableBaseValueMeasPoint.Value,
+                                                                      freqPoint.Value,
+                                                                      curr.VariableBaseValueMeasPoint.MultipliersUnit,
+                                                                      freqPoint.MultipliersUnit);
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            Thread.Sleep(2000);
+                            //измеряем
+                            measurePoint = (decimal) appa107N.GetValue();
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        }
+
+                        //округляем измерения
+                        MathStatistics.Round(ref measurePoint, mantisa);
+
+                        operation.Getting =
+                            new AcVariablePoint(measurePoint, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        flkCalib5522A.Out.Set.Current.Ac.SetValue(curr.VariableBaseValueMeasPoint.Value,
-                                                                  freqPoint.Value,
-                                                                  curr.VariableBaseValueMeasPoint.MultipliersUnit,
-                                                                  freqPoint.MultipliersUnit);
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                        Thread.Sleep(2000);
-                        //измеряем
-                        measurePoint = (decimal) appa107N.GetValue();
-                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        Logger.Error(e);
+                        throw;
                     }
-
-                    //округляем измерения
-                    MathStatistics.Round(ref measurePoint, mantisa);
-
-                    operation.Getting =
-                        new AcVariablePoint(measurePoint, thisRangeUnits.Units, thisRangeUnits.MultipliersUnit);
                 };
 
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -2116,11 +2168,11 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
 
         public List<IBasicOperation<AcVariablePoint>> DataRow { get; set; }
 
@@ -2235,6 +2287,7 @@ namespace APPA_107N_109N
 
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 3,
                 FileName = "appa_10XN_A_Aux_5522A.jpg",
@@ -2268,6 +2321,7 @@ namespace APPA_107N_109N
 
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 3,
                 FileName = "appa_10XN_A_Aux_5522A.jpg",
@@ -2300,6 +2354,7 @@ namespace APPA_107N_109N
 
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 4,
                 FileName = "appa_10XN_20A_5522A.jpg",
@@ -2413,11 +2468,14 @@ namespace APPA_107N_109N
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected.Description;
-                dataRow[2] = dds.Getting.Description;
-                dataRow[3] = dds.LowerTolerance.Description;
-                dataRow[4] = dds.UpperTolerance.Description;
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[1] = dds.Expected?.Description;
+                dataRow[2] = dds.Getting?.Description;
+                dataRow[3] = dds.LowerTolerance?.Description;
+                dataRow[4] = dds.UpperTolerance?.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = "не выполнено";
+                else
+                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -2441,26 +2499,23 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        await Task.Run(() =>
-                        {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                        });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != appa107N.GetMeasureMode)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                       "Указание оператору", MessageButton.OK,
-                                                       MessageIcon.Information,
-                                                       MessageResult.OK);
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
 
-                            while (appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show("Установите автоматический режим переключения пределов.");
-                        
+                        while (appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите автоматический режим переключения пределов.");
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
@@ -2512,8 +2567,13 @@ namespace APPA_107N_109N
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
                                                                  operation.Expected.Value +
                                                                  operation.Error.Value);
-                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
-                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Expected == null || operation.Getting == null ||
+                                operation.LowerTolerance == null || operation.UpperTolerance == null) return false;
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
                     }
                     catch (Exception e)
                     {
@@ -2530,11 +2590,11 @@ namespace APPA_107N_109N
 
         #endregion
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
 
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
     }
@@ -3013,11 +3073,14 @@ namespace APPA_107N_109N
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationOhmRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected.Description;
-                dataRow[2] = dds.Getting.Description;
-                dataRow[3] = dds.LowerTolerance.Description;
-                dataRow[4] = dds.UpperTolerance.Description;
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[1] = dds.Expected?.Description;
+                dataRow[2] = dds.Getting?.Description;
+                dataRow[3] = dds.LowerTolerance?.Description;
+                dataRow[4] = dds.UpperTolerance?.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = "не выполнено";
+                else
+                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -3040,56 +3103,53 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        await Task.Run(() =>
-                        {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                        });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != appa107N.GetMeasureMode)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
+
+                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите ручной режим переключения пределов.");
+
+                        while (OperationOhmRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton;
+
+                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
+                            {
                                 UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                        "Указание оператору", MessageButton.OK,
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
-
-                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show("Установите ручной режим переключения пределов.");
-
-                            while (OperationOhmRangeNominal != appa107N.GetRangeNominal)
-                            {
-                                int countPushRangeButton;
-
-                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                                {
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                           "Указание оператору", MessageButton.OK,
-                                                           MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
-                                else
-                                {
-                                    //работает только для ручного режима переключения пределов
-                                    CountOfRanges = 8;
-                                    var curRange = (int)appa107N.GetRangeCode - 127;
-                                    var targetRange = (int)OperationOhmRangeCode - 127;
-                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
-
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                           "Указание оператору", MessageButton.OK,
-                                                           MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
                             }
-                       
+                            else
+                            {
+                                //работает только для ручного режима переключения пределов
+                                CountOfRanges = 8;
+                                var curRange = (int) appa107N.GetRangeCode - 127;
+                                var targetRange = (int) OperationOhmRangeCode - 127;
+                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK,
+                                                       MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
@@ -3162,8 +3222,14 @@ namespace APPA_107N_109N
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
                                                                  operation.Expected.Value +
                                                                  operation.Error.Value);
-                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
-                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Expected == null || operation.Getting == null ||
+                                operation.LowerTolerance == null || operation.UpperTolerance == null) return false;
+
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
                     }
                     catch (Exception e)
                     {
@@ -3182,11 +3248,11 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
     }
 
     #endregion OHM
@@ -3294,11 +3360,14 @@ namespace APPA_107N_109N
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected.Description;
-                dataRow[2] = dds.Getting.Description;
-                dataRow[3] = dds.LowerTolerance.Description;
-                dataRow[4] = dds.UpperTolerance.Description;
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[1] = dds.Expected?.Description;
+                dataRow[2] = dds.Getting?.Description;
+                dataRow[3] = dds.LowerTolerance?.Description;
+                dataRow[4] = dds.UpperTolerance?.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = "не выполнено";
+                else
+                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -3321,43 +3390,38 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        await Task.Run(() =>
-                        {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                        });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != appa107N.GetMeasureMode)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                       "Указание оператору", MessageButton.OK,
-                                                       MessageIcon.Information,
-                                                       MessageResult.OK);
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
 
-                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show("Установите ручной режим переключения пределов.");
+                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationRangeNominal != appa107N.GetRangeNominal)
-                            {
-                                int countPushRangeButton;
-                                CountOfRanges = 8;
-                                var curRange = (int)appa107N.GetRangeCode - 127;
-                                var targetRange = (int)OperationRangeCode - 127;
-                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton;
+                            CountOfRanges = 8;
+                            var curRange = (int) appa107N.GetRangeCode - 127;
+                            var targetRange = (int) OperationRangeCode - 127;
+                            countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                       MessageResult.OK);
-                            }
-                       
-
-                        
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                   $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                   "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                   MessageResult.OK);
+                        }
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
@@ -3418,8 +3482,13 @@ namespace APPA_107N_109N
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
                                                                  operation.Expected.Value +
                                                                  operation.Error.Value);
-                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
-                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Expected == null || operation.Getting == null ||
+                                operation.LowerTolerance == null || operation.UpperTolerance == null) return false;
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
                     }
                     catch (Exception e)
                     {
@@ -3438,11 +3507,11 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
     }
 
     public class Oper9_1Far_4nF_Measure : Oper9FarMeasureBase
@@ -3706,6 +3775,7 @@ namespace APPA_107N_109N
             DataRow = new List<IBasicOperation<MeasPoint>>();
             Sheme = new ShemeImage
             {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = 5,
                 FileName = @"appa_10XN_Temp_5522.jpg",
@@ -3732,11 +3802,14 @@ namespace APPA_107N_109N
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected.Description;
-                dataRow[2] = dds.Getting.Description;
-                dataRow[3] = dds.LowerTolerance.Description;
-                dataRow[4] = dds.UpperTolerance.Description;
-                dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[1] = dds.Expected?.Description;
+                dataRow[2] = dds.Getting?.Description;
+                dataRow[3] = dds.LowerTolerance?.Description;
+                dataRow[4] = dds.UpperTolerance?.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = "не выполнено";
+                else
+                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -3759,56 +3832,52 @@ namespace APPA_107N_109N
                             appa107N.StringConnection = GetStringConnect(appa107N);
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                        await Task.Run(() =>
-                        {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                        });
+                        await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != appa107N.GetMeasureMode)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
-                                                       "Указание оператору", MessageButton.OK,
-                                                       MessageIcon.Information,
-                                                       MessageResult.OK);
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
+                                                   "Указание оператору", MessageButton.OK,
+                                                   MessageIcon.Information,
+                                                   MessageResult.OK);
 
-                            while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
-                                                 .Show("Установите ручной режим переключения пределов.");
+                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                            UserItemOperation.ServicePack.MessageBox
+                                             .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        {
+                            int countPushRangeButton;
+
+                            if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
                             {
-                                int countPushRangeButton;
-
-                                if (thisRangeUnits.MultipliersUnit == Multipliers.Mili)
-                                {
-                                    CountOfRanges = 2;
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
-                                else
-                                {
-                                    //работает только для ручного режима переключения пределов
-                                    CountOfRanges = 2;
-                                    var curRange = (int)appa107N.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
-                                    countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
-
-                                    UserItemOperation.ServicePack.MessageBox
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
-                                                           $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
-                                                           "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                                           MessageResult.OK);
-                                }
+                                CountOfRanges = 2;
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
                             }
-                        
-                        
+                            else
+                            {
+                                //работает только для ручного режима переключения пределов
+                                CountOfRanges = 2;
+                                var curRange = (int) appa107N.GetRangeCode - 127;
+                                var targetRange = (int) OperationRangeCode - 127;
+                                countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
+
+                                UserItemOperation.ServicePack.MessageBox
+                                                 .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                       $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
+                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                                       MessageResult.OK);
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
@@ -3858,8 +3927,13 @@ namespace APPA_107N_109N
                         operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.MultipliersUnit,
                                                                  operation.Expected.Value +
                                                                  operation.Error.Value);
-                        operation.IsGood = () => (operation.Getting.Value < operation.UpperTolerance.Value) &
-                                                 (operation.Getting.Value > operation.LowerTolerance.Value);
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Expected == null || operation.Getting == null ||
+                                operation.LowerTolerance == null || operation.UpperTolerance == null) return false;
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
                     }
                     catch (Exception e)
                     {
@@ -3879,11 +3953,11 @@ namespace APPA_107N_109N
 
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
 
-        public override async Task StartWork(CancellationToken token)
-        {
-            await base.StartWork(token);
-            appa107N?.Dispose();
-        }
+        //public override async Task StartWork(CancellationToken token)
+        //{
+        //    await base.StartWork(token);
+        //    appa107N?.Dispose();
+        //}
     }
 
     public class Oper10_1Temperature_Minus200_Minus100_Measure : Oper10TemperatureMeasureBase

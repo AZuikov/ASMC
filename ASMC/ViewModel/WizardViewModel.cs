@@ -382,28 +382,31 @@ namespace ASMC.ViewModel
 
                         var markName = n.Data.TableName;
 
-                        if (string.IsNullOrWhiteSpace(markName)) return;
+                        if (!string.IsNullOrWhiteSpace(markName))
+                        {
+                            if (regInsTextByMark.IsMatch(markName))
+                            {
+                                report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
+                            }
+                            else if (regInsTextByReplase.IsMatch(markName))
+                            {
+                                report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
+                            }
+                            else if (regInTableByMark.IsMatch(markName))
+                            {
+                                report.InsertNewTableToBookmark(markName, n.Data, a);
+                            }
+                            else if (regFillTableByMark.IsMatch(markName))
+                            {
+                                report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
+                            }
+                            else
+                            {
+                                Logger.Error($@"Имя {markName} не распознано");
+                            }
+                        }
 
-                        if (regInsTextByMark.IsMatch(markName))
-                        {
-                            report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
-                        }
-                        else if (regInsTextByReplase.IsMatch(markName))
-                        {
-                            report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
-                        }
-                        else if (regInTableByMark.IsMatch(markName))
-                        {
-                            report.InsertNewTableToBookmark(markName, n.Data, a);
-                        }
-                        else if (regFillTableByMark.IsMatch(markName))
-                        {
-                            report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
-                        }
-                        else
-                        {
-                            Logger.Error($@"Имя {markName} не распознано");
-                        }
+                        
                     }
 
                     foreach (var node in userItem.Nodes)

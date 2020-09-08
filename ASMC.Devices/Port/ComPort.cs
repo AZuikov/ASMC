@@ -111,6 +111,15 @@ namespace ASMC.Devices.Port
             set => _sp.NewLine = value;
             get => _sp.NewLine;
         }
+
+        /// <summary>
+        /// Отвечает открыт ли уже порт или нет
+        /// </summary>
+        /// <returns></returns>
+        public bool GetStatusIsOpen()
+        {
+            return _sp.IsOpen;
+        }
         /// <summary>
         /// Открывает соединение с Com портом.
         /// </summary>
@@ -126,10 +135,11 @@ namespace ASMC.Devices.Port
             {
                 _sp.Open();
                 _sp.DataReceived += SerialPort_DataReceived;
+                Logger.Debug($"Открыли порт {_sp.PortName} и подписались на событие считывания");
             }
             catch (UnauthorizedAccessException e)
             {
-                Logger.Error(e);
+                Logger.Error($"Попытка открыть порт: {e}");
                 return false;
             }              
             return true;
@@ -146,6 +156,9 @@ namespace ASMC.Devices.Port
 
                 _sp.DataReceived -= SerialPort_DataReceived;
                 _sp.Close();
+                _sp.Dispose();
+                Logger.Debug($"Последовательный порт {_sp.PortName} закрыт и отписались от события считывания.");
+                
             }
             catch(IOException e)
             {
@@ -162,7 +175,7 @@ namespace ASMC.Devices.Port
         {
             
 
-            if (Open()) return null;
+            if (GetStatusIsOpen()) return null;
             try
             {
                 return _sp.ReadLine();
@@ -184,7 +197,7 @@ namespace ASMC.Devices.Port
         }
         protected void Write(byte[] sendData, int offset, int length)
         {
-            if (!Open())
+            if (!GetStatusIsOpen())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{sendData} не выполнена");
                 return;
@@ -202,7 +215,7 @@ namespace ASMC.Devices.Port
         /// <param name="data"></param>
         public void Write(string data)
         {
-            if(!Open())
+            if(!GetStatusIsOpen())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
                 return;
@@ -215,7 +228,7 @@ namespace ASMC.Devices.Port
         /// <returns>Возвращает рузультат чтения</returns>
         public void WriteLine(string data)
         {
-            if (!Open())
+            if (!GetStatusIsOpen())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
                 return;
@@ -227,7 +240,7 @@ namespace ASMC.Devices.Port
 
         public string QueryLine(string inStrData)
         {
-            if (!Open())
+            if (!GetStatusIsOpen())
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName} данных: {inStrData} не выполнена");
                 throw new IOException($"Последовательный порт {_sp.PortName} не удалось открыть.");
