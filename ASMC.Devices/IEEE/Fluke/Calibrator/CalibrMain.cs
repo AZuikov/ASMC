@@ -33,7 +33,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public COut(CalibrMain calibrMain)
             {
-                this._calibrMain = calibrMain;
+                _calibrMain = calibrMain;
                 Set = new CSet(calibrMain);
                
             }
