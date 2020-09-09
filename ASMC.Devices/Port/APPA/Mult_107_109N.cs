@@ -682,15 +682,16 @@ namespace ASMC.Devices.Port.APPA
 
         public void SendQuery()
         {
-            if (Open())
+            //проверка на признак открытого порта
+            if (!GetStatusIsOpen())
             {
-                Write(_sendData, 0, _sendData.Length);
-                _wait.Start();
+                // открываем порт
+                Open();
             }
-            else
-            {
-                Close();
-            }
+           
+            // отправляем запрос
+            Write(_sendData, 0, _sendData.Length);
+            _wait.Start();
 
             WaitEvent.WaitOne();
             if (_flagTimeout)
@@ -698,6 +699,7 @@ namespace ASMC.Devices.Port.APPA
                 _flagTimeout = false;
                 Logger.Debug($"{ UserType} не отвечает.");
                 throw new TimeoutException($"{UserType} не отвечает.");
+
             }
 
         }
@@ -748,8 +750,10 @@ namespace ASMC.Devices.Port.APPA
                 }
                    
                 DiscardInBuffer();
-                CheckControlSumm();
+                
                 //Sp.DataReceived -= SerialPort_DataReceived;
+                Close();
+                CheckControlSumm();
             }
             catch (Exception a)
             {
@@ -773,6 +777,7 @@ namespace ASMC.Devices.Port.APPA
             if ((match != _readingBuffer[_readingBuffer.Count - 1]))
             {
                 WaitEvent.Reset();
+                //Close();
                 SendQuery();
                 return;
             }

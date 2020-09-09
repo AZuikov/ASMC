@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASMC.Data.Model;
 using Ivi.Visa;
@@ -318,7 +319,34 @@ namespace ASMC.Devices.IEEE
             get
             {
                 var arr = GlobalResourceManager.Find().ToList();
-                arr.Remove("INTFC");
+
+                //Parallel.For(0, arr.Count, (int i) =>
+                //{
+                //    if (arr[i].Contains("INTFC"))
+                //    {
+                //        arr.RemoveAt(i);
+                //        i--;
+                //        return;
+
+
+                //    }
+
+                //    string MyReEx = @"(com|lpt)\d+";
+                //    Match m;
+                //    try
+                //    {
+                //        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
+
+                //        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                //        if (m.Success) arr[i] = m.Value;
+                //    }
+                //    catch (NativeVisaException e)
+                //    {
+                //        arr.RemoveAt(i);
+                //        i--;
+
+                //    }
+                //});
 
 
                 for (var i = 0; i < arr.Count; i++)
@@ -329,14 +357,14 @@ namespace ASMC.Devices.IEEE
                         continue;
                     }
 
-                    
+
 
                     string MyReEx = @"(com|lpt)\d+";
                     Match m;
                     try
                     {
                         var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
-                        
+
                         m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
                         if (m.Success) arr[i] = m.Value;
                     }

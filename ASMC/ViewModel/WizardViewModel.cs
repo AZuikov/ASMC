@@ -73,7 +73,7 @@ namespace ASMC.ViewModel
 
         #region Fields
 
-        private readonly CancellationTokenSource _isWorkToken = new CancellationTokenSource();
+        private CancellationTokenSource _isWorkToken = new CancellationTokenSource();
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
@@ -382,28 +382,31 @@ namespace ASMC.ViewModel
 
                         var markName = n.Data.TableName;
 
-                        if (string.IsNullOrWhiteSpace(markName)) return;
+                        if (!string.IsNullOrWhiteSpace(markName))
+                        {
+                            if (regInsTextByMark.IsMatch(markName))
+                            {
+                                report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
+                            }
+                            else if (regInsTextByReplase.IsMatch(markName))
+                            {
+                                report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
+                            }
+                            else if (regInTableByMark.IsMatch(markName))
+                            {
+                                report.InsertNewTableToBookmark(markName, n.Data, a);
+                            }
+                            else if (regFillTableByMark.IsMatch(markName))
+                            {
+                                report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
+                            }
+                            else
+                            {
+                                Logger.Error($@"Имя {markName} не распознано");
+                            }
+                        }
 
-                        if (regInsTextByMark.IsMatch(markName))
-                        {
-                            report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
-                        }
-                        else if (regInsTextByReplase.IsMatch(markName))
-                        {
-                            report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
-                        }
-                        else if (regInTableByMark.IsMatch(markName))
-                        {
-                            report.InsertNewTableToBookmark(markName, n.Data, a);
-                        }
-                        else if (regFillTableByMark.IsMatch(markName))
-                        {
-                            report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
-                        }
-                        else
-                        {
-                            Logger.Error($@"Имя {markName} не распознано");
-                        }
+                        
                     }
 
                     foreach (var node in userItem.Nodes)
@@ -496,7 +499,10 @@ namespace ASMC.ViewModel
         private async void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
-         
+            if (_isWorkToken.Token.IsCancellationRequested)
+            {
+                _isWorkToken = new CancellationTokenSource();
+            }
             if (SelectionItemOperation == null)
             {
                 Logger.Info("Программа МК запущена");
