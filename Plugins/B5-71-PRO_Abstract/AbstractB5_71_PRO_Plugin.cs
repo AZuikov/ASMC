@@ -1011,7 +1011,7 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () =>
                         (operation.Getting >= operation.LowerTolerance) &
-                        (operation.Getting < operation.UpperTolerance);
+                        (operation.Getting <= operation.UpperTolerance);
                 }
                 catch (Exception e)
                 {
@@ -1731,7 +1731,7 @@ namespace B5_71_PRO_Abstract
                     operation.ErrorCalculation = ErrorCalculation;
                     operation.LowerTolerance = 0;
                     operation.UpperTolerance = operation.Expected + operation.Error;
-                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
+                    operation.IsGood = () => (operation.Getting <= operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
                 }
                 catch (Exception e)
