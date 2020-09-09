@@ -102,14 +102,14 @@
     <Compile Include="SimpleScada\Parametr\ScadaParametr.cs" />
     <Compile Include="SimpleScada\Parametr\ScadaParametrDecorator.cs" />
     <Compile Include="SimpleScada\Dv2TsSensor.cs" />
+    <Compile Include="UniqueDevices\SKBIS\Lir917\Driver.cs" />
+    <Compile Include="UniqueDevices\SKBIS\Lir917\Wrapper.cs" />
     <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
     <Compile Include="VirtMeasInst\VirtualSensor.cs" />
     <Compile Include="WithoutInterface\Voltmetr\B3_57.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +132,11 @@
       <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\SiUSBXp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

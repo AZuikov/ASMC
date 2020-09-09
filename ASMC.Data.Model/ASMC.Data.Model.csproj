@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicOperation.cs" />
-    <Compile Include="IDevice.cs" />
+    <Compile Include="IProtocolStringLine.cs" />
     <Compile Include="Interface\IBasicOperation.cs" />
     <Compile Include="Interface\ICell.cs" />
     <Compile Include="MeasurePointAndMeasUtils.cs" />

@@ -95,7 +95,10 @@ namespace ASMC.Common.UI
             if (viewModel != null)
             {
                 if (viewModel is ISupportClose sc)
+                {
+                    sc.Close();
                     sc.RequestClose -= ViewModel_RequestClose;
+                }
 
                 WindowPosition[viewModel.GetType()] = new Point(window.Left, window.Top);
             }

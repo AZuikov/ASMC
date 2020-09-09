@@ -2,7 +2,7 @@
 
 namespace ASMC.Data.Model
 {
-    public interface IDevice : IDisposable
+    public interface IProtocolStringLine : IDeviceBase
     {
         #region Property
 
@@ -11,24 +11,11 @@ namespace ASMC.Data.Model
         /// </summary>
         string StringConnection { get; }
 
-        /// <summary>
-        /// Вернет тип устройства заданный в библиотеке.
-        /// </summary>
-        string UserType { get; }
+       
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Позволяет закрыть соединение с устройством.
-        /// </summary>
-        void Close();
-
-        /// <summary>
-        /// Позволяет открыть соединение с устройством.
-        /// </summary>
-        bool Open();
 
         /// <summary>
         /// Считывает строку. 
@@ -50,5 +37,22 @@ namespace ASMC.Data.Model
 
 
         #endregion
+    }
+
+    public interface IDeviceBase : IDisposable
+    {
+        /// <summary>
+        /// Вернет тип устройства заданный в библиотеке.
+        /// </summary>
+        string UserType { get; }
+        /// <summary>
+        /// Позволяет закрыть соединение с устройством.
+        /// </summary>
+        void Close();
+
+        /// <summary>
+        /// Позволяет открыть соединение с устройством.
+        /// </summary>
+        bool Open();
     }
 }

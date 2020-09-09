@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -51,7 +52,7 @@ namespace Plugins.Test
                 new DeviceInterface {Name = new[] {"В3"}, Description = "Микровольтметр", IsCanStringConnect = false}
             };
             var a = new Operation1(this);
-            a.Nodes.Add(new Operation1(this));
+            a.Nodes.Add(new Operation2(this));
 
             a.Nodes.Add(new Operation1(this));
             this.UserItemOperation = new IUserItemOperationBase[] {new Operation1(this), new Operation1(this) , a };
@@ -101,8 +102,13 @@ namespace Plugins.Test
         /// <inheritdoc />
         public Operation1(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Внешний осмотр";
+            Name = "Внешний осмотр1";
             DataRow = new List<IBasicOperation<double>>();
+            Sheme = new ShemeImage
+            {
+                Number = 1,
+                FileName = @"appa_10XN_A_Aux_5522A.jpg"
+            };
         }
 
 
@@ -129,7 +135,72 @@ namespace Plugins.Test
 
             DataRow.Clear();
 
-            for (int i = 0; i <20; i++)
+            for (int i = 0; i <1; i++)
+            {
+                var operation = new BasicOperation<double>();
+                operation.InitWork = () =>
+                {
+                    var wind = this.UserItemOperation.ServicePack.FreeWindow as WindowService;
+                    var a = new WebCamViewModel();
+                    wind.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                    wind.Show("WebView", a);
+                    return Task.CompletedTask;
+                };
+                operation.BodyWork = () =>
+                {
+                    Thread.Sleep(50);
+                    operation.Expected = new Random().NextDouble();
+                    operation.Getting = new Random().NextDouble();
+                    operation.IsGood = () => true;
+                };
+                DataRow.Add(operation);
+            }
+
+        }
+
+        /// <inheritdoc />
+        public List<IBasicOperation<double>> DataRow { get; set; }
+    }
+
+    public class Operation2 : ParagraphBase, IUserItemOperation<double>
+    {
+        /// <inheritdoc />
+        public Operation2(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Внешний осмотр2";
+            DataRow = new List<IBasicOperation<double>>();
+            Sheme = new ShemeImage
+            {
+                Number = 2,
+                FileName = @"appa_10XN_ma_5522A.jpg"
+            };
+        }
+
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var dt = new DataTable("fdsfs");
+            dt.Columns.Add("Expected");
+            dt.Columns.Add("Getting");
+            foreach (var r in DataRow)
+            {
+                var row = dt.NewRow();
+                row[0] = r.Expected;
+                row[1] = r.Getting;
+                dt.Rows.Add(row);
+            }
+
+            return dt;
+        }
+
+        /// <inheritdoc />
+        protected override void InitWork()
+        {
+
+            DataRow.Clear();
+
+            for (int i = 0; i < 1; i++)
             {
                 var operation = new BasicOperation<double>();
                 operation.InitWork = () =>
@@ -158,6 +229,4 @@ namespace Plugins.Test
         /// <inheritdoc />
         public List<IBasicOperation<double>> DataRow { get; set; }
     }
-
-
 }

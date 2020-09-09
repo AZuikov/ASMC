@@ -11,7 +11,7 @@ using NLog;
 
 namespace ASMC.Devices.Port
 {
-    public class ComPort : HelpDeviceBase, IDevice
+    public class ComPort : HelpDeviceBase, IProtocolStringLine
     {
         /// <summary>
         /// Позволяет получать имя устройства.

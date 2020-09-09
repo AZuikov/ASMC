@@ -18,7 +18,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace ASMC.Devices.IEEE
 {
-    public class IeeeBase : HelpDeviceBase, IDevice
+    public class IeeeBase : HelpDeviceBase, IProtocolStringLine
     {
        
         /// <summary>
@@ -405,6 +405,7 @@ namespace ASMC.Devices.IEEE
              Close();
             return date;
         }
+
         /// <summary>
         /// Считывает текст до пробела
         /// </summary>
