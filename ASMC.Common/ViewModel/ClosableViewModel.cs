@@ -29,16 +29,16 @@ namespace ASMC.Common.ViewModel
         /// </summary>
         protected ClosableViewModel()
         {
-            CloseCommand = new DelegateCommand(Close);
+            CloseCommand = new DelegateCommand(OnClose);
         }
-
         /// <summary>
         /// Закрывает связанное представление.
         /// </summary>
-        public void Close()
+        public void OnClose()
         {
             RequestClose?.Invoke(this, EventArgs.Empty);
         }
+
 
         /// <summary>
         /// Возвращает значение, задающее
@@ -50,6 +50,11 @@ namespace ASMC.Common.ViewModel
         public virtual bool CanClose(object state)
         {
             return true;
+        }
+
+        /// <inheritdoc />
+        public virtual void Close()
+        {
         }
     }
 }

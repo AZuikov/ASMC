@@ -25,5 +25,9 @@ namespace ASMC.Common
         /// содержащий состояния
         /// модели.</param>
         bool CanClose(object state);
+        /// <summary>
+        /// Вызывается при закрытии представления.
+        /// </summary>
+        void Close();
     }
 }
