@@ -402,18 +402,18 @@ namespace APPA_107N_109N
 
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите ручной режим переключения пределов.");
 
-                        while (OperationDcRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationDcRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
                         {
                             int countPushRangeButton;
 
@@ -853,18 +853,18 @@ namespace APPA_107N_109N
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         var testMeasureModde = appa107N.GetMeasureMode;
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите ручной режим переключения пределов.");
 
-                        while (OperationAcRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationAcRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
                         {
                             int countPushRangeButton;
 
@@ -1458,18 +1458,18 @@ namespace APPA_107N_109N
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         var testMode = appa107N.GetMeasureMode;
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите ручной режим переключения пределов.");
 
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
                         {
                             int countPushRangeButton;
 
@@ -1977,18 +1977,18 @@ namespace APPA_107N_109N
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         var testMode = appa107N.GetMeasureMode;
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите ручной режим переключения пределов.");
 
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
                         {
                             int countPushRangeButton;
 
@@ -2501,14 +2501,14 @@ namespace APPA_107N_109N
 
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode != Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) != Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите автоматический режим переключения пределов.");
                     }
@@ -3105,18 +3105,18 @@ namespace APPA_107N_109N
 
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите ручной режим переключения пределов.");
 
-                        while (OperationOhmRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationOhmRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal)  )
                         {
                             int countPushRangeButton;
 
@@ -3392,18 +3392,18 @@ namespace APPA_107N_109N
 
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите ручной режим переключения пределов.");
 
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
                         {
                             int countPushRangeButton;
                             CountOfRanges = 8;
@@ -3833,19 +3833,19 @@ namespace APPA_107N_109N
                         flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
-
-                        while (OperMeasureMode != appa107N.GetMeasureMode)
+                        
+                        while (OperMeasureMode !=   await Task<Mult107_109N.MeasureMode>.Factory.StartNew(()=> appa107N.GetMeasureMode))
                             UserItemOperation.ServicePack.MessageBox
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
-                        while (appa107N.GetRangeSwitchMode == Mult107_109N.RangeSwitchMode.Auto)
+                        while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
                             UserItemOperation.ServicePack.MessageBox
                                              .Show("Установите ручной режим переключения пределов.");
 
-                        while (OperationRangeNominal != appa107N.GetRangeNominal)
+                        while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal)  )
                         {
                             int countPushRangeButton;
 

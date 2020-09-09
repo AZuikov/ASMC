@@ -4,11 +4,10 @@ using System.Threading;
 using AP.Math;
 using AP.Utils.Data;
 using AP.Utils.Helps;
-
+using NLog;
 
 //using System.Globalization;
 //using System.Text.RegularExpressions;
-
 
 namespace ASMC.Devices.Port.Profigrupp
 {
@@ -32,11 +31,12 @@ namespace ASMC.Devices.Port.Profigrupp
             [StringValue("cps_int_ext")] PcAndFrontPanel, //Управление от ПК и с клавиатуры прибора cps_int_ext
 
             [StringValue("cont_ps_int")]
-            OnlyFrontPanel, //Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int 
+            OnlyFrontPanel, //Выключает управление от ПК, только управление с клавиатуры прибора cont_ps_int
+
             [StringValue("c_reset_ext")] ResetBp //команда перезагрузки блока питания
         }
 
-        #region  Fields
+        #region Fields
 
         /// <summary>
         /// Погрешность нетсабильности выходного тока.
@@ -57,7 +57,6 @@ namespace ASMC.Devices.Port.Profigrupp
         /// </summary>
         public decimal CurrMax { get; protected set; }
 
-
         /// <summary>
         /// Допустимый уровень пульсаций по току
         /// </summary>
@@ -72,14 +71,12 @@ namespace ASMC.Devices.Port.Profigrupp
 
         public decimal TolleranceVoltPuls { get; protected set; } = 2;
 
-
         /// <summary>
         /// Максимальное значение напряжения источника питания
         /// </summary>
         public decimal VoltMax { get; protected set; }
 
         #endregion
-
 
         protected B571Pro(string portName) : base(portName)
         {
@@ -118,7 +115,6 @@ namespace ASMC.Devices.Port.Profigrupp
             return decimal.Parse(GetStateVal()[1]) / 1000;
         }
 
-
         /// <summary>
         /// Вовзращает величину уставки напряжения источника питания.
         /// </summary>
@@ -127,7 +123,6 @@ namespace ASMC.Devices.Port.Profigrupp
         {
             return decimal.Parse(GetStateVal()[2]) / 1000;
         }
-
 
         /// <summary>
         /// Производится подключение к блоку питания. Переводит прибор в режим дистанционного управления.
@@ -144,16 +139,20 @@ namespace ASMC.Devices.Port.Profigrupp
             StopBit = StopBits.One;
             EndLineTerm = "\r";
 
-
             //перезагружаем блок питания
             Reset();
 
             //Переводим в режим дистанционного управления. При этом работают клавиши на панели прибора.
             //В ответ на команду перевода врежим дистанционного управления прибор должен прислать сообщение "EIC"
-            var answer = QueryLine(RemoteState.PcAndFrontPanel.GetStringValue());
+            string answer = "";
 
-            if (string.Equals(answer, "EIC"))
-                return this;
+            for (int i = 0; i < 5; i++)
+            {
+                answer = QueryLine(RemoteState.PcAndFrontPanel.GetStringValue());
+
+                if (string.Equals(answer, "EIC"))
+                    return this;
+            }
 
             throw new Exception("Инициализация блока не прошла успешно.");
         }
@@ -184,7 +183,6 @@ namespace ASMC.Devices.Port.Profigrupp
             throw new Exception("Блок питания не отвечает на команду включения выхода");
         }
 
-
         /// <summary>
         /// Отправляет на прибор команду перезагрузки
         /// </summary>
@@ -194,14 +192,13 @@ namespace ASMC.Devices.Port.Profigrupp
             Thread.Sleep(2000);
         }
 
-
         /// <summary>
         /// Позволяет задать уставку по току для источника питания.
         /// </summary>
         /// <param name = "inCurr">Ток который необходимо задать.</param>
         /// <param name = "inUnitCurrMultipliers">Единицы измерения тока (милли, кило, амперы).</param>
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
-        public B571Pro SetStateCurr(decimal inCurr, Multipliers mult = AP.Utils.Helps.Multipliers.None )
+        public B571Pro SetStateCurr(decimal inCurr, Multipliers mult = AP.Utils.Helps.Multipliers.None)
         {
             var inCurrToDevice = inCurr * (decimal) (mult.GetDoubleValue() * 1E4);
 
@@ -212,9 +209,17 @@ namespace ASMC.Devices.Port.Profigrupp
             for (; resultStr.Length < 6;)
                 resultStr = resultStr.Insert(0, "0");
 
-            var answer = QueryLine("I" + resultStr);
-            Thread.Sleep(2000);
-            if (string.Equals(answer, "I")) return this;
+            var answer = "";
+            for (var i = 0; i != 5; i++)
+            {
+                answer = QueryLine("I" + resultStr);
+
+                if (string.Equals(answer, "I"))
+                {
+                    Thread.Sleep(2000);
+                    return this;
+                }
+            }
 
             throw new ArgumentException($"Неверное значение уставки по току: {inCurr} => {inCurrToDevice}");
         }
@@ -237,10 +242,17 @@ namespace ASMC.Devices.Port.Profigrupp
             for (; resultStr.Length < 6;)
                 resultStr = resultStr.Insert(0, "0");
 
-            var answer = QueryLine("U" + resultStr);
-            Thread.Sleep(2000);
-
-            if (string.Equals(answer, "U")) return this;
+            var answer = "";
+            for (var i = 0; i != 5; i++)
+            {
+                answer = QueryLine("U" + resultStr);
+                if (string.Equals(answer, "U"))
+                {
+                    Thread.Sleep(2000);
+                    return this;
+                }
+            }
+            
 
             throw new ArgumentException($"Неверное значение уставки по напряжению: {inVolt} => {inVoltToDevice}");
         }
@@ -292,7 +304,6 @@ namespace ASMC.Devices.Port.Profigrupp
 
             return arrStr;
         }
-
 
         /// <summary>
         /// формулы расчета погрешности нестабильности тока/напряжения

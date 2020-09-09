@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Math;
-using AP.Utils.Data;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -180,8 +179,13 @@ namespace B5_71_PRO_Abstract
             if (DataRow.Count == 1)
             {
                 var dds = DataRow[0] as BasicOperationVerefication<bool>;
+                if (dds == null)
+                    dataRow[0] = "";
                 //ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.IsGood() ? "Соответствует" :dds.Comment;
+                else if (dds.IsGood == null)
+                    dataRow[0] = "не выполнено";
+                else
+                    dataRow[0] = dds.IsGood() ? "Соответствует" : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -219,6 +223,7 @@ namespace B5_71_PRO_Abstract
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
             };
             operation.BodyWork = () =>
@@ -278,6 +283,7 @@ namespace B5_71_PRO_Abstract
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
                 finally
                 {
@@ -300,7 +306,7 @@ namespace B5_71_PRO_Abstract
                 {
                     operation.IsGood = () => { return false; };
                     Logger.Error("режим CC: Не горит индикация стабилизации тока на источнике питания.");
-                    return Task.FromResult(false);
+                    return Task.FromResult(true);
                 }
 
                 var resist = Bp.VoltMax / Bp.CurrMax + 3;
@@ -315,7 +321,7 @@ namespace B5_71_PRO_Abstract
                 {
                     operation.IsGood = () => { return false; };
                     Logger.Error("режим CV: На источнике питания индикатор стабилизации тока должен не должен гореть.");
-                    return Task.FromResult(false);
+                    return Task.FromResult(true);
                 }
 
                 Load.SetOutputState(MainN3300.State.Off);
@@ -373,11 +379,15 @@ namespace B5_71_PRO_Abstract
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Expected + " В";
-                dataRow[1] = dds.Getting + " В";
-                dataRow[2] = dds.LowerTolerance + " В";
-                dataRow[3] = dds.UpperTolerance + " В";
-                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                if (dds == null) continue;
+                dataRow[0] = dds?.Expected + " В";
+                dataRow[1] = dds?.Getting + " В";
+                dataRow[2] = dds?.LowerTolerance + " В";
+                dataRow[3] = dds?.UpperTolerance + " В";
+                if (dds.IsGood == null)
+                    dataRow[4] = "не выполнено";
+                else
+                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -418,6 +428,7 @@ namespace B5_71_PRO_Abstract
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
@@ -455,6 +466,7 @@ namespace B5_71_PRO_Abstract
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.CompliteWork = () =>
@@ -535,12 +547,16 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
+                if (dds == null) continue;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Expected + " В";
-                dataRow[1] = dds.Getting + " В";
-                dataRow[2] = dds.LowerTolerance + " В";
-                dataRow[3] = dds.UpperTolerance + " В";
-                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[0] = dds?.Expected + " В";
+                dataRow[1] = dds?.Getting + " В";
+                dataRow[2] = dds?.LowerTolerance + " В";
+                dataRow[3] = dds?.UpperTolerance + " В";
+                if (dds.IsGood == null)
+                    dataRow[4] = "не выполнено";
+                else
+                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -583,6 +599,7 @@ namespace B5_71_PRO_Abstract
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.BodyWork = () =>
@@ -621,6 +638,7 @@ namespace B5_71_PRO_Abstract
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
 
@@ -667,6 +685,7 @@ namespace B5_71_PRO_Abstract
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrСoefVoltUnstable = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
@@ -697,9 +716,28 @@ namespace B5_71_PRO_Abstract
                 var dataRow = dataTable.NewRow();
                 var dds = DataRow[0] as BasicOperationVerefication<decimal>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting + " В";
-                dataRow[1] = dds.Error + " В";
-                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+                if (dds == null)
+                {
+                    dataRow[0] = "";
+                    dataRow[1] = "";
+                }
+                else
+                {
+                    dataRow[0] = dds?.Getting + " В";
+                    try
+                    {
+                        dataRow[1] = dds?.Error + " В";
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        dataRow[1] = "";
+                    }
+                }
+
+                if (dds.IsGood == null)
+                    dataRow[2] = "не выполнено";
+                else
+                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -739,6 +777,7 @@ namespace B5_71_PRO_Abstract
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
             };
 
@@ -796,6 +835,7 @@ namespace B5_71_PRO_Abstract
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
             };
             operation.CompliteWork = () =>
@@ -837,6 +877,7 @@ namespace B5_71_PRO_Abstract
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27, (decimal) 37.5, (decimal) 187.5};
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
@@ -859,11 +900,30 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+                if (dds == null)
+                {
+                    dataRow[0] = "";
+                    dataRow[1] = "";
+                }
+                else
+                {
+                    dataRow[0] = dds?.Getting + " мВ";
+                    try
+                    {
+                        dataRow[1] = dds?.Error + "мВ";
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        dataRow[1] = "";
+                    }
+                }
 
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting + " мВ";
-                dataRow[1] = dds.Error + " мВ";
-                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+
+                if (dds.IsGood == null)
+                    dataRow[2] = "не выполнено";
+                else
+                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -879,8 +939,6 @@ namespace B5_71_PRO_Abstract
             {
                 try
                 {
-                    
-
                     await Task.Run(() =>
                     {
                         Mult.StringConnection = GetStringConnect(Mult);
@@ -921,7 +979,7 @@ namespace B5_71_PRO_Abstract
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
 
-                    var windows = (WindowService)UserItemOperation.ServicePack.FreeWindow;
+                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow;
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
@@ -958,12 +1016,14 @@ namespace B5_71_PRO_Abstract
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
             };
 
             operation.BodyWork = () => { };
             operation.CompliteWork = () =>
             {
+                if (operation.IsGood == null) return Task.FromResult(false);
                 if (!operation.IsGood())
                 {
                     var answer =
@@ -1038,12 +1098,16 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
+                if (dds == null) continue;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Expected + " А";
-                dataRow[1] = dds.Getting + " А";
-                dataRow[2] = dds.LowerTolerance + " А";
-                dataRow[3] = dds.UpperTolerance + " А";
-                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[0] = dds?.Expected + " А";
+                dataRow[1] = dds?.Getting + " А";
+                dataRow[2] = dds?.LowerTolerance + " А";
+                dataRow[3] = dds?.UpperTolerance + " А";
+                if (dds.IsGood == null)
+                    dataRow[4] = "не выполнено";
+                else
+                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1077,6 +1141,7 @@ namespace B5_71_PRO_Abstract
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
 
@@ -1110,13 +1175,13 @@ namespace B5_71_PRO_Abstract
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                                  (operation.Getting > operation.LowerTolerance);
-                       
 
                         Bp.OffOutput();
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.CompliteWork = () =>
@@ -1188,7 +1253,7 @@ namespace B5_71_PRO_Abstract
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcIMeasure" };
+            var dataTable = new DataTable {TableName = "FillTabBmDcIMeasure"};
             dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
             dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
             dataTable.Columns.Add("Минимальное допустимое значение, А");
@@ -1199,12 +1264,16 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<decimal>;
+                if (dds == null) continue;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Expected + " А";
-                dataRow[1] = dds.Getting + " А";
-                dataRow[2] = dds.LowerTolerance + " А";
-                dataRow[3] = dds.UpperTolerance + " А";
-                dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                dataRow[0] = dds?.Expected + " А";
+                dataRow[1] = dds?.Getting + " А";
+                dataRow[2] = dds?.LowerTolerance + " А";
+                dataRow[3] = dds?.UpperTolerance + " А";
+                if (dds.IsGood == null)
+                    dataRow[4] = "не выполнено";
+                else
+                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1238,6 +1307,7 @@ namespace B5_71_PRO_Abstract
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
 
@@ -1278,6 +1348,7 @@ namespace B5_71_PRO_Abstract
                     catch (Exception e)
                     {
                         Logger.Error(e);
+                        throw;
                     }
                 };
                 operation.CompliteWork = () =>
@@ -1352,10 +1423,30 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = DataRow[0] as BasicOperationVerefication<decimal>;
+                if (dds == null)
+                {
+                    dataRow[0] = "";
+                    dataRow[1] = "";
+                }
+                else
+                {
+                    dataRow[0] = dds?.Getting + " А";
+                    try
+                    {
+                        dataRow[1] = dds?.Error + " А";
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        dataRow[1] = "";
+                    }
+                }
+
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting + " А";
-                dataRow[1] = dds.Error + " А";
-                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+
+                if (dds.IsGood == null)
+                    dataRow[2] = "не выполнено";
+                else
+                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1384,6 +1475,7 @@ namespace B5_71_PRO_Abstract
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
             };
 
@@ -1428,6 +1520,7 @@ namespace B5_71_PRO_Abstract
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
             };
             operation.CompliteWork = () =>
@@ -1499,9 +1592,28 @@ namespace B5_71_PRO_Abstract
             {
                 var dataRow = dataTable.NewRow();
                 var dds = DataRow[0] as BasicOperationVerefication<decimal>;
-                dataRow[0] = dds.Getting + " мА";
-                dataRow[1] = dds.Error + " мА";
-                dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+                if (dds == null)
+                {
+                    dataRow[0] = "";
+                    dataRow[1] = "";
+                }
+                else
+                {
+                    dataRow[0] = dds?.Getting + " мА";
+                    try
+                    {
+                        dataRow[1] = dds?.Error + "мА";
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        dataRow[1] = "";
+                    }
+                }
+
+                if (dds.IsGood == null)
+                    dataRow[2] = "не выполнено";
+                else
+                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1539,12 +1651,12 @@ namespace B5_71_PRO_Abstract
 
                         //инициализация блока питания
                         Bp.InitDevice();
-                        Bp.SetStateCurr(Bp.CurrMax*(decimal)0.7);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.7);
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.OnOutput();
 
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.8);
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.9);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9);
                         Bp.SetStateCurr(Bp.CurrMax);
                     });
 
@@ -1564,7 +1676,7 @@ namespace B5_71_PRO_Abstract
                                                                   MessageIcon.Information,
                                                                   MessageResult.OK);
 
-                    var windows = (WindowService)UserItemOperation.ServicePack.FreeWindow;
+                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow;
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
@@ -1573,33 +1685,33 @@ namespace B5_71_PRO_Abstract
                     windows.Show("SelectRangeView", vm);
 
                     var a = vm.SelectRange;
-                    
+
                     Mult.Dc.Voltage.Range.Set(100);
                     decimal currPuls34401 = -1;
-                    while (currPuls34401<=0)
+                    while (currPuls34401 <= 0)
                     {
-                        currPuls34401 = (decimal)Mult.GetMeasValue();
+                        currPuls34401 = (decimal) Mult.GetMeasValue();
                         if (currPuls34401 > 0) break;
 
                         var answer = UserItemOperation.ServicePack.MessageBox.Show(
-                                                                      "Установите на В3-57 подходящий предел измерения напряжения",
-                                                                      "Указание оператору", MessageButton.OKCancel,
-                                                                      MessageIcon.Information,
-                                                                      MessageResult.OK);
+                                                                                   "Установите на В3-57 подходящий предел измерения напряжения",
+                                                                                   "Указание оператору",
+                                                                                   MessageButton.OKCancel,
+                                                                                   MessageIcon.Information,
+                                                                                   MessageResult.OK);
                         if (answer == MessageResult.Cancel)
                         {
                             UserItemOperation.ServicePack.MessageBox.Show(
                                                                           "Операция измерения пульсаций прервана, измерения не выполнены.",
-                                                                          "Указание оператору", MessageButton.OKCancel,
+                                                                          "Указание оператору", MessageButton.OK,
                                                                           MessageIcon.Information,
                                                                           MessageResult.OK);
 
                             return;
                         }
-
                     }
-                    
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99, 0, a.Value);
+
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99, 0, a.Value);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
@@ -1621,16 +1733,17 @@ namespace B5_71_PRO_Abstract
                     operation.UpperTolerance = operation.Expected + operation.Error;
                     operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
-
                 }
                 catch (Exception e)
                 {
                     Logger.Error(e);
+                    throw;
                 }
             };
-            
+
             operation.CompliteWork = () =>
             {
+                if (operation.IsGood == null) return Task.FromResult(true);
                 if (!operation.IsGood())
                 {
                     var answer =

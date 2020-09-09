@@ -230,8 +230,9 @@ namespace ASMC.Devices.Port
         {
             if (!GetStatusIsOpen())
             {
-                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
-                return;
+                Open();
+                //Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
+                //return;
             }
             _sp.WriteLine(data);
             Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
@@ -242,8 +243,9 @@ namespace ASMC.Devices.Port
         {
             if (!GetStatusIsOpen())
             {
-                Logger.Warn($@"Запись в порт {_sp.PortName} данных: {inStrData} не выполнена");
-                throw new IOException($"Последовательный порт {_sp.PortName} не удалось открыть.");
+                Open();
+                //Logger.Warn($@"Запись в порт {_sp.PortName} данных: {inStrData} не выполнена");
+                //throw new IOException($"Последовательный порт {_sp.PortName} не удалось открыть.");
                 
             }
 
