@@ -108,7 +108,7 @@ namespace ASMC.Core.Model
         public async Task StartWorkAsync(CancellationTokenSource source)
         {
             var count = 0;
-            LastShem = null;
+            //LastShem = null;
             foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
                 count+=CountNode(userItemOperationBase);
 

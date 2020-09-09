@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Globalization;
+using AP.Utils.Data;
 using AP.Utils.Helps;
 
 namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
@@ -38,6 +40,15 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             Source = new CSource(this);
             Route = new ROUTe(this);
             AuxFunc = new AUXFunctional(this);
+            Multipliers = Multipliers = new ICommand[]
+            {
+                new Command("N", "н", 1E-9),
+                new Command("U", "мк", 1E-6),
+                new Command("M", "м", 1E-3),
+                new Command("", "", 1),
+                //new Command("K", "к", 1E3)
+
+            };
         }
 
         /// <summary>
@@ -117,6 +128,15 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             public CSource(Calibr9500B calibrMain)
             {
                 _calibrMain = calibrMain;
+                Multipliers = Multipliers = new ICommand[]
+                {
+                    new Command("N", "н", 1E-9),
+                    new Command("U", "мк", 1E-6),
+                    new Command("M", "м", 1E-3),
+                    new Command("", "", 1),
+                    //new Command("K", "к", 1E3)
+
+                };
             }
 
             #region Methods
@@ -140,6 +160,19 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             {
                 _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
                 return _calibrMain;
+            }
+
+            /// <summary>
+            /// Возвращает значение установленной частоты.
+            /// </summary>
+            /// <returns>Значение частоты в decimal.</returns>
+
+            public decimal GetFreq()
+            {
+                string answer = _calibrMain.QueryLine("SOUR:FREQ?");
+                var arr = answer.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
+                                .Split('E');
+                return (decimal) decimal.Parse(arr[0]) * (decimal) (Math.Pow(10, double.Parse(arr[1])));
             }
 
             /// <summary>
@@ -175,6 +208,18 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 return _calibrMain;
             }
 
+            /// <summary>
+            /// Считывает значение напряжения на выходе канала.
+            /// </summary>
+            /// <returns>Значение напряжения типа decimal.</returns>
+            public decimal GetVoltage()
+            {
+                string answer = _calibrMain.QueryLine("SOUR:VOLT?");
+               string[] var = answer.TrimEnd('\n').Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator).Split('E');
+
+                return decimal.Parse(var[0])* (decimal)(Math.Pow(10, double.Parse(var[1])));
+            }
+
             #endregion
 
             /// <summary>
@@ -196,6 +241,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     public DC(Calibr9500B calibr)
                     {
                         _calibrMain = calibr;
+                        
                     }
 
                     #region Methods
@@ -350,7 +396,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// </summary>
                     /// <param name = "Se"></param>
                     /// <returns></returns>
-                    public Calibr9500B SetDerection(Direction Der)
+                    public Calibr9500B SetDirection(Direction Der)
                     {
                         _calibrMain.WriteLine("SOUR:PAR:EDGE:TRAN " + Der);
                         return _calibrMain;
@@ -402,12 +448,12 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <summary>
                     /// 50 ОМ
                     /// </summary>
-                    Res_50 = 50,
+                   [StringValue("5.000000E+01")] Res_50 = 50,
 
                     /// <summary>
                     /// 1 МОм
                     /// </summary>
-                    Res_1M = 1000
+                    [StringValue("1.000000E+06")]Res_1M = 1000000
                 }
 
                 #region Fields
@@ -445,6 +491,19 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 {
                     _calibMain.WriteLine("ROUT:SIGN:IMP " + (int) imp);
                     return _calibMain;
+                }
+
+                /// <summary>
+                /// Позволяет полчить значение импеданса текущего рабочего канала.
+                /// </summary>
+                /// <returns></returns>
+                public Impedans GetImpedans()
+                {
+                    string answer = _calibMain.QueryLine("ROUT: SIGN:IMP?");
+                    var val = answer.TrimEnd('\n').Replace(".", ",").Split('E');
+
+                    return (Impedans)((int)(double.Parse(val[0]) * Math.Pow(10, double.Parse(val[1]))));
+                   
                 }
 
                 #endregion
