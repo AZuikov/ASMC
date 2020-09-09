@@ -62,7 +62,7 @@ namespace ASMC.Core.Model
         /// приборов.
         /// </param>
         /// <returns>Возвращает строку подключения для устройства.</returns>
-        protected string GetStringConnect(IDevice currentDevice)
+        protected string GetStringConnect(IProtocolStringLine currentDevice)
         {
             var connect = UserItemOperation.ControlDevices
                                            .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType,
