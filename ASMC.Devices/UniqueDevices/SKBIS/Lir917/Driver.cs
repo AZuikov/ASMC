@@ -4,11 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Data.Model;
+using ASMC.Devices.USB_Device.SiliconLabs;
+using NLog;
 
 namespace ASMC.Devices.UniqueDevices.SKBIS.Lir917
 {
     public class Driver: IDeviceBase
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private UsbExpressWrapper Wrapper;
+        public int? NubmerDevice { get; set; }
+        public Driver()
+        {
+            Wrapper = new UsbExpressWrapper();
+        }
         /// <inheritdoc />
         public void Dispose()
         {
@@ -16,7 +25,7 @@ namespace ASMC.Devices.UniqueDevices.SKBIS.Lir917
         }
 
         /// <inheritdoc />
-        public string UserType { get; }
+        public string UserType { get; protected set; }
 
         /// <inheritdoc />
         public void Close()
@@ -27,7 +36,18 @@ namespace ASMC.Devices.UniqueDevices.SKBIS.Lir917
         /// <inheritdoc />
         public bool Open()
         {
-            throw new NotImplementedException();
+            if (NubmerDevice == null) return false;
+            
+                try
+                {
+                    Wrapper.Open((int)NubmerDevice);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e, $@"Не удалось открыть порт {UserType}");
+                    return false;
+                }
+                return true;
         }
     }
 }

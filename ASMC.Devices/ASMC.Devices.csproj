@@ -103,7 +103,8 @@
     <Compile Include="SimpleScada\Parametr\ScadaParametrDecorator.cs" />
     <Compile Include="SimpleScada\Dv2TsSensor.cs" />
     <Compile Include="UniqueDevices\SKBIS\Lir917\Driver.cs" />
-    <Compile Include="UniqueDevices\SKBIS\Lir917\Wrapper.cs" />
+    <Compile Include="USB_Device\SiliconLabs\UsbExpressWrapper.cs" />
+    <Compile Include="USB_Device\SiliconLabs\Exception.cs" />
     <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
     <Compile Include="VirtMeasInst\VirtualSensor.cs" />
     <Compile Include="WithoutInterface\Voltmetr\B3_57.cs" />
@@ -125,7 +126,7 @@
       <Name>AP.Reports</Name>
     </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
-      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
+      <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
       <Name>AP.Utils</Name>
     </ProjectReference>
     <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">

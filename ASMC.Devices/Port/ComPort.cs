@@ -116,9 +116,9 @@ namespace ASMC.Devices.Port
         /// Отвечает открыт ли уже порт или нет
         /// </summary>
         /// <returns></returns>
-        public bool GetStatusIsOpen()
+        protected bool IsOpen
         {
-            return _sp.IsOpen;
+            get=> _sp.IsOpen;
         }
         /// <summary>
         /// Открывает соединение с Com портом.
@@ -175,7 +175,7 @@ namespace ASMC.Devices.Port
         {
             
 
-            if (GetStatusIsOpen()) return null;
+            if (IsOpen) return null;
             try
             {
                 return _sp.ReadLine();
@@ -197,7 +197,7 @@ namespace ASMC.Devices.Port
         }
         protected void Write(byte[] sendData, int offset, int length)
         {
-            if (!GetStatusIsOpen())
+            if (!IsOpen)
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{sendData} не выполнена");
                 return;
@@ -215,7 +215,7 @@ namespace ASMC.Devices.Port
         /// <param name="data"></param>
         public void Write(string data)
         {
-            if(!GetStatusIsOpen())
+            if(!IsOpen)
             {
                 Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
                 return;
@@ -228,7 +228,7 @@ namespace ASMC.Devices.Port
         /// <returns>Возвращает рузультат чтения</returns>
         public void WriteLine(string data)
         {
-            if (!GetStatusIsOpen())
+            if (!IsOpen)
             {
                 Open();
                 //Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
@@ -241,7 +241,7 @@ namespace ASMC.Devices.Port
 
         public string QueryLine(string inStrData)
         {
-            if (!GetStatusIsOpen())
+            if (!IsOpen)
             {
                 Open();
                 //Logger.Warn($@"Запись в порт {_sp.PortName} данных: {inStrData} не выполнена");
