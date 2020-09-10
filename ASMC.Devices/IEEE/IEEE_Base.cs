@@ -311,7 +311,7 @@ namespace ASMC.Devices.IEEE
         }
 
         /// <summary>
-        /// Получить список всех устройств.
+        /// Получить актуальный список всех устройств через VISA.
         /// </summary>
         /// <returns></returns>
         public static string[] AllStringConnect
@@ -319,20 +319,57 @@ namespace ASMC.Devices.IEEE
             get
             {
                 var arr = GlobalResourceManager.Find().ToList();
+                List<string> ResultList = new List<string>();
 
-                //Parallel.For(0, arr.Count, (int i) =>
+                Parallel.For(0, arr.Count, (int i) =>
+                {
+                    if (!arr[i].Contains("INTFC"))
+                    {
+
+                        string MyReEx = @"(com|lpt)\d+";
+                        Match portNameMatch;
+
+                        string MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
+                        Match usbDeviceMatch;
+
+                        string MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
+                        Match gpibDeviceMatch;
+                       
+                        try
+                        {
+                            var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
+
+                            portNameMatch = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                            usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
+                            gpibDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
+                            if (portNameMatch.Success) ResultList.Add(portNameMatch.Value);
+                            else if (usbDeviceMatch.Success || gpibDeviceMatch.Success) ResultList.Add(arr[i]);
+                            
+                            
+                        }
+                        catch (NativeVisaException e)
+                        {
+                            
+                        }
+
+                    }
+
+                   
+                });
+
+
+
+                //for (var i = 0; i < arr.Count; i++)
                 //{
                 //    if (arr[i].Contains("INTFC"))
                 //    {
                 //        arr.RemoveAt(i);
-                //        i--;
-                //        return;
-
-
+                //        continue;
                 //    }
 
-                //    string MyReEx = @"(com|lpt)\d+";
-                //    Match m;
+
+
+
                 //    try
                 //    {
                 //        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
@@ -344,39 +381,11 @@ namespace ASMC.Devices.IEEE
                 //    {
                 //        arr.RemoveAt(i);
                 //        i--;
-
+                //        continue;
                 //    }
-                //});
 
-
-                for (var i = 0; i < arr.Count; i++)
-                {
-                    if (arr[i].Contains("INTFC"))
-                    {
-                        arr.RemoveAt(i);
-                        continue;
-                    }
-
-
-
-                    string MyReEx = @"(com|lpt)\d+";
-                    Match m;
-                    try
-                    {
-                        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
-
-                        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                        if (m.Success) arr[i] = m.Value;
-                    }
-                    catch (NativeVisaException e)
-                    {
-                        arr.RemoveAt(i);
-                        i--;
-                        continue;
-                    }
-
-                }
-                return arr.ToArray();
+                //}
+                return ResultList.ToArray();
             }
         }
 
