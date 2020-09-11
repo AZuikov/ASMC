@@ -652,7 +652,6 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         {
             var code = NativeMethods.SI_Close(Handle);
             GenericException(nameof(GetProductString), (StatusCode) code);
-            FlushBuffers(true, true);
             Handle = IntPtr.Zero;
         }
 
@@ -692,31 +691,43 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         /// <summary>
         /// Считывает данные устройства в заданный буфер.
         /// </summary>
-        /// <param name = "lpBuffer">указатель на буфер, в который будут записаны данные устройства</param>
         /// <param name = "dwBytesToRead">число байт для считывания</param>
         /// <param name = "lpdwBytesReturned">указатель на число фактически считанных байт</param>
         /// <param name = "o">структура Win32 API для асинхронного считывания/записи данных (см. документацию Win32 API)</param>
-        public void Read(byte[] lpBuffer, uint dwBytesToRead, ref uint lpdwBytesReturned, IntPtr o)
+        public byte[] Read(uint dwBytesToRead, ref uint lpdwBytesReturned, IntPtr o)
         {
             if (dwBytesToRead > MaxReadSize)
                 throw new ArgumentOutOfRangeException($"Считывание возможно не более {MaxReadSize} байт.");
+            byte[] lpBuffer = new byte[dwBytesToRead];
             var code = NativeMethods.SI_Read(Handle, lpBuffer, dwBytesToRead, ref lpdwBytesReturned, o);
             GenericException(nameof(GetProductString), (StatusCode) code);
+            return lpBuffer;
         }
 
         /// <summary>
         /// Записывает данные из буфера  в устройство.
         /// </summary>
         /// <param name = "lpBuffer">указатель на буфер, из которого будут записаны данные</param>
-        /// <param name = "dwBytesToWrite">число байт для записи</param>
         /// <param name = "lpdwBytesWritten">указатель на число фактически записанных байт</param>
         /// <param name = "o">структура Win32 API для асинхронного считывания/записи данных (см. документацию Win32 API)</param>
-        public void Write(byte[] lpBuffer, uint dwBytesToWrite, ref uint lpdwBytesWritten, IntPtr o)
+        public void Write(byte[] lpBuffer, ref uint lpdwBytesWritten, IntPtr o)
         {
-            if (dwBytesToWrite > MaxWriteSize)
+            if (lpBuffer.Length > MaxWriteSize)
                 throw new ArgumentOutOfRangeException($"Запись возможна не более {MaxWriteSize} байт.");
-            var code = NativeMethods.SI_Write(Handle, lpBuffer, dwBytesToWrite, ref lpdwBytesWritten, o);
-            GenericException(nameof(GetProductString), (StatusCode) code);
+            foreach (var buff in lpBuffer) Write(buff, ref lpdwBytesWritten, o);
+
+        }
+        /// <summary>
+        /// Записывает данные из буфера  в устройство.
+        /// </summary>
+        /// <param name = "lpBuffer">указатель на буфер, из которого будут записаны данные</param>
+        /// <param name = "lpdwBytesWritten">указатель на число фактически записанных байт</param>
+        /// <param name = "o">структура Win32 API для асинхронного считывания/записи данных (см. документацию Win32 API)</param>
+        public void Write(byte lpBuffer, ref uint lpdwBytesWritten, IntPtr o)
+        {
+            
+            var code = NativeMethods.SI_Write(Handle,new []{ lpBuffer } , (uint)1, ref lpdwBytesWritten, o);
+            GenericException(nameof(GetProductString), (StatusCode)code);
         }
 
         #endregion
