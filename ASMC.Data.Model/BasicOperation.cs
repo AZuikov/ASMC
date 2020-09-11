@@ -73,7 +73,9 @@ namespace ASMC.Data.Model
                 await InitWork();
                 Logger.Debug("Закончено выполнение инициализации");
                 Logger.Debug("Начато выполнение тела");
-                var task = Task.Factory.StartNew(BodyWork, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
+                var task = Task.Run(BodyWork, token);
+               
+                //var task = Task.Factory.StartNew(BodyWork, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
                 await task;
                 if (task.Status== TaskStatus.Faulted)
                 {
