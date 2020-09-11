@@ -149,6 +149,7 @@ namespace Plugins.Test
                 operation.BodyWork = () =>
                 {
                     Thread.Sleep(50);
+                    throw new Exception("СПЕЦАЛЬНО!");
                     operation.Expected = new Random().NextDouble();
                     operation.Getting = new Random().NextDouble();
                     operation.IsGood = () => true;
