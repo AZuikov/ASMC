@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Devices.USB_Device.SiliconLabs;
 using NLog;
 
-namespace ASMC.Devices.UniqueDevices.SKBIS.Lir917
+namespace ASMC.Devices.USB_Device.SKBIS.Lir917
 {
     public class Driver: IDeviceBase
     {

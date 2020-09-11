@@ -102,7 +102,7 @@
     <Compile Include="SimpleScada\Parametr\ScadaParametr.cs" />
     <Compile Include="SimpleScada\Parametr\ScadaParametrDecorator.cs" />
     <Compile Include="SimpleScada\Dv2TsSensor.cs" />
-    <Compile Include="UniqueDevices\SKBIS\Lir917\Driver.cs" />
+    <Compile Include="USB_Device\SKBIS\Lir917\Driver.cs" />
     <Compile Include="USB_Device\SiliconLabs\UsbExpressWrapper.cs" />
     <Compile Include="USB_Device\SiliconLabs\Exception.cs" />
     <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
