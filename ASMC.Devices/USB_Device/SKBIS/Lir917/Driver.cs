@@ -8,7 +8,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
 {
     public class Driver: IDeviceBase
     {
-        public delegate void AnchorRefereceFlag();
+        public delegate void AnchorRefereceFlag(int anchorRefereceValue);
 
         protected enum CommandQuery:byte
         {
@@ -66,6 +66,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
             throw new NotImplementedException();
         }
 
+
         /// <inheritdoc />
         public string UserType { get; protected set; }
 
@@ -78,17 +79,29 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
         /// флаг захвата референтной метки
         /// </summary>
         public const byte RefMarkFlag = 0x80;
-        public void ReadPackeg()
+        public void Query()
         {
-            Open();
-         uint byteCount=0;
-        Wrapper.Write((byte)CommandQuery.PackageRequest , ref byteCount, IntPtr.Zero);
-        Byffer = Wrapper.Read(InPackageSize, ref byteCount, IntPtr.Zero);
+            if (!IsOpen) throw new Efm32USBEpressException($"порт закрыт для устройства {UserType}");
+        Wrapper.Write((byte)CommandQuery.PackageRequest , ref _byteCount, IntPtr.Zero);
+        Byffer = Wrapper.Read(InPackageSize, ref _byteCount, IntPtr.Zero);
        if ((Byffer[0] & VccFlag) != 0) throw new Efm32USBEpressException($"Отсутствиет питиание на разъме датчика {UserType}.");
-       Close();
-
         }
-
+        private uint _byteCount;
+        public void ResetRelative()
+        {
+            if (!IsOpen) throw new Efm32USBEpressException($"Порт закрыт для устройства {UserType}");
+            Wrapper.Write((byte)CommandQuery.DropRelCoordinate, ref _byteCount, IntPtr.Zero);
+        }
+        public void ResetAbsolute()
+        {
+            if (!IsOpen) throw new Efm32USBEpressException($"Порт закрыт для устройства {UserType}");
+            Wrapper.Write((byte)CommandQuery.DropAbsCoordinate, ref _byteCount, IntPtr.Zero);
+        }
+        public void ResetAll()
+        {
+            ResetAbsolute();
+            ResetRelative();
+        }
         public int Relative
         {
             get
@@ -118,7 +131,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
             get
             {
                 var flag = (Byffer.FirstOrDefault() & RefMarkFlag) != 0;
-                if(flag) AnchorRefereceFlagEvent?.Invoke();
+                if(flag) AnchorRefereceFlagEvent?.Invoke(LastReferenceValue);
                 return flag;
             }
         }
@@ -126,6 +139,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
         /// <inheritdoc />
         public void Close()
         {
+            if (!IsOpen) return;
             try
             {
                 Wrapper.Close();
@@ -144,6 +158,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
         /// <inheritdoc />
         public void Open()
         {
+            if(IsOpen) return;
             if (NubmerDevice == null)
             {
                 IsOpen = false;
