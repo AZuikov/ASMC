@@ -458,7 +458,6 @@ namespace ASMC.Devices.IEEE
         {
             if (IsOpen)
             {
-                Session.Clear();
                 Session?.Dispose();
             }
             IsOpen = false;
