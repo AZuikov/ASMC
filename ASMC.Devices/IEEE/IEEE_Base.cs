@@ -61,7 +61,7 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// отвечает за задержку между командами в мс
         /// </summary>
-        private readonly int _dealySending;
+        protected  int DealySending { get; set; }
 
         /// <summary>
         /// Массив подключенных устройств
@@ -112,13 +112,16 @@ namespace ASMC.Devices.IEEE
 
                         try
                         {
-                            var devObj = GlobalResourceManager.Open(arr[i]);
-
-                            portNameMatch = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                            usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
-                            gpibDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
-                            if (portNameMatch.Success) ResultList.Add(portNameMatch.Value);
-                            else if (usbDeviceMatch.Success || gpibDeviceMatch.Success) ResultList.Add(arr[i]);
+                            
+                           usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
+                           gpibDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
+                           if (usbDeviceMatch.Success || gpibDeviceMatch.Success) ResultList.Add(arr[i]);
+                           else
+                           {
+                                var devObj = GlobalResourceManager.Open(arr[i]);
+                                portNameMatch = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                                if (portNameMatch.Success) ResultList.Add(portNameMatch.Value);
+                           }
                         }
                         catch (NativeVisaException e)
                         {
@@ -165,7 +168,7 @@ namespace ASMC.Devices.IEEE
         public IeeeBase()
         {
             /*50ms задежка*/
-            _dealySending = 50;
+            DealySending = 50;
             Multipliers = new ICommand[]
             {
                 new Command("N", "н", 1E-9),
@@ -362,7 +365,7 @@ namespace ASMC.Devices.IEEE
         {
             Open();
             Session.FormattedIO.WriteLine("vbs '" + date + "'");
-            Thread.Sleep(_dealySending);
+            Thread.Sleep(DealySending);
             Close();
         }
 
@@ -453,8 +456,11 @@ namespace ASMC.Devices.IEEE
         /// <inheritdoc />
         public void Close()
         {
-            Session.Clear();
-            Session?.Dispose();
+            if (IsOpen)
+            {
+                Session.Clear();
+                Session?.Dispose();
+            }
             IsOpen = false;
         }
 
@@ -529,7 +535,7 @@ namespace ASMC.Devices.IEEE
             }
 
             Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
-            Thread.Sleep(_dealySending);
+            Thread.Sleep(DealySending);
         }
 
         public string QueryLine(string inStrData)
@@ -537,7 +543,7 @@ namespace ASMC.Devices.IEEE
             Open();
             Session.FormattedIO.WriteLine(inStrData);
             Logger.Debug($"На устройство {UserType} отправлена команда {inStrData}");
-            Thread.Sleep(200);
+            
             string answer;
             try
             {

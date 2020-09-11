@@ -205,7 +205,7 @@ namespace B5_71_PRO_Abstract
                         Mult.StringConnection = GetStringConnect(Mult);
                         Load.StringConnection = GetStringConnect(Load);
                         Bp.StringConnection = GetStringConnect(Bp);
-
+                        Load.WriteLine("*rst");
                         Load.FindThisModule();
 
                         //если модуль нагрузки найти не удалось
