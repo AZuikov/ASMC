@@ -116,7 +116,7 @@ namespace ASMC.Devices.Port
         /// Отвечает открыт ли уже порт или нет
         /// </summary>
         /// <returns></returns>
-        protected bool IsOpen
+        public bool IsOpen
         {
             get=> _sp.IsOpen;
         }
@@ -124,13 +124,10 @@ namespace ASMC.Devices.Port
         /// Открывает соединение с Com портом.
         /// </summary>
         /// <returns>Возвращает True, если порт открыт, иначе False</returns>
-        public bool Open()
+        public void Open()
         {
-            if (_sp.IsOpen)
-            {
-                Logger.Error($"Порт {_sp.PortName} уже открыт.");
-                return true;
-            }
+            if (IsOpen) return;
+
             try
             {
                 _sp.Open();
@@ -140,26 +137,19 @@ namespace ASMC.Devices.Port
             catch (UnauthorizedAccessException e)
             {
                 Logger.Error($"Попытка открыть порт: {e}");
-                return false;
-            }              
-            return true;
+            }             
         }
         public void Close()
         {
-            try
-            {
-                if (!_sp.IsOpen)
+          
+                if (!_sp.IsOpen) return;
+                try
                 {
-                    Logger.Debug($"Порт {_sp.PortName} уже закрыт.");
-                    return;
-                }
-
                 _sp.DataReceived -= SerialPort_DataReceived;
                 _sp.Close();
                 _sp.Dispose();
                 Logger.Debug($"Последовательный порт {_sp.PortName} закрыт и отписались от события считывания.");
-                
-            }
+                }
             catch(IOException e)
             {
                 Logger.Error(e);

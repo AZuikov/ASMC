@@ -30,23 +30,37 @@ namespace ASMC.Devices.UniqueDevices.SKBIS.Lir917
         /// <inheritdoc />
         public void Close()
         {
-            throw new NotImplementedException();
+            try
+            {
+                Wrapper.Close();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $@"Не удалось закрыть порт {UserType}");
+                throw;
+            }
+            finally
+            {
+                IsOpen = false;
+            }
         }
 
         /// <inheritdoc />
         public void Open()
         {
-            if (NubmerDevice != null)
+            if (NubmerDevice == null)
             {
-                IsOpen = true;
+                IsOpen = false;
                 return;
             }
             try
             {
                 Wrapper.Open((int)NubmerDevice);
+                IsOpen = true;
             }
             catch (Exception e)
             {
+                IsOpen = false;
                 Logger.Error(e, $@"Не удалось открыть порт {UserType}");
                 throw;
             }
