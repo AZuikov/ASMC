@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -316,11 +317,16 @@ namespace ASMC.Devices.IEEE
         /// <returns></returns>
         public static string[] AllStringConnect
         {
+
+            //  \HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB  чистить реестр тут
             get
             {
+
                 var arr = GlobalResourceManager.Find().ToList();
                 List<string> ResultList = new List<string>();
 
+
+               
                 Parallel.For(0, arr.Count, (int i) =>
                 {
                     if (!arr[i].Contains("INTFC"))
@@ -334,6 +340,9 @@ namespace ASMC.Devices.IEEE
 
                         string MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
                         Match gpibDeviceMatch;
+
+                        //нужна регулярка для устройств подключенных через LAN
+
                        
                         try
                         {
@@ -356,7 +365,7 @@ namespace ASMC.Devices.IEEE
 
                    
                 });
-
+                
 
 
                 //for (var i = 0; i < arr.Count; i++)
@@ -366,15 +375,20 @@ namespace ASMC.Devices.IEEE
                 //        arr.RemoveAt(i);
                 //        continue;
                 //    }
-
-
-
-
                 //    try
                 //    {
                 //        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
+                //        string MyReEx = @"(com|lpt)\d+";
+                //        Match portNameMatch;
 
-                //        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                //        string MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
+                //        Match usbDeviceMatch;
+
+                //        string MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
+                //        Match gpibDeviceMatch;
+                //        Match m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                //        usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
+                //        usbDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
                 //        if (m.Success) arr[i] = m.Value;
                 //    }
                 //    catch (NativeVisaException e)
@@ -385,6 +399,9 @@ namespace ASMC.Devices.IEEE
                 //    }
 
                 //}
+
+                
+
                 return ResultList.ToArray();
             }
         }

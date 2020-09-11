@@ -19,17 +19,164 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             Ch5
         }
 
+        public enum Direction
+        {
+            /// <summary>
+            /// устанавливает фронт (ступенька вверх).
+            /// </summary>
+            RIS,
+
+            /// <summary>
+            /// устанавливает спад (ступенька вниз).
+            /// </summary>
+            FALL
+        }
+
+        /// <summary>
+        /// Выходной импеданс
+        /// </summary>
+        public enum Impedans
+        {
+            /// <summary>
+            /// 50 ОМ
+            /// </summary>
+            [StringValue("5.000000E+01")] Res_50 = 50,
+
+            /// <summary>
+            /// 1 МОм
+            /// </summary>
+            [StringValue("1.000000E+06")] Res_1M = 1000000
+        }
+
+        public enum Polar
+        {
+            /// <summary>
+            /// устанавливает выходной прямоугольный сигнал положительной полярности относительно заземления
+            /// </summary>
+            POS,
+
+            /// <summary>
+            /// устанавливает выходной прямоугольный сигнал отрицательной полярности относительно заземления
+            /// </summary>
+            NEG,
+
+            /// <summary>
+            /// устанавливает выходной прямоугольный сигнал симметрично относительно земли
+            /// </summary>
+            SYMM
+        }
+
+        public enum Shap
+        {
+            /// <summary>
+            /// Определяет, что последующий выбор напряжения (VOLT) или тока (CURR) будет иметь только постоянную составляющую (DC).
+            /// </summary>
+            DC,
+
+            /// <summary>
+            /// Определяет, что последующий выбор напряжения (VOLT) или тока (CURR) связан с сигналом прямоугольной формы
+            /// </summary>
+            SQU,
+
+            /// <summary>
+            /// Выбирает функцию перепада импульса. Форма сигнала выбирается отдельной командой.
+            /// </summary>
+            EDG,
+
+            /// <summary>
+            /// Выбирает форму сигнала временного маркера.
+            /// </summary>
+            MARK,
+
+            /// <summary>
+            /// Выбирает нормированный синусоидальный сигнал.
+            /// </summary>
+            SIN,
+
+            /// <summary>
+            /// Выбирает энергию импульса, используемого для тестирования защиты от перегрузки осциллографа.
+            /// </summary>
+            OPUL,
+
+            /// <summary>
+            /// Выбирает форму полного видеосигнала.
+            /// </summary>
+            TEL,
+
+            /// <summary>
+            /// Выбирает замкнутое или разомкнутое состояние активной головки для определения тока утечки осциллографа.
+            /// </summary>
+            LEAK,
+
+            /// <summary>
+            /// Выбирает функцию пилообразного сигнала
+            /// </summary>
+            RAMP,
+
+            /// <summary>
+            /// Выбирает функцию выравнивания задержки
+            /// </summary>
+            SKEW,
+
+            /// <summary>
+            /// Выбирает функцию длительности импульса
+            /// </summary>
+            PWID,
+
+            /// <summary>
+            /// Выбирает входной сигнал по дополнительному входу (Auxiliary).
+            /// </summary>
+            EXT
+        }
+
+        /// <summary>
+        /// Скорость наростания
+        /// </summary>
+        public enum SpeedEdge
+        {
+            /// <summary>
+            /// 100нс
+            /// </summary>
+            Low_100n = 700,
+
+            /// <summary>
+            /// 500 пс
+            /// </summary>
+            Mid_500p = 500,
+
+            /// <summary>
+            /// 150 пс
+            /// </summary>
+            Fast_150p = 100
+        }
+
         public enum State
         {
             On,
             Off
         }
 
+        /// <summary>
+        /// Тип измерения
+        /// </summary>
+        public enum TypeMes
+        {
+            /// <summary>
+            /// Сопротивление
+            /// </summary>
+            RES,
+
+            /// <summary>
+            /// Емкость
+            /// </summary>
+            CAP
+        }
+
         #region Property
 
-        public AUXFunctional AuxFunc { get; }
+        public CAUXFunctional AuxFunc { get; }
 
-        public ROUTe Route { get; }
+        public CROUTe Route { get; }
 
         public CSource Source { get; }
 
@@ -38,16 +185,15 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         public Calibr9500B()
         {
             Source = new CSource(this);
-            Route = new ROUTe(this);
-            AuxFunc = new AUXFunctional(this);
-            Multipliers = Multipliers = new ICommand[]
+            Route = new CROUTe(this);
+            AuxFunc = new CAUXFunctional(this);
+            Multipliers =  new ICommand[]
             {
                 new Command("N", "н", 1E-9),
                 new Command("U", "мк", 1E-6),
                 new Command("M", "м", 1E-3),
-                new Command("", "", 1),
-                //new Command("K", "к", 1E3)
-
+                new Command("", "", 1)
+                
             };
         }
 
@@ -56,90 +202,59 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// </summary>
         public class CSource : HelpDeviceBase
         {
-            public enum Shap
-            {
-                /// <summary>
-                /// Определяет, что последующий выбор напряжения (VOLT) или тока (CURR) будет иметь только постоянную составляющую (DC).
-                /// </summary>
-                DC,
-
-                /// <summary>
-                /// Определяет, что последующий выбор напряжения (VOLT) или тока (CURR) связан с сигналом прямоугольной формы
-                /// </summary>
-                SQU,
-
-                /// <summary>
-                /// Выбирает функцию перепада импульса. Форма сигнала выбирается отдельной командой.
-                /// </summary>
-                EDG,
-
-                /// <summary>
-                /// Выбирает форму сигнала временного маркера.
-                /// </summary>
-                MARK,
-
-                /// <summary>
-                /// Выбирает нормированный синусоидальный сигнал.
-                /// </summary>
-                SIN,
-
-                /// <summary>
-                /// Выбирает энергию импульса, используемого для тестирования защиты от перегрузки осциллографа.
-                /// </summary>
-                OPULS,
-
-                /// <summary>
-                /// Выбирает форму полного видеосигнала.
-                /// </summary>
-                TEL,
-
-                /// <summary>
-                /// Выбирает замкнутое или разомкнутое состояние активной головки для определения тока утечки осциллографа.
-                /// </summary>
-                LAE,
-
-                /// <summary>
-                /// Выбирает функцию пилообразного сигнала
-                /// </summary>
-                RAMP,
-
-                /// <summary>
-                /// Выбирает функцию выравнивания задержки
-                /// </summary>
-                SKEW,
-
-                /// <summary>
-                /// Выбирает функцию длительности импульса
-                /// </summary>
-                PWID,
-
-                /// <summary>
-                /// Выбирает входной сигнал по дополнительному входу (Auxiliary).
-                /// </summary>
-                EXT
-            }
-
             #region Fields
 
             private readonly Calibr9500B _calibrMain;
 
             #endregion
 
+            #region Property
+
+            public CParametr Parametr { get; }
+
+            #endregion
+
             public CSource(Calibr9500B calibrMain)
             {
                 _calibrMain = calibrMain;
+                Parametr = new CParametr(calibrMain);
                 Multipliers = Multipliers = new ICommand[]
                 {
                     new Command("N", "н", 1E-9),
                     new Command("U", "мк", 1E-6),
                     new Command("M", "м", 1E-3),
-                    new Command("", "", 1),
+                    new Command("", "", 1)
                     //new Command("K", "к", 1E3)
-
                 };
             }
 
             #region Methods
+
+            /// <summary>
+            /// Возвращает значение установленной частоты.
+            /// </summary>
+            /// <returns>Значение частоты в decimal.</returns>
+            public decimal GetFreq()
+            {
+                var answer = _calibrMain.QueryLine("SOUR:FREQ?");
+                var arr = answer.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
+                                .Split('E');
+                return decimal.Parse(arr[0]) * (decimal) Math.Pow(10, double.Parse(arr[1]));
+            }
+
+            /// <summary>
+            /// Считывает значение напряжения на выходе канала.
+            /// </summary>
+            /// <returns>Значение напряжения типа decimal.</returns>
+            public decimal GetVoltage()
+            {
+                var answer = _calibrMain.QueryLine("SOUR:VOLT?");
+                var var = answer.TrimEnd('\n')
+                                .Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
+                                .Split('E');
+
+                return decimal.Parse(var[0]) * (decimal) Math.Pow(10, double.Parse(var[1]));
+            }
 
             /// <summary>
             /// Управление переключением выхода: включено/выключено
@@ -160,19 +275,6 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             {
                 _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
                 return _calibrMain;
-            }
-
-            /// <summary>
-            /// Возвращает значение установленной частоты.
-            /// </summary>
-            /// <returns>Значение частоты в decimal.</returns>
-
-            public decimal GetFreq()
-            {
-                string answer = _calibrMain.QueryLine("SOUR:FREQ?");
-                var arr = answer.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
-                                .Split('E');
-                return (decimal) decimal.Parse(arr[0]) * (decimal) (Math.Pow(10, double.Parse(arr[1])));
             }
 
             /// <summary>
@@ -208,29 +310,38 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 return _calibrMain;
             }
 
-            /// <summary>
-            /// Считывает значение напряжения на выходе канала.
-            /// </summary>
-            /// <returns>Значение напряжения типа decimal.</returns>
-            public decimal GetVoltage()
-            {
-                string answer = _calibrMain.QueryLine("SOUR:VOLT?");
-               string[] var = answer.TrimEnd('\n').Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator).Split('E');
-
-                return decimal.Parse(var[0])* (decimal)(Math.Pow(10, double.Parse(var[1])));
-            }
-
             #endregion
 
             /// <summary>
             /// Настройки выходного параметра
             /// </summary>
-            public class Parametr
+            public class CParametr
             {
+                #region Fields
+
+                private Calibr9500B _calibrMain;
+
+                #endregion
+
+                #region Property
+
+                public CDC DC { get; }
+
+                public CEDGE EDGE { get; }
+
+                #endregion
+
+                public CParametr(Calibr9500B calibr)
+                {
+                    _calibrMain = calibr;
+                    EDGE = new CEDGE(calibr);
+                    DC = new CDC(calibr);
+                }
+
                 /// <summary>
                 /// Настройка постоянного напряжения
                 /// </summary>
-                public class DC
+                public class CDC
                 {
                     #region Fields
 
@@ -238,10 +349,9 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
                     #endregion
 
-                    public DC(Calibr9500B calibr)
+                    public CDC(Calibr9500B calibr)
                     {
                         _calibrMain = calibr;
-                        
                     }
 
                     #region Methods
@@ -278,35 +388,15 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 /// <summary>
                 /// Настройка Меандра
                 /// </summary>
-                public class SQU
+                public class CSQU
                 {
-                    /// <summary>
-                    /// </summary>
-                    public enum Polar
-                    {
-                        /// <summary>
-                        /// устанавливает выходной прямоугольный сигнал положительной полярности относительно заземления
-                        /// </summary>
-                        POS,
-
-                        /// <summary>
-                        /// устанавливает выходной прямоугольный сигнал отрицательной полярности относительно заземления
-                        /// </summary>
-                        NEG,
-
-                        /// <summary>
-                        /// устанавливает выходной прямоугольный сигнал симметрично относительно земли
-                        /// </summary>
-                        SYMM
-                    }
-
                     #region Fields
 
                     private readonly Calibr9500B _calibrMain;
 
                     #endregion
 
-                    public SQU(Calibr9500B calibr)
+                    public CSQU(Calibr9500B calibr)
                     {
                         _calibrMain = calibr;
                     }
@@ -342,49 +432,15 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 /// <summary>
                 /// настройка импульса перепада
                 /// </summary>
-                public class EDGE
+                public class CEDGE
                 {
-                    public enum Direction
-                    {
-                        /// <summary>
-                        /// устанавливает фронт (ступенька вверх).
-                        /// </summary>
-                        RIS,
-
-                        /// <summary>
-                        /// устанавливает спад (ступенька вниз).
-                        /// </summary>
-                        FALL
-                    }
-
-                    /// <summary>
-                    /// Скорость наростания
-                    /// </summary>
-                    public enum SpeedEdge
-                    {
-                        /// <summary>
-                        /// 100нс
-                        /// </summary>
-                        Low_100n = 700,
-
-                        /// <summary>
-                        /// 500 пс
-                        /// </summary>
-                        Mid_500p = 500,
-
-                        /// <summary>
-                        /// 150 пс
-                        /// </summary>
-                        Fast_150p = 100
-                    }
-
                     #region Fields
 
                     private readonly Calibr9500B _calibrMain;
 
                     #endregion
 
-                    public EDGE(Calibr9500B calibr)
+                    public CEDGE(Calibr9500B calibr)
                     {
                         _calibrMain = calibr;
                     }
@@ -396,7 +452,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// </summary>
                     /// <param name = "Se"></param>
                     /// <returns></returns>
-                    public Calibr9500B SetDirection(Direction Der)
+                    public Calibr9500B SetEdgeDirection(Direction Der)
                     {
                         _calibrMain.WriteLine("SOUR:PAR:EDGE:TRAN " + Der);
                         return _calibrMain;
@@ -407,7 +463,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// </summary>
                     /// <param name = "Se"></param>
                     /// <returns></returns>
-                    public Calibr9500B SetSpeed(SpeedEdge Se)
+                    public Calibr9500B SetEdgeSpeed(SpeedEdge Se)
                     {
                         _calibrMain.WriteLine("SOUR:PAR:EDGE:SPE " + (double) Se * Math.Pow(10, -12));
                         return _calibrMain;
@@ -419,46 +475,34 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         }
 
         /// <summary>
-        /// Данная подсистема используется для конфигурирования выходных каналов, которые используются как выходы сигнала и источники триггера.
+        /// Данная подсистема используется для конфигурирования выходных каналов, которые используются как выходы сигнала и
+        /// источники триггера.
         /// </summary>
-        public class ROUTe
+        public class CROUTe
         {
             #region Fields
 
             private Calibr9500B _calibMain;
+
+            #endregion
+
+            #region Property
+
             public ChanelSetting Chanel { get; }
 
             #endregion
 
-            public ROUTe(Calibr9500B calibr)
+            public CROUTe(Calibr9500B calibr)
             {
                 _calibMain = calibr;
                 Chanel = new ChanelSetting(calibr);
-
-
             }
 
             public class ChanelSetting
             {
-                /// <summary>
-                /// Выходной импеданс
-                /// </summary>
-                public enum Impedans
-                {
-                    /// <summary>
-                    /// 50 ОМ
-                    /// </summary>
-                   [StringValue("5.000000E+01")] Res_50 = 50,
-
-                    /// <summary>
-                    /// 1 МОм
-                    /// </summary>
-                    [StringValue("1.000000E+06")]Res_1M = 1000000
-                }
-
                 #region Fields
 
-                private  Calibr9500B _calibMain;
+                private readonly Calibr9500B _calibMain;
 
                 #endregion
 
@@ -468,6 +512,18 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 }
 
                 #region Methods
+
+                /// <summary>
+                /// Позволяет полчить значение импеданса текущего рабочего канала.
+                /// </summary>
+                /// <returns></returns>
+                public Impedans GetImpedans()
+                {
+                    var answer = _calibMain.QueryLine("ROUT:SIGN:IMP?");
+                    var val = answer.TrimEnd('\n').Replace(".", ",").Split('E');
+
+                    return (Impedans) (int) (double.Parse(val[0]) * Math.Pow(10, double.Parse(val[1])));
+                }
 
                 /// <summary>
                 /// Данная команда используется для определения канала, связанного с сигнальным выходом.
@@ -493,19 +549,6 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     return _calibMain;
                 }
 
-                /// <summary>
-                /// Позволяет полчить значение импеданса текущего рабочего канала.
-                /// </summary>
-                /// <returns></returns>
-                public Impedans GetImpedans()
-                {
-                    string answer = _calibMain.QueryLine("ROUT: SIGN:IMP?");
-                    var val = answer.TrimEnd('\n').Replace(".", ",").Split('E');
-
-                    return (Impedans)((int)(double.Parse(val[0]) * Math.Pow(10, double.Parse(val[1]))));
-                   
-                }
-
                 #endregion
             }
         }
@@ -513,31 +556,15 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// <summary>
         /// Дополнительный функцианал
         /// </summary>
-        public class AUXFunctional
+        public class CAUXFunctional
         {
-            /// <summary>
-            /// Тип измерения
-            /// </summary>
-            public enum TypeMes
-            {
-                /// <summary>
-                /// Сопротивление
-                /// </summary>
-                RES,
-
-                /// <summary>
-                /// Емкость
-                /// </summary>
-                CAP
-            }
-
             #region Fields
 
             private readonly Calibr9500B _calibrMain;
 
             #endregion
 
-            public AUXFunctional(Calibr9500B calibr)
+            public CAUXFunctional(Calibr9500B calibr)
             {
                 _calibrMain = calibr;
             }
@@ -547,7 +574,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <summary>
             /// Запрос значения сопротивления или емкости.
             /// </summary>
-            public string QuaryAuxValue()
+            public string QueryAuxValue()
             {
                 var answer = _calibrMain.QueryLine("READ?");
 
