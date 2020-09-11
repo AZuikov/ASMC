@@ -3,15 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Timers;
 using ASMC.Data.Model;
 using Ivi.Visa;
 using NLog;
@@ -21,7 +18,6 @@ namespace ASMC.Devices.IEEE
 {
     public class IeeeBase : HelpDeviceBase, IProtocolStringLine
     {
-       
         /// <summary>
         /// Звуковой сигнал
         /// </summary>
@@ -32,13 +28,13 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         public const string Clear = "*CLS";
 
+        ///Вызывает конфигурацию опций прибора
+        public const string QueryConfig = "*OPT?";
+
         /// <summary>
         /// Запрос индификации прибора
         /// </summary>
         public const string QueryIdentificationDevice = "*IDN?";
-
-        ///Вызывает конфигурацию опций прибора
-        public const string QueryConfig = "*OPT?";
 
         /// <summary>
         /// Запрос на наличие не завершкенных операций
@@ -58,18 +54,112 @@ namespace ASMC.Devices.IEEE
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        #region Fields
+
+        /// <summary>
+        /// отвечает за задержку между командами в мс
+        /// </summary>
+        private readonly int _dealySending;
+
+        /// <summary>
+        /// Массив подключенных устройств
+        /// </summary>
+        private string[] _devace;
+
         private DeviceInfo _info;
+
+        private string _stringConnection;
+
+        private Timer _time;
+
+        /// <summary>
+        /// Массив информации об устройстве
+        /// </summary>
+        private string[] _words;
+
+        #endregion
+
+        #region Property
+
+        /// <summary>
+        /// Получить список всех устройств.
+        /// </summary>
+        /// <returns></returns>
+        public static string[] AllStringConnect
+        {
+            get
+            {
+                var arr = GlobalResourceManager.Find().ToList();
+
+                //Parallel.For(0, arr.Count, (int i) =>
+                //{
+                //    if (arr[i].Contains("INTFC"))
+                //    {
+                //        arr.RemoveAt(i);
+                //        i--;
+                //        return;
+
+
+                //    }
+
+                //    string MyReEx = @"(com|lpt)\d+";
+                //    Match m;
+                //    try
+                //    {
+                //        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
+
+                //        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                //        if (m.Success) arr[i] = m.Value;
+                //    }
+                //    catch (NativeVisaException e)
+                //    {
+                //        arr.RemoveAt(i);
+                //        i--;
+
+                //    }
+                //});
+
+
+                for (var i = 0; i < arr.Count; i++)
+                {
+                    if (arr[i].Contains("INTFC"))
+                    {
+                        arr.RemoveAt(i);
+                        continue;
+                    }
+
+
+                    var MyReEx = @"(com|lpt)\d+";
+                    Match m;
+                    try
+                    {
+                        var devObj = GlobalResourceManager.Open(arr[i]);
+
+                        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                        if (m.Success) arr[i] = m.Value;
+                    }
+                    catch (NativeVisaException e)
+                    {
+                        arr.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                return arr.ToArray();
+            }
+        }
+
         public DeviceInfo Info
         {
             get
             {
                 if (_info != null) return _info;
 
-                  var arr  =GetBaseInfoFromDevice();
+                var arr = GetBaseInfoFromDevice();
                 string manufacturer = null, serial = null, type = null, fwv = null;
                 try
                 {
-                     manufacturer = arr[0];
+                    manufacturer = arr[0];
                     type = arr[1];
                     serial = arr[2];
                     fwv = arr[3];
@@ -83,68 +173,29 @@ namespace ASMC.Devices.IEEE
                 return _info;
             }
         }
-        #region  Fields
-
-        /// <summary>
-        /// Массив подключенных устройств
-        /// </summary>
-        private string[] _devace;
-
-        private Timer _time;
-
-        /// <summary>
-        /// Массив информации об устройстве
-        /// </summary>
-        private string[] _words;
-
-        /// <summary>
-        /// отвечает за задержку между командами в мс
-        /// </summary>
-        private readonly int _dealySending;
-        /// <inheritdoc />
-        public string UserType { get; protected set; }
-
-        /// <inheritdoc /> 
-        public string StringConnection {
-            get => _stringConnection;
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    _stringConnection = null;
-                    return;
-                }
-                   
-                if (value.StartsWith("com", true, CultureInfo.InvariantCulture))
-                {
-                    var replace = value.ToLower().Replace("com", "ASRL") + "::INSTR";
-                    _stringConnection = replace;
-                    return;
-                }
-                _stringConnection = value;
-            } }
 
         /// <summary>
         /// Объкт сессии
         /// </summary>
         protected IMessageBasedSession Session { get; set; }
 
-        private string _stringConnection;
-
         #endregion
 
         public IeeeBase()
-        {     
+        {
             /*50ms задежка*/
             _dealySending = 50;
-            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
+            Multipliers = new ICommand[]
+            {
+                new Command("N", "н", 1E-9),
                 new Command("N", "н", 1E-9),
                 new Command("U", "мк", 1E-6),
                 new Command("M", "м", 1E-3),
                 new Command("", "", 1),
                 new Command("K", "к", 1E3),
                 new Command("MA", "М", 1E6),
-                new Command("G", "Г", 1E9)};
+                new Command("G", "Г", 1E9)
+            };
         }
 
         #region Methods
@@ -173,55 +224,6 @@ namespace ASMC.Devices.IEEE
                 _time.Stop();
                 Close();
             }
-        }
-
-        public void Dispose()
-        {
-          _time?.Dispose();
-            Close();
-        }
-
-        /// <inheritdoc />
-        public void Close()
-        {
-            //Session.Clear();
-            Session?.Dispose();
-        }
-
-        /// <inheritdoc />
-        public bool Open()
-        {
-            
-            try
-            {
-                Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
-                Session.TimeoutMilliseconds = 60000;
-                //Session.Clear();
-                Thread.Sleep(100);
-
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                Session.Clear();
-                return false;
-            }
-            return true;
-        }
-
-
-        /// <summary>
-        /// Метод обращается к прибору и заполняет массив для информации о нём
-        /// </summary>
-        private string[] GetBaseInfoFromDevice()
-        {
-            
-            if(!Open()) {return null;}
-            Session.FormattedIO.WriteLine(QueryIdentificationDevice);
-            var res = Session.FormattedIO.ReadLine().Split(',');
-             Close();
-            return res;
-
         }
 
 
@@ -268,6 +270,7 @@ namespace ASMC.Devices.IEEE
                     Close();
                 }
             }
+
             Logger.Warn($@"Устройство {UserType} не найдено");
             return false;
         }
@@ -305,131 +308,16 @@ namespace ASMC.Devices.IEEE
 
                         Close();
                     }
-                    
                 }
+
             Logger.Warn($@"Устройство {UserType} не найдено");
             return false;
         }
 
-        /// <summary>
-        /// Получить актуальный список всех устройств через VISA.
-        /// </summary>
-        /// <returns></returns>
-        public static string[] AllStringConnect
-        {
-
-            //  \HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB  чистить реестр тут
-            get
-            {
-
-                var arr = GlobalResourceManager.Find().ToList();
-                List<string> ResultList = new List<string>();
-
-
-               
-                Parallel.For(0, arr.Count, (int i) =>
-                {
-                    if (!arr[i].Contains("INTFC"))
-                    {
-
-                        string MyReEx = @"(com|lpt)\d+";
-                        Match portNameMatch;
-
-                        string MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
-                        Match usbDeviceMatch;
-
-                        string MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
-                        Match gpibDeviceMatch;
-
-                        //нужна регулярка для устройств подключенных через LAN
-
-                       
-                        try
-                        {
-                            var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
-
-                            portNameMatch = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                            usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
-                            gpibDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
-                            if (portNameMatch.Success) ResultList.Add(portNameMatch.Value);
-                            else if (usbDeviceMatch.Success || gpibDeviceMatch.Success) ResultList.Add(arr[i]);
-                            
-                            
-                        }
-                        catch (NativeVisaException e)
-                        {
-                            
-                        }
-
-                    }
-
-                   
-                });
-                
-
-
-                //for (var i = 0; i < arr.Count; i++)
-                //{
-                //    if (arr[i].Contains("INTFC"))
-                //    {
-                //        arr.RemoveAt(i);
-                //        continue;
-                //    }
-                //    try
-                //    {
-                //        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
-                //        string MyReEx = @"(com|lpt)\d+";
-                //        Match portNameMatch;
-
-                //        string MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
-                //        Match usbDeviceMatch;
-
-                //        string MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
-                //        Match gpibDeviceMatch;
-                //        Match m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                //        usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
-                //        usbDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
-                //        if (m.Success) arr[i] = m.Value;
-                //    }
-                //    catch (NativeVisaException e)
-                //    {
-                //        arr.RemoveAt(i);
-                //        i--;
-                //        continue;
-                //    }
-
-                //}
-
-                
-
-                return ResultList.ToArray();
-            }
-        }
-
-          
         public List<string> GetOption()
         {
             WriteLine(QueryConfig);
             return new List<string>(ReadString().Split(','));
-        }
-        /// <summary>
-        /// Считывает строку
-        /// </summary>
-        /// <returns>Возвращает считанаю строку</returns>
-        public string ReadLine()
-        {
-            if(!Open()) return null;
-            string date = null;
-            try
-            {
-                date = Session.FormattedIO.ReadLine();
-            }
-            catch(TimeoutException e)
-            {
-                Logger.Error(e);
-            }
-             Close();
-            return date;
         }
 
         /// <summary>
@@ -438,18 +326,21 @@ namespace ASMC.Devices.IEEE
         /// <returns>Возвращает считанаю строку</returns>
         public string ReadString()
         {
-            if (!Open()) return null;
+            Open();
             string date = null;
             try
             {
                 date = Session.FormattedIO.ReadString();
-                
             }
             catch (IOTimeoutException e)
-            {  
-              Logger.Error(e);  
-            } 
-            Close();
+            {
+                Logger.Error(e);
+            }
+            finally
+            {
+                Close();
+            }
+
             return date;
         }
 
@@ -458,69 +349,30 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         public void Sinchronization()
         {
-            WriteLine(QuerySinchronization);
-            var val = "";
-            do
+            var timer = new System.Timers.Timer {Interval = 30000};
+            timer.Elapsed += Timer_Elapsed;
+
+            void Timer_Elapsed(object sender, ElapsedEventArgs e)
             {
-                try
-                {
-                    val = ReadString();
-                    break;
-                }
-                catch (TimeoutException e)
-                {
-                    Logger.Error(e);
-                }
-            } while (val != "1");
+                timer.Elapsed -= Timer_Elapsed;
+                timer.Dispose();
+                throw new TimeoutException($@"Превышено время ожидания синхронизации в {UserType}");
+            }
+
+            // ReSharper disable once EmptyEmbeddedStatement
+            while (!QueryLine(QuerySinchronization).Equals("1")) ;
+            timer.Elapsed -= Timer_Elapsed;
+            timer.Dispose();
         }
+
 
         /// <summary>
         /// Самопроверка
         /// </summary>
-        /// <returns> 1 - успешно, 0 - провал</returns>
+        /// <returns> True - успешно, иначе провал</returns>
         public bool TestSelf()
         {
-            WriteLine(QueryTestSelf);
-            if (int.TryParse(ReadString(), out var result))
-                if (result == 0)
-                    return true;
-                else
-                    return false;
-            return false;
-        }
-
-        /// <summary>
-        /// Отправляет полученную команду, без изменений
-        /// </summary>
-        /// <param name = "str">Принимает текст команды в VBS формате</param>
-        public void WriteLine(string data )
-        {
-            
-            if(!Open()) return;
-            Session.FormattedIO.WriteLine(data);
-            Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
-            Thread.Sleep(_dealySending);
-            Close();
-        }
-
-        public string QueryLine(string inStrData)
-        {
-            if (!Open())
-            {
-                Logger.Warn($@"Запись в устройство {Session.ResourceName} данных: {inStrData} не выполнена");
-                throw new IOException($"Не удалось получить доступ к утсройству {Session.ResourceName}");
-
-            }
-
-            Session.FormattedIO.WriteLine(inStrData);
-            Thread.Sleep(200);
-
-            string answer = Session.FormattedIO.ReadLine().TrimEnd('\n');
-            Close();
-
-            if (answer.Length == 0) throw new IOException($"Данные с устройства {Session.ResourceName} считать не удалось.");
-
-            return answer;
+            return QueryLine(QueryTestSelf).Equals("1");
         }
 
         /// <summary>
@@ -529,10 +381,23 @@ namespace ASMC.Devices.IEEE
         /// <param name = "date">Принимает текст команды в VBS формате</param>
         public void WriteLineVbs(string date)
         {
-            if(!Open()) return;
+            Open();
             Session.FormattedIO.WriteLine("vbs '" + date + "'");
             Thread.Sleep(_dealySending);
             Close();
+        }
+
+
+        /// <summary>
+        /// Метод обращается к прибору и заполняет массив для информации о нём
+        /// </summary>
+        private string[] GetBaseInfoFromDevice()
+        {
+            Open();
+            Session.FormattedIO.WriteLine(QueryIdentificationDevice);
+            var res = Session.FormattedIO.ReadLine().Split(',');
+            Close();
+            return res;
         }
 
         private bool Open(bool error)
@@ -545,14 +410,14 @@ namespace ASMC.Devices.IEEE
             }
             catch (Exception e)
             {
-                if(error) Logger.Error(e);
+                if (error) Logger.Error(e);
                 return false;
             }
 
             try
             {
                 Session.FormattedIO.WriteLine("*IDN?");
-               
+
                 if (Session.HardwareInterfaceType == HardwareInterfaceType.Serial)
                 {
                     _words = new[] {Session.FormattedIO.ReadLine()};
@@ -569,11 +434,150 @@ namespace ASMC.Devices.IEEE
                 Session.Clear();
                 return false;
             }
-            
+
 
             return true;
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public string UserType { get; protected set; }
+
+        /// <inheritdoc />
+        public string StringConnection
+        {
+            get => _stringConnection;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _stringConnection = null;
+                    return;
+                }
+
+                if (value.StartsWith("com", true, CultureInfo.InvariantCulture))
+                {
+                    var replace = value.ToLower().Replace("com", "ASRL") + "::INSTR";
+                    _stringConnection = replace;
+                    return;
+                }
+
+                _stringConnection = value;
+            }
+        }
+
+        public void Dispose()
+        {
+            _time?.Dispose();
+            Close();
+        }
+
+        /// <inheritdoc />
+        public void Close()
+        {
+            Session.Clear();
+            Session?.Dispose();
+            IsOpen = false;
+        }
+
+        /// <inheritdoc />
+        public void Open()
+        {
+            try
+            {
+                if (IsOpen) return;
+                Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
+                Session.TimeoutMilliseconds = 60000;
+                Thread.Sleep(100);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+                Session.Clear();
+                IsOpen = false;
+                throw;
+            }
+
+            IsOpen = true;
+        }
+
+        /// <inheritdoc />
+        public bool IsOpen { get; protected set; }
+
+        /// <summary>
+        /// Считывает строку
+        /// </summary>
+        /// <returns>Возвращает считанаю строку</returns>
+        public string ReadLine()
+        {
+            Open();
+            string date = null;
+            try
+            {
+                date = Session.FormattedIO.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $@"Не удалось считать данные с устройства {UserType}");
+                throw;
+            }
+            finally
+            {
+                Close();
+            }
+            return date;
+        }
+
+        /// <summary>
+        /// Отправляет полученную команду как строку
+        /// </summary>
+        /// <param name = "data">Текст комманды.</param>
+        public void WriteLine(string data)
+        {
+            Open();
+            try
+            {
+
+                Session.FormattedIO.WriteLine(data);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $@"Не удалось отправить комманду {data} на устройство {UserType}");
+                throw;
+            }
+            finally
+            {
+                Close();
+            }
+            Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
+            Thread.Sleep(_dealySending);
+          
+        }
+
+        public string QueryLine(string inStrData)
+        {
+            Open();
+            Session.FormattedIO.WriteLine(inStrData);
+            Thread.Sleep(200);
+            string answer;
+            try
+            {
+                answer = Session.FormattedIO.ReadLine().TrimEnd('\n');
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $@"Считать результат на запрос {inStrData} c устройства {UserType} не удалось.");
+                throw;
+            }
+            finally
+            {
+                Close();
+            }
+
+            if (!answer.Any()) throw new IOException($"Данные с устройства {UserType} считать не удалось.");
+
+            return answer;
+        }
     }
 }

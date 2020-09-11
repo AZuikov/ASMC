@@ -53,6 +53,10 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Позволяет открыть соединение с устройством.
         /// </summary>
-        bool Open();
+        void Open();
+        /// <summary>
+        /// 
+        /// </summary>
+        bool IsOpen { get; }
     }
 }

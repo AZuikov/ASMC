@@ -683,7 +683,7 @@ namespace ASMC.Devices.Port.APPA
         public void SendQuery()
         {
             //проверка на признак открытого порта
-            if (!GetStatusIsOpen())
+            if (!IsOpen)
             {
                 // открываем порт
                 Open();
