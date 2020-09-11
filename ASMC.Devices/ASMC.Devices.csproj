@@ -112,6 +112,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IEEE\Fluke\Multimeter\" />
