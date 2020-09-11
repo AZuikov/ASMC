@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using ASMC.Data.Model;
 using Ivi.Visa;
+using MathNet.Numerics.Financial;
 using NLog;
 using Timer = System.Windows.Forms.Timer;
 
@@ -535,11 +536,13 @@ namespace ASMC.Devices.IEEE
         {
             Open();
             Session.FormattedIO.WriteLine(inStrData);
+            Logger.Debug($"На устройство {UserType} отправлена команда {inStrData}");
             Thread.Sleep(200);
             string answer;
             try
             {
                 answer = Session.FormattedIO.ReadLine().TrimEnd('\n');
+                Logger.Debug($"Устройство {UserType} ответило {answer}");
             }
             catch (Exception e)
             {
