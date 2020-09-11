@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using ASMC.Data.Model;
 using Ivi.Visa;
@@ -87,65 +88,44 @@ namespace ASMC.Devices.IEEE
         /// <returns></returns>
         public static string[] AllStringConnect
         {
+            //  \HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB  чистить реестр тут
             get
             {
                 var arr = GlobalResourceManager.Find().ToList();
+                var ResultList = new List<string>();
 
-                //Parallel.For(0, arr.Count, (int i) =>
-                //{
-                //    if (arr[i].Contains("INTFC"))
-                //    {
-                //        arr.RemoveAt(i);
-                //        i--;
-                //        return;
-
-
-                //    }
-
-                //    string MyReEx = @"(com|lpt)\d+";
-                //    Match m;
-                //    try
-                //    {
-                //        var devObj = (IVisaSession)GlobalResourceManager.Open(arr[i]);
-
-                //        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                //        if (m.Success) arr[i] = m.Value;
-                //    }
-                //    catch (NativeVisaException e)
-                //    {
-                //        arr.RemoveAt(i);
-                //        i--;
-
-                //    }
-                //});
-
-
-                for (var i = 0; i < arr.Count; i++)
+                Parallel.For(0, arr.Count, i =>
                 {
-                    if (arr[i].Contains("INTFC"))
+                    if (!arr[i].Contains("INTFC"))
                     {
-                        arr.RemoveAt(i);
-                        continue;
+                        var MyReEx = @"(com|lpt)\d+";
+                        Match portNameMatch;
+
+                        var MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
+                        Match usbDeviceMatch;
+
+                        var MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
+                        Match gpibDeviceMatch;
+
+                        //нужна регулярка для устройств подключенных через LAN
+
+                        try
+                        {
+                            var devObj = GlobalResourceManager.Open(arr[i]);
+
+                            portNameMatch = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                            usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
+                            gpibDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
+                            if (portNameMatch.Success) ResultList.Add(portNameMatch.Value);
+                            else if (usbDeviceMatch.Success || gpibDeviceMatch.Success) ResultList.Add(arr[i]);
+                        }
+                        catch (NativeVisaException e)
+                        {
+                        }
                     }
+                });
 
-
-                    var MyReEx = @"(com|lpt)\d+";
-                    Match m;
-                    try
-                    {
-                        var devObj = GlobalResourceManager.Open(arr[i]);
-
-                        m = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                        if (m.Success) arr[i] = m.Value;
-                    }
-                    catch (NativeVisaException e)
-                    {
-                        arr.RemoveAt(i);
-                        i--;
-                    }
-                }
-
-                return arr.ToArray();
+                return ResultList.ToArray();
             }
         }
 
@@ -225,7 +205,6 @@ namespace ASMC.Devices.IEEE
                 Close();
             }
         }
-
 
         /// <summary>
         /// Опрашивает все подключеннные устройства и находит необходимый(по типу прибора), устанавливая строку подключения
@@ -365,7 +344,6 @@ namespace ASMC.Devices.IEEE
             timer.Dispose();
         }
 
-
         /// <summary>
         /// Самопроверка
         /// </summary>
@@ -386,7 +364,6 @@ namespace ASMC.Devices.IEEE
             Thread.Sleep(_dealySending);
             Close();
         }
-
 
         /// <summary>
         /// Метод обращается к прибору и заполняет массив для информации о нём
@@ -434,7 +411,6 @@ namespace ASMC.Devices.IEEE
                 Session.Clear();
                 return false;
             }
-
 
             return true;
         }
@@ -526,6 +502,7 @@ namespace ASMC.Devices.IEEE
             {
                 Close();
             }
+
             return date;
         }
 
@@ -538,7 +515,6 @@ namespace ASMC.Devices.IEEE
             Open();
             try
             {
-
                 Session.FormattedIO.WriteLine(data);
             }
             catch (Exception e)
@@ -550,9 +526,9 @@ namespace ASMC.Devices.IEEE
             {
                 Close();
             }
+
             Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
             Thread.Sleep(_dealySending);
-          
         }
 
         public string QueryLine(string inStrData)
