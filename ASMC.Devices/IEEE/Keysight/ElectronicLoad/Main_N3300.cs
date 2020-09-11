@@ -33,9 +33,9 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         public enum State
         {
-            [StringValue("outp 0")] Off,
+            [StringValue("0")] Off=0,
 
-            [StringValue("outp 1")] On
+            [StringValue("1")] On=1
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -239,7 +239,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         public MainN3300 SetOutputState(State state)
         {
-            WriteLine(state.GetStringValue());
+            WriteLine($"outp {state.GetStringValue()}");
             Thread.Sleep(10);
             if (StateOutput != state) throw new Exception("Состояние выхода не изменено.");
             return this;
