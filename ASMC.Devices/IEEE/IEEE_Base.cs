@@ -469,7 +469,7 @@ namespace ASMC.Devices.IEEE
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, $@"Порт не удалось открыть для устроства {UserType}.");
                 Session.Clear();
                 IsOpen = false;
                 throw;

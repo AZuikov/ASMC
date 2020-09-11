@@ -453,7 +453,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             Cursor = new CCursor(this);
             Display = new CDisplay(this);
             Horizontal = new CHorizontal(this);
-            Math = new CMath(this);
+            //Math = new CMath(this);
             Measurement = new CMeasurement(this);
             Chanel = new CChanel(this);
         }
