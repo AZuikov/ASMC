@@ -169,8 +169,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         {
                             string SendComand = $@"OUT {JoinValueMult(value, voltMult)}V, {JoinValueMult(hertz, herzMult)}HZ";
                             _calibrMain.WriteLine(SendComand);
-                            _calibrMain.WriteLine("err?");
-                            string answer = _calibrMain.ReadLine();
+                            string answer = _calibrMain.QueryLine("err?");
                             if (!answer.Equals("0,\"No Error\"\n"))
                             {
                                 MessageBox.Show($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
@@ -278,8 +277,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                                 $@"OUT {JoinValueMult(value, voltMult)}A, {JoinValueMult(hertz, herzMult)}HZ";
                             _calibrMain.WriteLine(SendComand);
 
-                            _calibrMain.WriteLine("err?");
-                            string answer = _calibrMain.ReadLine();
+                            string answer = _calibrMain.QueryLine("err?");
                             if (!answer.Equals("0,\"No Error\"\n"))
                             {
                                 MessageBox.Show($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");

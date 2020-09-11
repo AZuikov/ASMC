@@ -95,8 +95,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         {
             get
             {
-                WriteLine("outp?");
-                return (State) int.Parse(ReadLine());
+                return (State) int.Parse(QueryLine("outp?"));
             }
         }
 
@@ -157,8 +156,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <returns></returns>
         public decimal GetCurrLevel()
         {
-            WriteLine("CURR:LEV?");
-            return StrToDecimal(ReadLine());
+            return StrToDecimal(QueryLine("CURR:LEV?"));
         }
 
         /// <summary>
@@ -167,8 +165,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <returns></returns>
         public decimal GetCurrMeasRange()
         {
-            WriteLine("SENS:CURR:RANGE?");
-            return StrToDecimal(ReadLine());
+            return StrToDecimal(QueryLine("SENS:CURR:RANGE?"));
         }
 
         /// <summary>
@@ -177,9 +174,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <returns></returns>
         public ModuleInfo[] GetInstalledModulesName()
         {
-            WriteLine("*RDT?");
-            Thread.Sleep(10);
-            var answer = ReadLine().TrimEnd('\n');
+            var answer = QueryLine("*RDT?"); 
             var reg = new Regex(@"(?<=.+)\d+");
             return answer.Split(';').Select(mod => mod.Split(':'))
                          .Select(s => new ModuleInfo {Channel = int.Parse(reg.Match(s[0]).Value), Type = s[1]}).ToArray();
@@ -263,8 +258,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             Thread.Sleep(10);
 
             //удостоверимся, что значение принято
-            WriteLine("VOLT?");
-            var answer = ReadLine();
+            var answer = QueryLine("VOLT?");
 
             //преобразуем строку в число
             var val = answer.TrimEnd('\n').Replace(".", ",").Split('E');
