@@ -468,6 +468,11 @@ namespace B5_71_PRO_Abstract
                         Logger.Error(e);
                         throw;
                     }
+                    finally
+                    {
+                        Load.SetOutputState(MainN3300.State.Off);
+                        Bp.OffOutput();
+                    }
                 };
                 operation.CompliteWork = () =>
                 {
@@ -639,6 +644,11 @@ namespace B5_71_PRO_Abstract
                     {
                         Logger.Error(e);
                         throw;
+                    }
+                    finally
+                    {
+                        Load.SetOutputState(MainN3300.State.Off);
+                        Bp.OffOutput();
                     }
                 };
 
@@ -837,6 +847,11 @@ namespace B5_71_PRO_Abstract
                     Logger.Error(e);
                     throw;
                 }
+                finally
+                {
+                    Load.SetOutputState(MainN3300.State.Off);
+                    Bp.OffOutput();
+                }
             };
             operation.CompliteWork = () =>
             {
@@ -1018,6 +1033,11 @@ namespace B5_71_PRO_Abstract
                     Logger.Error(e);
                     throw;
                 }
+                finally
+                {
+                    Load.SetOutputState(MainN3300.State.Off);
+                    Bp.OffOutput();
+                }
             };
 
             operation.BodyWork = () => { };
@@ -1182,6 +1202,11 @@ namespace B5_71_PRO_Abstract
                     {
                         Logger.Error(e);
                         throw;
+                    }
+                    finally
+                    {
+                        Load.SetOutputState(MainN3300.State.Off);
+                        Bp.OffOutput();
                     }
                 };
                 operation.CompliteWork = () =>
@@ -1350,6 +1375,11 @@ namespace B5_71_PRO_Abstract
                         Logger.Error(e);
                         throw;
                     }
+                    finally
+                    {
+                        Load.SetOutputState(MainN3300.State.Off);
+                        Bp.OffOutput();
+                    }
                 };
                 operation.CompliteWork = () =>
                 {
@@ -1498,13 +1528,19 @@ namespace B5_71_PRO_Abstract
                     Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9);
                     Bp.SetStateCurr(Bp.CurrMax );
 
+                    if (Bp.UserType.Equals("Б5-71/2-ПРО"))
+                    {
+                        Bp.OffOutput();
+                        Bp.OnOutput();
+                    }
+
                     var currUnstableList = new List<decimal>();
 
                     foreach (var coef in MyPoint)
                     {
                         var resistance = coef * Bp.VoltMax / Bp.CurrMax;
                         Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance);
-                        Thread.Sleep(2000);
+                        Thread.Sleep(3500);
                         currUnstableList.Add(Load.Current.MeasureCurrent);
                     }
 
@@ -1525,6 +1561,11 @@ namespace B5_71_PRO_Abstract
                 {
                     Logger.Error(e);
                     throw;
+                }
+                finally
+                {
+                    Load.SetOutputState(MainN3300.State.Off);
+                    Bp.OffOutput();
                 }
             };
             operation.CompliteWork = () =>
@@ -1742,6 +1783,11 @@ namespace B5_71_PRO_Abstract
                 {
                     Logger.Error(e);
                     throw;
+                }
+                finally
+                {
+                    Load.SetOutputState(MainN3300.State.Off);
+                    Bp.OffOutput();
                 }
             };
 
