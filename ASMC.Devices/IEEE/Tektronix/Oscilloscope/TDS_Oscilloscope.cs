@@ -67,162 +67,162 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <summary>
             /// 2.5 нс
             /// </summary>
-            [StringValue("2.5E-9")] Scal_25E10,
+            [StringValue("2.5E-9")] Scal_2_5nSec,
 
             /// <summary>
             /// 5 нс
             /// </summary>
-            [StringValue("5E-9")] Scal_50E10,
+            [StringValue("5E-9")] Scal_5nSec,
 
             /// <summary>
             /// 10 нс
             /// </summary>
-            [StringValue("10E-9")] Scal_10E9,
+            [StringValue("10E-9")] Scal_10nSec,
 
             /// <summary>
             /// 25 нс
             /// </summary>
-            [StringValue("25E-9")] Scal_25E9,
+            [StringValue("25E-9")] Scal_25nSec,
 
             /// <summary>
             /// 50 нс
             /// </summary>
-            [StringValue("50E-9")] Scal_50E9,
+            [StringValue("50E-9")] Scal_50nSec,
 
             /// <summary>
             /// 100 нс
             /// </summary>
-            [StringValue("10E-8")] Scal_10E8,
+            [StringValue("10E-8")] Scal_100nSec,
 
             /// <summary>
             /// 250 нс
             /// </summary>
-            [StringValue("25E-8")] Scal_25E8,
+            [StringValue("25E-8")] Scal_250nSec,
 
             /// <summary>
             /// 500 нс
             /// </summary>
-            [StringValue("50E-8")] Scal_50E8,
+            [StringValue("50E-8")] Scal_500nSec,
 
             /// <summary>
             /// 1 мкс
             /// </summary>
-            [StringValue("1E-6")] Scal_1E6,
+            [StringValue("1E-6")] Scal_1mkSec,
 
             /// <summary>
             /// 2.5 мкс
             /// </summary>
-            [StringValue("2.5E-6")] Scal_25E7,
+            [StringValue("2.5E-6")] Scal_2_5mkSec,
 
             /// <summary>
             /// 5 мкс
             /// </summary>
-            [StringValue("5E-6")] Scal_50E7,
+            [StringValue("5E-6")] Scal_5mkSec,
 
             /// <summary>
             /// 10 мкс
             /// </summary>
-            [StringValue("10E-6")] Scal_10E6,
+            [StringValue("10E-6")] Scal_10mkSec,
 
             /// <summary>
             /// 25 мкс
             /// </summary>
-            [StringValue("25E-6")] Scal_25E6,
+            [StringValue("25E-6")] Scal_25mkSec,
 
             /// <summary>
             /// 50 мкс
             /// </summary>
-            [StringValue("50E-6")] Scal_50E6,
+            [StringValue("50E-6")] Scal_50mkSec,
 
             /// <summary>
             /// 100 мкс
             /// </summary>
-            [StringValue("100E-6")] Scal_100E6,
+            [StringValue("100E-6")] Scal_100mkSec,
 
             /// <summary>
             /// 250 мкс
             /// </summary>
-            [StringValue("250E-6")] Scal_250E6,
+            [StringValue("250E-6")] Scal_250mkSec,
 
             /// <summary>
             /// 500 мкс
             /// </summary>
-            [StringValue("500E-6")] Scal_500E6,
+            [StringValue("500E-6")] Scal_500mkSec,
 
             /// <summary>
             /// 1 мс
             /// </summary>
-            [StringValue("1E-3")] Scal_10E4,
+            [StringValue("1E-3")] Scal_1mSec,
 
             /// <summary>
             /// 2.5 мс
             /// </summary>
-            [StringValue("2.5E-3")] Scal_25E4,
+            [StringValue("2.5E-3")] Scal_2_5mSec,
 
             /// <summary>
             /// 5 мс
             /// </summary>
-            [StringValue("5E-3")] Scal_50E4,
+            [StringValue("5E-3")] Scal_5mSec,
 
             /// <summary>
             /// 10 мс
             /// </summary>
-            [StringValue("10E-3")] Scal_10E3,
+            [StringValue("10E-3")] Scal_10mSec,
 
             /// <summary>
             /// 25 мс
             /// </summary>
-            [StringValue("25E-3")] Scal_25E3,
+            [StringValue("25E-3")] Scal_mSec,
 
             /// <summary>
             /// 50 мс
             /// </summary>
-            [StringValue("50E-3")] Scal_50E3,
+            [StringValue("50E-3")] Scal_50mSec,
 
             /// <summary>
             /// 100 мс
             /// </summary>
-            [StringValue("100E-3")] Scal_100E3,
+            [StringValue("100E-3")] Scal_100mSec,
 
             /// <summary>
             /// 250 мс
             /// </summary>
-            [StringValue("250E-3")] Scal_250E3,
+            [StringValue("250E-3")] Scal_250mSec,
 
             /// <summary>
             /// 500 мс
             /// </summary>
-            [StringValue("500E-3")] Scal_500E3,
+            [StringValue("500E-3")] Scal_500mSec,
 
             /// <summary>
             /// 1 с
             /// </summary>
-            [StringValue("1")] Scal_1,
+            [StringValue("1")] Scal_1Sec,
 
             /// <summary>
             /// 2.5 с
             /// </summary>
-            [StringValue("2.5")] Scal_25E1,
+            [StringValue("2.5")] Scal_2_5Sec,
 
             /// <summary>
             /// 5 с
             /// </summary>
-            [StringValue("5")] Scal_5,
+            [StringValue("5")] Scal_5Sec,
 
             /// <summary>
             /// 10 с
             /// </summary>
-            [StringValue("10")] Scal_10,
+            [StringValue("10")] Scal_10Sec,
 
             /// <summary>
             /// 25 с
             /// </summary>
-            [StringValue("25")] Scal_25,
+            [StringValue("25")] Scal_25Sec,
 
             /// <summary>
             /// 50 с
             /// </summary>
-            [StringValue("50")] Scal_50
+            [StringValue("50")] Scal_50Sec
         }
 
         /// <summary>
@@ -581,13 +581,14 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             #region Methods
 
             /// <summary>
-            /// Установка развертки
+            /// Установка временной развертки.
             /// </summary>
-            /// <param name = "horisontalSc">The sc.</param>
-            /// <returns></returns>
-            public static string SetScale(HorisontalSCAle horisontalSc)
+            /// <param name = "horisontalSc">Допустимое значение временной развертки.</param>
+            /// <returns>Объекта осциллографа.</returns>
+            public  TDS_Oscilloscope SetScale(HorisontalSCAle horisontalSc)
             {
-                return "HORi:SCAL " /*+ MyEnum.GetStringValue(sc)*/;
+                _tdsOscilloscope.WriteLine($"HORi:SCAL {horisontalSc.GetStringValue()}"); 
+                return _tdsOscilloscope;
             }
 
             #endregion
@@ -806,13 +807,14 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
         public CChanel(TDS_Oscilloscope inOsciloscope)
         {
             _tdsOscilloscope = inOsciloscope;
+            Vertical = new CVertical(inOsciloscope);
         }
 
        
 
         public CChanel()
         {
-            Vertical = new CVertical();
+            Vertical = new CVertical(_tdsOscilloscope);
         }
 
         /// <summary>
@@ -827,17 +829,25 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             return _tdsOscilloscope;
         }
 
+       
+
         /// <summary>
         /// Коэфициент отклонения
         /// </summary>
         public class CVertical
         {
-
-            
+            private readonly TDS_Oscilloscope _tdsOscilloscope;
+            public CVertical(TDS_Oscilloscope inTdsOscilloscope)
+            {
+                _tdsOscilloscope = inTdsOscilloscope;
+            }
 
             #region Methods
 
-           
+            public string GetVerticalParametr(TDS_Oscilloscope.ChanelSet inChanel)
+            {
+                return _tdsOscilloscope.QueryLine($"{inChanel}?");
+            }
 
             /// <summary>
             /// Настройка канала
