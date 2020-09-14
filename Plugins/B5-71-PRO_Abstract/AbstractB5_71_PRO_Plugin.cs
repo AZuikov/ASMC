@@ -205,7 +205,7 @@ namespace B5_71_PRO_Abstract
                         Mult.StringConnection = GetStringConnect(Mult);
                         Load.StringConnection = GetStringConnect(Load);
                         Bp.StringConnection = GetStringConnect(Bp);
-
+                        Load.WriteLine("*rst");
                         Load.FindThisModule();
 
                         //если модуль нагрузки найти не удалось
@@ -1490,9 +1490,13 @@ namespace B5_71_PRO_Abstract
 
                     ////инициализация блока питания
                     Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax);
+                    Bp.SetStateCurr(Bp.CurrMax*(decimal)0.7);
                     Bp.SetStateVolt(Bp.VoltMax);
                     Bp.OnOutput();
+
+                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8);
+                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9);
+                    Bp.SetStateCurr(Bp.CurrMax );
 
                     var currUnstableList = new List<decimal>();
 
@@ -1500,7 +1504,7 @@ namespace B5_71_PRO_Abstract
                     {
                         var resistance = coef * Bp.VoltMax / Bp.CurrMax;
                         Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance);
-                        Thread.Sleep(1000);
+                        Thread.Sleep(2000);
                         currUnstableList.Add(Load.Current.MeasureCurrent);
                     }
 

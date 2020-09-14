@@ -105,6 +105,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         protected MainN3300()
         {
+            DealySending = 2000;
             Resistance = new Resistance(this);
             UserType = "N3300A";
             Current = new Current(this);
@@ -188,7 +189,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public bool SetCurrLevel(decimal currLevelIn)
         {
             WriteLine("CURR:LEV " + currLevelIn.ToString("G17", new CultureInfo("en-US")));
-            Thread.Sleep(10);
+            
             //!!!!   доделать с прибором   !!!!!
             var currLevAnswer = GetCurrLevel();
 
@@ -240,7 +241,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public MainN3300 SetOutputState(State state)
         {
             WriteLine($"outp {state.GetStringValue()}");
-            Thread.Sleep(10);
+            
             if (StateOutput != state) throw new Exception("Состояние выхода не изменено.");
             return this;
         }
@@ -255,7 +256,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
             //отправляем команду с уставкой по вольтам
             WriteLine("VOLT " + inLevel.ToString("G17", new CultureInfo("en-US")));
-            Thread.Sleep(10);
+           
 
             //удостоверимся, что значение принято
             var answer = QueryLine("VOLT?");
@@ -304,6 +305,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public MainN3300 SetWorkingChanel()
         {
             WriteLine("CHAN:LOAD " + _chanNum);
+           
             if (int.Parse(QueryLine("CHAN:LOAD?")) == ChanelNumber) return this;
             Logger.Error("Канал не устанавлен");
             throw new NullReferenceException("Канал не устанавлен");
