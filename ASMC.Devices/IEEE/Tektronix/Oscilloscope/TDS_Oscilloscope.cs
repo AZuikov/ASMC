@@ -849,6 +849,18 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 return _tdsOscilloscope.QueryLine($"{inChanel}?");
             }
 
+            public TDS_Oscilloscope SetBandwith(TDS_Oscilloscope.ChanelSet chanel,TDS_Oscilloscope.State setState)
+            {
+                _tdsOscilloscope.WriteLine($"{chanel}:Bandwith {setState}");
+                return _tdsOscilloscope;
+            }
+
+            public string GetBandwith(TDS_Oscilloscope.ChanelSet chanel, TDS_Oscilloscope.State setState)
+            {
+              return  _tdsOscilloscope.QueryLine($"{chanel}:Bandwith {setState}?");
+               
+            }
+
             /// <summary>
             /// Настройка канала
             /// </summary>

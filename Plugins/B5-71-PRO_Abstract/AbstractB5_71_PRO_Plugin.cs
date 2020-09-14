@@ -407,6 +407,7 @@ namespace B5_71_PRO_Abstract
                         await Task.Run(() =>
                         {
                             Mult.StringConnection = GetStringConnect(Mult);
+                            
                             Load.StringConnection = GetStringConnect(Load);
                             Bp.StringConnection = GetStringConnect(Bp);
 

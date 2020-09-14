@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using AP.Utils.Data;
 using AP.Utils.Helps;
 using MathNet.Numerics.Statistics;
@@ -30,12 +31,10 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <param name="multipliers">Желаемый множитель.</param>
         /// <returns>Возвращает значение с желаемым множителем.</returns>
         public double GetMeasValue(Multipliers multipliers= AP.Utils.Helps.Multipliers.None)
-        {   var sw = new Stopwatch();
-            sw.Start();
-            WriteLine(QueryValue);
+        {  
+           WriteLine(QueryValue);
+           
             var res = DataStrToDoubleMind(ReadString(), multipliers);
-            sw.Stop();
-            TimeLastMeas = sw.Elapsed;
             return res;
         }
 
