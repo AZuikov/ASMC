@@ -54,7 +54,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
             Wrapper = new UsbExpressWrapper();
         }
         /// <summary>
-        /// позволяет получить ключество подключенных устройств
+        /// Позволяет получить количество подключенных устройств
         /// </summary>
         public static int CountDeviceConnect
         {
@@ -63,7 +63,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
         /// <inheritdoc />
         public void Dispose()
         {
-            throw new NotImplementedException();
+           Close();
         }
 
 
