@@ -297,12 +297,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <summary>
             /// Выключить
             /// </summary>
-            OFF,
+            [StringValue("OFF")]OFF,
 
             /// <summary>
             /// Включить
             /// </summary>
-            ON
+            [StringValue("ON")]ON
         }
 
         /// <summary>
@@ -843,46 +843,132 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             }
 
             #region Methods
-
+            /// <summary>
+            /// Возвращает строк с настройками канала.
+            /// </summary>
+            /// <param name="inChanel"></param>
+            /// <returns></returns>
             public string GetVerticalParametr(TDS_Oscilloscope.ChanelSet inChanel)
             {
                 return _tdsOscilloscope.QueryLine($"{inChanel}?");
             }
 
+            /// <summary>
+            /// Устанавливает полосу канала.
+            /// </summary>
+            /// <param name="chanel">Канал осциллографа.</param>
+            /// <param name="setState">Статус опции (вкл/выкл).</param>
+            /// <returns></returns>
             public TDS_Oscilloscope SetBandwith(TDS_Oscilloscope.ChanelSet chanel,TDS_Oscilloscope.State setState)
             {
-                _tdsOscilloscope.WriteLine($"{chanel}:Bandwith {setState}");
+                _tdsOscilloscope.WriteLine($"{chanel}:Band {setState}");
                 return _tdsOscilloscope;
             }
 
-            public string GetBandwith(TDS_Oscilloscope.ChanelSet chanel, TDS_Oscilloscope.State setState)
+            /// <summary>
+            /// Отвечает какой сейчас статус полосы пропускания на канале.
+            /// </summary>
+            /// <param name="chanel">Канал осциллографа.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope.State GetBandwith(TDS_Oscilloscope.ChanelSet chanel)
             {
-              return  _tdsOscilloscope.QueryLine($"{chanel}:Bandwith {setState}?");
+                string answer = _tdsOscilloscope.QueryLine($"{chanel}:Band?");
+                if (answer.Equals(TDS_Oscilloscope.State.ON)) return TDS_Oscilloscope.State.ON;
+                return TDS_Oscilloscope.State.OFF;
+                
                
             }
 
+          
             /// <summary>
-            /// Настройка канала
+            /// Устанавливает связь каналаю
             /// </summary>
-            /// <param name = "ch">Канал<see cref = "TDS_Oscilloscope.ChanelSet" /></param>
-            /// <param name = "coup">Режимы работы канала<see cref = "TDS_Oscilloscope.COUPling" /></param>
-            /// <param name = "BWlim">Ограничение полосы пропускания</param>
-            /// <param name = "Invert">Инвертирование сигнала</param>
+            /// <param name="inChanel">Канал осциллографа.</param>
+            /// <param name="inCouPling">Какой вариант связи установить: AC, DC, GND.</param>
             /// <returns></returns>
-            //public  void SetSetupChanel(TDS_Oscilloscope.ChanelSet ch, TDS_Oscilloscope.COUPling coup, TDS_Oscilloscope.State BWlim = TDS_Oscilloscope.State.OFF,
-            //    TDS_Oscilloscope.State Invert = TDS_Oscilloscope.State.OFF)
-            //{
-            //   // return ch + ":COUP " + coup + "\n" + ch + ":BAN " + BWlim + "\n" + ch + ":INV " + Invert;
-            //}
+            public TDS_Oscilloscope SetCoupl(TDS_Oscilloscope.ChanelSet inChanel, TDS_Oscilloscope.COUPling inCouPling)
+            {
+                _tdsOscilloscope.WriteLine($"{inChanel}:coupl {inCouPling}");
+                return _tdsOscilloscope;
+            }
 
             /// <summary>
-            /// Sets the sc ale.
+            /// Отвечает какой вид связи установлен на канале.
             /// </summary>
-            /// <param name = "ch">The ch.</param>
-            /// <param name = "sc">The sc.</param>
-            /// <param name = "prb">The PRB.</param>
+            /// <param name="inChanel">Канал осциллографа.</param>
             /// <returns></returns>
-            public static string SetSCAle(TDS_Oscilloscope.ChanelSet ch, TDS_Oscilloscope.VerticalScale sc, TDS_Oscilloscope.Probe prb = TDS_Oscilloscope.Probe.Att_1)
+            public TDS_Oscilloscope.COUPling GetCoupling(TDS_Oscilloscope.ChanelSet inChanel)
+            {
+                string answer= _tdsOscilloscope.QueryLine($"{inChanel}:coupl?");
+                if (answer.Equals(TDS_Oscilloscope.COUPling.DC)) return TDS_Oscilloscope.COUPling.DC;
+                else if (answer.Equals(TDS_Oscilloscope.COUPling.AC)) return TDS_Oscilloscope.COUPling.AC;
+                return TDS_Oscilloscope.COUPling.GND;
+            }
+
+            /// <summary>
+            /// Инвертирует канал осциллографа.
+            /// </summary>
+            /// <param name="chanel">Канал осциллографа.</param>
+            /// <param name="setState">Инверсия вкл/выкл.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetInvert(TDS_Oscilloscope.ChanelSet chanel, TDS_Oscilloscope.State setState)
+            {
+                _tdsOscilloscope.WriteLine($"{chanel}:inv {setState}");
+                return _tdsOscilloscope;
+            }
+
+            /// <summary>
+            /// Отвечает о статусе инверсии канала.
+            /// </summary>
+            /// <param name="chanel">Канал осциллографа.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope.State GetInvert(TDS_Oscilloscope.ChanelSet chanel)
+            {
+                string answer = _tdsOscilloscope.QueryLine($"{chanel}:inv?");
+                if (answer.Equals(TDS_Oscilloscope.State.ON)) return TDS_Oscilloscope.State.ON;
+                return TDS_Oscilloscope.State.OFF;
+            }
+
+            /// <summary>
+            /// Устанавливает смещение канала по вертикали.
+            /// </summary>
+            /// <param name="chanel">Канал осциллографа.</param>
+            /// <param name="verticalOffset">Величина смещения в делениях. Может быть дробным числом.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetPosition(TDS_Oscilloscope.ChanelSet chanel, decimal verticalOffset)
+            {
+                _tdsOscilloscope.WriteLine($"{chanel}:pos {(double)verticalOffset}");
+                return _tdsOscilloscope;
+            }
+
+            public decimal GetPosition(TDS_Oscilloscope.ChanelSet chanel)
+            {
+                string answer = _tdsOscilloscope.QueryLine($"{chanel}:pos?");
+                return decimal.Parse(answer);
+            }
+
+            /// <summary>
+        /// Настройка канала
+        /// </summary>
+        /// <param name = "ch">Канал<see cref = "TDS_Oscilloscope.ChanelSet" /></param>
+        /// <param name = "coup">Режимы работы канала<see cref = "TDS_Oscilloscope.COUPling" /></param>
+        /// <param name = "BWlim">Ограничение полосы пропускания</param>
+        /// <param name = "Invert">Инвертирование сигнала</param>
+        /// <returns></returns>
+        //public  void SetSetupChanel(TDS_Oscilloscope.ChanelSet ch, TDS_Oscilloscope.COUPling coup, TDS_Oscilloscope.State BWlim = TDS_Oscilloscope.State.OFF,
+        //    TDS_Oscilloscope.State Invert = TDS_Oscilloscope.State.OFF)
+        //{
+        //   // return ch + ":COUP " + coup + "\n" + ch + ":BAN " + BWlim + "\n" + ch + ":INV " + Invert;
+        //}
+
+        /// <summary>
+        /// Sets the sc ale.
+        /// </summary>
+        /// <param name = "ch">The ch.</param>
+        /// <param name = "sc">The sc.</param>
+        /// <param name = "prb">The PRB.</param>
+        /// <returns></returns>
+        public static string SetSCAle(TDS_Oscilloscope.ChanelSet ch, TDS_Oscilloscope.VerticalScale sc, TDS_Oscilloscope.Probe prb = TDS_Oscilloscope.Probe.Att_1)
             {
                 return ch + ":PRO " + (int)prb + "\n" + ch + ":SCAle " + (int)sc / 1000.0 * (int)prb;
             }
