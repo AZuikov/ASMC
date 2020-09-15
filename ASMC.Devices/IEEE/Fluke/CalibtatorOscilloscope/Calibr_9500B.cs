@@ -218,7 +218,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             {
                 _calibrMain = calibrMain;
                 Parametr = new CParametr(calibrMain);
-                Multipliers = Multipliers = new ICommand[]
+                Multipliers =  new ICommand[]
                 {
                     new Command("N", "н", 1E-9),
                     new Command("U", "мк", 1E-6),

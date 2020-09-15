@@ -407,6 +407,7 @@ namespace B5_71_PRO_Abstract
                         await Task.Run(() =>
                         {
                             Mult.StringConnection = GetStringConnect(Mult);
+                            
                             Load.StringConnection = GetStringConnect(Load);
                             Bp.StringConnection = GetStringConnect(Bp);
 
@@ -1177,10 +1178,14 @@ namespace B5_71_PRO_Abstract
                         Bp.InitDevice();
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.OnOutput();
-
+                        
                         var setPoint = coef * Bp.CurrMax;
                         //ставим значение тока
+                        //плавно подходим, что бы не было перегрузки.
+                        Bp.SetStateCurr(setPoint * (decimal)0.9);
                         Bp.SetStateCurr(setPoint);
+                        Bp.OffOutput();
+                        Bp.OnOutput();
                         Thread.Sleep(1000);
                         //измеряем ток
 
@@ -1346,8 +1351,9 @@ namespace B5_71_PRO_Abstract
                         Load.SetOutputState(MainN3300.State.On);
 
                         Bp.InitDevice();
-                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax);
+                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax*(decimal)0.7);
                         Bp.OnOutput();
+                       
 
                         var setPoint = coef * Bp.CurrMax;
                         //ставим точку напряжения
@@ -1528,11 +1534,10 @@ namespace B5_71_PRO_Abstract
                     Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9);
                     Bp.SetStateCurr(Bp.CurrMax );
 
-                    if (Bp.UserType.Equals("Б5-71/2-ПРО"))
-                    {
-                        Bp.OffOutput();
-                        Bp.OnOutput();
-                    }
+                    //это нужно для нормальной работы источника
+                    Bp.OffOutput();
+                    Bp.OnOutput();
+                    
 
                     var currUnstableList = new List<decimal>();
 

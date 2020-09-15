@@ -12,6 +12,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             UserType = "34401A";
             SecuredCodeCalibr = "HP034401";
             this.Ac.Voltage.Filtr = new MFiltr01(this);
+            DealySending = 1000;
+
         }
      
     }

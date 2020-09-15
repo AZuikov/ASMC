@@ -387,7 +387,8 @@ namespace ASMC.Devices.IEEE
             {
                 Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 100;
-                Session.Clear();
+                // !!! очистка сессии здесь не нужна. на некоторых машинах она вызывает наслоение команд. В результате часть отправленых команд не выпонятся.
+                // !!! Очистка сессии может отменять ранее запущенные операции на устройстве.
             }
             catch (Exception e)
             {
@@ -510,6 +511,14 @@ namespace ASMC.Devices.IEEE
             }
 
             return date;
+        }
+
+        /// <summary>
+        /// Отправдяет на прибор стандартную команду сброса *rst.
+        /// </summary>
+        public void ResetDevice()
+        {
+            WriteLine(Reset);
         }
 
         /// <summary>
