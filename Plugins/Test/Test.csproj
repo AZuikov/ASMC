@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accord.Video.DirectShow, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7" />
     <Reference Include="DevExpress.Data.v17.2">
       <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Data.v17.2.dll</HintPath>
     </Reference>
@@ -81,6 +82,10 @@
     <ProjectReference Include="..\..\ASMC.Devices\ASMC.Devices.csproj">
       <Project>{C606FA94-0B7E-4698-801F-206CA9DA0CEF}</Project>
       <Name>ASMC.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ASMC.MVision\ASMC.MVision.csproj">
+      <Project>{A25F06CB-6E50-4A6B-AB3D-C78DC06E0327}</Project>
+      <Name>ASMC.MVision</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

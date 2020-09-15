@@ -40,6 +40,7 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
 
         public Efm32USBEpressException()
         {
+
         }
 
         public Efm32USBEpressException(string message):base(message)
@@ -52,7 +53,15 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         {
                 this.Code = (UsbExpressWrapper.StatusCode) inf.GetInt32(nameof(Code));
         }
+
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $@"Вызвано исключение: с кодом {(int)Code} {CodeMessage} "+ base.ToString();
+        }
     }
+
 
     [Serializable]
     public class DeviceIoFailedException : Efm32USBEpressException

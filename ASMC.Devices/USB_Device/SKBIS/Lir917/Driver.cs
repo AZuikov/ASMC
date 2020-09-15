@@ -6,135 +6,112 @@ using NLog;
 
 namespace ASMC.Devices.USB_Device.SKBIS.Lir917
 {
-    public class Driver: IDeviceBase
+    public class Driver : IDeviceBase
     {
+       
         public delegate void AnchorRefereceFlag(int anchorRefereceValue);
 
-        protected enum CommandQuery:byte
-        {
-            /// <summary>
-            /// команда сброса относительной координаты
-            /// </summary>
-            DropRelCoordinate = 0x30,
-            /// <summary>
-            /// команда сброса абсолютной координаты
-            /// </summary>
-            DropAbsCoordinate = 0x31,
-            /// <summary>
-            /// команда запроса пакета
-            /// </summary>
-            PackageRequest = 0x33
-        }
-        protected enum Address 
-        {
-        /// <summary>
-        /// номер абсолютной координаты в пакете
-        /// </summary>
-        AbsCoordNum = 1,
-        /// <summary>       
-        /// номер относительной координаты в пакете
-        /// </summary>      
-        RelCoordNum = 5,
-        /// <summary>       
-        /// Yомер координаты референтой метки в пакете
-        /// </summary>      
-        RefCoordNum = 9
-    }
         /// <summary>
         /// размер считываемого пакета
         /// </summary>
         protected const uint InPackageSize = 13;
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private UsbExpressWrapper Wrapper;
-        public int? NubmerDevice { get; set; }
-        public Driver()
-        {
-            UserType = "Lir917";
-            Wrapper = new UsbExpressWrapper();
-        }
         /// <summary>
-        /// Позволяет получить количество подключенных устройств
+        /// флаг захвата референтной метки
         /// </summary>
-        public static int CountDeviceConnect
-        {
-            get => UsbExpressWrapper.GetCountDevices();
-        }
-        /// <inheritdoc />
-        public void Dispose()
-        {
-           Close();
-        }
-
-
-        /// <inheritdoc />
-        public string UserType { get; protected set; }
+        public const byte RefMarkFlag = 0x80;
 
         /// <summary>
         /// флаг питания датчика
         /// </summary>
         public const byte VccFlag = 0x40;
 
-        /// <summary>
-        /// флаг захвата референтной метки
-        /// </summary>
-        public const byte RefMarkFlag = 0x80;
-        public void Query()
-        {
-            if (!IsOpen) throw new Efm32USBEpressException($"порт закрыт для устройства {UserType}");
-        Wrapper.Write((byte)CommandQuery.PackageRequest , ref _byteCount, IntPtr.Zero);
-        Byffer = Wrapper.Read(InPackageSize, ref _byteCount, IntPtr.Zero);
-       if ((Byffer[0] & VccFlag) != 0) throw new Efm32USBEpressException($"Отсутствиет питиание на разъме датчика {UserType}.");
-        }
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
         private uint _byteCount;
-        public void ResetRelative()
-        {
-            if (!IsOpen) throw new Efm32USBEpressException($"Порт закрыт для устройства {UserType}");
-            Wrapper.Write((byte)CommandQuery.DropRelCoordinate, ref _byteCount, IntPtr.Zero);
-        }
-        public void ResetAbsolute()
-        {
-            if (!IsOpen) throw new Efm32USBEpressException($"Порт закрыт для устройства {UserType}");
-            Wrapper.Write((byte)CommandQuery.DropAbsCoordinate, ref _byteCount, IntPtr.Zero);
-        }
-        public void ResetAll()
-        {
-            ResetAbsolute();
-            ResetRelative();
-        }
-        public int Relative
-        {
-            get
-            {
-                return BitConverter.ToInt32(Byffer, (int) Address.RelCoordNum);
-            }
-        }
-        public int Absolute
-        {
-            get
-            {
-                return BitConverter.ToInt32(Byffer, (int)Address.AbsCoordNum);
-            }
-        }
-        public int LastReferenceValue
-        {
-            get
-            {
-                return BitConverter.ToInt32(Byffer, (int)Address.RefCoordNum);
-            }
-        }
+        private readonly UsbExpressWrapper Wrapper;
+
+        #endregion
+
         public event AnchorRefereceFlag AnchorRefereceFlagEvent;
 
-        protected byte[] Byffer { get; set; }
+        #region Property
+
+        public int Absolute => BitConverter.ToInt32(Byffer, (int) Address.AbsCoordNum);
+
+        /// <summary>
+        /// Позволяет получить количество подключенных устройств
+        /// </summary>
+        public static int CountDeviceConnect => UsbExpressWrapper.GetCountDevices();
+
         public bool IsRefereceFlag
         {
             get
             {
                 var flag = (Byffer.FirstOrDefault() & RefMarkFlag) != 0;
-                if(flag) AnchorRefereceFlagEvent?.Invoke(LastReferenceValue);
+                if (flag) AnchorRefereceFlagEvent?.Invoke(LastReferenceValue);
                 return flag;
             }
         }
+
+        public int LastReferenceValue => BitConverter.ToInt32(Byffer, (int) Address.RefCoordNum);
+
+        public int? NubmerDevice { get; set; }
+
+        public int Relative => BitConverter.ToInt32(Byffer, (int) Address.RelCoordNum);
+
+        protected byte[] Byffer { get; set; }
+
+        #endregion
+
+        public Driver()
+        {
+            UserType = "Lir917";
+            Wrapper = new UsbExpressWrapper();
+        }
+
+        #region Methods
+
+        public void Query()
+        {
+            if (!IsOpen) throw new Efm32USBEpressException($"порт закрыт для устройства {UserType}");
+            Wrapper.Write((byte) CommandQuery.PackageRequest, ref _byteCount, IntPtr.Zero);
+            Byffer = Wrapper.Read(InPackageSize, ref _byteCount, IntPtr.Zero);
+            if ((Byffer[0] & VccFlag) != 0)
+                throw new Efm32USBEpressException($"Отсутствиет питиание на разъме датчика {UserType}.");
+        }
+
+        public void ResetAbsolute()
+        {
+            if (!IsOpen) throw new Efm32USBEpressException($"Порт закрыт для устройства {UserType}");
+            Wrapper.Write((byte) CommandQuery.DropAbsCoordinate, ref _byteCount, IntPtr.Zero);
+        }
+
+        public void ResetAll()
+        {
+            ResetAbsolute();
+            ResetRelative();
+        }
+
+        public void ResetRelative()
+        {
+            if (!IsOpen) throw new Efm32USBEpressException($"Порт закрыт для устройства {UserType}");
+            Wrapper.Write((byte) CommandQuery.DropRelCoordinate, ref _byteCount, IntPtr.Zero);
+        }
+
+        #endregion
+
+        /// <inheritdoc />
+        public virtual void Dispose()
+        {
+            Close();
+        }
+
+
+        /// <inheritdoc />
+        public string UserType { get; protected set; }
 
         /// <inheritdoc />
         public void Close()
@@ -158,15 +135,16 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
         /// <inheritdoc />
         public void Open()
         {
-            if(IsOpen) return;
+            if (IsOpen) return;
             if (NubmerDevice == null)
             {
                 IsOpen = false;
                 return;
             }
+
             try
             {
-                Wrapper.Open((int)NubmerDevice);
+                Wrapper.Open((int) NubmerDevice);
                 IsOpen = true;
                 Wrapper.FlushBuffers(true, true);
             }
@@ -180,6 +158,41 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
 
         /// <inheritdoc />
         public bool IsOpen { get; protected set; }
-    }
 
+        protected enum CommandQuery : byte
+        {
+            /// <summary>
+            /// команда сброса относительной координаты
+            /// </summary>
+            DropRelCoordinate = 0x30,
+
+            /// <summary>
+            /// команда сброса абсолютной координаты
+            /// </summary>
+            DropAbsCoordinate = 0x31,
+
+            /// <summary>
+            /// команда запроса пакета
+            /// </summary>
+            PackageRequest = 0x33
+        }
+
+        protected enum Address
+        {
+            /// <summary>
+            /// номер абсолютной координаты в пакете
+            /// </summary>
+            AbsCoordNum = 1,
+
+            /// <summary>
+            /// номер относительной координаты в пакете
+            /// </summary>
+            RelCoordNum = 5,
+
+            /// <summary>
+            /// Yомер координаты референтой метки в пакете
+            /// </summary>
+            RefCoordNum = 9
+        }
+    }
 }
