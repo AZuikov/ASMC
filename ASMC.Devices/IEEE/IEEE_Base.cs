@@ -514,6 +514,14 @@ namespace ASMC.Devices.IEEE
         }
 
         /// <summary>
+        /// Отправдяет на прибор стандартную команду сброса *rst.
+        /// </summary>
+        public void ResetDevice()
+        {
+            WriteLine(Reset);
+        }
+
+        /// <summary>
         /// Отправляет полученную команду как строку
         /// </summary>
         /// <param name = "data">Текст комманды.</param>

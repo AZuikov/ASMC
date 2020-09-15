@@ -1529,11 +1529,10 @@ namespace B5_71_PRO_Abstract
                     Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9);
                     Bp.SetStateCurr(Bp.CurrMax );
 
-                    if (Bp.UserType.Equals("Б5-71/2-ПРО"))
-                    {
-                        Bp.OffOutput();
-                        Bp.OnOutput();
-                    }
+                    //это нужно для нормальной работы источника
+                    Bp.OffOutput();
+                    Bp.OnOutput();
+                    
 
                     var currUnstableList = new List<decimal>();
 
