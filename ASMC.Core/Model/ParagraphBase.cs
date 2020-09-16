@@ -65,12 +65,12 @@ namespace ASMC.Core.Model
         protected string GetStringConnect(IProtocolStringLine currentDevice)
         {
             var connect = UserItemOperation.ControlDevices
-                                           .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType,
+                                           .FirstOrDefault(q => string.Equals(q.SelectedDevice.UserType, currentDevice.UserType,
                                                                               StringComparison
                                                                                  .InvariantCultureIgnoreCase))
                                           ?.StringConnect ??
                           UserItemOperation.TestDevices
-                                           .FirstOrDefault(q => string.Equals(q.SelectedName, currentDevice.UserType,
+                                           .FirstOrDefault(q => string.Equals(q.SelectedDevice.UserType, currentDevice.UserType,
                                                                               StringComparison
                                                                                  .InvariantCultureIgnoreCase))
                                           ?.StringConnect;

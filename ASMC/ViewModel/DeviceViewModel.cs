@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using ASMC.Common.ViewModel;
+using ASMC.Data.Model;
 using NLog;
 
 namespace ASMC.ViewModel
@@ -14,8 +15,8 @@ namespace ASMC.ViewModel
         private string[] _addresDivece;
         private string _description;
         private bool? _isConnect;
-        private string[] _name;
-        private string _selectedName;
+        private UserType[] _devices;
+        private UserType _selectedDevice;
         private string _stringConnect;
 
         #endregion
@@ -45,19 +46,19 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _isConnect, value, nameof(IsConnect));
         }
 
-        public string[] Name
+        public UserType[] Devices
         {
-            get => _name;
-            set => SetProperty(ref _name, value, nameof(Name), () =>
+            get => _devices;
+            set => SetProperty(ref _devices, value, nameof(Devices), () =>
             {
-                if (string.IsNullOrWhiteSpace(SelectedName)) SelectedName = Name.FirstOrDefault();
+                if (SelectedDevice==null) SelectedDevice = Devices.FirstOrDefault();
             });
         }
 
-        public string SelectedName
+        public UserType SelectedDevice
         {
-            get => _selectedName;
-            set => SetProperty(ref _selectedName, value, nameof(SelectedName));
+            get => _selectedDevice;
+            set => SetProperty(ref _selectedDevice, value, nameof(SelectedDevice));
         }
 
         public string StringConnect
@@ -78,8 +79,8 @@ namespace ASMC.ViewModel
         private void DeviceViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals(nameof(StringConnect)))
-                Logger.Info($@"Для устройства {SelectedName} указано подключение: {StringConnect}");
-            else if (e.PropertyName.Equals(nameof(SelectedName))) Logger.Info($@"Выбранно устройство: {SelectedName}");
+                Logger.Info($@"Для устройства {SelectedDevice} указано подключение: {StringConnect}");
+            else if (e.PropertyName.Equals(nameof(SelectedDevice))) Logger.Info($@"Выбранно устройство: {SelectedDevice}");
         }
 
         #endregion

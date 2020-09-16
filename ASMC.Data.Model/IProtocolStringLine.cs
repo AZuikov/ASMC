@@ -39,12 +39,9 @@ namespace ASMC.Data.Model
         #endregion
     }
 
-    public interface IDeviceBase : IDisposable
+    public interface IDeviceBase :UserType, IDisposable
     {
-        /// <summary>
-        /// Вернет тип устройства заданный в библиотеке.
-        /// </summary>
-        string UserType { get; }
+      
         /// <summary>
         /// Позволяет закрыть соединение с устройством.
         /// </summary>
@@ -55,8 +52,20 @@ namespace ASMC.Data.Model
         /// </summary>
         void Open();
         /// <summary>
-        /// 
+        /// Предоставлячет возможность проверки состояния соединения
         /// </summary>
         bool IsOpen { get; }
+        /// <summary>
+        /// Предоставляет сведенье об успешности подключения
+        /// </summary>
+        bool IsTestConnect { get; }
+    }
+
+    public interface UserType
+    {
+        /// <summary>
+        /// Вернет тип устройства заданный в библиотеке.
+        /// </summary>
+        string UserType { get; }
     }
 }

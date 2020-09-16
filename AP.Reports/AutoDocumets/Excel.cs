@@ -13,7 +13,7 @@ using ClosedXML.Excel;
 
 namespace AP.Reports.AutoDocumets
 {
-    public class Excel : Document, IMsOfficeReport, IDisposable
+    public class Excel : Document, IMsOfficeReport, IExcel, IDisposable
     {
         public enum FileFormat
         {
@@ -184,6 +184,14 @@ namespace AP.Reports.AutoDocumets
         {
             var currentWorkSheet = _workbook.Worksheet(workSheet);
             if (currentWorkSheet != null) _currentCell = currentWorkSheet.Cell(cell);
+        }
+        /// <summary>
+        ///     Устанавливает курсор на ячейку
+        /// </summary>
+        /// <param name="cell"></param>
+        public void MoveToCell(string cell)
+        {
+            if (_currentCell.Worksheet != null) _currentCell = _currentCell.Worksheet.Cell(cell);
         }
 
         /// <summary>
@@ -938,5 +946,23 @@ namespace AP.Reports.AutoDocumets
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public void MoveColumnEnd()
+        {
+            if (_workbook != null) _currentCell = _currentCell?.Worksheet.LastColumnUsed().FirstCell();
+        }
+
+        /// <inheritdoc />
+        public void SelectRange(string leftTopCorner, string BottomRightCorner)
+        {
+            _currentCell.Worksheet.Range(leftTopCorner, BottomRightCorner);
+        }
+
+        /// <inheritdoc />
+        public IXLCell Cell
+        {
+            get => _currentCell;
+        }
     }
 }

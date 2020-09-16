@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -268,10 +269,6 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
             [Description("Устройство не найдено")] DeviceNotFound = 0xFF
         }
 
-        /// <summary>
-        /// номер абсолютной координаты в пакете
-        /// </summary>
-        public const int AbsCoordNum = 1;
 
         // GetDeviceVersion() return codes
         public const byte Cp2101Version = 0x01;
@@ -280,15 +277,6 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         public const byte Cp2103Version = 0x03;
         public const byte Cp2104Version = 0x04;
 
-        /// <summary>
-        /// команда сброса абсолютной координаты
-        /// </summary>
-        public const byte DropAbsCoordinate = 0x31;
-
-        /// <summary>
-        /// команда сброса относительной координаты
-        /// </summary>
-        public const byte DropRelCoordinate = 0x30;
 
         public const byte FirmwareControlled = 0x02;
 
@@ -315,34 +303,6 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         private const int MaxReadSize = 4096 * 16;
         private const int MaxWriteSize = 4096;
 
-        /// <summary>
-        /// размер передаваемого пакета
-        /// </summary>
-        public const uint OutPackageSize = 1;
-
-        /// <summary>
-        /// команда запроса пакета
-        /// </summary>
-        public const byte PackageRequest = 0x33;
-
-        public const byte ReceiveFlowControl = 0x02;
-
-        /// <summary>
-        /// номер координаты референтой метки в пакете
-        /// </summary>
-        public const int RefCoordNum = 9;
-
-        /// <summary>
-        /// флаг захвата референтной метки
-        /// </summary>
-        public const byte RefMarkFlag = 0x80;
-
-        /// <summary>
-        /// номер относительной координаты в пакете
-        /// </summary>
-        public const int RelCoordNum = 5;
-
-        public const byte RxEmpty = 0x00;
 
         // RX Queue status flags
         public const byte RxNoOverrun = 0x00;
@@ -371,6 +331,24 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         #endregion
 
         #region Property
+
+        /// <summary>
+        /// Предоставляет описание всех подключенных устройств
+        /// </summary>
+        public static Product[] FindAllDevice
+        {
+            get
+            {
+                var poduct = new List<Product>();
+                for (var i = 0; i < GetCountDevices(); i++)
+                {
+                    poduct.Add(GetProduct(i));
+                    poduct[i].Number = i;
+                }
+
+                return poduct.ToArray();
+            }
+        }
 
         public IntPtr Handle
         {
@@ -698,7 +676,7 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         {
             if (dwBytesToRead > MaxReadSize)
                 throw new ArgumentOutOfRangeException($"Считывание возможно не более {MaxReadSize} байт.");
-            byte[] lpBuffer = new byte[dwBytesToRead];
+            var lpBuffer = new byte[dwBytesToRead];
             var code = NativeMethods.SI_Read(Handle, lpBuffer, dwBytesToRead, ref lpdwBytesReturned, o);
             GenericException(nameof(GetProductString), (StatusCode) code);
             return lpBuffer;
@@ -715,8 +693,8 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
             if (lpBuffer.Length > MaxWriteSize)
                 throw new ArgumentOutOfRangeException($"Запись возможна не более {MaxWriteSize} байт.");
             foreach (var buff in lpBuffer) Write(buff, ref lpdwBytesWritten, o);
-
         }
+
         /// <summary>
         /// Записывает данные из буфера  в устройство.
         /// </summary>
@@ -725,12 +703,12 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         /// <param name = "o">структура Win32 API для асинхронного считывания/записи данных (см. документацию Win32 API)</param>
         public void Write(byte lpBuffer, ref uint lpdwBytesWritten, IntPtr o)
         {
-            
-            var code = NativeMethods.SI_Write(Handle,new []{ lpBuffer } , (uint)1, ref lpdwBytesWritten, o);
-            GenericException(nameof(GetProductString), (StatusCode)code);
+            var code = NativeMethods.SI_Write(Handle, new[] {lpBuffer}, 1, ref lpdwBytesWritten, o);
+            GenericException(nameof(GetProductString), (StatusCode) code);
         }
 
         #endregion
+
 
         /// <summary>
         /// Параметры USB Устройства.
@@ -769,6 +747,7 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
 
             public string Description { get; set; }
             public string LinkName { get; set; }
+            public int Number { get; set; }
             public string Pid { get; set; }
             public string SerialNumber { get; set; }
             public string Vid { get; set; }

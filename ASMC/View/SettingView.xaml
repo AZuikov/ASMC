@@ -10,23 +10,27 @@
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
   </UserControl.Resources>
     <StackPanel>
-   
-      
-    <GroupBox Header="Обслуживаемое средство">
+
+
+        <GroupBox Header="Обслуживаемое средство" Visibility="{DXBinding 'TestDevice.Count != 0', Converter={StaticResource BooleanToVisibilityConverter}}">
       <ListView ItemsSource="{Binding TestDevice}" >
         <ListView.View>
           <GridView  AllowsColumnReorder="False">
             <GridViewColumn Header="Имя устройства" Width="150"  >
               <GridViewColumn.CellTemplate >
                 <DataTemplate>
-                  <ComboBox Margin="5,10,5,10" MinWidth="100" ItemsSource="{Binding Path=Name}" SelectedItem="{Binding SelectedName}"/>
+                    <StackPanel>
+                    <ComboBox Margin="5,10,5,10" MinWidth="100" ItemsSource="{Binding Path=Devices}" DisplayMemberPath="UserType" SelectedItem="{Binding SelectedDevice}" Visibility="{DXBinding 'Devices.Count gt 1', Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <TextBlock Text="{Binding SelectedDevice.UserType}" Visibility="{DXBinding 'Devices.Count==1', Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </StackPanel>
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn Header="Строка подключения" Width="150" >
               <GridViewColumn.CellTemplate >
                 <DataTemplate>
-                  <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=AddresDivece}" SelectedItem="{Binding StringConnect}"/>
+                                    <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=AddresDivece}" SelectedItem="{Binding StringConnect}" />
+
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
@@ -48,14 +52,17 @@
         </ListView.View>
       </ListView>
     </GroupBox>
-    <GroupBox Header="Средства используемые для метрологического контроля">
+        <GroupBox Header="Средства используемые для метрологического контроля" Visibility="{DXBinding 'ControlDevice.Count !=0', Converter={StaticResource BooleanToVisibilityConverter}}">
       <ListView ItemsSource="{Binding ControlDevice}" >
         <ListView.View>
           <GridView  AllowsColumnReorder="False">
             <GridViewColumn Header="Имя устройства" Width="150"  >
               <GridViewColumn.CellTemplate >
                 <DataTemplate>
-                  <ComboBox Margin="5,10,5,10" MinWidth="100" ItemsSource="{Binding Path=Name}" SelectedItem="{Binding SelectedName}"/>
+                    <StackPanel>
+                                        <ComboBox Margin="5,10,5,10" MinWidth="100" ItemsSource="{Binding Path=Devices}" DisplayMemberPath="UserType" SelectedItem="{Binding SelectedDevice}" Visibility="{DXBinding 'Devices.Count gt 1', Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <TextBlock Text="{Binding SelectedDevice.UserType}" Visibility="{DXBinding 'Devices.Count==1', Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        </StackPanel>
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>

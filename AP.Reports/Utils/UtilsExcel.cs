@@ -3,14 +3,14 @@ using System.Linq;
 
 namespace AP.Reports.Utils
 {
-    public abstract class UtilsExcel
+    public static class UtilsExcel
     {
         /// <summary>
         /// Возвращает буквенный символ столбца Microsoft Excel, соответствующий заданному порядковому номеру.
         /// </summary>
         /// <param name="number">Порядковый номер столбца.</param>
         /// <returns></returns>
-        protected static string NumberToLetters(int number)
+        public static string NumberToLetters(int number)
         {
             string result;
             if (number > 0)
@@ -30,7 +30,7 @@ namespace AP.Reports.Utils
         /// </summary>
         /// <param name="letters">Буквенный символ столбца.</param>
         /// <returns></returns>
-        protected static int LettersToNumber(string letters)
+        public static int LettersToNumber(string letters)
         {
             var result = 0;
             if (letters.Length > 0 && letters.All(a => (a >= 'A' && a <= 'Z')))

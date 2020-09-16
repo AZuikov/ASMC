@@ -12,6 +12,7 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
+using ASMC.MVision;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 using MessageButton = DevExpress.Mvvm.MessageButton;
@@ -48,8 +49,8 @@ namespace Plugins.Test
         {
             ControlDevices = new IDeviceUi[]
             {
-                new DeviceInterface {Name = new[] {"34401A"}, Description = "Мультиметр"},
-                new DeviceInterface {Name = new[] {"В3"}, Description = "Микровольтметр", IsCanStringConnect = false}
+                new DeviceInterface {Devices = new[] {"ППИ-50"}, Description = "Прибор ППИ"},
+                new DeviceInterface{Description = "Веб камера", Devices = new []{"Веб камера"}} 
             };
             var a = new Operation1(this);
             a.Nodes.Add(new Operation2(this));
@@ -66,7 +67,7 @@ namespace Plugins.Test
         /// <inheritdoc />
         public override void RefreshDevice()
         {
-            AddresDevice = IeeeBase.AllStringConnect;
+            AddresDevice= ASMC.Devices.USB_Device.SiliconLabs.UsbExpressWrapper.FindAllDevice.Select(q => q.Number.ToString()).Concat(WebCam.GetVideoInputDevice.Select(q=>q.MonikerString)).ToArray();
         }
 
         /// <inheritdoc />
@@ -83,16 +84,16 @@ namespace Plugins.Test
         public string Description { get; set; }
 
         /// <inheritdoc />
-        public bool IsCanStringConnect { get; set; }
+        public bool IsCanStringConnect { get; set; } = true;
 
         /// <inheritdoc />
         public bool? IsConnect { get; }
 
         /// <inheritdoc />
-        public string[] Name { get; set; }
+        public IDeviceBase[] Devices { get; set; }
 
         /// <inheritdoc />
-        public string SelectedName { get; set; }
+        public UserType SelectedDevice { get; set; }
 
         /// <inheritdoc />
         public string StringConnect { get; set; }

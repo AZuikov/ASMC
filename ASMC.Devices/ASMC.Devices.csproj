@@ -105,6 +105,7 @@
     <Compile Include="USB_Device\SKBIS\Lir917\Driver.cs" />
     <Compile Include="USB_Device\SiliconLabs\UsbExpressWrapper.cs" />
     <Compile Include="USB_Device\SiliconLabs\Exception.cs" />
+    <Compile Include="USB_Device\SKBIS\Lir917\Ppi.cs" />
     <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
     <Compile Include="VirtMeasInst\VirtualSensor.cs" />
     <Compile Include="WithoutInterface\Voltmetr\B3_57.cs" />
@@ -137,6 +138,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\SiUSBXp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SiUSBXp.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

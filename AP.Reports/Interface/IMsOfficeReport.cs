@@ -1,4 +1,7 @@
-﻿namespace AP.Reports.Interface
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming;
+
+namespace AP.Reports.Interface
 {
     /// <summary>
     /// Интерфейс обеспечивающий основыные функции для создания отчетов Word, Excel
@@ -27,5 +30,22 @@
         /// <param name="sFind">Найти</param>
         /// <param name="sReplace">Заменить</param>
         void FindStringInHeaderAndAllReplace(string sFind, string sReplace);
+    }
+
+
+    public interface IExcel
+    {
+        /// <summary>
+        /// Позволяет перейти к последнее используемой ячеке в столбце
+        /// </summary>
+        void MoveColumnEnd();
+        /// <summary>
+        /// Позваляет выделить область
+        /// </summary>
+        /// <param name="leftTopCorner"></param>
+        /// <param name="BottomRightCorner"></param>
+        void SelectRange(string leftTopCorner, string BottomRightCorner);
+
+        IXLCell Cell { get; }
     }
 }
