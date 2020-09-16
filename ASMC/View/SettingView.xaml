@@ -21,7 +21,7 @@
                 <DataTemplate>
                     <StackPanel>
                     <ComboBox Margin="5,10,5,10" MinWidth="100" ItemsSource="{Binding Path=Devices}" DisplayMemberPath="UserType" SelectedItem="{Binding SelectedDevice}" Visibility="{DXBinding 'Devices.Count gt 1', Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <TextBlock Text="{Binding SelectedDevice.UserType}" Visibility="{DXBinding 'Devices.Count==1', Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Text="{Binding SelectedDevice.UserType}" Visibility="{DXBinding 'Devices.Count==1', Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
@@ -29,15 +29,14 @@
             <GridViewColumn Header="Строка подключения" Width="150" >
               <GridViewColumn.CellTemplate >
                 <DataTemplate>
-                                    <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=AddresDivece}" SelectedItem="{Binding StringConnect}" />
-
+                    <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=AddresDivece}" SelectedItem="{Binding StringConnect}" />
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn Header="Статус" Width="50" >
               <GridViewColumn.CellTemplate >
                 <DataTemplate>
-                  <TextBlock  Margin="5,10,5,10" Text="Подключен" />
+                                    <TextBlock  Margin="5,10,5,10" Text="{Binding IsConnect}" Visibility="{Binding IsCanStringConnect, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
@@ -76,7 +75,7 @@
             <GridViewColumn Header="Статус" Width="50" >
               <GridViewColumn.CellTemplate >
                 <DataTemplate>
-                                    <TextBlock  Margin="5,10,5,10" Text="{Binding IsConnect}" />
+                                    <TextBlock  Margin="5,10,5,10" Text="{Binding IsConnect}" Visibility="{Binding IsCanStringConnect, Converter={StaticResource BooleanToVisibilityConverter}}"  />
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>

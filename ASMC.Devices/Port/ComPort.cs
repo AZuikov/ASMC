@@ -122,7 +122,7 @@ namespace ASMC.Devices.Port
         }
 
         /// <inheritdoc />
-        public bool IsTestConnect { get; }
+        public virtual bool IsTestConnect { get=>false; }
 
         /// <summary>
         /// Открывает соединение с Com портом.
