@@ -75,6 +75,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "49310_12", "49310_12", "{8F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Indicator_10", "Plugins\DialIndicator\49310_12\Indicator_10\WpfControlLibrary1\Indicator_10.csproj", "{A591274A-2626-4FA6-8C9C-BBAC6586EF07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDS_BasePlugin", "Plugins\Tektronix\TDS_BasePlugin\TDS_BasePlugin.csproj", "{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -299,6 +301,14 @@ Global
 		{A591274A-2626-4FA6-8C9C-BBAC6586EF07}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A591274A-2626-4FA6-8C9C-BBAC6586EF07}.Release|x86.ActiveCfg = Release|Any CPU
 		{A591274A-2626-4FA6-8C9C-BBAC6586EF07}.Release|x86.Build.0 = Release|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Debug|x86.Build.0 = Debug|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Release|x86.ActiveCfg = Release|Any CPU
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -322,6 +332,7 @@ Global
 		{138B1DBE-B890-44E6-A881-641AE158F54B} = {68AEA7B5-A438-4196-BB56-CD0A1E70478B}
 		{8F36E485-02DA-4915-B635-48BC69099B7C} = {138B1DBE-B890-44E6-A881-641AE158F54B}
 		{A591274A-2626-4FA6-8C9C-BBAC6586EF07} = {8F36E485-02DA-4915-B635-48BC69099B7C}
+		{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E} = {68AEA7B5-A438-4196-BB56-CD0A1E70478B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71D1BAB0-0FB3-4200-A013-A7CEE7708890}
