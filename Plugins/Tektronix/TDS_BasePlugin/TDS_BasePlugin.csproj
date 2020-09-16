@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevExpress.Mvvm.v17.2">
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\Установка метролога для ЗРТО\Metr6\DevExpress.Mvvm.v17.2.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,6 +46,24 @@
   <ItemGroup>
     <Compile Include="TDS_Base.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ASMC.Common\ASMC.Common.csproj">
+      <Project>{7fe244d8-06c9-4b0e-b2e5-7e92ac14e48d}</Project>
+      <Name>ASMC.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{adb547eb-33aa-4c07-a493-c80729632a8b}</Project>
+      <Name>ASMC.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ASMC.Devices\ASMC.Devices.csproj">
+      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
+      <Name>ASMC.Devices</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
