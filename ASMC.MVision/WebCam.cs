@@ -10,11 +10,12 @@ using Accord.Imaging;
 using Accord.Imaging.Filters;
 using Accord.Video;
 using Accord.Video.DirectShow;
+using ASMC.Data.Model;
 using NLog;
 
 namespace ASMC.MVision
 {
-    public class WebCam:IDisposable
+    public class WebCam:IUserType,IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly VideoCaptureDevice _videoCaptureDevice;
@@ -33,7 +34,7 @@ namespace ASMC.MVision
 
         public WebCam()
         {
-
+            UserType = "Веб камера";
             _videoCaptureDevice = new VideoCaptureDevice();
         }
 
@@ -187,5 +188,8 @@ namespace ASMC.MVision
         {
             Stop();
         }
+
+        /// <inheritdoc />
+        public string UserType { get; }
     }
 }

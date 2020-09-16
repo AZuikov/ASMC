@@ -23,7 +23,7 @@ using WindowService = ASMC.Common.UI.WindowService;
 namespace Plugins.Test
 {
  
-    public class Device  : Program
+    public class Device  : Program<Verefication>
     {
         /// <inheritdoc />
         public Device(ServicePack service) : base(service)
@@ -90,7 +90,7 @@ namespace Plugins.Test
         public bool? IsConnect { get; }
 
         /// <inheritdoc />
-        public IDeviceBase[] Devices { get; set; }
+        public IUserType[] Devices { get; set; }
 
         /// <inheritdoc />
         public IUserType SelectedDevice { get; set; }

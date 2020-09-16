@@ -7,7 +7,7 @@ using ASMC.Devices.Port.APPA;
 
 namespace Appa107N
 {
-    public class APPA107N : Appa107N109NBasePlugin
+    public class APPA107N : Appa107N109NBasePlugin<Appa107N.Operation>
     {
         public APPA107N(ServicePack servicePack) : base(servicePack)
         {
@@ -17,7 +17,6 @@ namespace Appa107N
                     " эл. сопр. 0 - 2 ГОм, эл. ёмкость до 40 мФ.";
             Accuracy = "DCV 0.06%, ACV 1%, DCI 0.2%, ACI 1.2%,\n" +
                        " FREQ 0.01%, OHM 5%, FAR 1.5%";
-            Operation = new Operation(servicePack);
         }
     }
 

@@ -11,13 +11,12 @@ using B5_71_PRO_Abstract;
 
 namespace B5_71_4_PRO
 {
-    public class B5_71_4PRO : AbstractB571ProPlugin
+    public class B5_71_4PRO : AbstractB571ProPlugin<Operation>
     {
         public B5_71_4PRO(ServicePack service) : base(service)
         {
             Range = "0 - 75 В, 0 - 4 А";
             Type = "Б5-71/4-ПРО";
-            Operation = new Operation(service);
         }
     }
 

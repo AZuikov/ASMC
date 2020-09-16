@@ -24,7 +24,7 @@ namespace B5_71_PRO_Abstract
     /// В этом пространчтве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели
     /// устройства
     /// </summary>
-    public abstract class AbstractB571ProPlugin : Program
+    public abstract class AbstractB571ProPlugin<T> : Program<T> where T: OperationMetrControlBase
     {
         #region Property
 
