@@ -6,6 +6,7 @@ using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Port.Profigrupp;
+using ASMC.Devices.WithoutInterface.Voltmetr;
 using B5_71_PRO_Abstract;
 
 namespace B5_71_4_PRO
@@ -35,13 +36,16 @@ namespace B5_71_4_PRO
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
-            {
-                new Device {Name = new[] {"N3300A"}, Description = "Электронная нагрузка"},
-                new Device {Name = new[] {"34401A"}, Description = "Мультиметр"},
-                new Device {Name = new[] {"В3-57"}, Description = "Микровольтметр", IsCanStringConnect = false}
+                {new Device 
+                    { Devices = new IDeviceBase[] { new N3303A() }, Description = "Электронная нагрузка"},
+                    new Device{Devices = new IDeviceBase[] { new Mult_34401A() }, Description = "Мультиметр"},
+                    new Device{Devices = new UserType[] { new B3_57(),  }, Description = "Микровольтметр", IsCanStringConnect = false}
+                };
+            TestDevices = new IDeviceUi[]
+            {new Device
+                    { Devices = new IDeviceBase[] { new B571Pro4(),  }, Description = "источник питания"}
             };
 
-            TestDevices = new IDeviceUi[] {new Device {Name = new[] {"Б5-71/4-ПРО"}, Description = "источник питания"}};
 
             
             UserItemOperation = new IUserItemOperationBase[]

@@ -12,6 +12,7 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
+using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.Port.APPA;
 using DevExpress.Mvvm;
 using NLog;
@@ -118,9 +119,8 @@ namespace APPA_107N_109N
         {
             //Необходимые устройства
             ControlDevices = new IDeviceUi[]
-                {new Device {Name = new[] {"5522A"}, Description = "Многофунциональный калибратор"}};
-            TestDevices = new IDeviceUi[]
-                {new Device {Name = new[] {"APPA-107N"}, Description = "Цифровой портативный мультиметр"}};
+                {new Device { Devices = new IDeviceBase[] { new Calib5522A() }, Description = "Многофунциональный калибратор"}};
+          
 
             Accessories = new[]
             {

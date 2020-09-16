@@ -488,6 +488,9 @@ namespace ASMC.Devices.IEEE
         /// <inheritdoc />
         public bool IsOpen { get; protected set; }
 
+        /// <inheritdoc />
+        public bool IsTestConnect { get; }
+
         /// <summary>
         /// Считывает строку
         /// </summary>

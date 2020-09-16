@@ -8,7 +8,7 @@ using ASMC.Data.Model;
 
 namespace ASMC.Devices.WithoutInterface.Voltmetr
 {
-    public class B3_57:HelpDeviceBase
+    public class B3_57:HelpDeviceBase, UserType
     {
         public double AnalogOutput3 { get; set; }
         public double AnalogOutput1 { get; set; }
@@ -21,6 +21,7 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
 
         public B3_57()
         {
+            UserType = "В3-57";
             Multipliers = new ICommand[]
             {
                 new Command("", "дБ", 1),
@@ -46,6 +47,11 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
             Ranges[13] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], (decimal) 0.1);
             Ranges[14] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], (decimal) 0.03);
         }
+
+        
+        /// <inheritdoc />
+        public string UserType { get; }
+
     }
 
    

@@ -36,6 +36,8 @@ namespace Appa109N
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
+            TestDevices = new IDeviceUi[]
+                {new Device { Devices = new IDeviceBase[] { new MultAPPA109N()}, Description = "Цифровой портативный мультиметр"}};
             var DcvMode = new Oper3DcvMeasureBase(this);
             DcvMode.Nodes.Add(new Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
             DcvMode.Nodes.Add(new Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal.Range200mV, this));

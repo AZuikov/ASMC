@@ -120,6 +120,10 @@ namespace ASMC.Devices.Port
         {
             get=> _sp.IsOpen;
         }
+
+        /// <inheritdoc />
+        public bool IsTestConnect { get; }
+
         /// <summary>
         /// Открывает соединение с Com портом.
         /// </summary>

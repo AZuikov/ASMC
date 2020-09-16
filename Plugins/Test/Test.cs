@@ -49,8 +49,8 @@ namespace Plugins.Test
         {
             ControlDevices = new IDeviceUi[]
             {
-                new DeviceInterface {Name = new[] {"ППИ-50"}, Description = "Прибор ППИ"},
-                new DeviceInterface{Description = "Веб камера", Name = new []{"Веб камера"}} 
+                new DeviceInterface {Devices = new[] {"ППИ-50"}, Description = "Прибор ППИ"},
+                new DeviceInterface{Description = "Веб камера", Devices = new []{"Веб камера"}} 
             };
             var a = new Operation1(this);
             a.Nodes.Add(new Operation2(this));
@@ -90,10 +90,10 @@ namespace Plugins.Test
         public bool? IsConnect { get; }
 
         /// <inheritdoc />
-        public string[] Name { get; set; }
+        public IDeviceBase[] Devices { get; set; }
 
         /// <inheritdoc />
-        public string SelectedName { get; set; }
+        public UserType SelectedDevice { get; set; }
 
         /// <inheritdoc />
         public string StringConnect { get; set; }

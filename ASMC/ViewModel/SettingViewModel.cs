@@ -64,7 +64,7 @@ namespace ASMC.ViewModel
                 ControlDevice.Add(new DeviceViewModel
                 {
                     Description = device.Description,
-                    Name = device.Name,
+                    Devices = device.Devices,
                     AddresDivece = AddresDivece,
                     StringConnect = device.StringConnect,
                     IsCanStringConnect = device.IsCanStringConnect,
@@ -78,7 +78,7 @@ namespace ASMC.ViewModel
                 TestDevice.Add(new DeviceViewModel
                 {
                     Description = device.Description,
-                    Name = device.Name,
+                    Devices = device.Devices,
                     AddresDivece = AddresDivece,
                     StringConnect = device.StringConnect,
                     IsCanStringConnect = device.IsCanStringConnect,
@@ -92,13 +92,13 @@ namespace ASMC.ViewModel
             for (var i = 0; i < TestDevices?.Length; i++)
             {
                 TestDevices[i].StringConnect = TestDevice[i].StringConnect;
-                TestDevices[i].SelectedName = TestDevice[i].SelectedName;
+                TestDevices[i].SelectedDevice = TestDevice[i].SelectedDevice;
             }
 
             for (var i = 0; i < ControlDevices?.Length; i++)
             {
                 ControlDevices[i].StringConnect = ControlDevice[i].StringConnect;
-                ControlDevices[i].SelectedName = ControlDevice[i].SelectedName;
+                ControlDevices[i].SelectedDevice = ControlDevice[i].SelectedDevice;
             }
 
             Event?.Invoke();
