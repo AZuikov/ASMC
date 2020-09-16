@@ -160,7 +160,21 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
         public bool IsOpen { get; protected set; }
 
         /// <inheritdoc />
-        public bool IsTestConnect { get; }
+        public virtual bool IsTestConnect
+        {
+            get
+            {
+                Open();
+                try
+                {
+                    return Wrapper.ProductInfo != null;
+                }
+                catch 
+                {
+                    return false;
+                }
+            }
+        }
 
         protected enum CommandQuery : byte
         {

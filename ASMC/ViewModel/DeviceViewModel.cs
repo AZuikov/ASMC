@@ -64,7 +64,12 @@ namespace ASMC.ViewModel
         public string StringConnect
         {
             get => _stringConnect;
-            set => SetProperty(ref _stringConnect, value, nameof(StringConnect));
+            set => SetProperty(ref _stringConnect, value, nameof(StringConnect), () =>
+            {
+                var device = SelectedDevice as IDeviceBase;
+                if (device == null) return;
+                IsConnect = device.IsTestConnect;
+            });
         }
 
         #endregion

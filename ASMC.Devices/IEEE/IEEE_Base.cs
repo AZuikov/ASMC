@@ -489,7 +489,14 @@ namespace ASMC.Devices.IEEE
         public bool IsOpen { get; protected set; }
 
         /// <inheritdoc />
-        public bool IsTestConnect { get; }
+        public virtual bool IsTestConnect
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(StringConnection)) return false;
+                return !string.IsNullOrWhiteSpace(QueryLine(QueryIdentificationDevice));
+            }
+        }
 
         /// <summary>
         /// Считывает строку
