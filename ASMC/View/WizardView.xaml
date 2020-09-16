@@ -149,28 +149,28 @@
                                                 <GridViewColumn Header="Тип СИ">
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Type}" />
+                                                            <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Type}" MaxWidth="300" />
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
                                                 <GridViewColumn Header="Госреестр">
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Grsi}" />
+                                                    <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Grsi}" MaxWidth="100" />
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
                                                 <GridViewColumn Header="Диапазон">
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Range}" />
+                                                    <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Range}" MaxWidth="300" />
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
                                                 <GridViewColumn Header="Характеристика точности">
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Accuracy}" />
+                                                    <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Accuracy}" MaxWidth="300" />
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>

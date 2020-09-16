@@ -14,11 +14,10 @@ using B5_71_PRO_Abstract;
 namespace B5_71_1_PRO
 {
     // ReSharper disable once InconsistentNaming
-    public class B5_71_1PRO : AbstractB571ProPlugin
+    public class B5_71_1PRO : AbstractB571ProPlugin<Operation>
     {
         public B5_71_1PRO(ServicePack service) : base(service)
         {
-            Operation = new Operation(service);
             Type = "Б5-71/1-ПРО";
             Range = "0 - 30 В; 0 - 10 А";
         }

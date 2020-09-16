@@ -19,9 +19,10 @@ using NLog;
 
 namespace APPA_107N_109N
 {
-    public class Appa107N109NBasePlugin : Program
+    public class Appa107N109NBasePlugin<T> : Program<T> where T: OperationMetrControlBase
 
     {
+
         public Appa107N109NBasePlugin(ServicePack service) : base(service)
         {
             Grsi = "20085-11";
