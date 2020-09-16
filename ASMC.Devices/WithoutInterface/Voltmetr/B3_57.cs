@@ -8,7 +8,7 @@ using ASMC.Data.Model;
 
 namespace ASMC.Devices.WithoutInterface.Voltmetr
 {
-    public class B3_57:HelpDeviceBase, UserType
+    public class B3_57:HelpDeviceBase, IUserType
     {
         public double AnalogOutput3 { get; set; }
         public double AnalogOutput1 { get; set; }

@@ -12,6 +12,7 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
+using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using ASMC.MVision;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
@@ -49,8 +50,7 @@ namespace Plugins.Test
         {
             ControlDevices = new IDeviceUi[]
             {
-                new DeviceInterface {Devices = new[] {"ППИ-50"}, Description = "Прибор ППИ"},
-                new DeviceInterface{Description = "Веб камера", Devices = new []{"Веб камера"}} 
+                new DeviceInterface {Devices = new IDeviceBase[] {new Ppi()}, Description = "Прибор ППИ"}
             };
             var a = new Operation1(this);
             a.Nodes.Add(new Operation2(this));
@@ -93,7 +93,7 @@ namespace Plugins.Test
         public IDeviceBase[] Devices { get; set; }
 
         /// <inheritdoc />
-        public UserType SelectedDevice { get; set; }
+        public IUserType SelectedDevice { get; set; }
 
         /// <inheritdoc />
         public string StringConnect { get; set; }

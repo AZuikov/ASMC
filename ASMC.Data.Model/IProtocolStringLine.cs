@@ -39,7 +39,7 @@ namespace ASMC.Data.Model
         #endregion
     }
 
-    public interface IDeviceBase :UserType, IDisposable
+    public interface IDeviceBase :IUserType, IDisposable
     {
       
         /// <summary>
@@ -61,7 +61,7 @@ namespace ASMC.Data.Model
         bool IsTestConnect { get; }
     }
 
-    public interface UserType
+    public interface IUserType
     {
         /// <summary>
         /// Вернет тип устройства заданный в библиотеке.
