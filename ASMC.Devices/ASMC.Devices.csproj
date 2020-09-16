@@ -84,6 +84,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34460_61A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
+    <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_2022B\TDS_2022B.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />

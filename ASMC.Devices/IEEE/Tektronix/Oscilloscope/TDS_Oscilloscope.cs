@@ -8,6 +8,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 {
     public class TDS_Oscilloscope : IeeeBase
     {
+        public int ChanelCount { get; protected set; }
 
         public enum HorizontalView
         {
