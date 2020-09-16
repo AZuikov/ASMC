@@ -12,7 +12,7 @@ namespace Indicator_10
     public class Indicator_10 : Program
     {
         /// <inheritdoc />
-        public Device(ServicePack service) : base(service)
+        public Indicator_10(ServicePack service) : base(service)
         {
             this.Type = "Тест";
             Operation = new Verefication(service);

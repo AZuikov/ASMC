@@ -42,12 +42,12 @@ namespace ASMC.Data.Model
         /// <summary>
         /// позволяет поучать или задавать перечень взаимозаменяемых устройств.
         /// </summary>
-        UserType[] Devices { get; set; }
+        IUserType[] Devices { get; set; }
 
         /// <summary>
         /// Позволяет задать или получить имя выбранного прибора.
         /// </summary>
-        UserType SelectedDevice { get; set; }
+        IUserType SelectedDevice { get; set; }
 
         /// <summary>
         /// Позволяет задать или получить строку подключения к прибору.
@@ -67,10 +67,10 @@ namespace ASMC.Data.Model
         public string Description { get; set; }
 
         /// <inheritdoc />
-        public UserType[] Devices { get; set; }
+        public IUserType[] Devices { get; set; }
 
         /// <inheritdoc />
-        public UserType SelectedDevice { get; set; }
+        public IUserType SelectedDevice { get; set; }
 
         /// <inheritdoc />
         public string StringConnect { get; set; }

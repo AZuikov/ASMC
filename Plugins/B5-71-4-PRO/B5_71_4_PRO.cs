@@ -39,7 +39,7 @@ namespace B5_71_4_PRO
                 {new Device 
                     { Devices = new IDeviceBase[] { new N3303A() }, Description = "Электронная нагрузка"},
                     new Device{Devices = new IDeviceBase[] { new Mult_34401A() }, Description = "Мультиметр"},
-                    new Device{Devices = new UserType[] { new B3_57(),  }, Description = "Микровольтметр", IsCanStringConnect = false}
+                    new Device{Devices = new IUserType[] { new B3_57(),  }, Description = "Микровольтметр", IsCanStringConnect = false}
                 };
             TestDevices = new IDeviceUi[]
             {new Device

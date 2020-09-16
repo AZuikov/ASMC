@@ -15,8 +15,8 @@ namespace ASMC.ViewModel
         private string[] _addresDivece;
         private string _description;
         private bool? _isConnect;
-        private UserType[] _devices;
-        private UserType _selectedDevice;
+        private IUserType[] _devices;
+        private IUserType _selectedDevice;
         private string _stringConnect;
 
         #endregion
@@ -46,7 +46,7 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _isConnect, value, nameof(IsConnect));
         }
 
-        public UserType[] Devices
+        public IUserType[] Devices
         {
             get => _devices;
             set => SetProperty(ref _devices, value, nameof(Devices), () =>
@@ -55,7 +55,7 @@ namespace ASMC.ViewModel
             });
         }
 
-        public UserType SelectedDevice
+        public IUserType SelectedDevice
         {
             get => _selectedDevice;
             set => SetProperty(ref _selectedDevice, value, nameof(SelectedDevice));
