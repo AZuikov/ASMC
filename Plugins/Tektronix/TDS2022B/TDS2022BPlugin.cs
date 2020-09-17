@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
-using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
-using ASMC.Devices.Port.APPA;
 using TDS_BasePlugin;
 
 
