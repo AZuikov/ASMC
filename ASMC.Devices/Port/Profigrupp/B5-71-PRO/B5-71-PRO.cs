@@ -80,13 +80,13 @@ namespace ASMC.Devices.Port.Profigrupp
 
         protected B571Pro(string portName) : base(portName)
         {
-            SetTimeout = 500;
+            SetTimeout = 1000;
 
         }
 
         protected B571Pro()
         {
-            SetTimeout = 500;
+            SetTimeout = 1000;
         }
 
         #region Methods

@@ -13,14 +13,13 @@ using TDS_BasePlugin;
 
 namespace TDS2022B
 {
-    public class TDS2022BPlugin : TDS_BasePlugin.TDS_BasePlugin
+    public class TDS2022BPlugin : TDS_BasePlugin.TDS_BasePlugin<Operation>
     {
         public TDS2022BPlugin(ServicePack servicePack) : base(servicePack)
         {
             Type = "TDS 2022B";
             Range = "no range";
             Accuracy = "no accuracy";
-            Operation = new Operation(servicePack);
 
         }
     }

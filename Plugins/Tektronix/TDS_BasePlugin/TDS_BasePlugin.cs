@@ -11,13 +11,12 @@ using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 
 namespace TDS_BasePlugin
 {
-    public class TDS_BasePlugin: Program
+    public class TDS_BasePlugin<T>: Program<T> where  T: OperationMetrControlBase
 
     {
         public TDS_BasePlugin(ServicePack service) : base(service)
         {
             Grsi = "32618-06";
-            Operation = new Operation();
         }
     }
 

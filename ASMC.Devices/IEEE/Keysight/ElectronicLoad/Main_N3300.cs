@@ -105,7 +105,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         protected MainN3300()
         {
-            DealySending = 2000;
+          
             Resistance = new Resistance(this);
             UserType = "N3300A";
             Current = new Current(this);
