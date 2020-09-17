@@ -184,6 +184,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
         public Calibr9500B()
         {
+            UserType = "Fluke 9500B";
             Source = new CSource(this);
             Route = new CROUTe(this);
             AuxFunc = new CAUXFunctional(this);

@@ -8,6 +8,8 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
+using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
+using NLog;
 
 namespace TDS_BasePlugin
 {
@@ -86,7 +88,7 @@ namespace TDS_BasePlugin
             {
                 var service = UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
-                service.Entity = new Tuple<string, Assembly>("VisualTest", null);
+                service.Entity = new Tuple<string, Assembly>("TDS_VisualTest", null);
                 service.Show();
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
@@ -141,7 +143,7 @@ namespace TDS_BasePlugin
             {
                 var service = UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Опробование";
-                service.Entity = new Tuple<string, Assembly>("Oprobovanie", null);
+                service.Entity = new Tuple<string, Assembly>("TDS_Oprobovanie", null);
                 service.Show();
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
@@ -162,6 +164,66 @@ namespace TDS_BasePlugin
 
 
     /*Определение погрешности коэффициентов отклонения.*/
+
+    public abstract class Oper3KoefOtkl : ParagraphBase, IUserItemOperation<decimal>
+    {
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        private Calibr9500B calibr9500B;
+        private TDS_Oscilloscope someTdsOscilloscope;
+
+        protected Oper3KoefOtkl(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности коэффициентов отклонения";
+            DataRow = new List<IBasicOperation<decimal>>();
+            //подключение к каналу это наверное можно сделать через сообщение
+            // ли для каждого канала картинку нарисовать TemplateSheme
+
+        }
+
+        protected override void InitWork()
+        {
+            DataRow.Clear();
+            foreach (TDS_Oscilloscope.VerticalScale currScale in Enum.GetValues(typeof(TDS_Oscilloscope.VerticalScale)))
+            {
+                var operation = new BasicOperationVerefication<decimal>();
+                operation.InitWork = async () =>
+                {
+                    try
+                    {
+                        await Task.Run(() =>
+                        {
+                            calibr9500B.StringConnection = GetStringConnect(calibr9500B);
+                            someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
+                        });
+
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+
+                operation.BodyWork = () =>
+                {
+                    //1.нужно знать канал
+                    //2.установить развертку по вертикали
+                    //3.установить развертку по времени
+                    //4.установить усреднение
+                    //5.подать сигнал
+                    //6.снять показания с осциллографа
+                };
+            }
+        }
+
+
+
+    }
+
+
+
     /*Определение погрешности измерения временных интервалов.*/
     /*Определение Времени нарастания переходной характеристики.*/
 }

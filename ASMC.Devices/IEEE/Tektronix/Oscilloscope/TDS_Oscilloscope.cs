@@ -1,59 +1,13 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-using AP.Utils.Data;
 using System;
+using AP.Utils.Data;
 
 namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 {
     public class TDS_Oscilloscope : IeeeBase
     {
-        public int ChanelCount { get; protected set; }
-
-        public enum HorizontalView
-        {
-            MAIN,
-            WINDOW,
-            ZONE
-        }
-
-        /// <summary>
-        /// Единицы измерения для горизонтальных курсоров.
-        /// </summary>
-        public enum HorizontalCursorUnit
-        {
-            VOLTS,
-            DIVS,
-            DECIBELS,
-            UNKNOWN
-        }
-
-        public enum VerticalCursorUnits
-        { SECOND,
-            HERTZ
-        }
-
-        /// <summary>
-        /// Режимы работы курсоровю
-        /// </summary>
-        public enum CursorFunc
-        {
-            /// <summary>
-            /// горизонтальные курсоры.
-            /// </summary>
-            HBA,
-
-            /// <summary>
-            /// Вертикальные курсоры.
-            /// </summary>
-            VBA,
-
-            /// <summary>
-            /// Курсоры отключены.
-            /// </summary>
-            OFF
-        }
-
         /// <summary>
         /// Перечень каналов
         /// </summary>
@@ -99,6 +53,38 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// Земля
             /// </summary>
             GND
+        }
+
+        /// <summary>
+        /// Режимы работы курсоровю
+        /// </summary>
+        public enum CursorFunc
+        {
+            /// <summary>
+            /// горизонтальные курсоры.
+            /// </summary>
+            HBA,
+
+            /// <summary>
+            /// Вертикальные курсоры.
+            /// </summary>
+            VBA,
+
+            /// <summary>
+            /// Курсоры отключены.
+            /// </summary>
+            OFF
+        }
+
+        /// <summary>
+        /// Единицы измерения для горизонтальных курсоров.
+        /// </summary>
+        public enum HorizontalCursorUnit
+        {
+            VOLTS,
+            DIVS,
+            DECIBELS,
+            UNKNOWN
         }
 
         /// <summary>
@@ -267,6 +253,13 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             [StringValue("50")] Scal_50Sec
         }
 
+        public enum HorizontalView
+        {
+            MAIN,
+            WINDOW,
+            ZONE
+        }
+
         /// <summary>
         /// Режим сбора данных
         /// </summary>
@@ -413,6 +406,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             NONe
         }
 
+        public enum VerticalCursorUnits
+        {
+            SECOND,
+            HERTZ
+        }
+
         /// <summary>
         /// Масштаб, указан для <see cref = "Probe.Att_1" />
         /// </summary>
@@ -477,10 +476,13 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
         #region Property
 
         public CChanel Chanel { get; }
+        public int ChanelCount { get; protected set; }
 
         public CCursor Cursor { get; }
 
         public CDisplay Display { get; }
+
+        public bool GetSelfTestResult => QueryLine("diag:result:flag?").Equals("PASS") ? true : false;
 
         public CHorizontal Horizontal { get; }
 
@@ -488,7 +490,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
         public CMeasurement Measurement { get; }
 
-        #endregion Property
+        #endregion
+
+        /// <summary>
+        /// Набор разверток по вертикали, характерный для конкретной модели осциллографа.
+        /// </summary>
+        protected VerticalScale[] VertScaleChanel;
 
         public TDS_Oscilloscope()
         {
@@ -500,16 +507,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             Chanel = new CChanel(this);
         }
 
-      
         #region Methods
-
-        public bool GetSelfTestResult
-        {
-            get
-            {
-                return QueryLine("diag:result:flag?").Equals("PASS")? true:false;
-            }
-        }
 
         /// <summary>
         /// Выбрать канал
@@ -532,33 +530,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             return "ACQ:STATE " + st;
         }
 
-        ///// <summary>
-        ///// Пребразует данные в нужных единицах
-        ///// </summary>
-        ///// <param name = "date">The date.</param>
-        ///// <param name = "Mult">The mult.</param>
-        ///// <returns></returns>
-        //public double DataPreparationAndConvert(string date, Multipliers Mult = AP.Utils.Helps.Multipliers.None)
-        //{
-        //    var Value = date.Split(',');
-        //    var a = new double[Value.Length];
-        //    for (var i = 0; i < Value.Length; i++) a[i] = Convert(Value[i], Mult);
-        //    return a.Mean() < 0 ? a.RootMeanSquare() * -1 : a.RootMeanSquare();
-        //}
-
-        //private double Convert(string date, Multipliers Mult)
-        //{
-        //    Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-        //    double _return = 0;
-        //    var dDate = new double[2];
-        //    var Value = date.Split('E');
-        //    dDate[0] = System.Convert.ToDouble(Value[0]);
-        //    dDate[1] = System.Convert.ToDouble(Value[1]);
-
-        //    return dDate[0] * System.Math.Pow(10, dDate[1]) * (double)Mult;
-        //}
-
-        #endregion Methods
+        #endregion
 
         /// <summary>
         /// класс для управления работой канала
@@ -569,13 +541,13 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
             private readonly TDS_Oscilloscope _tdsOscilloscope;
 
-            #endregion Fields
+            #endregion
 
             #region Property
 
             public CVertical Vertical { get; }
 
-            #endregion Property
+            #endregion
 
             public CChanel(TDS_Oscilloscope inOsciloscope)
             {
@@ -595,14 +567,14 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// </summary>
             /// <param name = "inChanel">Канал с которым работаем</param>
             /// <param name = "OnOffState">Статус канала вкл/выкл</param>
-            public TDS_Oscilloscope SetChanelState(TDS_Oscilloscope.ChanelSet inChanel, TDS_Oscilloscope.State OnOffState)
+            public TDS_Oscilloscope SetChanelState(ChanelSet inChanel, State OnOffState)
             {
                 _tdsOscilloscope.WriteLine($"select:{inChanel} {OnOffState}");
 
                 return _tdsOscilloscope;
             }
 
-            #endregion Methods
+            #endregion
 
             /// <summary>
             /// Коэфициент отклонения
@@ -613,17 +585,17 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
                 private readonly TDS_Oscilloscope _tdsOscilloscope;
 
-                #endregion Fields
+                #endregion
 
                 public CVertical(TDS_Oscilloscope inTdsOscilloscope)
                 {
                     _tdsOscilloscope = inTdsOscilloscope;
                     Multipliers = new ICommand[]
                     {
-                    new Command("N", "н", 1E-9),
-                    new Command("U", "мк", 1E-6),
-                    new Command("M", "м", 1E-3),
-                    new Command("", "", 1)
+                        new Command("N", "н", 1E-9),
+                        new Command("U", "мк", 1E-6),
+                        new Command("M", "м", 1E-3),
+                        new Command("", "", 1)
                     };
                 }
 
@@ -634,11 +606,11 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// </summary>
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope.State GetBandwith(TDS_Oscilloscope.ChanelSet chanel)
+                public State GetBandwith(ChanelSet chanel)
                 {
                     var answer = _tdsOscilloscope.QueryLine($"{chanel}:Band?");
-                    if (answer.Equals(TDS_Oscilloscope.State.ON)) return TDS_Oscilloscope.State.ON;
-                    return TDS_Oscilloscope.State.OFF;
+                    if (answer.Equals(State.ON)) return State.ON;
+                    return State.OFF;
                 }
 
                 /// <summary>
@@ -646,12 +618,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// </summary>
                 /// <param name = "inChanel">Канал осциллографа.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope.COUPling GetCoupling(TDS_Oscilloscope.ChanelSet inChanel)
+                public COUPling GetCoupling(ChanelSet inChanel)
                 {
                     var answer = _tdsOscilloscope.QueryLine($"{inChanel}:coupl?");
-                    if (answer.Equals(TDS_Oscilloscope.COUPling.DC)) return TDS_Oscilloscope.COUPling.DC;
-                    if (answer.Equals(TDS_Oscilloscope.COUPling.AC)) return TDS_Oscilloscope.COUPling.AC;
-                    return TDS_Oscilloscope.COUPling.GND;
+                    if (answer.Equals(COUPling.DC)) return COUPling.DC;
+                    if (answer.Equals(COUPling.AC)) return COUPling.AC;
+                    return COUPling.GND;
                 }
 
                 /// <summary>
@@ -659,11 +631,11 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// </summary>
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope.State GetInvert(TDS_Oscilloscope.ChanelSet chanel)
+                public State GetInvert(ChanelSet chanel)
                 {
                     var answer = _tdsOscilloscope.QueryLine($"{chanel}:inv?");
-                    if (answer.Equals(TDS_Oscilloscope.State.ON)) return TDS_Oscilloscope.State.ON;
-                    return TDS_Oscilloscope.State.OFF;
+                    if (answer.Equals(State.ON)) return State.ON;
+                    return State.OFF;
                 }
 
                 /// <summary>
@@ -671,12 +643,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// </summary>
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <returns>Смещение по вертикали в делениях.</returns>
-                public decimal GetPosition(TDS_Oscilloscope.ChanelSet chanel)
+                public decimal GetPosition(ChanelSet chanel)
                 {
                     var answer = _tdsOscilloscope.QueryLine($"{chanel}:pos?");
                     //проверить как парсится, там будет степень десятки
                     var doub = DataStrToDoubleMind(answer);
-                    return (decimal)doub;
+                    return (decimal) doub;
                 }
 
                 /// <summary>
@@ -684,10 +656,22 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// </summary>
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope.Probe GetProbe(TDS_Oscilloscope.ChanelSet chanel)
+                public Probe GetProbe(ChanelSet chanel)
                 {
                     var answer = _tdsOscilloscope.QueryLine($"{chanel}:pro?");
-                    return (TDS_Oscilloscope.Probe)(int)DataStrToDoubleMind(answer);
+                    return (Probe) (int) DataStrToDoubleMind(answer);
+                }
+
+                /// <summary>
+                /// Отвечает какая вертикальная развертка сейчас установлена на канале.
+                /// </summary>
+                /// <param name = "chanel">Канал осциллорафа.</param>
+                /// <returns></returns>
+                public decimal GetScale(ChanelSet chanel)
+                {
+                    var answer = _tdsOscilloscope.QueryLine($"{chanel}:scale?");
+                    var doub = DataStrToDoubleMind(answer);
+                    return (decimal) doub;
                 }
 
                 /// <summary>
@@ -695,7 +679,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// </summary>
                 /// <param name = "inChanel"></param>
                 /// <returns></returns>
-                public string GetVerticalParametr(TDS_Oscilloscope.ChanelSet inChanel)
+                public string GetVerticalParametr(ChanelSet inChanel)
                 {
                     return _tdsOscilloscope.QueryLine($"{inChanel}?");
                 }
@@ -706,7 +690,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <param name = "setState">Статус опции (вкл/выкл).</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetBandwith(TDS_Oscilloscope.ChanelSet chanel, TDS_Oscilloscope.State setState)
+                public TDS_Oscilloscope SetBandwith(ChanelSet chanel, State setState)
                 {
                     _tdsOscilloscope.WriteLine($"{chanel}:Band {setState}");
                     return _tdsOscilloscope;
@@ -718,7 +702,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "inChanel">Канал осциллографа.</param>
                 /// <param name = "inCouPling">Какой вариант связи установить: AC, DC, GND.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetCoupl(TDS_Oscilloscope.ChanelSet inChanel, TDS_Oscilloscope.COUPling inCouPling)
+                public TDS_Oscilloscope SetCoupl(ChanelSet inChanel, COUPling inCouPling)
                 {
                     _tdsOscilloscope.WriteLine($"{inChanel}:coupl {inCouPling}");
                     return _tdsOscilloscope;
@@ -730,7 +714,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <param name = "setState">Инверсия вкл/выкл.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetInvert(TDS_Oscilloscope.ChanelSet chanel, TDS_Oscilloscope.State setState)
+                public TDS_Oscilloscope SetInvert(ChanelSet chanel, State setState)
                 {
                     _tdsOscilloscope.WriteLine($"{chanel}:inv {setState}");
                     return _tdsOscilloscope;
@@ -742,9 +726,9 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <param name = "verticalOffset">Величина смещения в делениях. Может быть дробным числом.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetPosition(TDS_Oscilloscope.ChanelSet chanel, decimal verticalOffset)
+                public TDS_Oscilloscope SetPosition(ChanelSet chanel, decimal verticalOffset)
                 {
-                    _tdsOscilloscope.WriteLine($"{chanel}:pos {(double)verticalOffset}");
+                    _tdsOscilloscope.WriteLine($"{chanel}:pos {(double) verticalOffset}");
                     return _tdsOscilloscope;
                 }
 
@@ -754,9 +738,9 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <param name = "inProbe">Номинал пробника.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetProbe(TDS_Oscilloscope.ChanelSet chanel, TDS_Oscilloscope.Probe inProbe)
+                public TDS_Oscilloscope SetProbe(ChanelSet chanel, Probe inProbe)
                 {
-                    _tdsOscilloscope.WriteLine($"{chanel}:pro {(int)inProbe}");
+                    _tdsOscilloscope.WriteLine($"{chanel}:pro {(int) inProbe}");
                     return _tdsOscilloscope;
                 }
 
@@ -766,40 +750,28 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "ch">Канал осциллорафа.</param>
                 /// <param name = "sc">Разверктка по вертикали.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetSCAle(TDS_Oscilloscope.ChanelSet chanel, TDS_Oscilloscope.VerticalScale inScale)
+                public TDS_Oscilloscope SetSCAle(ChanelSet chanel, VerticalScale inScale)
                 {
-                    _tdsOscilloscope.WriteLine($"{chanel}:scale {inScale.GetDoubleValue().ToString().Replace(',', '.')}");
+                    _tdsOscilloscope
+                       .WriteLine($"{chanel}:scale {inScale.GetDoubleValue().ToString().Replace(',', '.')}");
                     return _tdsOscilloscope;
                 }
 
                 /// <summary>
                 /// Позволяет задать развертку по вертикали с точностью до сотой Вольт. Например 1.76 Вольт/Клетка
                 /// </summary>
-                /// <param name="chanel">Канал осциллографа.</param>
-                /// <param name="inScale">Величина разверкти, с точностью до сотой Вольт.</param>
+                /// <param name = "chanel">Канал осциллографа.</param>
+                /// <param name = "inScale">Величина разверкти, с точностью до сотой Вольт.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetSCAle(TDS_Oscilloscope.ChanelSet chanel, double inScale)
+                public TDS_Oscilloscope SetSCAle(ChanelSet chanel, double inScale)
                 {
                     _tdsOscilloscope.WriteLine($"{chanel}:scale {inScale.ToString().Replace(',', '.')}");
                     return _tdsOscilloscope;
                 }
 
-                /// <summary>
-                /// Отвечает какая вертикальная развертка сейчас установлена на канале.
-                /// </summary>
-                /// <param name="chanel">Канал осциллорафа.</param>
-                /// <returns></returns>
-                public decimal GetScale(TDS_Oscilloscope.ChanelSet chanel)
-                {
-                    string answer = _tdsOscilloscope.QueryLine($"{chanel}:scale?");
-                    var doub = DataStrToDoubleMind(answer);
-                    return (decimal)doub;
-                }
-
-                #endregion Methods
+                #endregion
             }
         }
-
 
         /// <summary>
         /// Команды калибровки и диагностики
@@ -813,13 +785,73 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
         /// </summary>
         public class CCursor : HelpDeviceBase
         {
-            #region Fields
-
             private const string curs_str = "cursor";
+
+            #region Fields
 
             private readonly TDS_Oscilloscope _tdsOscilloscope;
 
-            #endregion Fields
+            #endregion
+
+            #region Property
+
+            /// <summary>
+            /// Вовзращае строку с информацией о настройке курсоров
+            /// </summary>
+            public string[] GetCursorstatus => _tdsOscilloscope.QueryLine($"{curs_str}?").TrimEnd('\n').Split(';');
+
+            public decimal GetDeltaBeetwenHorizontalCursors =>
+                (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:delta?"));
+
+            public decimal GetDeltaBeetwenVerticalCursors =>
+                (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:delta?"));
+
+            /// <summary>
+            /// Возвращает данные о настройках горизонтальных курсоров.
+            /// </summary>
+            public string[] GetHorizontalCursorState =>
+                _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}?").TrimEnd('\n').Split(';');
+
+            /// <summary>
+            /// Отвечает какие сейчас единицы измерения стоят на горизонтальных курсорах.
+            /// </summary>
+            public HorizontalCursorUnit GetHorizontalCursorUnits
+            {
+                get
+                {
+                    var answer = _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:units?").TrimEnd('\n');
+                    return (HorizontalCursorUnit) Enum.Parse(typeof(HorizontalCursorUnit), answer);
+                }
+            }
+
+            public decimal GetPositionHorisontalCursor1 =>
+                (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:position1?"));
+
+            public decimal GetPositionHorisontalCursor2 =>
+                (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:position2?"));
+
+            public decimal GetPositionVerticalCursor1 =>
+                (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:position1?"));
+
+            public decimal GetPositionVerticalCursor2 =>
+                (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:position2?"));
+
+            /// <summary>
+            /// Возвращает данные о настройках вертикальных курсоров.
+            /// </summary>
+            public string[] GetVerticalCursorState =>
+                _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}?").TrimEnd('\n').Split(';');
+
+            public VerticalCursorUnits GetVerticalCursorUnits
+            {
+                get
+                {
+                    var answer = _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:units?").TrimEnd('\n');
+                    return (VerticalCursorUnits) Enum.Parse(typeof(VerticalCursorUnits), answer);
+                }
+            }
+
+            #endregion
 
             public CCursor(TDS_Oscilloscope inTdsOscilloscope)
             {
@@ -833,12 +865,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 };
             }
 
-            /// <summary>
-            /// Вовзращае строку с информацией о настройке курсоров
-            /// </summary>
-            public string[] GetCursorstatus
+            #region Methods
+
+            public TDS_Oscilloscope SelectSource(ChanelSet inChanel)
             {
-                get { return _tdsOscilloscope.QueryLine($"{curs_str}?").TrimEnd('\n').Split(';'); }
+                _tdsOscilloscope.WriteLine($"{curs_str}:sel:sou {inChanel}");
+                return _tdsOscilloscope;
             }
 
             public TDS_Oscilloscope SetCursorFunc(CursorFunc inCursorFunc)
@@ -847,103 +879,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 return _tdsOscilloscope;
             }
 
-            public decimal GetDeltaBeetwenVerticalCursors
-            {
-                get
-                {
-                    return (decimal)DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:delta?"));
-                }
-            }
-
-            public decimal GetDeltaBeetwenHorizontalCursors
-            {
-                get
-                {
-                    return (decimal)DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:delta?"));
-                }
-            }
-
-            /// <summary>
-            /// Возвращает данные о настройках горизонтальных курсоров.
-            /// </summary>
-            public string[] GetHorizontalCursorState
-            {
-                get
-                {
-                    return _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}?").TrimEnd('\n').Split(';');
-                }
-            }
-
-            /// <summary>
-            /// Возвращает данные о настройках вертикальных курсоров.
-            /// </summary>
-            public string[] GetVerticalCursorState
-            {
-                get
-                {
-                    return _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}?").TrimEnd('\n').Split(';');
-                }
-            }
-            /// <summary>
-            /// Отвечает какие сейчас единицы измерения стоят на горизонтальных курсорах.
-            /// </summary>
-            public HorizontalCursorUnit GetHorizontalCursorUnits
-            {
-                get
-                {
-                    string answer = _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:units?").TrimEnd('\n');
-                    return (HorizontalCursorUnit)Enum.Parse(typeof(HorizontalCursorUnit), answer);
-                }
-            }
-
-            public VerticalCursorUnits GetVerticalCursorUnits
-            {
-                get
-                {
-                    string answer = _tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:units?").TrimEnd('\n');
-                    return (VerticalCursorUnits)Enum.Parse(typeof(VerticalCursorUnits), answer);
-                }
-            }
-
-            public decimal GetPositionHorisontalCursor1
-            {
-                get
-                { 
-                    return (decimal)DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:position1?"));
-                        
-                }
-            }
-
-            public decimal GetPositionHorisontalCursor2
-            {
-                get
-                {
-                    return (decimal)DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.HBA}:position2?"));
-                }
-            }
-
-            public decimal GetPositionVerticalCursor1
-            {
-                get
-                {
-                    return (decimal)DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:position1?"));
-
-                }
-            }
-
-            public decimal GetPositionVerticalCursor2
-            {
-                get
-                {
-                    return (decimal)DataStrToDoubleMind(_tdsOscilloscope.QueryLine($"{curs_str}:{CursorFunc.VBA}:position2?"));
-                }
-            }
-
-            public TDS_Oscilloscope SelectSource(ChanelSet inChanel)
-            {
-                _tdsOscilloscope.WriteLine($"{curs_str}:sel:sou {inChanel}");
-                return _tdsOscilloscope;
-            }
+            #endregion
         }
 
         /// <summary>
@@ -955,7 +891,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
             private readonly TDS_Oscilloscope _tdsOscilloscope;
 
-            #endregion Fields
+            #endregion
 
             public CDisplay(TDS_Oscilloscope inTdsOscilloscope)
             {
@@ -966,13 +902,23 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
         /// <summary>
         /// Управление разверткой
         /// </summary>
-        public class CHorizontal:HelpDeviceBase
+        public class CHorizontal : HelpDeviceBase
         {
             #region Fields
 
             private readonly TDS_Oscilloscope _tdsOscilloscope;
 
-            #endregion Fields
+            #endregion
+
+            #region Property
+
+            public decimal GetHorizontalSCAle =>
+                (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine("HORi:SCALE?"));
+
+            public HorizontalView GetHorizontalView =>
+                (HorizontalView) Enum.Parse(typeof(HorizontalView), _tdsOscilloscope.QueryLine("hor:vie?"));
+
+            #endregion
 
             public CHorizontal(TDS_Oscilloscope inTdsOscilloscope)
             {
@@ -980,6 +926,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             }
 
             #region Methods
+
+            public TDS_Oscilloscope SetHorizontalView(HorizontalView inHorizontalView)
+            {
+                _tdsOscilloscope.WriteLine($"hor:vie {inHorizontalView}");
+                return _tdsOscilloscope;
+            }
 
             /// <summary>
             /// Установка временной развертки.
@@ -992,28 +944,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 return _tdsOscilloscope;
             }
 
-            public decimal GetHorizontalSCAle {
-                get
-                {
-                    return (decimal) DataStrToDoubleMind(_tdsOscilloscope.QueryLine("HORi:SCALE?")) ;
-                }
-            }
-
-            public TDS_Oscilloscope SetHorizontalView(HorizontalView inHorizontalView)
-            {
-                _tdsOscilloscope.WriteLine($"hor:vie {inHorizontalView}");
-                return _tdsOscilloscope;
-            }
-
-            public HorizontalView GetHorizontalView
-            {
-                get
-                {
-                    return (HorizontalView)Enum.Parse(typeof(HorizontalView), _tdsOscilloscope.QueryLine("hor:vie?"));
-                }
-            }
-
-            #endregion Methods
+            #endregion
 
             //HORizontal:DELay:POSition Position window
             //HORizontal:DELay:SCAle Set or query the window time base time/division
@@ -1057,7 +988,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
             private readonly TDS_Oscilloscope _tdsOscilloscope;
 
-            #endregion Fields
+            #endregion
 
             public CMeasurement(TDS_Oscilloscope inTdsOscilloscope)
             {
@@ -1075,7 +1006,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <returns></returns>
             public static string SetMeas(ChanelSet ch, TypeMeas tm)
             {
-                return "MEASU:MEAS" + (int)ch + ":SOU " + ch + "\nMEASU:MEAS" + (int)ch + ":TYP " + tm;
+                return "MEASU:MEAS" + (int) ch + ":SOU " + ch + "\nMEASU:MEAS" + (int) ch + ":TYP " + tm;
             }
 
             /// <summary>
@@ -1085,10 +1016,10 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <returns></returns>
             public static string QueruValue(ChanelSet chm)
             {
-                return "MEASU:MEAS" + (int)chm + ":VAL?";
+                return "MEASU:MEAS" + (int) chm + ":VAL?";
             }
 
-            #endregion Methods
+            #endregion
         }
 
         /// <summary>
@@ -1129,11 +1060,11 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 MiscellaneousNUMAV num = MiscellaneousNUMAV.Number_128)
             {
                 if (md == MiscellaneousMode.AVErage)
-                    return "ACQuire:MODe " + md + "\nACQuire:NUMAVg " + (int)num;
+                    return "ACQuire:MODe " + md + "\nACQuire:NUMAVg " + (int) num;
                 return "ACQuire:MODe " + md;
             }
 
-            #endregion Methods
+            #endregion
         }
 
         /// <summary>
@@ -1217,7 +1148,31 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
             //}
         }
-    }
 
-   
+        ///// <summary>
+        ///// Пребразует данные в нужных единицах
+        ///// </summary>
+        ///// <param name = "date">The date.</param>
+        ///// <param name = "Mult">The mult.</param>
+        ///// <returns></returns>
+        //public double DataPreparationAndConvert(string date, Multipliers Mult = AP.Utils.Helps.Multipliers.None)
+        //{
+        //    var Value = date.Split(',');
+        //    var a = new double[Value.Length];
+        //    for (var i = 0; i < Value.Length; i++) a[i] = Convert(Value[i], Mult);
+        //    return a.Mean() < 0 ? a.RootMeanSquare() * -1 : a.RootMeanSquare();
+        //}
+
+        //private double Convert(string date, Multipliers Mult)
+        //{
+        //    Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+        //    double _return = 0;
+        //    var dDate = new double[2];
+        //    var Value = date.Split('E');
+        //    dDate[0] = System.Convert.ToDouble(Value[0]);
+        //    dDate[1] = System.Convert.ToDouble(Value[1]);
+
+        //    return dDate[0] * System.Math.Pow(10, dDate[1]) * (double)Mult;
+        //}
+    }
 }
