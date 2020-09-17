@@ -127,7 +127,7 @@ namespace B5_71_PRO_Abstract
             {
                 var service = UserItemOperation.ServicePack.QuestionText;
                 service.Title = "Внешний осмотр";
-                service.Entity = new Tuple<string, Assembly>("VisualTestText", null);
+                service.Entity = new Tuple<string, Assembly>("B5VisualTestText", null);
                 service.Show();
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
