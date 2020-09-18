@@ -4,6 +4,7 @@
 using AP.Utils.Data;
 using NLog;
 using System;
+using AP.Utils.Helps;
 
 namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 {
@@ -98,162 +99,226 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <summary>
             /// 2.5 нс
             /// </summary>
-            [StringValue("2.5E-9")] Scal_2_5nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(2.5)] Scal_2_5nSec,
 
             /// <summary>
             /// 5 нс
             /// </summary>
-            [StringValue("5E-9")] Scal_5nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(5)] Scal_5nSec,
 
             /// <summary>
             /// 10 нс
             /// </summary>
-            [StringValue("10E-9")] Scal_10nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(10)] Scal_10nSec,
 
             /// <summary>
             /// 25 нс
             /// </summary>
-            [StringValue("25E-9")] Scal_25nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(25)] Scal_25nSec,
 
             /// <summary>
             /// 50 нс
             /// </summary>
-            [StringValue("50E-9")] Scal_50nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(50)] Scal_50nSec,
 
             /// <summary>
             /// 100 нс
             /// </summary>
-            [StringValue("10E-8")] Scal_100nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(100)] Scal_100nSec,
 
             /// <summary>
             /// 250 нс
             /// </summary>
-            [StringValue("25E-8")] Scal_250nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(250)] Scal_250nSec,
 
             /// <summary>
             /// 500 нс
             /// </summary>
-            [StringValue("50E-8")] Scal_500nSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Nano)]
+            [DoubleValue(500)] Scal_500nSec,
 
             /// <summary>
             /// 1 мкс
             /// </summary>
-            [StringValue("1E-6")] Scal_1mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(1)] Scal_1mkSec,
 
             /// <summary>
             /// 2.5 мкс
             /// </summary>
-            [StringValue("2.5E-6")] Scal_2_5mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(2.5)] Scal_2_5mkSec,
 
             /// <summary>
             /// 5 мкс
             /// </summary>
-            [StringValue("5E-6")] Scal_5mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(5)] Scal_5mkSec,
 
             /// <summary>
             /// 10 мкс
             /// </summary>
-            [StringValue("10E-6")] Scal_10mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(10)] Scal_10mkSec,
 
             /// <summary>
             /// 25 мкс
             /// </summary>
-            [StringValue("25E-6")] Scal_25mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(25)] Scal_25mkSec,
 
             /// <summary>
             /// 50 мкс
             /// </summary>
-            [StringValue("50E-6")] Scal_50mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(50)] Scal_50mkSec,
 
             /// <summary>
             /// 100 мкс
             /// </summary>
-            [StringValue("100E-6")] Scal_100mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(100)] Scal_100mkSec,
 
             /// <summary>
             /// 250 мкс
             /// </summary>
-            [StringValue("250E-6")] Scal_250mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(250)] Scal_250mkSec,
 
             /// <summary>
             /// 500 мкс
             /// </summary>
-            [StringValue("500E-6")] Scal_500mkSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Micro)]
+            [DoubleValue(500)] Scal_500mkSec,
 
             /// <summary>
             /// 1 мс
             /// </summary>
-            [StringValue("1E-3")] Scal_1mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(1)] Scal_1mSec,
 
             /// <summary>
             /// 2.5 мс
             /// </summary>
-            [StringValue("2.5E-3")] Scal_2_5mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(2.5)] Scal_2_5mSec,
 
             /// <summary>
             /// 5 мс
             /// </summary>
-            [StringValue("5E-3")] Scal_5mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(5)] Scal_5mSec,
 
             /// <summary>
             /// 10 мс
             /// </summary>
-            [StringValue("10E-3")] Scal_10mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(10)] Scal_10mSec,
 
             /// <summary>
             /// 25 мс
             /// </summary>
-            [StringValue("25E-3")] Scal_mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(25)] Scal_25mSec,
 
             /// <summary>
             /// 50 мс
             /// </summary>
-            [StringValue("50E-3")] Scal_50mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(50)] Scal_50mSec,
 
             /// <summary>
             /// 100 мс
             /// </summary>
-            [StringValue("100E-3")] Scal_100mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(100)] Scal_100mSec,
 
             /// <summary>
             /// 250 мс
             /// </summary>
-            [StringValue("250E-3")] Scal_250mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(250)] Scal_250mSec,
 
             /// <summary>
             /// 500 мс
             /// </summary>
-            [StringValue("500E-3")] Scal_500mSec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(500)] Scal_500mSec,
 
             /// <summary>
             /// 1 с
             /// </summary>
-            [StringValue("1")] Scal_1Sec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.None)]
+            [DoubleValue(1)] Scal_1Sec,
 
             /// <summary>
             /// 2.5 с
             /// </summary>
-            [StringValue("2.5")] Scal_2_5Sec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.None)]
+            [DoubleValue(2.5)] Scal_2_5Sec,
 
             /// <summary>
             /// 5 с
             /// </summary>
-            [StringValue("5")] Scal_5Sec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.None)]
+            [DoubleValue(5)] Scal_5Sec,
 
             /// <summary>
             /// 10 с
             /// </summary>
-            [StringValue("10")] Scal_10Sec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.None)]
+            [DoubleValue(10)] Scal_10Sec,
 
             /// <summary>
             /// 25 с
             /// </summary>
-            [StringValue("25")] Scal_25Sec,
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.None)]
+            [DoubleValue(25)] Scal_25Sec,
 
             /// <summary>
             /// 50 с
             /// </summary>
-            [StringValue("50")] Scal_50Sec
+            [MeasureUnitsValue(MeasureUnits.sec)]
+            [UnitMultipliers(UnitMultipliers.None)]
+            [DoubleValue(50)] Scal_50Sec
         }
 
         public enum HorizontalView
@@ -423,56 +488,78 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <summary>
             /// 2 mV
             /// </summary>
-            [DoubleValue(0.002)] Scale_2mV,
+            [MeasureUnitsValue(MeasureUnits.V)]
+            [UnitMultipliers(UnitMultipliers.Mili)] 
+            [DoubleValue(2)] Scale_2mV,
 
             /// <summary>
             /// 5 mV
             /// </summary>
-            [DoubleValue(0.005)] Scale_5mV,
+            [MeasureUnitsValue(MeasureUnits.V)] 
+            [UnitMultipliers(UnitMultipliers.Mili)] 
+            [DoubleValue(5)] Scale_5mV,
 
             /// <summary>
             /// 10 mV
             /// </summary>
-            [DoubleValue(0.01)] Scale_10mV,
+            [MeasureUnitsValue(MeasureUnits.V)] 
+            [UnitMultipliers(UnitMultipliers.Mili)] 
+            [DoubleValue(10)] Scale_10mV,
 
             /// <summary>
             /// 20 mV
             /// </summary>
-            [DoubleValue(0.02)] Scale_20mV,
+            [MeasureUnitsValue(MeasureUnits.V)] 
+            [UnitMultipliers(UnitMultipliers.Mili)] 
+            [DoubleValue(20)] Scale_20mV,
 
             /// <summary>
             /// 50 mV
             /// </summary>
-            [DoubleValue(0.05)] Scale_50mV,
+            [MeasureUnitsValue(MeasureUnits.V)] 
+            [UnitMultipliers(UnitMultipliers.Mili)] 
+            [DoubleValue(50)] Scale_50mV,
 
             /// <summary>
             /// 100 mV
             /// </summary>
-            [DoubleValue(0.1)] Scale_100mV,
+            [MeasureUnitsValue(MeasureUnits.V)] 
+            [UnitMultipliers(UnitMultipliers.Mili)] 
+            [DoubleValue(100)] Scale_100mV,
 
             /// <summary>
             /// 200 mV
             /// </summary>
-            [DoubleValue(0.2)] Scale_200mV,
+            [MeasureUnitsValue(MeasureUnits.V)] 
+            [UnitMultipliers(UnitMultipliers.Mili)] 
+            [DoubleValue(200)] Scale_200mV,
 
             /// <summary>
             /// 500 mV
             /// </summary>
-            [DoubleValue(0.5)] Scale_500mV,
+            [MeasureUnitsValue(MeasureUnits.V)]
+            [UnitMultipliers(UnitMultipliers.Mili)]
+            [DoubleValue(500)] Scale_500mV,
 
             /// <summary>
             /// 1000 mV
             /// </summary>
+            [MeasureUnitsValue(MeasureUnits.V)]
+            [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(1)] Scale_1V,
 
             /// <summary>
             /// 2000 mV
             /// </summary>
+            [MeasureUnitsValue(MeasureUnits.V)]
+            [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(2)] Scale_2V,
 
             /// <summary>
             /// 5000 mV
             /// </summary>
+            [MeasureUnitsValue(MeasureUnits.V)]
+            [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(5)] Scale_5V
         }
 
@@ -758,8 +845,9 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <returns></returns>
                 public TDS_Oscilloscope SetSCAle(ChanelSet chanel, VerticalScale inScale)
                 {
+                    double setVertScale = inScale.GetUnitMultipliersValue() * inScale.GetDoubleValue();
                     _tdsOscilloscope
-                       .WriteLine($"{chanel}:scale {inScale.GetDoubleValue().ToString().Replace(',', '.')}");
+                       .WriteLine($"{chanel}:scale {setVertScale.ToString().Replace(',', '.')}");
                     return _tdsOscilloscope;
                 }
 
@@ -944,9 +1032,10 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// </summary>
             /// <param name = "horizontalSc">Допустимое значение временной развертки.</param>
             /// <returns>Объекта осциллографа.</returns>
-            public TDS_Oscilloscope SetHorizontalScale(HorizontalSCAle horizontalSc)
+            public TDS_Oscilloscope SetHorizontalScale(HorizontalSCAle inHorizontalScale)
             {
-                _tdsOscilloscope.WriteLine($"HORi:SCAL {horizontalSc.GetStringValue()}");
+                double horizontScale = inHorizontalScale.GetUnitMultipliersValue() * inHorizontalScale.GetDoubleValue();
+                _tdsOscilloscope.WriteLine($"hor:sca {horizontScale.ToString().Replace(',','.')}");
                 return _tdsOscilloscope;
             }
 
