@@ -2,9 +2,13 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Xml;
 using AP.Utils.Data;
 using AP.Utils.Helps;
+using ASMC.Data.Model;
+using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 
 namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 {
@@ -181,6 +185,12 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         public CSource Source { get; }
 
         #endregion
+        /// <summary>
+        /// Список (словарь) возможных моделей активных головок.
+        /// </summary>
+        public readonly Dictionary<string, ActiveHeadFor9500B> ActiveHeadDictionary = 
+            new Dictionary<string, ActiveHeadFor9500B>();
+        
 
         public Calibr9500B()
         {
@@ -196,6 +206,45 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 new Command("", "", 1)
                 
             };
+
+            //список возможных головок калибратора
+            ActiveHeadDictionary.Add("9510", new ActiveHead9510());
+            ActiveHeadDictionary.Add("9530", new ActiveHead9530());
+            ActiveHeadDictionary.Add("9550", new ActiveHead9550());
+            ActiveHeadDictionary.Add("9560", new ActiveHead9560());
+        }
+
+        /// <summary>
+        /// Найдет каналы, на которых установлена модель головки.
+        /// </summary>
+        /// <param name="head">Головка которую хотим найти.</param>
+        /// <returns></returns>
+        public  List<TDS_Oscilloscope.ChanelSet> FindActiveHeadOnChanel(ActiveHeadFor9500B head)
+        {
+            List<TDS_Oscilloscope.ChanelSet> resultHeadList = new List<TDS_Oscilloscope.ChanelSet>();
+            for (int i = 1; i <= 5; i++)
+            {
+                string[] answer = QueryLine($"ROUT:FITT? CH{i}").Split(',');
+                if (answer[0].Equals(head.GetModelName)) resultHeadList.Add((TDS_Oscilloscope.ChanelSet)i);
+            }
+
+            return resultHeadList;
+        }
+
+        /// <summary>
+        /// Возвращает полный переченб подключенных головок к каналам.
+        /// </summary>
+        /// <returns>Словарь: номер канала - модель головы.</returns>
+        public Dictionary<TDS_Oscilloscope.ChanelSet, ActiveHeadFor9500B> FindAllActiveHead()
+        {
+            Dictionary<TDS_Oscilloscope.ChanelSet, ActiveHeadFor9500B> resultDict = new Dictionary<TDS_Oscilloscope.ChanelSet, ActiveHeadFor9500B>();
+            for (int i = 1; i <= 5; i++)
+            {
+                string[] answer = QueryLine($"ROUT:FITT? CH{i}").Split(',');
+                if (!answer[0].Equals("NONE")&& !answer[0].Equals("CABL")) resultDict.Add((TDS_Oscilloscope.ChanelSet)i, ActiveHeadDictionary[answer[0]]);
+            }
+
+            return resultDict.Count == 0? null: resultDict;
         }
 
         /// <summary>
@@ -597,4 +646,99 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             #endregion
         }
     }
+
+    public abstract class ActiveHeadFor9500B
+    {
+        protected string ModelName;
+
+        /// <summary>
+        /// Максимальная частота для модели активной головки.
+        /// </summary>
+        private MeasPoint MaxFreq;
+        /// <summary>
+        /// Длительность фронта для данной головки
+        /// </summary>
+        private MeasPoint[] ImpulseWidth;
+
+        /// <summary>
+        /// Серийный (заводской) номер.
+        /// </summary>
+        public string HeadSerialNumb { get; protected set; }
+
+        public ActiveHeadFor9500B(MeasPoint maxFreq, MeasPoint[] impulseWidth)
+        {
+            
+            MaxFreq = maxFreq;
+            ImpulseWidth = impulseWidth;
+        }
+
+        /// <summary>
+        /// Какая максимальная частота у головы.
+        /// </summary>
+        public MeasPoint GetMaxFreq
+        {
+            get { return MaxFreq; }
+        }
+
+        /// <summary>
+        /// Возможные длительности импульса головы.
+        /// </summary>
+        public MeasPoint[] GetImpulseWidthArr
+        {
+            get { return ImpulseWidth; }
+        }
+
+        public string GetModelName
+        {
+            get { return ModelName; }
+        }
+
+    }
+
+    public class ActiveHead9510 : ActiveHeadFor9500B
+    {
+        public ActiveHead9510() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, 1),
+                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 500)})
+        {
+           
+            ModelName = "9510";
+        }
+    }
+
+    public class ActiveHead9530 : ActiveHeadFor9500B
+    {
+        public ActiveHead9530() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, (decimal) 3.2),
+                                       new MeasPoint[]
+                                       {
+                                           new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 150),
+                                           new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 500)
+                                       })
+        {
+           
+            ModelName = "9530";
+        }
+    }
+
+    public class ActiveHead9550 : ActiveHeadFor9500B
+    {
+        public ActiveHead9550() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, 14),
+                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 25)})
+        {
+            
+            ModelName = "9550";
+        }
+    }
+
+    public class ActiveHead9560 : ActiveHeadFor9500B
+    {
+        public ActiveHead9560() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, 6),
+                                                new MeasPoint[] {new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 70)})
+        {
+           
+            ModelName = "9560";
+        }
+    }
+
+   
+
 }

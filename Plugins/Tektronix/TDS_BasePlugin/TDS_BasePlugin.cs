@@ -172,11 +172,16 @@ namespace TDS_BasePlugin
         public List<IBasicOperation<decimal>> DataRow { get; set; }
         private Calibr9500B calibr9500B;
         private TDS_Oscilloscope someTdsOscilloscope;
+        /// <summary>
+        /// тестируемый канал.
+        /// </summary>
+        private TDS_Oscilloscope.ChanelSet TestingChnael;
 
-        protected Oper3KoefOtkl(IUserItemOperation userItemOperation) : base(userItemOperation)
+        protected Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChnael) : base(userItemOperation)
         {
             Name = "Определение погрешности коэффициентов отклонения";
             DataRow = new List<IBasicOperation<decimal>>();
+            TestingChnael = inTestingChnael;
             //подключение к каналу это наверное можно сделать через сообщение
             // ли для каждого канала картинку нарисовать TemplateSheme
 
@@ -208,12 +213,38 @@ namespace TDS_BasePlugin
 
                 operation.BodyWork = () =>
                 {
-                    //1.нужно знать канал
-                    //2.установить развертку по вертикали
-                    //3.установить развертку по времени
-                    //4.установить усреднение
-                    //5.подать сигнал
-                    //6.снять показания с осциллографа
+                    try
+                    {
+
+                        //1.нужно знать канал
+                        someTdsOscilloscope.Chanel.SetChanelState(TestingChnael, TDS_Oscilloscope.State.ON);
+                        //2.установить развертку по вертикали
+                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(TestingChnael, currScale);
+                        //3.установить развертку по времени
+                        someTdsOscilloscope.Horizontal.SetHorizontalScale(TDS_Oscilloscope
+                                                                         .HorizontalSCAle.Scal_25mkSec);
+                        
+                        //4.установить усреднение
+                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
+                        //5.подать сигнал: меандр 1 кГц
+                        //6.снять показания с осциллографа
+
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                    finally
+                    {
+                        calibr9500B.Source.Output(Calibr9500B.State.Off);
+                        someTdsOscilloscope.Chanel.SetChanelState(TestingChnael, TDS_Oscilloscope.State.OFF);
+                    }
+
+                   
+
+
+                    
                 };
             }
         }

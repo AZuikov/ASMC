@@ -490,6 +490,8 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
         public CMeasurement Measurement { get; }
 
+        public CMiscellaneous Acquire { get; }
+
         #endregion
 
         /// <summary>
@@ -505,6 +507,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             //Math = new CMath(this);
             Measurement = new CMeasurement(this);
             Chanel = new CChanel(this);
+            Acquire = new CMiscellaneous();
         }
 
         #region Methods
@@ -938,7 +941,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// </summary>
             /// <param name = "horizontalSc">Допустимое значение временной развертки.</param>
             /// <returns>Объекта осциллографа.</returns>
-            public TDS_Oscilloscope SetScale(HorizontalSCAle horizontalSc)
+            public TDS_Oscilloscope SetHorizontalScale(HorizontalSCAle horizontalSc)
             {
                 _tdsOscilloscope.WriteLine($"HORi:SCAL {horizontalSc.GetStringValue()}");
                 return _tdsOscilloscope;
@@ -1035,7 +1038,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <param name = "st">Состояние</param>
             /// <param name = "sett">Параметр</param>
             /// <returns></returns>
-            public static string AutoRange(State st, MiscellaneousSetting sett = MiscellaneousSetting.BOTH)
+            public  string AutoRange(State st, MiscellaneousSetting sett = MiscellaneousSetting.BOTH)
             {
                 return "AUTOR:STATE " + st + "\n" + "AUTOR:SETT" + sett;
             }
@@ -1044,7 +1047,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// Автоустановка
             /// </summary>
             /// <returns></returns>
-            public static string AutoSet()
+            public  string AutoSet()
             {
                 return "AUTOS EXEC";
             }
@@ -1056,7 +1059,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <param name = "num">
             /// Количество накоплений, только для <see cref = "MiscellaneousMode.AVErage" />/param>
             /// <returns></returns>
-            public static string SetDataCollection(MiscellaneousMode md,
+            public  string SetDataCollection(MiscellaneousMode md,
                 MiscellaneousNUMAV num = MiscellaneousNUMAV.Number_128)
             {
                 if (md == MiscellaneousMode.AVErage)

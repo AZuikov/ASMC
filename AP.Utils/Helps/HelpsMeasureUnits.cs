@@ -19,7 +19,8 @@ namespace AP.Utils.Helps
         [StringValue("Гц")] Herz,
         [StringValue("°C")] degC,
         [StringValue("°F")] DegF,
-        [StringValue("дБ")] Db
+        [StringValue("дБ")] Db,
+        [StringValue("сек")] sec
 
     }
     /// <summary>
