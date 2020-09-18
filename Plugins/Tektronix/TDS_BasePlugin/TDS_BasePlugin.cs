@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AP.Utils.Data;
 using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
@@ -167,11 +168,11 @@ namespace TDS_BasePlugin
 
     /*Определение погрешности коэффициентов отклонения.*/
 
-    public abstract class Oper3KoefOtkl : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper3KoefOtkl : ParagraphBase, IUserItemOperation<MeasPoint>
     {
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
         private Calibr9500B calibr9500B;
         private TDS_Oscilloscope someTdsOscilloscope;
         /// <summary>
@@ -182,7 +183,7 @@ namespace TDS_BasePlugin
         protected Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation)
         {
             Name = "Определение погрешности коэффициентов отклонения";
-            DataRow = new List<IBasicOperation<decimal>>();
+            DataRow = new List<IBasicOperation<MeasPoint>>();
             TestingChanel = inTestingChanel;
             //подключение к каналу это наверное можно сделать через сообщение
             // ли для каждого канала картинку нарисовать TemplateSheme
@@ -194,7 +195,7 @@ namespace TDS_BasePlugin
             DataRow.Clear();
             foreach (TDS_Oscilloscope.VerticalScale currScale in Enum.GetValues(typeof(TDS_Oscilloscope.VerticalScale)))
             {
-                var operation = new BasicOperationVerefication<decimal>();
+                var operation = new BasicOperationVerefication<MeasPoint>();
                 operation.InitWork = async () =>
                 {
                     try
@@ -227,15 +228,21 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Chanel.Vertical.SetSCAle(TestingChanel, currScale);
                         //3.установить развертку по времени
                         someTdsOscilloscope.Horizontal.SetHorizontalScale(TDS_Oscilloscope
-                                                                         .HorizontalSCAle.Scal_25mkSec);
+                                                                         .HorizontalSCAle.Scal_500mkSec);
                         
                         //4.установить усреднение
-                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
+                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple); //так быстрее будет
                         //5.подать сигнал: меандр 1 кГц
+                        operation.Expected = new MeasPoint(MeasureUnits.V);
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.SQU).
-                                    Source.SetVoltage(3 * (double) currScale).
-                                    Source.SetFreq(1, Multipliers.Kilo);
+                                    Source.SetVoltage().
+                                    Source.SetFreq(1, UnitMultipliers.Kilo);
+                        calibr9500B.Source.Output(Calibr9500B.State.On);
                         //6.снять показания с осциллографа
+                        
+                        someTdsOscilloscope.Measurement.SetMeas(TestingChanel, TDS_Oscilloscope.TypeMeas.PK2,1);
+                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
+                        someTdsOscilloscope.Measurement.MeasureValue(1);
 
                     }
                     catch (Exception e)

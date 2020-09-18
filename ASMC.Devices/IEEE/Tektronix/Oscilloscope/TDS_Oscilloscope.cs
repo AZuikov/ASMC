@@ -1004,14 +1004,21 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             #region Methods
 
             /// <summary>
-            /// Установить измерения
+            /// Устанавливает источник измерения (например канал осциллографа) и тип измерения.
             /// </summary>
-            /// <param name = "ch">на канале</param>
-            /// <param name = "chm">измерительный канал</param>
-            /// <param name = "tm">тип измерения</param>
+            /// <param name="ch">Номер канала осциллографа.</param>
+            /// <param name="tm">Тип измерений.</param>
+            /// <param name="MeasureNumb">Задает номер измеряемого параметра (от 1 до 4).</param>
             /// <returns></returns>
             public TDS_Oscilloscope SetMeas(ChanelSet ch, TypeMeas tm, int MeasureNumb = 1)
             {
+                if (MeasureNumb < 1 && MeasureNumb > 4)
+                {
+                    string strError =
+                        $"У осциллографа может быть только 4 измеряемых параметра.\nЗначение {MeasureNumb} вне диапазона.";
+                    Logger.Error(strError);
+                    throw new ArgumentException(strError);
+                }
                 _tdsOscilloscope.WriteLine($"MEASU:MEAS{MeasureNumb}:SOU {ch}");
                 _tdsOscilloscope.WriteLine($"MEASU:MEAS{MeasureNumb}:TYP {tm}");
                 return _tdsOscilloscope;

@@ -321,7 +321,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetFreq(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+            public Calibr9500B SetFreq(double value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -342,7 +342,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetPeriod(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+            public Calibr9500B SetPeriod(double value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:PER {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -354,7 +354,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetVoltage(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+            public Calibr9500B SetVoltage(double value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:VOLT {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -697,8 +697,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9510 : ActiveHeadFor9500B
     {
-        public ActiveHead9510() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, 1),
-                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 500)})
+        public ActiveHead9510() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 1),
+                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 500)})
         {
            
             ModelName = "9510";
@@ -707,11 +707,11 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9530 : ActiveHeadFor9500B
     {
-        public ActiveHead9530() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, (decimal) 3.2),
+        public ActiveHead9530() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, (decimal) 3.2),
                                        new MeasPoint[]
                                        {
-                                           new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 150),
-                                           new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 500)
+                                           new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 150),
+                                           new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 500)
                                        })
         {
            
@@ -721,8 +721,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9550 : ActiveHeadFor9500B
     {
-        public ActiveHead9550() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, 14),
-                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 25)})
+        public ActiveHead9550() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 14),
+                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 25)})
         {
             
             ModelName = "9550";
@@ -731,8 +731,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9560 : ActiveHeadFor9500B
     {
-        public ActiveHead9560() : base(new MeasPoint(MeasureUnits.Herz, Multipliers.Giga, 6),
-                                                new MeasPoint[] {new MeasPoint(MeasureUnits.sec, Multipliers.Pico, 70)})
+        public ActiveHead9560() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 6),
+                                                new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 70)})
         {
            
             ModelName = "9560";

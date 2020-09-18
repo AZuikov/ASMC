@@ -21,7 +21,7 @@ namespace ASMC.Data.Model
         public MeasureUnits Units { get; set; }
 
         //множитель единицы
-        public Multipliers MultipliersUnit { get; set; }
+        public UnitMultipliers UnitMultipliersUnit { get; set; }
 
         //номинал величины
         public decimal Value { get; set; }
@@ -42,7 +42,7 @@ namespace ASMC.Data.Model
         public MeasPoint()
         {
             Units = MeasureUnits.V;
-            MultipliersUnit = Multipliers.None;
+            UnitMultipliersUnit = UnitMultipliers.None;
             Value = 0;
             fakePoinFlag = false;
         }
@@ -50,13 +50,13 @@ namespace ASMC.Data.Model
         /// Измерительная точка.
         /// </summary>
         /// <param name="units">Единицы измерения величины.</param>
-        /// <param name="multipliersUnit">Множитель единицы измерения (килоб милли и т.д.).</param>
+        /// <param name="unitMultipliersUnit">Множитель единицы измерения (килоб милли и т.д.).</param>
         /// <param name="value">Номинальное значение величины.</param>
         /// <param name="fakePoint">Точка реально подается на прибор (если false)</param>
-        public MeasPoint(MeasureUnits units, Multipliers multipliersUnit, decimal value, bool fakePoint  = false)
+        public MeasPoint(MeasureUnits units, UnitMultipliers unitMultipliersUnit, decimal value, bool fakePoint  = false)
         {
             Units = units;
-            MultipliersUnit = multipliersUnit;
+            UnitMultipliersUnit = unitMultipliersUnit;
             Value = value;
             fakePoinFlag = fakePoint;
         }
@@ -65,7 +65,7 @@ namespace ASMC.Data.Model
         {
 
             //todo: Необходимо верно конвертировать значение decimal в строку, что бы не появлялась подпись со степенью десятки.
-            return $"{Value} {MultipliersUnit.GetStringValue()}{Units.GetStringValue()}";
+            return $"{Value} {UnitMultipliersUnit.GetStringValue()}{Units.GetStringValue()}";
         }
     }
 
@@ -97,8 +97,8 @@ namespace ASMC.Data.Model
         /// Конструктор можно использовать для точек с постоянным напряжением (массива частоты нет).
         /// </summary>
         /// <param name = "inNominal">Предел измерения прибора.</param>
-        /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
-        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit) : this(inNominal, inMeasureUnits, inMultipliersUnit,
+        /// <param name = "inUnitMultipliersUnit">Множитель единицы измерения.</param>
+        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, UnitMultipliers inUnitMultipliersUnit) : this(inNominal, inMeasureUnits, inUnitMultipliersUnit,
                                                                                                                      null)
         {
         }
@@ -107,12 +107,12 @@ namespace ASMC.Data.Model
         /// Конструктор для точек переменного напряжения и тока (массив с частотами вложен).
         /// </summary>
         /// <param name = "inNominal">номинал предела измерения.</param>
-        /// <param name = "inMultipliersUnit">Множитель единицы измерения.</param>
+        /// <param name = "inUnitMultipliersUnit">Множитель единицы измерения.</param>
         /// <param name = "inHerzArr">Массив частот для данной точки.</param>
-        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, Multipliers inMultipliersUnit, MeasPoint[] inHerzArr, bool fakePoint = false)
+        public AcVariablePoint(decimal inNominal, MeasureUnits inMeasureUnits, UnitMultipliers inUnitMultipliersUnit, MeasPoint[] inHerzArr, bool fakePoint = false)
         {
             VariableBaseValueMeasPoint.Value = inNominal;
-            VariableBaseValueMeasPoint.MultipliersUnit = inMultipliersUnit;
+            VariableBaseValueMeasPoint.UnitMultipliersUnit = inUnitMultipliersUnit;
             VariableBaseValueMeasPoint.Units = inMeasureUnits;
             fakePointFlag = fakePoint;
             Herz = inHerzArr;

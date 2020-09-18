@@ -1,8 +1,41 @@
 ﻿using System;
 using System.Collections;
+using AP.Utils.Helps;
 
 namespace AP.Utils.Data
 {
+    /// <inheritdoc />
+    [AttributeUsage(AttributeTargets.Field)]
+    public class MeasureUnitsValueAttribute : Attribute
+    {
+        /// <inheritdoc />
+        public MeasureUnitsValueAttribute(MeasureUnits value)
+        {
+            Value = value;
+        }
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <value></value>
+        public MeasureUnits Value { get; }
+    }
+
+    /// <inheritdoc />
+    [AttributeUsage(AttributeTargets.Field)]
+    public class UnitMultipliersAttribute : Attribute
+    {
+        /// <inheritdoc />
+        public UnitMultipliersAttribute(UnitMultipliers value)
+        {
+            Value = value;
+        }
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <value></value>
+        public UnitMultipliers Value { get; }
+    }
+
     /// <inheritdoc />
     [AttributeUsage(AttributeTargets.Field)]
     public class StringValueAttribute : Attribute

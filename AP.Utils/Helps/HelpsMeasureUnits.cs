@@ -26,7 +26,7 @@ namespace AP.Utils.Helps
     /// <summary>
     /// Содержит доступные множители и их обозначения.
     /// </summary>
-    public enum Multipliers
+    public enum UnitMultipliers
     {
         /// <summary>
         ///  Множетель пико 1Е-12.

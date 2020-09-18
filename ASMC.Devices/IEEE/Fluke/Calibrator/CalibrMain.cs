@@ -124,9 +124,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <param name="value">Значение величины, которое необходимо установить.</param>
                         /// <param name = "mult">Множитель единицы измрения (нано, кило, милли и т.д.)</param>
                         /// <returns>Сформированую команду</returns>
-                        public CalibrMain SetValue(decimal value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+                        public CalibrMain SetValue(decimal value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
                         {
-                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}V, 0{ JoinValueMult((double)0, AP.Utils.Helps.Multipliers.None)}HZ");
+                            _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}V, 0{ JoinValueMult((double)0, AP.Utils.Helps.UnitMultipliers.None)}HZ");
                             _calibrMain.Sinchronization();
                             return _calibrMain;
                         }
@@ -160,12 +160,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// </summary>
                         /// <param name = "value"></param>
                         /// <param name="hertz">The hertz.</param>
-                        /// <param name="voltMult">Множитель устанавливаемой еденицы напряжения <смотреть cref="Multipliers"/> class.</param>
+                        /// <param name="voltMult">Множитель устанавливаемой еденицы напряжения <смотреть cref="UnitMultipliers"/> class.</param>
                         /// <param name = "herzMult"></param>
                         /// <returns>Сформированую команду</returns>
 
                         //todo: множитель для частоты нужно уточнить в документации и сделать перечисление
-                        public CalibrMain SetValue(decimal value,decimal hertz, Multipliers voltMult, Multipliers herzMult = AP.Utils.Helps.Multipliers.None)
+                        public CalibrMain SetValue(decimal value,decimal hertz, UnitMultipliers voltMult, UnitMultipliers herzMult = AP.Utils.Helps.UnitMultipliers.None)
                         {
                             string SendComand = $@"OUT {JoinValueMult(value, voltMult)}V, {JoinValueMult(hertz, herzMult)}HZ";
                             _calibrMain.WriteLine(SendComand);
@@ -238,7 +238,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <summary>
                         /// Генерирует команду установки постоянного тока указной величины
                         /// </summary> 
-                        public CalibrMain SetValue(decimal value, Multipliers mult= AP.Utils.Helps.Multipliers.None)
+                        public CalibrMain SetValue(decimal value, UnitMultipliers mult= AP.Utils.Helps.UnitMultipliers.None)
                         {
                             _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}A, 0Hz");
                             return _calibrMain;
@@ -271,7 +271,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <param name = "voltMult"></param>
                         /// <param name = "herzMult"></param>
                         /// <returns>Сформированую команду</returns>
-                        public CalibrMain SetValue(decimal value, decimal hertz, Multipliers voltMult, Multipliers herzMult = AP.Utils.Helps.Multipliers.None)
+                        public CalibrMain SetValue(decimal value, decimal hertz, UnitMultipliers voltMult, UnitMultipliers herzMult = AP.Utils.Helps.UnitMultipliers.None)
                         {
                             string SendComand =
                                 $@"OUT {JoinValueMult(value, voltMult)}A, {JoinValueMult(hertz, herzMult)}HZ";
@@ -332,7 +332,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <param name="value">Значение</param>
                     /// <param name = "mult"></param>
                     /// <returns></returns>
-                    public CalibrMain SetValue(decimal value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+                    public CalibrMain SetValue(decimal value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
                     {
                         _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}OHM");
                         return _calibrMain;
@@ -378,7 +378,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <param name="value">Значение</param>
                     /// <param name = "mult"></param>
                     /// <returns></returns>
-                    public CalibrMain SetValue(decimal value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+                    public CalibrMain SetValue(decimal value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
                     {
                         _calibrMain.WriteLine($@"OUT {JoinValueMult(value, mult)}F");
                         return _calibrMain;
