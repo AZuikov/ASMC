@@ -52,6 +52,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\AP.Utils\AP.Utils.csproj">
+      <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
+      <Name>AP.Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ASMC.Common\ASMC.Common.csproj">
       <Project>{7fe244d8-06c9-4b0e-b2e5-7e92ac14e48d}</Project>
       <Name>ASMC.Common</Name>

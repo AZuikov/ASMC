@@ -219,13 +219,13 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// </summary>
         /// <param name="head">Головка которую хотим найти.</param>
         /// <returns></returns>
-        public  List<TDS_Oscilloscope.ChanelSet> FindActiveHeadOnChanel(ActiveHeadFor9500B head)
+        public  List<Chanel> FindActiveHeadOnChanel(ActiveHeadFor9500B head)
         {
-            List<TDS_Oscilloscope.ChanelSet> resultHeadList = new List<TDS_Oscilloscope.ChanelSet>();
+            List<Chanel> resultHeadList = new List<Chanel>();
             for (int i = 1; i <= 5; i++)
             {
                 string[] answer = QueryLine($"ROUT:FITT? CH{i}").Split(',');
-                if (answer[0].Equals(head.GetModelName)) resultHeadList.Add((TDS_Oscilloscope.ChanelSet)i);
+                if (answer[0].Equals(head.GetModelName)) resultHeadList.Add((Chanel)i);
             }
 
             return resultHeadList;
@@ -235,13 +235,13 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// Возвращает полный переченб подключенных головок к каналам.
         /// </summary>
         /// <returns>Словарь: номер канала - модель головы.</returns>
-        public Dictionary<TDS_Oscilloscope.ChanelSet, ActiveHeadFor9500B> FindAllActiveHead()
+        public Dictionary<Chanel, ActiveHeadFor9500B> FindAllActiveHead()
         {
-            Dictionary<TDS_Oscilloscope.ChanelSet, ActiveHeadFor9500B> resultDict = new Dictionary<TDS_Oscilloscope.ChanelSet, ActiveHeadFor9500B>();
+            Dictionary<Chanel, ActiveHeadFor9500B> resultDict = new Dictionary<Chanel, ActiveHeadFor9500B>();
             for (int i = 1; i <= 5; i++)
             {
                 string[] answer = QueryLine($"ROUT:FITT? CH{i}").Split(',');
-                if (!answer[0].Equals("NONE")&& !answer[0].Equals("CABL")) resultDict.Add((TDS_Oscilloscope.ChanelSet)i, ActiveHeadDictionary[answer[0]]);
+                if (!answer[0].Equals("NONE")&& !answer[0].Equals("CABL")) resultDict.Add((Chanel)i, ActiveHeadDictionary[answer[0]]);
             }
 
             return resultDict.Count == 0? null: resultDict;
