@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using AP.Utils.Data;
 using AP.Utils.Helps;
@@ -238,11 +239,11 @@ namespace TDS_BasePlugin
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<MeasPoint>;
                 if (dds == null) continue;
-                dataRow[0] = ChanelVerticalRange.ToString()+"/Дел";
-                dataRow[1] = dds.Expected.ToString();
-                dataRow[3] = dds.Getting.ToString();
-                dataRow[4] = dds.LowerTolerance.ToString();
-                dataRow[4] = dds.UpperTolerance.ToString();
+                dataRow[0] = ChanelVerticalRange.Description+"/Дел";
+                dataRow[1] = dds.Expected?.Description;
+                dataRow[2] = dds.Getting?.Description;
+                dataRow[3] = dds.LowerTolerance?.Description;
+                dataRow[4] = dds.UpperTolerance?.Description;
                 
                 if (dds.IsGood == null)
                     dataRow[5] = "не выполнено";
@@ -289,7 +290,7 @@ namespace TDS_BasePlugin
                         //теперь нужно понять с каким каналом мы будем работать на калибраторе
                         var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
                         calibr9500B.Route.Chanel.SetChanel(chnael);
-                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_50);
+                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
                         //2.установить развертку по вертикали
                         someTdsOscilloscope.Chanel.Vertical.SetSCAle(TestingChanel, currScale);
                         //смещение для номального отображения
@@ -299,6 +300,7 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
                         someTdsOscilloscope.Trigger.SetTriggerEdgeSource(TestingChanel);
                         someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
+                        
 
                         //3.установить развертку по времени
                         someTdsOscilloscope.Horizontal.SetHorizontalScale(TDS_Oscilloscope
@@ -319,11 +321,18 @@ namespace TDS_BasePlugin
                         
                         someTdsOscilloscope.Measurement.SetMeas(TestingChanel, TDS_Oscilloscope.TypeMeas.PK2,1);
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
-                        decimal measResult = someTdsOscilloscope.Measurement.MeasureValue(1);
+                        someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
+                        Thread.Sleep(2500);
+                        someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
+                        decimal measResult = someTdsOscilloscope.Measurement.MeasureValue(1)/ (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
+                        AP.Math.MathStatistics.Round(ref measResult, 2);
+
+                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
+
                         operation.Getting= new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), measResult);
                         operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value* 4 / 100);
                         operation.UpperTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value + operation.Error.Value);
-                        operation.UpperTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value - operation.Error.Value);
+                        operation.LowerTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value - operation.Error.Value);
 
                         operation.IsGood = () =>
                         {

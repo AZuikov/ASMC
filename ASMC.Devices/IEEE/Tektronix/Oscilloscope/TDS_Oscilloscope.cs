@@ -584,10 +584,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
 
         #endregion Property
 
-        /// <summary>
-        /// Набор разверток по вертикали, характерный для конкретной модели осциллографа.
-        /// </summary>
-        protected VerticalScale[] VertScaleChanel;
+       
 
         public TDS_Oscilloscope()
         {
@@ -597,7 +594,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             //Math = new CMath(this);
             Measurement = new CMeasurement(this);
             Chanel = new CChanel(this);
-            Acquire = new CMiscellaneous();
+            Acquire = new CMiscellaneous(this);
             Trigger = new CTrigger(this);
             DealySending = 100;
 
@@ -822,7 +819,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <param name = "verticalOffset">Величина смещения в делениях. Может быть дробным числом.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetPosition(ChanelSet chanel, double verticalOffset)
+                public TDS_Oscilloscope SetPosition(ChanelSet chanel, int verticalOffset)
                 {
                     _tdsOscilloscope.WriteLine($"{chanel}:pos {verticalOffset}");
                     return _tdsOscilloscope;
@@ -1153,24 +1150,34 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
         {
             #region Methods
 
+            private TDS_Oscilloscope _tdsOscilloscope;
+
+            public CMiscellaneous(TDS_Oscilloscope inOscilloscope)
+            {
+                _tdsOscilloscope = inOscilloscope;
+            }
+
             /// <summary>
             /// Выбор автодиапазона(TDS1000B, TDS2000B, and TPS2000 only)
             /// </summary>
             /// <param name = "st">Состояние</param>
             /// <param name = "sett">Параметр</param>
             /// <returns></returns>
-            public string AutoRange(State st, MiscellaneousSetting sett = MiscellaneousSetting.BOTH)
+            public TDS_Oscilloscope AutoRange(State st, MiscellaneousSetting sett = MiscellaneousSetting.BOTH)
             {
-                return "AUTOR:STATE " + st + "\n" + "AUTOR:SETT" + sett;
+                _tdsOscilloscope.WriteLine($"AUTOR:STATE {st}"); 
+                _tdsOscilloscope.WriteLine($"AUTOR:SETT {sett}");
+                return _tdsOscilloscope;
             }
 
             /// <summary>
             /// Автоустановка
             /// </summary>
             /// <returns></returns>
-            public string AutoSet()
+            public TDS_Oscilloscope AutoSet()
             {
-                return "AUTOS EXEC";
+                _tdsOscilloscope.WriteLine("AUTOS EXEC");
+                return _tdsOscilloscope;
             }
 
             /// <summary>
@@ -1180,12 +1187,16 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <param name = "num">
             /// Количество накоплений, только для <see cref = "MiscellaneousMode.AVErage" />/param>
             /// <returns></returns>
-            public string SetDataCollection(MiscellaneousMode md,
-                MiscellaneousNUMAV num = MiscellaneousNUMAV.Number_128)
+            public TDS_Oscilloscope SetDataCollection(MiscellaneousMode md, MiscellaneousNUMAV num = MiscellaneousNUMAV.Number_128)
             {
+                _tdsOscilloscope.WriteLine($"ACQuire:MODe {md}");
                 if (md == MiscellaneousMode.AVErage)
-                    return "ACQuire:MODe " + md + "\nACQuire:NUMAVg " + (int)num;
-                return "ACQuire:MODe " + md;
+                {
+                       
+                    _tdsOscilloscope.WriteLine($"ACQuire:NUMAVg {(int)num}");
+                }
+
+                return _tdsOscilloscope;
             }
 
             #endregion Methods
@@ -1303,7 +1314,17 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <returns></returns>
             public TDS_Oscilloscope SetTriggerLevel(double inLevel)
             {
-                _tdsOscilloscope.WriteLine($"TRIG:MAI:LEV {inLevel}");
+                _tdsOscilloscope.WriteLine($"TRIG:MAI:LEV {inLevel.ToString().Replace(',','.')}");
+                return _tdsOscilloscope;
+            }
+
+            /// <summary>
+            /// Устанавливает уровень срабатывания триггера на 50 % от уровня входного сигнала.
+            /// </summary>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetTriggerLevelOn50Percent()
+            {
+                _tdsOscilloscope.WriteLine($"trig:main setlevel");
                 return _tdsOscilloscope;
             }
 
