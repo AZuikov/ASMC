@@ -67,4 +67,19 @@ namespace TDS2022B
        
     }
 
+    public class Oper4MeasureTimeIntervals : TDS_BasePlugin.Oper4MeasureTimeIntervals
+    {
+        public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
+        {
+            calibr9500B = new Calibr9500B();
+            someTdsOscilloscope = new TDS_2022B();
+            horizontalScAleSet =new [] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec, 
+                TDS_Oscilloscope.HorizontalSCAle.Scal_100nSec, 
+                TDS_Oscilloscope.HorizontalSCAle.Scal_500nSec, 
+                TDS_Oscilloscope.HorizontalSCAle.Scal_1mSec, 
+                TDS_Oscilloscope.HorizontalSCAle.Scal_5mSec
+            };
+        }
+    }
+
 }
