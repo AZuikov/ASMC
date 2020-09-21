@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
+using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
 using TDS_BasePlugin;
 
@@ -36,12 +39,13 @@ namespace TDS2022B
         {
             
             TestDevices = new IDeviceUi[]
-                {new Device { Devices = new IDeviceBase[] { new TDS_2022B()}, Description = "Цифровой портативный мультиметр"}};
+                {new Device { Devices = new IDeviceBase[] { new TDS_2022B()}, Description = "Цифровой осциллограф."}};
 
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new Oper1VisualTest(this),
-                new Oper2Oprobovanie(this)
+                new Oper2Oprobovanie(this),
+                new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1)
             };
         }
 
@@ -49,6 +53,18 @@ namespace TDS2022B
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class Oper3KoefOtkl : TDS_BasePlugin.Oper3KoefOtkl
+    {
+        public Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
+        {
+            calibr9500B  = new Calibr9500B();
+            someTdsOscilloscope = new TDS_2022B();
+        }
+
+
+       
     }
 
 }

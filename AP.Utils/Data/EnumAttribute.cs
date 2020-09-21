@@ -122,21 +122,23 @@ namespace AP.Utils.Data
             return output;
         }
 
-        public static double GetUnitMultipliersValue(this Enum value)
+        public static UnitMultipliers GetUnitMultipliersValue(this Enum value)
         {
             UnitMultipliers output = UnitMultipliers.None ;
             var type = value.GetType();
             if (UnitMultipliersValues.ContainsKey(value))
-                output = UnitMultipliers.Giga;//((UnitMultipliers)UnitMultipliersValues[value]).Value;
+                output = ((UnitMultipliersAttribute)UnitMultipliersValues[value]).Value;
             else
             {
                 var fi = type.GetField(value.ToString());
-                if (!(fi.GetCustomAttributes(typeof(UnitMultipliersAttribute), false) is UnitMultipliersAttribute[] attrs) ||
-                    attrs.Length <= 0) return output.GetDoubleValue();
+                if (!(fi.GetCustomAttributes(typeof(UnitMultipliersAttribute), false) is UnitMultipliersAttribute[]
+                        attrs) ||
+                    attrs.Length <= 0) return output;
                 UnitMultipliersValues.Add(value, attrs[0]);
                 output = attrs[0].Value;
             }
-            return output.GetDoubleValue();
+
+            return output;
         }
     }
 }

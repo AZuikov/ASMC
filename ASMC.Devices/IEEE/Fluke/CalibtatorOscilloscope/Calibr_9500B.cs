@@ -9,18 +9,22 @@ using AP.Utils.Data;
 using AP.Utils.Helps;
 using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
+using NLog;
 
 namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 {
+
     public class Calibr9500B : IeeeBase
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public enum Chanel
         {
-            Ch1,
-            Ch2,
-            Ch3,
-            Ch4,
-            Ch5
+            Ch1 = 1,
+            Ch2 = 2,
+            Ch3 = 3,
+            Ch4 = 4,
+            Ch5 = 5
         }
 
         public enum Direction
@@ -225,7 +229,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             for (int i = 1; i <= 5; i++)
             {
                 string[] answer = QueryLine($"ROUT:FITT? CH{i}").Split(',');
-                if (answer[0].Equals(head.GetModelName)) resultHeadList.Add((Chanel)i);
+                if (answer[0].Equals(head.GetModelName)) 
+                    resultHeadList.Add((Chanel)i);
             }
 
             return resultHeadList;
@@ -273,8 +278,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     new Command("N", "н", 1E-9),
                     new Command("U", "мк", 1E-6),
                     new Command("M", "м", 1E-3),
-                    new Command("", "", 1)
-                    //new Command("K", "к", 1E3)
+                    new Command("", "", 1),
+                    new Command("K", "к", 1E3)
                 };
             }
 
@@ -356,7 +361,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <returns></returns>
             public Calibr9500B SetVoltage(double value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
             {
-                _calibrMain.WriteLine($@"SOUR:VOLT {JoinValueMult(value, mult)}");
+                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value *  mult.GetDoubleValue()).ToString().Replace(',','.')}");
                 return _calibrMain;
             }
 
@@ -583,6 +588,13 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 /// <returns></returns>
                 public Calibr9500B SetChanel(Chanel ch)
                 {
+                    if (ch == null)
+                    {
+                        string errorStr = $"Невозможно установить канал на калибраторе. Значение параметра: {ch}";
+                        Logger.Error(errorStr);
+                        throw new ArgumentException(errorStr);
+                    }
+
                     _calibMain.WriteLine("ROUT:SIGN " + ch);
                     return _calibMain;
                 }

@@ -598,6 +598,9 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             Measurement = new CMeasurement(this);
             Chanel = new CChanel(this);
             Acquire = new CMiscellaneous();
+            Trigger = new CTrigger(this);
+            DealySending = 100;
+
         }
 
         #region Methods
@@ -819,9 +822,9 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <param name = "chanel">Канал осциллографа.</param>
                 /// <param name = "verticalOffset">Величина смещения в делениях. Может быть дробным числом.</param>
                 /// <returns></returns>
-                public TDS_Oscilloscope SetPosition(ChanelSet chanel, decimal verticalOffset)
+                public TDS_Oscilloscope SetPosition(ChanelSet chanel, double verticalOffset)
                 {
-                    _tdsOscilloscope.WriteLine($"{chanel}:pos {(double)verticalOffset}");
+                    _tdsOscilloscope.WriteLine($"{chanel}:pos {verticalOffset}");
                     return _tdsOscilloscope;
                 }
 
@@ -845,7 +848,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <returns></returns>
                 public TDS_Oscilloscope SetSCAle(ChanelSet chanel, VerticalScale inScale)
                 {
-                    double setVertScale = inScale.GetUnitMultipliersValue() * inScale.GetDoubleValue();
+                    double setVertScale = inScale.GetUnitMultipliersValue().GetDoubleValue() * inScale.GetDoubleValue();
                     _tdsOscilloscope
                        .WriteLine($"{chanel}:scale {setVertScale.ToString().Replace(',', '.')}");
                     return _tdsOscilloscope;
@@ -1034,7 +1037,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <returns>Объекта осциллографа.</returns>
             public TDS_Oscilloscope SetHorizontalScale(HorizontalSCAle inHorizontalScale)
             {
-                double horizontScale = inHorizontalScale.GetUnitMultipliersValue() * inHorizontalScale.GetDoubleValue();
+                double horizontScale = inHorizontalScale.GetUnitMultipliersValue().GetDoubleValue() * inHorizontalScale.GetDoubleValue();
                 _tdsOscilloscope.WriteLine($"hor:sca {horizontScale.ToString().Replace(',','.')}");
                 return _tdsOscilloscope;
             }
@@ -1088,6 +1091,15 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             public CMeasurement(TDS_Oscilloscope inTdsOscilloscope)
             {
                 _tdsOscilloscope = inTdsOscilloscope;
+
+                Multipliers = new ICommand[]
+                {
+                    new Command("N", "н", 1E-9),
+                    new Command("U", "мк", 1E-6),
+                    new Command("M", "м", 1E-3),
+                    new Command("", "", 1),
+                    new Command("K", "к", 1e3)
+                };
             }
 
             #region Methods
@@ -1179,10 +1191,12 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             #endregion Methods
         }
 
+        public CTrigger Trigger { get; protected set; }
+
         /// <summary>
         /// Управление тригером
         /// </summary>
-        public class Trigger
+        public class CTrigger
         {
             /// <summary>
             /// Режим работы
@@ -1247,11 +1261,80 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 [StringValue("AC LINE")] AC_LINE
             }
 
-            //public static string SetTriger(Sours sur, Slope sp,Mode md= Mode.AUTO, double Level=0)
+            public enum Type
+            {
+                EDGE,
+                VIDeo
+            }
+
+            private TDS_Oscilloscope _tdsOscilloscope;
+
+            public CTrigger( TDS_Oscilloscope incOscilloscope)
+            {
+                _tdsOscilloscope = incOscilloscope;
+            }
+
+            /// <summary>
+            /// Устанавдивает режимработы триггера (auto/manual).
+            /// </summary>
+            /// <param name="inMode">Режим работы триггера.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetTriggerMode(Mode inMode)
+            {
+                _tdsOscilloscope.WriteLine($"TRIG:MAI:MODe {inMode}");
+                return _tdsOscilloscope;
+            }
+
+            /// <summary>
+            /// Задает тип сигнала для срабатывания триггера.
+            /// </summary>
+            /// <param name="inType">Тип сигнала</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetTriggerType(Type inType)
+            {
+                _tdsOscilloscope.WriteLine($"TRIG:MAI:TYPe {inType}");
+                return _tdsOscilloscope;
+            }
+
+            /// <summary>
+            /// Задает уровень срадатывания триггера.
+            /// </summary>
+            /// <param name="inLevel">Уровень сигнала в вольтах.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetTriggerLevel(double inLevel)
+            {
+                _tdsOscilloscope.WriteLine($"TRIG:MAI:LEV {inLevel}");
+                return _tdsOscilloscope;
+            }
+
+            /// <summary>
+            /// Задает источник сигнала для триггера в режиме EDGE.
+            /// </summary>
+            /// <param name="inChanel">Источник сигнала для триггера.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetTriggerEdgeSource(ChanelSet inChanel)
+            {
+                _tdsOscilloscope.WriteLine($"TRIG:MAIn:EDGE:SOU {inChanel}");
+                return _tdsOscilloscope;
+            }
+
+            /// <summary>
+            /// Задает срабатывание триггера на фронт или спад в режиме EDGE.
+            /// </summary>
+            /// <param name="inSlope">Режимы срабатывания триггера.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetTriggerEdgeSlope(Slope inSlope)
+            {
+                _tdsOscilloscope.WriteLine($"TRIG:MAI:EDGE:SLO {inSlope}");
+                return _tdsOscilloscope;
+            }
+
+
+            //public string SetTriger(Sours sur, Slope sp, Mode md = Mode.AUTO, double Level = 0)
             //{
-            //    if (md!= Mode.AUTO)
+            //    if (md != Mode.AUTO)
             //    {
-            //        return "TRIG:MAIn:EDGE:SOU " + MyEnum.GetStringValue(sur) + "\nTRIG:MAI:EDGE:SLO " + sp.ToString() + "\nTRIG:MAI:MODe " + md.ToString()+ "\nTRIG:MAI:LEV " +Level;
+            //        return "TRIG:MAIn:EDGE:SOU " + MyEnum.GetStringValue(sur) + "\nTRIG:MAI:EDGE:SLO " + sp.ToString() + "\nTRIG:MAI:MODe " + md.ToString() + "\nTRIG:MAI:LEV " + Level;
             //    }
             //    else
             //    {
@@ -1261,30 +1344,6 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             //}
         }
 
-        ///// <summary>
-        ///// Пребразует данные в нужных единицах
-        ///// </summary>
-        ///// <param name = "date">The date.</param>
-        ///// <param name = "Mult">The mult.</param>
-        ///// <returns></returns>
-        //public double DataPreparationAndConvert(string date, Multipliers Mult = AP.Utils.Helps.Multipliers.None)
-        //{
-        //    var Value = date.Split(',');
-        //    var a = new double[Value.Length];
-        //    for (var i = 0; i < Value.Length; i++) a[i] = Convert(Value[i], Mult);
-        //    return a.Mean() < 0 ? a.RootMeanSquare() * -1 : a.RootMeanSquare();
-        //}
-
-        //private double Convert(string date, Multipliers Mult)
-        //{
-        //    Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-        //    double _return = 0;
-        //    var dDate = new double[2];
-        //    var Value = date.Split('E');
-        //    dDate[0] = System.Convert.ToDouble(Value[0]);
-        //    dDate[1] = System.Convert.ToDouble(Value[1]);
-
-        //    return dDate[0] * System.Math.Pow(10, dDate[1]) * (double)Mult;
-        //}
+       
     }
 }

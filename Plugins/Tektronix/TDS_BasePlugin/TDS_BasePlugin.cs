@@ -12,10 +12,39 @@ using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
+using DevExpress.Mvvm;
 using NLog;
 
 namespace TDS_BasePlugin
 {
+
+    public static class Hepls
+    {
+        public static Task<bool> HelpsCompliteWork(BasicOperationVerefication<MeasPoint> operation,
+            IUserItemOperation UserItemOperation)
+        {
+            if (!operation.IsGood())
+            {
+                var answer =
+                    UserItemOperation.ServicePack.MessageBox
+                                     .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                           $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
+                                           $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
+                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
+                                           $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.Value - operation.Getting.Value}\n\n" +
+                                           "Повторить измерение этой точки?",
+                                           "Информация по текущему измерению",
+                                           MessageButton.YesNo, MessageIcon.Question,
+                                           MessageResult.Yes);
+
+                if (answer == MessageResult.No) return Task.FromResult(true);
+            }
+
+            return Task.FromResult(operation.IsGood());
+        }
+    }
+
     public class TDS_BasePlugin<T>: Program<T> where  T: OperationMetrControlBase
 
     {
@@ -173,8 +202,12 @@ namespace TDS_BasePlugin
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
-        private Calibr9500B calibr9500B;
-        private TDS_Oscilloscope someTdsOscilloscope;
+        protected Calibr9500B calibr9500B;
+        protected TDS_Oscilloscope someTdsOscilloscope;
+        /// <summary>
+        /// Веритикальная развертка на которой производится поверка.
+        /// </summary>
+        protected MeasPoint ChanelVerticalRange;
         /// <summary>
         /// тестируемый канал.
         /// </summary>
@@ -190,8 +223,40 @@ namespace TDS_BasePlugin
 
         }
 
+        protected override DataTable FillData()
+        {
+            var dataTable = new DataTable { TableName = $"FillTabBmOper3KoefOtkl{this.TestingChanel}" };
+            dataTable.Columns.Add("Коэффициент развёртки");
+            dataTable.Columns.Add("Амплитуда подаваемого сигнала");
+            dataTable.Columns.Add("Измеренное значение амплитуды");
+            dataTable.Columns.Add("Минимальное допустимое значение");
+            dataTable.Columns.Add("Максимальное допустимое значение");
+            dataTable.Columns.Add("Результат");
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint>;
+                if (dds == null) continue;
+                dataRow[0] = ChanelVerticalRange.ToString()+"/Дел";
+                dataRow[1] = dds.Expected.ToString();
+                dataRow[3] = dds.Getting.ToString();
+                dataRow[4] = dds.LowerTolerance.ToString();
+                dataRow[4] = dds.UpperTolerance.ToString();
+                
+                if (dds.IsGood == null)
+                    dataRow[5] = "не выполнено";
+                else
+                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                dataTable.Rows.Add(dataRow);
+            }
+            return dataTable;
+        }
+
         protected override void InitWork()
         {
+            if (calibr9500B == null || someTdsOscilloscope == null) return;
+
             DataRow.Clear();
             foreach (TDS_Oscilloscope.VerticalScale currScale in Enum.GetValues(typeof(TDS_Oscilloscope.VerticalScale)))
             {
@@ -224,8 +289,17 @@ namespace TDS_BasePlugin
                         //теперь нужно понять с каким каналом мы будем работать на калибраторе
                         var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
                         calibr9500B.Route.Chanel.SetChanel(chnael);
+                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_50);
                         //2.установить развертку по вертикали
                         someTdsOscilloscope.Chanel.Vertical.SetSCAle(TestingChanel, currScale);
+                        //смещение для номального отображения
+                        someTdsOscilloscope.Chanel.Vertical.SetPosition(TestingChanel, -2);
+                        //триггер
+                        someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
+                        someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
+                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(TestingChanel);
+                        someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
+
                         //3.установить развертку по времени
                         someTdsOscilloscope.Horizontal.SetHorizontalScale(TDS_Oscilloscope
                                                                          .HorizontalSCAle.Scal_500mkSec);
@@ -233,16 +307,31 @@ namespace TDS_BasePlugin
                         //4.установить усреднение
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple); //так быстрее будет
                         //5.подать сигнал: меандр 1 кГц
-                        operation.Expected = new MeasPoint(MeasureUnits.V);
+                        //это разверктка
+                        ChanelVerticalRange = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), (decimal)currScale.GetDoubleValue());
+                        // это подаваемая амплитуда
+                        operation.Expected = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), 3*(decimal)currScale.GetDoubleValue());
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.SQU).
-                                    Source.SetVoltage().
+                                    Source.SetVoltage((double)operation.Expected.Value, operation.Expected.UnitMultipliersUnit).
                                     Source.SetFreq(1, UnitMultipliers.Kilo);
                         calibr9500B.Source.Output(Calibr9500B.State.On);
                         //6.снять показания с осциллографа
                         
                         someTdsOscilloscope.Measurement.SetMeas(TestingChanel, TDS_Oscilloscope.TypeMeas.PK2,1);
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
-                        someTdsOscilloscope.Measurement.MeasureValue(1);
+                        decimal measResult = someTdsOscilloscope.Measurement.MeasureValue(1);
+                        operation.Getting= new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), measResult);
+                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value* 4 / 100);
+                        operation.UpperTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value + operation.Error.Value);
+                        operation.UpperTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value - operation.Error.Value);
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
 
                     }
                     catch (Exception e)
@@ -261,6 +350,10 @@ namespace TDS_BasePlugin
 
                     
                 };
+                operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<MeasPoint>)operation.Clone());
             }
         }
 
