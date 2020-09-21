@@ -330,7 +330,15 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
 
                         operation.Getting= new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), measResult);
-                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value* 4 / 100);
+                        operation.ErrorCalculation = (point, measPoint) =>
+                        {
+                            decimal nominalPoint = ChanelVerticalRange.Value * (decimal) ChanelVerticalRange.UnitMultipliersUnit.GetDoubleValue();
+                            
+                            if (nominalPoint>= (decimal)0.01 && nominalPoint <= 5)
+                                return new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value * 4 / 100);
+                            
+                            return new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value * 3 / 100);
+                        };
                         operation.UpperTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value + operation.Error.Value);
                         operation.LowerTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(), operation.Expected.Value - operation.Error.Value);
 
