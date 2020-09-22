@@ -45,7 +45,8 @@ namespace TDS2022B
             {
                 //new Oper1VisualTest(this),
                 //new Oper2Oprobovanie(this),
-                new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1)
+                //new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1)
             };
         }
 
@@ -62,23 +63,15 @@ namespace TDS2022B
             calibr9500B  = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
         }
-
-
-       
     }
 
-    public class Oper4MeasureTimeIntervals : TDS_BasePlugin.Oper4MeasureTimeIntervals
+    public class Oper4MeasureTimeIntervals : TDS20XXBOper4MeasureTimeIntervals
     {
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
-            horizontalScAleSet =new [] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec, 
-                TDS_Oscilloscope.HorizontalSCAle.Scal_100nSec, 
-                TDS_Oscilloscope.HorizontalSCAle.Scal_500nSec, 
-                TDS_Oscilloscope.HorizontalSCAle.Scal_1mSec, 
-                TDS_Oscilloscope.HorizontalSCAle.Scal_5mSec
-            };
+            
         }
     }
 

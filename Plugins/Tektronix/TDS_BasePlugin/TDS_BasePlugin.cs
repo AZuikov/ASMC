@@ -463,10 +463,13 @@ namespace TDS_BasePlugin
                         throw;
                     }
                 };
+                
                 operation.BodyWork = () =>
                 {
-
+                    someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
+                    calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
                 };
+
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
@@ -476,6 +479,40 @@ namespace TDS_BasePlugin
 
        
     }
-   
+
+    /// <summary>
+    /// Класс нужен для того, что бы выделить диапазоны верменных разверток в зависимости от модели, по МП.
+    /// </summary>
+    public class TDS20XXBOper4MeasureTimeIntervals : Oper4MeasureTimeIntervals
+    {
+        public TDS20XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
+        {
+            horizontalScAleSet = new[] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec
+            };
+        }
+    }
+
+    /// <summary>
+    /// Класс нужен для того, что бы выделить диапазоны верменных разверток в зависимости от модели, по МП.
+    /// </summary>
+    public class TDS10XXBOper4MeasureTimeIntervals : Oper4MeasureTimeIntervals
+    {
+        public TDS10XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
+        {
+            horizontalScAleSet = new[] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
+                TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec
+            };
+        }
+    }
+
     /*Определение Времени нарастания переходной характеристики.*/
 }

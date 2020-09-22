@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using System.Xml;
 using AP.Utils.Data;
 using AP.Utils.Helps;
@@ -54,6 +55,18 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// 1 МОм
             /// </summary>
             [StringValue("1.000000E+06")] Res_1M = 1000000
+        }
+
+        /// <summary>
+        /// Перечисление форм волны для маркера.
+        /// </summary>
+        public enum MarkerWaveForm
+        {
+            SQU,
+            PULS,
+            TRI,
+            LINE,
+            UNKNOWN
         }
 
         public enum Polar
@@ -294,7 +307,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 var answer = _calibrMain.QueryLine("SOUR:FREQ?");
                 var arr = answer.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
                                 .Split('E');
-                return decimal.Parse(arr[0]) * (decimal) Math.Pow(10, double.Parse(arr[1]));
+                return Decimal.Parse(arr[0]) * (decimal) Math.Pow(10, Double.Parse(arr[1]));
             }
 
             /// <summary>
@@ -308,7 +321,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                                 .Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
                                 .Split('E');
 
-                return decimal.Parse(var[0]) * (decimal) Math.Pow(10, double.Parse(var[1]));
+                return Decimal.Parse(var[0]) * (decimal) Math.Pow(10, Double.Parse(var[1]));
             }
 
             /// <summary>
@@ -326,7 +339,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetFreq(double value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
+            public Calibr9500B SetFreq(double value, UnitMultipliers mult = UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -347,7 +360,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetPeriod(double value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
+            public Calibr9500B SetPeriod(double value, UnitMultipliers mult = UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:PER {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -359,7 +372,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetVoltage(double value, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
+            public Calibr9500B SetVoltage(double value, UnitMultipliers mult = UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value *  mult.GetDoubleValue()).ToString().Replace(',','.')}");
                 return _calibrMain;
@@ -384,6 +397,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
                 public CEDGE EDGE { get; }
 
+                public CMARKER MARKER { get; }
+
                 #endregion
 
                 public CParametr(Calibr9500B calibr)
@@ -391,6 +406,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     _calibrMain = calibr;
                     EDGE = new CEDGE(calibr);
                     DC = new CDC(calibr);
+                    MARKER = new CMARKER(calibr);
                 }
 
                 /// <summary>
@@ -526,8 +542,40 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
                     #endregion
                 }
+
+                public class CMARKER
+                {
+                
+
+                    private Calibr9500B _calibrMain;
+                    public CMARKER(Calibr9500B calibr)
+                    {
+                        _calibrMain = calibr;
+                    }
+
+                    public Calibr9500B SetWaveForm(MarkerWaveForm inWaveForm)
+                    {
+                        _calibrMain.WriteLine($"sour:par:mark:wave {inWaveForm}");
+                        return _calibrMain;
+                    }
+
+                    public MarkerWaveForm GetMarkerWaveForm()
+                    {
+                        string answer = _calibrMain.QueryLine($"sour:par:mark:wave?").TrimEnd('\n').ToUpper();
+                        //Enum.GetName(typeof(MarkerWaveForm), answer);
+                        foreach (MarkerWaveForm markerWave in (MarkerWaveForm[]) Enum.GetValues(typeof(MarkerWaveForm)))
+                        {
+                            if (markerWave.ToString().ToUpper().Equals(answer)) return markerWave;
+                        }
+
+                        Logger.Error($"Неизвестная фома волны считана с калибратора {answer}. Добавьте в перечисление.");
+                        return MarkerWaveForm.UNKNOWN;
+
+
+                    }
+                }
             }
-        }
+    }
 
         /// <summary>
         /// Данная подсистема используется для конфигурирования выходных каналов, которые используются как выходы сигнала и
