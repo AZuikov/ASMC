@@ -405,6 +405,11 @@ namespace TDS_BasePlugin
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// тестируемый канал.
+        /// </summary>
+        private readonly TDS_Oscilloscope.ChanelSet TestingChanel;
+
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
 
         protected Calibr9500B calibr9500B;
@@ -424,7 +429,7 @@ namespace TDS_BasePlugin
         /// <summary>
         /// Набор разверток, в зависимости от модели устройства. Как в методике поверки.
         /// </summary>
-        protected  TDS_Oscilloscope.HorizontalSCAle[] horizontalScAleSet;
+        protected Dictionary<TDS_Oscilloscope.HorizontalSCAle, MeasPoint> ScaleTolDict = new Dictionary<TDS_Oscilloscope.HorizontalSCAle, MeasPoint>();
 
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation)
         {
@@ -444,7 +449,7 @@ namespace TDS_BasePlugin
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
             DataRow.Clear();
-            foreach (TDS_Oscilloscope.HorizontalSCAle currScale in horizontalScAleSet)
+            foreach (TDS_Oscilloscope.HorizontalSCAle currScale in ScaleTolDict.Keys)
             {
                 var operation = new BasicOperationVerefication<MeasPoint>();
                 operation.InitWork = async () =>
@@ -466,11 +471,74 @@ namespace TDS_BasePlugin
                 
                 operation.BodyWork = () =>
                 {
-                    someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
-                    calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
-                    calibr9500B.Source.Parametr.MARKER.SetWaveForm(Calibr9500B.MarkerWaveForm.SQU);
-                    calibr9500B.Source.Parametr.MARKER.SetAmplitude(Calibr9500B.MarkerAmplitude.ampl1V);
-                    calibr9500B.Source.Parametr.MARKER.SetPeriod(new MeasPoint(currScale.GetMeasureUnitsValue(),currScale.GetUnitMultipliersValue(),(decimal)(currScale.GetDoubleValue()*2) ));
+                    try
+                    {
+                        //1.нужно знать канал
+                        someTdsOscilloscope.Chanel.SetChanelState(TestingChanel, TDS_Oscilloscope.State.ON);
+                        //теперь нужно понять с каким каналом мы будем работать на калибраторе
+                        var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
+                        calibr9500B.Route.Chanel.SetChanel(chnael);
+                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
+                        //2.установить развертку по вертикали
+                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(TestingChanel, TDS_Oscilloscope.VerticalScale.Scale_200mV);
+                        //смещение для номального отображения
+                        someTdsOscilloscope.Chanel.Vertical.SetPosition(TestingChanel, -2);
+
+                        someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
+                        calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
+                        calibr9500B.Source.Parametr.MARKER.SetWaveForm(Calibr9500B.MarkerWaveForm.SQU);
+                        calibr9500B.Source.Parametr.MARKER.SetAmplitude(Calibr9500B.MarkerAmplitude.ampl1V);
+                        MeasPoint ExpectedPoin = new MeasPoint(MeasureUnits.sec, currScale.GetUnitMultipliersValue(), (decimal)(currScale.GetDoubleValue() * 2));
+                        calibr9500B.Source.Parametr.MARKER.SetPeriod(ExpectedPoin);
+                        operation.Expected = ExpectedPoin;
+
+                        calibr9500B.Source.Output(Calibr9500B.State.On);
+
+                        //триггер
+                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
+                        someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
+                        someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
+                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(TestingChanel);
+                        someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
+                        someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
+                        someTdsOscilloscope.Measurement.SetMeas(TestingChanel, TDS_Oscilloscope.TypeMeas.PERI, 2);
+                        Thread.Sleep(500);
+                        var measResult = someTdsOscilloscope.Measurement.MeasureValue() /
+                                         (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
+                        MathStatistics.Round(ref measResult, 2);
+
+                        operation.Getting =
+                            new MeasPoint(MeasureUnits.sec, currScale.GetUnitMultipliersValue(), measResult);
+
+                        operation.ErrorCalculation = (point, measPoint) => ScaleTolDict[currScale];
+
+                        //!!!!!! нужно привести погрешность к размерности измеряемого значениея
+                        operation.UpperTolerance = new MeasPoint(MeasureUnits.sec, currScale.GetUnitMultipliersValue(),
+                                                                 operation.Expected.Value + operation.Error.Value*(decimal)(operation.Error.UnitMultipliersUnit.GetDoubleValue()/operation.Expected.UnitMultipliersUnit.GetDoubleValue()));
+                        operation.LowerTolerance = new MeasPoint(MeasureUnits.sec, currScale.GetUnitMultipliersValue(),
+                                                                 operation.Expected.Value - operation.Error.Value * (decimal)(operation.Error.UnitMultipliersUnit.GetDoubleValue() / operation.Expected.UnitMultipliersUnit.GetDoubleValue()));
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                    finally
+                    {
+                        calibr9500B.Source.Output(Calibr9500B.State.Off);
+                        someTdsOscilloscope.Chanel.SetChanelState(TestingChanel, TDS_Oscilloscope.State.OFF);
+                    }
+
+                   
+
                 };
 
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -490,13 +558,11 @@ namespace TDS_BasePlugin
     {
         public TDS20XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
         {
-            horizontalScAleSet = new[] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec
-            };
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec, new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano , (decimal)0.61));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,  new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano , (decimal)0.81));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec, new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano , (decimal)1.63));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,new MeasPoint(MeasureUnits.sec, UnitMultipliers.Micro, (decimal)2.05));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec, new MeasPoint(MeasureUnits.sec, UnitMultipliers.Micro, (decimal)10.25));
         }
     }
 
@@ -507,13 +573,19 @@ namespace TDS_BasePlugin
     {
         public TDS10XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
         {
-            horizontalScAleSet = new[] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
-                TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec
-            };
+            //horizontalScAleSet = new[] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
+            //    TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
+            //    TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
+            //    TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
+            //    TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
+            //    TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec
+            //};
+
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,   new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.62));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,  new MeasPoint(MeasureUnits.sec,UnitMultipliers.Nano , (decimal)0.81));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec, new MeasPoint(MeasureUnits.sec,UnitMultipliers.Nano , (decimal)1.63));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,new MeasPoint(MeasureUnits.sec,UnitMultipliers.Micro, (decimal)2.05));
+            ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec, new MeasPoint(MeasureUnits.sec,UnitMultipliers.Micro, (decimal)10.25));
         }
     }
 
