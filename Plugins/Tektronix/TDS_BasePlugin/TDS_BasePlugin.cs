@@ -405,10 +405,7 @@ namespace TDS_BasePlugin
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        /// <summary>
-        /// тестируемый канал.
-        /// </summary>
-        private readonly TDS_Oscilloscope.ChanelSet TestingChanel;
+       
 
         public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
 
@@ -474,15 +471,14 @@ namespace TDS_BasePlugin
                     try
                     {
                         //1.нужно знать канал
-                        someTdsOscilloscope.Chanel.SetChanelState(TestingChanel, TDS_Oscilloscope.State.ON);
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingInTestingChanel, TDS_Oscilloscope.State.ON);
                         //теперь нужно понять с каким каналом мы будем работать на калибраторе
                         var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
                         calibr9500B.Route.Chanel.SetChanel(chnael);
                         calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
                         //2.установить развертку по вертикали
-                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(TestingChanel, TDS_Oscilloscope.VerticalScale.Scale_200mV);
-                        //смещение для номального отображения
-                        someTdsOscilloscope.Chanel.Vertical.SetPosition(TestingChanel, -2);
+                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingInTestingChanel, TDS_Oscilloscope.VerticalScale.Scale_200mV);
+                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingInTestingChanel, 0);
 
                         someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
@@ -498,12 +494,12 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
                         someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
                         someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(TestingChanel);
+                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingInTestingChanel);
                         someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
                         someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
-                        someTdsOscilloscope.Measurement.SetMeas(TestingChanel, TDS_Oscilloscope.TypeMeas.PERI, 2);
-                        Thread.Sleep(500);
-                        var measResult = someTdsOscilloscope.Measurement.MeasureValue() /
+                        someTdsOscilloscope.Measurement.SetMeas(_testingInTestingChanel, TDS_Oscilloscope.TypeMeas.PERI, 2);
+                        Thread.Sleep(1000);
+                        var measResult = someTdsOscilloscope.Measurement.MeasureValue(2) /
                                          (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
                         MathStatistics.Round(ref measResult, 2);
 
@@ -534,7 +530,7 @@ namespace TDS_BasePlugin
                     finally
                     {
                         calibr9500B.Source.Output(Calibr9500B.State.Off);
-                        someTdsOscilloscope.Chanel.SetChanelState(TestingChanel, TDS_Oscilloscope.State.OFF);
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingInTestingChanel, TDS_Oscilloscope.State.OFF);
                     }
 
                    

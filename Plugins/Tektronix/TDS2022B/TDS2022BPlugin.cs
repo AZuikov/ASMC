@@ -43,9 +43,9 @@ namespace TDS2022B
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                //new Oper1VisualTest(this),
-                //new Oper2Oprobovanie(this),
-                //new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
+                new Oper1VisualTest(this),
+                new Oper2Oprobovanie(this),
+                new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
                 new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1)
             };
         }
