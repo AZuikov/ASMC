@@ -569,14 +569,6 @@ namespace TDS_BasePlugin
     {
         public TDS10XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
         {
-            //horizontalScAleSet = new[] {TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
-            //    TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
-            //    TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
-            //    TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
-            //    TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
-            //    TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec
-            //};
-
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,   new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.62));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,  new MeasPoint(MeasureUnits.sec,UnitMultipliers.Nano , (decimal)0.81));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec, new MeasPoint(MeasureUnits.sec,UnitMultipliers.Nano , (decimal)1.63));
