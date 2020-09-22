@@ -77,6 +77,7 @@ namespace AP.Utils.Data
         private static readonly Hashtable StringValues = new Hashtable();
         private static readonly Hashtable DoubleValues = new Hashtable();
         private static readonly Hashtable UnitMultipliersValues = new Hashtable();
+        private static readonly Hashtable MeasureUnitValues = new Hashtable();
         /// <summary>
         /// Предоставляет возможность получить значение аттрибута  <see cref="StringValueAttribute"/>
         /// </summary>
@@ -139,6 +140,26 @@ namespace AP.Utils.Data
             }
 
             return output;
+        }
+
+        public static MeasureUnits GetMeasureUnitsValue(this Enum value)
+        {
+            MeasureUnits output = MeasureUnits.NONE;
+            var type = value.GetType();
+            if (UnitMultipliersValues.ContainsKey(value))
+                output = ((MeasureUnitsValueAttribute)MeasureUnitValues[value]).Value;
+            else
+            {
+                var fi = type.GetField(value.ToString());
+                if (!(fi.GetCustomAttributes(typeof(MeasureUnitsValueAttribute), false) is MeasureUnitsValueAttribute[]
+                        attrs) ||
+                    attrs.Length <= 0) return output;
+                UnitMultipliersValues.Add(value, attrs[0]);
+                output = attrs[0].Value;
+            }
+
+            return output;
+
         }
     }
 }

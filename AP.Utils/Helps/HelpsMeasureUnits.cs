@@ -12,6 +12,7 @@ namespace AP.Utils.Helps
     /// </summary>
     public enum MeasureUnits
     {
+        [StringValue("NONE")] NONE,
         [StringValue("В")] V,
         [StringValue("А")] I,
         [StringValue("Ом")] Ohm,

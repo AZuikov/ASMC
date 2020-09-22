@@ -178,6 +178,18 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         }
 
         /// <summary>
+        /// Варианты амплитуды для маркеров.
+        /// </summary>
+        public enum MarkerAmplitude
+        {
+            [DoubleValue(0.1)] Ampl100mV,
+            [DoubleValue(0.25)] Ampl250mV,
+            [DoubleValue(0.5)] Ampl500mV,
+            [DoubleValue(1)] ampl1V,
+            UNKNOWN
+        }
+
+        /// <summary>
         /// Тип измерения
         /// </summary>
         public enum TypeMes
@@ -286,7 +298,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             {
                 _calibrMain = calibrMain;
                 Parametr = new CParametr(calibrMain);
-                Multipliers =  new ICommand[]
+                Multipliers = new ICommand[]
                 {
                     new Command("N", "н", 1E-9),
                     new Command("U", "мк", 1E-6),
@@ -307,7 +319,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 var answer = _calibrMain.QueryLine("SOUR:FREQ?");
                 var arr = answer.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
                                 .Split('E');
-                return Decimal.Parse(arr[0]) * (decimal) Math.Pow(10, Double.Parse(arr[1]));
+                return Decimal.Parse(arr[0]) * (decimal)Math.Pow(10, Double.Parse(arr[1]));
             }
 
             /// <summary>
@@ -321,7 +333,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                                 .Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
                                 .Split('E');
 
-                return Decimal.Parse(var[0]) * (decimal) Math.Pow(10, Double.Parse(var[1]));
+                return Decimal.Parse(var[0]) * (decimal)Math.Pow(10, Double.Parse(var[1]));
             }
 
             /// <summary>
@@ -374,7 +386,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <returns></returns>
             public Calibr9500B SetVoltage(double value, UnitMultipliers mult = UnitMultipliers.None)
             {
-                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value *  mult.GetDoubleValue()).ToString().Replace(',','.')}");
+                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value * mult.GetDoubleValue()).ToString().Replace(',', '.')}");
                 return _calibrMain;
             }
 
@@ -536,7 +548,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public Calibr9500B SetEdgeSpeed(SpeedEdge Se)
                     {
-                        _calibrMain.WriteLine("SOUR:PAR:EDGE:SPE " + (double) Se * Math.Pow(10, -12));
+                        _calibrMain.WriteLine("SOUR:PAR:EDGE:SPE " + (double)Se * Math.Pow(10, -12));
                         return _calibrMain;
                     }
 
@@ -545,7 +557,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
                 public class CMARKER
                 {
-                
+
 
                     private Calibr9500B _calibrMain;
                     public CMARKER(Calibr9500B calibr)
@@ -561,17 +573,64 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
                     public MarkerWaveForm GetMarkerWaveForm()
                     {
-                        string answer = _calibrMain.QueryLine($"sour:par:mark:wave?").TrimEnd('\n').ToUpper();
-                        //Enum.GetName(typeof(MarkerWaveForm), answer);
-                        foreach (MarkerWaveForm markerWave in (MarkerWaveForm[]) Enum.GetValues(typeof(MarkerWaveForm)))
+                        string answer = _calibrMain.QueryLine($"sour:par:mark:wave?").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').ToUpper();
+                        
+                        foreach (MarkerWaveForm markerWave in (MarkerWaveForm[])Enum.GetValues(typeof(MarkerWaveForm)))
                         {
                             if (markerWave.ToString().ToUpper().Equals(answer)) return markerWave;
                         }
 
-                        Logger.Error($"Неизвестная фома волны считана с калибратора {answer}. Добавьте в перечисление.");
+                        Logger.Error($"Неизвестная форма волны считана с калибратора {answer}. Добавьте в перечисление.");
                         return MarkerWaveForm.UNKNOWN;
 
 
+                    }
+
+                    
+                    /// <summary>
+                    /// Устанавливает амплитуду сигнала маркера.
+                    /// </summary>
+                    /// <param name="inAmplitude">Амплитуда сигнала.</param>
+                    /// <returns></returns>
+                    public Calibr9500B SetAmplitude(MarkerAmplitude inAmplitude)
+                    {
+                        _calibrMain.WriteLine($"volt {(inAmplitude.GetDoubleValue()).ToString().Replace(',','.')}");
+                        return _calibrMain;
+                    }
+
+                    /// <summary>
+                    /// Устанавливает период следования сигнала.
+                    /// </summary>
+                    /// <param name="inPoint">Значение периода с единицами измерения.</param>
+                    /// <returns></returns>
+                    public Calibr9500B SetPeriod(MeasPoint inPoint)
+                    {
+                        if (inPoint.Units != MeasureUnits.sec)
+                        {
+                            string errorStr = $"Единицы измерения не секунды {inPoint.Description}";
+                            Logger.Error(errorStr);
+                            throw new ArgumentException(errorStr);
+                        }
+
+                        _calibrMain.WriteLine($"per {((double)inPoint.Value*inPoint.UnitMultipliersUnit.GetDoubleValue()).ToString().Replace(',','.')}");
+                        return _calibrMain;
+                    }
+
+                    /// <summary>
+                    /// Возвращает значение амплитуды.
+                    /// </summary>
+                    /// <returns></returns>
+                    public MarkerAmplitude GetAmplitude()
+                    {
+                        string answer =_calibrMain.QueryLine($"volt?").TrimEnd('\n').Replace(',','.');
+                        double doubleAnswer;
+                        double.TryParse(answer, out doubleAnswer);
+                        foreach (MarkerAmplitude amplitude in (MarkerAmplitude[])Enum.GetValues(typeof(MarkerAmplitude)))
+                        {
+                            if (amplitude.GetDoubleValue() == doubleAnswer) return amplitude;
+                        }
+                        Logger.Error($"Неизвестное значение амплитуды маркера {answer}");
+                        return MarkerAmplitude.UNKNOWN;
                     }
                 }
             }

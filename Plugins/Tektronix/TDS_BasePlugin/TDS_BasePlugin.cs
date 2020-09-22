@@ -468,6 +468,9 @@ namespace TDS_BasePlugin
                 {
                     someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
                     calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
+                    calibr9500B.Source.Parametr.MARKER.SetWaveForm(Calibr9500B.MarkerWaveForm.SQU);
+                    calibr9500B.Source.Parametr.MARKER.SetAmplitude(Calibr9500B.MarkerAmplitude.ampl1V);
+                    calibr9500B.Source.Parametr.MARKER.SetPeriod(new MeasPoint(currScale.GetMeasureUnitsValue(),currScale.GetUnitMultipliersValue(),(decimal)(currScale.GetDoubleValue()*2) ));
                 };
 
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
