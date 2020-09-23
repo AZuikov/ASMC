@@ -358,10 +358,10 @@ namespace TDS_BasePlugin
 
                             if (nominalPoint >= (decimal)0.01 && nominalPoint <= 5)
                                 return new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(),
-                                                     operation.Expected.Value * 4 / 100);
+                                                     operation.Expected.Value * 3 / 100);
 
                             return new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(),
-                                                 operation.Expected.Value * 3 / 100);
+                                                 operation.Expected.Value * 4 / 100);
                         };
                         operation.UpperTolerance = new MeasPoint(MeasureUnits.V, currScale.GetUnitMultipliersValue(),
                                                                  operation.Expected.Value + operation.Error.Value);
@@ -423,6 +423,8 @@ namespace TDS_BasePlugin
         /// </summary>
         private readonly TDS_Oscilloscope.ChanelSet _testingInTestingChanel;
 
+        
+
         /// <summary>
         /// Набор разверток, в зависимости от модели устройства. Как в методике поверки.
         /// </summary>
@@ -438,7 +440,34 @@ namespace TDS_BasePlugin
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+           DataTable dataTable = new DataTable{TableName = $"FillTabBmOper4MeasureTimeIntervalsl{_testingInTestingChanel}" };
+           dataTable.Columns.Add("Развертка по времени");
+           dataTable.Columns.Add("Период следования подаваемого импульса");
+           dataTable.Columns.Add("Измеренное значение периода");
+           dataTable.Columns.Add("Минимально допустимое значение");
+           dataTable.Columns.Add("Максимально допустимое значение");
+           dataTable.Columns.Add("Результат");
+
+           foreach (var row in DataRow)
+           {
+               var dataRow = dataTable.NewRow();
+               var dds = row as BasicOperationVerefication<MeasPoint>;
+               if (dds == null) continue;
+               dataRow[0] = ChanelHorizontalRange.Description;
+               dataRow[1] = dds.Expected?.Description;
+               dataRow[2] = dds.Getting?.Description;
+               dataRow[3] = dds.LowerTolerance?.Description;
+               dataRow[4] = dds.UpperTolerance?.Description;
+
+               if (dds.IsGood == null)
+                   dataRow[5] = "не выполнено";
+               else
+                   dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+               dataTable.Rows.Add(dataRow);
+
+           }
+
+           return dataTable;
         }
 
         protected override void InitWork()
@@ -484,6 +513,7 @@ namespace TDS_BasePlugin
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
                         calibr9500B.Source.Parametr.MARKER.SetWaveForm(Calibr9500B.MarkerWaveForm.SQU);
                         calibr9500B.Source.Parametr.MARKER.SetAmplitude(Calibr9500B.MarkerAmplitude.ampl1V);
+                        ChanelHorizontalRange = new MeasPoint(MeasureUnits.sec, currScale.GetUnitMultipliersValue(), (decimal)(currScale.GetDoubleValue()));
                         MeasPoint ExpectedPoin = new MeasPoint(MeasureUnits.sec, currScale.GetUnitMultipliersValue(), (decimal)(currScale.GetDoubleValue() * 2));
                         calibr9500B.Source.Parametr.MARKER.SetPeriod(ExpectedPoin);
                         operation.Expected = ExpectedPoin;
