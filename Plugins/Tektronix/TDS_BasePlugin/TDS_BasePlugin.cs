@@ -608,4 +608,83 @@ namespace TDS_BasePlugin
     }
 
     /*Определение Времени нарастания переходной характеристики.*/
+    public abstract class Oper5MeasureRiseTime : ParagraphBase, IUserItemOperation<MeasPoint>
+    {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+        protected Calibr9500B calibr9500B;
+        protected TDS_Oscilloscope someTdsOscilloscope;
+        /// <summary>
+        /// тестируемый канал.
+        /// </summary>
+        private readonly TDS_Oscilloscope.ChanelSet _testingInTestingChanel;
+
+        /// <summary>
+        /// Набор разверток, в зависимости от модели устройства. Как в методике поверки.
+        /// </summary>
+        protected List<TDS_Oscilloscope.HorizontalSCAle > VerticalScale = new List<TDS_Oscilloscope.HorizontalSCAle>();
+
+        protected Oper5MeasureRiseTime(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation)
+        {
+            _testingInTestingChanel = inTestingChanel;
+            Name = "Определение Времени нарастания переходной характеристики";
+            DataRow = new List<IBasicOperation<MeasPoint>>();
+        }
+
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void InitWork()
+        {
+            if (calibr9500B == null || someTdsOscilloscope == null) return;
+
+            DataRow.Clear();
+
+            foreach (TDS_Oscilloscope.VerticalScale verticalScale in VerticalScale)
+            {
+                var operation = new BasicOperationVerefication<MeasPoint>();
+                operation.InitWork = async () =>
+                {
+                    try
+                    {
+                        await Task.Run(() =>
+                        {
+                            calibr9500B.StringConnection = GetStringConnect(calibr9500B);
+                            someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+
+                operation.BodyWork = () =>
+                {
+                    try
+                    {
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
+                    finally
+                    {
+                        calibr9500B.Source.Output(Calibr9500B.State.Off);
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingInTestingChanel, TDS_Oscilloscope.State.OFF);
+                    }
+                };
+
+                operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<MeasPoint>)operation.Clone());
+            }
+        }
+    }
 }
