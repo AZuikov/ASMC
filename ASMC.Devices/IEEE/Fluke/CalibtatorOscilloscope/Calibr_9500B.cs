@@ -548,7 +548,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public Calibr9500B SetEdgeSpeed(SpeedEdge Se)
                     {
-                        _calibrMain.WriteLine("SOUR:PAR:EDGE:SPE " + (double)Se * Math.Pow(10, -12));
+                        _calibrMain.WriteLine($"SOUR:PAR:EDGE:SPE {((double)Se * Math.Pow(10, -12))}");
                         return _calibrMain;
                     }
 

@@ -254,6 +254,10 @@
       <Project>{9e15a5e6-f812-4e56-bf83-2b5c0d247f96}</Project>
       <Name>B5-71-PRO_Abstract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Plugins\Keysight\N8975A\N8957APlugin\N8957APlugin.csproj">
+      <Project>{c4e6a477-6be4-4dff-8141-5912bc41b3f2}</Project>
+      <Name>N8957APlugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Plugins\Tektronix\TDS_BasePlugin\TDS_BasePlugin.csproj">
       <Project>{c362fa9e-df8d-49b0-a86a-64661ecdba9e}</Project>
       <Name>TDS_BasePlugin</Name>

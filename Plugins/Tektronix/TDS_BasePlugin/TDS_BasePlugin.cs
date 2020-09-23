@@ -619,10 +619,16 @@ namespace TDS_BasePlugin
         /// </summary>
         private readonly TDS_Oscilloscope.ChanelSet _testingInTestingChanel;
 
+
         /// <summary>
         /// Набор разверток, в зависимости от модели устройства. Как в методике поверки.
         /// </summary>
         protected List<TDS_Oscilloscope.HorizontalSCAle > VerticalScale = new List<TDS_Oscilloscope.HorizontalSCAle>();
+
+        /// <summary>
+        /// Значение развертки по времени, для отображения фронта.
+        /// </summary>
+        protected TDS_Oscilloscope.HorizontalSCAle horizontalScAleForTest;
 
         protected Oper5MeasureRiseTime(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation)
         {
@@ -666,11 +672,33 @@ namespace TDS_BasePlugin
                 {
                     try
                     {
+                        //1.нужно знать канал
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingInTestingChanel, TDS_Oscilloscope.State.ON);
+                        //теперь нужно понять с каким каналом мы будем работать на калибраторе
+                        var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
+                        calibr9500B.Route.Chanel.SetChanel(chnael);
+                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
+                        //2.установить развертку по вертикали
+                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingInTestingChanel, verticalScale);
+                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingInTestingChanel, 1);
+                        someTdsOscilloscope.Horizontal.SetHorizontalScale(horizontalScAleForTest);
 
+                        calibr9500B.Source.SetFunc(Calibr9500B.Shap.EDG);
+                        calibr9500B.Source.Parametr.EDGE.SetEdgeDirection(Calibr9500B.Direction.RIS);
+                        calibr9500B.Source.Parametr.EDGE.SetEdgeSpeed(Calibr9500B.SpeedEdge.Mid_500p);
+                        
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        Logger.Error(e);
                         throw;
                     }
                     finally
