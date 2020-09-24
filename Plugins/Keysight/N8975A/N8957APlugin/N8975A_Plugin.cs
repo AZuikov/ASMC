@@ -136,6 +136,17 @@ namespace N8957APlugin
                 operation.Getting = res.Item2;
                 operation.Comment = res.Item1;
                 operation.IsGood = () => operation.Getting;
+                
+
+                n8975.WriteLine("CALibration:AUTO:state 1");
+                n8975.WriteLine("CALibration:YTF");
+
+                UserItemOperation.ServicePack.MessageBox
+                                 .Show("Дождитесь окончания настройки, затем нажмите ОК!",
+                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                       MessageResult.OK);
+
+
                 return Task.CompletedTask;
             };
            
@@ -223,7 +234,48 @@ namespace N8957APlugin
                         {
                             e8257D.StringConnection = GetStringConnect(e8257D);
                             n8975.StringConnection = GetStringConnect(n8975);
+
+                            double testFreqqPoint = (double)freq * UnitMultipliers.Mega.GetDoubleValue();
+                            //подготовка генератора
+                            e8257D.WriteLine(":OUTPut:MODulation 0"); //выключаем модуляцию
+                            e8257D.WriteLine(":pow -20"); //ставим амплитуду -20 дБм
+                            e8257D.WriteLine($"FREQuency {testFreqqPoint.ToString().Replace(',', '.')}"); //частоту
+                            // e8257D.WriteLine("FREQuency:MODE "); //ставим режим воспроизведения частоты
+                            //какие параметры сигнала еще должны быть?
+
+                            n8975.WriteLine($"INITiate:CONTinuous 0");
+                            n8975.WriteLine("CONFigure:MODE:DUT AMPLifier");
+                            n8975.WriteLine("freq:mode swe");
+                            n8975.WriteLine($"FREQuency:CENTer {testFreqqPoint.ToString().Replace(',', '.')}"); //центральная частота
+                            if (freq == 15)
+                                n8975.WriteLine($"FREQuency:span 10e6"); //обзор
+                            else
+                                n8975.WriteLine($"FREQuency:span 8e6"); //обзор
+
+                            n8975.WriteLine($"AVERage:STATe 0");
+                            n8975.WriteLine($"BANDwidth 4MHz");
+                            n8975.WriteLine($"SWEep:POINts 201");  //сколько точек измерения
+
+                            n8975.WriteLine("DISPlay:FORMat TABLe");//устнавливаем отображение таблицы
+                            n8975.WriteLine("DISPlay:DATA:UNITs phot, lin");//задаем единицы измерения
+
+                            e8257D.WriteLine(":OUTP 1");
+                            Thread.Sleep(300);
+                            // единичное измерение
+                            n8975.WriteLine("INITiate");
                         });
+
+                        
+                        //n8975.Sinchronization();
+                        //как то нужно от прибора получить ответ, что он закончил измерения
+                        UserItemOperation.ServicePack.MessageBox
+                                         .Show("Дождитесь окончания измерения, затем нажмите ОК!",
+                                               "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                               MessageResult.OK);
+                        string[] answerFreqList = n8975.QueryLine("FREQuency:LIST:DATA?").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(',');//считать частоты для коэффициентов
+                        string[] answerPHot = n8975.QueryLine("FETC:UNC:PHOT? LIN").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(','); ;//считывание коэффициентов PHOT Lin
+                        
+
                     }
                     catch (Exception e)
                     {
@@ -235,29 +287,7 @@ namespace N8957APlugin
                 {
                     try
                     {
-                        double testFreqqPoint = (double)freq * UnitMultipliers.Mega.GetDoubleValue();
-                        //подготовка генератора
-                        e8257D.WriteLine(":OUTPut:MODulation 0"); //выключаем модуляцию
-                        e8257D.WriteLine(":pow -20"); //ставим амплитуду -20 дБм
-                        e8257D.WriteLine($"FREQuency {testFreqqPoint.ToString().Replace(',', '.')}"); //частоту
-                        e8257D.WriteLine("FREQuency:MODE "); //ставим режим воспроизведения частоты
-                                                             //какие параметры сигнала еще должны быть?
-
-                        n8975.WriteLine("CONFigure:MODE:DUT AMPLifier");
-                        n8975.WriteLine("freq:mode swe");
-                        n8975.WriteLine($"FREQuency:CENTer {testFreqqPoint.ToString().Replace(',', '.')}"); //центральная частота
-                        n8975.WriteLine($"FREQuency:span "); //обзор
-                        n8975.WriteLine($"SWEep:POINts 201");  //сколько точек измерения
-
-                        n8975.WriteLine("DISPlay:DATA:UNITs phot, lin");//задаем единицы измерения
-                        n8975.WriteLine("DISPlay:FORMat TABLe");//устнавливаем отображение таблицы
-
-                        e8257D.WriteLine(":OUTP 1");
-                        Thread.Sleep(300);
-                        n8975.WriteLine($"INITiate:CONTinuous 0"); // единичное измерение
-                        n8975.Sinchronization();
-                        string answerFreqList = n8975.QueryLine("FREQuency:LIST:DATA?");//считать частоты для коэффициентов
-                        string answerPHot = n8975.QueryLine("FETC:UNC:PHOT? LIN");//считывание коэффициентов PHOT Lin
+                       
                     }
                     catch (Exception e)
                     {
