@@ -13,16 +13,17 @@ using ASMC.Devices.IEEE.Keysight.NoiseFigureAnalyzer;
 
 namespace N8957APlugin
 {
-    public class N8975A_Plugin<T> : Program<T> where T : OperationMetrControlBase
+    public class N8975A_Plugin : Program<Operation>
     {
 
 
-        protected N8975A_Plugin(ServicePack service) : base(service)
+        public  N8975A_Plugin(ServicePack service) : base(service)
         {
             Type = "N8975A";
             Grsi = "37178-08";
             Range = "no range";
             Accuracy = "none";
+            Operation = new Operation(service);
         }
     }
 
@@ -55,9 +56,8 @@ namespace N8957APlugin
             {
                 "Стандарт частоты PENDULUM 6689",
                 "Генератор сигналов Keysight/Agilent E8257D",
-
                 "Преобразователь интерфесов National Instruments GPIB-USB",
-                "Кабелли:\n 1) для подключения стандарта частоты к генератору\n  2) для подключения выхода генератора ко входу анализатора шума"
+                "Кабели:\n 1) для подключения стандарта частоты к генератору\n  2) для подключения выхода генератора ко входу анализатора шума"
             };
 
             UserItemOperation = new[] {new Oper8_3_4FreqInSintezatorFrequency(this)};
