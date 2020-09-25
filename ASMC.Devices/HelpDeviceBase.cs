@@ -77,7 +77,7 @@ namespace ASMC.Devices
         /// <param name="date">Число для преобразования в виде строки.</param>
         /// <param name="mult">Множитель единицы измерения (милли, кило и т.д.).</param>
         /// <returns></returns>
-        private static double StrToDoubleMindMind(string date, ICommand mult = null)
+        public static double StrToDoubleMindMind(string date, ICommand mult = null)
         {
             var dDate = new double[2];
             var value = date.Replace(".", ",").Split('E');
@@ -87,7 +87,8 @@ namespace ASMC.Devices
             // ReSharper disable once InconsistentNaming
             double math(double val, double exponent, ICommand m)
             {
-                return val * Math.Pow(10, exponent) / m?.Value ?? 1.0;
+                if (exponent == 0)   return val  /( m?.Value ?? 1.0);
+                return val * Math.Pow(10, exponent) /( m?.Value ?? 1.0);
             }
         }
 

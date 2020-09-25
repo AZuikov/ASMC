@@ -11,6 +11,7 @@ namespace ASMC.Devices.IEEE.Keysight.NoiseFigureAnalyzer
         public N8975A()
         {
             UserType = "N8975A";
+            DealySending = 500;
         }
     }
 }

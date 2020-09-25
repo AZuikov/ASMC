@@ -11,9 +11,11 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Devices;
 
 namespace N8957APlugin
 {
@@ -142,7 +144,7 @@ namespace N8957APlugin
                 n8975.WriteLine("CALibration:YTF");
 
                 UserItemOperation.ServicePack.MessageBox
-                                 .Show("Дождитесь окончания настройки, затем нажмите ОК!",
+                                 .Show("Дождитесь окончания настройки N8975, затем нажмите ОК!",
                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.OK);
 
@@ -191,6 +193,7 @@ namespace N8957APlugin
             freqAndTolDictionary.Add(5995, 400);
             freqAndTolDictionary.Add(14995, 400);
             freqAndTolDictionary.Add(17995, 400);
+
         }
 
         #region Methods
@@ -230,12 +233,14 @@ namespace N8957APlugin
                 {
                     try
                     {
+                        double testFreqqPoint = (double)freq * UnitMultipliers.Mega.GetDoubleValue();
                         await Task.Run(() =>
                         {
                             e8257D.StringConnection = GetStringConnect(e8257D);
                             n8975.StringConnection = GetStringConnect(n8975);
+                            
 
-                            double testFreqqPoint = (double)freq * UnitMultipliers.Mega.GetDoubleValue();
+                            
                             //подготовка генератора
                             e8257D.WriteLine(":OUTPut:MODulation 0"); //выключаем модуляцию
                             e8257D.WriteLine(":pow -20"); //ставим амплитуду -20 дБм
@@ -256,8 +261,10 @@ namespace N8957APlugin
                             n8975.WriteLine($"BANDwidth 4MHz");
                             n8975.WriteLine($"SWEep:POINts 201");  //сколько точек измерения
 
+                            n8975.WriteLine("DISPlay:DATA:TRACe1 phot");//В первой таблице устанавливаем параметр PHOT
+                            n8975.WriteLine("DISPlay:DATA:UNITs phot, lin");//устнавливаем единицы измерения
                             n8975.WriteLine("DISPlay:FORMat TABLe");//устнавливаем отображение таблицы
-                            n8975.WriteLine("DISPlay:DATA:UNITs phot, lin");//задаем единицы измерения
+                            //n8975.WriteLine("DISPlay:DATA:UNITs phot, lin");//задаем единицы измерения
 
                             e8257D.WriteLine(":OUTP 1");
                             Thread.Sleep(300);
@@ -272,15 +279,41 @@ namespace N8957APlugin
                                          .Show("Дождитесь окончания измерения, затем нажмите ОК!",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
-                        string[] answerFreqList = n8975.QueryLine("FREQuency:LIST:DATA?").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(',');//считать частоты для коэффициентов
-                        string[] answerPHot = n8975.QueryLine("FETC:UNC:PHOT? LIN").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(','); ;//считывание коэффициентов PHOT Lin
+                       e8257D.WriteLine(":OUTP 0");
+
+                        //теперь нужно обработать числа и получить результат вычислений (все сложить и поделить на 2)
+
                         
+                        string[] answerPHotArr = n8975.QueryLine("FETC:UNC:PHOT? LIN").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(','); ;//считывание коэффициентов PHOT Lin
+                        double[] photArrDoubles = new double[answerPHotArr.Length];
+                        Parallel.For(0, answerPHotArr.Length,
+                                     q => { photArrDoubles[q] = HelpDeviceBase.StrToDoubleMindMind(answerPHotArr[q]); });
+
+                        string[] answerFreqList = n8975.QueryLine("FREQuency:LIST:DATA?").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(',');//считать частоты для коэффициентов
+                        double[]freqArrDoubles = new double[answerFreqList.Length];
+                        Parallel.For(0, answerFreqList.Length,
+                                     q => { freqArrDoubles[q] = HelpDeviceBase.StrToDoubleMindMind(answerFreqList[q]); });
+
+                        double HalfSumPhot = photArrDoubles.Sum() / 2;
+                        Parallel.For(0, photArrDoubles.Length,
+                                     q => { photArrDoubles[q] = photArrDoubles[q] - HalfSumPhot; });
+                        double min = photArrDoubles.Min();
+                        int FreqIndexInArr = Array.FindIndex(photArrDoubles, q => { return q == min; });
+
+                           
+                        operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)testFreqqPoint);
+                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)freqArrDoubles[FreqIndexInArr]);
+                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, freqAndTolDictionary[freq]);
 
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                         throw;
+                    }
+                    finally
+                    {
+                        e8257D.WriteLine(":OUTP 0");
                     }
                 };
                 operation.BodyWork = () =>
@@ -294,10 +327,7 @@ namespace N8957APlugin
                         Logger.Error(e);
                         throw;
                     }
-                    finally
-                    {
-                        e8257D.WriteLine(":OUTP 0");
-                    }
+                    
                 };
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
 
