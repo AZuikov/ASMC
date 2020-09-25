@@ -234,6 +234,11 @@ namespace N8957APlugin
                     try
                     {
                         double testFreqqPoint = (double)freq * UnitMultipliers.Mega.GetDoubleValue();
+                        double startFreq;
+                        double stopFreq;
+                        int pointsCount = 201;
+                        double[] freqSTDArr = new double[pointsCount]; //сами посчитаем список точек и загрузим в прибор
+
                         await Task.Run(() =>
                         {
                             e8257D.StringConnection = GetStringConnect(e8257D);
@@ -257,9 +262,26 @@ namespace N8957APlugin
                             else
                                 n8975.WriteLine($"FREQuency:span 8e6"); //обзор
 
+                            startFreq = HelpDeviceBase.StrToDoubleMindMind(n8975.QueryLine("FREQuency:Start?"));
+                            stopFreq = HelpDeviceBase.StrToDoubleMindMind(n8975.QueryLine("FREQuency:Stop?"));
+
+                            
+                            double step = (stopFreq - startFreq) / (pointsCount - 1);
+                            freqSTDArr[0] = startFreq;
+                            for (int i = 1; i < freqSTDArr.Length; i++)
+                                freqSTDArr[i] = freqSTDArr[i - 1] + step;
+
                             n8975.WriteLine($"AVERage:STATe 0");
-                            n8975.WriteLine($"BANDwidth 4MHz");
-                            n8975.WriteLine($"SWEep:POINts 201");  //сколько точек измерения
+                            n8975.WriteLine($"BANDwidth 100kHz");
+                            n8975.WriteLine($"SWEep:POINts {pointsCount}");  //сколько точек измерения
+                            
+                            //грузим точки в прибор
+                            string loadToDevaceStr = "";
+                            for (int i = 1; i < freqSTDArr.Length; i++)
+                                loadToDevaceStr = loadToDevaceStr + freqSTDArr[i].ToString().Replace(',', '.') + ",";
+                            loadToDevaceStr=loadToDevaceStr.TrimEnd(',');
+                            n8975.WriteLine($"FREQuency:LIST:DATA {loadToDevaceStr}");
+                            Thread.Sleep(200);
 
                             n8975.WriteLine("DISPlay:DATA:TRACe1 phot");//В первой таблице устанавливаем параметр PHOT
                             n8975.WriteLine("DISPlay:DATA:UNITs phot, lin");//устнавливаем единицы измерения
@@ -289,10 +311,7 @@ namespace N8957APlugin
                         Parallel.For(0, answerPHotArr.Length,
                                      q => { photArrDoubles[q] = HelpDeviceBase.StrToDoubleMindMind(answerPHotArr[q]); });
 
-                        string[] answerFreqList = n8975.QueryLine("FREQuency:LIST:DATA?").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(',');//считать частоты для коэффициентов
-                        double[]freqArrDoubles = new double[answerFreqList.Length];
-                        Parallel.For(0, answerFreqList.Length,
-                                     q => { freqArrDoubles[q] = HelpDeviceBase.StrToDoubleMindMind(answerFreqList[q]); });
+                       
 
                         double HalfSumPhot = photArrDoubles.Sum() / 2;
                         Parallel.For(0, photArrDoubles.Length,
@@ -303,7 +322,7 @@ namespace N8957APlugin
                            
                         
                         operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(testFreqqPoint / UnitMultipliers.Mega.GetDoubleValue()));
-                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(freqArrDoubles[FreqIndexInArr]/ UnitMultipliers.Mega.GetDoubleValue()));
+                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(freqSTDArr[FreqIndexInArr]/ UnitMultipliers.Mega.GetDoubleValue()));
                         operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, freqAndTolDictionary[freq]);
                         operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, 
                                                                  (operation.Expected.Value*(decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() +
