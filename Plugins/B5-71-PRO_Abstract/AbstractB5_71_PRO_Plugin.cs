@@ -447,7 +447,8 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        var result = Mult.Dc.Voltage.Range.Set((double) setPoint).GetMeasValue();
+                        Mult.Dc.Voltage.Range.Set((double) setPoint);
+                        var result = Mult.GetMeasValue();
                         MathStatistics.Round(ref result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
@@ -623,7 +624,8 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        var resultMult = Mult.Dc.Voltage.Range.Set((double) setPoint).GetMeasValue();
+                        Mult.Dc.Voltage.Range.Set((double) setPoint);
+                        var resultMult = Mult.GetMeasValue();
                         var resultBp = Bp.GetMeasureVolt();
 
                         MathStatistics.Round(ref resultMult, 3);
@@ -823,7 +825,8 @@ namespace B5_71_PRO_Abstract
                         // время выдержки
                         Thread.Sleep(1000);
                         // записываем результаты
-                        voltUnstableList.Add((decimal) Mult.Dc.Voltage.Range.Set((double) Bp.VoltMax).GetMeasValue());
+                        Mult.Dc.Voltage.Range.Set((double) Bp.VoltMax);
+                        voltUnstableList.Add((decimal)Mult.GetMeasValue());
                     }
 
                     Bp.OffOutput();

@@ -296,14 +296,29 @@ namespace N8957APlugin
 
                         double HalfSumPhot = photArrDoubles.Sum() / 2;
                         Parallel.For(0, photArrDoubles.Length,
-                                     q => { photArrDoubles[q] = photArrDoubles[q] - HalfSumPhot; });
+                                     q => { photArrDoubles[q] = Math.Abs(photArrDoubles[q] - HalfSumPhot); });
                         double min = photArrDoubles.Min();
                         int FreqIndexInArr = Array.FindIndex(photArrDoubles, q => { return q == min; });
 
                            
-                        operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)testFreqqPoint);
-                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)freqArrDoubles[FreqIndexInArr]);
+                        
+                        operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(testFreqqPoint / UnitMultipliers.Mega.GetDoubleValue()));
+                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(freqArrDoubles[FreqIndexInArr]/ UnitMultipliers.Mega.GetDoubleValue()));
                         operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, freqAndTolDictionary[freq]);
+                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, 
+                                                                 (operation.Expected.Value*(decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() +
+                                                                 operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue())/(decimal)UnitMultipliers.Mega.GetDoubleValue());
+                        operation.LowerTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega,
+                                                                 (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() -
+                                                                  operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultipliers.Mega.GetDoubleValue());
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
+                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                        };
 
                     }
                     catch (Exception e)
