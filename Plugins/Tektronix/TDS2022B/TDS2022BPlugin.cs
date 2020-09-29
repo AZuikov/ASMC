@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
@@ -36,13 +39,23 @@ namespace TDS2022B
             TestDevices = new IDeviceUi[]
                 {new Device {Devices = new IDeviceBase[] {new TDS_2022B()}, Description = "Цифровой осциллограф."}};
 
+            var Cnanel1 = new ChanelOsciloscope(this,"1");
+            Cnanel1.Nodes.Add(new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1));
+            Cnanel1.Nodes.Add(new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1));
+            Cnanel1.Nodes.Add(new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1));
+
+            var Cnanel2 = new ChanelOsciloscope(this,"2");
+            Cnanel2.Nodes.Add(new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2));
+            Cnanel2.Nodes.Add(new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2));
+            Cnanel2.Nodes.Add(new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2));
+
             UserItemOperation = new IUserItemOperationBase[]
             {
-                //new Oper1VisualTest(this),
-                //new Oper2Oprobovanie(this),
-                //new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
-                //new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1),
-                new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1)
+                new Oper1VisualTest(this),
+                new Oper2Oprobovanie(this),
+                Cnanel1,
+                Cnanel2
+
             };
         }
 
@@ -102,5 +115,26 @@ namespace TDS2022B
             
 
         }
+    }
+
+    public class ChanelOsciloscope : ParagraphBase, IUserItemOperation<MeasPoint>
+    {
+        public ChanelOsciloscope(IUserItemOperation userItemOperation, string ChanelNameStr) : base(userItemOperation)
+        {
+            Name = $"Канал {ChanelNameStr}";
+        }
+
+
+        protected override DataTable FillData()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void InitWork()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
     }
 }
