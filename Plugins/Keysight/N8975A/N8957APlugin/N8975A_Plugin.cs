@@ -272,7 +272,7 @@ namespace N8957APlugin
                                 freqSTDArr[i] = freqSTDArr[i - 1] + step;
 
                             n8975.WriteLine($"AVERage:STATe 0");
-                            n8975.WriteLine($"BANDwidth 100kHz");
+                            n8975.WriteLine($"BANDwidth 4MHz");
                             n8975.WriteLine($"SWEep:POINts {pointsCount}");  //сколько точек измерения
                             
                             //грузим точки в прибор
@@ -317,7 +317,7 @@ namespace N8957APlugin
                         Parallel.For(0, photArrDoubles.Length,
                                      q => { photArrDoubles[q] = Math.Abs(photArrDoubles[q] - HalfSumPhot); });
                         double min = photArrDoubles.Min();
-                        int FreqIndexInArr = Array.FindIndex(photArrDoubles, q => { return q == min; });
+                        int FreqIndexInArr = Array.FindIndex(photArrDoubles, q => q == min);
 
                            
                         

@@ -347,6 +347,25 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
         }
 
         /// <summary>
+        /// Режим запуска осциллографа. Единичный по условию или непрерывный.
+        /// </summary>
+        public enum AcquireMode
+        {
+            SEQUENCE,
+            RUNSTOP
+        }
+        /// <summary>
+        /// Запуск и остановка режимов сбора данных осциллорафа.
+        /// </summary>
+        public enum  AcquireState
+        {
+            OFF,
+            ON,
+            RUN,
+            STOP
+        }
+
+        /// <summary>
         /// Количество накоплений данных при усреднении
         /// </summary>
         public enum MiscellaneousNUMAV
@@ -1196,6 +1215,18 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                     _tdsOscilloscope.WriteLine($"ACQuire:NUMAVg {(int)num}");
                 }
 
+                return _tdsOscilloscope;
+            }
+
+            public TDS_Oscilloscope SetSingleOrRunStopMode(AcquireMode mode)
+            {
+                _tdsOscilloscope.WriteLine($"acq:stopafter {mode}");
+                return _tdsOscilloscope;
+            }
+
+            public TDS_Oscilloscope StartAcquire()
+            {
+                _tdsOscilloscope.WriteLine($"acq:state {AcquireState.RUN}");
                 return _tdsOscilloscope;
             }
 
