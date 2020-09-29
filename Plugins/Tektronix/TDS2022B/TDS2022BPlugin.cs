@@ -63,13 +63,26 @@ namespace TDS2022B
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
+            
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_10mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_20mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_50mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_100mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_200mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_500mV);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_1V);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2V);
+            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5V);
+            
         }
     }
 
     public class Oper4MeasureTimeIntervals : TDS20XXBOper4MeasureTimeIntervals
     {
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet inTestingChanel) : base(userItemOperation, inTestingChanel)
+            TDS_Oscilloscope.ChanelSet chanel) : base(userItemOperation, chanel)
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
@@ -85,6 +98,9 @@ namespace TDS2022B
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
             RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal) 2.1);
+
+            
+
         }
     }
 }

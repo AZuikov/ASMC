@@ -686,6 +686,18 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 return _tdsOscilloscope;
             }
 
+            /// <summary>
+            /// Устанавливает пробник для канала.
+            /// </summary>
+            /// <param name = "chanel">Канал осциллографа.</param>
+            /// <param name = "inProbe">Номинал пробника.</param>
+            /// <returns></returns>
+            public TDS_Oscilloscope SetProbe(ChanelSet chanel, Probe inProbe)
+            {
+                _tdsOscilloscope.WriteLine($"{chanel}:pro {(int)inProbe}");
+                return _tdsOscilloscope;
+            }
+
             #endregion Methods
 
             /// <summary>
@@ -844,17 +856,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                     return _tdsOscilloscope;
                 }
 
-                /// <summary>
-                /// Устанавливает пробник для канала.
-                /// </summary>
-                /// <param name = "chanel">Канал осциллографа.</param>
-                /// <param name = "inProbe">Номинал пробника.</param>
-                /// <returns></returns>
-                public TDS_Oscilloscope SetProbe(ChanelSet chanel, Probe inProbe)
-                {
-                    _tdsOscilloscope.WriteLine($"{chanel}:pro {(int)inProbe}");
-                    return _tdsOscilloscope;
-                }
+               
 
                 /// <summary>
                 /// Устанвливает вертикальную развертку.
