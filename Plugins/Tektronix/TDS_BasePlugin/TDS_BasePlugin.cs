@@ -231,17 +231,19 @@ namespace TDS_BasePlugin
 
         #endregion Fields
 
-        protected Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) :
+        protected Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel, string inResourceDir) :
             base(userItemOperation)
         {
-            Name = "Определение погрешности коэффициентов отклонения";
-            DataRow = new List<IBasicOperation<MeasPoint>>();
             _testingChanel = inTestingChanel;
+            Name = $"{_testingChanel}: Определение погрешности коэффициентов отклонения";
+            DataRow = new List<IBasicOperation<MeasPoint>>();
+            
            
             Sheme = new ShemeImage
             {
                 
-                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                
+                AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
                 Number = (int)_testingChanel,
                 FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
@@ -442,15 +444,15 @@ namespace TDS_BasePlugin
         #endregion Fields
 
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel) : base(userItemOperation)
+            TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation)
         {
             _testingChanel = chanel;
-            Name = "Определение погрешности измерения временных интервалов";
+            Name = $"{_testingChanel}: Определение погрешности измерения временных интервалов";
             DataRow = new List<IBasicOperation<MeasPoint>>();
             Sheme = new ShemeImage
             {
 
-                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
                 Number = (int)_testingChanel,
                 FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
@@ -616,7 +618,7 @@ namespace TDS_BasePlugin
     public class TDS20XXBOper4MeasureTimeIntervals : Oper4MeasureTimeIntervals
     {
         public TDS20XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel) : base(userItemOperation, chanel)
+            TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation, chanel, inResourceDir)
         {
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec,
                              new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.61));
@@ -637,7 +639,7 @@ namespace TDS_BasePlugin
     public class TDS10XXBOper4MeasureTimeIntervals : Oper4MeasureTimeIntervals
     {
         public TDS10XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel) : base(userItemOperation, chanel)
+            TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation, chanel, inResourceDir)
         {
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
                              new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.62));
@@ -682,11 +684,11 @@ namespace TDS_BasePlugin
 
         #endregion Fields
 
-        protected Oper5MeasureRiseTime(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet chanel) :
+        protected Oper5MeasureRiseTime(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) :
             base(userItemOperation)
         {
             _testingChanel = chanel;
-            Name = "Определение Времени нарастания переходной характеристики";
+            Name = $"{_testingChanel}: Определение Времени нарастания переходной характеристики";
             DataRow = new List<IBasicOperation<MeasPoint>>();
 
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5mV);
@@ -703,7 +705,7 @@ namespace TDS_BasePlugin
             Sheme = new ShemeImage
             {
 
-                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
                 Number = (int)_testingChanel,
                 FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
@@ -821,7 +823,7 @@ namespace TDS_BasePlugin
                         MathStatistics.Round(ref measResult, 2);
 
                         operation.Getting =
-                            new MeasPoint(MeasureUnits.sec, verticalScale.GetUnitMultipliersValue(), measResult);
+                            new MeasPoint(MeasureUnits.sec, horizontalScAleForTest.GetUnitMultipliersValue(), measResult);
                         operation.ErrorCalculation = (point, measPoint) => RiseTimeTol;
                         operation.UpperTolerance = RiseTimeTol;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Reflection;
 using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
@@ -39,24 +40,20 @@ namespace TDS2022B
             TestDevices = new IDeviceUi[]
                 {new Device {Devices = new IDeviceBase[] {new TDS_2022B()}, Description = "Цифровой осциллограф."}};
 
-            var Cnanel1 = new ChanelOsciloscope(this,"1");
-            Cnanel1.Nodes.Add(new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1));
-            Cnanel1.Nodes.Add(new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1));
-            Cnanel1.Nodes.Add(new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1));
-
-            var Cnanel2 = new ChanelOsciloscope(this,"2");
-            Cnanel2.Nodes.Add(new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2));
-            Cnanel2.Nodes.Add(new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2));
-            Cnanel2.Nodes.Add(new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2));
+           
+           
 
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
-                Cnanel1,
-                Cnanel2
-
-            };
+                new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1),
+                new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2)
+        };
         }
 
         #region Methods
@@ -72,7 +69,7 @@ namespace TDS2022B
     public class Oper3KoefOtkl : TDS_BasePlugin.Oper3KoefOtkl
     {
         public Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) :
-            base(userItemOperation, inTestingChanel)
+            base(userItemOperation, inTestingChanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
@@ -95,7 +92,7 @@ namespace TDS2022B
     public class Oper4MeasureTimeIntervals : TDS20XXBOper4MeasureTimeIntervals
     {
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel) : base(userItemOperation, chanel)
+            TDS_Oscilloscope.ChanelSet chanel, string inResourceDi) : base(userItemOperation, chanel, inResourceDi)
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
@@ -105,7 +102,7 @@ namespace TDS2022B
     public class Oper5MeasureRiseTime : TDS_BasePlugin.Oper5MeasureRiseTime
     {
         public Oper5MeasureRiseTime(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet chanel) :
-            base(userItemOperation, chanel)
+            base(userItemOperation, chanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
@@ -117,24 +114,25 @@ namespace TDS2022B
         }
     }
 
-    public class ChanelOsciloscope : ParagraphBase, IUserItemOperation<MeasPoint>
-    {
-        public ChanelOsciloscope(IUserItemOperation userItemOperation, string ChanelNameStr) : base(userItemOperation)
-        {
-            Name = $"Канал {ChanelNameStr}";
-        }
+    //public class ChanelOsciloscope : ParagraphBase
+    //{
+    //    public ChanelOsciloscope(IUserItemOperation userItemOperation, string ChanelNameStr) : base(userItemOperation)
+    //    {
+    //        Name = $"Канал {ChanelNameStr}";
+    //        DataRow = new List<IBasicOperation<MeasPoint>>();
+    //    }
 
 
-        protected override DataTable FillData()
-        {
-            return null;
-        }
+    //    protected override DataTable FillData()
+    //    {
+    //        return null;
+    //    }
 
-        protected override void InitWork()
-        {
-            throw new NotImplementedException();
-        }
+    //    protected override void InitWork()
+    //    {
+            
+    //    }
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
-    }
+    //    public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+    //}
 }
