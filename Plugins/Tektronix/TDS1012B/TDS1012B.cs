@@ -1,20 +1,20 @@
-﻿using AP.Utils.Helps;
+﻿using System;
+using System.Reflection;
+using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
-using System;
-using System.Reflection;
 using TDS_BasePlugin;
 
-namespace TDS2022B
+namespace TDS1012B
 {
-    public class TDS2022BPlugin : TDS_BasePlugin<Operation>
+    public class TDS1012bPlugin : TDS_BasePlugin<Operation>
     {
-        public TDS2022BPlugin(ServicePack servicePack) : base(servicePack)
+        public TDS1012bPlugin(ServicePack servicePack) : base(servicePack)
         {
-            Type = "TDS 2022B";
+            Type = "TDS 1012B";
             Range = "no range";
             Accuracy = "no accuracy";
         }
@@ -42,10 +42,12 @@ namespace TDS2022B
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2)
             };
         }
@@ -57,7 +59,7 @@ namespace TDS2022B
             throw new NotImplementedException();
         }
 
-        #endregion Methods
+        #endregion
     }
 
     public class Oper3KoefOtkl : TDS_BasePlugin.Oper3KoefOtkl
@@ -82,7 +84,7 @@ namespace TDS2022B
         }
     }
 
-    public class Oper4MeasureTimeIntervals : TDS20XXBOper4MeasureTimeIntervals
+    public class Oper4MeasureTimeIntervals : TDS10XXBOper4MeasureTimeIntervals
     {
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
             TDS_Oscilloscope.ChanelSet chanel, string inResourceDi) : base(userItemOperation, chanel, inResourceDi)
@@ -99,28 +101,8 @@ namespace TDS2022B
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
-            horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)2.1);
+            horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec;
+            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal) 3.5);
         }
     }
-
-    //public class ChanelOsciloscope : ParagraphBase
-    //{
-    //    public ChanelOsciloscope(IUserItemOperation userItemOperation, string ChanelNameStr) : base(userItemOperation)
-    //    {
-    //        Name = $"Канал {ChanelNameStr}";
-    //        DataRow = new List<IBasicOperation<MeasPoint>>();
-    //    }
-
-    //    protected override DataTable FillData()
-    //    {
-    //        return null;
-    //    }
-
-    //    protected override void InitWork()
-    //    {
-    //    }
-
-    //    public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
-    //}
 }
