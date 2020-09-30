@@ -216,7 +216,7 @@ namespace TDS_BasePlugin
         /// <summary>
         /// тестируемый канал.
         /// </summary>
-        private readonly TDS_Oscilloscope.ChanelSet TestingChanel;
+        private readonly TDS_Oscilloscope.ChanelSet _testingChanel;
 
         protected Calibr9500B calibr9500B;
 
@@ -236,16 +236,24 @@ namespace TDS_BasePlugin
         {
             Name = "Определение погрешности коэффициентов отклонения";
             DataRow = new List<IBasicOperation<MeasPoint>>();
-            TestingChanel = inTestingChanel;
-            //подключение к каналу это наверное можно сделать через сообщение
-            // ли для каждого канала картинку нарисовать TemplateSheme
+            _testingChanel = inTestingChanel;
+           
+            Sheme = new ShemeImage
+            {
+                
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема",
+                Number = (int)_testingChanel,
+                FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
         }
 
         #region Methods
 
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = $"FillTabBmOper3KoefOtkl{TestingChanel}" };
+            var dataTable = new DataTable { TableName = $"FillTabBmOper3KoefOtkl{_testingChanel}" };
             dataTable.Columns.Add("Коэффициент развёртки");
             dataTable.Columns.Add("Амплитуда подаваемого сигнала");
             dataTable.Columns.Add("Измеренное значение амплитуды");
@@ -305,20 +313,20 @@ namespace TDS_BasePlugin
                     try
                     {
                         //1.нужно знать канал
-                        someTdsOscilloscope.Chanel.SetChanelState(TestingChanel, TDS_Oscilloscope.State.ON);
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.ON);
                         //теперь нужно понять с каким каналом мы будем работать на калибраторе
                         var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
                         calibr9500B.Route.Chanel.SetChanel(chnael);
                         calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
                         //2.установить развертку по вертикали
-                        someTdsOscilloscope.Chanel.SetProbe(TestingChanel, TDS_Oscilloscope.Probe.Att_1);
-                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(TestingChanel, currScale);
+                        someTdsOscilloscope.Chanel.SetProbe(_testingChanel, TDS_Oscilloscope.Probe.Att_1);
+                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingChanel, currScale);
                         //смещение для номального отображения
-                        someTdsOscilloscope.Chanel.Vertical.SetPosition(TestingChanel, -2);
+                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, -2);
                         //триггер
                         someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
                         someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(TestingChanel);
+                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingChanel);
                         someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
 
                         //3.установить развертку по времени
@@ -342,7 +350,7 @@ namespace TDS_BasePlugin
                         calibr9500B.Source.Output(Calibr9500B.State.On);
                         //6.снять показания с осциллографа
 
-                        someTdsOscilloscope.Measurement.SetMeas(TestingChanel, TDS_Oscilloscope.TypeMeas.PK2);
+                        someTdsOscilloscope.Measurement.SetMeas(_testingChanel, TDS_Oscilloscope.TypeMeas.PK2);
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
                         someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
                         Thread.Sleep(2500);
@@ -388,7 +396,7 @@ namespace TDS_BasePlugin
                     finally
                     {
                         calibr9500B.Source.Output(Calibr9500B.State.Off);
-                        someTdsOscilloscope.Chanel.SetChanelState(TestingChanel, TDS_Oscilloscope.State.OFF);
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
                     }
                 };
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -439,6 +447,15 @@ namespace TDS_BasePlugin
             _testingChanel = chanel;
             Name = "Определение погрешности измерения временных интервалов";
             DataRow = new List<IBasicOperation<MeasPoint>>();
+            Sheme = new ShemeImage
+            {
+
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема",
+                Number = (int)_testingChanel,
+                FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
         }
 
         #region Methods
@@ -682,6 +699,16 @@ namespace TDS_BasePlugin
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_1V);
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2V);
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5V);
+
+            Sheme = new ShemeImage
+            {
+
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема",
+                Number = (int)_testingChanel,
+                FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
         }
 
         #region Methods

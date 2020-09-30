@@ -127,7 +127,7 @@ namespace TDS2022B
 
         protected override DataTable FillData()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         protected override void InitWork()

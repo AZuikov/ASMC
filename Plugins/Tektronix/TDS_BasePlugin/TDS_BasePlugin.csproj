@@ -77,7 +77,12 @@
       <Name>ASMC.Devices</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resource\9500B_to_TDS_CH1.jpg" />
+    <Content Include="Resource\9500B_to_TDS_CH2.jpg" />
+    <Content Include="Resource\9500B_to_TDS_CH3.jpg" />
+    <Content Include="Resource\9500B_to_TDS_CH4.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resource\32618-06 TDS.dotx" />
   </ItemGroup>
