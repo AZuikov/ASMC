@@ -127,7 +127,7 @@
       <Name>AP.Math</Name>
     </ProjectReference>
     <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
-      <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
+      <Project>{630eedde-fe14-4ba9-a2da-7976f9bee39a}</Project>
       <Name>AP.Reports</Name>
     </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
