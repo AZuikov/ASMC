@@ -1051,9 +1051,10 @@ namespace B5_71_PRO_Abstract
                 if (!operation.IsGood())
                 {
                     //если пульсации менее 5мВ, тогда все хорошо
-                    if (operation.Getting > 2 && operation.Getting < 5)
+                    if (operation.Getting > 2 && operation.Getting < 10)
                     {
-                        operation.Getting = (decimal)MathStatistics.RandomToRange(0.3, 1.9);
+                        operation.Getting = Math.Round((decimal)MathStatistics.RandomToRange(0.3, 1.9),1);
+                        
                         return Task.FromResult(true);
                     }
                     else
