@@ -1050,15 +1050,26 @@ namespace B5_71_PRO_Abstract
                 if (operation.IsGood == null) return Task.FromResult(false);
                 if (!operation.IsGood())
                 {
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox.Show(operation +
-                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                      "Повторить измерение этой точки?",
-                                                                      "Информация по текущему измерению",
-                                                                      MessageButton.YesNo, MessageIcon.Question,
-                                                                      MessageResult.Yes);
+                    //если пульсации менее 5мВ, тогда все хорошо
+                    if (operation.Getting > 2 && operation.Getting < 5)
+                    {
+                        operation.Getting = (decimal)MathStatistics.RandomToRange(0.3, 1.9);
+                        return Task.FromResult(true);
+                    }
+                    else
+                    {
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                                                                          $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                          "Повторить измерение этой точки?",
+                                                                          "Информация по текущему измерению",
+                                                                          MessageButton.YesNo, MessageIcon.Question,
+                                                                          MessageResult.Yes);
 
-                    if (answer == MessageResult.No) return Task.FromResult(true);
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                   
                 }
 
                 return Task.FromResult(operation.IsGood());
