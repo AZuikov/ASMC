@@ -17,7 +17,7 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
 
         public MeasureUnits[] MeasureUnits { get; } = {AP.Utils.Helps.MeasureUnits.Db, AP.Utils.Helps.MeasureUnits.V};
 
-        public Multipliers[] MultipliersEnum { get; } = {AP.Utils.Helps.Multipliers.None, AP.Utils.Helps.Multipliers.Mili};
+        public UnitMultipliers[] MultipliersEnum { get; } = {AP.Utils.Helps.UnitMultipliers.None, AP.Utils.Helps.UnitMultipliers.Mili};
 
         public B3_57()
         {

@@ -12,6 +12,7 @@ namespace AP.Utils.Helps
     /// </summary>
     public enum MeasureUnits
     {
+        [StringValue("NONE")] NONE,
         [StringValue("В")] V,
         [StringValue("А")] I,
         [StringValue("Ом")] Ohm,
@@ -19,13 +20,14 @@ namespace AP.Utils.Helps
         [StringValue("Гц")] Herz,
         [StringValue("°C")] degC,
         [StringValue("°F")] DegF,
-        [StringValue("дБ")] Db
+        [StringValue("дБ")] Db,
+        [StringValue("сек")] sec
 
     }
     /// <summary>
     /// Содержит доступные множители и их обозначения.
     /// </summary>
-    public enum Multipliers
+    public enum UnitMultipliers
     {
         /// <summary>
         ///  Множетель пико 1Е-12.

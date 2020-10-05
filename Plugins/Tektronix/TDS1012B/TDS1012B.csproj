@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2BC759A0-2E5F-46EF-AA23-555D6475EA6C}</ProjectGuid>
+    <ProjectGuid>{7E3A464D-83E0-4106-B9C2-CBD4C2529C14}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>APPA_107N_109N</RootNamespace>
-    <AssemblyName>APPA-107N-109N</AssemblyName>
+    <RootNamespace>TDS1012B</RootNamespace>
+    <AssemblyName>TDS1012B</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -21,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,21 +29,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Mvvm.v17.2">
-      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
+      <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\..\..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,20 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Appa107N109NBasePlugin.cs" />
+    <Compile Include="TDS1012B.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\AP.Math\AP.Math.csproj">
-      <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
-      <Name>AP.Math</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\AP.Utils\AP.Utils.csproj">
-      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
+      <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
       <Name>AP.Utils</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ASMC.Common\ASMC.Common.csproj">
-      <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
+      <Project>{7fe244d8-06c9-4b0e-b2e5-7e92ac14e48d}</Project>
       <Name>ASMC.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ASMC.Core\ASMC.Core.csproj">
@@ -78,21 +65,18 @@
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ASMC.Devices\ASMC.Devices.csproj">
-      <Project>{C606FA94-0B7E-4698-801F-206CA9DA0CEF}</Project>
+      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
       <Name>ASMC.Devices</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-    <None Include="Resources\APPA_107N_109N.dotx" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <Resource Include="Resources\appa_10XN_20A_5522A.jpg" />
-    <Resource Include="Resources\appa_10XN_A_Aux_5522A.jpg" />
-    <Resource Include="Resources\appa_10XN_ma_5522A.jpg" />
-    <Resource Include="Resources\appa_10XN_volt_hz_5522A.jpg" />
+    <ProjectReference Include="..\TDS_BasePlugin\TDS_BasePlugin.csproj">
+      <Project>{c362fa9e-df8d-49b0-a86a-64661ecdba9e}</Project>
+      <Name>TDS_BasePlugin</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
+mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

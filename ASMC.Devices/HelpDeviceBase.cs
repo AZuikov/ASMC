@@ -28,7 +28,7 @@ namespace ASMC.Devices
         /// <param name = "date">Одно значение или перечисление значений через запятую. Разделитель целой и дробной части точка.</param>
         /// <param name = "mult">Множитель единицы измерения, в которую нужно преобразовать входные данные (милли, кило и т.д.). </param>
         /// <returns></returns>
-        public double DataStrToDoubleMind(string date, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+        public double DataStrToDoubleMind(string date, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
         {
             
             var value = date.Split(',');
@@ -44,9 +44,9 @@ namespace ASMC.Devices
         /// <param name="inDouble">Числовое значение для перевода</param>
         /// <param name="mult">множитель единицы измерения (милли, кило и т.д.).</param>
         /// <returns></returns>
-        public double DoubleToDoubleMind(double inDouble, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+        public double DoubleToDoubleMind(double inDouble, UnitMultipliers mult = AP.Utils.Helps.UnitMultipliers.None)
         {
-            return mult == AP.Utils.Helps.Multipliers.None ? inDouble : inDouble / mult.GetDoubleValue();
+            return mult == AP.Utils.Helps.UnitMultipliers.None ? inDouble : inDouble / mult.GetDoubleValue();
         }
 
        
@@ -56,13 +56,13 @@ namespace ASMC.Devices
         /// </summary>
         /// <param name="mult"></param>
         /// <returns></returns>
-        protected Multipliers GetMultiplier(ICommand mult)
+        protected UnitMultipliers GetMultiplier(ICommand mult)
         {
-            var res = Enum.GetValues(typeof(Multipliers)).Cast<Multipliers>()
+            var res = Enum.GetValues(typeof(UnitMultipliers)).Cast<UnitMultipliers>()
                           .FirstOrDefault(q => Equals(q.GetDoubleValue(), mult.Value));
             return res;
         }
-        protected ICommand GetMultiplier(Multipliers mult)
+        protected ICommand GetMultiplier(UnitMultipliers mult)
         {
             var res = Multipliers.FirstOrDefault(q => Equals(q.Value, mult.GetDoubleValue()));
             if(res == null)
@@ -77,7 +77,7 @@ namespace ASMC.Devices
         /// <param name="date">Число для преобразования в виде строки.</param>
         /// <param name="mult">Множитель единицы измерения (милли, кило и т.д.).</param>
         /// <returns></returns>
-        private static double StrToDoubleMindMind(string date, ICommand mult = null)
+        public static double StrToDoubleMindMind(string date, ICommand mult = null)
         {
             var dDate = new double[2];
             var value = date.Replace(".", ",").Split('E');
@@ -87,11 +87,12 @@ namespace ASMC.Devices
             // ReSharper disable once InconsistentNaming
             double math(double val, double exponent, ICommand m)
             {
-                return val * Math.Pow(10, exponent) / m?.Value ?? 1.0;
+                if (exponent == 0)   return val  /( m?.Value ?? 1.0);
+                return val * Math.Pow(10, exponent) /( m?.Value ?? 1.0);
             }
         }
 
-        public string JoinValueMult(double value, Multipliers mult)
+        public string JoinValueMult(double value, UnitMultipliers mult)
         {
             return JoinValueMult((decimal)value, mult);
         }
@@ -101,7 +102,7 @@ namespace ASMC.Devices
         /// <param name="value">Числовое значение которео нужно преобразовать.</param>
         /// <param name="mult"> Множитель единицы измерения (млии, кило и т.д.).</param>
         /// <returns></returns>
-        public string JoinValueMult(decimal value, Multipliers mult)
+        public string JoinValueMult(decimal value, UnitMultipliers mult)
         {
             return value.ToString("G", CultureInfo.GetCultureInfo("en-US")) +
                    GetMultiplier(mult).StrCommand;

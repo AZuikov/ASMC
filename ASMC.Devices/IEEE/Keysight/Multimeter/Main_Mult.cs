@@ -28,13 +28,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <summary>
         /// Запрос на получение значения (U, I, R, F)
         /// </summary>
-        /// <param name="multipliers">Желаемый множитель.</param>
+        /// <param name="unitMultipliers">Желаемый множитель.</param>
         /// <returns>Возвращает значение с желаемым множителем.</returns>
-        public double GetMeasValue(Multipliers multipliers= AP.Utils.Helps.Multipliers.None)
+        public double GetMeasValue(UnitMultipliers unitMultipliers= AP.Utils.Helps.UnitMultipliers.None)
         {  
            WriteLine(QueryValue);
            
-            var res = DataStrToDoubleMind(ReadString(), multipliers);
+            var res = DataStrToDoubleMind(ReadString(), unitMultipliers);
             return res;
         }
 
@@ -524,12 +524,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "multipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
+        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
         {
             var val = Math.Abs(value);
-            val *= multipliers.GetDoubleValue();
+            val *= unitMultipliers.GetDoubleValue();
             var res = Ranges.FirstOrDefault(q => q.Value <= val);
 
             if(res == null)
@@ -722,12 +722,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон фильтра взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "multipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
+        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
         {
             var val = Math.Abs(value);
-            val *= multipliers.GetDoubleValue();
+            val *= unitMultipliers.GetDoubleValue();
             var res = Filters.FirstOrDefault(q => q.Value >= val);
 
             if(res == null)
@@ -880,12 +880,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "multipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
+        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
         {
             var val = Math.Abs(value);
-             val *= multipliers.GetDoubleValue();
+             val *= unitMultipliers.GetDoubleValue();
             var res = Ranges.OrderBy(o=>o.Value).FirstOrDefault(q => q.Value <= val);
 
             if(res == null)
@@ -945,12 +945,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "multipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, Multipliers multipliers = Multipliers.None)
+        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
         {
             var val = Math.Abs(value);
-            val *= multipliers.GetDoubleValue();
+            val *= unitMultipliers.GetDoubleValue();
             var res = Ranges.FirstOrDefault(q => q.Value <= val);
 
             if(res == null)

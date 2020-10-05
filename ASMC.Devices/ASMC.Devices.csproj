@@ -79,11 +79,14 @@
     <Compile Include="IEEE\Keysight\ElectronicLoad\Main_N3300.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3303A.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3306A.cs" />
+    <Compile Include="IEEE\Keysight\Generator\E8257D.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Main_Mult.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34401A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34460_61A.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
+    <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
+    <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_2022B\TDS_2022B.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />
@@ -124,7 +127,7 @@
       <Name>AP.Math</Name>
     </ProjectReference>
     <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
-      <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
+      <Project>{630eedde-fe14-4ba9-a2da-7976f9bee39a}</Project>
       <Name>AP.Reports</Name>
     </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">

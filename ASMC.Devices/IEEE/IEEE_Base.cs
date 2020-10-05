@@ -1,6 +1,9 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+using ASMC.Data.Model;
+using Ivi.Visa;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,10 +13,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using ASMC.Data.Model;
-using Ivi.Visa;
-using MathNet.Numerics.Financial;
-using NLog;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ASMC.Devices.IEEE
@@ -61,7 +60,7 @@ namespace ASMC.Devices.IEEE
         /// <summary>
         /// отвечает за задержку между командами в мс
         /// </summary>
-        protected  int DealySending { get; set; }
+        protected int DealySending { get; set; }
 
         /// <summary>
         /// Массив подключенных устройств
@@ -79,7 +78,7 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         private string[] _words;
 
-        #endregion
+        #endregion Fields
 
         #region Property
 
@@ -92,40 +91,35 @@ namespace ASMC.Devices.IEEE
             //  \HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB  чистить реестр тут
             get
             {
-                var arr = GlobalResourceManager.Find().ToList();
+                var arr = GlobalResourceManager.Find("?*INSTR").ToList();
                 var ResultList = new List<string>();
 
                 Parallel.For(0, arr.Count, i =>
                 {
-                    if (!arr[i].Contains("INTFC"))
+                    var MyReEx = @"(com|lpt)\d+";
+                    Match portNameMatch;
+
+                    var MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
+                    Match usbDeviceMatch;
+
+                    var MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
+                    Match gpibDeviceMatch;
+
+                    try
                     {
-                        var MyReEx = @"(com|lpt)\d+";
-                        Match portNameMatch;
+                        var devObj = GlobalResourceManager.Open(arr[i]);
 
-                        var MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
-                        Match usbDeviceMatch;
-
-                        var MyGpibRegEx = @"GPIB\d+::\d+::INSTR";
-                        Match gpibDeviceMatch;
-
-                        //нужна регулярка для устройств подключенных через LAN
-
-                        try
+                        portNameMatch = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
+                        if (portNameMatch.Success) ResultList.Add(portNameMatch.Value);
+                        else
                         {
-                            
-                           usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
-                           gpibDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
-                           if (usbDeviceMatch.Success || gpibDeviceMatch.Success) ResultList.Add(arr[i]);
-                           else
-                           {
-                                var devObj = GlobalResourceManager.Open(arr[i]);
-                                portNameMatch = Regex.Match(devObj.HardwareInterfaceName, MyReEx, RegexOptions.IgnoreCase);
-                                if (portNameMatch.Success) ResultList.Add(portNameMatch.Value);
-                           }
+                            usbDeviceMatch = Regex.Match(arr[i], MyUsbRegEx, RegexOptions.IgnoreCase);
+                            gpibDeviceMatch = Regex.Match(arr[i], MyGpibRegEx, RegexOptions.IgnoreCase);
+                            if (usbDeviceMatch.Success || gpibDeviceMatch.Success) ResultList.Add(arr[i]);
                         }
-                        catch (NativeVisaException e)
-                        {
-                        }
+                    }
+                    catch (NativeVisaException e)
+                    {
                     }
                 });
 
@@ -163,7 +157,7 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         protected IMessageBasedSession Session { get; set; }
 
-        #endregion
+        #endregion Property
 
         public IeeeBase()
         {
@@ -332,7 +326,7 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         public void Sinchronization()
         {
-            var timer = new System.Timers.Timer {Interval = 30000};
+            var timer = new System.Timers.Timer { Interval = 30000 };
             timer.Elapsed += Timer_Elapsed;
 
             void Timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -385,7 +379,7 @@ namespace ASMC.Devices.IEEE
         {
             try
             {
-                Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
+                Session = (IMessageBasedSession)GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 100;
                 // !!! очистка сессии здесь не нужна. на некоторых машинах она вызывает наслоение команд. В результате часть отправленых команд не выпонятся.
                 // !!! Очистка сессии может отменять ранее запущенные операции на устройстве.
@@ -402,7 +396,7 @@ namespace ASMC.Devices.IEEE
 
                 if (Session.HardwareInterfaceType == HardwareInterfaceType.Serial)
                 {
-                    _words = new[] {Session.FormattedIO.ReadLine()};
+                    _words = new[] { Session.FormattedIO.ReadLine() };
                 }
                 else
                 {
@@ -420,7 +414,7 @@ namespace ASMC.Devices.IEEE
             return true;
         }
 
-        #endregion
+        #endregion Methods
 
         /// <inheritdoc />
         public string UserType { get; protected set; }
@@ -470,7 +464,7 @@ namespace ASMC.Devices.IEEE
             try
             {
                 if (IsOpen) return;
-                Session = (IMessageBasedSession) GlobalResourceManager.Open(StringConnection);
+                Session = (IMessageBasedSession)GlobalResourceManager.Open(StringConnection);
                 Session.TimeoutMilliseconds = 60000;
                 Thread.Sleep(100);
             }
@@ -561,7 +555,7 @@ namespace ASMC.Devices.IEEE
             Open();
             Session.FormattedIO.WriteLine(inStrData);
             Logger.Debug($"На устройство {UserType} отправлена команда {inStrData}");
-            
+
             string answer;
             try
             {

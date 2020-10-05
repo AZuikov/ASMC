@@ -1,8 +1,41 @@
 ﻿using System;
 using System.Collections;
+using AP.Utils.Helps;
 
 namespace AP.Utils.Data
 {
+    /// <inheritdoc />
+    [AttributeUsage(AttributeTargets.Field)]
+    public class MeasureUnitsValueAttribute : Attribute
+    {
+        /// <inheritdoc />
+        public MeasureUnitsValueAttribute(MeasureUnits value)
+        {
+            Value = value;
+        }
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <value></value>
+        public MeasureUnits Value { get; }
+    }
+
+    /// <inheritdoc />
+    [AttributeUsage(AttributeTargets.Field)]
+    public class UnitMultipliersAttribute : Attribute
+    {
+        /// <inheritdoc />
+        public UnitMultipliersAttribute(UnitMultipliers value)
+        {
+            Value = value;
+        }
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <value></value>
+        public UnitMultipliers Value { get; }
+    }
+
     /// <inheritdoc />
     [AttributeUsage(AttributeTargets.Field)]
     public class StringValueAttribute : Attribute
@@ -43,6 +76,8 @@ namespace AP.Utils.Data
     {
         private static readonly Hashtable StringValues = new Hashtable();
         private static readonly Hashtable DoubleValues = new Hashtable();
+        private static readonly Hashtable UnitMultipliersValues = new Hashtable();
+        private static readonly Hashtable MeasureUnitValues = new Hashtable();
         /// <summary>
         /// Предоставляет возможность получить значение аттрибута  <see cref="StringValueAttribute"/>
         /// </summary>
@@ -87,5 +122,44 @@ namespace AP.Utils.Data
             } 
             return output;
         }
+
+        public static UnitMultipliers GetUnitMultipliersValue(this Enum value)
+        {
+            UnitMultipliers output = UnitMultipliers.None ;
+            var type = value.GetType();
+            if (UnitMultipliersValues.ContainsKey(value))
+                output = ((UnitMultipliersAttribute)UnitMultipliersValues[value]).Value;
+            else
+            {
+                var fi = type.GetField(value.ToString());
+                if (!(fi.GetCustomAttributes(typeof(UnitMultipliersAttribute), false) is UnitMultipliersAttribute[]
+                        attrs) ||
+                    attrs.Length <= 0) return output;
+                UnitMultipliersValues.Add(value, attrs[0]);
+                output = attrs[0].Value;
+            }
+
+            return output;
+        }
+
+        //public static MeasureUnits GetMeasureUnitsValue(this Enum value)
+        //{
+        //    MeasureUnits output = MeasureUnits.NONE;
+        //    var type = value.GetType();
+        //    if (UnitMultipliersValues.ContainsKey(value))
+        //        output = ((MeasureUnitsValueAttribute)MeasureUnitValues[value]).Value;
+        //    else
+        //    {
+        //        var fi = type.GetField(value.ToString());
+        //        if (!(fi.GetCustomAttributes(typeof(MeasureUnitsValueAttribute), false) is MeasureUnitsValueAttribute[]
+        //                attrs) ||
+        //            attrs.Length <= 0) return output;
+        //        UnitMultipliersValues.Add(value, attrs[0]);
+        //        output = attrs[0].Value;
+        //    }
+
+        //    return output;
+
+        //}
     }
 }

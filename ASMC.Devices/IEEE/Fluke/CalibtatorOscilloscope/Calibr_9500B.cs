@@ -2,21 +2,30 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
+using System.Xml;
 using AP.Utils.Data;
 using AP.Utils.Helps;
+using ASMC.Data.Model;
+using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
+using NLog;
 
 namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 {
+
     public class Calibr9500B : IeeeBase
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public enum Chanel
         {
-            Ch1,
-            Ch2,
-            Ch3,
-            Ch4,
-            Ch5
+            Ch1 = 1,
+            Ch2 = 2,
+            Ch3 = 3,
+            Ch4 = 4,
+            Ch5 = 5
         }
 
         public enum Direction
@@ -46,6 +55,18 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// 1 МОм
             /// </summary>
             [StringValue("1.000000E+06")] Res_1M = 1000000
+        }
+
+        /// <summary>
+        /// Перечисление форм волны для маркера.
+        /// </summary>
+        public enum MarkerWaveForm
+        {
+            SQU,
+            PULS,
+            TRI,
+            LINE,
+            UNKNOWN
         }
 
         public enum Polar
@@ -157,6 +178,18 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         }
 
         /// <summary>
+        /// Варианты амплитуды для маркеров.
+        /// </summary>
+        public enum MarkerAmplitude
+        {
+            [DoubleValue(0.1)] Ampl100mV,
+            [DoubleValue(0.25)] Ampl250mV,
+            [DoubleValue(0.5)] Ampl500mV,
+            [DoubleValue(1)] ampl1V,
+            UNKNOWN
+        }
+
+        /// <summary>
         /// Тип измерения
         /// </summary>
         public enum TypeMes
@@ -181,9 +214,16 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         public CSource Source { get; }
 
         #endregion
+        /// <summary>
+        /// Список (словарь) возможных моделей активных головок.
+        /// </summary>
+        public readonly Dictionary<string, ActiveHeadFor9500B> ActiveHeadDictionary = 
+            new Dictionary<string, ActiveHeadFor9500B>();
+        
 
         public Calibr9500B()
         {
+            UserType = "Fluke 9500B";
             Source = new CSource(this);
             Route = new CROUTe(this);
             AuxFunc = new CAUXFunctional(this);
@@ -195,6 +235,46 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 new Command("", "", 1)
                 
             };
+
+            //список возможных головок калибратора
+            ActiveHeadDictionary.Add("9510", new ActiveHead9510());
+            ActiveHeadDictionary.Add("9530", new ActiveHead9530());
+            ActiveHeadDictionary.Add("9550", new ActiveHead9550());
+            ActiveHeadDictionary.Add("9560", new ActiveHead9560());
+        }
+
+        /// <summary>
+        /// Найдет каналы, на которых установлена модель головки.
+        /// </summary>
+        /// <param name="head">Головка которую хотим найти.</param>
+        /// <returns></returns>
+        public  List<Chanel> FindActiveHeadOnChanel(ActiveHeadFor9500B head)
+        {
+            List<Chanel> resultHeadList = new List<Chanel>();
+            for (int i = 1; i <= 5; i++)
+            {
+                string[] answer = QueryLine($"ROUT:FITT? CH{i}").Split(',');
+                if (answer[0].Equals(head.GetModelName)) 
+                    resultHeadList.Add((Chanel)i);
+            }
+
+            return resultHeadList;
+        }
+
+        /// <summary>
+        /// Возвращает полный переченб подключенных головок к каналам.
+        /// </summary>
+        /// <returns>Словарь: номер канала - модель головы.</returns>
+        public Dictionary<Chanel, ActiveHeadFor9500B> FindAllActiveHead()
+        {
+            Dictionary<Chanel, ActiveHeadFor9500B> resultDict = new Dictionary<Chanel, ActiveHeadFor9500B>();
+            for (int i = 1; i <= 5; i++)
+            {
+                string[] answer = QueryLine($"ROUT:FITT? CH{i}").Split(',');
+                if (!answer[0].Equals("NONE")&& !answer[0].Equals("CABL")) resultDict.Add((Chanel)i, ActiveHeadDictionary[answer[0]]);
+            }
+
+            return resultDict.Count == 0? null: resultDict;
         }
 
         /// <summary>
@@ -218,13 +298,13 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             {
                 _calibrMain = calibrMain;
                 Parametr = new CParametr(calibrMain);
-                Multipliers =  new ICommand[]
+                Multipliers = new ICommand[]
                 {
                     new Command("N", "н", 1E-9),
                     new Command("U", "мк", 1E-6),
                     new Command("M", "м", 1E-3),
-                    new Command("", "", 1)
-                    //new Command("K", "к", 1E3)
+                    new Command("", "", 1),
+                    new Command("K", "к", 1E3)
                 };
             }
 
@@ -239,7 +319,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 var answer = _calibrMain.QueryLine("SOUR:FREQ?");
                 var arr = answer.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
                                 .Split('E');
-                return decimal.Parse(arr[0]) * (decimal) Math.Pow(10, double.Parse(arr[1]));
+                return Decimal.Parse(arr[0]) * (decimal)Math.Pow(10, Double.Parse(arr[1]));
             }
 
             /// <summary>
@@ -253,7 +333,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                                 .Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
                                 .Split('E');
 
-                return decimal.Parse(var[0]) * (decimal) Math.Pow(10, double.Parse(var[1]));
+                return Decimal.Parse(var[0]) * (decimal)Math.Pow(10, Double.Parse(var[1]));
             }
 
             /// <summary>
@@ -271,7 +351,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetFreq(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+            public Calibr9500B SetFreq(double value, UnitMultipliers mult = UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -292,7 +372,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetPeriod(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+            public Calibr9500B SetPeriod(double value, UnitMultipliers mult = UnitMultipliers.None)
             {
                 _calibrMain.WriteLine($@"SOUR:PER {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -304,9 +384,9 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetVoltage(double value, Multipliers mult = AP.Utils.Helps.Multipliers.None)
+            public Calibr9500B SetVoltage(double value, UnitMultipliers mult = UnitMultipliers.None)
             {
-                _calibrMain.WriteLine($@"SOUR:VOLT {JoinValueMult(value, mult)}");
+                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value * mult.GetDoubleValue()).ToString().Replace(',', '.')}");
                 return _calibrMain;
             }
 
@@ -329,6 +409,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
                 public CEDGE EDGE { get; }
 
+                public CMARKER MARKER { get; }
+
                 #endregion
 
                 public CParametr(Calibr9500B calibr)
@@ -336,6 +418,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     _calibrMain = calibr;
                     EDGE = new CEDGE(calibr);
                     DC = new CDC(calibr);
+                    MARKER = new CMARKER(calibr);
                 }
 
                 /// <summary>
@@ -465,14 +548,93 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public Calibr9500B SetEdgeSpeed(SpeedEdge Se)
                     {
-                        _calibrMain.WriteLine("SOUR:PAR:EDGE:SPE " + (double) Se * Math.Pow(10, -12));
+                        _calibrMain.WriteLine($"SOUR:PAR:EDGE:SPE {((double)Se * Math.Pow(10, -12))}");
                         return _calibrMain;
                     }
 
                     #endregion
                 }
+
+                public class CMARKER
+                {
+
+
+                    private Calibr9500B _calibrMain;
+                    public CMARKER(Calibr9500B calibr)
+                    {
+                        _calibrMain = calibr;
+                    }
+
+                    public Calibr9500B SetWaveForm(MarkerWaveForm inWaveForm)
+                    {
+                        _calibrMain.WriteLine($"sour:par:mark:wave {inWaveForm}");
+                        return _calibrMain;
+                    }
+
+                    public MarkerWaveForm GetMarkerWaveForm()
+                    {
+                        string answer = _calibrMain.QueryLine($"sour:par:mark:wave?").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').ToUpper();
+                        
+                        foreach (MarkerWaveForm markerWave in (MarkerWaveForm[])Enum.GetValues(typeof(MarkerWaveForm)))
+                        {
+                            if (markerWave.ToString().ToUpper().Equals(answer)) return markerWave;
+                        }
+
+                        Logger.Error($"Неизвестная форма волны считана с калибратора {answer}. Добавьте в перечисление.");
+                        return MarkerWaveForm.UNKNOWN;
+
+
+                    }
+
+                    
+                    /// <summary>
+                    /// Устанавливает амплитуду сигнала маркера.
+                    /// </summary>
+                    /// <param name="inAmplitude">Амплитуда сигнала.</param>
+                    /// <returns></returns>
+                    public Calibr9500B SetAmplitude(MarkerAmplitude inAmplitude)
+                    {
+                        _calibrMain.WriteLine($"volt {(inAmplitude.GetDoubleValue()).ToString().Replace(',','.')}");
+                        return _calibrMain;
+                    }
+
+                    /// <summary>
+                    /// Устанавливает период следования сигнала.
+                    /// </summary>
+                    /// <param name="inPoint">Значение периода с единицами измерения.</param>
+                    /// <returns></returns>
+                    public Calibr9500B SetPeriod(MeasPoint inPoint)
+                    {
+                        if (inPoint.Units != MeasureUnits.sec)
+                        {
+                            string errorStr = $"Единицы измерения не секунды {inPoint.Description}";
+                            Logger.Error(errorStr);
+                            throw new ArgumentException(errorStr);
+                        }
+
+                        _calibrMain.WriteLine($"per {((double)inPoint.Value*inPoint.UnitMultipliersUnit.GetDoubleValue()).ToString().Replace(',','.')}");
+                        return _calibrMain;
+                    }
+
+                    /// <summary>
+                    /// Возвращает значение амплитуды.
+                    /// </summary>
+                    /// <returns></returns>
+                    public MarkerAmplitude GetAmplitude()
+                    {
+                        string answer =_calibrMain.QueryLine($"volt?").TrimEnd('\n').Replace(',','.');
+                        double doubleAnswer;
+                        double.TryParse(answer, out doubleAnswer);
+                        foreach (MarkerAmplitude amplitude in (MarkerAmplitude[])Enum.GetValues(typeof(MarkerAmplitude)))
+                        {
+                            if (amplitude.GetDoubleValue() == doubleAnswer) return amplitude;
+                        }
+                        Logger.Error($"Неизвестное значение амплитуды маркера {answer}");
+                        return MarkerAmplitude.UNKNOWN;
+                    }
+                }
             }
-        }
+    }
 
         /// <summary>
         /// Данная подсистема используется для конфигурирования выходных каналов, которые используются как выходы сигнала и
@@ -533,6 +695,13 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 /// <returns></returns>
                 public Calibr9500B SetChanel(Chanel ch)
                 {
+                    if (ch == null)
+                    {
+                        string errorStr = $"Невозможно установить канал на калибраторе. Значение параметра: {ch}";
+                        Logger.Error(errorStr);
+                        throw new ArgumentException(errorStr);
+                    }
+
                     _calibMain.WriteLine("ROUT:SIGN " + ch);
                     return _calibMain;
                 }
@@ -596,4 +765,99 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             #endregion
         }
     }
+
+    public abstract class ActiveHeadFor9500B
+    {
+        protected string ModelName;
+
+        /// <summary>
+        /// Максимальная частота для модели активной головки.
+        /// </summary>
+        private MeasPoint MaxFreq;
+        /// <summary>
+        /// Длительность фронта для данной головки
+        /// </summary>
+        private MeasPoint[] ImpulseWidth;
+
+        /// <summary>
+        /// Серийный (заводской) номер.
+        /// </summary>
+        public string HeadSerialNumb { get; protected set; }
+
+        public ActiveHeadFor9500B(MeasPoint maxFreq, MeasPoint[] impulseWidth)
+        {
+            
+            MaxFreq = maxFreq;
+            ImpulseWidth = impulseWidth;
+        }
+
+        /// <summary>
+        /// Какая максимальная частота у головы.
+        /// </summary>
+        public MeasPoint GetMaxFreq
+        {
+            get { return MaxFreq; }
+        }
+
+        /// <summary>
+        /// Возможные длительности импульса головы.
+        /// </summary>
+        public MeasPoint[] GetImpulseWidthArr
+        {
+            get { return ImpulseWidth; }
+        }
+
+        public string GetModelName
+        {
+            get { return ModelName; }
+        }
+
+    }
+
+    public class ActiveHead9510 : ActiveHeadFor9500B
+    {
+        public ActiveHead9510() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 1),
+                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 500)})
+        {
+           
+            ModelName = "9510";
+        }
+    }
+
+    public class ActiveHead9530 : ActiveHeadFor9500B
+    {
+        public ActiveHead9530() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, (decimal) 3.2),
+                                       new MeasPoint[]
+                                       {
+                                           new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 150),
+                                           new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 500)
+                                       })
+        {
+           
+            ModelName = "9530";
+        }
+    }
+
+    public class ActiveHead9550 : ActiveHeadFor9500B
+    {
+        public ActiveHead9550() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 14),
+                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 25)})
+        {
+            
+            ModelName = "9550";
+        }
+    }
+
+    public class ActiveHead9560 : ActiveHeadFor9500B
+    {
+        public ActiveHead9560() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 6),
+                                                new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 70)})
+        {
+           
+            ModelName = "9560";
+        }
+    }
+
+   
+
 }
