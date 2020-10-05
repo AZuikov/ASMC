@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ASMC.Data.Model.Interface
 {
     /// <summary>
-    /// Предоставляет инерфейс базаовой операции.
+    /// Предоставляет инерфейс базовой операции.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IBasicOperation<T>
