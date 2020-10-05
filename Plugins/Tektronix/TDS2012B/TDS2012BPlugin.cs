@@ -1,18 +1,23 @@
-﻿using AP.Utils.Helps;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
-using System;
-using System.Reflection;
 using TDS_BasePlugin;
+using Operation = ASMC.Core.Model.Operation;
 
-namespace TDS2022B
+namespace TDS2012B
 {
-    public class TDS2022BPlugin : TDS_BasePlugin<Operation>
+    public class TDS2012BPlugin : TDS_BasePlugin<Operation>
     {
-        public TDS2022BPlugin(ServicePack servicePack) : base(servicePack)
+        public TDS2012BPlugin(ServicePack servicePack) : base(servicePack)
         {
             Type = "TDS 2022B";
             Range = "no range";
@@ -42,23 +47,22 @@ namespace TDS2022B
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2)
             };
         }
-
-        #region Methods
 
         public override void FindDevice()
         {
             throw new NotImplementedException();
         }
-
-        #endregion Methods
     }
+
 
     public class Oper3KoefOtkl : TDS_BasePlugin.Oper3KoefOtkl
     {
@@ -100,9 +104,7 @@ namespace TDS2022B
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)2.1);
+            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)3.5);
         }
     }
-
-   
 }

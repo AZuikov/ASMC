@@ -8,16 +8,17 @@ using System;
 using System.Reflection;
 using TDS_BasePlugin;
 
-namespace TDS2022B
+namespace TDS2004B
 {
-    public class TDS2022BPlugin : TDS_BasePlugin<Operation>
+    public class TDS2004BPlugin : TDS_BasePlugin<Operation>
     {
-        public TDS2022BPlugin(ServicePack servicePack) : base(servicePack)
+        public TDS2004BPlugin(ServicePack servicePack) : base(servicePack)
         {
-            Type = "TDS 2022B";
+            Type = "TDS 2002B";
             Range = "no range";
             Accuracy = "no accuracy";
         }
+    
     }
 
     public class Operation : OperationMetrControlBase
@@ -46,7 +47,14 @@ namespace TDS2022B
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2),
                 new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2, Assembly.GetExecutingAssembly().GetName().Name),
-                new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2)
+                new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2),
+                new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH3),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH3, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH3),
+                new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH4),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH4, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH4)
+
             };
         }
 
@@ -100,9 +108,7 @@ namespace TDS2022B
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)2.1);
+            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)5.8);
         }
     }
-
-   
 }
