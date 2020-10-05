@@ -8,13 +8,13 @@ using System;
 using System.Reflection;
 using TDS_BasePlugin;
 
-namespace TDS2022B
+namespace TDS2002B
 {
-    public class TDS2022BPlugin : TDS_BasePlugin<Operation>
+    public class TDS2002BPlugin : TDS_BasePlugin<Operation>
     {
-        public TDS2022BPlugin(ServicePack servicePack) : base(servicePack)
+        public TDS2002BPlugin(ServicePack servicePack) : base(servicePack)
         {
-            Type = "TDS 2022B";
+            Type = "TDS 2002B";
             Range = "no range";
             Accuracy = "no accuracy";
         }
@@ -100,9 +100,7 @@ namespace TDS2022B
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)2.1);
+            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)5.8);
         }
     }
-
-   
 }
