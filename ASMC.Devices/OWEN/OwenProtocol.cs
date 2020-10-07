@@ -4,6 +4,9 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OwenioNet;
+using OwenioNet.IO;
+using OwenioNet.Types;
 
 namespace ASMC.Devices.OWEN
 {
