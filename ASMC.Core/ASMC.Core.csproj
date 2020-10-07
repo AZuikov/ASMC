@@ -115,6 +115,7 @@
     <Compile Include="ValidationRules\Rules.cs" />
     <Compile Include="ViewModel\QuestionTextViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />
+    <Compile Include="ViewModel\TableViewModel.cs" />
     <Compile Include="View\ImageView.xaml.cs">
       <DependentUpon>ImageView.xaml</DependentUpon>
     </Compile>

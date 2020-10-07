@@ -2,11 +2,12 @@
 using System.Linq;
 using ASMC.Common.ViewModel;
 using ASMC.Data.Model;
+using DevExpress.Mvvm;
 using NLog;
 
 namespace ASMC.ViewModel
 {
-    public class DeviceViewModel : BaseViewModel
+    public class DeviceViewModel : BindableBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -90,9 +91,5 @@ namespace ASMC.ViewModel
 
         #endregion
 
-        ~DeviceViewModel()
-        {
-            PropertyChanged -= DeviceViewModel_PropertyChanged;
-        }
     }
 }

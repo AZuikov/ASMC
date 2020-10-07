@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
+using ASMC.Devices.WithoutInterface.HourIndicator;
 using ASMC.MVision;
 
 namespace Indicator_10.First
@@ -16,6 +18,17 @@ namespace Indicator_10.First
                 new Device {Devices = new IUserType[] {new Ppi()}},
                 new Device {Devices = new IUserType[] {new WebCam()}}
             };
+            TestDevices = new IDeviceUi[]
+            {
+                new Device
+                {
+                    Devices = new IUserType[] {new Ich("ИЧ10") {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Micro, 10),  } }
+                }
+            };
+            UserItemOperation = new IUserItemOperationBase[]
+            {
+                new MeasuringForce(this)
+            };
             Accessories = new[]
             {
                 "Весы настольные циферблатные РН-3Ц13У",
@@ -23,12 +36,11 @@ namespace Indicator_10.First
                 "Граммометр часового типа Г 3,0",
                 "Прибор для поверки индикаторов ППИ-50"
             };
-            this.UserItemOperation = new IUserItemOperationBase[]{new };
         }
         /// <inheritdoc />
         public override void RefreshDevice()
         {
-            AddresDevice = ASMC.Devices.USB_Device.SiliconLabs.UsbExpressWrapper.FindAllDevice.Select(q => q.Number.ToString()).Concat(WebCam.GetVideoInputDevice.Select(q => q.MonikerString)).ToArray();
+            //AddresDevice = ASMC.Devices.USB_Device.SiliconLabs.UsbExpressWrapper.FindAllDevice.Select(q => q.Number.ToString()).Concat(WebCam.GetVideoInputDevice.Select(q => q.MonikerString)).ToArray();
         }
         /// <inheritdoc />
         public override void FindDevice()

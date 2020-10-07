@@ -21,7 +21,10 @@ namespace AP.Utils.Helps
         [StringValue("°C")] degC,
         [StringValue("°F")] DegF,
         [StringValue("дБ")] Db,
-        [StringValue("сек")] sec
+        [StringValue("с")] sec,
+        [StringValue("м")] Metr,
+        [StringValue("Кг")] Kg,
+        [StringValue("Н")] N
 
     }
     /// <summary>

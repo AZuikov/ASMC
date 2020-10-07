@@ -34,62 +34,41 @@ namespace Indicator_10
         }
     }
 
-    public abstract class IndicatorParagraphBase<T> : ParagraphBase, IUserItemOperation<T>
-    {
-        protected const string ConstGood = "Годен";
-        protected const string ConstBad = "Брак";
-        protected const string ConstNotUsed = "Не выполнено";
+    //public abstract class IndicatorParagraphBase<T> : ParagraphBase, IUserItemOperation<T>
+    //{
+    //    protected const string ConstGood = "Годен";
+    //    protected const string ConstBad = "Брак";
+    //    protected const string ConstNotUsed = "Не выполнено";
 
-        private string _reportTableName;
-        /// <summary>
-        /// Имя закладки таблички в протоколе.
-        /// </summary>
-        protected string ReportTableName {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_reportTableName))  throw new NotImplementedException("Имя закладки не указано");
-                return _reportTableName;
-            }
-            set { _reportTableName = value; }
-        }
+    //    /// <summary>
+    //    /// Имя закладки таблички в протоколе.
+    //    /// </summary>
+    //    protected abstract string GetReportTableName();
+        
 
-        private string[] _ColumnName;
-        /// <summary>
-        /// Предоставляет перечень имен столбцов таблицы для отчетов
-        /// </summary>
-        protected string[] ColumnName
-        {
-            get
-            {
-                if(_ColumnName?.Length<1) throw new NotImplementedException("Имена столбцов таблицы не указаны");
-                return _ColumnName;
-            }
-            set { _ColumnName = value; }
-        }
+    //    /// <summary>
+    //    /// Предоставляет перечень имен столбцов таблицы для отчетов
+    //    /// </summary>
+    //    protected abstract DataColumn[] GetColumnName();
+        
 
-        /// <inheritdoc />
-        protected IndicatorParagraphBase(IUserItemOperation userItemOperation) : base(userItemOperation)
-        {
-            DataRow = (List<IBasicOperation<T>>)Activator.CreateInstance(typeof(List<IBasicOperation<T>>));
-        }
+    //    /// <inheritdoc />
+    //    protected IndicatorParagraphBase(IUserItemOperation userItemOperation) : base(userItemOperation)
+    //    {
+    //        DataRow = (List<IBasicOperation<T>>)Activator.CreateInstance(typeof(List<IBasicOperation<T>>));
+    //    }
 
 
-        /// <inheritdoc />
-        protected override DataTable FillData()
-        {
-            var dt = new DataTable { TableName = ReportTableName };
-            foreach (var cn in ColumnName) dt.Columns.Add(cn);
-            dt.Columns.Add("Результат");
-            return dt;
-        }
+    //    /// <inheritdoc />
+      
 
-        /// <inheritdoc />
-        protected override void InitWork()
-        {
-            DataRow.Clear();
-        }
+    //    ///// <inheritdoc />
+    //    //protected override void InitWork()
+    //    //{
+    //    //    DataRow.Clear();
+    //    //}
 
-        /// <inheritdoc />
-        public List<IBasicOperation<T>> DataRow { get; set; }
-    }
+    //    ///// <inheritdoc />
+    //    //public List<IBasicOperation<T>> DataRow { get; set; }
+    //}
 }

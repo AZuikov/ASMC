@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -58,7 +59,7 @@ namespace Plugins.Test
             a.Nodes.Add(new Operation1(this));
             this.UserItemOperation = new IUserItemOperationBase[] {new Operation1(this), new Operation1(this) , a };
             Accessories = new[]
-        {
+            {
                 "Мультиметр цифровой Agilent/Keysight 34401A",
                 "Кабель banana"
             };
@@ -199,16 +200,14 @@ namespace Plugins.Test
         /// <inheritdoc />
         protected override void InitWork()
         {
-
-            DataRow.Clear();
-
+            base.InitWork();
             for (int i = 0; i < 1; i++)
             {
                 var operation = new BasicOperation<double>();
                 operation.InitWork = () =>
                 {
                     var wind = this.UserItemOperation.ServicePack.FreeWindow as WindowService;
-                    var a = new TableVm();
+                    var a = new TableViewModel();
                     wind.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     wind.Show("Table", a);
                     return Task.CompletedTask;

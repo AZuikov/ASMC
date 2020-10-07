@@ -16,7 +16,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Флаг поддельной точки. Подразумевается, если значение false, значит точка НЕ поддельная.
         /// </summary>
-        public bool fakePoinFlag { get; protected set; }
+        public bool IsFake { get; protected set; }
 
         public MeasureUnits Units { get; set; }
 
@@ -44,7 +44,7 @@ namespace ASMC.Data.Model
             Units = MeasureUnits.V;
             UnitMultipliersUnit = UnitMultipliers.None;
             Value = 0;
-            fakePoinFlag = false;
+            IsFake = false;
         }
         /// <summary>
         /// Измерительная точка.
@@ -52,13 +52,13 @@ namespace ASMC.Data.Model
         /// <param name="units">Единицы измерения величины.</param>
         /// <param name="unitMultipliersUnit">Множитель единицы измерения (килоб милли и т.д.).</param>
         /// <param name="value">Номинальное значение величины.</param>
-        /// <param name="fakePoint">Точка реально подается на прибор (если false)</param>
-        public MeasPoint(MeasureUnits units, UnitMultipliers unitMultipliersUnit, decimal value, bool fakePoint  = false)
+        /// <param name="isFakePoint">Точка реально подается на прибор (если false)</param>
+        public MeasPoint(MeasureUnits units, UnitMultipliers unitMultipliersUnit, decimal value, bool isFakePoint  = false)
         {
             Units = units;
             UnitMultipliersUnit = unitMultipliersUnit;
             Value = value;
-            fakePoinFlag = fakePoint;
+            IsFake = isFakePoint;
         }
 
         public override string ToString()

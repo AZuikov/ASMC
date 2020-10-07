@@ -26,7 +26,7 @@ namespace ASMC.Core.View
 
         static InputTableControl()
         {
-            RowCountPropery= DependencyProperty.Register(nameof(RowCount), typeof(int), typeof(InputTableControl), new UIPropertyMetadata(-1));
+            RowCountPropery= DependencyProperty.Register(nameof(RowCount), typeof(int), typeof(InputTableControl), new UIPropertyMetadata(20));
             DataProperty =
                 DependencyProperty.Register(nameof(Data), typeof(BindingList<ICell>), typeof(InputTableControl), new FrameworkPropertyMetadata(new BindingList<ICell>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
             IsOnlyReadProperty =

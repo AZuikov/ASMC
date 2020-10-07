@@ -88,7 +88,7 @@ namespace N8957APlugin
         #endregion Methods
     }
 
-    public class PrevSetup : ParagraphBase, IUserItemOperation<bool>
+    public  class PrevSetup : ParagraphBase<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         protected E8257D e8257D;
@@ -97,18 +97,26 @@ namespace N8957APlugin
         public PrevSetup(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Предварительная настройка";
-            DataRow = new List<IBasicOperation<bool>>();
             e8257D = new E8257D();
             n8975 = new N8975A();
         }
 
-        protected override DataTable FillData()
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
         {
             return null;
         }
 
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
+        }
+
+
         protected override void InitWork()
         {
+            base.InitWork();
             var operation = new BasicOperationVerefication<bool>();
             operation.InitWork =  () =>
             {
@@ -157,10 +165,9 @@ namespace N8957APlugin
             DataRow.Add(operation);
         }
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
-    public class Oper8_3_4FreqInSintezatorFrequency : ParagraphBase, IUserItemOperation<MeasPoint>
+    public class Oper8_3_4FreqInSintezatorFrequency : ParagraphBase<MeasPoint>
     {
         private Dictionary<int, int> freqAndTolDictionary;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -198,13 +205,28 @@ namespace N8957APlugin
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[]
+            {
+                new DataColumn("fН"),
+                new DataColumn("fЦ"),
+                new DataColumn("Δf"),
+                new DataColumn("Максимально допустимое значение Δf")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmSintezatorFrequency";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = "FillTabBmSintezatorFrequency" };
-            dataTable.Columns.Add("fН");
-            dataTable.Columns.Add("fЦ");
-            dataTable.Columns.Add("Δf");
-            dataTable.Columns.Add("Максимально допустимое значение Δf");
+            var dataTable = base.FillData();
+           
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
@@ -223,8 +245,8 @@ namespace N8957APlugin
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (e8257D == null || n8975 == null) return;
-            DataRow.Clear();
             foreach (int freq in freqAndTolDictionary.Keys)
             {
                 var operation = new BasicOperationVerefication<MeasPoint>();

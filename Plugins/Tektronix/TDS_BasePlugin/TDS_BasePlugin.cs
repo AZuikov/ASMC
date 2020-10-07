@@ -93,7 +93,7 @@ namespace TDS_BasePlugin
         #endregion Methods
     }
 
-    public class Oper1VisualTest : ParagraphBase, IUserItemOperation<bool>
+    public class Oper1VisualTest : ParagraphBase<bool>
     {
         public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -104,11 +104,21 @@ namespace TDS_BasePlugin
         #region Methods
 
         /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Результат внешнего осмотра")};
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "ITBmVisualTest";
+        }
+
+        /// <inheritdoc />
         protected override DataTable FillData()
         {
-            var data = new DataTable { TableName = "ITBmVisualTest" };
-
-            data.Columns.Add("Результат внешнего осмотра");
+            var data = base.FillData();
             var dataRow = data.NewRow();
             if (DataRow.Count == 1)
             {
@@ -123,7 +133,7 @@ namespace TDS_BasePlugin
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -147,24 +157,33 @@ namespace TDS_BasePlugin
 
         #endregion Methods
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
+       
     }
 
-    public class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
+    public class Oper2Oprobovanie : ParagraphBase<bool>
     {
         public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
-            DataRow = new List<IBasicOperation<bool>>();
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Результат опробования")};
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "ITBmOprobovanie";
+        }
+
         protected override DataTable FillData()
         {
-            var data = new DataTable { TableName = "ITBmOprobovanie" };
-
-            data.Columns.Add("Результат опробования");
+            var data = base.FillData();
             var dataRow = data.NewRow();
             if (DataRow.Count == 1)
             {
@@ -178,7 +197,7 @@ namespace TDS_BasePlugin
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -202,12 +221,12 @@ namespace TDS_BasePlugin
 
         #endregion Methods
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
+       
     }
 
     /*Определение погрешности коэффициентов отклонения.*/
 
-    public abstract class Oper3KoefOtkl : ParagraphBase, IUserItemOperation<MeasPoint>
+    public abstract class Oper3KoefOtkl : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -236,7 +255,7 @@ namespace TDS_BasePlugin
         {
             _testingChanel = inTestingChanel;
             Name = $"{_testingChanel}: Определение погрешности коэффициентов отклонения";
-            DataRow = new List<IBasicOperation<MeasPoint>>();
+            
             
            
             Sheme = new ShemeImage
@@ -253,15 +272,26 @@ namespace TDS_BasePlugin
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] { new DataColumn("Коэффициент развёртки"),
+                new DataColumn("Амплитуда подаваемого сигнала"),
+                new DataColumn("Измеренное значение амплитуды"),
+                new DataColumn("Минимальное допустимое значение"),
+                new DataColumn("Максимальное допустимое значение")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return $"FillTabBmOper3KoefOtkl{_testingChanel}";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = $"FillTabBmOper3KoefOtkl{_testingChanel}" };
-            dataTable.Columns.Add("Коэффициент развёртки");
-            dataTable.Columns.Add("Амплитуда подаваемого сигнала");
-            dataTable.Columns.Add("Измеренное значение амплитуды");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -287,9 +317,9 @@ namespace TDS_BasePlugin
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
-            DataRow.Clear();
             foreach (TDS_Oscilloscope.VerticalScale currScale in verticalScalesList)
             {
                 var operation = new BasicOperationVerefication<MeasPoint>();
@@ -410,12 +440,12 @@ namespace TDS_BasePlugin
 
         #endregion Methods
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+       
     }
 
     /*Определение погрешности измерения временных интервалов.*/
 
-    public abstract class Oper4MeasureTimeIntervals : ParagraphBase, IUserItemOperation<MeasPoint>
+    public class Oper4MeasureTimeIntervals : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -448,7 +478,6 @@ namespace TDS_BasePlugin
         {
             _testingChanel = chanel;
             Name = $"{_testingChanel}: Определение погрешности измерения временных интервалов";
-            DataRow = new List<IBasicOperation<MeasPoint>>();
             Sheme = new ShemeImage
             {
 
@@ -462,14 +491,22 @@ namespace TDS_BasePlugin
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Развертка по времени"),
+                new DataColumn("Измеренное значение периода"), new DataColumn("Минимально допустимое значение"), new DataColumn("Максимально допустимое значение"), new DataColumn("Максимальное допустимое значение")  };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return $"FillTabBmOper4MeasureTimeIntervalsl{_testingChanel}";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = $"FillTabBmOper4MeasureTimeIntervalsl{_testingChanel}" };
-            dataTable.Columns.Add("Развертка по времени");
-            dataTable.Columns.Add("Измеренное значение периода");
-            dataTable.Columns.Add("Минимально допустимое значение");
-            dataTable.Columns.Add("Максимально допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -495,9 +532,9 @@ namespace TDS_BasePlugin
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
-            DataRow.Clear();
             foreach (var currScale in ScaleTolDict.Keys)
             {
                 var operation = new BasicOperationVerefication<MeasPoint>();
@@ -609,7 +646,6 @@ namespace TDS_BasePlugin
 
         #endregion Methods
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
     }
 
     /// <summary>
@@ -656,7 +692,7 @@ namespace TDS_BasePlugin
 
     /*Определение Времени нарастания переходной характеристики.*/
 
-    public abstract class Oper5MeasureRiseTime : ParagraphBase, IUserItemOperation<MeasPoint>
+    public  class Oper5MeasureRiseTime : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -689,7 +725,7 @@ namespace TDS_BasePlugin
         {
             _testingChanel = chanel;
             Name = $"{_testingChanel}: Определение Времени нарастания переходной характеристики";
-            DataRow = new List<IBasicOperation<MeasPoint>>();
+            
 
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5mV);
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_10mV);
@@ -715,15 +751,26 @@ namespace TDS_BasePlugin
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] { new DataColumn("Горизонтальная развёртка"),
+                new DataColumn("Коэффициент отклонения"),
+                new DataColumn("Измеренное значение длительности фронта"),
+                new DataColumn("Минимально допустимое значение длительности фронта")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return $"FillTabBmOper5MeasureRiseTime{_testingChanel}";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = $"FillTabBmOper5MeasureRiseTime{_testingChanel}" };
-            dataTable.Columns.Add("Горизонтальная развёртка");
-            dataTable.Columns.Add("Коэффициент отклонения");
-            dataTable.Columns.Add("Измеренное значение длительности фронта");
-            dataTable.Columns.Add("Минимально допустимое значение длительности фронта");
-            dataTable.Columns.Add("Результат");
-
+            var dataTable = base.FillData();
+            
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
@@ -747,10 +794,10 @@ namespace TDS_BasePlugin
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
-            DataRow.Clear();
-
+          
             foreach (TDS_Oscilloscope.VerticalScale verticalScale in verticalScalesList)
             {
                 //первый коэффициент отклонения пропускаем
@@ -855,6 +902,6 @@ namespace TDS_BasePlugin
 
         #endregion Methods
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+       
     }
 }

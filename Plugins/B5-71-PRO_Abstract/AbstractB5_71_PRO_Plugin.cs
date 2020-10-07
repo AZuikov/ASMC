@@ -50,7 +50,7 @@ namespace B5_71_PRO_Abstract
         }
     }
 
-    public abstract class OpertionFirsVerf : ASMC.Core.Model.Operation
+    public class OpertionFirsVerf : ASMC.Core.Model.Operation
     {
         protected OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
@@ -87,10 +87,8 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Внешний осмотр СИ
     /// </summary>
-    public abstract class Oper0VisualTest : ParagraphBase, IUserItemOperation<bool>
+    public abstract class Oper0VisualTest : ParagraphBase<bool>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         protected Oper0VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Внешний осмотр";
@@ -100,9 +98,21 @@ namespace B5_71_PRO_Abstract
         #region Methods
 
         /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Результат внешнего осмотра")};
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "ITBmVisualTest";
+        }
+
+        /// <inheritdoc />
         protected override DataTable FillData()
         {
-            var data = new DataTable {TableName = "ITBmVisualTest"};
+            var data = base.FillData();
             ;
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
@@ -119,7 +129,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -143,13 +153,12 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
     /// <summary>
     /// Проведение опробования
     /// </summary>
-    public abstract class Oper1Oprobovanie : ParagraphBase, IUserItemOperation<bool>
+    public abstract class Oper1Oprobovanie : ParagraphBase<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
@@ -171,10 +180,21 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Результат опробования")};
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "ITBmOprobovanie";
+        }
+
         protected override DataTable FillData()
         {
-            var data = new DataTable {TableName = "ITBmOprobovanie"};
-            data.Columns.Add("Результат опробования");
+            var data = base.FillData();
             var dataRow = data.NewRow();
             if (DataRow.Count == 1)
             {
@@ -194,7 +214,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperationVerefication<bool>();
             operation.InitWork = async () =>
             {
@@ -335,13 +355,12 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public abstract class Oper2DcvOutput : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper2DcvOutput : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -359,20 +378,33 @@ namespace B5_71_PRO_Abstract
         protected Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного напряжения";
-            DataRow = new List<IBasicOperation<decimal>>();
+           
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[]
+            {
+                new DataColumn("Установленное значение напряжения, В"),
+                new DataColumn("Измеренное значение, В"),
+                new DataColumn("Минимальное допустимое значение, В"),
+                new DataColumn("Максимальное допустимое значение, В")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcvOutput";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcvOutput"};
-            dataTable.Columns.Add("Установленное значение напряжения, В");
-            dataTable.Columns.Add("Измеренное значение, В");
-            dataTable.Columns.Add("Минимальное допустимое значение, В");
-            dataTable.Columns.Add("Максимальное допустимое значение, В");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -396,7 +428,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -509,13 +541,12 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
 
     /// <summary>
     /// Измерение постоянного напряжения
     /// </summary>
-    public abstract class Oper3DcvMeasure : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper3DcvMeasure : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -535,19 +566,32 @@ namespace B5_71_PRO_Abstract
         protected Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного напряжения";
-            DataRow = new List<IBasicOperation<decimal>>();
+           
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] { new DataColumn("Измеренное эталонным мультиметром значение, В"),
+                new DataColumn("Измеренное источником питания значение, В"),
+                new DataColumn("Минимальное допустимое значение, В"),
+                new DataColumn("Максимальное допустимое значение, В")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcvMeasure";
+        }
+        /// <inheritdoc />
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcvMeasure"};
-            dataTable.Columns.Add("Измеренное эталонным мультиметром значение, В");
-            dataTable.Columns.Add("Измеренное источником питания значение, В");
-            dataTable.Columns.Add("Минимальное допустимое значение, В");
-            dataTable.Columns.Add("Максимальное допустимое значение, В");
+            var dataTable = base.FillData();
+            
             dataTable.Columns.Add("Результат");
 
             foreach (var row in DataRow)
@@ -570,10 +614,10 @@ namespace B5_71_PRO_Abstract
 
             return dataTable;
         }
-
+        /// <inheritdoc />
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.FillData();
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -688,13 +732,13 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        
     }
 
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public abstract class Oper4VoltUnstable : ParagraphBase, IUserItemOperation<decimal>
+    public class Oper4VoltUnstable : ParagraphBase<decimal>
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrСoefVoltUnstable = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
@@ -712,18 +756,29 @@ namespace B5_71_PRO_Abstract
         protected Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного напряжения";
-            DataRow = new List<IBasicOperation<decimal>>();
+           
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] { new DataColumn("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В"),
+                new DataColumn("Допустимое значение, В")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcvUnstable";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcvUnstable"};
-            dataTable.Columns.Add("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В");
-            dataTable.Columns.Add("Допустимое значение, В");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
             if (DataRow.Count == 1)
             {
                 var dataRow = dataTable.NewRow();
@@ -760,7 +815,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperationVerefication<decimal>();
             operation.InitWork = async () =>
             {
@@ -886,13 +941,13 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        
     }
 
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public abstract class Oper5VoltPulsation : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper5VoltPulsation : ParagraphBase<decimal>
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27, (decimal) 37.5, (decimal) 187.5};
@@ -902,18 +957,31 @@ namespace B5_71_PRO_Abstract
         protected Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций по напряжению";
-            DataRow = new List<IBasicOperation<decimal>>();
+           
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[]
+            {
+                new DataColumn("Измеренное значение пульсаций, мВ"),
+                new DataColumn("Допустимое значение пульсаций, мВ")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcvPulsation";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcvPulsation"};
-            dataTable.Columns.Add("Измеренное значение пульсаций, мВ");
-            dataTable.Columns.Add("Допустимое значение пульсаций, мВ");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             if (DataRow.Count == 1)
             {
@@ -951,7 +1019,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperationVerefication<decimal>();
 
             operation.InitWork = async () =>
@@ -1090,7 +1158,7 @@ namespace B5_71_PRO_Abstract
         protected B571Pro Bp { get; set; }
         protected Mult_34401A Mult { get; set; }
         protected MainN3300 Load { get; set; }
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        
 
         #endregion Fileds
     }
@@ -1098,7 +1166,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public abstract class Oper6DciOutput : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper6DciOutput : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1115,20 +1183,34 @@ namespace B5_71_PRO_Abstract
         protected Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного тока";
-            DataRow = new List<IBasicOperation<decimal>>();
+           
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[]
+            {
+                new DataColumn("Установленное значение тока, А"),
+                new DataColumn("Измеренное значение, А"),
+                new DataColumn("Минимальное допустимое значение, А"),
+                new DataColumn("Максимальное допустимое значение, А")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcIOutput";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcIOutput"};
-            dataTable.Columns.Add("Установленное значение тока, А");
-            dataTable.Columns.Add("Измеренное значение, А");
-            dataTable.Columns.Add("Минимальное допустимое значение, А");
-            dataTable.Columns.Add("Максимальное допустимое значение, А");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
+         
 
             foreach (var row in DataRow)
             {
@@ -1153,7 +1235,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -1262,13 +1344,12 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
 
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public abstract class Oper7DciMeasure : ParagraphBase, IUserItemOperation<decimal>
+    public abstract  class Oper7DciMeasure : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1290,20 +1371,31 @@ namespace B5_71_PRO_Abstract
         protected Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного тока";
-            DataRow = new List<IBasicOperation<decimal>>();
+           
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] { new DataColumn("Измеренное эталонным авмперметром значение тока, А"),
+                new DataColumn("Измеренное блоком питания значение тока, А"),
+                new DataColumn("Минимальное допустимое значение, А"),
+                new DataColumn("Максимальное допустимое значение, А")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcIMeasure";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcIMeasure"};
-            dataTable.Columns.Add("Измеренное эталонным авмперметром значение тока, А");
-            dataTable.Columns.Add("Измеренное блоком питания значение тока, А");
-            dataTable.Columns.Add("Минимальное допустимое значение, А");
-            dataTable.Columns.Add("Максимальное допустимое значение, А");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -1328,7 +1420,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -1434,13 +1526,13 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
+        
     }
 
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public abstract class Oper8DciUnstable : ParagraphBase, IUserItemOperation<decimal>
+    public  class Oper8DciUnstable : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1457,18 +1549,32 @@ namespace B5_71_PRO_Abstract
         protected Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного тока";
-            DataRow = new List<IBasicOperation<decimal>>();
+           
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[]
+            {
+                new DataColumn("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А"),
+                new DataColumn("Допустимое значение, А")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcIUnstable";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcIUnstable"};
-            dataTable.Columns.Add("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А");
-            dataTable.Columns.Add("Допустимое значение, А");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
+            
 
             if (DataRow.Count == 1)
             {
@@ -1507,7 +1613,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperationVerefication<decimal>();
             operation.InitWork = async () =>
             {
@@ -1617,13 +1723,12 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
 
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public abstract class Oper9DciPulsation : ParagraphBase, IUserItemOperation<decimal>
+    public abstract class Oper9DciPulsation : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1638,20 +1743,31 @@ namespace B5_71_PRO_Abstract
         protected Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций постоянного тока";
-            DataRow = new List<IBasicOperation<decimal>>();
 
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[]
+            {
+                new DataColumn("Измеренное значение пульсаций, мА"),
+                new DataColumn("Допустимое значение пульсаций, мА")
+            };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmDcIPulsation";
+        }
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable {TableName = "FillTabBmDcIPulsation"};
-
-            dataTable.Columns.Add("Измеренное значение пульсаций, мА");
-            dataTable.Columns.Add("Допустимое значение пульсаций, мА");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             if (DataRow.Count == 1)
             {
@@ -1688,7 +1804,7 @@ namespace B5_71_PRO_Abstract
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperationVerefication<decimal>();
 
             operation.InitWork = async () =>
@@ -1839,7 +1955,6 @@ namespace B5_71_PRO_Abstract
 
         #endregion
 
-        public List<IBasicOperation<decimal>> DataRow { get; set; }
     }
 
     internal static class ShemeTemplate
