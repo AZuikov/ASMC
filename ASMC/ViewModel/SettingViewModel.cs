@@ -88,14 +88,15 @@ namespace ASMC.ViewModel
 
         private void ControlDevice_ListChanged(object sender, ListChangedEventArgs e)
         {
-            if (e.ListChangedType != ListChangedType.ItemChanged) return;
+            //if (e.ListChangedType != ListChangedType.ItemChanged) return;
+            if(Equals(TestDevices?.Length, TestDevice?.Count))
             for (var i = 0; i < TestDevices?.Length; i++)
             {
                 TestDevices[i].StringConnect = TestDevice[i].StringConnect;
                 TestDevices[i].SelectedDevice = TestDevice[i].SelectedDevice;
             }
-
-            for (var i = 0; i < ControlDevices?.Length; i++)
+            if (Equals(ControlDevices?.Length, ControlDevice?.Count))
+                for (var i = 0; i < ControlDevices?.Length; i++)
             {
                 ControlDevices[i].StringConnect = ControlDevice[i].StringConnect;
                 ControlDevices[i].SelectedDevice = ControlDevice[i].SelectedDevice;

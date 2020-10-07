@@ -93,6 +93,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDS2012B", "Plugins\Tektron
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDS2014B", "Plugins\Tektronix\TDS2014B\TDS2014B.csproj", "{CE22F82C-C8C8-4B79-800B-8D9E225F024F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AP.Extension", "AP.Extension\AP.Extension.csproj", "{7208342F-BF11-4241-B032-30F196CE1A6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -381,6 +383,14 @@ Global
 		{CE22F82C-C8C8-4B79-800B-8D9E225F024F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE22F82C-C8C8-4B79-800B-8D9E225F024F}.Release|x86.ActiveCfg = Release|Any CPU
 		{CE22F82C-C8C8-4B79-800B-8D9E225F024F}.Release|x86.Build.0 = Release|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Debug|x86.Build.0 = Debug|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7208342F-BF11-4241-B032-30F196CE1A6C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

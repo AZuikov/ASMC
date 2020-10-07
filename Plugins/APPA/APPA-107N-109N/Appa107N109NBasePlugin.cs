@@ -145,7 +145,7 @@ namespace APPA_107N_109N
         #endregion Methods
     }
 
-    public class Oper1VisualTest : ParagraphBase, IUserItemOperation<bool>
+    public class Oper1VisualTest : ParagraphBase<bool>
     {
         public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -156,9 +156,21 @@ namespace APPA_107N_109N
         #region Methods
 
         /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Результат внешнего осмотра")};
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "ITBmVisualTest";
+        }
+
+        /// <inheritdoc />
         protected override DataTable FillData()
         {
-            var data = new DataTable { TableName = "ITBmVisualTest" };
+            var data = base.FillData();
 
             data.Columns.Add("Результат внешнего осмотра");
             var dataRow = data.NewRow();
@@ -175,7 +187,7 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -202,7 +214,7 @@ namespace APPA_107N_109N
         public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
-    public class Oper2Oprobovanie : ParagraphBase, IUserItemOperation<bool>
+    public class Oper2Oprobovanie : ParagraphBase<bool>
     {
         public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -212,9 +224,21 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Результат опробования")};
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "ITBmOprobovanie";
+        }
+
         protected override DataTable FillData()
         {
-            var data = new DataTable { TableName = "ITBmOprobovanie" };
+            var data = base.FillData();
 
             data.Columns.Add("Результат опробования");
             var dataRow = data.NewRow();
@@ -230,7 +254,7 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
-            DataRow.Clear();
+            base.InitWork();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -254,14 +278,13 @@ namespace APPA_107N_109N
 
         #endregion Methods
 
-        public List<IBasicOperation<bool>> DataRow { get; set; }
     }
 
     //////////////////////////////******DCV*******///////////////////////////////
 
     #region DCV
 
-    public class Oper3DcvMeasureBase : ParagraphBase, IUserItemOperation<AcVariablePoint>
+    public abstract class Oper3DcvMeasureBase : ParagraphBase<AcVariablePoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -292,10 +315,10 @@ namespace APPA_107N_109N
         /// </summary>
         protected AcVariablePoint RangeResolution;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
+        ///// <summary>
+        ///// Имя закладки таблички в результирующем протоколе doc (Ms Word).
+        ///// </summary>
+        //protected string ReportTableName;
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -351,15 +374,18 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+
+    
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -384,9 +410,9 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (appa107N == null || flkCalib5522A == null) return;
 
-            DataRow.Clear();
 
             foreach (var currPoint in VoltPoint)
             {
@@ -548,7 +574,6 @@ namespace APPA_107N_109N
         public Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper3_1DC_2V_Measure";
             OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
 
@@ -567,6 +592,12 @@ namespace APPA_107N_109N
             VoltPoint[4] = new AcVariablePoint((decimal)1.8, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
             VoltPoint[5] = new AcVariablePoint((decimal)-1.8, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper3_1DC_2V_Measure";
+        }
     }
 
     public class Oper3_1DC_20V_Measure : Oper3DcvMeasureBase
@@ -574,7 +605,6 @@ namespace APPA_107N_109N
         public Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper3_1DC_20V_Measure";
             OperationDcRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationDcRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.V, UnitMultipliers.Mili);
@@ -589,6 +619,13 @@ namespace APPA_107N_109N
             VoltPoint[4] = new AcVariablePoint(18, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
             VoltPoint[5] = new AcVariablePoint(-18, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper3_1DC_20V_Measure";
+            ;
+        }
     }
 
     public class Oper3_1DC_200V_Measure : Oper3DcvMeasureBase
@@ -596,7 +633,6 @@ namespace APPA_107N_109N
         public Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper3_1DC_200V_Measure";
             OperationDcRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationDcRangeNominal = inRangeNominal;
 
@@ -615,6 +651,12 @@ namespace APPA_107N_109N
             VoltPoint[4] = new AcVariablePoint(180, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
             VoltPoint[5] = new AcVariablePoint(-180, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+           return "FillTabBmOper3_1DC_200V_Measure";
+        }
     }
 
     public class Oper3_1DC_1000V_Measure : Oper3DcvMeasureBase
@@ -622,7 +664,6 @@ namespace APPA_107N_109N
         public Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper3_1DC_1000V_Measure";
             OperationDcRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationDcRangeNominal = inRangeNominal;
 
@@ -641,6 +682,12 @@ namespace APPA_107N_109N
             VoltPoint[4] = new AcVariablePoint(900, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
             VoltPoint[5] = new AcVariablePoint(-900, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper3_1DC_1000V_Measure";
+        }
     }
 
     public class Oper3_1DC_20mV_Measure : Oper3DcvMeasureBase
@@ -649,8 +696,6 @@ namespace APPA_107N_109N
             base(userItemOperation, inResourceDir)
         {
             thisRangeUnits = new MeasPoint(MeasureUnits.V, UnitMultipliers.Mili, 0);
-            ReportTableName = "FillTabBmOper3_1DC_20mV_Measure";
-
             OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.V, UnitMultipliers.Micro);
@@ -669,6 +714,12 @@ namespace APPA_107N_109N
             VoltPoint[4] = new AcVariablePoint(18, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
             VoltPoint[5] = new AcVariablePoint(-18, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper3_1DC_20mV_Measure";
+        }
     }
 
     public class Oper3_1DC_200mV_Measure : Oper3DcvMeasureBase
@@ -677,7 +728,6 @@ namespace APPA_107N_109N
             base(userItemOperation, inResourceDir)
         {
             thisRangeUnits = new MeasPoint(MeasureUnits.V, UnitMultipliers.Mili, 0);
-            ReportTableName = "FillTabBmOper3_1DC_200mV_Measure";
             OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationDcRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.V, UnitMultipliers.Micro);
@@ -695,6 +745,12 @@ namespace APPA_107N_109N
             VoltPoint[3] = new AcVariablePoint(160, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
             VoltPoint[4] = new AcVariablePoint(180, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
             VoltPoint[5] = new AcVariablePoint(-180, MeasureUnits.V, thisRangeUnits.UnitMultipliersUnit);
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper3_1DC_200mV_Measure";
         }
     }
 
@@ -721,7 +777,7 @@ namespace APPA_107N_109N
 
     #region ACV
 
-    public class Oper4AcvMeasureBase : ParagraphBase, IUserItemOperation<AcVariablePoint>
+    public abstract class Oper4AcvMeasureBase : ParagraphBase<AcVariablePoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -737,10 +793,10 @@ namespace APPA_107N_109N
         /// </summary>
         protected MeasPoint[] HerzVPoint;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
+        ///// <summary>
+        ///// Имя закладки таблички в результирующем протоколе doc (Ms Word).
+        ///// </summary>
+        //protected string ReportTableName;
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -800,16 +856,18 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+
+       
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Частота сигнала");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -836,8 +894,8 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (flkCalib5522A == null || appa107N == null) return;
-            DataRow.Clear();
 
             foreach (var volPoint in VoltPoint)
                 foreach (var freqPoint in volPoint.Herz)
@@ -957,7 +1015,7 @@ namespace APPA_107N_109N
 
                             decimal measurePoint = 0;
 
-                            if (freqPoint.fakePoinFlag && volPoint.fakePointFlag)
+                            if (freqPoint.IsFake && volPoint.fakePointFlag)
                             {
                                 Logger.Info($"фальшивая точка {volPoint} {freqPoint.Description}");
                                 measurePoint =
@@ -1107,8 +1165,6 @@ namespace APPA_107N_109N
             base(userItemOperation, inResourceDir)
         {
             thisRangeUnits = new MeasPoint(MeasureUnits.V, UnitMultipliers.Mili, 0);
-            ReportTableName = "FillTabBmOpe4_1_AcV_20mV_Measure";
-
             OperMeasureMode = Mult107_109N.MeasureMode.ACmV;
             OperationAcRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationAcRangeNominal = inRangeNominal;
@@ -1132,6 +1188,12 @@ namespace APPA_107N_109N
             VoltPoint[2] = new AcVariablePoint(18 * VoltMultipliers, thisRangeUnits.Units,
                                                thisRangeUnits.UnitMultipliersUnit, HerzVPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOpe4_1_AcV_20mV_Measure";
+        }
     }
 
     public class Ope4_1_AcV_200mV_Measure : Oper4AcvMeasureBase
@@ -1140,8 +1202,7 @@ namespace APPA_107N_109N
             : base(userItemOperation, inResourceDir)
         {
             thisRangeUnits = new MeasPoint(MeasureUnits.V, UnitMultipliers.Mili, 0);
-            ReportTableName = "FillTabBmOpe4_1_AcV_200mV_Measure";
-
+           
             OperMeasureMode = Mult107_109N.MeasureMode.ACmV;
             OperationAcRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationAcRangeNominal = inRangeNominal;
@@ -1164,6 +1225,12 @@ namespace APPA_107N_109N
             VoltPoint[2] = new AcVariablePoint(18 * VoltMultipliers, thisRangeUnits.Units,
                                                thisRangeUnits.UnitMultipliersUnit, HerzVPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+           return "FillTabBmOpe4_1_AcV_200mV_Measure";
+        }
     }
 
     public class Ope4_1_AcV_2V_Measure : Oper4AcvMeasureBase
@@ -1171,7 +1238,7 @@ namespace APPA_107N_109N
         public Ope4_1_AcV_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOpe4_1_AcV_2V_Measure";
+            
 
             OperMeasureMode = Mult107_109N.MeasureMode.ACV;
             OperationAcRangeCode = Mult107_109N.RangeCode.Range1Manual;
@@ -1201,6 +1268,12 @@ namespace APPA_107N_109N
             VoltPoint[2] = new AcVariablePoint((decimal)1.8, thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit,
                                                HerzVPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+           return "FillTabBmOpe4_1_AcV_2V_Measure";
+        }
     }
 
     public class Ope4_1_AcV_20V_Measure : Oper4AcvMeasureBase
@@ -1208,7 +1281,6 @@ namespace APPA_107N_109N
         public Ope4_1_AcV_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOpe4_1_AcV_20V_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.ACV;
             OperationAcRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationAcRangeNominal = inRangeNominal;
@@ -1240,6 +1312,12 @@ namespace APPA_107N_109N
                 new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units,
                                     thisRangeUnits.UnitMultipliersUnit, HerzVPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOpe4_1_AcV_20V_Measure";
+        }
     }
 
     public class Ope4_1_AcV_200V_Measure : Oper4AcvMeasureBase
@@ -1247,7 +1325,6 @@ namespace APPA_107N_109N
         public Ope4_1_AcV_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOpe4_1_AcV_200V_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.ACV;
             OperationAcRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationAcRangeNominal = inRangeNominal;
@@ -1277,6 +1354,12 @@ namespace APPA_107N_109N
             VoltPoint[2] = new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units,
                                                thisRangeUnits.UnitMultipliersUnit, HerzVPoint, true);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOpe4_1_AcV_200V_Measure";
+        }
     }
 
     public class Ope4_1_AcV_750V_Measure : Oper4AcvMeasureBase
@@ -1284,7 +1367,6 @@ namespace APPA_107N_109N
         public Ope4_1_AcV_750V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir)
             : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOpe41AcV750VMeasure";
             OperMeasureMode = Mult107_109N.MeasureMode.ACV;
             OperationAcRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationAcRangeNominal = inRangeNominal;
@@ -1306,6 +1388,12 @@ namespace APPA_107N_109N
             VoltPoint[2] = new AcVariablePoint(700 * VoltMultipliers, thisRangeUnits.Units,
                                                thisRangeUnits.UnitMultipliersUnit, HerzVPoint, true);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOpe41AcV750VMeasure";
+        }
     }
 
     #endregion ACV
@@ -1314,7 +1402,7 @@ namespace APPA_107N_109N
 
     #region DCI
 
-    public class Oper5DciMeasureBase : ParagraphBase, IUserItemOperation<MeasPoint>
+    public abstract class Oper5DciMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1348,10 +1436,10 @@ namespace APPA_107N_109N
         /// </summary>
         protected AcVariablePoint RangeResolution;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
+        ///// <summary>
+        ///// Имя закладки таблички в результирующем протоколе doc (Ms Word).
+        ///// </summary>
+        //protected string ReportTableName;
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -1407,15 +1495,17 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -1440,10 +1530,8 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (appa107N == null || flkCalib5522A == null) return;
-
-            DataRow.Clear();
-
             foreach (var currPoint in CurrentDciPoint)
             {
                 var operation = new BasicOperationVerefication<MeasPoint>();
@@ -1591,7 +1679,7 @@ namespace APPA_107N_109N
         //    appa107N?.Dispose();
         //}
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+      
     }
 
     public class Oper5_1Dci_20mA_Measure : Oper5DciMeasureBase
@@ -1599,7 +1687,6 @@ namespace APPA_107N_109N
         public Oper5_1Dci_20mA_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper5_1Dci_20mA_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.DCmA;
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
@@ -1632,6 +1719,12 @@ namespace APPA_107N_109N
             CurrentDciPoint[4] =
                 new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, -18 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper5_1Dci_20mA_Measure";
+        }
     }
 
     public class Oper5_1Dci_200mA_Measure : Oper5DciMeasureBase
@@ -1639,7 +1732,6 @@ namespace APPA_107N_109N
         public Oper5_1Dci_200mA_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir)
             : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper5_1Dci_200mA_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.DCmA;
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
@@ -1672,6 +1764,12 @@ namespace APPA_107N_109N
             CurrentDciPoint[4] =
                 new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, -18 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper5_1Dci_200mA_Measure";
+        }
     }
 
     public class Oper5_1Dci_2A_Measure : Oper5DciMeasureBase
@@ -1679,7 +1777,7 @@ namespace APPA_107N_109N
         public Oper5_1Dci_2A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper5_1Dci_2A_Measure";
+           
             OperMeasureMode = Mult107_109N.MeasureMode.DCI;
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
@@ -1721,6 +1819,12 @@ namespace APPA_107N_109N
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper5_1Dci_2A_Measure";
+        }
     }
 
     public class Oper5_2_1Dci_10A_Measure : Oper5DciMeasureBase
@@ -1728,7 +1832,7 @@ namespace APPA_107N_109N
         public Oper5_2_1Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir)
             : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper5_2_1Dci_10A_Measure";
+            
             OperMeasureMode = Mult107_109N.MeasureMode.DCI;
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
@@ -1753,6 +1857,12 @@ namespace APPA_107N_109N
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper5_2_1Dci_10A_Measure";
+        }
     }
 
     public class Oper5_2_2Dci_10A_Measure : Oper5DciMeasureBase
@@ -1760,7 +1870,6 @@ namespace APPA_107N_109N
         public Oper5_2_2Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir)
             : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper5_2_2Dci_10A_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.DCI;
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
@@ -1786,6 +1895,12 @@ namespace APPA_107N_109N
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper5_2_2Dci_10A_Measure";
+        }
     }
 
     #endregion DCI
@@ -1794,7 +1909,7 @@ namespace APPA_107N_109N
 
     #region ACI
 
-    public class Oper6AciMeasureBase : ParagraphBase, IUserItemOperation<AcVariablePoint>
+    public abstract class Oper6AciMeasureBase : ParagraphBase<AcVariablePoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1820,10 +1935,7 @@ namespace APPA_107N_109N
         /// </summary>
         protected MeasPoint[] HerzPoint;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
+        
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -1923,16 +2035,17 @@ namespace APPA_107N_109N
             }
         }
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Частота сигнала");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -1959,8 +2072,9 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (flkCalib5522A == null || appa107N == null) return;
-            DataRow.Clear();
+           
 
             foreach (var curr in AciPoint)
                 foreach (var freqPoint in curr.Herz)
@@ -2083,7 +2197,7 @@ namespace APPA_107N_109N
                             };
 
                             decimal measurePoint = 0;
-                            if (freqPoint.fakePoinFlag)
+                            if (freqPoint.IsFake)
                             {
                                 measurePoint =
                                     (decimal)
@@ -2201,7 +2315,7 @@ namespace APPA_107N_109N
         public Oper6_1Aci_20mA_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper6_1Aci_20mA_Measure";
+           
             OperMeasureMode = Mult107_109N.MeasureMode.ACmA;
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
@@ -2224,6 +2338,12 @@ namespace APPA_107N_109N
             AciPoint[2] = new AcVariablePoint(18 * CurrentMultipliers, thisRangeUnits.Units,
                                               thisRangeUnits.UnitMultipliersUnit, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper6_1Aci_20mA_Measure";
+        }
     }
 
     public class Oper6_1Aci_200mA_Measure : Oper6AciMeasureBase
@@ -2231,7 +2351,6 @@ namespace APPA_107N_109N
         public Oper6_1Aci_200mA_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper6_1Aci_200mA_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.ACmA;
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
@@ -2255,6 +2374,12 @@ namespace APPA_107N_109N
             AciPoint[2] = new AcVariablePoint(18 * CurrentMultipliers, thisRangeUnits.Units,
                                               thisRangeUnits.UnitMultipliersUnit, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper6_1Aci_200mA_Measure";
+        }
     }
 
     public class Oper6_1Aci_2A_Measure : Oper6AciMeasureBase
@@ -2262,7 +2387,6 @@ namespace APPA_107N_109N
         public Oper6_1Aci_2A_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper6_1Aci_2A_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.ACI;
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
@@ -2294,6 +2418,12 @@ namespace APPA_107N_109N
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper6_1Aci_2A_Measure";
+        }
     }
 
     public class Oper6_2_1Aci_10A_Measure : Oper6AciMeasureBase
@@ -2301,7 +2431,6 @@ namespace APPA_107N_109N
         public Oper6_2_1Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper6_2_1Aci_10A_Measure";
             OperMeasureMode = Mult107_109N.MeasureMode.ACI;
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
@@ -2328,6 +2457,12 @@ namespace APPA_107N_109N
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper6_2_1Aci_10A_Measure";
+        }
     }
 
     public class Oper6_2_2Aci_10A_Measure : Oper6AciMeasureBase
@@ -2335,7 +2470,7 @@ namespace APPA_107N_109N
         public Oper6_2_2Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper6_2_2Aci_10A_Measure";
+            
             OperMeasureMode = Mult107_109N.MeasureMode.ACI;
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
@@ -2361,6 +2496,12 @@ namespace APPA_107N_109N
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper6_2_2Aci_10A_Measure";
+        }
     }
 
     #endregion ACI
@@ -2369,7 +2510,7 @@ namespace APPA_107N_109N
 
     #region FREQ
 
-    public class Oper7FreqMeasureBase : ParagraphBase, IUserItemOperation<MeasPoint>
+    public abstract class Oper7FreqMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -2394,10 +2535,7 @@ namespace APPA_107N_109N
 
         protected AcVariablePoint RangeResolution;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
+       
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -2452,15 +2590,16 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+        
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -2485,9 +2624,9 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (appa107N == null || flkCalib5522A == null) return;
 
-            DataRow.Clear();
             foreach (var voltPoint in VoltPoint)
                 foreach (var freqPoint in voltPoint.Herz)
                 {
@@ -2597,7 +2736,7 @@ namespace APPA_107N_109N
         //    appa107N?.Dispose();
         //}
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+      
     }
 
     public class Oper71Freq20HzMeasureBase : Oper7FreqMeasureBase
@@ -2606,7 +2745,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper71Freq20HzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
 
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
@@ -2625,6 +2763,12 @@ namespace APPA_107N_109N
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultipliers.None, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+           return "FillTabBmOper71Freq20HzMeasureBase";
+        }
     }
 
     public class Oper71Freq200HzMeasureBase : Oper7FreqMeasureBase
@@ -2633,7 +2777,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper71Freq200HzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
 
@@ -2651,6 +2794,12 @@ namespace APPA_107N_109N
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultipliers.None, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper71Freq200HzMeasureBase";
+        }
     }
 
     public class Oper71Freq2kHzMeasureBase : Oper7FreqMeasureBase
@@ -2659,7 +2808,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper71Freq2kHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
 
@@ -2677,6 +2825,12 @@ namespace APPA_107N_109N
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultipliers.None, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper71Freq2kHzMeasureBase";
+        }
     }
 
     public class Oper71Freq20kHzMeasureBase : Oper7FreqMeasureBase
@@ -2685,7 +2839,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper71Freq20kHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
 
@@ -2703,6 +2856,12 @@ namespace APPA_107N_109N
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultipliers.None, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper71Freq20kHzMeasureBase";
+        }
     }
 
     public class Oper71Freq200kHzMeasureBase : Oper7FreqMeasureBase
@@ -2711,7 +2870,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper71Freq200kHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range5Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
 
@@ -2729,6 +2887,12 @@ namespace APPA_107N_109N
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultipliers.None, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+           return "FillTabBmOper71Freq200kHzMeasureBase";
+        }
     }
 
     public class Oper71Freq1MHzMeasureBase : Oper7FreqMeasureBase
@@ -2737,7 +2901,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper71Freq1MHzMeasureBase";
             OperationRangeCode = Mult107_109N.RangeCode.Range6Manual;
             OperMeasureMode = Mult107_109N.MeasureMode.Herz;
 
@@ -2755,6 +2918,12 @@ namespace APPA_107N_109N
             VoltPoint = new AcVariablePoint[1];
             VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultipliers.None, HerzPoint);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper71Freq1MHzMeasureBase";
+        }
     }
 
     #endregion FREQ
@@ -2768,7 +2937,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_200Ohm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_200Ohm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationOhmRangeNominal = inRangeNominal;
 
@@ -2786,6 +2954,12 @@ namespace APPA_107N_109N
             OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 100 * BaseMultipliers);
             OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 200 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_200Ohm_Meas";
+        }
     }
 
     public class Oper8_1Resistance_2kOhm_Measure : Oper8ResistanceMeasureBase
@@ -2793,7 +2967,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_2kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_2kOhm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
@@ -2816,6 +2989,12 @@ namespace APPA_107N_109N
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit,
                                         (decimal)1.8 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_2kOhm_Meas";
+        }
     }
 
     public class Oper8_1Resistance_20kOhm_Measure : Oper8ResistanceMeasureBase
@@ -2823,7 +3002,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_20kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_20kOhm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationOhmRangeNominal = inRangeNominal;
 
@@ -2847,6 +3025,12 @@ namespace APPA_107N_109N
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit,
                                         (decimal)1.8 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_20kOhm_Meas";
+        }
     }
 
     public class Oper8_1Resistance_200kOhm_Measure : Oper8ResistanceMeasureBase
@@ -2854,7 +3038,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_200kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_200kOhm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
@@ -2877,6 +3060,12 @@ namespace APPA_107N_109N
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit,
                                         (decimal)1.8 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_200kOhm_Meas";
+        }
     }
 
     public class Oper8_1Resistance_2MOhm_Measure : Oper8ResistanceMeasureBase
@@ -2884,7 +3073,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_2MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_2MOhm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range5Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
@@ -2907,6 +3095,12 @@ namespace APPA_107N_109N
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit,
                                         (decimal)1.8 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_2MOhm_Meas";
+        }
     }
 
     public class Oper8_1Resistance_20MOhm_Measure : Oper8ResistanceMeasureBase
@@ -2914,7 +3108,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_20MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_20MOhm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range6Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
@@ -2930,6 +3123,12 @@ namespace APPA_107N_109N
             OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 10 * BaseMultipliers);
             OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 20 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_20MOhm_Meas";
+        }
     }
 
     public class Oper8_1Resistance_200MOhm_Measure : Oper8ResistanceMeasureBase
@@ -2937,7 +3136,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_200MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_200MOhm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range7Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
@@ -2954,6 +3152,12 @@ namespace APPA_107N_109N
             OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 10 * BaseMultipliers);
             OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 20 * BaseMultipliers);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_200MOhm_Meas";
+        }
     }
 
     public class Oper8_1Resistance_2GOhm_Measure : Oper8ResistanceMeasureBase
@@ -2961,7 +3165,6 @@ namespace APPA_107N_109N
         public Oper8_1Resistance_2GOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
         {
-            ReportTableName = "FillTabBmOper8_1Resistance_2GOhm_Meas";
             OperationOhmRangeCode = Mult107_109N.RangeCode.Range8Manual;
             OperationOhmRangeNominal = inRangeNominal;
             Name = OperationOhmRangeNominal.GetStringValue();
@@ -2975,9 +3178,15 @@ namespace APPA_107N_109N
             OhmPoint = new MeasPoint[1];
             OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, (decimal)0.9);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper8_1Resistance_2GOhm_Meas";
+        }
     }
 
-    public class Oper8ResistanceMeasureBase : ParagraphBase, IUserItemOperation<MeasPoint>
+    public abstract class Oper8ResistanceMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -3005,10 +3214,6 @@ namespace APPA_107N_109N
 
         protected AcVariablePoint RangeResolution;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -3058,15 +3263,16 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+        
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -3091,9 +3297,9 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (appa107N == null || flkCalib5522A == null) return;
 
-            DataRow.Clear();
             foreach (var currPoint in OhmPoint)
             {
                 var operation = new BasicOperationVerefication<MeasPoint>();
@@ -3248,7 +3454,7 @@ namespace APPA_107N_109N
 
         #endregion Methods
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+      
 
         //public override async Task StartWork(CancellationToken token)
         //{
@@ -3263,7 +3469,7 @@ namespace APPA_107N_109N
 
     #region FAR
 
-    public class Oper9FarMeasureBase : ParagraphBase, IUserItemOperation<MeasPoint>
+    public abstract class Oper9FarMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -3291,10 +3497,6 @@ namespace APPA_107N_109N
 
         protected AcVariablePoint RangeResolution;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -3336,8 +3538,6 @@ namespace APPA_107N_109N
 
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
-
-            DataRow = new List<IBasicOperation<MeasPoint>>();
             Sheme = ShemeTemplateDefault.TemplateSheme;
 
             CountOfRanges = 8;
@@ -3345,15 +3545,17 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+
+    
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable = base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -3378,9 +3580,10 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (appa107N == null || flkCalib5522A == null) return;
 
-            DataRow.Clear();
+          
             foreach (var currPoint in FarMeasPoints)
             {
                 var operation = new BasicOperationVerefication<MeasPoint>();
@@ -3507,7 +3710,7 @@ namespace APPA_107N_109N
 
         #endregion Methods
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+      
 
         //public override async Task StartWork(CancellationToken token)
         //{
@@ -3522,7 +3725,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation, string inResourceDir) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_4nF_Measure";
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
             BaseTolCoeff = (decimal)0.015;
@@ -3537,6 +3739,12 @@ namespace APPA_107N_109N
             Sheme = ShemeTemplateDefault.TemplateSheme;
             Sheme.AssemblyLocalName = inResourceDir;
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_4nF_Measure";
+        }
     }
 
     public class Oper9_1Far_40nF_Measure : Oper9FarMeasureBase
@@ -3545,7 +3753,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_40nF_Measure";
 
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
@@ -3558,6 +3765,12 @@ namespace APPA_107N_109N
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 30);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_40nF_Measure";
+        }
     }
 
     public class Oper9_1Far_400nF_Measure : Oper9FarMeasureBase
@@ -3566,7 +3779,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation)
             : base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_400nF_Measure";
             OperationRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Far, UnitMultipliers.Pico);
@@ -3581,6 +3793,12 @@ namespace APPA_107N_109N
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 300);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_400nF_Measure";
+        }
     }
 
     public class Oper9_1Far_4uF_Measure : Oper9FarMeasureBase
@@ -3589,7 +3807,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_4uF_Measure";
             OperationRangeCode = Mult107_109N.RangeCode.Range4Manual;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
@@ -3604,6 +3821,12 @@ namespace APPA_107N_109N
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 3);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_4uF_Measure";
+        }
     }
 
     public class Oper9_1Far_40uF_Measure : Oper9FarMeasureBase
@@ -3612,7 +3835,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_40uF_Measure";
             OperationRangeCode = Mult107_109N.RangeCode.Range5Manual;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
@@ -3625,6 +3847,12 @@ namespace APPA_107N_109N
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 30);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_40uF_Measure";
+        }
     }
 
     public class Oper9_1Far_400uF_Measure : Oper9FarMeasureBase
@@ -3633,7 +3861,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation)
             : base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_400uF_Measure";
             OperationRangeCode = Mult107_109N.RangeCode.Range6Manual;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
@@ -3646,6 +3873,12 @@ namespace APPA_107N_109N
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 300);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_400uF_Measure";
+        }
     }
 
     public class Oper9_1Far_4mF_Measure : Oper9FarMeasureBase
@@ -3654,7 +3887,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_4mF_Measure";
             OperationRangeCode = Mult107_109N.RangeCode.Range7Manual;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
@@ -3667,6 +3899,12 @@ namespace APPA_107N_109N
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 3);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_4mF_Measure";
+        }
     }
 
     public class Oper9_1Far_40mF_Measure : Oper9FarMeasureBase
@@ -3675,7 +3913,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper9_1Far_40mF_Measure";
             OperationRangeCode = Mult107_109N.RangeCode.Range8Manual;
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
@@ -3688,6 +3925,12 @@ namespace APPA_107N_109N
             FarMeasPoints = new MeasPoint[1];
             FarMeasPoints[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 30);
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper9_1Far_40mF_Measure";
+        }
     }
 
     #endregion FAR
@@ -3696,7 +3939,7 @@ namespace APPA_107N_109N
 
     #region TEMP
 
-    public class Oper10TemperatureMeasureBase : ParagraphBase, IUserItemOperation<MeasPoint>
+    public abstract class Oper10TemperatureMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -3730,10 +3973,7 @@ namespace APPA_107N_109N
         /// </summary>
         protected AcVariablePoint RangeResolution;
 
-        /// <summary>
-        /// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-        /// </summary>
-        protected string ReportTableName;
+        
 
         /// <summary>
         /// Это пустая точка, которая содержит только единицы измерения текущего
@@ -3789,15 +4029,17 @@ namespace APPA_107N_109N
 
         #region Methods
 
+        /// <inheritdoc />
+        protected override DataColumn[] GetColumnName()
+        {
+            return new[] {new DataColumn("Предел измерения"),
+                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+        }
+
+
         protected override DataTable FillData()
         {
-            var dataTable = new DataTable { TableName = ReportTableName };
-            dataTable.Columns.Add("Предел измерения");
-            dataTable.Columns.Add("Поверяемая точка");
-            dataTable.Columns.Add("Измеренное значение");
-            dataTable.Columns.Add("Минимальное допустимое значение");
-            dataTable.Columns.Add("Максимальное допустимое значение");
-            dataTable.Columns.Add("Результат");
+            var dataTable= base.FillData();
 
             foreach (var row in DataRow)
             {
@@ -3822,8 +4064,8 @@ namespace APPA_107N_109N
 
         protected override void InitWork()
         {
+            base.InitWork();
             if (appa107N == null || flkCalib5522A == null) return;
-            DataRow.Clear();
 
             foreach (var currPoint in DegC_Point)
             {
@@ -3955,7 +4197,7 @@ namespace APPA_107N_109N
 
         #endregion Methods
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+      
 
         //public override async Task StartWork(CancellationToken token)
         //{
@@ -3970,7 +4212,7 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper10_1Tem_Minus200_Minus100";
+          
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.degC, UnitMultipliers.Mili);
@@ -3982,6 +4224,12 @@ namespace APPA_107N_109N
 
             DegC_Point = new[] { new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, -200) };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper10_1Tem_Minus200_Minus100";
+        }
     }
 
     public class Oper10_1Temperature_Minus100_400_Measure : Oper10TemperatureMeasureBase
@@ -3990,7 +4238,6 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper10_1Tem_Minus100_400";
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.degC, UnitMultipliers.Mili);
@@ -4007,6 +4254,12 @@ namespace APPA_107N_109N
                 new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 100)
             };
         }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper10_1Tem_Minus100_400";
+        }
     }
 
     public class Oper10_1Temperature_400_1200_Measure : Oper10TemperatureMeasureBase
@@ -4015,7 +4268,7 @@ namespace APPA_107N_109N
             IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            ReportTableName = "FillTabBmOper10_1Tem_400_1200";
+          
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.degC, UnitMultipliers.None);
@@ -4031,6 +4284,12 @@ namespace APPA_107N_109N
                 new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 800),
                 new MeasPoint(thisRangeUnits.Units, thisRangeUnits.UnitMultipliersUnit, 1200)
             };
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return "FillTabBmOper10_1Tem_400_1200";
         }
     }
 

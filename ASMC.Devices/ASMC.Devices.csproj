@@ -118,6 +118,7 @@
     <Compile Include="USB_Device\SKBIS\Lir917\Ppi.cs" />
     <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
     <Compile Include="VirtMeasInst\VirtualSensor.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\Ich.cs" />
     <Compile Include="WithoutInterface\Voltmetr\B3_57.cs" />
   </ItemGroup>
   <ItemGroup>

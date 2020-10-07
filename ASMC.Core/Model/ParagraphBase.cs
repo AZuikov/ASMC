@@ -16,8 +16,12 @@ namespace ASMC.Core.Model
     /// <summary>
     /// Предоставляет базовый клас для пункта операции.
     /// </summary>
-    public abstract class ParagraphBase : ViewModelBase, IUserItemOperationBase, ITreeNode
+    public abstract class ParagraphBase<T> : ViewModelBase, IUserItemOperationBase, ITreeNode, IUserItemOperation<T>
     {
+        protected const string ConstGood = "Годен";
+        protected const string ConstBad = "Брак";
+        protected const string ConstNotUsed = "Не выполнено";
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly TreeNode _treeNode;
         private bool _isWork;
@@ -46,12 +50,25 @@ namespace ASMC.Core.Model
         }
 
         #region Methods
-
+        /// <summary>
+        /// Предоставляет перечень имен столбцов таблицы для отчетов
+        /// </summary>
+        protected abstract DataColumn[] GetColumnName();
+        /// <summary>
+        /// Имя закладки таблички в протоколе.
+        /// </summary>
+        protected abstract string GetReportTableName();
         /// <summary>
         /// Заполняет свойство <see cref = "Data" />.
         /// </summary>
         /// <returns></returns>
-        protected abstract DataTable FillData();
+        protected virtual DataTable FillData()
+        {
+            var dt = new DataTable { TableName = GetReportTableName() };
+            foreach (var cn in GetColumnName()) dt.Columns.Add(cn);
+            dt.Columns.Add("Результат");
+            return dt;
+        }
 
         /// <summary>
         /// Связывает строку подключения из интрефеса пользователя с выбранным прибором. Работает для контрольных и контролируемых
@@ -85,10 +102,7 @@ namespace ASMC.Core.Model
             return connect;
         }
 
-        /// <summary>
-        /// Проводит инициализацию необходимую для реализации интерфейса <see cref = "IUserItemOperation&lt; T &gt;" />
-        /// </summary>
-        protected abstract void InitWork();
+ 
 
         private object[] GetProperty()
         {
@@ -221,11 +235,20 @@ namespace ASMC.Core.Model
                Logger.Info($@"Пункт выполнился с результатом {IsGood}");
             }
         }
-
+        /// <summary>
+        /// Проводит инициализацию необходимую для реализации интерфейса <see cref = "IUserItemOperation&lt; T &gt;" />
+        /// </summary>
+        protected virtual void InitWork()
+        {
+            DataRow.Clear();
+        }
         /// <inheritdoc />
         public bool IsCheked { get; set; }
 
         /// <inheritdoc />
         public DataTable Data => FillData();
+
+        /// <inheritdoc />
+        public List<IBasicOperation<T>> DataRow { get; set; }
     }
 }
