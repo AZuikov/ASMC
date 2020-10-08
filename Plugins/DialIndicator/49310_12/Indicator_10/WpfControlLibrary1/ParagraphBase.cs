@@ -54,14 +54,14 @@ namespace Indicator_10
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[]
+            return (string[]) new[]
             {
                 "Точка диапазона измерений индикатора, мм",
                 "Показания весов, г",
                 "При изменении направления хода изм. стержня",
                 "Колебание при прямом/обратном ходе",
                 "Максимальное при прямом ходе"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
 
         /// <inheritdoc />
@@ -105,11 +105,11 @@ namespace Indicator_10
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[]
+            return (string[]) new[]
             {
                 "№ Измерения", "Изменение показаний индикатора, делений шкалы",
                 "Допустимые изменения показаний, делений шкалы"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
 
         /// <inheritdoc />

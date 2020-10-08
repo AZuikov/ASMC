@@ -71,7 +71,7 @@ namespace ASMC.Core.Model
         /// <returns></returns>
         protected virtual string[] GenerateDataColumnTypeObject()
         {
-            return null;
+            return new[]{"Результат"};
         }
         /// <summary>
         /// Имя закладки таблички в протоколе.
@@ -85,7 +85,6 @@ namespace ASMC.Core.Model
         {
             var dt = new DataTable { TableName = GetReportTableName() };
             foreach (var cn in GetColumnName()) dt.Columns.Add(cn);
-            dt.Columns.Add("Результат");
             return dt;
         }
 
