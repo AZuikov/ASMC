@@ -155,12 +155,12 @@ namespace APPA_107N_109N
 
         #region Methods
 
+     
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Результат внешнего осмотра")};
+            return new[] { "Результат внешнего осмотра" };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -225,11 +225,10 @@ namespace APPA_107N_109N
         #region Methods
 
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Результат опробования")};
+            return new[] { "Результат опробования" };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -284,7 +283,7 @@ namespace APPA_107N_109N
 
     #region DCV
 
-    public abstract class Oper3DcvMeasureBase : ParagraphBase<AcVariablePoint>
+    public class Oper3DcvMeasureBase : ParagraphBase<AcVariablePoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -374,14 +373,19 @@ namespace APPA_107N_109N
 
         #region Methods
 
+   
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
+        }
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
         }
 
-    
 
         protected override DataTable FillData()
         {
@@ -566,7 +570,7 @@ namespace APPA_107N_109N
         //    appa107N?.Dispose();
         //}
 
-        public List<IBasicOperation<AcVariablePoint>> DataRow { get; set; }
+       
     }
 
     public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
@@ -777,7 +781,7 @@ namespace APPA_107N_109N
 
     #region ACV
 
-    public abstract class Oper4AcvMeasureBase : ParagraphBase<AcVariablePoint>
+    public class Oper4AcvMeasureBase : ParagraphBase<AcVariablePoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -856,14 +860,19 @@ namespace APPA_107N_109N
 
         #region Methods
 
+      
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"};
+        }
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
         }
 
-       
 
         protected override DataTable FillData()
         {
@@ -1137,7 +1146,7 @@ namespace APPA_107N_109N
         //    appa107N?.Dispose();
         //}
 
-        public List<IBasicOperation<AcVariablePoint>> DataRow { get; set; }
+       
 
         #region TolleranceFormula
 
@@ -1402,7 +1411,7 @@ namespace APPA_107N_109N
 
     #region DCI
 
-    public abstract class Oper5DciMeasureBase : ParagraphBase<MeasPoint>
+    public class Oper5DciMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1495,11 +1504,17 @@ namespace APPA_107N_109N
 
         #region Methods
 
+      
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
+        }
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
         }
 
 
@@ -1909,7 +1924,7 @@ namespace APPA_107N_109N
 
     #region ACI
 
-    public abstract class Oper6AciMeasureBase : ParagraphBase<AcVariablePoint>
+    public class Oper6AciMeasureBase : ParagraphBase<AcVariablePoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -2035,11 +2050,17 @@ namespace APPA_107N_109N
             }
         }
 
+   
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
+        }
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
         }
 
 
@@ -2282,13 +2303,7 @@ namespace APPA_107N_109N
 
         #endregion Methods
 
-        //public override async Task StartWork(CancellationToken token)
-        //{
-        //    await base.StartWork(token);
-        //    appa107N?.Dispose();
-        //}
-
-        public List<IBasicOperation<AcVariablePoint>> DataRow { get; set; }
+        
 
         #region TolleranceFormula
 
@@ -2510,7 +2525,7 @@ namespace APPA_107N_109N
 
     #region FREQ
 
-    public abstract class Oper7FreqMeasureBase : ParagraphBase<MeasPoint>
+    public class Oper7FreqMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -2591,12 +2606,17 @@ namespace APPA_107N_109N
         #region Methods
 
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
         }
-        
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
+        }
+
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
@@ -3186,7 +3206,7 @@ namespace APPA_107N_109N
         }
     }
 
-    public abstract class Oper8ResistanceMeasureBase : ParagraphBase<MeasPoint>
+    public class Oper8ResistanceMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -3263,13 +3283,19 @@ namespace APPA_107N_109N
 
         #region Methods
 
+  
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
         }
-        
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+           return null;
+        }
+
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
@@ -3469,7 +3495,7 @@ namespace APPA_107N_109N
 
     #region FAR
 
-    public abstract class Oper9FarMeasureBase : ParagraphBase<MeasPoint>
+    public class Oper9FarMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -3545,14 +3571,21 @@ namespace APPA_107N_109N
 
         #region Methods
 
+     
+
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
+        }
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
         }
 
-    
+
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
@@ -3939,7 +3972,7 @@ namespace APPA_107N_109N
 
     #region TEMP
 
-    public abstract class Oper10TemperatureMeasureBase : ParagraphBase<MeasPoint>
+    public class Oper10TemperatureMeasureBase : ParagraphBase<MeasPoint>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -4029,11 +4062,17 @@ namespace APPA_107N_109N
 
         #region Methods
 
+    
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
+        }
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return null;
         }
 
 

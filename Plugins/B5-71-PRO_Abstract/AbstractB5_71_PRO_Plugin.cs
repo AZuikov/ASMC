@@ -97,10 +97,10 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
-        /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+/// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Результат внешнего осмотра")};
+            return new[] { "Результат внешнего осмотра" };
         }
 
         /// <inheritdoc />
@@ -180,12 +180,12 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+      
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Результат опробования")};
+            return new[] { "Результат опробования" };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -384,18 +384,18 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+        
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-                new DataColumn("Установленное значение напряжения, В"),
-                new DataColumn("Измеренное значение, В"),
-                new DataColumn("Минимальное допустимое значение, В"),
-                new DataColumn("Максимальное допустимое значение, В")
+                "Установленное значение напряжения, В",
+                "Измеренное значение, В",
+                "Минимальное допустимое значение, В",
+                "Максимальное допустимое значение, В"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -572,16 +572,16 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+   
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { new DataColumn("Измеренное эталонным мультиметром значение, В"),
-                new DataColumn("Измеренное источником питания значение, В"),
-                new DataColumn("Минимальное допустимое значение, В"),
-                new DataColumn("Максимальное допустимое значение, В")
+            return new[] { "Измеренное эталонным мультиметром значение, В",
+                "Измеренное источником питания значение, В",
+                "Минимальное допустимое значение, В",
+                "Максимальное допустимое значение, В"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -762,14 +762,14 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+       
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { new DataColumn("Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В"),
-                new DataColumn("Допустимое значение, В")
+            return new[] { "Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В",
+                "Допустимое значение, В"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -963,16 +963,16 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+      
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-                new DataColumn("Измеренное значение пульсаций, мВ"),
-                new DataColumn("Допустимое значение пульсаций, мВ")
+                "Измеренное значение пульсаций, мВ",
+                "Допустимое значение пульсаций, мВ"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1189,18 +1189,18 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+     
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-                new DataColumn("Установленное значение тока, А"),
-                new DataColumn("Измеренное значение, А"),
-                new DataColumn("Минимальное допустимое значение, А"),
-                new DataColumn("Максимальное допустимое значение, А")
+                "Установленное значение тока, А",
+                "Измеренное значение, А",
+                "Минимальное допустимое значение, А",
+                "Максимальное допустимое значение, А"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1377,16 +1377,16 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+      
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { new DataColumn("Измеренное эталонным авмперметром значение тока, А"),
-                new DataColumn("Измеренное блоком питания значение тока, А"),
-                new DataColumn("Минимальное допустимое значение, А"),
-                new DataColumn("Максимальное допустимое значение, А")
+            return new[] { "Измеренное эталонным авмперметром значение тока, А",
+                "Измеренное блоком питания значение тока, А",
+                "Минимальное допустимое значение, А",
+                "Максимальное допустимое значение, А"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1555,16 +1555,16 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+   
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-                new DataColumn("Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А"),
-                new DataColumn("Допустимое значение, А")
+                "Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А",
+                "Допустимое значение, А"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1749,16 +1749,16 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
+    
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-                new DataColumn("Измеренное значение пульсаций, мА"),
-                new DataColumn("Допустимое значение пульсаций, мА")
+                "Измеренное значение пульсаций, мА",
+                "Допустимое значение пульсаций, мА"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {

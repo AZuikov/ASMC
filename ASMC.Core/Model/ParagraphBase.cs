@@ -44,16 +44,35 @@ namespace ASMC.Core.Model
 
         protected ParagraphBase(IUserItemOperation userItemOperation)
         {
+            DataRow = (List<IBasicOperation<T>>)Activator.CreateInstance(typeof(List<IBasicOperation<T>>));
             UserItemOperation = userItemOperation;
             var sdsad= new System.Windows.Forms.TreeNode();
             _treeNode = new TreeNode();
         }
 
         #region Methods
+
         /// <summary>
         /// Предоставляет перечень имен столбцов таблицы для отчетов
         /// </summary>
-        protected abstract DataColumn[] GetColumnName();
+        protected virtual DataColumn[] GetColumnName()
+        {
+            var list = new List<DataColumn>();
+            var arrNames = GenerateDataColumnTypeObject();
+            foreach (var name in arrNames)
+            {
+                list.Add(new DataColumn(name));
+            }
+            return list.ToArray();
+        }
+        /// <summary>
+        /// предоставляет перечень имен столбцов таблицы для стобцов типа Object.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string[] GenerateDataColumnTypeObject()
+        {
+            return null;
+        }
         /// <summary>
         /// Имя закладки таблички в протоколе.
         /// </summary>
@@ -240,7 +259,7 @@ namespace ASMC.Core.Model
         /// </summary>
         protected virtual void InitWork()
         {
-            DataRow.Clear();
+            DataRow?.Clear();
         }
         /// <inheritdoc />
         public bool IsCheked { get; set; }

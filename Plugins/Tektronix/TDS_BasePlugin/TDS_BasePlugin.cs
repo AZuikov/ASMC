@@ -103,12 +103,16 @@ namespace TDS_BasePlugin
 
         #region Methods
 
-        /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
-        {
-            return new[] {new DataColumn("Результат внешнего осмотра")};
-        }
+       
 
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Результат внешнего осмотра"
+            };
+        }
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -169,12 +173,15 @@ namespace TDS_BasePlugin
 
         #region Methods
 
+       
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Результат опробования")};
+            return new[]
+            {
+                "Результат опробования"
+            };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -272,17 +279,17 @@ namespace TDS_BasePlugin
 
         #region Methods
 
+    
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { new DataColumn("Коэффициент развёртки"),
-                new DataColumn("Амплитуда подаваемого сигнала"),
-                new DataColumn("Измеренное значение амплитуды"),
-                new DataColumn("Минимальное допустимое значение"),
-                new DataColumn("Максимальное допустимое значение")
+            return new[] { "Коэффициент развёртки",
+                "Амплитуда подаваемого сигнала",
+                "Измеренное значение амплитуды",
+                "Минимальное допустимое значение",
+                "Максимальное допустимое значение"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -491,13 +498,14 @@ namespace TDS_BasePlugin
 
         #region Methods
 
-        /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
-        {
-            return new[] {new DataColumn("Развертка по времени"),
-                new DataColumn("Измеренное значение периода"), new DataColumn("Минимально допустимое значение"), new DataColumn("Максимально допустимое значение"), new DataColumn("Максимальное допустимое значение")  };
-        }
+       
 
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[] {"Развертка по времени",
+                "Измеренное значение периода", "Минимально допустимое значение", "Максимально допустимое значение", "Максимальное допустимое значение"  };
+        }
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -751,16 +759,16 @@ namespace TDS_BasePlugin
 
         #region Methods
 
+       
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { new DataColumn("Горизонтальная развёртка"),
-                new DataColumn("Коэффициент отклонения"),
-                new DataColumn("Измеренное значение длительности фронта"),
-                new DataColumn("Минимально допустимое значение длительности фронта")
+            return new[] { "Горизонтальная развёртка",
+                "Коэффициент отклонения",
+                "Измеренное значение длительности фронта",
+                "Минимально допустимое значение длительности фронта"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
