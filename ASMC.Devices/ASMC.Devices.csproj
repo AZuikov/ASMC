@@ -45,6 +45,12 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="OwenioNet">
+      <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\OwenioNet.dll</HintPath>
+    </Reference>
+    <Reference Include="OwenioNet.DataConverter">
+      <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\OwenioNet.DataConverter.dll</HintPath>
+    </Reference>
     <Reference Include="Palsys.Data.Model, Version=7.0.1900.1199, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Palitra System\Metr7\Palsys.Data.Model.dll</HintPath>
@@ -88,6 +94,7 @@
     <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_2022B\TDS_2022B.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
+    <Compile Include="OWEN\OwenProtocol.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B5-71-PRO.cs" />
@@ -116,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>
