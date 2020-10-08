@@ -73,12 +73,14 @@ namespace ASMC.ViewModel
 
         #region Fields
 
-        private CancellationTokenSource _isWorkToken = new CancellationTokenSource();
         private string[] _accessoriesList;
         private IUserItemOperationBase _curentItemOperation;
         private DataView _dataOperation;
         private OperationMetrControlBase.TypeOpeation? _enableOpeation;
         private bool _isCheckWork;
+        private bool _isManual;
+
+        private CancellationTokenSource _isWorkToken = new CancellationTokenSource();
         private TabItemControl _selectedTabItem;
         private IUserItemOperationBase _selectionItemOperation;
         private IProgram _selectProgram;
@@ -86,7 +88,6 @@ namespace ASMC.ViewModel
         private StateWork _stateWorkFlag;
         private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
-        private bool _isManual;
 
         #endregion
 
@@ -126,6 +127,20 @@ namespace ASMC.ViewModel
             get => _isCheckWork;
             set => SetProperty(ref _isCheckWork, value, nameof(IsCheckWork), OnIsSpeedWorkCallback);
         }
+
+        public bool IsManual
+        {
+            get => _isManual;
+            set => SetProperty(ref _isManual, value, nameof(IsManual),
+                               () =>
+                               {
+                                   if (SelectProgram == null) return;
+                                   SelectProgram.Operation.IsManual = IsManual;
+                               });
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public bool[] ModeWork { get; set; } = {true, false};
 
         public ICommand PauseCommand { get; }
 
@@ -182,7 +197,11 @@ namespace ASMC.ViewModel
         public OperationMetrControlBase.TypeOpeation TypeOpertion
         {
             get => _typeOpertion;
-            set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion),()=>Logger.Info($@"Выбранна операция {TypeOpertion}"));
+            set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion), () =>
+            {
+                ChangeProgram();
+                Logger.Info($@"Выбранна операция {TypeOpertion}");
+            });
         }
 
         /// <summary>
@@ -215,54 +234,7 @@ namespace ASMC.ViewModel
             PauseCommand = new DelegateCommand(OnPauseCommand);
         }
 
-        // ReSharper disable once UnusedMember.Global
-        public bool[] ModeWork { get; set; } = {true, false};
-        public bool IsManual
-        {
-            get => _isManual;
-            set => SetProperty(ref _isManual, value, nameof(IsManual),
-                               () =>
-                               {
-                                   if (SelectProgram==null) return;
-                                   SelectProgram.Operation.IsManual = IsManual;
-                               });
-        }
-
         #region Methods
-
-        private string GetUniqueFileName(string format)
-        {
-            var systemFlober = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var asseblyName = Assembly.GetEntryAssembly().GetName().Name;
-            var path = Path.Combine(systemFlober, asseblyName);
-
-            string PasteNameToPath = SelectProgram?.Type;
-            foreach (var chr in Path.GetInvalidFileNameChars())
-            {
-                PasteNameToPath=PasteNameToPath.Replace(chr, '_');
-            }
-            
-            var newFileName = path + @"\" + PasteNameToPath + Path.GetRandomFileName() +  format;
-           
-            try
-            {
-                Directory.Delete(path, true);
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                Logger.Debug(e, $"Дериректория {path} не найдена.");
-            }
-            catch (IOException e)
-            {
-                Logger.Debug(e, "Очистить деректорию не получить по причиние, используются файлы.");
-            }
-            finally
-            {
-                Directory.CreateDirectory(path);
-            }
-            
-            return newFileName;
-        }
 
         /// <inheritdoc />
         protected override void OnInitialized()
@@ -271,69 +243,23 @@ namespace ASMC.ViewModel
             LoadPlugins();
         }
 
+        private void ChangeProgram()
+        {
+            SelectProgram.Operation.SelectedTypeOpeation = TypeOpertion;
+            UserItemOperation = SelectProgram.Operation?.SelectedOperation?.UserItemOperation;
+            if (SettingViewModel != null) SettingViewModel.Event -= SettingViewModel_Event;
+            SettingViewModel = new SettingViewModel
+            {
+                ControlDevices = SelectProgram.Operation.SelectedOperation?.ControlDevices,
+                TestDevices = SelectProgram.Operation.SelectedOperation?.TestDevices
+            };
+            SettingViewModel.Event += SettingViewModel_Event;
+            AccessoriesList = SelectProgram.Operation.SelectedOperation?.Accessories;
+        }
+
         private void EnableOpeationCallback()
         {
             if (EnableOpeation != null) TypeOpertion = EnableOpeation.Value;
-        }
-
-        private void LoadPlugins()
-        {
-            var interfaceType = typeof(IProgram);
-            Type[] types = null;
-            try
-            {
-                types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
-                                 .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
-            }
-            catch (Exception e)
-            {
-                Logger.Warn(e);
-            }
-
-            var servicePack = new ServicePack
-            {
-                MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
-                ShemForm = GetService<IFormService>("ImageService"),
-                QuestionText = GetService<IFormService>("QuestionTextService"),
-                FreeWindow = GetService<IWindowService>("FreeWindow")
-            };
-            if (types == null) return;
-            foreach (var type in types)
-            {
-                try
-                {
-                    Prog.Add((IProgram) Activator.CreateInstance(type, servicePack));
-                    Logger.Debug($@"Загружена сборка {type}");
-                }
-                catch (InvalidCastException e)
-                {
-                    Logger.Warn(e, $@"Не соответствует интерфейсу {type}");
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                }
-            }
-        }
-
-        private void OnBackCommand()
-        {
-            SelectedTabItem = SelectedTabItem - 1;
-        }
-        //todo:Добавить окно формирования документа и сделать асинхронно.
-        private void OnCreatDocumetCommand()
-        {
-            Logger.Info($@"Запущено формирование протокола");
-
-            try
-            {
-                GenerateDocument();
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e, "Протокол не был сформирован");
-                Alert(e);
-            }
         }
 
         private void GenerateDocument()
@@ -366,8 +292,8 @@ namespace ASMC.ViewModel
                     var tree = uio as ITreeNode;
                     if (tree == null) continue;
                     FillDoc(tree);
-
                 }
+
                 path = GetUniqueFileName(".docx");
                 report.SaveAs(path);
                 Logger.Info($@"Протокол сформирован по пути {path}");
@@ -375,49 +301,30 @@ namespace ASMC.ViewModel
                 void FillDoc(ITreeNode userItem)
                 {
                     var n = userItem as IUserItemOperationBase;
-                    
-                    if (n?.Data != null )
-                    {
-                       
 
+                    if (n?.Data != null)
+                    {
                         var markName = n.Data.TableName;
 
                         if (!string.IsNullOrWhiteSpace(markName))
                         {
                             if (regInsTextByMark.IsMatch(markName))
-                            {
                                 report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
-                            }
                             else if (regInsTextByReplase.IsMatch(markName))
-                            {
                                 report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
-                            }
                             else if (regInTableByMark.IsMatch(markName))
-                            {
                                 report.InsertNewTableToBookmark(markName, n.Data, a);
-                            }
                             else if (regFillTableByMark.IsMatch(markName))
-                            {
                                 report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
-                            }
                             else
-                            {
                                 Logger.Error($@"Имя {markName} не распознано");
-                            }
                         }
-
-                        
                     }
 
-                    foreach (var node in userItem.Nodes)
-                    {
-                        FillDoc(node);
-                    }
-
-                    
+                    foreach (var node in userItem.Nodes) FillDoc(node);
                 }
-
             }
+
             Process.Start(path);
 
             string TableToStringConvert(DataTable dt)
@@ -425,19 +332,105 @@ namespace ASMC.ViewModel
                 var dataStr = new StringBuilder();
                 foreach (DataRow row in dt.Rows)
                 {
-                    foreach (var cell in row.ItemArray)
-                    {
-                        dataStr.Append(cell).Append(" ");
-                    }
-                    if (dataStr.Length > 0)
-                    {
-                        dataStr.Remove(dataStr.Length - 1, 1);
-                    }
+                    foreach (var cell in row.ItemArray) dataStr.Append(cell).Append(" ");
+                    if (dataStr.Length > 0) dataStr.Remove(dataStr.Length - 1, 1);
                     dataStr.AppendLine();
                 }
+
                 return dataStr.ToString().TrimEnd('\n');
             }
         }
+
+        private string GetUniqueFileName(string format)
+        {
+            var systemFlober = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var asseblyName = Assembly.GetEntryAssembly().GetName().Name;
+            var path = Path.Combine(systemFlober, asseblyName);
+
+            var PasteNameToPath = SelectProgram?.Type;
+            foreach (var chr in Path.GetInvalidFileNameChars()) PasteNameToPath = PasteNameToPath.Replace(chr, '_');
+
+            var newFileName = path + @"\" + PasteNameToPath + Path.GetRandomFileName() + format;
+
+            try
+            {
+                Directory.Delete(path, true);
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Logger.Debug(e, $"Дериректория {path} не найдена.");
+            }
+            catch (IOException e)
+            {
+                Logger.Debug(e, "Очистить деректорию не получить по причиние, используются файлы.");
+            }
+            finally
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            return newFileName;
+        }
+
+        private void LoadPlugins()
+        {
+            var interfaceType = typeof(IProgram);
+            Type[] types = null;
+            try
+            {
+                types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
+                                 .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            }
+            catch (Exception e)
+            {
+                Logger.Warn(e);
+            }
+
+            var servicePack = new ServicePack
+            {
+                MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
+                ShemForm = GetService<IFormService>("ImageService"),
+                QuestionText = GetService<IFormService>("QuestionTextService"),
+                FreeWindow = GetService<IWindowService>("FreeWindow")
+            };
+            if (types == null) return;
+            foreach (var type in types)
+                try
+                {
+                    Prog.Add((IProgram) Activator.CreateInstance(type, servicePack));
+                    Logger.Debug($@"Загружена сборка {type}");
+                }
+                catch (InvalidCastException e)
+                {
+                    Logger.Warn(e, $@"Не соответствует интерфейсу {type}");
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+        }
+
+        private void OnBackCommand()
+        {
+            SelectedTabItem = SelectedTabItem - 1;
+        }
+
+        //todo:Добавить окно формирования документа и сделать асинхронно.
+        private void OnCreatDocumetCommand()
+        {
+            Logger.Info(@"Запущено формирование протокола");
+
+            try
+            {
+                GenerateDocument();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Протокол не был сформирован");
+                Alert(e);
+            }
+        }
+
         private void OnIsSpeedWorkCallback()
         {
             SelectProgram.Operation.IsSpeedWork = IsCheckWork;
@@ -484,25 +477,13 @@ namespace ASMC.ViewModel
                     break;
                 }
 
-            SelectProgram.Operation.SelectedTypeOpeation = TypeOpertion;
-            UserItemOperation = SelectProgram.Operation?.SelectedOperation?.UserItemOperation;
-            if (SettingViewModel != null) SettingViewModel.Event -= SettingViewModel_Event;
-            SettingViewModel = new SettingViewModel
-            {
-                ControlDevices = SelectProgram.Operation.SelectedOperation?.ControlDevices,
-                TestDevices = SelectProgram.Operation.SelectedOperation?.TestDevices
-            };
-            SettingViewModel.Event += SettingViewModel_Event;
-            AccessoriesList = SelectProgram.Operation.SelectedOperation?.Accessories;
+            ChangeProgram();
         }
 
         private async void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
-            if (_isWorkToken.Token.IsCancellationRequested)
-            {
-                _isWorkToken = new CancellationTokenSource();
-            }
+            if (_isWorkToken.Token.IsCancellationRequested) _isWorkToken = new CancellationTokenSource();
             if (SelectionItemOperation == null)
             {
                 Logger.Info("Программа МК запущена");
@@ -515,8 +496,8 @@ namespace ASMC.ViewModel
                     Logger.Error(e);
                     Alert(e);
                 }
-                
             }
+
             StateWorkFlag = StateWork.Stop;
         }
 

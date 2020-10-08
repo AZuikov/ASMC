@@ -33,42 +33,4 @@ namespace Indicator_10
             this.UserItemOperationPeriodicVerf = new OpertionPeriodicVerf(servicePac);
         }
     }
-
-    //public abstract class IndicatorParagraphBase<T> : ParagraphBase, IUserItemOperation<T>
-    //{
-    //    protected const string ConstGood = "Годен";
-    //    protected const string ConstBad = "Брак";
-    //    protected const string ConstNotUsed = "Не выполнено";
-
-    //    /// <summary>
-    //    /// Имя закладки таблички в протоколе.
-    //    /// </summary>
-    //    protected abstract string GetReportTableName();
-        
-
-    //    /// <summary>
-    //    /// Предоставляет перечень имен столбцов таблицы для отчетов
-    //    /// </summary>
-    //    protected abstract DataColumn[] GetColumnName();
-        
-
-    //    /// <inheritdoc />
-    //    protected IndicatorParagraphBase(IUserItemOperation userItemOperation) : base(userItemOperation)
-    //    {
-    //        DataRow = (List<IBasicOperation<T>>)Activator.CreateInstance(typeof(List<IBasicOperation<T>>));
-    //    }
-
-
-    //    /// <inheritdoc />
-      
-
-    //    ///// <inheritdoc />
-    //    //protected override void InitWork()
-    //    //{
-    //    //    DataRow.Clear();
-    //    //}
-
-    //    ///// <inheritdoc />
-    //    //public List<IBasicOperation<T>> DataRow { get; set; }
-    //}
 }

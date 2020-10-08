@@ -44,6 +44,7 @@ namespace ASMC.Core.Model
 
         protected ParagraphBase(IUserItemOperation userItemOperation)
         {
+            DataRow = (List<IBasicOperation<T>>)Activator.CreateInstance(typeof(List<IBasicOperation<T>>));
             UserItemOperation = userItemOperation;
             var sdsad= new System.Windows.Forms.TreeNode();
             _treeNode = new TreeNode();
@@ -240,7 +241,7 @@ namespace ASMC.Core.Model
         /// </summary>
         protected virtual void InitWork()
         {
-            DataRow.Clear();
+            DataRow?.Clear();
         }
         /// <inheritdoc />
         public bool IsCheked { get; set; }
