@@ -534,7 +534,7 @@ namespace ASMC.Devices.Port.APPA
             {
                 if (_data[10] == 255)
                     value = ~((0xff - _data[10] << 16) | (0xff - _data[9] << 8) | (0xff - _data[8])) - 1;
-                else value = ((_data[10] << 16) | (_data[9] << 8) | _data[8]);
+                else value = (_data[10] << 16) | (_data[9] << 8) | _data[8];
                 value= GetPointInfo(value, _data[11]);
              
             }
@@ -543,7 +543,7 @@ namespace ASMC.Devices.Port.APPA
             {
                 if (_data[15] == 255)
                     value = ~((0xff - _data[15] << 16) | (0xff - _data[14] << 8) | (0xff - _data[13])) - 1;
-                else value = ((_data[15] << 16) | (_data[14] << 8) | _data[13]);
+                else value = (_data[15] << 16) | (_data[14] << 8) | _data[13];
                 value = GetPointInfo(value, _data[16]);
             }
 
@@ -774,7 +774,7 @@ namespace ASMC.Devices.Port.APPA
             /*берем последние биты*/
             var match = chechSum & 0xFF;
             Logger.Debug($"{this.StringConnection}:  Контрольная сумма считанных данных: {match.ToString("X")} а ожидается {_readingBuffer[_readingBuffer.Count - 1].ToString("X")}");
-            if ((match != _readingBuffer[_readingBuffer.Count - 1]))
+            if (match != _readingBuffer[_readingBuffer.Count - 1])
             {
                 WaitEvent.Reset();
                 //Close();

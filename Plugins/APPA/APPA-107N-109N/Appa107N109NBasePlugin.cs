@@ -155,12 +155,12 @@ namespace APPA_107N_109N
 
         #region Methods
 
+     
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Результат внешнего осмотра")};
+            return new[] { "Результат внешнего осмотра" };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -225,11 +225,10 @@ namespace APPA_107N_109N
         #region Methods
 
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Результат опробования")};
+            return new[] { "Результат опробования" };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -374,13 +373,13 @@ namespace APPA_107N_109N
 
         #region Methods
 
+   
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -861,13 +860,13 @@ namespace APPA_107N_109N
 
         #region Methods
 
+      
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"};
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1505,13 +1504,13 @@ namespace APPA_107N_109N
 
         #region Methods
 
+      
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -2051,13 +2050,13 @@ namespace APPA_107N_109N
             }
         }
 
+   
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -2607,12 +2606,11 @@ namespace APPA_107N_109N
         #region Methods
 
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -3285,13 +3283,13 @@ namespace APPA_107N_109N
 
         #region Methods
 
+  
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -3573,13 +3571,14 @@ namespace APPA_107N_109N
 
         #region Methods
 
-        /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
-        {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
-        }
+     
 
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
+        }
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -4063,13 +4062,13 @@ namespace APPA_107N_109N
 
         #region Methods
 
+    
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {new DataColumn("Предел измерения"),
-                new DataColumn("Поверяемая точка"), new DataColumn("Измеренное значение"), new DataColumn("Минимальное допустимое значение"), new DataColumn("Максимальное допустимое значение"),  new DataColumn("Результат")  };
+            return new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {

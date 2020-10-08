@@ -101,11 +101,7 @@ namespace N8957APlugin
             n8975 = new N8975A();
         }
 
-        /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
-        {
-            return null;
-        }
+        
 
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -205,18 +201,18 @@ namespace N8957APlugin
 
         #region Methods
 
+     
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-                new DataColumn("fН"),
-                new DataColumn("fЦ"),
-                new DataColumn("Δf"),
-                new DataColumn("Максимально допустимое значение Δf")
+                "fН",
+                "fЦ",
+                "Δf",
+                "Максимально допустимое значение Δf"
             };
         }
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {

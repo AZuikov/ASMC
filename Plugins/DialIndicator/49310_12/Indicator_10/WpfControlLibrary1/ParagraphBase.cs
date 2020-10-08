@@ -50,16 +50,17 @@ namespace Indicator_10
             return dataTable;
         }
 
+
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-                new DataColumn("Точка диапазона измерений индикатора, мм"),
-                new DataColumn("Показания весов, г"),
-                new DataColumn("При изменении направления хода изм. стержня"),
-                new DataColumn("Колебание при прямом/обратном ходе"),
-                new DataColumn("Максимальное при прямом ходе")
+                "Точка диапазона измерений индикатора, мм",
+                "Показания весов, г",
+                "При изменении направления хода изм. стержня",
+                "Колебание при прямом/обратном ходе",
+                "Максимальное при прямом ходе"
             };
         }
 
@@ -89,6 +90,9 @@ namespace Indicator_10
         #endregion
     }
 
+    /// <summary>
+    /// Определение изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его оси.
+    /// </summary>
     public class PerpendicularPressure : ParagraphBase<MeasPoint>
     {
         /// <inheritdoc />
@@ -99,9 +103,13 @@ namespace Indicator_10
         #region Methods
 
         /// <inheritdoc />
-        protected override DataColumn[] GetColumnName()
+        protected override string[] GenerateDataColumnTypeObject()
         {
-            throw new NotImplementedException();
+            return new[]
+            {
+                "№ Измерения", "Изменение показаний индикатора, делений шкалы",
+                "Допустимые изменения показаний, делений шкалы"
+            };
         }
 
         /// <inheritdoc />
