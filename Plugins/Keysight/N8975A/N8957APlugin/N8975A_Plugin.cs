@@ -205,13 +205,13 @@ namespace N8957APlugin
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[]
+            return (string[]) new[]
             {
                 "fН",
                 "fЦ",
                 "Δf",
                 "Максимально допустимое значение Δf"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()

@@ -12,6 +12,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -377,8 +378,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -864,8 +865,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"};
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"}.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -1508,8 +1509,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -2054,8 +2055,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -2608,8 +2609,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  };
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение"  }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -3287,8 +3288,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -3576,8 +3577,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" }.Concat(base.GenerateDataColumnTypeObject()); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -4066,8 +4067,8 @@ namespace APPA_107N_109N
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Предел измерения",
-                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" };
+            return (string[]) new[] {"Предел измерения",
+                "Поверяемая точка", "Измеренное значение", "Минимальное допустимое значение", "Максимальное допустимое значение" }.Concat(base.GenerateDataColumnTypeObject());
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
