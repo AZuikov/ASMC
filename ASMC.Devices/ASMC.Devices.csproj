@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>
