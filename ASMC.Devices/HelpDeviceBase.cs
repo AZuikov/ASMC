@@ -68,6 +68,7 @@ namespace ASMC.Devices
             if(res == null)
                 throw new ArgumentOutOfRangeException($@"Даппозон {mult} не найден.");
             return res;
+
         }
 
 

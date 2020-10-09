@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,26 +11,31 @@ using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace Indicator_10.ViewModel
 {
-    public class MeasuringForceViewModel: TableViewModel
+    public class MeasuringForceViewModel: ASMC.Common.ViewModel.FromBaseViewModel
     {
-        public int RowCount { get; }
-        public Ich Ich { get; set; }
-        public MeasuringForceViewModel(Ich ich)
+        public ObservableCollection<ITemTable> Content { get; } = new ObservableCollection<ITemTable>();
+        public IchBase IchBase { get; set; }
+        public MeasuringForceViewModel(IchBase ichBase)
         {
-            Ich = ich;
-            var arrPoints = Ich.Range.GetArayMeasPointsInParcent(0, 50, 100);
-
+            this.
+            IchBase = ichBase;
+            var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50,100);
+            Content.Add(new TableViewModel(){Header= "Прямой ход"});
+            Content.Add(new TableViewModel { Header = "Обратный ход" });
+            Content.Add(new TableViewModel { Header = "Прямой/обатный ход" });
 
             for (int i = 0; i < arrPoints.Length; i++)
             {
-                this.Cells.Add(new Cell { ColumnIndex = i, RowIndex = 0, Name = arrPoints[i].ToString() });
+                Content[0].Cells.Add(new Cell { ColumnIndex = 0, RowIndex = i, Name = arrPoints[i].ToString() });
             }
 
             var reverse = arrPoints.Reverse().ToArray();
             for (int i = 0; i < arrPoints.Length; i++)
             {
-                this.Cells.Add(new Cell { ColumnIndex = i + 1, RowIndex = 1, Name = reverse[i].ToString() });
+                this.Content[1].Cells.Add(new Cell { ColumnIndex = 0, RowIndex = i, Name = reverse[i].ToString() });
             }
+            this.Content[2].Cells.Add(new Cell { ColumnIndex = 0, RowIndex = 0, Name = arrPoints[1].ToString() });
+            this.Content[2].Cells.Add(new Cell { ColumnIndex = 0, RowIndex = 1, Name = arrPoints[1].ToString() });
 
         }
 

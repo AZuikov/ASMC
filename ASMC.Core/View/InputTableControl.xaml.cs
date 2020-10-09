@@ -10,7 +10,6 @@ namespace ASMC.Core.View
     /// </summary>
     public partial class InputTableControl : UserControl
     {
-        public static readonly DependencyProperty RowCountPropery;
 
         public static readonly DependencyProperty DataProperty;
 
@@ -26,21 +25,13 @@ namespace ASMC.Core.View
 
         static InputTableControl()
         {
-            RowCountPropery= DependencyProperty.Register(nameof(RowCount), typeof(int), typeof(InputTableControl), new UIPropertyMetadata(20));
+            
             DataProperty =
                 DependencyProperty.Register(nameof(Data), typeof(BindingList<ICell>), typeof(InputTableControl), new FrameworkPropertyMetadata(new BindingList<ICell>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
             IsOnlyReadProperty =
                 DependencyProperty.Register(nameof(IsOnlyRead), typeof(bool), typeof(InputTableControl), new PropertyMetadata(false));
         }
 
-        public int RowCount
-        {
-            get => (int)GetValue(RowCountPropery);
-            set
-            {
-                SetValue(RowCountPropery, value);
-            }
-        }
         public double WidthCell
         {
             get => (double) GetValue(WidthCellProperty);  

@@ -29,7 +29,7 @@ namespace Indicator_10.Periodic
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new Ich("ИЧ10") {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Mili, 10),  } }
+                    Devices = new IUserType[] {new IchBase("ИЧ10") {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Mili, 10),  } }
                 }
             };
             UserItemOperation = new IUserItemOperationBase[]

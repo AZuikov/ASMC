@@ -87,6 +87,7 @@
     </Compile>
     <Compile Include="ParagraphBase.cs" />
     <Compile Include="ViewModel\MeasuringForceViewModel.cs" />
+    <Compile Include="ViewModel\PerpendicularPressureViewModel.cs" />
     <Compile Include="View\MeasuringForceView.xaml.cs">
       <DependentUpon>MeasuringForceView.xaml</DependentUpon>
     </Compile>

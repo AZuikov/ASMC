@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeviceInfo.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
@@ -118,7 +119,7 @@
     <Compile Include="USB_Device\SKBIS\Lir917\Ppi.cs" />
     <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
     <Compile Include="VirtMeasInst\VirtualSensor.cs" />
-    <Compile Include="WithoutInterface\HourIndicator\Ich.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\IchBase.cs" />
     <Compile Include="WithoutInterface\Voltmetr\B3_57.cs" />
   </ItemGroup>
   <ItemGroup>

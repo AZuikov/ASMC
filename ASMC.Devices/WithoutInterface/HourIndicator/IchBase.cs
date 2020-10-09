@@ -2,8 +2,9 @@
 
 namespace ASMC.Devices.WithoutInterface.HourIndicator
 {
-    public class Ich : IUserType
+    public class IchBase : IUserType
     {
+
         #region Property
 
         public MaxMeasuringForce MeasuringForce { get; set; }
@@ -17,11 +18,18 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
 
         #endregion
 
-        public Ich(string userType)
+        public IchBase(string userType)
         {
             UserType = userType;
         }
 
+        public AccuracyClass.Standart CurrentAccuracyClass { get; set; }
+
+        /// <summary>
+        /// Доступные класы точности.
+        /// </summary>
+        public AccuracyClass.Standart[] AvailabeAccuracyClass { get; } =
+            {AccuracyClass.Standart.Zero, AccuracyClass.Standart.First, AccuracyClass.Standart.Second};
         /// <inheritdoc />
         public string UserType { get; }
 
