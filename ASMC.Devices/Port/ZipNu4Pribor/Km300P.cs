@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AP.Utils.Data;
 
 namespace ASMC.Devices.Port.ZipNu4Pribor
 {
@@ -19,7 +20,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             InputU2 = 0x08
         }
 
-       
+       [Flags]
         public enum MeasureMode
         {
             /// <summary>
@@ -37,7 +38,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             /// <summary>
             /// Предел измерения 100в.
             /// </summary>
-            Range100V = 0x03,
+             Range100V = 0x03,
             /// <summary>
             /// Предел измерения 1000в.
             /// </summary>
@@ -45,25 +46,21 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             /// <summary>
             /// Режим измерения разности напряжений между входом U1 и U2.
             /// </summary>
-            DeltaVoltMeasureOn = 0x00,
-            DeltaVoltMeasureOff = 0x10,
+            IsDeltaVoltMeasure = 0x10,
+            //[DoubleValue(4)] DeltaVoltMeasureOff = 0x00,
             /// <summary>
             /// Автоматический режим измерения.
             /// </summary>
-            AutoMeasureMode = 0x20,
+             IsAutoMeasureMode = 0x20,
             /// <summary>
             /// Ручной  режим измерения.
             /// </summary>
-            ManualMeasureMode = 0x0,
+            //[DoubleValue(5)] ManualMeasureMode = 0x0,
             /// <summary>
-            /// Прибор может ответить что значение выше предела измерения
+            /// Прибор может ответить что значение выше предела измерения.
             /// </summary>
-            Overload = 0x80
+             Overload = 0x80
         }
-        
-        
-
-        
 
         /// <summary>
         /// Адрес устройства по умолчанию.
@@ -75,8 +72,10 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         //DBit dataBit = DBit.Bit8;
         //StopBits stopBit = StopBits.One;
 
-        public Km300P():base("com1", SpeedRate.R57600, Parity.None, DBit.Bit8)
+        public Km300P()
         {
+            BaudRate = SpeedRate.R57600;
+            
         }
         /// <summary>
         /// Устанавливает напряжение на выходе калибратора.
@@ -110,6 +109,24 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             Write(resultByteArr, 0, resultByteArr.Length);
             Close();
         }
+
+        public decimal GetMeasureVolt(MeasureInputVolt input)
+        {
+            byte[] resultByteArr = new byte[] { 0x03, 0x44, 0x03, 0x21 };
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
+            resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
+            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
+
+            Open();
+            //записали
+            Write(resultByteArr, 0, resultByteArr.Length);
+            //теперь считываем
+            //нужно написать метод считывания побайтам
+            Close();
+
+            return 0;
+        }
+
 
         /// <summary>
         /// Включение режима измерения.
