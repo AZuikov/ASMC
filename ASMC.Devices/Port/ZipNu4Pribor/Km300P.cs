@@ -8,18 +8,28 @@ using System.Threading.Tasks;
 
 namespace ASMC.Devices.Port.ZipNu4Pribor
 {
-    class Km300P: ComPort
+    public class Km300P: ComPort
     {
         /// <summary>
         /// Адрес устройства по умолчанию.
         /// </summary>
         private byte adress = 1;
-        private int Baud = 57600;
-        private Parity parity = Parity.None;
-        private int dataBits = 8;
+
+        //SpeedRate baudRate = SpeedRate.R57600;
+        //Parity parity = Parity.None;
+        //DBit dataBit = DBit.Bit8;
+        //StopBits stopBit = StopBits.One;
+
+        public Km300P():base("com1", SpeedRate.R57600, Parity.None, DBit.Bit8)
+        {
+        }
+        /// <summary>
+        /// Устанавливает напряжение на выходе калибратора.
+        /// </summary>
+        /// <param name="inVolt">Напряжение в вольтах на выходе калибратора.</param>
         public void SetOutVoltOnCalibrator(decimal inVolt)
         {
-            var valueArr = CRCUtilsKM300.ConvertValueToBcdCode((double)inVolt);
+            var valueArr = CRCUtilsKM300.ConvertValueToBcdCode((double)Math.Abs(inVolt));
             byte[] resultByteArr = { 0x0A, 0x44, 0x03, 0x10 };
             resultByteArr = resultByteArr.Concat(valueArr).ToArray();
 
@@ -36,11 +46,31 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
 
 
             var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
-            Console.Write($" в HEX = {resultCRC.ToString("X")}\n");
+            
 
             resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
             resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
+
+            Open();
+            Write(resultByteArr, 0, resultByteArr.Length);
+            Close();
         }
+
+        /// <summary>
+        /// Сброс.
+        /// </summary>
+        public void Reset()
+        {
+            byte[] resultByteArr = new byte[]{0x03,0x44,0x03,0x01};
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
+            resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
+            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
+
+            Open();
+            Write(resultByteArr, 0, resultByteArr.Length);
+            Close();
+        }
+
     }
 
     internal static class CRCUtilsKM300
