@@ -11,6 +11,61 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
     public class Km300P: ComPort
     {
         /// <summary>
+        /// Входы компаратора.
+        /// </summary>
+        public enum MeasureInputVolt
+        {
+            InputU1 = 0x00,
+            InputU2 = 0x08
+        }
+
+       
+        public enum MeasureMode
+        {
+            /// <summary>
+            /// Предел измерения 100мв.
+            /// </summary>
+            Range100mV = 0x0,
+            /// <summary>
+            /// Предел измерения 1в.
+            /// </summary>
+            Range1V = 0x01,
+            /// <summary>
+            /// Предел измерения 10в.
+            /// </summary>
+            Range10V = 0x02,
+            /// <summary>
+            /// Предел измерения 100в.
+            /// </summary>
+            Range100V = 0x03,
+            /// <summary>
+            /// Предел измерения 1000в.
+            /// </summary>
+            Range1000V = 0x04,
+            /// <summary>
+            /// Режим измерения разности напряжений между входом U1 и U2.
+            /// </summary>
+            DeltaVoltMeasureOn = 0x00,
+            DeltaVoltMeasureOff = 0x10,
+            /// <summary>
+            /// Автоматический режим измерения.
+            /// </summary>
+            AutoMeasureMode = 0x20,
+            /// <summary>
+            /// Ручной  режим измерения.
+            /// </summary>
+            ManualMeasureMode = 0x0,
+            /// <summary>
+            /// Прибор может ответить что значение выше предела измерения
+            /// </summary>
+            Overload = 0x80
+        }
+        
+        
+
+        
+
+        /// <summary>
         /// Адрес устройства по умолчанию.
         /// </summary>
         private byte adress = 1;
@@ -55,6 +110,46 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             Write(resultByteArr, 0, resultByteArr.Length);
             Close();
         }
+
+        /// <summary>
+        /// Включение режима измерения.
+        /// </summary>
+        public void MeasureModeOn()
+        {
+
+            byte[] resultByteArr = new byte[] { 0x03, 0x44, 0x03, 0x20 };
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
+            resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
+            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
+
+            Open();
+            Write(resultByteArr, 0, resultByteArr.Length);
+            Close();
+        }
+
+        /// <summary>
+        /// Задает текущий вход для измерения (вход U1 или U2)
+        /// </summary>
+        public void SetCurrentVIn(MeasureInputVolt input)
+        {
+            byte[] resultByteArr = new byte[] { 0x04, 0x44, 0x03, 0x24 };
+            if (input == MeasureInputVolt.InputU1)
+                resultByteArr = resultByteArr.Concat(new byte[] {0x20}).ToArray();
+            else
+                resultByteArr = resultByteArr.Concat(new byte[] { 0x28 }).ToArray();
+            
+
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
+            resultByteArr = new byte[] { 0x03 }.Concat(resultByteArr).ToArray();
+            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
+
+            Open();
+            Write(resultByteArr, 0, resultByteArr.Length);
+            Close();
+
+        }
+
+
 
         /// <summary>
         /// Сброс.
