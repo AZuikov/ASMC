@@ -4,8 +4,8 @@ using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
+using ASMC.Devices.USB_Device.WebCam;
 using ASMC.Devices.WithoutInterface.HourIndicator;
-using ASMC.MVision;
 
 namespace Indicator_10.First
 {
@@ -22,7 +22,7 @@ namespace Indicator_10.First
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBase("ИЧ143420") {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Micro, 10),  } }
+                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Micro, 10), UserType="ИЧ, мод. ИЧ10"  },  }
                 }
             };
             UserItemOperation = new IUserItemOperationBase[]

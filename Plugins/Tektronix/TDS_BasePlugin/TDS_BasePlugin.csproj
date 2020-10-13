@@ -84,6 +84,7 @@
     <Content Include="Resource\9500B_to_TDS_CH4.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Resource\32618-06 TDS.dotx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

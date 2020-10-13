@@ -76,7 +76,7 @@ namespace Indicator_10
             var operation = new BasicOperation<MeasPoint>();
             operation.InitWork = async () =>
             {
-                var a = UserItemOperation.ServicePack.FreeWindow as WindowService;
+                var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
                 var vm = new MeasuringForceViewModel(UserItemOperation.TestDevices.FirstOrDefault().SelectedDevice as IchBase);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
@@ -86,7 +86,6 @@ namespace Indicator_10
         }
         #endregion
     }
-
     /// <summary>
     /// Определение изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его оси.
     /// </summary>

@@ -1,4 +1,6 @@
-﻿using ASMC.Data.Model;
+﻿using System.ComponentModel;
+using System.Reflection;
+using ASMC.Data.Model;
 
 namespace ASMC.Devices.WithoutInterface.HourIndicator
 {
@@ -18,10 +20,6 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
 
         #endregion
 
-        public IchBase(string userType)
-        {
-            UserType = userType;
-        }
 
         public AccuracyClass.Standart CurrentAccuracyClass { get; set; }
 
@@ -31,7 +29,7 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         public AccuracyClass.Standart[] AvailabeAccuracyClass { get; } =
             {AccuracyClass.Standart.Zero, AccuracyClass.Standart.First, AccuracyClass.Standart.Second};
         /// <inheritdoc />
-        public string UserType { get; }
+        public string UserType { get; set; }
 
         /// <summary>
         /// Максимальное допутсимое усилие
@@ -57,5 +55,6 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
 
             #endregion
         }
+
     }
 }

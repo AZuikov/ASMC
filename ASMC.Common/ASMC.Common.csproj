@@ -118,7 +118,6 @@
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\ClosableViewModel.cs" />
     <Compile Include="ViewModel\FromBaseViewModel.cs" />
-    <Compile Include="ViewModel\WebCamViewModel.cs" />
     <Compile Include="View\FormView.xaml.cs">
       <DependentUpon>FormView.xaml</DependentUpon>
     </Compile>
@@ -162,12 +161,17 @@
     <Resource Include="Image\ListNumbering.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASMC.Devices\ASMC.Devices.csproj">
+      <Project>{C606FA94-0B7E-4698-801F-206CA9DA0CEF}</Project>
+      <Name>ASMC.Devices</Name>
     </ProjectReference>
     <ProjectReference Include="..\ASMC.MVision\ASMC.MVision.csproj">
       <Project>{A25F06CB-6E50-4A6B-AB3D-C78DC06E0327}</Project>

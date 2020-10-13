@@ -68,7 +68,7 @@ namespace APPA_107N_109N
             if (!operation.IsGood())
             {
                 var answer =
-                    UserItemOperation.ServicePack.MessageBox
+                    UserItemOperation.ServicePack.MessageBox()
                                      .Show($"Текущая точка {operation.Expected.VariableBaseValueMeasPoint.Description} не проходит по допуску:\n" +
                                            $"Минимально допустимое значение {operation.LowerTolerance.VariableBaseValueMeasPoint.Description}\n" +
                                            $"Максимально допустимое значение {operation.UpperTolerance.VariableBaseValueMeasPoint.Description}\n" +
@@ -92,7 +92,7 @@ namespace APPA_107N_109N
             if (!operation.IsGood())
             {
                 var answer =
-                    UserItemOperation.ServicePack.MessageBox
+                    UserItemOperation.ServicePack.MessageBox()
                                      .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
                                            $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
@@ -194,7 +194,7 @@ namespace APPA_107N_109N
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
             operation.InitWork = () =>
             {
-                var service = UserItemOperation.ServicePack.QuestionText;
+                var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
                 service.Entity = new Tuple<string, Assembly>("VisualTest", null);
                 service.Show();
@@ -260,7 +260,7 @@ namespace APPA_107N_109N
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
             operation.InitWork = () =>
             {
-                var service = UserItemOperation.ServicePack.QuestionText;
+                var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Опробование";
                 service.Entity = new Tuple<string, Assembly>("Oprobovanie", null);
                 service.Show();
@@ -433,14 +433,14 @@ namespace APPA_107N_109N
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
                         while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show("Установите ручной режим переключения пределов.");
 
                         while (OperationDcRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
@@ -450,7 +450,7 @@ namespace APPA_107N_109N
                             if (thisRangeUnits.UnitMultipliersUnit == UnitMultipliers.Mili)
                             {
                                 CountOfRanges = 2;
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -464,7 +464,7 @@ namespace APPA_107N_109N
                                 var targetRange = (int)OperationDcRangeCode - 127;
                                 countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -923,14 +923,14 @@ namespace APPA_107N_109N
 
                             var testMeasureModde = appa107N.GetMeasureMode;
                             while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
 
                             while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show("Установите ручной режим переключения пределов.");
 
                             while (OperationAcRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
@@ -939,7 +939,7 @@ namespace APPA_107N_109N
 
                                 if (thisRangeUnits.UnitMultipliersUnit == UnitMultipliers.Mili)
                                 {
-                                    UserItemOperation.ServicePack.MessageBox
+                                    UserItemOperation.ServicePack.MessageBox()
                                                      .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -953,7 +953,7 @@ namespace APPA_107N_109N
                                     var targetRange = (int)OperationAcRangeCode - 127;
                                     countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                    UserItemOperation.ServicePack.MessageBox
+                                    UserItemOperation.ServicePack.MessageBox()
                                                      .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -1563,14 +1563,14 @@ namespace APPA_107N_109N
 
                         var testMode = appa107N.GetMeasureMode;
                         while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
                         while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show("Установите ручной режим переключения пределов.");
 
                         while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
@@ -1580,7 +1580,7 @@ namespace APPA_107N_109N
                             if (thisRangeUnits.UnitMultipliersUnit == UnitMultipliers.Mili)
                             {
                                 CountOfRanges = 2;
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -1594,7 +1594,7 @@ namespace APPA_107N_109N
                                 var targetRange = (int)OperationRangeCode - 127;
                                 countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -2114,14 +2114,14 @@ namespace APPA_107N_109N
 
                             var testMode = appa107N.GetMeasureMode;
                             while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
 
                             while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show("Установите ручной режим переключения пределов.");
 
                             while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
@@ -2131,7 +2131,7 @@ namespace APPA_107N_109N
                                 if (thisRangeUnits.UnitMultipliersUnit == UnitMultipliers.Mili)
                                 {
                                     CountOfRanges = 2;
-                                    UserItemOperation.ServicePack.MessageBox
+                                    UserItemOperation.ServicePack.MessageBox()
                                                      .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -2145,7 +2145,7 @@ namespace APPA_107N_109N
                                     var targetRange = (int)OperationRangeCode - 127;
                                     countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                    UserItemOperation.ServicePack.MessageBox
+                                    UserItemOperation.ServicePack.MessageBox()
                                                      .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -2663,14 +2663,14 @@ namespace APPA_107N_109N
                             await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                             while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
 
                             while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) != Mult107_109N.RangeSwitchMode.Auto)
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show("Установите автоматический режим переключения пределов.");
                         }
                         catch (Exception e)
@@ -3341,14 +3341,14 @@ namespace APPA_107N_109N
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
                         while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show("Установите ручной режим переключения пределов.");
 
                         while (OperationOhmRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
@@ -3357,7 +3357,7 @@ namespace APPA_107N_109N
 
                             if (thisRangeUnits.UnitMultipliersUnit == UnitMultipliers.Mili)
                             {
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                        "Указание оператору", MessageButton.OK,
@@ -3372,7 +3372,7 @@ namespace APPA_107N_109N
                                 var targetRange = (int)OperationOhmRangeCode - 127;
                                 countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                        "Указание оператору", MessageButton.OK,
@@ -3632,14 +3632,14 @@ namespace APPA_107N_109N
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
                         while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show("Установите ручной режим переключения пределов.");
 
                         while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
@@ -3650,7 +3650,7 @@ namespace APPA_107N_109N
                             var targetRange = (int)OperationRangeCode - 127;
                             countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                    $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                    "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -4121,14 +4121,14 @@ namespace APPA_107N_109N
                         await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                         while (OperMeasureMode != await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                    "Указание оператору", MessageButton.OK,
                                                    MessageIcon.Information,
                                                    MessageResult.OK);
 
                         while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N.GetRangeSwitchMode) == Mult107_109N.RangeSwitchMode.Auto)
-                            UserItemOperation.ServicePack.MessageBox
+                            UserItemOperation.ServicePack.MessageBox()
                                              .Show("Установите ручной режим переключения пределов.");
 
                         while (OperationRangeNominal != await Task<Mult107_109N.RangeNominal>.Factory.StartNew(() => appa107N.GetRangeNominal))
@@ -4138,7 +4138,7 @@ namespace APPA_107N_109N
                             if (thisRangeUnits.UnitMultipliersUnit == UnitMultipliers.Mili)
                             {
                                 CountOfRanges = 2;
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
@@ -4152,7 +4152,7 @@ namespace APPA_107N_109N
                                 var targetRange = (int)OperationRangeCode - 127;
                                 countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
-                                UserItemOperation.ServicePack.MessageBox
+                                UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                        $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,

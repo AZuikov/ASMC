@@ -132,6 +132,9 @@
     <Compile Include="ViewModel\WizardViewModel.cs" />
     <Compile Include="ViewSettingsSelector.cs" />
     <Compile Include="View\Converters\VersionToStringConverter.cs" />
+    <Compile Include="View\DeviceView.xaml.cs">
+      <DependentUpon>DeviceView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\OperationView.xaml.cs">
       <DependentUpon>OperationView.xaml</DependentUpon>
     </Compile>
@@ -189,6 +192,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ValueContentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\DeviceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -135,7 +135,7 @@ namespace B5_71_PRO_Abstract
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
             operation.InitWork = () =>
             {
-                var service = UserItemOperation.ServicePack.QuestionText;
+                var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
                 service.Entity = new Tuple<string, Assembly>("B5VisualTestText", null);
                 service.Show();
@@ -235,7 +235,7 @@ namespace B5_71_PRO_Abstract
                     });
 
                     //while (!Mult.IsTerminal)
-                    //    this.UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                    //    this.UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                     //                                                       " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                     //                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
                     //                                                       MessageResult.OK);
@@ -318,7 +318,7 @@ namespace B5_71_PRO_Abstract
 
                 //Теперь проверим внешнюю индикацию режимов
                 var answer =
-                    UserItemOperation.ServicePack.MessageBox
+                    UserItemOperation.ServicePack.MessageBox()
                                      .Show("Сейчас на лицевой панели блока питания индикатор \"СТАБ.ТОКА\" горит?",
                                            "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
@@ -333,7 +333,7 @@ namespace B5_71_PRO_Abstract
                 Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
 
                 answer =
-                    UserItemOperation.ServicePack.MessageBox
+                    UserItemOperation.ServicePack.MessageBox()
                                      .Show("Сейчас на лицевой панели прибора индикатор \"СТАБ.ТОКА\" НЕ горит?",
                                            "Опробование", MessageButton.YesNo, MessageIcon.Question, MessageResult.Yes);
 
@@ -452,7 +452,7 @@ namespace B5_71_PRO_Abstract
                         });
 
                         while (!Mult.IsTerminal)
-                            UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                            UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                           " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                                           "Указание оператору", MessageButton.OK,
                                                                           MessageIcon.Information,
@@ -513,7 +513,7 @@ namespace B5_71_PRO_Abstract
                     if (!operation.IsGood())
                     {
                         var answer =
-                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                            UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                           "Повторить измерение этой точки?",
                                                                           "Информация по текущему измерению",
@@ -641,7 +641,7 @@ namespace B5_71_PRO_Abstract
                         });
 
                         while (!Mult.IsTerminal)
-                            UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                            UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                           " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                                           "Указание оператору", MessageButton.OK,
                                                                           MessageIcon.Information,
@@ -704,7 +704,7 @@ namespace B5_71_PRO_Abstract
                     if (!operation.IsGood())
                     {
                         var answer =
-                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                            UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                           "Повторить измерение этой точки?",
                                                                           "Информация по текущему измерению",
@@ -836,7 +836,7 @@ namespace B5_71_PRO_Abstract
                     });
 
                     while (!Mult.IsTerminal)
-                        UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                        UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                       " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                                       "Указание оператору", MessageButton.OK,
                                                                       MessageIcon.Information,
@@ -917,7 +917,7 @@ namespace B5_71_PRO_Abstract
                 if (!operation.IsGood())
                 {
                     var answer =
-                        UserItemOperation.ServicePack.MessageBox.Show(operation +
+                        UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                       $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                       "Повторить измерение этой точки?",
                                                                       "Информация по текущему измерению",
@@ -1054,19 +1054,19 @@ namespace B5_71_PRO_Abstract
 
                     Mult.Open();
                     while (Mult.IsTerminal)
-                        UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
+                        UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                       " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
                                                                       "Указание оператору", MessageButton.OK,
                                                                       MessageIcon.Information,
                                                                       MessageResult.OK);
 
                     Thread.Sleep(5000);
-                    UserItemOperation.ServicePack.MessageBox
+                    UserItemOperation.ServicePack.MessageBox()
                                      .Show("Установите на В3-57 подходящий предел измерения напряжения",
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
 
-                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow;
+                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow();
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
@@ -1083,7 +1083,7 @@ namespace B5_71_PRO_Abstract
                                                           a.Value);
                     MathStatistics.Round(ref voltPulsV357, 0);
 
-                    UserItemOperation.ServicePack.MessageBox.Show(
+                    UserItemOperation.ServicePack.MessageBox().Show(
                                                                   "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",
                                                                   "Указание оператору", MessageButton.OK,
                                                                   MessageIcon.Information,
@@ -1128,7 +1128,7 @@ namespace B5_71_PRO_Abstract
                     else
                     {
                         var answer =
-                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                            UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                           "Повторить измерение этой точки?",
                                                                           "Информация по текущему измерению",
@@ -1316,7 +1316,7 @@ namespace B5_71_PRO_Abstract
                     if (!operation.IsGood())
                     {
                         var answer =
-                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                            UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                           "Повторить измерение этой точки?",
                                                                           "Информация по текущему измерению",
@@ -1499,7 +1499,7 @@ namespace B5_71_PRO_Abstract
                     if (!operation.IsGood())
                     {
                         var answer =
-                            UserItemOperation.ServicePack.MessageBox.Show(operation +
+                            UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                           "Повторить измерение этой точки?",
                                                                           "Информация по текущему измерению",
@@ -1699,7 +1699,7 @@ namespace B5_71_PRO_Abstract
                 if (!operation.IsGood())
                 {
                     var answer =
-                        UserItemOperation.ServicePack.MessageBox.Show(operation +
+                        UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                       $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                       "Повторить измерение этой точки?",
                                                                       "Информация по текущему измерению",
@@ -1842,22 +1842,22 @@ namespace B5_71_PRO_Abstract
                     });
 
                     while (Mult.IsTerminal)
-                        UserItemOperation.ServicePack.MessageBox.Show("На панели прибора " + Mult.UserType +
-                                                                      " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
-                                                                      "Указание оператору", MessageButton.OK,
-                                                                      MessageIcon.Information,
-                                                                      MessageResult.OK);
+                        UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
+                                                                        " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
+                                                                        "Указание оператору", MessageButton.OK,
+                                                                        MessageIcon.Information,
+                                                                        MessageResult.OK);
 
                     //нужно дать время В3-57
                     Thread.Sleep(5000);
 
-                    UserItemOperation.ServicePack.MessageBox.Show(
+                    UserItemOperation.ServicePack.MessageBox().Show(
                                                                   "Установите на В3-57 подходящий предел измерения напряжения",
                                                                   "Указание оператору", MessageButton.OK,
                                                                   MessageIcon.Information,
                                                                   MessageResult.OK);
 
-                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow;
+                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow();
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
@@ -1874,7 +1874,7 @@ namespace B5_71_PRO_Abstract
                         currPuls34401 = (decimal) Mult.GetMeasValue();
                         if (currPuls34401 > 0) break;
 
-                        var answer = UserItemOperation.ServicePack.MessageBox.Show(
+                        var answer = UserItemOperation.ServicePack.MessageBox().Show(
                                                                                    "Установите на В3-57 подходящий предел измерения напряжения",
                                                                                    "Указание оператору",
                                                                                    MessageButton.OKCancel,
@@ -1882,7 +1882,7 @@ namespace B5_71_PRO_Abstract
                                                                                    MessageResult.OK);
                         if (answer == MessageResult.Cancel)
                         {
-                            UserItemOperation.ServicePack.MessageBox.Show(
+                            UserItemOperation.ServicePack.MessageBox().Show(
                                                                           "Операция измерения пульсаций прервана, измерения не выполнены.",
                                                                           "Указание оператору", MessageButton.OK,
                                                                           MessageIcon.Information,
@@ -1899,7 +1899,7 @@ namespace B5_71_PRO_Abstract
                     currPulsV357 = currPulsV357 / measResist;
                     MathStatistics.Round(ref currPulsV357, Bp.TolleranceCurrentPuls.ToString());
 
-                    UserItemOperation.ServicePack.MessageBox.Show(
+                    UserItemOperation.ServicePack.MessageBox().Show(
                                                                   "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",
                                                                   "Указание оператору", MessageButton.OK,
                                                                   MessageIcon.Information,
@@ -1933,7 +1933,7 @@ namespace B5_71_PRO_Abstract
                 if (!operation.IsGood())
                 {
                     var answer =
-                        UserItemOperation.ServicePack.MessageBox.Show(operation +
+                        UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                       $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                                                       "Повторить измерение этой точки?",
                                                                       "Информация по текущему измерению",

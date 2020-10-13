@@ -164,7 +164,7 @@ namespace ASMC.Core.Model
         {
             if (sheme == null || LastShem?.Number == sheme.Number) return;
             LastShem = sheme;
-            var ser = SelectedOperation.ServicePack.ShemForm;
+            var ser = SelectedOperation.ServicePack.ShemForm();
             if (ser == null)
             {
                 Logger.Error("Сервис не найден");

@@ -134,7 +134,7 @@ namespace N8957APlugin
                     throw;
                 }
 
-                var service = UserItemOperation.ServicePack.QuestionText;
+                var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
                 service.Entity = new Tuple<string, Assembly>("N8975_PreSetup", null);
                 service.Show();
@@ -147,7 +147,7 @@ namespace N8957APlugin
                 n8975.WriteLine("CALibration:AUTO:state 1");
                 n8975.WriteLine("CALibration:YTF");
 
-                UserItemOperation.ServicePack.MessageBox
+                UserItemOperation.ServicePack.MessageBox()
                                  .Show("Дождитесь окончания настройки N8975, затем нажмите ОК!",
                                        "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                        MessageResult.OK);
@@ -315,7 +315,7 @@ namespace N8957APlugin
                         
                         //n8975.Sinchronization();
                         //как то нужно от прибора получить ответ, что он закончил измерения
-                        UserItemOperation.ServicePack.MessageBox
+                        UserItemOperation.ServicePack.MessageBox()
                                          .Show("Дождитесь окончания измерения, затем нажмите ОК!",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
@@ -402,7 +402,7 @@ namespace N8957APlugin
             if (!operation.IsGood())
             {
                 var answer =
-                    UserItemOperation.ServicePack.MessageBox
+                    UserItemOperation.ServicePack.MessageBox()
                                      .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
                                            $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +

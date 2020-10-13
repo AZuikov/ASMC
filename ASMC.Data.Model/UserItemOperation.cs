@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ASMC.Data.Model.Interface;
+using DevExpress.Mvvm.UI;
 
 namespace ASMC.Data.Model
 {
@@ -49,6 +52,7 @@ namespace ASMC.Data.Model
         /// </summary>
         IUserType SelectedDevice { get; set; }
 
+        
         /// <summary>
         /// Позволяет задать или получить строку подключения к прибору.
         /// </summary>
@@ -79,6 +83,22 @@ namespace ASMC.Data.Model
         public bool? IsConnect { get; } = true;
     }
 
+    public interface IControlPannelDevice : IUserType
+    {
+        /// <summary>
+        /// Предстваление управления прибором
+        /// </summary>
+        string DocumentType { get; }
+        /// <summary>
+        /// ВМ интерфеса управления прибором
+        /// </summary>
+        INotifyPropertyChanged ViewModel { get; }
+        /// <summary>
+        /// Указывает где искать представление
+        /// </summary>
+        Assembly Assembly { get; }
+
+    }
     /// <summary>
     /// Предоставляет интерфес пункта(параграфа) операции
     /// </summary>

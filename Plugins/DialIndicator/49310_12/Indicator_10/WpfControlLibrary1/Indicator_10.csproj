@@ -85,7 +85,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ParagraphBase.cs" />
+    <Compile Include="Procedures.cs" />
     <Compile Include="ViewModel\MeasuringForceViewModel.cs" />
     <Compile Include="ViewModel\PerpendicularPressureViewModel.cs" />
     <Compile Include="View\MeasuringForceView.xaml.cs">
@@ -122,6 +122,10 @@
     <ProjectReference Include="..\..\..\..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\ASMC.Devices.UInterface\ASMC.Devices.UInterface.csproj">
+      <Project>{E9310A9C-14AB-4C55-83B9-83FE13E1EC3B}</Project>
+      <Name>ASMC.Devices.UInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\ASMC.Devices\ASMC.Devices.csproj">
       <Project>{C606FA94-0B7E-4698-801F-206CA9DA0CEF}</Project>

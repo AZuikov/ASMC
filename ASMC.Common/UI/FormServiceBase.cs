@@ -380,4 +380,16 @@ namespace ASMC.Common.UI
             set => SetValue(ParameterProperty, value);
         }
     }
+    public class FormServiceBase<T> : FormServiceBase where T : new()
+    {
+        public FormServiceBase()
+        {
+            this.DocumentType = nameof(T).Replace("ViewModel", "View");
+        }
+        /// <inheritdoc />
+        protected override object CreateViewModel()
+        {
+            return new T();
+        }
+    }
 }

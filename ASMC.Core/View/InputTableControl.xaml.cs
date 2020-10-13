@@ -31,7 +31,6 @@ namespace ASMC.Core.View
             IsOnlyReadProperty =
                 DependencyProperty.Register(nameof(IsOnlyRead), typeof(bool), typeof(InputTableControl), new PropertyMetadata(false));
         }
-
         public double WidthCell
         {
             get => (double) GetValue(WidthCellProperty);  
