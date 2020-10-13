@@ -1,13 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 using ASMC.Common.ViewModel;
 using ASMC.Data.Model;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.UI;
 using NLog;
+using WindowService = ASMC.Common.UI.WindowService;
 
 namespace ASMC.ViewModel
 {
-    public class DeviceViewModel : BindableBase
+    public class DeviceViewModel : BaseViewModel
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -56,6 +59,7 @@ namespace ASMC.ViewModel
             });
         }
 
+        public ICommand SettingOpenCommand { get; }
         public IUserType SelectedDevice
         {
             get => _selectedDevice;
@@ -78,6 +82,18 @@ namespace ASMC.ViewModel
         public DeviceViewModel()
         {
             PropertyChanged += DeviceViewModel_PropertyChanged;
+            SettingOpenCommand = new DelegateCommand(OnSettingOpenCommand, ()=> SelectedDevice is IControlPannelDevice);
+        }
+
+        private void OnSettingOpenCommand()
+        {
+            var device = SelectedDevice as IControlPannelDevice;
+            var service = GetService<IWindowService>("FreeWindow") as WindowService;
+            if (service != null)
+            {
+                service.ViewLocator = new ViewLocator(device?.Assembly);
+                service.Show(device?.DocumentType, device?.ViewModel);
+            }
         }
 
         #region Methods

@@ -58,7 +58,6 @@ namespace Indicator_10
             {
                 "Точка диапазона измерений индикатора, мм",
                 "Показания весов, г",
-                "При изменении направления хода изм. стержня",
                 "Колебание при прямом/обратном ходе",
                 "Максимальное при прямом ходе"
             }.Concat(base.GenerateDataColumnTypeObject()); ;
@@ -77,19 +76,16 @@ namespace Indicator_10
             var operation = new BasicOperation<MeasPoint>();
             operation.InitWork = async () =>
             {
-                var a = UserItemOperation.ServicePack.FreeWindow as WindowService;
-                var vm =
-                    new MeasuringForceViewModel(UserItemOperation.TestDevices.FirstOrDefault().SelectedDevice as Ich);
+                var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
+                var vm = new MeasuringForceViewModel(UserItemOperation.TestDevices.FirstOrDefault().SelectedDevice as IchBase);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("MeasuringForceView", vm, null, null);
             };
             DataRow.Add(operation);
         }
-
         #endregion
     }
-
     /// <summary>
     /// Определение изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его оси.
     /// </summary>
@@ -119,5 +115,37 @@ namespace Indicator_10
         }
 
         #endregion
+    }
+    /// <summary>
+    /// Определение размаха показаний
+    /// </summary>
+    public class RangeIndications : ParagraphBase<MeasPoint>
+    {
+        /// <inheritdoc />
+        public RangeIndications(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    /// <summary>
+    /// Определение вариации показаний
+    /// </summary>
+    public class VariationReading : ParagraphBase<MeasPoint>
+    {
+        /// <inheritdoc />
+        public VariationReading(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

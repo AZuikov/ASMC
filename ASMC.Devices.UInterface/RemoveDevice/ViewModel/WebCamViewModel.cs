@@ -1,22 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using Accord.Video.DirectShow;
-using ASMC.MVision;
+using ASMC.Common.ViewModel;
+using ASMC.Data.Model;
+using ASMC.Devices.USB_Device.WebCam;
 using DevExpress.Mvvm;
+using DevExpress.Xpf.Core.Commands;
 
-namespace ASMC.Common.ViewModel
+namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
 {
+    public class WebCamUi : WebCam, IControlPannelDevice
+    {
+        public WebCamUi()
+        {
+            ViewModel = new WebCamViewModel();
+            DocumentType = "WebCamView";
+            Assembly = Assembly.GetExecutingAssembly();
+        }
+
+        /// <inheritdoc />
+        public string DocumentType { get; }
+
+        /// <inheritdoc />
+        public INotifyPropertyChanged ViewModel { get; }
+
+        /// <inheritdoc />
+        public Assembly Assembly { get; }
+    }
     /// <summary>
     /// Предоставляет базовый класс для VM использующую видеоустройство.
     /// </summary>
@@ -25,7 +40,7 @@ namespace ASMC.Common.ViewModel
         /// <summary>
         /// Объект для работы с видеоустройством.
         /// </summary>
-        protected WebCam WebCam { get; set; }
+        public WebCam WebCam { get; set; }
         /// <summary>
         /// Источник видеопотока.
         /// </summary>
@@ -46,19 +61,19 @@ namespace ASMC.Common.ViewModel
         /// <summary>
         /// Команда отображения дефолтного окна настроек видекоустройства.
         /// </summary>
-        public ICommand PropertyWebCamShowCommand { get; }
+        public System.Windows.Input.ICommand PropertyWebCamShowCommand { get; }
         /// <summary>
         /// Комманда запуска видеопотока.
         /// </summary>
-        public ICommand StartVideoCommand { get; }
+        public System.Windows.Input.ICommand StartVideoCommand { get; }
         /// <summary>
         /// Комманда остановки видеопотока.
         /// </summary>
-        public ICommand StopVideoCommand { get; }
+        public System.Windows.Input.ICommand StopVideoCommand { get; }
         /// <summary>
         /// Комманда обнавления видеоустройств.
         /// </summary>
-        public ICommand RefreshVideoDeviceCommand { get; }
+        public System.Windows.Input.ICommand RefreshVideoDeviceCommand { get; }
         public WebCamViewModel()
         {
             PropertyWebCamShowCommand = new DelegateCommand(OnPropertyWebCamShowCommand);

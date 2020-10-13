@@ -106,6 +106,7 @@ namespace ASMC.Data.Model
         }
 
     }
+
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {
         /// <inheritdoc />

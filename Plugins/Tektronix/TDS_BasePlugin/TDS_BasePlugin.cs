@@ -29,7 +29,7 @@ namespace TDS_BasePlugin
             if (!operation.IsGood())
             {
                 var answer =
-                    UserItemOperation.ServicePack.MessageBox
+                    UserItemOperation.ServicePack.MessageBox()
                                      .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
                                            $"Минимально допустимое значение {operation.LowerTolerance?.Description}\n" +
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
@@ -143,7 +143,7 @@ namespace TDS_BasePlugin
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
             operation.InitWork = () =>
             {
-                var service = UserItemOperation.ServicePack.QuestionText;
+                var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
                 service.Entity = new Tuple<string, Assembly>("TDS_VisualTest", null);
                 service.Show();
@@ -210,7 +210,7 @@ namespace TDS_BasePlugin
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
             operation.InitWork = () =>
             {
-                var service = UserItemOperation.ServicePack.QuestionText;
+                var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Опробование";
                 service.Entity = new Tuple<string, Assembly>("TDS_Oprobovanie", null);
                 service.Show();

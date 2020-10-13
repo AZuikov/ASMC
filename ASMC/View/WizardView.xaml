@@ -20,9 +20,6 @@
             <common:EnumFlagToBoolConverter x:Key="EnumFlagToBoolConverter" />
             <converters:SpecialBooToStringConverter x:Key="SpecialBooToStringConverter" />
             <GridLength x:Key="Gap">20</GridLength>
-            <!--<Style TargetType="Button">
-                <Setter Property="Margin" Value="0,5,0,0" />
-            </Style>-->
             <Style TargetType="RadioButton">
                 <Setter Property="Margin" Value="0,10,0,0" />
             </Style>
@@ -33,7 +30,6 @@
         <ui:ImageService x:Name="ImageService" />
         <ui1:MessageBoxService />
         <ui1:TaskMessageService />
-        <ui1:WindowService x:Name="FreeWindow" />
     </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>
@@ -139,8 +135,8 @@
                     </Grid>
                 </Grid>
             </StackPanel>
-            <Grid>
-                <TabControl  Name="TabControl1" Height="{Binding RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Path=MaxHeight}">
+            <Grid >
+                <TabControl  Name="TabControl1" >
                     <TabItem Header="Выбор СИ" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ChoiceSi}">
                             <GroupBox Header="Выберете СИ:">
                                     <ListView ItemsSource="{Binding Prog}" SelectedItem="{Binding SelectProgram}">
@@ -182,7 +178,7 @@
                     <TabItem Header="Вид МО" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ChoiceTypeMc}"
                    IsEnabled="{DXBinding 'SelectProgram != null'}">
                         <StackPanel>
-                            <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsCheckWork}" />
+                            <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsCheckWork}" IsEnabled="False" />
                             <GroupBox Header="Выберете вид МО:" Padding="10,0,10,10" VerticalAlignment="Top">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -232,104 +228,6 @@
                                     </ui1:ValueContentControl>
                                 </Grid>
                                 <view:SettingView DataContext="{Binding SettingViewModel}" />
-                                <!--<GroupBox Header="Обслуживаемое средство">
-                  <ListView ItemsSource="{Binding TestDevices}">
-                    <ListView.View>
-                      <GridView  AllowsColumnReorder="False">
-                        <GridViewColumn Header="Имя устройства" Width="150">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <ComboBox Margin="5,10,5,10" MinWidth="100" ItemsSource="{Binding Path=Name}" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Строка подключения" Width="150">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=AddresDivece}" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Статус" Width="50">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBlock  Margin="5,10,5,10" Text="Подключен" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Описание" Width="Auto">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Path=Description}" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                      </GridView>
-                    </ListView.View>
-                  </ListView>
-                </GroupBox>
-                <GroupBox Header="Средства используемые для метрологического контроля">
-                  <ListView ItemsSource="{Binding ControlDevices}">
-                    <ListView.View>
-                      <GridView  AllowsColumnReorder="False">
-                        <GridViewColumn Header="Имя устройства" Width="150">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <ComboBox Margin="5,10,5,10" MinWidth="100" ItemsSource="{Binding Path=Name}" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Строка подключения" Width="150">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <ComboBox Margin="5,10,5,10"  MinWidth="100" ItemsSource="{Binding Path=Aray}" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Статус" Width="50">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBlock  Margin="5,10,5,10" Text="Подключен" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Описание" Width="Auto">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBlock TextWrapping="Wrap"  Margin="5,10,5,10" Text="{Binding Path=Description}" />
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                      </GridView>
-                    </ListView.View>
-                  </ListView>
-                </GroupBox>-->
-
-                                <!--<DataGrid AutoGenerateColumns="False" ItemsSource="{Binding DeviceInterface}"   CanUserReorderColumns="False" CanUserSortColumns="False" SelectionUnit="Cell">
-                <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Имя устройства"  MinWidth="100">
-                   <DataGridTemplateColumn.CellTemplate>
-                     <DataTemplate>
-                      <ComboBox Margin="5,10,5,10" ItemsSource="{Binding Path=Name}"></ComboBox>
-                     </DataTemplate>
-                   </DataGridTemplateColumn.CellTemplate>
-                 </DataGridTemplateColumn>
-                  <DataGridTemplateColumn Header="Адрес устройства" MinWidth="160">
-                    <DataGridTemplateColumn.CellTemplate>
-                      <DataTemplate>
-                      <ComboBox Margin="5,10,5,10" ItemsSource="{Binding Path=Aray}"></ComboBox>
-                      </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                  </DataGridTemplateColumn>
-                  <DataGridTemplateColumn Header="Статус"  MinWidth="50">
-                    <DataGridTemplateColumn.CellTemplate>
-                      <DataTemplate>
-                        <TextBlock Margin="5,10,5,10" Text="Подключен"></TextBlock>
-                      </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                  </DataGridTemplateColumn>
-              </DataGrid.Columns>
-            </DataGrid>-->
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>

@@ -50,6 +50,7 @@ namespace ASMC.ViewModel
 
         public SettingViewModel()
         {
+            
             ControlDevice = new BindingList<DeviceViewModel>();
             TestDevice = new BindingList<DeviceViewModel>();
             ControlDevice.ListChanged += ControlDevice_ListChanged;

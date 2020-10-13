@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
-using Accord;
-using Accord.Imaging;
 using Accord.Imaging.Filters;
 using Accord.Video;
 using Accord.Video.DirectShow;
 using ASMC.Data.Model;
 using NLog;
 
-namespace ASMC.MVision
+namespace ASMC.Devices.USB_Device.WebCam
 {
     public class WebCam:IUserType,IDisposable
     {
@@ -192,4 +189,6 @@ namespace ASMC.MVision
         /// <inheritdoc />
         public string UserType { get; }
     }
+
+
 }

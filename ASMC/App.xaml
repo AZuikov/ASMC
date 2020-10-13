@@ -12,10 +12,14 @@
                               WindowShowMode="Default"
                               Title="ASMC"
                               SizeToContent="WidthAndHeight">
+
                 <!--<dxmvvm:WindowService.SettingsSelector>
                     <asmc:ViewSettingsSelector />
                 </dxmvvm:WindowService.SettingsSelector>-->
             </ui1:WindowService>
+
+            <ui1:WindowService x:Key="FreeWindow" WindowShowMode="Dialog" SizeToContent="WidthAndHeight"/>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

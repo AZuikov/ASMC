@@ -6,35 +6,38 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:behavior="clr-namespace:ASMC.Common.Behavior;assembly=ASMC.Common"
              xmlns:view="clr-namespace:ASMC.Core.View"
+             xmlns:ui="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
       <StackPanel>
-        <ItemsControl ItemsSource="{Binding Path=Data, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}" Focusable="False">
+        <ItemsControl ItemsSource="{Binding Path=Data, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}"  Focusable="False">
               <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
-                    <UniformGrid />
-                  </ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding CountRow}" Columns="{Binding CountColumn}" />
+
+                </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemContainerStyle>
                   <Style>
                     <Setter Property="Grid.Row" Value="{Binding Path=RowIndex}" />
                     <Setter Property="Grid.Column" Value="{Binding Path=ColumnIndex}" />
                   </Style>
+
               </ItemsControl.ItemContainerStyle>
               <ItemsControl.ItemTemplate>
+
                   <DataTemplate>
-                          <Grid Margin="5" >
-                              <Grid.RowDefinitions>
-                                  <RowDefinition />
-                                  <RowDefinition />
-                              </Grid.RowDefinitions>
-                              <TextBlock Text="{Binding Path=Name}" />
-                        <TextBox Grid.Row="1" Text="{Binding Path=Value}" IsReadOnly="{Binding IsOnlyRead, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}" />
-                    </Grid>
-                     
+                        <!--<ui:ValueContentControl Header="{Binding Path=Name}" Margin="5,5,5,0" >-->
+                    <TextBox Text="{Binding Path=Value}" IsReadOnly="{Binding IsOnlyRead, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}">
+                        <i:Interaction.Behaviors>
+                            <behavior:IsFocesedUi SelectValue ="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=SelectValue, Mode=TwoWay}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
+                    <!--</ui:ValueContentControl>-->
                   </DataTemplate>
               </ItemsControl.ItemTemplate>
-          </ItemsControl>
+        </ItemsControl>
     </StackPanel>
 </UserControl>

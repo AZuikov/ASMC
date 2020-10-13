@@ -10,9 +10,10 @@ using ASMC.Common.UI;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices.UInterface.AnalogDevice.ViewModel;
+using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using ASMC.Devices.WithoutInterface.HourIndicator;
-using ASMC.MVision;
 
 namespace Indicator_10.Periodic
 {
@@ -23,13 +24,16 @@ namespace Indicator_10.Periodic
             ControlDevices = new IDeviceUi[]
             {
                 new Device {Devices = new IUserType[] {new Ppi()}},
-                new Device {Devices = new IUserType[] {new WebCam()}}
+                new Device {Devices = new IUserType[] {new WebCamUi()}}
             };
             TestDevices = new IDeviceUi[]
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new Ich("ИЧ10") {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Mili, 10),  } }
+                    Devices = new IUserType[] {new IchBaseSettingUi {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Mili, 10), UserType="ИЧ, мод. ИЧ10" } },
+                    IsCanStringConnect=false, 
+                    Description = "Индикатор часового типа",
+
                 }
             };
             UserItemOperation = new IUserItemOperationBase[]

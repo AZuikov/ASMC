@@ -388,10 +388,10 @@ namespace ASMC.ViewModel
 
             var servicePack = new ServicePack
             {
-                MessageBox = GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
-                ShemForm = GetService<IFormService>("ImageService"),
-                QuestionText = GetService<IFormService>("QuestionTextService"),
-                FreeWindow = GetService<IWindowService>("FreeWindow")
+                MessageBox = () => GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
+                ShemForm = () => GetService<IFormService>("ImageService"),
+                QuestionText = () => GetService<IFormService>("QuestionTextService"),
+                FreeWindow = ()=> GetService<IWindowService>("FreeWindow")
             };
             if (types == null) return;
             foreach (var type in types)

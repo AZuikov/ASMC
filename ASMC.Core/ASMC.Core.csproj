@@ -112,6 +112,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\QuestionTextService.cs" />
     <Compile Include="UI\ImageService.cs" />
+    <Compile Include="UI\SettingService.cs" />
     <Compile Include="ValidationRules\Rules.cs" />
     <Compile Include="ViewModel\QuestionTextViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />
