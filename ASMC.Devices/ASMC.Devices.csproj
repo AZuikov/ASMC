@@ -101,6 +101,7 @@
     <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro1.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro2.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro4.cs" />
+    <Compile Include="Port\ZipNu4Pribor\Km300P.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensor.cs" />
