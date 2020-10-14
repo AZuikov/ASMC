@@ -7,17 +7,19 @@
              xmlns:view="clr-namespace:ASMC.Core.View;assembly=ASMC.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Width="800" Height="800">
-        <ItemsControl ItemsSource="{Binding Content}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <GroupBox Header="{Binding Path=Header}">
-                        <view:InputTableControl Data="{Binding Path=Cells}" />
-                    </GroupBox>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </Grid>
+    <StackPanel>
+        <GroupBox Header="Введите измереное значение с весов в граммах." Margin="20">
+            <ItemsControl ItemsSource="{Binding Content}" Margin="20">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" Height="60">
+                            <view:InputTableControl Data="{Binding Path=Cells}" SelectValue="{Binding Selected}" />
+                        </HeaderedContentControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </GroupBox>
+    </StackPanel>
  
 
         <!--<GroupBox Header="Обратный ход">

@@ -7,7 +7,6 @@
              xmlns:behavior="clr-namespace:ASMC.Common.Behavior;assembly=ASMC.Common"
              xmlns:view="clr-namespace:ASMC.Core.View"
              xmlns:ui="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
@@ -16,7 +15,6 @@
               <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
                     <UniformGrid Rows="{Binding CountRow}" Columns="{Binding CountColumn}" />
-
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemContainerStyle>
@@ -24,18 +22,19 @@
                     <Setter Property="Grid.Row" Value="{Binding Path=RowIndex}" />
                     <Setter Property="Grid.Column" Value="{Binding Path=ColumnIndex}" />
                   </Style>
-
               </ItemsControl.ItemContainerStyle>
               <ItemsControl.ItemTemplate>
-
                   <DataTemplate>
-                        <!--<ui:ValueContentControl Header="{Binding Path=Name}" Margin="5,5,5,0" >-->
-                    <TextBox Text="{Binding Path=Value}" IsReadOnly="{Binding IsOnlyRead, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}">
-                        <i:Interaction.Behaviors>
-                            <behavior:IsFocesedUi SelectValue ="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=SelectValue, Mode=TwoWay}"/>
-                        </i:Interaction.Behaviors>
-                    </TextBox>
-                    <!--</ui:ValueContentControl>-->
+                        <ui:ValueContentControl Header="{Binding Path=Name}" Margin="5,5,5,0" >
+                        <Grid >
+                            <TextBox HorizontalContentAlignment="Center"  Text="{Binding Path=Value}" IsReadOnly="{Binding IsOnlyRead, RelativeSource={RelativeSource AncestorType={x:Type view:InputTableControl}}}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <behavior:IsFocesedUi SelectValue ="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=SelectValue, Mode=TwoWay}"/>
+                            </dxmvvm:Interaction.Behaviors>
+                        </TextBox>
+                            <TextBlock HorizontalAlignment="Right" Margin="0,0,5,0" Grid.Column="0" Text="г."/>
+                        </Grid>
+                    </ui:ValueContentControl>
                   </DataTemplate>
               </ItemsControl.ItemTemplate>
         </ItemsControl>

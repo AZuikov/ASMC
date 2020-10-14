@@ -20,9 +20,11 @@ namespace Indicator_10.ViewModel
             this.
             IchBase = ichBase;
             var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50,100);
-            Content.Add(new TableViewModel(){Header= "Прямой ход"});
+            Content.Add(new TableViewModel{Header= "Прямой ход"});
             Content.Add(new TableViewModel { Header = "Обратный ход" });
             Content.Add(new TableViewModel { Header = "Прямой/обатный ход" });
+            Content.Add(new TableViewModel { Header = "Прямой/обатный ход1" });
+            Content.Add(new TableViewModel { Header = "Прямой/обатный ход2" });
 
             for (int i = 0; i < arrPoints.Length; i++)
             {
