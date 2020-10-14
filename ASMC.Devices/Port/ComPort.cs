@@ -256,9 +256,34 @@ namespace ASMC.Devices.Port
             }
         }
 
+        public int ReadByte()
+        {
+            if (!IsOpen) return 0;
+            try
+            {
+                return _sp.ReadByte();
+
+            }
+            catch (TimeoutException e)
+            {
+                Logger.Error(e);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return 0;
+            
+        }
+
         public int ReadByte(byte[] buffer, int offset, int count )
         {
-            if (IsOpen) return 0;
+            if (!IsOpen) return 0;
             try
             {
                 return _sp.Read(buffer, offset, count);
