@@ -617,7 +617,7 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override void InitWork()
         {
-            base.FillData();
+            base.InitWork();
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();

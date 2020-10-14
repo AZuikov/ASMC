@@ -14,19 +14,184 @@ namespace ASMC.Devices.Port
     public class ComPort : HelpDeviceBase, IProtocolStringLine
     {
         /// <summary>
-        /// Позволяет получать имя устройства.
+        /// Предоставлет перечесление возможного размера данных.
         /// </summary>
-        public string UserType { get; protected set; }
+        public enum DBit
+        {
+            Bit4 = 4,
+            Bit5 = 5,
+            Bit6 = 6,
+            Bit7 = 7,
+            Bit8 = 8
+        }
+
+        /// <summary>
+        /// Предоставляет перечисление возможных скоростей.
+        /// </summary>
+        public enum SpeedRate
+        {
+            R75 = 75,
+            R110 = 110,
+            R134 = 134,
+            R150 = 150,
+            R300 = 300,
+            R600 = 600,
+            R1200 = 1200,
+            R1800 = 1800,
+            R2400 = 2400,
+            R4800 = 4800,
+            R7200 = 7200,
+            R9600 = 9600,
+            R14400 = 14400,
+            R19200 = 19200,
+            R38400 = 38400,
+            R57600 = 57600,
+            R115200 = 115200,
+            R128000 = 128000
+        }
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
         private readonly SerialPort _sp;
+
+        #endregion
+
+        #region Property
+
+        public SpeedRate BaudRate
+        {
+            get => (SpeedRate) _sp.BaudRate;
+            set => _sp.BaudRate = (int) value;
+        }
+
+        public DBit DataBit
+        {
+            get => (DBit) _sp.DataBits;
+            set => _sp.DataBits = (int) value;
+        }
+
+        /// <summary>
+        /// Позволяет задать или получить терменал окончания строки.
+        /// </summary>
+        public string EndLineTerm
+        {
+            set => _sp.NewLine = value;
+            get => _sp.NewLine;
+        }
+
+        public Parity Parity
+        {
+            get => _sp.Parity;
+            set => _sp.Parity = value;
+        }
+
+        /// <summary>
+        /// Установка таймаута, изначально выставлено 500 мс
+        /// </summary>
+        /// <value>
+        /// Значение в милисекундах
+        /// </value>
+        public int SetTimeout
+        {
+            set
+            {
+                _sp.WriteTimeout = value;
+                _sp.ReadTimeout = value;
+            }
+        }
+
+        public StopBits StopBit
+        {
+            get => _sp.StopBits;
+            set => _sp.StopBits = value;
+        }
+
+        #endregion
+
+        public ComPort()
+        {
+            _sp = new SerialPort();
+        }
+
+        public ComPort(string portName)
+        {
+            _sp = new SerialPort(portName, (int) SpeedRate.R9600, Parity.None, (int) DBit.Bit8, StopBits.One);
+        }
+
+        public ComPort(string portName, SpeedRate bautRate)
+        {
+            _sp = new SerialPort(portName, (int) bautRate, Parity.None, (int) DBit.Bit8, StopBits.One);
+        }
+
+        public ComPort(string portName, SpeedRate bautRate, Parity parity)
+        {
+            _sp = new SerialPort(portName, (int) bautRate, parity, (int) DBit.Bit8, StopBits.One);
+        }
+
+        public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit)
+        {
+            _sp = new SerialPort(portName, (int) bautRate, parity, (int) databit, StopBits.One);
+        }
+
+        public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits)
+        {
+            _sp = new SerialPort(portName, (int) bautRate, parity, (int) databit, stopbits);
+        }
+
+        #region Methods
+
+        public static string[] GetPortName()
+        {
+            return SerialPort.GetPortNames();
+        }
+
+        /// <summary>
+        /// Записывает в порт строку.
+        /// </summary>
+        /// <param name = "data"></param>
+        public void Write(string data)
+        {
+            if (!IsOpen)
+            {
+                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
+                return;
+            }
+
+            _sp.Write(data);
+        }
+
+        protected void DiscardInBuffer()
+        {
+            _sp.DiscardInBuffer();
+        }
 
         protected virtual void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-           
-
         }
+
+        protected void Write(byte[] sendData, int offset, int length)
+        {
+            if (!IsOpen)
+            {
+                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{sendData} не выполнена");
+                return;
+            }
+
+            _sp.Write(sendData, offset, length);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Позволяет получать имя устройства.
+        /// </summary>
+        public string UserType { get; protected set; }
+
         public string StringConnection
-        { get => _sp.PortName;
+        {
+            get => _sp.PortName;
             set
             {
                 if (value == null)
@@ -34,95 +199,26 @@ namespace ASMC.Devices.Port
                     _sp.PortName = null;
                     return;
                 }
+
                 if (value.StartsWith("ASRL", true, CultureInfo.InvariantCulture))
                 {
-                    var replace ="COM"+ value.ToUpper().Replace("ASRL", "").Replace("::INSTR","");
+                    var replace = "COM" + value.ToUpper().Replace("ASRL", "").Replace("::INSTR", "");
                     _sp.PortName = replace;
                     return;
                 }
+
                 _sp.PortName = value;
             }
-        }
-        
-        public SpeedRate BaudRate
-        {
-            get => (SpeedRate) _sp.BaudRate;
-            set => _sp.BaudRate=(int)value;
-        }
-        public Parity Parity
-        {
-            get => _sp.Parity;
-            set => _sp.Parity = value;
-        }
-        /// <summary>
-        /// Установка таймаута, изначально выставлено 500 мс
-        /// </summary>
-        /// <value>
-        /// Значение в милисекундах
-        /// </value>
-        public int SetTimeout {
-            set
-            {
-                _sp.WriteTimeout = value;
-                _sp.ReadTimeout = value;
-            }
-        }
-        public DBit DataBit
-        {
-            get => (DBit) _sp.DataBits;
-            set => _sp.DataBits = (int) value;
-        }
-        public ComPort()
-        {
-            _sp= new SerialPort();
-            
-
-        }
-        public ComPort(string portName)
-        {
-            _sp = new SerialPort(portName, (int)SpeedRate.R9600,Parity.None, (int)DBit.Bit8, StopBits.One);            
-        }
-        public ComPort(string portName, SpeedRate bautRate)
-        {
-            _sp = new SerialPort(portName, (int)bautRate, Parity.None, (int)DBit.Bit8, StopBits.One);
-        }
-        public ComPort(string portName, SpeedRate bautRate, Parity parity)
-        {
-            _sp = new SerialPort(portName, (int)bautRate, parity, (int)DBit.Bit8, StopBits.One);
-        }
-        public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit)
-        {
-            _sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, StopBits.One);
-        }
-        public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits)
-        {
-            _sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, stopbits);
-            
-        }
-        public StopBits StopBit
-        {
-            get => _sp.StopBits;
-            set => _sp.StopBits = value;
-        }
-        /// <summary>
-        /// Позволяет задать или получить терменал окончания строки.
-        /// </summary>
-        public string EndLineTerm {
-            set => _sp.NewLine = value;
-            get => _sp.NewLine;
         }
 
         /// <summary>
         /// Отвечает открыт ли уже порт или нет
         /// </summary>
         /// <returns></returns>
-        public bool IsOpen
-        {
-            get=> _sp.IsOpen;
-        }
+        public bool IsOpen => _sp.IsOpen;
 
         /// <inheritdoc />
-        public virtual bool IsTestConnect { get=>false; }
+        public virtual bool IsTestConnect => false;
 
         /// <summary>
         /// Открывает соединение с Com портом.
@@ -141,25 +237,48 @@ namespace ASMC.Devices.Port
             catch (UnauthorizedAccessException e)
             {
                 Logger.Error($"Попытка открыть порт: {e}");
-            }             
+            }
         }
+
         public void Close()
         {
-          
-                if (!_sp.IsOpen) return;
-                try
-                {
+            if (!_sp.IsOpen) return;
+            try
+            {
                 _sp.DataReceived -= SerialPort_DataReceived;
                 _sp.Close();
                 _sp.Dispose();
                 Logger.Debug($"Последовательный порт {_sp.PortName} закрыт и отписались от события считывания.");
-                }
-            catch(IOException e)
+            }
+            catch (IOException e)
             {
                 Logger.Error(e);
             }
         }
 
+        public int ReadByte(byte[] buffer, int offset, int count )
+        {
+            if (IsOpen) return 0;
+            try
+            {
+                return _sp.Read(buffer, offset, count);
+                 
+            }
+            catch (TimeoutException e)
+            {
+                Logger.Error(e);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return 0;
+        }
 
         /// <summary>
         /// Считывает строку оканчивающуюся терминальнм символом из ComPort.
@@ -167,8 +286,6 @@ namespace ASMC.Devices.Port
         /// <returns>Возвращает рузультат чтения</returns>
         public string ReadLine()
         {
-            
-
             if (IsOpen) return null;
             try
             {
@@ -190,33 +307,6 @@ namespace ASMC.Devices.Port
             return null;
         }
 
-        protected void Write(byte[] sendData, int offset, int length)
-        {
-            if (!IsOpen)
-            {
-                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{sendData} не выполнена");
-                return;
-            }
-            _sp.Write(sendData, offset, length);
-        }
-
-        protected void DiscardInBuffer()
-        {
-            _sp.DiscardInBuffer();
-        }
-        /// <summary>
-        /// Записывает в порт строку.
-        /// </summary>
-        /// <param name="data"></param>
-        public void Write(string data)
-        {
-            if(!IsOpen)
-            {
-                Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
-                return;
-            }
-            _sp.Write(data);
-        }
         /// <summary>
         /// Записывает строку оканчивающуюся терминальнм символом в ComPort.
         /// </summary>
@@ -224,11 +314,9 @@ namespace ASMC.Devices.Port
         public void WriteLine(string data)
         {
             if (!IsOpen)
-            {
                 Open();
-                //Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
-                //return;
-            }
+            //Logger.Warn($@"Запись в порт {_sp.PortName}данных:{data} не выполнена");
+            //return;
             _sp.WriteLine(data);
             Logger.Debug($"На устройство {UserType} по адресу {StringConnection} отправлена команда {data}");
             Close();
@@ -237,70 +325,26 @@ namespace ASMC.Devices.Port
         public string QueryLine(string inStrData)
         {
             if (!IsOpen)
-            {
                 Open();
-                //Logger.Warn($@"Запись в порт {_sp.PortName} данных: {inStrData} не выполнена");
-                //throw new IOException($"Последовательный порт {_sp.PortName} не удалось открыть.");
-                
-            }
+            //Logger.Warn($@"Запись в порт {_sp.PortName} данных: {inStrData} не выполнена");
+            //throw new IOException($"Последовательный порт {_sp.PortName} не удалось открыть.");
 
             _sp.WriteLine(inStrData);
             Thread.Sleep(200);
-            
-            string answer = _sp.ReadLine();
+
+            var answer = _sp.ReadLine();
             Close();
 
-            if (answer.Length==0) throw  new IOException($"Данные с поседовательного порта {_sp.PortName} считать не удалось.");
+            if (answer.Length == 0)
+                throw new IOException($"Данные с поседовательного порта {_sp.PortName} считать не удалось.");
 
             return answer;
-
-        }
-
-        public static string[] GetPortName()
-        {
-            return SerialPort.GetPortNames();
         }
 
         public virtual void Dispose()
         {
             _sp.DataReceived -= SerialPort_DataReceived;
             _sp?.Dispose();
-        }
-
-        /// <summary>
-        /// Предоставлет перечесление возможного размера данных.
-        /// </summary>
-        public enum DBit
-        {
-            Bit4 = 4,
-            Bit5 = 5,
-            Bit6 = 6,
-            Bit7 = 7,
-            Bit8 = 8
-        }
-        /// <summary>
-        /// Предоставляет перечисление возможных скоростей.
-        /// </summary>
-        public enum SpeedRate
-        {
-            R75 = 75,
-            R110= 110,
-            R134 = 134,
-            R150 = 150,
-            R300 = 300,
-            R600 = 600,
-            R1200 = 1200,
-            R1800 = 1800,
-            R2400 = 2400,
-            R4800 = 4800,
-            R7200 = 7200,
-            R9600 = 9600,
-            R14400 = 14400,
-            R19200 = 19200,
-            R38400 = 38400,
-            R57600 = 57600,
-            R115200 = 115200,
-            R128000 = 128000
         }
     }
 }

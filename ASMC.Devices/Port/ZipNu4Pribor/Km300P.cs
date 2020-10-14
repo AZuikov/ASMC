@@ -4,15 +4,23 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
+using Accord.Statistics.Distributions.Univariate;
 using AP.Utils.Data;
 using NLog;
+using Timer = System.Timers.Timer;
 
 namespace ASMC.Devices.Port.ZipNu4Pribor
 {
     public class Km300P: ComPort
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+       //таймер
+        private readonly Timer _wait;
+        private bool _flagTimeout;
+        private static readonly AutoResetEvent WaitEvent = new AutoResetEvent(false);
         /// <summary>
         /// Входы компаратора.
         /// </summary>
@@ -78,26 +86,59 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         {
             UserType = "КМ300Р";
             BaudRate = SpeedRate.R57600;
-            
+
+            _wait = new Timer();
+            _wait.Interval = 35000;
+            _wait.Elapsed += TWait_Elapsed;
+            _wait.AutoReset = false;
+
+
+
         }
 
+        private void TWait_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _flagTimeout = true;
+            WaitEvent.Set();
+        }
+
+        public override void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing) _wait?.Dispose();
+            base.Dispose();
+        }
 
         protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             
             
             List<byte> _readData = new List<byte>();
-            var port = (SerialPort)sender;
+            //var port = (SerialPort)sender;
             try
             {
                 Open();
-                byte firstByteAdress = (byte) port.ReadByte();
-                int SecondByteCadrLeght = (int) port.ReadByte(); //длина посылки которую нужно считать
+                byte [] buffer1 = new byte[2];
+                ReadByte(buffer1, 0, 2);
+
+                int CountToReading = (int) buffer1[1];
+                CountToReading++;// +1 потому что нужно еще считать контрольную сумму
+                byte [] buff2 = new byte[CountToReading];
                 
-                while (_readData.Count < SecondByteCadrLeght)
+                for (int i=0; i < CountToReading;i++) 
                 {
-                    _readData.Add((byte) port.ReadByte());
+                     ReadByte(buff2,0, CountToReading);
                 }
+
+                byte[] fullByteBlock = buffer1.Concat(buff2).ToArray();
+                //если контрольная сумма совпадает то все хорошо
+                _wait.Stop();
+                WaitEvent.Set();
 
                 DiscardInBuffer();
                 
@@ -145,23 +186,32 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             Close();
         }
 
-        public decimal GetMeasureVolt(MeasureInputVolt input)
+        public void SendResponse()
         {
             byte[] resultByteArr = new byte[] { 0x03, 0x44, 0x03, 0x21 };
             var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
             resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
             resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
 
+            //порт закрывается
             Open();
-            //записали
+            //отправили команду запроса
             Write(resultByteArr, 0, resultByteArr.Length);
-            //теперь считываем
-            //нужно написать метод считывания побайтам
-            Close();
+            _wait.Start();
 
-            return 0;
+            WaitEvent.WaitOne();
+            if (_flagTimeout)
+            {
+                _flagTimeout = false;
+                Logger.Debug($"{ UserType} не отвечает.");
+                throw new TimeoutException($"{UserType} не отвечает.");
+
+            }
+
+           
         }
 
+      
 
         /// <summary>
         /// Включение режима измерения.
@@ -180,9 +230,9 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         }
 
         /// <summary>
-        /// Задает текущий вход для измерения (вход U1 или U2)
+        /// Задает текущий вход для измерения (вход U1 или U2).
         /// </summary>
-        public void SetCurrentVIn(MeasureInputVolt input)
+        public void SetVoltInput(MeasureInputVolt input)
         {
             byte[] resultByteArr = new byte[] { 0x04, 0x44, 0x03, 0x24 };
             if (input == MeasureInputVolt.InputU1)
