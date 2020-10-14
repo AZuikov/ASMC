@@ -283,12 +283,12 @@ namespace TDS_BasePlugin
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[] { "Коэффициент развёртки",
+            return new[] { "Коэффициент развёртки",
                 "Амплитуда подаваемого сигнала",
                 "Измеренное значение амплитуды",
                 "Минимальное допустимое значение",
                 "Максимальное допустимое значение"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -503,8 +503,8 @@ namespace TDS_BasePlugin
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[] {"Развертка по времени",
-                "Измеренное значение периода", "Минимально допустимое значение", "Максимально допустимое значение", "Максимальное допустимое значение"  }.Concat(base.GenerateDataColumnTypeObject()); ;
+            return new[] {"Развертка по времени",
+                "Измеренное значение периода", "Минимально допустимое значение", "Максимально допустимое значение", "Максимальное допустимое значение"  }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -763,11 +763,11 @@ namespace TDS_BasePlugin
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[] { "Горизонтальная развёртка",
+            return new[] { "Горизонтальная развёртка",
                 "Коэффициент отклонения",
                 "Измеренное значение длительности фронта",
                 "Минимально допустимое значение длительности фронта"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()

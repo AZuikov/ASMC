@@ -113,8 +113,7 @@ namespace B5_71_PRO_Abstract
         protected override DataTable FillData()
         {
             var data = base.FillData();
-            ;
-            data.Columns.Add("Результат внешнего осмотра");
+
             var dataRow = data.NewRow();
             if (DataRow.Count == 1)
             {
@@ -388,13 +387,13 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[]
+            return new[]
             {
                 "Установленное значение напряжения, В",
                 "Измеренное значение, В",
                 "Минимальное допустимое значение, В",
                 "Максимальное допустимое значение, В"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -576,11 +575,12 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[] { "Измеренное эталонным мультиметром значение, В",
-                "Измеренное источником питания значение, В",
-                "Минимальное допустимое значение, В",
-                "Максимальное допустимое значение, В"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+
+            return new[] { "Измеренное эталонным мультиметром значение, В",
+            "Измеренное источником питания значение, В",
+            "Минимальное допустимое значение, В",
+            "Максимальное допустимое значение, В"
+        }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -592,7 +592,7 @@ namespace B5_71_PRO_Abstract
         {
             var dataTable = base.FillData();
             
-            dataTable.Columns.Add("Результат");
+            
 
             foreach (var row in DataRow)
             {
@@ -766,9 +766,9 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[] { "Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В",
+            return  new[] { "Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В",
                 "Допустимое значение, В"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -967,11 +967,11 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[]
+            return new[]
             {
                 "Измеренное значение пульсаций, мВ",
                 "Допустимое значение пульсаций, мВ"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -1118,15 +1118,7 @@ namespace B5_71_PRO_Abstract
                 if (operation.IsGood == null) return Task.FromResult(false);
                 if (!operation.IsGood())
                 {
-                    //если пульсации менее 5мВ, тогда все хорошо
-                    if (operation.Getting > 2 && operation.Getting < 10)
-                    {
-                        operation.Getting = Math.Round((decimal)MathStatistics.RandomToRange(0.3, 1.9),1);
-                        
-                        return Task.FromResult(true);
-                    }
-                    else
-                    {
+                    
                         var answer =
                             UserItemOperation.ServicePack.MessageBox().Show(operation +
                                                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
@@ -1136,7 +1128,7 @@ namespace B5_71_PRO_Abstract
                                                                           MessageResult.Yes);
 
                         if (answer == MessageResult.No) return Task.FromResult(true);
-                    }
+                    
 
                    
                 }
@@ -1193,13 +1185,13 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[]
+            return  new[]
             {
                 "Установленное значение тока, А",
                 "Измеренное значение, А",
                 "Минимальное допустимое значение, А",
                 "Максимальное допустимое значение, А"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -1381,11 +1373,11 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[] { "Измеренное эталонным авмперметром значение тока, А",
+            return  new[] { "Измеренное эталонным авмперметром значение тока, А",
                 "Измеренное блоком питания значение тока, А",
                 "Минимальное допустимое значение, А",
                 "Максимальное допустимое значение, А"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -1559,11 +1551,11 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[]
+            return  new[]
             {
                 "Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А",
                 "Допустимое значение, А"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
         }
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -1753,11 +1745,11 @@ namespace B5_71_PRO_Abstract
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[]
+            return  new[]
             {
                 "Измеренное значение пульсаций, мА",
                 "Допустимое значение пульсаций, мА"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
         }
         /// <inheritdoc />
         protected override string GetReportTableName()

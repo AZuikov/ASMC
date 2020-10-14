@@ -60,7 +60,7 @@ namespace Indicator_10
                 "Показания весов, г",
                 "Колебание при прямом/обратном ходе",
                 "Максимальное при прямом ходе"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
 
         /// <inheritdoc />
@@ -105,7 +105,7 @@ namespace Indicator_10
             {
                 "№ Измерения", "Изменение показаний индикатора, делений шкалы",
                 "Допустимые изменения показаний, делений шкалы"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
 
         /// <inheritdoc />

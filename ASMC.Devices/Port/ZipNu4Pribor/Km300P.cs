@@ -6,11 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AP.Utils.Data;
+using NLog;
 
 namespace ASMC.Devices.Port.ZipNu4Pribor
 {
     public class Km300P: ComPort
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// Входы компаратора.
         /// </summary>
@@ -74,9 +76,42 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
 
         public Km300P()
         {
+            UserType = "КМ300Р";
             BaudRate = SpeedRate.R57600;
             
         }
+
+
+        protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            
+            
+            List<byte> _readData = new List<byte>();
+            var port = (SerialPort)sender;
+            try
+            {
+                Open();
+                byte firstByteAdress = (byte) port.ReadByte();
+                int SecondByteCadrLeght = (int) port.ReadByte(); //длина посылки которую нужно считать
+                
+                while (_readData.Count < SecondByteCadrLeght)
+                {
+                    _readData.Add((byte) port.ReadByte());
+                }
+
+                DiscardInBuffer();
+                
+            }
+            catch (Exception a)
+            {
+                Logger.Error(a);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
         /// <summary>
         /// Устанавливает напряжение на выходе калибратора.
         /// </summary>
@@ -155,7 +190,6 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             else
                 resultByteArr = resultByteArr.Concat(new byte[] { 0x28 }).ToArray();
             
-
             var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
             resultByteArr = new byte[] { 0x03 }.Concat(resultByteArr).ToArray();
             resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
