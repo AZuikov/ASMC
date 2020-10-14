@@ -211,7 +211,7 @@ namespace N8957APlugin
                 "fЦ",
                 "Δf",
                 "Максимально допустимое значение Δf"
-            }.Concat(base.GenerateDataColumnTypeObject()); ;
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
         /// <inheritdoc />
         protected override string GetReportTableName()

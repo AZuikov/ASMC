@@ -189,6 +189,7 @@ namespace ASMC.Devices.Port
 
             return null;
         }
+
         protected void Write(byte[] sendData, int offset, int length)
         {
             if (!IsOpen)

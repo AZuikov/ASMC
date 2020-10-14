@@ -611,54 +611,7 @@ namespace ASMC.Devices.Port.APPA
             }
         }
 
-        ///// <summary>
-        ///// Значение со второй строки экрана (верхняя с мелким шрифтом)
-        ///// </summary>
-        //public double GetSubValue
-        //{
-        //    get
-        //    {
-        //        SendQuery();
-        //        double value;
-        //        WaitEvent.WaitOne();
-        //        if (_flagTimeout)
-        //        {
-        //            _flagTimeout = false;
-        //            throw new TimeoutException();
-        //        }
-
-        //        switch (_data[16] & 0x07)
-        //        {
-        //            case (int)Point.None:
-        //                value = (_data[15] << 8) | (_data[14] << 8) | _data[13];
-        //                break;
-
-        //            case (int)Point.Point1:
-        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10.0;
-        //                break;
-
-        //            case (int)Point.Point2:
-        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 100.0;
-        //                break;
-
-        //            case (int)Point.Point3:
-        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 1000.0;
-        //                break;
-
-        //            case (int)Point.Point4:
-        //                value = ((_data[15] << 8) | (_data[14] << 8) | _data[13]) / 10000.0;
-        //                break;
-
-        //            default:
-        //                return 0;
-        //        }
-
-        //        Logger.Info(value);
-        //        return value;
-        //    }
-        //}
-
-        #endregion Property
+       #endregion Property
 
         public Mult107_109N()
         {

@@ -84,7 +84,11 @@ namespace ASMC.Core.Model
         protected virtual DataTable FillData()
         {
             var dt = new DataTable { TableName = GetReportTableName() };
-            foreach (var cn in GetColumnName()) dt.Columns.Add(cn);
+            foreach (var cn in GetColumnName())
+            {
+                if (dt.Columns.IndexOf(cn)!=-1)continue;
+                dt.Columns.Add(cn);
+            }
             return dt;
         }
 
