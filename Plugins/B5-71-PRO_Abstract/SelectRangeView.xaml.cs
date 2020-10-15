@@ -23,8 +23,6 @@ namespace B5_71_PRO_Abstract
         public SelectRangeView()
         {
             InitializeComponent();
-            
-            
         }
     }
 }

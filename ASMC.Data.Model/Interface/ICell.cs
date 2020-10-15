@@ -11,6 +11,7 @@ namespace ASMC.Data.Model.Interface
     /// </summary>
     public interface ICell
     {
+        string StringFormat { get; set; }
         /// <summary>
         /// Наименование ячейки
         /// </summary>
@@ -27,4 +28,5 @@ namespace ASMC.Data.Model.Interface
         int RowIndex { get; }
         int ColumnIndex { get; }
     }
+
 }

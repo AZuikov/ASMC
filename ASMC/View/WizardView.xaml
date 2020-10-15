@@ -7,17 +7,17 @@
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:view="clr-namespace:ASMC.View"
-             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
              xmlns:converters="clr-namespace:ASMC.View.Converters"
              xmlns:common="clr-namespace:ASMC.Common;assembly=ASMC.Common"
              xmlns:ui1="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
-
+             xmlns:core="clr-namespace:ASMC.Core;assembly=ASMC.Core"
+             xmlns:ui="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
              mc:Ignorable="d"
-             d:DesignHeight="650" d:DesignWidth="800" MinWidth="800" MaxHeight="1000">
+             d:DesignHeight="650" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <dx:EnumToBoolConverter x:Key="EnumToBoolConverter" />
-            <common:EnumFlagToBoolConverter x:Key="EnumFlagToBoolConverter" />
+            <core:EnumFlagToBoolConverter x:Key="EnumFlagToBoolConverter" />
             <converters:SpecialBooToStringConverter x:Key="SpecialBooToStringConverter" />
             <GridLength x:Key="Gap">20</GridLength>
             <Style TargetType="RadioButton">
@@ -26,10 +26,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <ui:QuestionTextService x:Name="QuestionTextService" />
-        <ui:ImageService x:Name="ImageService" />
-        <ui1:MessageBoxService />
-        <ui1:TaskMessageService />
+        <ui1:QuestionTextService x:Name="QuestionTextService" />
+        <ui1:ImageService x:Name="ImageService" />
+        <ui:MessageBoxService />
+        <ui:TaskMessageService />
     </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>
@@ -106,10 +106,10 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ui1:ValueContentControl Grid.Row="0"
+                    <ui:ValueContentControl Grid.Row="0"
                                            Header="Наименование типа">
                         <TextBox Text="" Style="{DynamicResource ReadOnlyTextBoxStyle}" />
-                    </ui1:ValueContentControl>
+                    </ui:ValueContentControl>
                     <Grid Grid.Row="1" Grid.Column="0" DataContext="{Binding SelectProgram}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -117,21 +117,21 @@
                             <ColumnDefinition Width="33*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <ui1:ValueContentControl Header="Тип СИ"
+                        <ui:ValueContentControl Header="Тип СИ"
                                                Margin="0,0,5,0">
                             <TextBox Text="{Binding Type, Mode=OneWay}"  Style="{DynamicResource ReadOnlyTextBoxStyle}"/>
-                        </ui1:ValueContentControl>
-                        <ui1:ValueContentControl Grid.Column="1" Header="Диапазон">
+                        </ui:ValueContentControl>
+                        <ui:ValueContentControl Grid.Column="1" Header="Диапазон">
                             <TextBox Text="{Binding Range, Mode=OneWay}" TextWrapping="NoWrap" Style="{DynamicResource ReadOnlyTextBoxStyle}"/>
-                        </ui1:ValueContentControl>
-                        <ui1:ValueContentControl Grid.Column="2" Header="Х-ка точности"
+                        </ui:ValueContentControl>
+                        <ui:ValueContentControl Grid.Column="2" Header="Х-ка точности"
                                                Margin="5,0,0,0">
                             <TextBox Text="{Binding Accuracy, Mode=OneWay}"  Style="{DynamicResource ReadOnlyTextBoxStyle}"/>
-                        </ui1:ValueContentControl>
-                        <ui1:ValueContentControl Grid.Column="3" Header="Госреестр">
+                        </ui:ValueContentControl>
+                        <ui:ValueContentControl Grid.Column="3" Header="Госреестр">
                             <TextBox Text="{Binding Grsi, Mode=OneWay}"
                                  Width="115"  Style="{DynamicResource ReadOnlyTextBoxStyle}" />
-                        </ui1:ValueContentControl>
+                        </ui:ValueContentControl>
                     </Grid>
                 </Grid>
             </StackPanel>
@@ -220,12 +220,12 @@
                                         <ColumnDefinition Width="{StaticResource Gap}" />
                                         <ColumnDefinition SharedSizeGroup="button" />
                                     </Grid.ColumnDefinitions>
-                                    <ui1:ValueContentControl Orientation="Horizontal"  Header="Найти устройства" Grid.Column="0">
+                                    <ui:ValueContentControl Orientation="Horizontal"  Header="Найти устройства" Grid.Column="0">
                                         <Button Content="Поиск" />
-                                    </ui1:ValueContentControl>
-                                    <ui1:ValueContentControl Orientation="Horizontal"  Header="Обновить список устройств" Grid.Column="2">
+                                    </ui:ValueContentControl>
+                                    <ui:ValueContentControl Orientation="Horizontal"  Header="Обновить список устройств" Grid.Column="2">
                                         <Button Content="Обновить" Command="{Binding RefreshCommand}" />
-                                    </ui1:ValueContentControl>
+                                    </ui:ValueContentControl>
                                 </Grid>
                                 <view:SettingView DataContext="{Binding SettingViewModel}" />
                             </StackPanel>

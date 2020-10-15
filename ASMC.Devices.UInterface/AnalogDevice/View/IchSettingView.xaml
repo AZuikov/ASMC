@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ASMC.Devices.UInterface.AnalogDevice.View"
              xmlns:ui="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
+             xmlns:ui1="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Margin="20">
-        <ui:ValueContentControl Header="Выбор класса точности">
+        <ui1:ValueContentControl Header="Выбор класса точности">
             <ComboBox ItemsSource="{Binding AvailabeAccuracyClass}" SelectedItem="{Binding CurrentAccuracyClass}"/>
-        </ui:ValueContentControl>
+        </ui1:ValueContentControl>
     </StackPanel>
 </UserControl>

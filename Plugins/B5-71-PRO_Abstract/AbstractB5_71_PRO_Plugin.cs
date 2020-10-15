@@ -16,7 +16,7 @@ using ASMC.Devices.Port.Profigrupp;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 using NLog;
-using WindowService = ASMC.Common.UI.WindowService;
+using WindowService = ASMC.Core.UI.WindowService;
 
 namespace B5_71_PRO_Abstract
 {

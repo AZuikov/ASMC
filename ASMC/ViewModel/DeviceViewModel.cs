@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Windows.Input;
 using ASMC.Common.ViewModel;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 using NLog;
-using WindowService = ASMC.Common.UI.WindowService;
+using WindowService = ASMC.Core.UI.WindowService;
 
 namespace ASMC.ViewModel
 {

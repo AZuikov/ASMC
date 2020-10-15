@@ -106,7 +106,6 @@ namespace ASMC.Data.Model
         }
 
     }
-
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {
         /// <inheritdoc />
@@ -124,7 +123,6 @@ namespace ASMC.Data.Model
         }
 
     }
-
     /// <summary>
     /// Педоставляет реализации операцию с нижней и верхней границей.
     /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using ASMC.Common.ViewModel;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 
 namespace ASMC.ViewModel

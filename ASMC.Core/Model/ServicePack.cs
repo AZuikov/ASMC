@@ -1,5 +1,4 @@
 ﻿using System;
-using ASMC.Common;
 using DevExpress.Mvvm;
 
 namespace ASMC.Core.Model

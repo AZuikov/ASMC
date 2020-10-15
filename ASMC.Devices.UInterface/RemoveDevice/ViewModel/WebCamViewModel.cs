@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Accord.Video.DirectShow;
 using ASMC.Common.ViewModel;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Devices.USB_Device.WebCam;
 using DevExpress.Mvvm;
