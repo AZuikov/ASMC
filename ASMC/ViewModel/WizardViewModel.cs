@@ -264,13 +264,13 @@ namespace ASMC.ViewModel
 
         private void GenerateDocument()
         {
-            var document = SelectProgram.Operation.SelectedOperation.DocumentName + @".dotx";
+            var filename = SelectProgram.Operation.SelectedOperation.DocumentName + @".dotx";
 
             var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
             if (!Directory.Exists(path))
                 return;
-            document = Directory.GetFiles(path, document, SearchOption.AllDirectories).FirstOrDefault();
-            if (document == null) throw new NullReferenceException($"Шаблон {document} не найден!");
+           var document = Directory.GetFiles(path, filename, SearchOption.AllDirectories).FirstOrDefault();
+            if (document == null) throw new NullReferenceException($"Шаблон {filename} не найден!");
             var a = new Document.ConditionalFormatting
             {
                 Color = Color.IndianRed,

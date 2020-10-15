@@ -3,6 +3,7 @@ using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.Generator;
 using ASMC.Devices.IEEE.Keysight.NoiseFigureAnalyzer;
@@ -11,11 +12,12 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using ASMC.Devices;
+using DevExpress.Mvvm.Native;
 
 namespace N8957APlugin
 {
@@ -64,9 +66,9 @@ namespace N8957APlugin
                 "Кабели:\n 1) для подключения стандарта частоты к генератору\n  2) для подключения выхода генератора ко входу анализатора шума"
             };
 
-            UserItemOperation = new IUserItemOperationBase[] 
+            UserItemOperation = new IUserItemOperationBase[]
                 {
-                    new PrevSetup(this) , 
+                    new PrevSetup(this) ,
                     new Oper8_3_4FreqInSintezatorFrequency(this)
                 };
         }
@@ -88,7 +90,7 @@ namespace N8957APlugin
         #endregion Methods
     }
 
-    public  class PrevSetup : ParagraphBase<bool>
+    public class PrevSetup : ParagraphBase<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         protected E8257D e8257D;
@@ -101,66 +103,55 @@ namespace N8957APlugin
             n8975 = new N8975A();
         }
 
-        
-
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
             return null;
         }
 
-
         protected override void InitWork()
         {
             base.InitWork();
             var operation = new BasicOperationVerefication<bool>();
-            operation.InitWork =  () =>
-            {
-                try
-                {
-                   
-                    
-                        e8257D.StringConnection = GetStringConnect(e8257D);
-                        n8975.StringConnection = GetStringConnect(n8975);
-                    
+            operation.InitWork = () =>
+           {
+               try
+               {
+                   e8257D.StringConnection = GetStringConnect(e8257D);
+                   n8975.StringConnection = GetStringConnect(n8975);
 
                     //предварительная подготовка прибора к работе
                     n8975.WriteLine("*rst");
-                    
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                    throw;
-                }
+               }
+               catch (Exception e)
+               {
+                   Logger.Error(e);
+                   throw;
+               }
 
-                var service = UserItemOperation.ServicePack.QuestionText();
-                service.Title = "Внешний осмотр";
-                service.Entity = new Tuple<string, Assembly>("N8975_PreSetup", null);
-                service.Show();
-                var res = service.Entity as Tuple<string, bool>;
-                operation.Getting = res.Item2;
-                operation.Comment = res.Item1;
-                operation.IsGood = () => operation.Getting;
-                
+               var service = UserItemOperation.ServicePack.QuestionText();
+               service.Title = "Внешний осмотр";
+               service.Entity = new Tuple<string, Assembly>("N8975_PreSetup", null);
+               service.Show();
+               var res = service.Entity as Tuple<string, bool>;
+               operation.Getting = res.Item2;
+               operation.Comment = res.Item1;
+               operation.IsGood = () => operation.Getting;
 
-                n8975.WriteLine("CALibration:AUTO:state 1");
-                n8975.WriteLine("CALibration:YTF");
+               n8975.WriteLine("CALibration:AUTO:state 1");
+               n8975.WriteLine("CALibration:YTF");
 
-                UserItemOperation.ServicePack.MessageBox()
-                                 .Show("Дождитесь окончания настройки N8975, затем нажмите ОК!",
-                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                                       MessageResult.OK);
+               UserItemOperation.ServicePack.MessageBox()
+                                .Show("Дождитесь окончания настройки N8975, затем нажмите ОК!",
+                                      "Указание оператору", MessageButton.OK, MessageIcon.Information,
+                                      MessageResult.OK);
 
-
-                return Task.CompletedTask;
-            };
-           
+               return Task.CompletedTask;
+           };
 
             operation.CompliteWork = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
-
     }
 
     public class Oper8_3_4FreqInSintezatorFrequency : ParagraphBase<MeasPoint>
@@ -185,7 +176,7 @@ namespace N8957APlugin
             DataRow = new List<IBasicOperation<MeasPoint>>();
             //Забиваем словарь: частота - погрешность
             freqAndTolDictionary = new Dictionary<int, int>();
-            //                       точка Мгц    кГц погрешность
+            //                точка Мгц кГц погрешность
             freqAndTolDictionary.Add(15, 100);
             freqAndTolDictionary.Add(495, 100);
             freqAndTolDictionary.Add(1495, 100);
@@ -196,16 +187,14 @@ namespace N8957APlugin
             freqAndTolDictionary.Add(5995, 400);
             freqAndTolDictionary.Add(14995, 400);
             freqAndTolDictionary.Add(17995, 400);
-
         }
 
         #region Methods
 
-     
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[]
+            return (string[])new[]
             {
                 "fН",
                 "fЦ",
@@ -213,6 +202,7 @@ namespace N8957APlugin
                 "Максимально допустимое значение Δf"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -222,7 +212,7 @@ namespace N8957APlugin
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
-           
+
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
@@ -261,9 +251,7 @@ namespace N8957APlugin
                         {
                             e8257D.StringConnection = GetStringConnect(e8257D);
                             n8975.StringConnection = GetStringConnect(n8975);
-                            
 
-                            
                             //подготовка генератора
                             e8257D.WriteLine(":OUTPut:MODulation 0"); //выключаем модуляцию
                             e8257D.WriteLine(":pow -20"); //ставим амплитуду -20 дБм
@@ -283,7 +271,6 @@ namespace N8957APlugin
                             startFreq = HelpDeviceBase.StrToDoubleMindMind(n8975.QueryLine("FREQuency:Start?"));
                             stopFreq = HelpDeviceBase.StrToDoubleMindMind(n8975.QueryLine("FREQuency:Stop?"));
 
-                            
                             double step = (stopFreq - startFreq) / (pointsCount - 1);
                             freqSTDArr[0] = startFreq;
                             for (int i = 1; i < freqSTDArr.Length; i++)
@@ -292,12 +279,12 @@ namespace N8957APlugin
                             n8975.WriteLine($"AVERage:STATe 0");
                             n8975.WriteLine($"BANDwidth 4MHz");
                             n8975.WriteLine($"SWEep:POINts {pointsCount}");  //сколько точек измерения
-                            
+
                             //грузим точки в прибор
                             string loadToDevaceStr = "";
                             for (int i = 1; i < freqSTDArr.Length; i++)
                                 loadToDevaceStr = loadToDevaceStr + freqSTDArr[i].ToString().Replace(',', '.') + ",";
-                            loadToDevaceStr=loadToDevaceStr.TrimEnd(',');
+                            loadToDevaceStr = loadToDevaceStr.TrimEnd(',');
                             n8975.WriteLine($"FREQuency:LIST:DATA {loadToDevaceStr}");
                             Thread.Sleep(200);
 
@@ -312,39 +299,68 @@ namespace N8957APlugin
                             n8975.WriteLine("INITiate");
                         });
 
-                        
                         //n8975.Sinchronization();
                         //как то нужно от прибора получить ответ, что он закончил измерения
                         UserItemOperation.ServicePack.MessageBox()
                                          .Show("Дождитесь окончания измерения, затем нажмите ОК!",
                                                "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                                MessageResult.OK);
-                       e8257D.WriteLine(":OUTP 0");
+                        e8257D.WriteLine(":OUTP 0");
 
                         //теперь нужно обработать числа и получить результат вычислений (все сложить и поделить на 2)
 
-                        
                         string[] answerPHotArr = n8975.QueryLine("FETC:UNC:PHOT? LIN").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(','); ;//считывание коэффициентов PHOT Lin
                         double[] photArrDoubles = new double[answerPHotArr.Length];
                         Parallel.For(0, answerPHotArr.Length,
                                      q => { photArrDoubles[q] = HelpDeviceBase.StrToDoubleMindMind(answerPHotArr[q]); });
-
-                       
-
-                        double HalfSumPhot = photArrDoubles.Sum() / 2;
-                        Parallel.For(0, photArrDoubles.Length,
-                                     q => { photArrDoubles[q] = Math.Abs(photArrDoubles[q] - HalfSumPhot); });
-                        double min = photArrDoubles.Min();
-                        int FreqIndexInArr = Array.FindIndex(photArrDoubles, q => q == min);
-
-                           
                         
+                        //создаем массив для расчета суммы (пункт расчета для EXCEL)
+                        //каждая ячейка должна содержать сумму себя и всех предыдущих!!!!!
+                        double[] CalculatePhot = new double[photArrDoubles.Length];
+                        CalculatePhot[0] = photArrDoubles[0];
+                        for (int i = 1; i < CalculatePhot.Length; i++)
+                            CalculatePhot[i] = CalculatePhot[i - 1] + photArrDoubles[i];
+
+                        double HalfSumPhot = CalculatePhot[CalculatePhot.Length-1]/2;
+                       
+                        //вычисляем разность для поиска частоты
+                        double [] deltaPhotArr = new double[photArrDoubles.Length];
+                        Parallel.For(0, deltaPhotArr.Length,
+                                     q => { deltaPhotArr[q] = Math.Abs(CalculatePhot[q] - HalfSumPhot); });
+                       
+                        
+                        int FreqIndexInArr = Array.IndexOf(deltaPhotArr, deltaPhotArr.Min());
+
+
+                        //сохраняем данные в cvs файл чтобы проверить вручную
+                        string fileName = $"{n8975.UserType}_{freq}MHz_{DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss")}.csv";
+                        string pathToSave = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + $"\\ASMC\\N8975\\{DateTime.Now.ToString("dd_MM_yyyy")}";
+                        if (Directory.Exists(pathToSave) == false)
+                            Directory.CreateDirectory(pathToSave);
+                        try
+                        {
+                            using (StreamWriter sw =
+                                new StreamWriter(pathToSave + "\\" + fileName, true, System.Text.Encoding.Default))
+                            {
+                                sw.WriteLine("Frequency;Phot;SumPhot");
+                                for (int i = 0; i < freqSTDArr.Length; i++)
+                                    sw.WriteLine($"{freqSTDArr[i]};{photArrDoubles[i]};{CalculatePhot[i]}");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Debug($"Запись в файл не прошла: {pathToSave}+{fileName}");
+                        }
+
+
+                        //---------------------------------------------------
+
                         operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(testFreqqPoint / UnitMultipliers.Mega.GetDoubleValue()));
-                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(freqSTDArr[FreqIndexInArr]/ UnitMultipliers.Mega.GetDoubleValue()));
+                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(freqSTDArr[FreqIndexInArr] / UnitMultipliers.Mega.GetDoubleValue()));
                         operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, freqAndTolDictionary[freq]);
-                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, 
-                                                                 (operation.Expected.Value*(decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() +
-                                                                 operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue())/(decimal)UnitMultipliers.Mega.GetDoubleValue());
+                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega,
+                                                                 (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() +
+                                                                 operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultipliers.Mega.GetDoubleValue());
                         operation.LowerTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega,
                                                                  (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() -
                                                                   operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultipliers.Mega.GetDoubleValue());
@@ -356,7 +372,6 @@ namespace N8957APlugin
                             return (operation.Getting.Value < operation.UpperTolerance.Value) &
                                    (operation.Getting.Value > operation.LowerTolerance.Value);
                         };
-
                     }
                     catch (Exception e)
                     {
@@ -372,14 +387,12 @@ namespace N8957APlugin
                 {
                     try
                     {
-                       
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                         throw;
                     }
-                    
                 };
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
 
