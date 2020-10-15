@@ -5,27 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Indicator_10.View"
              xmlns:view="clr-namespace:ASMC.Core.View;assembly=ASMC.Core"
+             xmlns:view1="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
-        <GroupBox Header="Введите измереное значение с весов в граммах." Margin="20">
-            <ItemsControl ItemsSource="{Binding Content}" Margin="20">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" Height="60">
-                            <view:InputTableControl Data="{Binding Path=Cells}" SelectValue="{Binding Selected}" />
-                        </HeaderedContentControl>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+        <GroupBox Header="Введите измереное значение с весов в граммах." Margin="20" Focusable="False">
+            <view1:MultiGridView/>
         </GroupBox>
+        <Button Content="Ок" Command="{Binding SelectCommand}"/>
     </StackPanel>
- 
-
-        <!--<GroupBox Header="Обратный ход">
-            <view:InputTableControl Data="{Binding Content[1].Cells}" />
-        </GroupBox>
-        <GroupBox Header="Усилие">
-            <view:InputTableControl Data="{Binding Content[2].Cells}" />
-        </GroupBox>-->
 </UserControl>

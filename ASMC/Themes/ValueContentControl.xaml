@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:utils="clr-namespace:AP.Utils;assembly=AP.Utils"
-                    xmlns:ui="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common">
+                    xmlns:ui="clr-namespace:ASMC.Common.UI;assembly=ASMC.Common"
+                    xmlns:ui1="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core">
 
   <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
@@ -9,7 +10,7 @@
         Data="M 0,4 L 4,0 L 8,4 z"
         Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
 
-  <Style TargetType="ui:ValueContentControl">
+  <Style TargetType="ui1:ValueContentControl">
     <Setter Property="Orientation" Value="Vertical" />
     <Setter Property="Padding" Value="0,0,0,4" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -37,7 +38,7 @@
                 </StackPanel>
               </Label>
               <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IsRequired, RelativeSource={RelativeSource AncestorType=ui:ValueContentControl}}" Value="True">
+                <DataTrigger Binding="{Binding IsRequired, RelativeSource={RelativeSource AncestorType=ui1:ValueContentControl}}" Value="True">
                   <Setter TargetName="Req" Property="Text" Value="*" />
                   <Setter TargetName="Req" Property="ToolTip" Value="" />
                 </DataTrigger>
@@ -47,7 +48,7 @@
         </Setter>
         <Setter Property="Template">
           <Setter.Value>
-            <ControlTemplate TargetType="ui:ValueContentControl">
+            <ControlTemplate TargetType="ui1:ValueContentControl">
               <Border Background="{TemplateBinding Background}"
                       BorderBrush="{TemplateBinding BorderBrush}"
                       BorderThickness="{TemplateBinding BorderThickness}">
@@ -131,7 +132,7 @@
                 </StackPanel>
               </Label>
               <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IsRequired, RelativeSource={RelativeSource AncestorType=ui:ValueContentControl}}" Value="True">
+                <DataTrigger Binding="{Binding IsRequired, RelativeSource={RelativeSource AncestorType=ui1:ValueContentControl}}" Value="True">
                   <Setter TargetName="Req" Property="Text" Value="*" />
                   <Setter TargetName="Req" Property="ToolTip" Value="" />
                 </DataTrigger>
@@ -141,7 +142,7 @@
         </Setter>
         <Setter Property="Template">
           <Setter.Value>
-            <ControlTemplate TargetType="ui:ValueContentControl">
+            <ControlTemplate TargetType="ui1:ValueContentControl">
               <Grid Margin="{TemplateBinding Padding}">
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto" />

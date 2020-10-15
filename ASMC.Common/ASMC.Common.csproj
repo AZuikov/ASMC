@@ -93,33 +93,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behavior\BindableSelectedItemBeheavior.cs" />
-    <Compile Include="Behavior\IsFocesedUI.cs" />
-    <Compile Include="EnumFlagToBoolConverter.cs" />
-    <Compile Include="Exceptions.cs" />
-    <Compile Include="IFormService.cs" />
-    <Compile Include="ISupportClose.cs" />
-    <Compile Include="ISupportDialog.cs" />
-    <Compile Include="ISupportSettings.cs" />
-    <Compile Include="ITaskMessageService.cs" />
-    <Compile Include="Keys.cs" />
-    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Behavior\IsFocesedUiBehavior.cs" />
+    <Compile Include="Behavior\TabOnEnterBehavior.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\IWindowSettings.cs" />
-    <Compile Include="Settings\SettingsSelector.cs" />
-    <Compile Include="Settings\WindowSettingsBase.cs" />
-    <Compile Include="UI\FormServiceBase.cs" />
-    <Compile Include="UI\GridHelpers.cs" />
-    <Compile Include="UI\MessageBoxService.cs" />
-    <Compile Include="UI\TaskMessageService.cs" />
-    <Compile Include="UI\ValueContentControl.cs" />
-    <Compile Include="UI\WindowAttachedProperties.cs" />
-    <Compile Include="UI\WindowService.cs" />
-    <Compile Include="ViewExtensions.cs" />
-    <Compile Include="ViewModel\BaseViewModel.cs" />
-    <Compile Include="ViewModel\ClosableViewModel.cs" />
-    <Compile Include="ViewModel\FromBaseViewModel.cs" />
-    <Compile Include="View\FormView.xaml.cs">
-      <DependentUpon>FormView.xaml</DependentUpon>
+    <Compile Include="UI\ImageService.cs" />
+    <Compile Include="UI\QuestionTextService.cs" />
+    <Compile Include="UI\SettingService.cs" />
+    <Compile Include="ViewModel\Cell.cs" />
+    <Compile Include="ViewModel\ITemTable.cs" />
+    <Compile Include="ViewModel\MultiGridViewModel.cs" />
+    <Compile Include="ViewModel\QuestionTextViewModel.cs" />
+    <Compile Include="ViewModel\ShemViewModel.cs" />
+    <Compile Include="ViewModel\TableViewModel.cs" />
+    <Compile Include="View\InputTableControl.xaml.cs">
+      <DependentUpon>InputTableControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MultiGridView.xaml.cs">
+      <DependentUpon>MultiGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\QuestionTextView.xaml.cs">
+      <DependentUpon>QuestionTextView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\WriteText.xaml.cs">
       <DependentUpon>WriteText.xaml</DependentUpon>
@@ -133,7 +126,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\FormView.xaml">
+    <Page Include="View\InputTableControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\MultiGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\QuestionTextView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -165,6 +166,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
+      <Name>ASMC.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
@@ -178,6 +183,7 @@
       <Name>ASMC.MVision</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

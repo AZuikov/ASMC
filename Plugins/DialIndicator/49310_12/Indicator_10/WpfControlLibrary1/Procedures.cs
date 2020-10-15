@@ -3,12 +3,15 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using AP.Extension;
+using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 using DevExpress.Mvvm.UI;
 using Indicator_10.ViewModel;
-using WindowService = ASMC.Common.UI.WindowService;
+using WindowService = ASMC.Core.UI.WindowService;
 
 namespace Indicator_10
 {
@@ -74,15 +77,39 @@ namespace Indicator_10
         {
             base.InitWork();
             var operation = new BasicOperation<MeasPoint>();
+
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                var vm = new MeasuringForceViewModel(UserItemOperation.TestDevices.FirstOrDefault().SelectedDevice as IchBase);
+                var ich = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
+                var arrPoints = ich.Range.GetArayMeasPointsInParcent(0, 50, 100);
+                var first = CreateTable("Прямой ход", arrPoints);
+                var too = CreateTable("Обратный ход", arrPoints.Reverse().ToArray());
+                var tree = CreateTable("Прямой/обратный ход", ich.Range.GetArayMeasPointsInParcent(50, 50));
+                var vm = new MeasuringForceViewModel();
+                vm.Content.Add(first);
+                vm.Content.Add(too);
+                vm.Content.Add(tree);
+
+
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("MeasuringForceView", vm, null, null);
             };
+            //operation.CompliteWork = () =>
+            //{
+
+            //    return true;
+            //}
             DataRow.Add(operation);
+
+            TableViewModel CreateTable(string name, MeasPoint[] measPoints)
+            {
+                var table = new TableViewModel { Header = name };
+                for (var i = 0; i < measPoints.Length; i++)
+                    table.Cells.Add(new Cell { ColumnIndex = 0, RowIndex = i, Name = measPoints[i].ToString(), StringFormat = @"{0} г" });
+                return table;
+            }
         }
         #endregion
     }

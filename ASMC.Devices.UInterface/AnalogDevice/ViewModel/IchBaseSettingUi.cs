@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Common.ViewModel;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 
