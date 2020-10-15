@@ -217,13 +217,14 @@ namespace N8957APlugin
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<MeasPoint>;
-                if (dds == null) continue;
-                dataRow[0] = dds?.Expected.Description;
-                dataRow[1] = dds?.Getting.Description;
+                if (dds?.Expected == null || dds?.Getting == null) continue;
+                dataRow[0] = dds?.Expected?.Description;
+                dataRow[1] = dds?.Getting?.Description;
                 var tol = new MeasPoint(dds.Expected.Units, dds.Expected.UnitMultipliersUnit,
-                                        dds.Expected.Value - dds.Getting.Value);
+                                        dds.Getting.Value - dds.Expected.Value);
                 dataRow[2] = tol.Description;
                 dataRow[3] = dds?.Error.Description;
+                dataTable.Rows.Add(dataRow);
             }
 
             return dataTable;
