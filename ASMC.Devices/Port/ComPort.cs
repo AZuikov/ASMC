@@ -60,11 +60,40 @@ namespace ASMC.Devices.Port
 
         #region Property
 
+        /// <summary>
+        /// Поддержка сигнала готовности терминала DTR.
+        /// </summary>
+        public bool IsDtrOn
+        {
+            get => _sp.DtrEnable;
+            set => _sp.DtrEnable = value;
+        }
+        /// <summary>
+        /// Сигнал запроса передачи RTS.
+        /// </summary>
+        public bool IsRTS
+        {
+            get => _sp.RtsEnable;
+            set => _sp.RtsEnable = value;
+        }
+        /// <summary>
+        /// Состояние линии готовности к приёму.
+        /// </summary>
+        public bool IsCTS
+        {
+            get => _sp.CtsHolding;
+           
+        }
+
+
+
         public SpeedRate BaudRate
         {
             get => (SpeedRate) _sp.BaudRate;
             set => _sp.BaudRate = (int) value;
         }
+
+       // public DTRMode
 
         public DBit DataBit
         {
@@ -118,6 +147,7 @@ namespace ASMC.Devices.Port
         public ComPort(string portName)
         {
             _sp = new SerialPort(portName, (int) SpeedRate.R9600, Parity.None, (int) DBit.Bit8, StopBits.One);
+            
         }
 
         public ComPort(string portName, SpeedRate bautRate)
@@ -280,8 +310,15 @@ namespace ASMC.Devices.Port
             return 0;
             
         }
-
-        public int ReadByte(byte[] buffer, int offset, int count )
+        /// <summary>
+        /// Считывает байты.
+        /// </summary>
+        /// <param name="buffer">Массив данных (буфер) куда считывать байты.</param>
+        /// <param name="offset">Смещение - с какого элемента буфера начать запись.</param>
+        /// <param name="count">Число байт для считывания.</param>
+        /// <param name="closePort">Закрывать порт после считывания (еси true закрывает порт).</param>
+        /// <returns></returns>
+        public int ReadByte(byte[] buffer, int offset, int count, bool closePort = true )
         {
             if (!IsOpen) return 0;
             try
@@ -299,7 +336,7 @@ namespace ASMC.Devices.Port
             }
             finally
             {
-                Close();
+              if (closePort)   Close();
             }
 
             return 0;
