@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,6 +65,27 @@ namespace ASMC.Data.Model.Interface
         }
 
     }
+
+
+    public interface IMultiErrorMeasuringOperation<T>
+    {
+        /// <summary>
+        /// Позволяет получить и задать значение погрешности.
+        /// </summary>
+        IEnumerable<T> Error
+        {
+            get;
+        }
+        /// <summary>
+        /// Позваляет задать функции расчета погрешности.
+        /// </summary>
+        Func<T, T, T>[] ErrorCalculation
+        {
+            set;
+        }
+
+    }
+
     /// <summary>
     /// Предоставляет интерфейс операции измерения.
     /// </summary>

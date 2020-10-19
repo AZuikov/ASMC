@@ -16,7 +16,7 @@ namespace ASMC.Core.Model
     /// <summary>
     /// Предоставляет базовый клас для пункта операции.
     /// </summary>
-    public abstract class ParagraphBase<T> : ViewModelBase, IUserItemOperationBase, ITreeNode, IUserItemOperation<T>
+    public abstract class ParagraphBase<T> : ViewModelBase, ITreeNode, IUserItemOperation<T>
     {
         protected const string ConstGood = "Годен";
         protected const string ConstBad = "Брак";

@@ -107,6 +107,16 @@ namespace ASMC.Data.Model
         }
 
     }
+
+    public class MultiErrorMeasuringOperation<T> :  BasicOperation<T>, IMultiErrorMeasuringOperation<T>
+    {
+        /// <inheritdoc />
+        public IEnumerable<T> Error { get { return ErrorCalculation.Select(ec => ec(Getting, Expected)); } }
+
+        /// <inheritdoc />
+        public Func<T, T, T>[] ErrorCalculation { get; set; }
+    }
+
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {
         /// <inheritdoc />
