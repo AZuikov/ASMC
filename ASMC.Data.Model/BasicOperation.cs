@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASMC.Data.Model.Interface;
+using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 
 namespace ASMC.Data.Model

@@ -6,26 +6,12 @@ using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace Indicator_10.ViewModel
 {
-    public class PerpendicularPressureViewModel: MultiGridViewModel
+    public class PerpendicularPressureViewModel: TableViewModel
     {
-        public int RowCount { get; }
-        public IchBase IchBase { get; set; }
-        public PerpendicularPressureViewModel(IchBase ichBase)
+        /// <inheritdoc />
+        protected override bool CanSelect()
         {
-            //IchBase = ichBase;
-            //var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(50);
-            //for (int i = 0; i < arrPoints.Length; i++)
-            //{
-            //    this.Cells.Add(new Cell { ColumnIndex = i, RowIndex = 0, Name = arrPoints[i].ToString() });
-            //}
-
-            //var reverse = arrPoints.Reverse().ToArray();
-            //for (int i = 0; i < arrPoints.Length; i++)
-            //{
-            //    this.Cells.Add(new Cell { ColumnIndex = i + 1, RowIndex = 1, Name = reverse[i].ToString() });
-            //}
-
+           return this.Cells.All(p => !string.IsNullOrWhiteSpace(p?.Value?.ToString()));
         }
-
     }
 }

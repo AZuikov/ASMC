@@ -339,13 +339,13 @@ namespace N8957APlugin
 
                            
                         
-                        operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(testFreqqPoint / UnitMultipliers.Mega.GetDoubleValue()));
-                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(freqSTDArr[FreqIndexInArr]/ UnitMultipliers.Mega.GetDoubleValue()));
-                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, freqAndTolDictionary[freq]);
-                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, 
+                        operation.Expected = new MeasPoint(MeasureUnits.Frequency, UnitMultipliers.Mega, (decimal)(testFreqqPoint / UnitMultipliers.Mega.GetDoubleValue()));
+                        operation.Getting = new MeasPoint(MeasureUnits.Frequency, UnitMultipliers.Mega, (decimal)(freqSTDArr[FreqIndexInArr]/ UnitMultipliers.Mega.GetDoubleValue()));
+                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Frequency, UnitMultipliers.Kilo, freqAndTolDictionary[freq]);
+                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Frequency, UnitMultipliers.Mega, 
                                                                  (operation.Expected.Value*(decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() +
                                                                  operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue())/(decimal)UnitMultipliers.Mega.GetDoubleValue());
-                        operation.LowerTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega,
+                        operation.LowerTolerance = new MeasPoint(MeasureUnits.Frequency, UnitMultipliers.Mega,
                                                                  (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() -
                                                                   operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultipliers.Mega.GetDoubleValue());
 

@@ -30,7 +30,7 @@ namespace Indicator_10.Periodic
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBaseSettingUi {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Mili, 10), UserType="ИЧ, мод. ИЧ10" } },
+                    Devices = new IUserType[] {new IchBaseSettingUi {Range = new MeasPoint(MeasureUnits.Length, UnitMultipliers.Mili, 10), UserType="ИЧ, мод. ИЧ10" } },
                     IsCanStringConnect=false, 
                     Description = "Индикатор часового типа",
 

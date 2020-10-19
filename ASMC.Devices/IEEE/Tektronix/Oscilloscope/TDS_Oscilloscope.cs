@@ -99,224 +99,224 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <summary>
             /// 2.5 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(2.5)] Scal_2_5nSec,
 
             /// <summary>
             /// 5 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(5)] Scal_5nSec,
 
             /// <summary>
             /// 10 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(10)] Scal_10nSec,
 
             /// <summary>
             /// 25 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(25)] Scal_25nSec,
 
             /// <summary>
             /// 50 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(50)] Scal_50nSec,
 
             /// <summary>
             /// 100 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(100)] Scal_100nSec,
 
             /// <summary>
             /// 250 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(250)] Scal_250nSec,
 
             /// <summary>
             /// 500 нс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Nano)]
             [DoubleValue(500)] Scal_500nSec,
 
             /// <summary>
             /// 1 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(1)] Scal_1mkSec,
 
             /// <summary>
             /// 2.5 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(2.5)] Scal_2_5mkSec,
 
             /// <summary>
             /// 5 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(5)] Scal_5mkSec,
 
             /// <summary>
             /// 10 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(10)] Scal_10mkSec,
 
             /// <summary>
             /// 25 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(25)] Scal_25mkSec,
 
             /// <summary>
             /// 50 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(50)] Scal_50mkSec,
 
             /// <summary>
             /// 100 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(100)] Scal_100mkSec,
 
             /// <summary>
             /// 250 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(250)] Scal_250mkSec,
 
             /// <summary>
             /// 500 мкс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Micro)]
             [DoubleValue(500)] Scal_500mkSec,
 
             /// <summary>
             /// 1 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(1)] Scal_1mSec,
 
             /// <summary>
             /// 2.5 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(2.5)] Scal_2_5mSec,
 
             /// <summary>
             /// 5 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(5)] Scal_5mSec,
 
             /// <summary>
             /// 10 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(10)] Scal_10mSec,
 
             /// <summary>
             /// 25 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(25)] Scal_25mSec,
 
             /// <summary>
             /// 50 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(50)] Scal_50mSec,
 
             /// <summary>
             /// 100 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(100)] Scal_100mSec,
 
             /// <summary>
             /// 250 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(250)] Scal_250mSec,
 
             /// <summary>
             /// 500 мс
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.Mili)]
             [DoubleValue(500)] Scal_500mSec,
 
             /// <summary>
             /// 1 с
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(1)] Scal_1Sec,
 
             /// <summary>
             /// 2.5 с
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(2.5)] Scal_2_5Sec,
 
             /// <summary>
             /// 5 с
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(5)] Scal_5Sec,
 
             /// <summary>
             /// 10 с
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(10)] Scal_10Sec,
 
             /// <summary>
             /// 25 с
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(25)] Scal_25Sec,
 
             /// <summary>
             /// 50 с
             /// </summary>
-            [MeasureUnitsValue(MeasureUnits.sec)]
+            [MeasureUnitsValue(MeasureUnits.Time)]
             [UnitMultipliers(UnitMultipliers.None)]
             [DoubleValue(50)] Scal_50Sec
         }

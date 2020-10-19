@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AP.Utils.Helps;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.WithoutInterface.Voltmetr
 {
@@ -12,7 +13,7 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
     {
         public double AnalogOutput3 { get; set; }
         public double AnalogOutput1 { get; set; }
-        public MeasPoint[] Ranges { get; set; }
+        public MeasPoint<Voltage>[] Ranges { get; set; }
 
 
         public MeasureUnits[] MeasureUnits { get; } = {AP.Utils.Helps.MeasureUnits.Db, AP.Utils.Helps.MeasureUnits.V};
@@ -30,22 +31,22 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
                 
             };
 
-            Ranges = new MeasPoint[15];
-            Ranges[0] = new MeasPoint(MeasureUnits[1], MultipliersEnum[0], 300);
-            Ranges[1] = new MeasPoint(MeasureUnits[1], MultipliersEnum[0], 100);
-            Ranges[2] = new MeasPoint(MeasureUnits[1], MultipliersEnum[0], 30);
-            Ranges[3] = new MeasPoint(MeasureUnits[1], MultipliersEnum[0], 10);
-            Ranges[4] = new MeasPoint(MeasureUnits[1], MultipliersEnum[0], 3);
-            Ranges[5] = new MeasPoint(MeasureUnits[1], MultipliersEnum[0], 1);
-            Ranges[6] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], 300);
-            Ranges[7] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], 100);
-            Ranges[8] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], 30);
-            Ranges[9] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], 10);
-            Ranges[10] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], 3);
-            Ranges[11] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], 1);
-            Ranges[12] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], (decimal) 0.3);
-            Ranges[13] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], (decimal) 0.1);
-            Ranges[14] = new MeasPoint(MeasureUnits[1], MultipliersEnum[1], (decimal) 0.03);
+            Ranges = new MeasPoint<Voltage>[15];
+            Ranges[0] = new MeasPoint<Voltage>(300);
+            Ranges[1] = new MeasPoint<Voltage>(100);
+            Ranges[2] = new MeasPoint<Voltage>(30);
+            Ranges[3] = new MeasPoint<Voltage>(10);
+            Ranges[4] = new MeasPoint<Voltage>(3);
+            Ranges[5] = new MeasPoint<Voltage>(1);
+            Ranges[6] = new MeasPoint<Voltage>(300, UnitMultipliers.Mili);
+            Ranges[7] = new MeasPoint<Voltage>(100, UnitMultipliers.Mili);
+            Ranges[8] = new MeasPoint<Voltage>(30, UnitMultipliers.Mili);
+            Ranges[9] = new MeasPoint<Voltage>(10, UnitMultipliers.Mili);  
+            Ranges[10] = new MeasPoint<Voltage>(3, UnitMultipliers.Mili);
+            Ranges[11] = new MeasPoint<Voltage>(1,UnitMultipliers.Mili);
+            Ranges[12] = new MeasPoint<Voltage>((decimal) 0.3,UnitMultipliers.Mili);
+            Ranges[13] = new MeasPoint<Voltage>((decimal) 0.1, UnitMultipliers.Mili);
+            Ranges[14] = new MeasPoint<Voltage>((decimal) 0.03, UnitMultipliers.Mili);
         }
 
         

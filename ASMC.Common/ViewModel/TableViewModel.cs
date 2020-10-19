@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Linq;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
 
 namespace ASMC.Common.ViewModel
 {
-    public class TableViewModel : BindableBase, ITemTable
+    public class TableViewModel : FromBaseViewModel, IItemTable
     {
         public TableViewModel()
         {
