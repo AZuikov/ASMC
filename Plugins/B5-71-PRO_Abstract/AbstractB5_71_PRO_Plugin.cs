@@ -1921,7 +1921,7 @@ namespace B5_71_PRO_Abstract
 
             operation.CompliteWork = () =>
             {
-                if (operation.IsGood == null) return Task.FromResult(true);
+               
                 if (!operation.IsGood())
                 {
                     var answer =
