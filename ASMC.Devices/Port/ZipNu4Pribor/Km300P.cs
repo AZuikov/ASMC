@@ -7,12 +7,16 @@ using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Timers;
+using Microsoft.Build.Utilities;
+using Logger = NLog.Logger;
 using Timer = System.Timers.Timer;
 
 namespace ASMC.Devices.Port.ZipNu4Pribor
 {
     public class Km300P : ComPort
     {
+        private static readonly byte[] TestConnectByte = new byte[] { 0x03, 0x44, 0x03, 0x08 };
+
         /// <summary>
         /// Входы компаратора.
         /// </summary>
@@ -97,6 +101,8 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         {
             UserType = "КМ300Р";
             BaudRate = SpeedRate.R57600;
+            IsDtrOn = true;
+            IsRTS = true;
 
             _wait = new Timer();
             _wait.Interval = 35000;
@@ -115,14 +121,13 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         /// <summary>
         /// Получить измеренное значение.
         /// </summary>
-        public void GetMeasureValue()
+        public  void GetMeasureValue()
         {
-            
-            
-            Sincronization();// спамим тест-обмен
+            Sincronization(TestConnectByte); // спамим тест-обмен
             SendQuery(new byte[] { 0x03, 0x44, 0x03, 0x21 });//получаем измеренное значение
-            
         }
+
+        
 
         /// <summary>
         /// Включение режима измерения.
@@ -130,7 +135,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         public void MeasureModeOn()
         {
             WriteData(new byte[] { 0x03, 0x44, 0x03, 0x20 }, false);//включаем режим измерения
-            
+            Thread.Sleep(500);
         }
 
         /// <summary>
@@ -151,12 +156,10 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             sendThisArr = new[] { adress }.Concat(sendThisArr).ToArray();
             sendThisArr = sendThisArr.Concat(new[] { resultCRC }).ToArray();
 
-            
             Open();
             //отправили команду запроса
             Write(sendThisArr, 0, sendThisArr.Length);
             _wait.Start();
-            
 
             WaitEvent.WaitOne();
             if (_flagTimeout)
@@ -206,24 +209,24 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         /// <summary>
         /// Метод выполняет функцию "Тест-Обмен"а из руководства на калибратор.
         /// </summary>
-        protected void Sincronization()
+        protected bool Sincronization(byte[] sendBytes)
         {
-            byte[] byteToWrite = new byte[] {0x03, 0x44, 0x03, 0x08};
-            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(byteToWrite);
-            byteToWrite = new[] { adress }.Concat(byteToWrite).ToArray();
-            byteToWrite = byteToWrite.Concat(new[] { resultCRC }).ToArray();
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(sendBytes);
+            byte[] ResultBytePack = new[] { adress }.Concat(sendBytes).ToArray();
+            ResultBytePack = ResultBytePack.Concat(new[] { resultCRC }).ToArray();
 
-            
             while (true)
             {
                 Open();
-                Write(byteToWrite,0,byteToWrite.Length);
-                Thread.Sleep(500);
-                if (_readData.Count > 3) 
+                _readData.Clear();//еще выполняется очистка при приеме данных
+                Write(ResultBytePack, 0, ResultBytePack.Length);
+                Thread.Sleep(300);
+                if (_readData.Count > 3)// нужно контрольную сумму проверять, а не число элементов в листе
                     break;
             }
-            Close();
-            byte[] readBytes = _readData.ToArray();
+            Close();// точно тут нужно закрывать порт?
+
+            return true;
         }
 
         /// <summary>
@@ -231,7 +234,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         /// </summary>
         /// <param name="byteToWrite"></param>
         /// /// <param name="closePort">Закрывает порт после записи, если true.</param>
-        public void WriteData(byte[] byteToWrite, bool closePort =true)
+        public void WriteData(byte[] byteToWrite, bool closePort = true)
         {
             var resultCRC = CRCUtilsKM300.CalcCRCforKm300(byteToWrite);
             byteToWrite = new[] { adress }.Concat(byteToWrite).ToArray();
@@ -239,41 +242,40 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
 
             Open();
             Write(byteToWrite, 0, byteToWrite.Length);
-            if (closePort)  Close();
+            if (closePort) Close();
         }
 
         protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            _readData.Clear();
             try
             {
                 //будем делать
-                for (int j = 0; j<50; j++)
+                for (int j = 0; j < 50; j++)
                 {
                     var buffer1 = new byte[32];
-                    ReadByte(buffer1, 0, buffer1.Length, false);
+                    int newArrSize = ReadByte(buffer1, 0, buffer1.Length, false);
+                    // считанные данные
+                    byte[] readBytes = new byte[newArrSize];
+                    Array.Copy(buffer1, readBytes, newArrSize);
 
-                    
-                    //byte[] fullByteBlock = buffer1.Concat(buff2).ToArray();
-                    ////проверка сходимости контрольной суммы
-                    //byte[] buf3 = new byte[buff2.Length - 1];//создаем массив что бы отбросить CRC  сумму
-                    //Array.Copy(buff2, buf3, buff2.Length - 1); //отбрасываем CRC сумму
-                    //if (fullByteBlock[fullByteBlock.Length - 1] == CRCUtilsKM300.CalcCRCforKm300(buf3))
+                    //проверка сходимости контрольной суммы
+                    byte[] ArrToCalcCRC = new byte[readBytes.Length - 2];//создаем массив что бы отбросить CRC  сумму и адрес (первый байт)
+                    Array.Copy(readBytes, 1, ArrToCalcCRC, 0, readBytes[1] + 1); //отбрасываем CRC сумму  и адрес
+                   // _readData.Clear();
+                    _readData.AddRange(readBytes);
+                    _wait.Stop();
+                    WaitEvent.Set();
+
+                    DiscardInBuffer();
+                    //Close();
+                    return;
+
+                    //if (readBytes[readBytes.Length - 1] == CRCUtilsKM300.CalcCRCforKm300(ArrToCalcCRC))
                     //{//если контрольная сумма совпадает то все хорошо
-                    //    _readData.AddRange(fullByteBlock);
-                    //    _wait.Stop();
-                    //    WaitEvent.Set();
-
-                    //    DiscardInBuffer();
-                    //    Close();
-                    //    return;
                     //}
-
-                   
                 }
 
                 throw new DataException($"{UserType}: После 10 попыток считывания данные не поступили.");
-
             }
             catch (Exception a)
             {
