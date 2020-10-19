@@ -99,7 +99,7 @@ namespace APPA_107N_109N
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                            $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.Value - operation.Getting.Value}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -310,7 +310,7 @@ namespace APPA_107N_109N
         /// <summary>
         /// Разарешение пределеа измерения (последний значащий разряд)
         /// </summary>
-        protected AcVariablePoint RangeResolution;
+        protected MeasPoint<Voltage> RangeResolution;
 
         ///// <summary>
         ///// Имя закладки таблички в результирующем протоколе doc (Ms Word).
@@ -393,14 +393,14 @@ namespace APPA_107N_109N
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<AcVariablePoint>;
+                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = OperationDcRangeNominal.GetStringValue();
-                dataRow[1] = dds.Expected?.MainPhysicalQuantity.Description;
-                dataRow[2] = dds.Getting?.MainPhysicalQuantity.Description;
-                dataRow[3] = dds.LowerTolerance?.MainPhysicalQuantity.Description;
-                dataRow[4] = dds.UpperTolerance?.MainPhysicalQuantity.Description;
+                dataRow[1] = dds.Expected?.MainPhysicalQuantity.ToString();
+                dataRow[2] = dds.Getting?.MainPhysicalQuantity.ToString();
+                dataRow[3] = dds.LowerTolerance?.MainPhysicalQuantity.ToString();
+                dataRow[4] = dds.UpperTolerance?.MainPhysicalQuantity.ToString();
                 if (dds.IsGood == null)
                     dataRow[5] = "не выполнено";
                 else
@@ -964,12 +964,9 @@ namespace APPA_107N_109N
                                 Multipliers = Point.AdditionalPhysicalQuantity[0].Multipliers
 
                             });
-                                //new MeasPoint<Voltage>(volPoint.MainPhysicalQuantity.Value,
-                                //                                         thisRangeUnits.MainPhysicalQuantity.Multipliers,
-                                //                                        new[] { freqPoint });
-
+                                
                         //расчет погрешности для конкретной точки предела измерения
-                        ConstructTooleranceFormula(Point.AdditionalPhysicalQuantity[0]); // функция подбирает коэффициенты для формулы погрешности
+                        ConstructTooleranceFormula(new MeasPoint<Frequency>(Point.AdditionalPhysicalQuantity[0].Value, Point.AdditionalPhysicalQuantity[0].Multipliers)); // функция подбирает коэффициенты для формулы погрешности
                         operation.ErrorCalculation = (inA, inB) =>
                             {
                                 var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
@@ -982,29 +979,19 @@ namespace APPA_107N_109N
                                              );
 
                                 MathStatistics.Round(ref result, mantisa);
-                                return new AcVariablePoint(result, thisRangeUnits.Units, thisRangeUnits.Multipliers);
+                                return new MeasPoint<Voltage>(result,  thisRangeUnits.MainPhysicalQuantity.Multipliers);
                             };
 
-                            operation.LowerTolerance =
-                                new AcVariablePoint(operation.Expected.MainPhysicalQuantity.Value -
-                                                    operation.Error.MainPhysicalQuantity.Value,
-                                                    operation.Expected.MainPhysicalQuantity.Units,
-                                                    operation.Expected.MainPhysicalQuantity.Multipliers);
-                        //operation.Expected - operation.Error;
-                        operation.UpperTolerance =
-                                new AcVariablePoint(operation.Expected.MainPhysicalQuantity.Value +
-                                                    operation.Error.MainPhysicalQuantity.Value,
-                                                    operation.Expected.MainPhysicalQuantity.Units,
-                                                    operation.Expected.MainPhysicalQuantity.Multipliers);
-                        //operation.Expected + operation.Error;
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                           
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                            
                         operation.IsGood = () =>
                             {
                                 if (operation.Getting == null || operation.Expected == null ||
                                     operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                return (operation.Getting.MainPhysicalQuantity.Value <
-                                        operation.UpperTolerance.MainPhysicalQuantity.Value) &
-                                       (operation.Getting.MainPhysicalQuantity.Value >
-                                        operation.LowerTolerance.MainPhysicalQuantity.Value);
+                                return (operation.Getting < operation.UpperTolerance) &
+                                       (operation.Getting > operation.LowerTolerance);
                             };
 
                             decimal measurePoint = 0;
@@ -1037,7 +1024,7 @@ namespace APPA_107N_109N
                         MathStatistics.Round(ref measurePoint, mantisa);
 
                             operation.Getting =
-                                new AcVariablePoint(measurePoint, thisRangeUnits.Units, thisRangeUnits.Multipliers);
+                                new MeasPoint<Voltage>(measurePoint,  thisRangeUnits.MainPhysicalQuantity.Multipliers);
                         }
                         catch (Exception e)
                         {
@@ -1148,7 +1135,7 @@ namespace APPA_107N_109N
         /// <summary>
         /// Разарешение пределеа измерения (последний значащий разряд)
         /// </summary>
-        protected AcVariablePoint RangeResolution;
+        protected MeasPoint<Voltage> RangeResolution;
 
         #endregion TolleranceFormula
     }
@@ -1193,7 +1180,7 @@ namespace APPA_107N_109N
         public Ope4_1_AcV_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation, string inResourceDir)
             : base(userItemOperation, inResourceDir)
         {
-            thisRangeUnits = new MeasPoint(MeasureUnits.V, UnitMultipliers.Mili, 0);
+            thisRangeUnits = new MeasPoint<Voltage>(0, UnitMultipliers.Mili);
            
             OperMeasureMode = Mult107_109N.MeasureMode.ACmV;
             OperationAcRangeCode = Mult107_109N.RangeCode.Range2Manual;
@@ -1203,19 +1190,19 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 10;
 
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.V, UnitMultipliers.Micro);
+            RangeResolution = new MeasPoint<Voltage>(10, UnitMultipliers.Micro);
 
-            HerzVPoint = new MeasPoint[2];
-            HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40);
-            HerzVPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 1000);
+            //HerzVPoint = new MeasPoint<Frequency>[2];
+            //HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40);
+            //HerzVPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 1000);
 
-            VoltPoint = new AcVariablePoint[3];
-            VoltPoint[0] = new AcVariablePoint(4 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint);
-            VoltPoint[1] = new AcVariablePoint(10 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint);
-            VoltPoint[2] = new AcVariablePoint(18 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint);
+            
+            VoltPoint.Add( new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40}  ));
+            VoltPoint.Add( new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 }));
+            VoltPoint.Add( new MeasPoint<Voltage>(10 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency{Value = 40}  ));
+            VoltPoint.Add( new MeasPoint<Voltage>(10 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 }));
+            VoltPoint.Add( new MeasPoint<Voltage>(18 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency{Value = 40}  ));
+            VoltPoint.Add( new MeasPoint<Voltage>(18 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 }));
         }
 
         /// <inheritdoc />
@@ -1240,25 +1227,28 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 1;
 
-            RangeResolution = new AcVariablePoint((decimal)0.1, MeasureUnits.V, UnitMultipliers.Mili);
+            RangeResolution = new MeasPoint<Voltage>((decimal)0.1, UnitMultipliers.Mili);
 
-            HerzVPoint = new MeasPoint[6];
-            HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40 * VoltMultipliers);
-            HerzVPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 1000 * VoltMultipliers);
-            HerzVPoint[2] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 10 * VoltMultipliers);
-            HerzVPoint[3] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 20 * VoltMultipliers);
-            HerzVPoint[4] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 50 * VoltMultipliers);
-            HerzVPoint[5] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 100 * VoltMultipliers);
-
-            VoltPoint = new AcVariablePoint[3];
+            
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
-            var trimHerzArr = new MeasPoint[4];
-            Array.Copy(HerzVPoint, trimHerzArr, 4);
-            VoltPoint[0] = new AcVariablePoint((decimal)0.2, thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                               trimHerzArr);
-            VoltPoint[1] = new AcVariablePoint(1, thisRangeUnits.Units, thisRangeUnits.Multipliers, HerzVPoint);
-            VoltPoint[2] = new AcVariablePoint((decimal)1.8, thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                               HerzVPoint);
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40 * VoltMultipliers}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 1000 * VoltMultipliers }));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 10 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 20 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo }));
+
+            VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40 * VoltMultipliers}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 1000 * VoltMultipliers }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 10 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 20 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 50 * VoltMultipliers , Multipliers =  UnitMultipliers.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 100 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo }));
+
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40 * VoltMultipliers}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 1000 * VoltMultipliers }));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 10 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 20 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 50 * VoltMultipliers , Multipliers =  UnitMultipliers.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 100 * VoltMultipliers, Multipliers = UnitMultipliers.Kilo }));
         }
 
         /// <inheritdoc />
@@ -1281,28 +1271,30 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 10;
 
-            RangeResolution = new AcVariablePoint(1, MeasureUnits.V, UnitMultipliers.Mili);
+            RangeResolution = new MeasPoint<Voltage>(1,  UnitMultipliers.Mili);
 
-            HerzVPoint = new MeasPoint[6];
-            HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40);
-            HerzVPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 1000);
-            HerzVPoint[2] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 10);
-            HerzVPoint[3] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 20);
-            HerzVPoint[4] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 50);
-            HerzVPoint[5] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 100);
-
-            VoltPoint = new AcVariablePoint[3];
+            
+            
             //конкретно для первой точки 2 нужны не все частоты, поэтому вырежем только необходимые
-            var trimHerzArr = new MeasPoint[4];
-            Array.Copy(HerzVPoint, trimHerzArr, 4);
-            VoltPoint[0] = new AcVariablePoint((decimal)0.2 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers,
-                                               trimHerzArr);
-            VoltPoint[1] = new AcVariablePoint(1 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint);
-            VoltPoint[2] =
-                new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units,
-                                    thisRangeUnits.Multipliers, HerzVPoint);
+            
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 1000}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 10, Multipliers = UnitMultipliers.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency {Value = 20, Multipliers = UnitMultipliers.Kilo}));
+
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers,  new Frequency{Value = 40}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers,  new Frequency{Value = 1000}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers,  new Frequency{Value = 10, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers,  new Frequency{Value = 20, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers,  new Frequency{Value = 50, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers,  new Frequency{Value = 100, Multipliers = UnitMultipliers.Kilo}));
+
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 1000}));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 10, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 20, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 50, Multipliers = UnitMultipliers.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 100, Multipliers = UnitMultipliers.Kilo }));
         }
 
         /// <inheritdoc />
@@ -1325,7 +1317,7 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 100;
 
-            RangeResolution = new AcVariablePoint(10, MeasureUnits.V, UnitMultipliers.Mili);
+            RangeResolution = new MeasPoint<Voltage>(10,  UnitMultipliers.Mili);
 
             HerzVPoint = new MeasPoint[6];
             HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40, true);
@@ -1339,12 +1331,9 @@ namespace APPA_107N_109N
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
             var trimHerzArr = new MeasPoint[4];
             Array.Copy(HerzVPoint, trimHerzArr, 4);
-            VoltPoint[0] = new AcVariablePoint((decimal)0.2 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, trimHerzArr);
-            VoltPoint[1] = new AcVariablePoint(1 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint, true);
-            VoltPoint[2] = new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint, true);
+            VoltPoint[0] = new AcVariablePoint((decimal)0.2 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, trimHerzArr);
+            VoltPoint[1] = new AcVariablePoint(1 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, HerzVPoint, true);
+            VoltPoint[2] = new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, HerzVPoint, true);
         }
 
         /// <inheritdoc />
