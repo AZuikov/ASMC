@@ -14,12 +14,12 @@ using ASMC.Devices.WithoutInterface.Voltmetr;
 
 namespace B5_71_PRO_Abstract
 {
-    public class SelectRangeViewModel<T> : FromBaseViewModel where T : IPhysicalQuantity, new()
+    public class SelectRangeViewModel : FromBaseViewModel 
 
     {
     private string _description = "Выбор установленного предела измерения:";
-    private List<MeasPoint<T>> _ranges;
-    private MeasPoint<T> _SelectRange;
+    private List<MeasPoint<Voltage>> _ranges;
+    private MeasPoint<Voltage> _SelectRange;
 
     /// <summary>
     /// Текст комментария для пользователя.
@@ -33,7 +33,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Списко пределов, в выпадающем списке.
     /// </summary>
-    public List<MeasPoint<T>> Ranges
+    public List<MeasPoint<Voltage>> Ranges
     {
         get => _ranges;
         set => SetProperty(ref _ranges, value, nameof(Ranges));
@@ -42,7 +42,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Выбранный пользователем предел.
     /// </summary>
-    public MeasPoint<T> SelectRange
+    public MeasPoint<Voltage> SelectRange
     {
         get => _SelectRange;
         set => SetProperty(ref _SelectRange, value, nameof(SelectRange));
@@ -50,8 +50,12 @@ namespace B5_71_PRO_Abstract
 
     public SelectRangeViewModel()
     {
-        var b357 = new B3_57();
-        _ranges = new List<MeasPoint<T>>(b357.Ranges);
+        var b357 = new B3_57(); 
+            _ranges = new List<MeasPoint<Voltage>>();
+            foreach (var val in b357.Ranges)
+        {
+            _ranges.Add(val);
+        }
         SelectRange = Ranges.FirstOrDefault();
 
     }

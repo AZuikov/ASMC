@@ -1,18 +1,22 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.IO.Ports;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AP.Utils.Data;
-using NLog;
+using System.Threading;
+using System.Timers;
+using Microsoft.Build.Utilities;
+using Logger = NLog.Logger;
+using Timer = System.Timers.Timer;
 
 namespace ASMC.Devices.Port.ZipNu4Pribor
 {
-    public class Km300P: ComPort
+    public class Km300P : ComPort
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly byte[] TestConnectByte = new byte[] { 0x03, 0x44, 0x03, 0x08 };
+
         /// <summary>
         /// Входы компаратора.
         /// </summary>
@@ -22,38 +26,45 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             InputU2 = 0x08
         }
 
-       [Flags]
+        [Flags]
         public enum MeasureMode
         {
             /// <summary>
             /// Предел измерения 100мв.
             /// </summary>
             Range100mV = 0x0,
+
             /// <summary>
             /// Предел измерения 1в.
             /// </summary>
             Range1V = 0x01,
+
             /// <summary>
             /// Предел измерения 10в.
             /// </summary>
             Range10V = 0x02,
+
             /// <summary>
             /// Предел измерения 100в.
             /// </summary>
-             Range100V = 0x03,
+            Range100V = 0x03,
+
             /// <summary>
             /// Предел измерения 1000в.
             /// </summary>
             Range1000V = 0x04,
+
             /// <summary>
             /// Режим измерения разности напряжений между входом U1 и U2.
             /// </summary>
             IsDeltaVoltMeasure = 0x10,
+
             //[DoubleValue(4)] DeltaVoltMeasureOff = 0x00,
             /// <summary>
             /// Автоматический режим измерения.
             /// </summary>
-             IsAutoMeasureMode = 0x20,
+            IsAutoMeasureMode = 0x20,
+
             /// <summary>
             /// Ручной  режим измерения.
             /// </summary>
@@ -61,13 +72,25 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             /// <summary>
             /// Прибор может ответить что значение выше предела измерения.
             /// </summary>
-             Overload = 0x80
+            Overload = 0x80
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly AutoResetEvent WaitEvent = new AutoResetEvent(false);
+
+        #region Fields
+
+        //таймер
+        private readonly Timer _wait;
 
         /// <summary>
         /// Адрес устройства по умолчанию.
         /// </summary>
-        private byte adress = 1;
+        private readonly byte adress = 1;
+
+        private bool _flagTimeout;
+
+        #endregion Fields
 
         //SpeedRate baudRate = SpeedRate.R57600;
         //Parity parity = Parity.None;
@@ -78,44 +101,80 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         {
             UserType = "КМ300Р";
             BaudRate = SpeedRate.R57600;
-            
+            IsDtrOn = true;
+            IsRTS = true;
+
+            _wait = new Timer();
+            _wait.Interval = 35000;
+            _wait.Elapsed += TWait_Elapsed;
+            _wait.AutoReset = false;
         }
 
+        #region Methods
 
-        protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        public override void Dispose()
         {
-            
-            
-            List<byte> _readData = new List<byte>();
-            var port = (SerialPort)sender;
-            try
-            {
-                Open();
-                byte firstByteAdress = (byte) port.ReadByte();
-                int SecondByteCadrLeght = (int) port.ReadByte(); //длина посылки которую нужно считать
-                
-                while (_readData.Count < SecondByteCadrLeght)
-                {
-                    _readData.Add((byte) port.ReadByte());
-                }
+            _wait?.Dispose();
+            base.Dispose();
+        }
 
-                DiscardInBuffer();
-                
-            }
-            catch (Exception a)
+        /// <summary>
+        /// Получить измеренное значение.
+        /// </summary>
+        public  void GetMeasureValue()
+        {
+            Sincronization(TestConnectByte); // спамим тест-обмен
+            SendQuery(new byte[] { 0x03, 0x44, 0x03, 0x21 });//получаем измеренное значение
+        }
+
+        
+
+        /// <summary>
+        /// Включение режима измерения.
+        /// </summary>
+        public void MeasureModeOn()
+        {
+            WriteData(new byte[] { 0x03, 0x44, 0x03, 0x20 }, false);//включаем режим измерения
+            Thread.Sleep(500);
+        }
+
+        /// <summary>
+        /// Сброс прибора.
+        /// </summary>
+        public void Reset()
+        {
+            WriteData(new byte[] { 0x03, 0x44, 0x03, 0x01 });
+        }
+
+        /// <summary>
+        /// Посылает запрос. Программа ждет ответ.
+        /// </summary>
+        /// <param name="sendThisArr"></param>
+        public void SendQuery(byte[] sendThisArr)
+        {
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(sendThisArr);
+            sendThisArr = new[] { adress }.Concat(sendThisArr).ToArray();
+            sendThisArr = sendThisArr.Concat(new[] { resultCRC }).ToArray();
+
+            Open();
+            //отправили команду запроса
+            Write(sendThisArr, 0, sendThisArr.Length);
+            _wait.Start();
+
+            WaitEvent.WaitOne();
+            if (_flagTimeout)
             {
-                Logger.Error(a);
-            }
-            finally
-            {
-                Close();
+                _flagTimeout = false;
+                var errorMessage = $"{UserType} не отвечает.";
+                Logger.Debug(errorMessage);
+                throw new TimeoutException(errorMessage);
             }
         }
 
         /// <summary>
         /// Устанавливает напряжение на выходе калибратора.
         /// </summary>
-        /// <param name="inVolt">Напряжение в вольтах на выходе калибратора.</param>
+        /// <param name = "inVolt">Напряжение в вольтах на выходе калибратора.</param>
         public void SetOutVoltOnCalibrator(decimal inVolt)
         {
             var valueArr = CRCUtilsKM300.ConvertValueToBcdCode((double)Math.Abs(inVolt));
@@ -123,100 +182,118 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             resultByteArr = resultByteArr.Concat(valueArr).ToArray();
 
             if (inVolt > 0)
-            {
                 resultByteArr = resultByteArr.Concat(new byte[] { 0x02, 0x03, 0xe8 }).ToArray();
-            }
             else
-            {
                 //Если значение должно быть со знаком минус, тогда берем 0x07
                 resultByteArr = resultByteArr.Concat(new byte[] { 0x07, 0x03, 0xe8 }).ToArray();
-            }
 
-
-
-            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
-            
-
-            resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
-            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
-
-            Open();
-            Write(resultByteArr, 0, resultByteArr.Length);
-            Close();
-        }
-
-        public decimal GetMeasureVolt(MeasureInputVolt input)
-        {
-            byte[] resultByteArr = new byte[] { 0x03, 0x44, 0x03, 0x21 };
-            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
-            resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
-            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
-
-            Open();
-            //записали
-            Write(resultByteArr, 0, resultByteArr.Length);
-            //теперь считываем
-            //нужно написать метод считывания побайтам
-            Close();
-
-            return 0;
-        }
-
-
-        /// <summary>
-        /// Включение режима измерения.
-        /// </summary>
-        public void MeasureModeOn()
-        {
-
-            byte[] resultByteArr = new byte[] { 0x03, 0x44, 0x03, 0x20 };
-            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
-            resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
-            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
-
-            Open();
-            Write(resultByteArr, 0, resultByteArr.Length);
-            Close();
+            WriteData(resultByteArr);
         }
 
         /// <summary>
-        /// Задает текущий вход для измерения (вход U1 или U2)
+        /// Задает текущий вход для измерения (вход U1 или U2).
         /// </summary>
-        public void SetCurrentVIn(MeasureInputVolt input)
+        public void SetVoltInput(MeasureInputVolt input)
         {
-            byte[] resultByteArr = new byte[] { 0x04, 0x44, 0x03, 0x24 };
+            byte[] resultByteArr = { 0x04, 0x44, 0x03, 0x24 };
             if (input == MeasureInputVolt.InputU1)
-                resultByteArr = resultByteArr.Concat(new byte[] {0x20}).ToArray();
+                resultByteArr = resultByteArr.Concat(new byte[] { 0x20 }).ToArray();
             else
                 resultByteArr = resultByteArr.Concat(new byte[] { 0x28 }).ToArray();
-            
-            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
-            resultByteArr = new byte[] { 0x03 }.Concat(resultByteArr).ToArray();
-            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
 
-            Open();
-            Write(resultByteArr, 0, resultByteArr.Length);
-            Close();
-
+            WriteData(resultByteArr);
         }
 
-
+        private List<byte> _readData = new List<byte>();
 
         /// <summary>
-        /// Сброс.
+        /// Метод выполняет функцию "Тест-Обмен"а из руководства на калибратор.
         /// </summary>
-        public void Reset()
+        protected bool Sincronization(byte[] sendBytes)
         {
-            byte[] resultByteArr = new byte[]{0x03,0x44,0x03,0x01};
-            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(resultByteArr);
-            resultByteArr = new byte[] { adress }.Concat(resultByteArr).ToArray();
-            resultByteArr = resultByteArr.Concat(new[] { resultCRC }).ToArray();
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(sendBytes);
+            byte[] ResultBytePack = new[] { adress }.Concat(sendBytes).ToArray();
+            ResultBytePack = ResultBytePack.Concat(new[] { resultCRC }).ToArray();
 
-            Open();
-            Write(resultByteArr, 0, resultByteArr.Length);
-            Close();
+            while (true)
+            {
+                Open();
+                _readData.Clear();//еще выполняется очистка при приеме данных
+                Write(ResultBytePack, 0, ResultBytePack.Length);
+                Thread.Sleep(300);
+                if (_readData.Count > 3)// нужно контрольную сумму проверять, а не число элементов в листе
+                    break;
+            }
+            Close();// точно тут нужно закрывать порт?
+
+            return true;
         }
 
+        /// <summary>
+        /// Запись команды в виде массива байт.
+        /// </summary>
+        /// <param name="byteToWrite"></param>
+        /// /// <param name="closePort">Закрывает порт после записи, если true.</param>
+        public void WriteData(byte[] byteToWrite, bool closePort = true)
+        {
+            var resultCRC = CRCUtilsKM300.CalcCRCforKm300(byteToWrite);
+            byteToWrite = new[] { adress }.Concat(byteToWrite).ToArray();
+            byteToWrite = byteToWrite.Concat(new[] { resultCRC }).ToArray();
+
+            Open();
+            Write(byteToWrite, 0, byteToWrite.Length);
+            if (closePort) Close();
+        }
+
+        protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                //будем делать
+                for (int j = 0; j < 50; j++)
+                {
+                    var buffer1 = new byte[32];
+                    int newArrSize = ReadByte(buffer1, 0, buffer1.Length, false);
+                    // считанные данные
+                    byte[] readBytes = new byte[newArrSize];
+                    Array.Copy(buffer1, readBytes, newArrSize);
+
+                    //проверка сходимости контрольной суммы
+                    byte[] ArrToCalcCRC = new byte[readBytes.Length - 2];//создаем массив что бы отбросить CRC  сумму и адрес (первый байт)
+                    Array.Copy(readBytes, 1, ArrToCalcCRC, 0, readBytes[1] + 1); //отбрасываем CRC сумму  и адрес
+                   // _readData.Clear();
+                    _readData.AddRange(readBytes);
+                    _wait.Stop();
+                    WaitEvent.Set();
+
+                    DiscardInBuffer();
+                    //Close();
+                    return;
+
+                    //if (readBytes[readBytes.Length - 1] == CRCUtilsKM300.CalcCRCforKm300(ArrToCalcCRC))
+                    //{//если контрольная сумма совпадает то все хорошо
+                    //}
+                }
+
+                throw new DataException($"{UserType}: После 10 попыток считывания данные не поступили.");
+            }
+            catch (Exception a)
+            {
+                Logger.Error(a);
+            }
+            //finally
+            //{
+            //    Close();
+            //}
+        }
+
+        private void TWait_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _flagTimeout = true;
+            WaitEvent.Set();
+        }
+
+        #endregion Methods
     }
 
     internal static class CRCUtilsKM300
@@ -639,6 +716,6 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             return 0;
         }
 
-        #endregion
+        #endregion Methods
     }
 }

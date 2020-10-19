@@ -112,7 +112,7 @@ namespace ASMC.Data.Model
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
-                throw new InvalidCastException("Не возможно производить омпрации с разными физическими величинами");
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
 
             var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Unit.GetDoubleValue() +
                       b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Unit.GetDoubleValue();
@@ -129,7 +129,7 @@ namespace ASMC.Data.Model
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
-                throw new InvalidCastException("Не возможно производить омпрации с разными физическими величинами");
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
 
             var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Unit.GetDoubleValue() -
                       b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Unit.GetDoubleValue();
@@ -147,7 +147,7 @@ namespace ASMC.Data.Model
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
-                throw new InvalidCastException("Не возможно производить омпрации с разными физическими величинами");
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
 
             var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Unit.GetDoubleValue() *
                       b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Unit.GetDoubleValue();
@@ -164,7 +164,7 @@ namespace ASMC.Data.Model
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
-                throw new InvalidCastException("Не возможно производить омпрации с разными физическими величинами");
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
 
             var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Unit.GetDoubleValue() /
                       b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Unit.GetDoubleValue();
@@ -217,6 +217,86 @@ namespace ASMC.Data.Model
             return new MeasPoint<TPhysicalQuantity>(a.MainPhysicalQuantity.Value / b,
                                                     a.MainPhysicalQuantity.Multipliers,
                                                     a.AdditionalPhysicalQuantity);
+        }
+
+        public static bool operator > (MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
+        {
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
+                || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
+
+            decimal A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            decimal B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            return A > B;
+
+
+        }
+
+        public static bool operator < (MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
+        {
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
+                || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
+
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            return A < B;
+
+
+        }
+
+        public static bool operator >=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
+        {
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
+                || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
+
+            decimal A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            decimal B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            return A >= B;
+
+
+        }
+
+        public static bool operator <=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
+        {
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
+                || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
+                throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
+
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            return A <= B;
+
+
+        }
+
+        public static bool operator !=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
+        {
+            if (a == null || b == null) return false;
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
+                || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
+                return true;
+
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            return A != B;
+
+
+        }
+
+        public static bool operator ==(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
+        {
+            if (!(a != null || b != null)) return false;
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
+                || !Enumerable.SequenceEqual(a.AdditionalPhysicalQuantity, b.AdditionalPhysicalQuantity))
+                return false;
+
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            return A == B;
+
+
         }
     }
 
