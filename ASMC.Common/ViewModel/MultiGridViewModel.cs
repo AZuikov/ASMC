@@ -13,7 +13,7 @@ namespace ASMC.Common.ViewModel
 
         #region Property
 
-        public ObservableCollection<ITemTable> Content { get; } = new ObservableCollection<ITemTable>();
+        public ObservableCollection<IItemTable> Content { get; } = new ObservableCollection<IItemTable>();
 
         #endregion
     }

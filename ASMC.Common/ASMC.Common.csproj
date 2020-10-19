@@ -100,7 +100,7 @@
     <Compile Include="UI\QuestionTextService.cs" />
     <Compile Include="UI\SettingService.cs" />
     <Compile Include="ViewModel\Cell.cs" />
-    <Compile Include="ViewModel\ITemTable.cs" />
+    <Compile Include="ViewModel\IItemTable.cs" />
     <Compile Include="ViewModel\MultiGridViewModel.cs" />
     <Compile Include="ViewModel\QuestionTextViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />

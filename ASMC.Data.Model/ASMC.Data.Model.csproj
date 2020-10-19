@@ -63,6 +63,7 @@
     <Compile Include="Interface\IBasicOperation.cs" />
     <Compile Include="Interface\ICell.cs" />
     <Compile Include="MeasurePointAndMeasUtils.cs" />
+    <Compile Include="PhysicalQuantity\PhysicalQuantity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="UserItemOperation.cs" />
@@ -77,5 +78,6 @@
       <Name>AP.Utils</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

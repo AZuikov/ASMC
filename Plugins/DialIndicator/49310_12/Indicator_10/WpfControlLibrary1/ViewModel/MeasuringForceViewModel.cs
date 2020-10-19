@@ -16,25 +16,39 @@ namespace Indicator_10.ViewModel
     {
         public MeasuringForceViewModel()
         {
-            this.Content[0].Cells.ListChanged += Cells_ListChanged;
-            this.Content[1].Cells.ListChanged += Cells_ListReversChanged;
+            this.Content.CollectionChanged += Content_CollectionChanged;
         }
 
-        private void Cells_ListReversChanged(object sender, ListChangedEventArgs e)
+        private void Content_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (e.ListChangedType == ListChangedType.ItemChanged)
+            if (Content.Count <= 2) return;
+
+            ((Cell)Content[0].Cells[1]).PropertyChanged += MeasuringForceViewModel_PropertyChanged;
+            ((Cell)Content[1].Cells[1]).PropertyChanged += ReversMeasuringForceViewModel_PropertyChanged;
+
+        }
+
+        private void ReversMeasuringForceViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Cell.Value))
             {
-                this.Content[2].Cells[0].Value = sender;
+                this.Content[2].Cells[1].Value = ((Cell)sender).Value;
             }
         }
 
-        private void Cells_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        private void MeasuringForceViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.ListChangedType == ListChangedType.ItemChanged)
+            if (e.PropertyName==nameof(Cell.Value))
             {
-                this.Content[2].Cells[1].Value = sender;
+                this.Content[2].Cells[0].Value = ((Cell) sender).Value;
             }
-          
+        }
+
+        /// <inheritdoc />
+        protected override bool CanSelect()
+        {
+            if (Content.Count <= 2) return false;
+            return Content.All(q => q.Cells.All(p => !string.IsNullOrWhiteSpace(p?.Value?.ToString())));
         }
     }
 }

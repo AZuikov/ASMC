@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.WithoutInterface.HourIndicator
 {
@@ -16,7 +17,7 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// </summary>
         public double PerpendicularPressureMax { get; set; }
 
-        public MeasPoint Range { get; set; }
+        public MeasPoint<Length> Range { get; set; }
 
         #endregion
 
@@ -34,24 +35,24 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// <summary>
         /// Максимальное допутсимое усилие
         /// </summary>
-        public class MaxMeasuringForce
+        public sealed class MaxMeasuringForce
         {
             #region Property
 
             /// <summary>
             /// Измерение хода
             /// </summary>
-            public MeasPoint ChangeCourse { get; set; }
+            public MeasPoint<Force> ChangeCourse { get; set; }
 
             /// <summary>
             /// Колибание при прямом/обратном ходу
             /// </summary>
-            public MeasPoint Oscillatons { get; set; }
+            public MeasPoint<Force> Oscillatons { get; set; }
 
             /// <summary>
             /// Максимальное усилие DataGridViewHeaderBorderStyle прямом ходе
             /// </summary>
-            public MeasPoint StraightRun { get; set; }
+            public MeasPoint<Force> StraightRun { get; set; }
 
             #endregion
         }

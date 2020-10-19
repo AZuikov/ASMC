@@ -112,7 +112,7 @@ namespace TDS2014B
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)3.5);
+            RiseTimeTol = new MeasPoint(MeasureUnits.Time, UnitMultipliers.Nano, (decimal)3.5);
         }
     }
 }

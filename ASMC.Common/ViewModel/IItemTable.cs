@@ -3,7 +3,7 @@ using ASMC.Data.Model.Interface;
 
 namespace ASMC.Common.ViewModel
 {
-    public interface ITemTable:INotifyPropertyChanged
+    public interface IItemTable:INotifyPropertyChanged
     {
         string Header { get; set; }
         BindingList<ICell> Cells { get; }

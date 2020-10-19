@@ -22,7 +22,7 @@ namespace Indicator_10.First
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint(MeasureUnits.Metr, UnitMultipliers.Micro, 10), UserType="ИЧ, мод. ИЧ10"  },  }
+                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint(MeasureUnits.Length, UnitMultipliers.Micro, 10), UserType="ИЧ, мод. ИЧ10"  },  }
                 }
             };
             UserItemOperation = new IUserItemOperationBase[]

@@ -9,6 +9,7 @@ using System.Xml;
 using AP.Utils.Data;
 using AP.Utils.Helps;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using NLog;
 
@@ -603,16 +604,16 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// </summary>
                     /// <param name="inPoint">Значение периода с единицами измерения.</param>
                     /// <returns></returns>
-                    public Calibr9500B SetPeriod(MeasPoint inPoint)
+                    public Calibr9500B SetPeriod(MeasPoint<Time> inPoint)
                     {
-                        if (inPoint.Units != MeasureUnits.sec)
+                        if (inPoint.MainPhysicalQuantity.Unit != MeasureUnits.Time)
                         {
                             string errorStr = $"Единицы измерения не секунды {inPoint.Description}";
                             Logger.Error(errorStr);
                             throw new ArgumentException(errorStr);
                         }
 
-                        _calibrMain.WriteLine($"per {((double)inPoint.Value*inPoint.UnitMultipliersUnit.GetDoubleValue()).ToString().Replace(',','.')}");
+                        _calibrMain.WriteLine($"per {((double)inPoint.MainPhysicalQuantity.Value*inPoint.MainPhysicalQuantity.Multipliers.GetDoubleValue()).ToString().Replace(',','.')}");
                         return _calibrMain;
                     }
 
@@ -773,18 +774,18 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// <summary>
         /// Максимальная частота для модели активной головки.
         /// </summary>
-        private MeasPoint MaxFreq;
+        private MeasPoint<Frequency> MaxFreq;
         /// <summary>
         /// Длительность фронта для данной головки
         /// </summary>
-        private MeasPoint[] ImpulseWidth;
+        private MeasPoint<Time>[] ImpulseWidth;
 
         /// <summary>
         /// Серийный (заводской) номер.
         /// </summary>
         public string HeadSerialNumb { get; protected set; }
 
-        public ActiveHeadFor9500B(MeasPoint maxFreq, MeasPoint[] impulseWidth)
+        public ActiveHeadFor9500B(MeasPoint<Frequency> maxFreq, MeasPoint<Time>[] impulseWidth)
         {
             
             MaxFreq = maxFreq;
@@ -794,7 +795,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// <summary>
         /// Какая максимальная частота у головы.
         /// </summary>
-        public MeasPoint GetMaxFreq
+        public MeasPoint<Frequency> GetMaxFreq
         {
             get { return MaxFreq; }
         }
@@ -802,7 +803,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
         /// <summary>
         /// Возможные длительности импульса головы.
         /// </summary>
-        public MeasPoint[] GetImpulseWidthArr
+        public MeasPoint<Time>[] GetImpulseWidthArr
         {
             get { return ImpulseWidth; }
         }
@@ -816,8 +817,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9510 : ActiveHeadFor9500B
     {
-        public ActiveHead9510() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 1),
-                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 500)})
+        public ActiveHead9510() : base(new MeasPoint<Frequency>(1,UnitMultipliers.Giga),
+                                       new [] {new MeasPoint<Time>( 500, UnitMultipliers.Pico) })
         {
            
             ModelName = "9510";
@@ -826,11 +827,11 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9530 : ActiveHeadFor9500B
     {
-        public ActiveHead9530() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, (decimal) 3.2),
-                                       new MeasPoint[]
+        public ActiveHead9530() : base(new MeasPoint<Frequency>((decimal) 3.2, UnitMultipliers.Giga),
+                                       new []
                                        {
-                                           new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 150),
-                                           new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 500)
+                                           new MeasPoint<Time>(150, UnitMultipliers.Pico),
+                                           new MeasPoint<Time>(500, UnitMultipliers.Pico)
                                        })
         {
            
@@ -840,8 +841,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9550 : ActiveHeadFor9500B
     {
-        public ActiveHead9550() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 14),
-                                       new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 25)})
+        public ActiveHead9550() : base(new MeasPoint<Frequency>( 14, UnitMultipliers.Giga),
+                                       new [] {new MeasPoint<Time>(25, UnitMultipliers.Pico) })
         {
             
             ModelName = "9550";
@@ -850,8 +851,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9560 : ActiveHeadFor9500B
     {
-        public ActiveHead9560() : base(new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Giga, 6),
-                                                new MeasPoint[] {new MeasPoint(MeasureUnits.sec, UnitMultipliers.Pico, 70)})
+        public ActiveHead9560() : base(new MeasPoint<Frequency>(6, UnitMultipliers.Giga),
+                                                new [] {new MeasPoint<Time>(70, UnitMultipliers.Pico) })
         {
            
             ModelName = "9560";
