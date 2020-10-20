@@ -527,16 +527,16 @@ namespace ASMC.Data.Model
     /// Предоставляет реализацию хранилища диапазонов (по виду измерения). Фактически перечень пределов СИ.
     /// </summary>
     //public class RangeStorage<T> where T : IPhysicalQuantity, new()
-    public class RangeStorage<IPhysicalQuantity> //where T : IPhysicalQuantity, new()
+    public class RangeStorage<T> where T : IPhysicalQuantity, new()
     {
         /// <summary>
         /// Наименование.
         /// </summary>
         public string Name { get; set; }
 
-        public IPhysicalQuantity[] Ranges { get; set; }
+        public PhysicalRange<T>[] Ranges { get; set; }
 
-        public RangeStorage(params IPhysicalQuantity[] inPhysicalRange)
+        public RangeStorage(params PhysicalRange<T>[] inPhysicalRange)
         {
             Ranges = inPhysicalRange;
         }
