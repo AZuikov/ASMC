@@ -142,8 +142,8 @@ namespace ASMC.Data.Model
             }
 
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Unit.GetDoubleValue() +
-                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Unit.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() +
+                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -174,8 +174,8 @@ namespace ASMC.Data.Model
                 }
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Unit.GetDoubleValue() -
-                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Unit.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() -
+                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -206,8 +206,8 @@ namespace ASMC.Data.Model
                 }
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Unit.GetDoubleValue() *
-                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Unit.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
+                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -238,8 +238,8 @@ namespace ASMC.Data.Model
                 }
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Unit.GetDoubleValue() /
-                b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Unit.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() /
+                b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -475,6 +475,63 @@ namespace ASMC.Data.Model
 
     #endregion
 }
+
+    /// <summary>
+    /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
+    /// </summary>
+    public class PhysicalRange  <TPhysicalQuantity> : ICloneable, IComparable<PhysicalRange<TPhysicalQuantity>> where TPhysicalQuantity : IPhysicalQuantity, new()
+    {
+        /// <summary>
+        /// Нименование.
+        /// </summary>
+        private string Name;
+
+        /// <summary>
+        /// Значение величины, описывающее начало диапазона (входит в диапазон).
+        /// </summary>
+        public MeasPoint<TPhysicalQuantity> Start;
+        /// <summary>
+        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
+        /// </summary>
+        public MeasPoint<TPhysicalQuantity> Stop;
+
+        public MeasureUnits Unit { get; protected set; }
+
+        public PhysicalRange(MeasPoint<TPhysicalQuantity> startRange, MeasPoint<TPhysicalQuantity> stopRange)
+        {
+            if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
+            {
+                throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            }
+            if (startRange.AdditionalPhysicalQuantity != null)
+            {
+                if (stopRange.AdditionalPhysicalQuantity != null ||
+                    startRange.AdditionalPhysicalQuantity.SequenceEqual(stopRange.AdditionalPhysicalQuantity))
+                    throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами (вложение)");
+            }
+            else
+            {
+                if (stopRange.AdditionalPhysicalQuantity != null)
+                {
+                    throw new ArgumentException("Первая точка в конструкторе диапазона не инициализирована (null).");
+                }
+            }
+
+            Start = startRange;
+            Stop = stopRange;
+            Unit = startRange.MainPhysicalQuantity.Unit;
+        }
+
+        public object Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int CompareTo(PhysicalRange<TPhysicalQuantity> other)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 
     /// <summary>
