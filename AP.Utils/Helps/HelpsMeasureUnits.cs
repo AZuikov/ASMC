@@ -51,6 +51,8 @@ namespace AP.Utils.Helps
         decimal Value { get; set; }
     }
 
+   
+
     /// <summary>
     /// Интерфейст позволяющий конвертировать физическую величину в различные системы измерения.
     /// </summary>

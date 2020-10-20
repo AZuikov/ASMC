@@ -479,7 +479,7 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange  <TPhysicalQuantity>  where TPhysicalQuantity : IPhysicalQuantity, new()
+    public class PhysicalRange  <TPhysicalQuantity>  where TPhysicalQuantity : IPhysicalQuantity
     {
         
 
@@ -523,20 +523,30 @@ namespace ASMC.Data.Model
 
        
     }
+    public interface IRangeStorage
+    {
+        /// <summary>
+        /// Наименование.
+        /// </summary>
+        string Name { get; set; }
+
+        IEnumerable<T  > [] Ranges  { get; set; } 
+    }
     /// <summary>
     /// Предоставляет реализацию хранилища диапазонов (по виду измерения). Фактически перечень пределов СИ.
     /// </summary>
     //public class RangeStorage<T> where T : IPhysicalQuantity, new()
-    public class RangeStorage<T> where T : IPhysicalQuantity, new()
+    public class RangeStorage<T> : IRangeStorage<IPhysicalQuantity> where T: IPhysicalQuantity, new()
     {
         /// <summary>
         /// Наименование.
         /// </summary>
         public string Name { get; set; }
 
-        public PhysicalRange<T>[] Ranges { get; set; }
+        public IEnumerable<IPhysicalQuantity>[] Ranges { get; set; }
 
-        public RangeStorage(params PhysicalRange<T>[] inPhysicalRange)
+
+        public RangeStorage(params IEnumerable<IPhysicalQuantity>[] inPhysicalRange)
         {
             Ranges = inPhysicalRange;
         }
