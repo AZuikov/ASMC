@@ -30,6 +30,16 @@ namespace Indicator_10
         public MeasuringForce(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение измерительного усилия и его колебания";
+            Sheme = new ShemeImage()
+            {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема",
+                Number = 1,
+                FileName = @"appa_10XN_ma_5522A.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
+
+
         }
 
         #region Methods

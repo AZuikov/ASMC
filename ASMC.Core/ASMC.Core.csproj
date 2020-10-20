@@ -138,9 +138,6 @@
     <Compile Include="View\FormView.xaml.cs">
       <DependentUpon>FormView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ImageView.xaml.cs">
-      <DependentUpon>ImageView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\WorkView.xaml.cs">
       <DependentUpon>WorkView.xaml</DependentUpon>
     </Compile>
@@ -151,10 +148,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\FormView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\ImageView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

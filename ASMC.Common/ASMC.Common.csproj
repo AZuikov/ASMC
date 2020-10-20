@@ -105,6 +105,9 @@
     <Compile Include="ViewModel\QuestionTextViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />
     <Compile Include="ViewModel\TableViewModel.cs" />
+    <Compile Include="View\ImageView.xaml.cs">
+      <DependentUpon>ImageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\InputTableControl.xaml.cs">
       <DependentUpon>InputTableControl.xaml</DependentUpon>
     </Compile>
@@ -123,6 +126,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\ValueContentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ImageView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
