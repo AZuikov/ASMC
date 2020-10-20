@@ -481,10 +481,7 @@ namespace ASMC.Data.Model
     /// </summary>
     public class PhysicalRange  <TPhysicalQuantity>  where TPhysicalQuantity : IPhysicalQuantity, new()
     {
-        /// <summary>
-        /// Наименование.
-        /// </summary>
-        public string Name { get; set; }
+        
 
         /// <summary>
         /// Значение величины, описывающее начало диапазона (входит в диапазон).
@@ -525,6 +522,24 @@ namespace ASMC.Data.Model
        
 
        
+    }
+    /// <summary>
+    /// Предоставляет реализацию хранилища диапазонов (по виду измерения). Фактически перечень пределов СИ.
+    /// </summary>
+    //public class RangeStorage<T> where T : IPhysicalQuantity, new()
+    public class RangeStorage<IPhysicalQuantity> //where T : IPhysicalQuantity, new()
+    {
+        /// <summary>
+        /// Наименование.
+        /// </summary>
+        public string Name { get; set; }
+
+        public IPhysicalQuantity[] Ranges { get; set; }
+
+        public RangeStorage(params IPhysicalQuantity[] inPhysicalRange)
+        {
+            Ranges = inPhysicalRange;
+        }
     }
 
 
