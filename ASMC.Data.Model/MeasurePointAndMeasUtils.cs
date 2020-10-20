@@ -479,12 +479,12 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange  <TPhysicalQuantity> : ICloneable, IComparable<PhysicalRange<TPhysicalQuantity>> where TPhysicalQuantity : IPhysicalQuantity, new()
+    public class PhysicalRange  <TPhysicalQuantity>  where TPhysicalQuantity : IPhysicalQuantity, new()
     {
         /// <summary>
-        /// Нименование.
+        /// Наименование.
         /// </summary>
-        private string Name;
+        public string Name { get; set; }
 
         /// <summary>
         /// Значение величины, описывающее начало диапазона (входит в диапазон).
@@ -522,15 +522,9 @@ namespace ASMC.Data.Model
             Unit = startRange.MainPhysicalQuantity.Unit;
         }
 
-        public object Clone()
-        {
-            throw new NotImplementedException();
-        }
+       
 
-        public int CompareTo(PhysicalRange<TPhysicalQuantity> other)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 
 
