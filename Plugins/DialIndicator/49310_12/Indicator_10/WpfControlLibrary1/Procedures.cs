@@ -45,10 +45,11 @@ namespace Indicator_10
                 var dds = row as MultiErrorMeasuringOperation<object>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
-                //dataRow[0] = dds.Expected?.Description;
-                //dataRow[1] = dds.Getting?.Description;
-                //dataRow[2] = dds.LowerTolerance?.Description;
-                //dataRow[3] = dds.UpperTolerance?.Description;
+                dataRow[0] = dds.Expected?.ToString();
+                dataRow[1] = dds.Getting?.ToString();
+                dataRow[2] = dds.Error[0];
+                dataRow[3] = dds.Error[1];
+                dataRow[4] = dds.Error[2];
                 if (dds.IsGood == null)
                     dataRow[5] = ConstNotUsed;
                 else
@@ -81,6 +82,7 @@ namespace Indicator_10
         /// <inheritdoc />
         protected override void InitWork()
         {
+            
             base.InitWork();
             var operation = new MultiErrorMeasuringOperation<object>();
 
@@ -88,7 +90,7 @@ namespace Indicator_10
             var arrPoints = ich.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
             var arrReversePoint = arrPoints.Reverse().ToArray();
             var arrstraightReversePoint = ich.Range.GetArayMeasPointsInParcent(50, 50).ToArray();
-            var fullPoints = arrPoints.Concat(arrReversePoint).ToArray();
+            var fullPoints = arrPoints.Concat(arrReversePoint).Concat(arrstraightReversePoint).ToArray();
             MeasPoint<Weight>[] fullGettingPoints = null;
             IEnumerable<MeasPoint<Force>> fullMeasPoints=null;
             IEnumerable<MeasPoint<Force>> straight = null;
@@ -126,33 +128,46 @@ namespace Indicator_10
                 fullGettingPoints = straightGetting.Concat(reverseGetting).Concat(straightReverseGetting).ToArray();
 
             };
-            operation.ErrorCalculation = new Func<object, object, object>[]
-            {
-                (expected,getting)=> {return fullMeasPoints.Max()- fullMeasPoints.Min();},
-                (expected,getting)=> {return straight.Max()- straight.Min();},
-                (expected,getting)=> {return straightReverse.First()- straightReverse.Last();}
-            };
-            for (var index = 0; index < fullPoints.Length; index++)
-            {
-                var point = fullPoints[index];
-                var pointGetting = 
+  
+        
                 operation.BodyWork = () =>
-                {
-                    operation.Expected = point;
-                    operation.Getting = fullGettingPoints[index];
+                {    
+                    for (int i = 0; i < fullPoints.Length-1; i++)
+                    {
+                        operation.Expected = fullPoints[i].Clone();
+                        operation.Getting = fullGettingPoints[i].Clone();
+                        operation = (MultiErrorMeasuringOperation<object>) operation.Clone();
+                        DataRow.Add(operation);
+                    }
                 };
-                //operation.CompliteWork = () =>
-                //{
+                operation.ErrorCalculation = new Func<object, object, object>[]
+                {
+                    (expected,getting)=>
+                    {
+                        return fullMeasPoints.Max()- fullMeasPoints.Min();
+                    },
+                    (expected,getting)=>
+                    {
+                        return straight.Max()- straight.Min();
+                    },
+                    (expected,getting)=>
+                    {
+                        return straightReverse.First()- straightReverse.Last();
+                    }
+                };
+            //operation.CompliteWork = () =>
+            //{
 
-                //    return true;
-                //}
-                DataRow.Add(operation);
-            }
+            //    return true;
+            //}
 
-            IEnumerable<MeasPoint<Force>> ConvertWeightToForce(MeasPoint<Weight>[] arr)
+            DataRow.Add(operation);
+
+
+            MeasPoint<Force>[] ConvertWeightToForce(MeasPoint<Weight>[] arr)
             {
                 return arr.Select(q => new MeasPoint<Force>(((Weight)q.MainPhysicalQuantity)
-                                                           .ConvertToForce()));
+                                                           .ConvertToForce())).ToArray();
             }
 
             IEnumerable<MeasPoint<Weight>> Fill(IItemTable item)

@@ -72,7 +72,7 @@ namespace ASMC.Data.Model.Interface
         /// <summary>
         /// Позволяет получить и задать значение погрешности.
         /// </summary>
-        IEnumerable<T> Error
+        T[] Error
         {
             get;
         }
