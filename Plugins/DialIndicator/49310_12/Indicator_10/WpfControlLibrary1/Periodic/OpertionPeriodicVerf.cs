@@ -31,12 +31,23 @@ namespace Indicator_10.Periodic
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBaseSettingUi {Range = new MeasPoint<Length>(10, UnitMultipliers.Mili), UserType="ИЧ, мод. ИЧ10" } },
-                    IsCanStringConnect=false, 
-                    Description = "Индикатор часового типа",
-
+                    Devices = new IUserType[]
+                    {
+                        new IchBase
+                        {
+                            Range = new MeasPoint<Length>(10, UnitMultipliers.Mili),
+                            UserType = "ИЧ, мод. ИЧ10",
+                            MeasuringForce = new IchBase.MaxMeasuringForce
+                            {
+                                StraightRun = new MeasPoint<Force>((decimal) 1.5),
+                                Oscillatons = new MeasPoint<Force>((decimal) 0.6),
+                                ChangeCourse = new MeasPoint<Force>((decimal) 0.5)
+                            }
+                        }
+                    }
                 }
             };
+
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new MeasuringForce(this)

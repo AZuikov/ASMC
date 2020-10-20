@@ -30,14 +30,14 @@ namespace Indicator_10
         public MeasuringForce(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение измерительного усилия и его колебания";
-            Sheme = new ShemeImage()
-            {
-                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
-                Description = "Измерительная схема",
-                Number = 1,
-                FileName = @"appa_10XN_ma_5522A.jpg",
-                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
-            };
+            //Sheme = new ShemeImage()
+            //{
+            //    AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+            //    Description = "Измерительная схема",
+            //    Number = 1,
+            //    FileName = @"appa_10XN_ma_5522A.jpg",
+            //    ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            //};
 
 
         }
@@ -48,7 +48,7 @@ namespace Indicator_10
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
-
+            var ich = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
@@ -60,10 +60,14 @@ namespace Indicator_10
                 dataRow[2] = dds.Error[0];
                 dataRow[3] = dds.Error[1];
                 dataRow[4] = dds.Error[2];
-                if (dds.IsGood == null)
-                    dataRow[5] = ConstNotUsed;
-                else
-                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
+                dataRow[5] = ich.MeasuringForce.StraightRun;
+                dataRow[6] = ich.MeasuringForce.Oscillatons;
+                dataRow[7] = ich.MeasuringForce.ChangeCourse;
+
+                //if (dds.IsGood == null)
+                //    dataRow[5] = ConstNotUsed;
+                //else
+                //    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -74,19 +78,23 @@ namespace Indicator_10
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return (string[]) new[]
+            return new[]
             {
                 "Точка диапазона измерений индикатора, мм",
                 "Показания весов, г",
+                "При изменении направления хода изм. стержня",
                 "Колебание при прямом/обратном ходе",
-                "Максимальное при прямом ходе"
+                "Максимальное при прямом ходе",
+                "Допуск При изменении направления хода изм. стержня",
+                "Допуск Колебание при прямом/ обратном ходе",
+                "Допуск Максимальное при прямом ходе"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); ;
         }
 
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
-            return "Определение измерительного усилия и его колебания";
+            return "FillTabBmMeasuringForce";
         }
 
         /// <inheritdoc />
@@ -142,7 +150,7 @@ namespace Indicator_10
         
                 operation.BodyWork = () =>
                 {    
-                    for (int i = 0; i < fullPoints.Length-1; i++)
+                    for (var i = 0; i < fullPoints.Length-1; i++)
                     {
                         operation.Expected = fullPoints[i].Clone();
                         operation.Getting = fullGettingPoints[i].Clone();

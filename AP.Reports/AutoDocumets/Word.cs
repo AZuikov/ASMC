@@ -435,25 +435,34 @@ namespace AP.Reports.AutoDocumets
             if (cf.NameColumn == null) return;
             foreach (var row in tab.Rows)
             {
-                if (!DoesItNeedToSetCondition(_document.GetText(row.Cells[formatingColumn].ContentRange), cf))
+                try
                 {
-                    continue;
-                }
+                    if (!DoesItNeedToSetCondition(_document.GetText(row?.Cells[formatingColumn]?.ContentRange), cf))
+                    {
+                        continue;
+                    }
 
-                if (cf.Region == ConditionalFormatting.RegionAction.Cell)
-                {
-                    row[formatingColumn].BackgroundColor = cf.Color;
-                }
+                    if (cf.Region == ConditionalFormatting.RegionAction.Cell)
+                    {
+                        row[formatingColumn].BackgroundColor = cf.Color;
+                    }
 
-                if (cf.Region != ConditionalFormatting.RegionAction.Row)
-                {
-                    continue;
-                }
+                    if (cf.Region != ConditionalFormatting.RegionAction.Row)
+                    {
+                        continue;
+                    }
 
-                foreach (var cell in row.Cells)
-                {
-                    cell.BackgroundColor = cf.Color;
+                    foreach (var cell in row.Cells)
+                    {
+                        cell.BackgroundColor = cf.Color;
+                    }
                 }
+                catch
+                {
+
+                }
+               
+               
             }
         }
 

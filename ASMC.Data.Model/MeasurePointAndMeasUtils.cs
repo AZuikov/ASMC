@@ -479,22 +479,17 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange  <TPhysicalQuantity>  where TPhysicalQuantity : IPhysicalQuantity
+    public class PhysicalRange<T>: IPhysicalRange<object> where T: IPhysicalQuantity, new() 
     {
-        
+        /// <inheritdoc />
+        public object Start { get; set; }
 
-        /// <summary>
-        /// Значение величины, описывающее начало диапазона (входит в диапазон).
-        /// </summary>
-        public MeasPoint<TPhysicalQuantity> Start;
-        /// <summary>
-        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
-        /// </summary>
-        public MeasPoint<TPhysicalQuantity> Stop;
+        /// <inheritdoc />
+        public object Stop { get; set; }
 
         public MeasureUnits Unit { get; protected set; }
 
-        public PhysicalRange(MeasPoint<TPhysicalQuantity> startRange, MeasPoint<TPhysicalQuantity> stopRange)
+        public PhysicalRange(MeasPoint<T> startRange, MeasPoint<T> stopRange)
         {
             if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
             {
@@ -523,30 +518,36 @@ namespace ASMC.Data.Model
 
        
     }
-    public interface IRangeStorage
+
+    public interface IPhysicalRange<T>
     {
         /// <summary>
-        /// Наименование.
+        /// Значение величины, описывающее начало диапазона (входит в диапазон).
         /// </summary>
-        string Name { get; set; }
+        T Start { get; set; }
 
-        IEnumerable<T  > [] Ranges  { get; set; } 
+        /// <summary>
+        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
+        /// </summary>
+        T Stop { get; set; }
+        MeasureUnits Unit { get; }
     }
+
     /// <summary>
     /// Предоставляет реализацию хранилища диапазонов (по виду измерения). Фактически перечень пределов СИ.
     /// </summary>
     //public class RangeStorage<T> where T : IPhysicalQuantity, new()
-    public class RangeStorage<T> : IRangeStorage<IPhysicalQuantity> where T: IPhysicalQuantity, new()
+    public class RangeStorage
     {
         /// <summary>
         /// Наименование.
         /// </summary>
         public string Name { get; set; }
 
-        public IEnumerable<IPhysicalQuantity>[] Ranges { get; set; }
+        public IPhysicalRange<object>[] Ranges { get; set; }
 
 
-        public RangeStorage(params IEnumerable<IPhysicalQuantity>[] inPhysicalRange)
+        public RangeStorage(params IPhysicalRange<object>[] inPhysicalRange)
         {
             Ranges = inPhysicalRange;
         }

@@ -23,7 +23,10 @@ namespace Indicator_10.First
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint<Length>(10,UnitMultipliers.Micro ), UserType="ИЧ, мод. ИЧ10"  },  }
+                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint<Length>(10,UnitMultipliers.Micro ), 
+                        UserType="ИЧ, мод. ИЧ10", 
+                        MeasuringForce = new IchBase.MaxMeasuringForce{StraightRun=new MeasPoint<Force>((decimal) 1.5), 
+                            Oscillatons= new MeasPoint<Force>((decimal)0.6), ChangeCourse= new MeasPoint<Force>((decimal)0.5) }  }}
                 }
             };
             UserItemOperation = new IUserItemOperationBase[]
