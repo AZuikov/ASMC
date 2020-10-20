@@ -10,6 +10,7 @@ using ASMC.Common.UI;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.UInterface.AnalogDevice.ViewModel;
 using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
@@ -30,7 +31,7 @@ namespace Indicator_10.Periodic
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBaseSettingUi {Range = new MeasPoint(MeasureUnits.Length, UnitMultipliers.Mili, 10), UserType="ИЧ, мод. ИЧ10" } },
+                    Devices = new IUserType[] {new IchBaseSettingUi {Range = new MeasPoint<Length>(10, UnitMultipliers.Mili), UserType="ИЧ, мод. ИЧ10" } },
                     IsCanStringConnect=false, 
                     Description = "Индикатор часового типа",
 
@@ -47,6 +48,7 @@ namespace Indicator_10.Periodic
                 "Граммометр часового типа Г 3,0",
                 "Прибор для поверки индикаторов ППИ-50"
             };
+            DocumentName = "ИЧ-10 Периодическая МП 2192-92";
         }
 
         /// <inheritdoc />

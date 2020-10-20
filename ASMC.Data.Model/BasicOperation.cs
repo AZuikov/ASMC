@@ -107,6 +107,28 @@ namespace ASMC.Data.Model
         }
 
     }
+
+    public class MultiErrorMeasuringOperation<T> :  BasicOperation<T>, ICloneable, IMultiErrorMeasuringOperation<T>
+    {
+        /// <inheritdoc />
+        public T[] Error 
+        {
+            get
+            {
+                return ErrorCalculation.Select(err => err(Getting, Expected)).ToArray();
+                //return ErrorCalculation.Select(ec => ec(Getting, Expected)).ToArray();
+            }
+        }
+
+        /// <inheritdoc />
+        public Func<T, T, T>[] ErrorCalculation { get; set; }
+        public override object Clone()
+        {
+            var @base = (BasicOperation<T>)base.Clone();
+            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
+        }
+    }
+
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {
         /// <inheritdoc />
@@ -120,7 +142,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MeasuringOperation<T>() { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
+            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
 
     }

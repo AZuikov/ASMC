@@ -104,6 +104,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="ИЧ-10 Периодическая МП 2192-92.docx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\AP.Extension\AP.Extension.csproj">

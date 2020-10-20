@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Indicator_10
     /// <summary>
     /// Измерительное усилие
     /// </summary>
-    public class MeasuringForce : ParagraphBase<MeasPoint<Force>>
+    public class MeasuringForce : ParagraphBase<object>
     {
         /// <inheritdoc />
         public MeasuringForce(IUserItemOperation userItemOperation) : base(userItemOperation)
@@ -41,13 +42,14 @@ namespace Indicator_10
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Force>>;
+                var dds = row as MultiErrorMeasuringOperation<object>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
-                dataRow[0] = dds.Expected?.Description;
-                dataRow[1] = dds.Getting?.Description;
-                dataRow[2] = dds.LowerTolerance?.Description;
-                dataRow[3] = dds.UpperTolerance?.Description;
+                dataRow[0] = dds.Expected?.ToString();
+                dataRow[1] = dds.Getting?.ToString();
+                dataRow[2] = dds.Error[0];
+                dataRow[3] = dds.Error[1];
+                dataRow[4] = dds.Error[2];
                 if (dds.IsGood == null)
                     dataRow[5] = ConstNotUsed;
                 else
@@ -80,23 +82,35 @@ namespace Indicator_10
         /// <inheritdoc />
         protected override void InitWork()
         {
+            
             base.InitWork();
-            var operation = new BasicOperation<MeasPoint<Force>>();
+            var operation = new MultiErrorMeasuringOperation<object>();
+
+            var ich = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
+            var arrPoints = ich.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
+            var arrReversePoint = arrPoints.Reverse().ToArray();
+            var arrstraightReversePoint = ich.Range.GetArayMeasPointsInParcent(50, 50).ToArray();
+            var fullPoints = arrPoints.Concat(arrReversePoint).Concat(arrstraightReversePoint).ToArray();
+            MeasPoint<Weight>[] fullGettingPoints = null;
+            IEnumerable<MeasPoint<Force>> fullMeasPoints=null;
             IEnumerable<MeasPoint<Force>> straight = null;
             IEnumerable<MeasPoint<Force>> reverse = null;
             IEnumerable<MeasPoint<Force>> straightReverse = null;
+            IEnumerable<MeasPoint<Weight>> straightGetting = null;
+            IEnumerable<MeasPoint<Weight>> reverseGetting = null;
+            IEnumerable<MeasPoint<Weight>> straightReverseGetting = null;
+            
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                var ich = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
-                var arrPoints = ich.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
+                arrPoints = ich.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
 
                 arrPoints.ToArray().Reverse();
                 arrPoints.Reverse();
-                var nameCell = ich.Range.MainPhysicalQuantity.Unit;
-                var first = CreateTable("Прямой ход", arrPoints.ToArray(), nameCell);
-                var too = CreateTable("Обратный ход", arrPoints.Reverse().ToArray(), nameCell);
-                var tree = CreateTable("Прямой/обратный ход", ich.Range.GetArayMeasPointsInParcent(50, 50).ToArray(), nameCell);
+                var nameCell = "г";
+                var first = CreateTable("Прямой ход", arrPoints, nameCell);
+                var too = CreateTable("Обратный ход", arrReversePoint, nameCell);
+                var tree = CreateTable("Прямой/обратный ход", arrstraightReversePoint, nameCell);
                 var vm = new MeasuringForceViewModel();
                 vm.Content.Add(first);
                 vm.Content.Add(too);
@@ -104,38 +118,71 @@ namespace Indicator_10
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("MeasuringForceView", vm, null, null);
-                straight= Fill(vm.Content[0]);
-                reverse= Fill(vm.Content[1]);
-                straightReverse=Fill(vm.Content[2]);
-               
+                straightGetting=Fill(vm.Content[0]);
+                reverseGetting= Fill(vm.Content[1]);
+                straightReverseGetting = Fill(vm.Content[2]);
+                straight = ConvertWeightToForce(straightGetting.ToArray());
+                reverse = ConvertWeightToForce(reverseGetting.ToArray());
+                straightReverse = ConvertWeightToForce(straightReverseGetting.ToArray());
+                fullMeasPoints = straight.Concat(reverse);
+                fullGettingPoints = straightGetting.Concat(reverseGetting).Concat(straightReverseGetting).ToArray();
+
             };
-            operation.BodyWork = () =>
-            {
-               var val= straight.Max() - straight.Min();
-            };
+  
+        
+                operation.BodyWork = () =>
+                {    
+                    for (int i = 0; i < fullPoints.Length-1; i++)
+                    {
+                        operation.Expected = fullPoints[i].Clone();
+                        operation.Getting = fullGettingPoints[i].Clone();
+                        operation = (MultiErrorMeasuringOperation<object>) operation.Clone();
+                        DataRow.Add(operation);
+                    }
+                };
+                operation.ErrorCalculation = new Func<object, object, object>[]
+                {
+                    (expected,getting)=>
+                    {
+                        return fullMeasPoints.Max()- fullMeasPoints.Min();
+                    },
+                    (expected,getting)=>
+                    {
+                        return straight.Max()- straight.Min();
+                    },
+                    (expected,getting)=>
+                    {
+                        return straightReverse.First()- straightReverse.Last();
+                    }
+                };
             //operation.CompliteWork = () =>
             //{
 
             //    return true;
             //}
+
             DataRow.Add(operation);
 
-            IEnumerable<MeasPoint<Force>> Fill(IItemTable item)
+
+            MeasPoint<Force>[] ConvertWeightToForce(MeasPoint<Weight>[] arr)
+            {
+                return arr.Select(q => new MeasPoint<Force>(((Weight)q.MainPhysicalQuantity)
+                                                           .ConvertToForce())).ToArray();
+            }
+
+            IEnumerable<MeasPoint<Weight>> Fill(IItemTable item)
             {
                 foreach (var cell in item.Cells)
                 {
                     var val = cell.Value.ToString().Trim().Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-
-                    var res =
-                        new Weight { Unit = MeasureUnits.Weight, Value = decimal.Parse(val) }.ConvertToForce();
-                    yield return new MeasPoint<Force>(res);
+                    yield return new MeasPoint<Weight>( new Weight {Unit = MeasureUnits.Weight, Value = decimal.Parse(val)});
                 }
             }
-            TableViewModel CreateTable(string name, MeasPoint<Length>[] measPoints, MeasureUnits UnitCell)
+            TableViewModel CreateTable(string name, MeasPoint<Length>[] measPoints, string UnitCell)
             {
                 var table = new TableViewModel { Header = name };
                 for (var i = 0; i < measPoints.Length; i++)
-                    table.Cells.Add(new Cell { ColumnIndex = 0, RowIndex = i, Name = string.Join(" ", measPoints[i].MainPhysicalQuantity.Value, UnitCell.GetStringValue()), StringFormat = @"{0} "+ UnitCell.GetStringValue() });
+                    table.Cells.Add(new Cell { ColumnIndex = 0, RowIndex = i, Name = measPoints[i].Description, StringFormat = @"{0} "+ UnitCell});
                 return table;
             }
         }

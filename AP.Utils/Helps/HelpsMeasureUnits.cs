@@ -49,8 +49,8 @@ namespace AP.Utils.Helps
         /// Позволяет задать или получить знаенчие физической величины
         /// </summary>
         decimal Value { get; set; }
-
     }
+
     /// <summary>
     /// Интерфейст позволяющий конвертировать физическую величину в различные системы измерения.
     /// </summary>
@@ -108,7 +108,7 @@ namespace AP.Utils.Helps
         /// <inheritdoc />
         public override string ToString()
         {
-            return $@"{Value} {Unit.GetStringValue()}{Multipliers.GetStringValue()}";
+            return $@"{Value} {Multipliers.GetStringValue()}{Unit.GetStringValue()}";
         }
         /// <inheritdoc />
         public UnitMultipliers Multipliers { get; set; }
@@ -120,7 +120,11 @@ namespace AP.Utils.Helps
     /// Содержит доступные множители и их обозначения.
     /// </summary>
     public enum UnitMultipliers
-    {
+    { 
+        /// <summary>
+        /// Без множителя.
+        /// </summary>
+        [StringValue("")] [DoubleValue(1)] None,
         /// <summary>
         ///  Множетель пико 1Е-12.
         /// </summary>
@@ -140,11 +144,6 @@ namespace AP.Utils.Helps
         /// Множетель мили 1Е-3.
         /// </summary>
         [StringValue("м")] [DoubleValue(1E-3)] Mili,
-
-        /// <summary>
-        /// Без множителя.
-        /// </summary>
-        [StringValue("")] [DoubleValue(1)] None,
 
         /// <summary>
         /// Множитель кило 1Е3
