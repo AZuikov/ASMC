@@ -1320,12 +1320,12 @@ namespace APPA_107N_109N
             RangeResolution = new MeasPoint<Voltage>(10,  UnitMultipliers.Mili);
 
             HerzVPoint = new MeasPoint[6];
-            HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40, true);
-            HerzVPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 1000);
-            HerzVPoint[2] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 10);
-            HerzVPoint[3] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 20);
-            HerzVPoint[4] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 50);
-            HerzVPoint[5] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, 100, true);
+            HerzVPoint[0] = new MeasPoint<Frequency>(40,   UnitMultipliers.None).IsFake = true;
+            HerzVPoint[1] = new MeasPoint<Frequency>(1000, UnitMultipliers.None);
+            HerzVPoint[2] = new MeasPoint<Frequency>(10  , UnitMultipliers.Kilo);
+            HerzVPoint[3] = new MeasPoint<Frequency>(20  , UnitMultipliers.Kilo);
+            HerzVPoint[4] = new MeasPoint<Frequency>(50  , UnitMultipliers.Kilo);
+            HerzVPoint[5] = new MeasPoint<Frequency>(100 , UnitMultipliers.Kilo).IsFake  =true;
 
             VoltPoint = new AcVariablePoint[3];
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые

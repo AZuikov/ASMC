@@ -20,7 +20,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Флаг поддельной точки. Подразумевается, если значение false, значит точка НЕ поддельная.
         /// </summary>
-        public bool IsFake { get; protected set; }
+        public bool IsFake { get;  set; }
 
         //public MeasureUnits Units { get; set; }
 
