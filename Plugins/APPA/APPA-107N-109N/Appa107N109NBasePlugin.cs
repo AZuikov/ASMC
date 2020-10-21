@@ -1319,8 +1319,9 @@ namespace APPA_107N_109N
 
             RangeResolution = new MeasPoint<Voltage>(10,  UnitMultipliers.Mili);
 
-            //RangeStorage storage = new RangeStorage(new PhysicalRange<Voltage>(new MeasPoint<Voltage>(1), new MeasPoint<Voltage>(10) ),
-            //                                        new PhysicalRange<Frequency>(new MeasPoint<Frequency>(1000), new MeasPoint<Frequency>(5000) ));
+            //RangeStorage storage = new RangeStorage(new PhysicalRange<Voltage>(new MeasPoint<Voltage>(1), new MeasPoint<Voltage>(10)),
+            //                                        new PhysicalRange<Frequency>(new MeasPoint<Frequency>(1000), new MeasPoint<Frequency>(5000)));
+            
             
 
             HerzVPoint = new MeasPoint[6];

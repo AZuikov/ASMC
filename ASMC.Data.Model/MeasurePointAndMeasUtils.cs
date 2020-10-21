@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AP.Utils.Data;
 using AP.Utils.Helps;
+using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Data.Model
 {
@@ -10,7 +11,7 @@ namespace ASMC.Data.Model
     /// Предоставляет реализация измерительной точки с номиналом величины и множителем.
     /// </summary>
     public class MeasPoint<TPhysicalQuantity> : ICloneable, IComparable<MeasPoint<TPhysicalQuantity>>
-        where TPhysicalQuantity : IPhysicalQuantity, new()
+        where TPhysicalQuantity : IPhysicalQuantity, IEquatable<TPhysicalQuantity>, new()
     {
         #region Property
 
@@ -40,11 +41,33 @@ namespace ASMC.Data.Model
 
         #region Methods
 
+        public override bool Equals(object obj)
+        {
+            var mainResult = false; // равенство основной единицы
+            var additionalResult = false; // равенство вложений
+            var pointToCompare = (MeasPoint<TPhysicalQuantity>) obj;
+           
+            if (MainPhysicalQuantity.Unit == pointToCompare.MainPhysicalQuantity.Unit &&
+                (decimal) MainPhysicalQuantity.Multipliers.GetDoubleValue() * MainPhysicalQuantity.Value ==
+                (decimal) pointToCompare.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
+                pointToCompare.MainPhysicalQuantity.Value)
+                mainResult = true;
+            if (this.AdditionalPhysicalQuantity != null && pointToCompare.AdditionalPhysicalQuantity != null)
+            {
+                Array.Sort(AdditionalPhysicalQuantity);
+                Array.Sort(pointToCompare.AdditionalPhysicalQuantity);
+                additionalResult = AdditionalPhysicalQuantity.SequenceEqual(pointToCompare.AdditionalPhysicalQuantity);
+                return mainResult && additionalResult;
+            }
+
+            return mainResult ;
+        }
+
         /// <inheritdoc />
         public override string ToString()
         {
-            var str = string.Join(" ", MainPhysicalQuantity.Value, MainPhysicalQuantity.Unit.GetStringValue()) +
-                      MainPhysicalQuantity.Multipliers.GetStringValue();
+            var str = string.Join(" ", MainPhysicalQuantity.Value, MainPhysicalQuantity.Multipliers.GetStringValue() ) +
+                     MainPhysicalQuantity.Unit.GetStringValue();
             //todo: Необходимо верно конвертировать значение decimal в строку, что бы не появлялась подпись со степенью десятки.
             return AdditionalPhysicalQuantity == null
                 ? str
@@ -428,6 +451,21 @@ namespace ASMC.Data.Model
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 || !a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
                 return false;
+            // проверка вложений
+            if (a.AdditionalPhysicalQuantity != null && b.AdditionalPhysicalQuantity != null)
+            {
+                if (a.AdditionalPhysicalQuantity.Length == b.AdditionalPhysicalQuantity.Length)
+                {
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
 
             var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
@@ -440,7 +478,7 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange<T> : IPhysicalRange<object> where T : IPhysicalQuantity, new()
+    public class PhysicalRange<T> : IPhysicalRange<object> where T : IPhysicalQuantity, IEquatable<T>, new()
     {
         public PhysicalRange(MeasPoint<T> startRange, MeasPoint<T> stopRange)
         {
@@ -528,6 +566,28 @@ namespace ASMC.Data.Model
                 result.Add(range.Unit);
             // удаляем дубликаты, если такое возможно!
             return new HashSet<MeasureUnits>(result).ToList();
+        }
+
+        public bool PointIsInRange<T>(MeasPoint<T> inPoint) where T : IPhysicalQuantity, IEquatable<T>, new()
+        {
+            //Если нужно сравнивать вложение точки с пределом, товсе усложняется
+            // нас спасет рекурсия!
+            foreach (var range in Ranges)
+                if (range.Unit == inPoint.MainPhysicalQuantity.Unit)
+                {
+                    var start = range.Start as MeasPoint<T>;
+                    var stop = range.Stop as MeasPoint<T>;
+                    return start <= inPoint && stop >= inPoint;
+
+                    if (inPoint.AdditionalPhysicalQuantity != null)
+                        foreach (var additional in inPoint.AdditionalPhysicalQuantity)
+                        {
+                            //inPoint.AdditionalPhysicalQuantity.Where(q => Equals(q.GetType(), typeof(Frequency)))
+                            //new MeasPoint<additional.Unit>(additional.Value, additional.Multipliers);
+                        }
+                }
+
+            return false;
         }
 
         #endregion

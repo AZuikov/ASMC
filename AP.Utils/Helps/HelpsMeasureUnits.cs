@@ -69,7 +69,7 @@ namespace AP.Utils.Helps
     /// <summary>
     /// Предоставляет базовую реализацию физической величины
     /// </summary>
-    public abstract class PhysicalQuantity: IPhysicalQuantity
+    public abstract class PhysicalQuantity<T>: IPhysicalQuantity, IEquatable<T> where T: IPhysicalQuantity
     {
         private MeasureUnits _unit;
 
@@ -107,6 +107,13 @@ namespace AP.Utils.Helps
             pq.Unit = this.Unit;
             return pq;
         }
+
+        public virtual bool Equals(T other)
+        {
+            return this.Unit == other.Unit && (this.Value * (decimal) this.Multipliers.GetDoubleValue()) ==
+                (other.Value * (decimal) other.Multipliers.GetDoubleValue());
+        }
+
         /// <inheritdoc />
         public override string ToString()
         {
