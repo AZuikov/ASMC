@@ -78,7 +78,7 @@ namespace ASMC.Core.Model
         /// </summary>
         protected abstract string GetReportTableName();
         /// <summary>
-        /// Заполняет свойство <see cref = "Data" />.
+        /// Заполняет свойство <see cref = "Data"/>.
         /// </summary>
         /// <returns></returns>
         protected virtual DataTable FillData()
@@ -89,6 +89,7 @@ namespace ASMC.Core.Model
                 if (dt.Columns.IndexOf(cn)!=-1)continue;
                 dt.Columns.Add(cn);
             }
+
             return dt;
         }
 

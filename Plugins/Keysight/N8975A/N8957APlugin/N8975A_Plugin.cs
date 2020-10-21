@@ -384,7 +384,7 @@ namespace N8957APlugin
                         e8257D.WriteLine(":OUTP 0");
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {

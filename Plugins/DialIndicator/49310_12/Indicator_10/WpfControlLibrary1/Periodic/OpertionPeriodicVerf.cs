@@ -50,7 +50,9 @@ namespace Indicator_10.Periodic
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new MeasuringForce(this)
+                new MeasuringForce(this), 
+                new PerpendicularPressure(this),
+                new RangeIndications(this)
             };
             Accessories = new[]
             {

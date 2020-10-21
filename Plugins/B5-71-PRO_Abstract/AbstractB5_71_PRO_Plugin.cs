@@ -245,7 +245,7 @@ namespace B5_71_PRO_Abstract
                     throw;
                 }
             };
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = () =>
             {
                 try
                 {
@@ -463,7 +463,7 @@ namespace B5_71_PRO_Abstract
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -653,7 +653,7 @@ namespace B5_71_PRO_Abstract
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -849,7 +849,7 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = () =>
             {
                 try
                 {
@@ -1112,7 +1112,7 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWork = () => { };
+            operation.BodyWorkAsync = () => { };
             operation.CompliteWork = () =>
             {
                 if (operation.IsGood == null) return Task.FromResult(false);
@@ -1255,7 +1255,7 @@ namespace B5_71_PRO_Abstract
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -1440,7 +1440,7 @@ namespace B5_71_PRO_Abstract
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -1628,7 +1628,7 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = () =>
             {
                 try
                 {

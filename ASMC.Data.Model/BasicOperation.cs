@@ -12,7 +12,7 @@ using NLog;
 namespace ASMC.Data.Model
 {
     /// <summary>
-    /// Предоставляет реализацию
+    /// Предоставляет реализацию базоовой операции.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>, ICloneable
@@ -48,8 +48,8 @@ namespace ASMC.Data.Model
             set { _compliteWork = value; }
         }
 
-
-        public Action BodyWork
+        /// <inheritdoc />
+        public Action BodyWorkAsync
         {
             get
             {
@@ -74,15 +74,23 @@ namespace ASMC.Data.Model
                 await InitWork();
                 Logger.Debug("Закончено выполнение инициализации");
                 Logger.Debug("Начато выполнение тела");
-                var task = Task.Run(BodyWork, token);
-               
-                //var task = Task.Factory.StartNew(BodyWork, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current);
-                await task;
-                if (task.Status== TaskStatus.Faulted)
+                var task = Task.Run(BodyWorkAsync, token);
+                try
                 {
-                    if (task.Exception != null)
+                    await task;
+                }
+                catch (Exception)
+                {
+                    if (task.Status == TaskStatus.Faulted)
                     {
-                        foreach (var ex in task.Exception.InnerExceptions) throw ex;
+                        if (task.Exception != null)
+                        {
+                            foreach (var ex in task.Exception.InnerExceptions)
+                            {
+                                Logger.Error(ex);
+                                throw ex;
+                            }
+                        }
                     }
                 }
                 Logger.Debug("Закончено выполнение тела");
@@ -103,7 +111,7 @@ namespace ASMC.Data.Model
 
         public virtual object Clone()
         {
-            return new BasicOperation<T> { InitWork = InitWork, BodyWork = BodyWork, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWork = CompliteWork };
+            return new BasicOperation<T> { InitWork = InitWork, BodyWorkAsync = BodyWorkAsync, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWork = CompliteWork };
         }
 
     }
@@ -125,7 +133,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
+            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
     }
 
@@ -142,7 +150,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
+            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
 
     }
@@ -164,7 +172,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (MeasuringOperation<T>)base.Clone();
-            return new BasicOperationVerefication<T> { LowerTolerance = LowerTolerance, UpperTolerance = UpperTolerance, ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWork = @base.BodyWork, Comment = @base.Comment };
+            return new BasicOperationVerefication<T> { LowerTolerance = LowerTolerance, UpperTolerance = UpperTolerance, ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
 
         public override string ToString()

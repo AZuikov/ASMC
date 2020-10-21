@@ -16,7 +16,7 @@ namespace AP.Extension
         /// <param name="range"></param>
         /// <param name="pointParcent">одно или несколько знаечние в процентах. Может принимать значение от 0 до 100</param>
         /// <returns></returns>
-        public static IEnumerable<MeasPoint<T>> GetArayMeasPointsInParcent<T>(this MeasPoint<T> range, params int[] pointParcent) where T: IPhysicalQuantity, new()
+        public static IEnumerable<MeasPoint<T>> GetArayMeasPointsInParcent<T>(this MeasPoint<T> range, params int[] pointParcent) where T: IPhysicalQuantity, IEquatable<T>, new()
         {
             var listPoint = new List<MeasPoint<T>>();
             foreach (var countPoint in pointParcent)

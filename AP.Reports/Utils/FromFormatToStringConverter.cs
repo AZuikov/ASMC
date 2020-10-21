@@ -84,4 +84,30 @@ namespace AP.Reports.Utils
         }
     
     }
+    /// <summary>
+    /// Перечень прифексов для автоматизации вставок
+    /// </summary>
+    public enum MarkReportEnum
+    {
+        /// <summary>
+        /// Вставка текста на закладку
+        /// </summary>
+        [StringValue("ITBm")]
+        InsetrTextByMark,
+        /// <summary>
+        /// Вставка текста с заменой
+        /// </summary>
+        [StringValue("RepT")]
+        InsertTextByReplase,
+        /// <summary>
+        /// Вставка таблицы на закладку
+        /// </summary>
+        [StringValue("ITabBm")]
+        InsetrTableByMark,
+        /// <summary>
+        /// Заполнение таблицы на закладке
+        /// </summary>
+        [StringValue("FillTabBm")]
+        FillTableByMark
+    }
 }

@@ -347,7 +347,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -563,7 +563,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -830,7 +830,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {

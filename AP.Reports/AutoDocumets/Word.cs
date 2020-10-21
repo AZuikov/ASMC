@@ -368,55 +368,58 @@ namespace AP.Reports.AutoDocumets
             _document.BeginUpdate();
             foreach (var row in tab.Rows)
             {
-                if (rowInsertCount == dt.Rows.Count)
+                if (rowInsertCount < dt.Rows.Count)
                 {
-                    break;
-                }
-
-                foreach (var cell in row.Cells)
-                {
-                    DocumentRange = cell.Range;
-                    DocumentPosition = DocumentRange.Start;
-                    if (_document.GetText(DocumentRange).Length > 2) continue;
-                    insertDataToRow = true;
-                    if (cell.Index < dt.Columns.Count)
+                    foreach (var cell in row.Cells)
                     {
-                        InsertText(dt.Rows[rowInsertCount][cell.Index].ToString());
+                        DocumentRange = cell.Range;
+                        DocumentPosition = DocumentRange.Start;
+                        if (_document.GetText(DocumentRange).Length > 2 || cell.VerticalMerging== VerticalMergingState.Continue ) continue;
+                        
+                        /*Разрешаем запись когда нашли первую ячейку в строке где пусто*/
+                        insertDataToRow = true;
+                        if (cell.Index < dt.Columns.Count)
+                        {
+                            InsertText(dt.Rows[rowInsertCount][cell.Index].ToString());
+                        }
+                    }
+
+                    if (insertDataToRow)
+                    {
+                        rowInsertCount++;
                     }
                 }
-
-                if (insertDataToRow)
-                {
-                    rowInsertCount++;
-                }
-
                 insertDataToRow = false;
+              
             }
 
             _document.EndUpdate();
         }
-
+        /*Добавляет строки в таблицу документа пока количество свободных строк не будет равно количеству строк в таблице с данными*/
         private void AppenedRow(Table tab, DataTable dt)
         {
             _document.BeginUpdate();
-            while (tab.Rows.Count < dt.Rows.Count)
-            {
-                tab.Rows.Append();
-            }
 
-            var rows = tab.Rows.Count;
-            for (var index = 0; index < rows; index++)
+            var countFreeRow=0;
+            var isCellFree=false;
+            foreach (var row in tab.Rows)
             {
-                var row = tab.Rows[index];
                 foreach (var cell in row.Cells)
                 {
                     DocumentRange = cell.Range;
-                    if (cell.ColumnSpan > 1)
-                        continue;
-                    if (_document.GetText(DocumentRange).Length <= 2) continue;
-                    tab.Rows.Append();
+                    if (_document.GetText(DocumentRange).Length > 2 ||
+                        cell.VerticalMerging == VerticalMergingState.Continue) continue;
+                    isCellFree = true;
                     break;
                 }
+                if (!isCellFree) continue;
+                countFreeRow++;
+                isCellFree = false;
+            }
+
+            for (var i = 0; i < dt.Rows.Count- countFreeRow; i++)
+            {
+                tab.Rows.Append();
             }
 
             _document.EndUpdate();

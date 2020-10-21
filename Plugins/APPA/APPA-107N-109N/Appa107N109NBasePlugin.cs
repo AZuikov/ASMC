@@ -476,7 +476,7 @@ namespace APPA_107N_109N
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -945,7 +945,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = () =>
                     {
                         try
                         {
@@ -1592,7 +1592,7 @@ namespace APPA_107N_109N
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -2144,7 +2144,7 @@ namespace APPA_107N_109N
                         }
                     };
 
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = () =>
                     {
                         try
                         {
@@ -2663,7 +2663,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = () =>
                     {
                         try
                         {
@@ -3371,7 +3371,7 @@ namespace APPA_107N_109N
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -3647,7 +3647,7 @@ namespace APPA_107N_109N
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {
@@ -4150,7 +4150,7 @@ namespace APPA_107N_109N
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = () =>
                 {
                     try
                     {

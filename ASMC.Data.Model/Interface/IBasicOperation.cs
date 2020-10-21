@@ -15,22 +15,33 @@ namespace ASMC.Data.Model.Interface
     /// <typeparam name="T"></typeparam>
     public interface IBasicOperation<T>
     {
+        /// <summary>
+        /// Выполняет иннициализацию устройств, данных пере выполнением основной работы <see cref="BodyWorkAsync"/> .
+        /// </summary>
         Func<Task> InitWork
         {
             get; set;
         }
-        Action BodyWork
+        /// <summary>
+        /// Выполняет основную работку в асинхронном режиме. После чего вызыается метод проверки и завершения работы <see cref="CompliteWork"/>.
+        /// </summary>
+        Action BodyWorkAsync
         {
             get; set;
         }
-
+        /// <summary>
+        /// Вызывает окончательный метод работы, после основного тела <see cref="BodyWorkAsync"/>
+        /// </summary>
+        /// <remarks>
+        /// В случае если возвращает <see cref="false"/> перезапускает выполнение операций загого начиная с инициализации <see cref="InitWork"/>.
+        /// </remarks>
         Func<Task<bool>> CompliteWork
         {
             get;
             set;
         }
         /// <summary>
-        /// Пhедоставляет метод который при вызове заполняет <see cref="IBasicOperation{T}"/>
+        /// Предоставляет метод который при вызове заполняет <see cref="IBasicOperation{T}"/>.
         /// </summary>
         Task WorkAsync(CancellationToken token);
         /// <summary>
