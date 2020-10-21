@@ -1,9 +1,8 @@
-﻿using System;
+﻿using AP.Utils.Data;
+using AP.Utils.Helps;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AP.Utils.Data;
-using AP.Utils.Helps;
-using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Data.Model
 {
@@ -37,19 +36,21 @@ namespace ASMC.Data.Model
 
         public IPhysicalQuantity MainPhysicalQuantity { get; }
 
-        #endregion
+        #endregion Property
 
         #region Methods
 
-        public override bool Equals(object obj)
+        public override bool Equals(object obj) => Equals(obj as MeasPoint<TPhysicalQuantity>);
+
+        public  bool Equals(MeasPoint<TPhysicalQuantity> pointToCompare)
         {
             var mainResult = false; // равенство основной единицы
             var additionalResult = false; // равенство вложений
-            var pointToCompare = (MeasPoint<TPhysicalQuantity>) obj;
-           
+            //var pointToCompare = (MeasPoint<TPhysicalQuantity>)obj;
+
             if (MainPhysicalQuantity.Unit == pointToCompare.MainPhysicalQuantity.Unit &&
-                (decimal) MainPhysicalQuantity.Multipliers.GetDoubleValue() * MainPhysicalQuantity.Value ==
-                (decimal) pointToCompare.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
+                (decimal)MainPhysicalQuantity.Multipliers.GetDoubleValue() * MainPhysicalQuantity.Value ==
+                (decimal)pointToCompare.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
                 pointToCompare.MainPhysicalQuantity.Value)
                 mainResult = true;
             if (this.AdditionalPhysicalQuantity != null && pointToCompare.AdditionalPhysicalQuantity != null)
@@ -59,14 +60,20 @@ namespace ASMC.Data.Model
                 additionalResult = AdditionalPhysicalQuantity.SequenceEqual(pointToCompare.AdditionalPhysicalQuantity);
                 return mainResult && additionalResult;
             }
+            else if ((this.AdditionalPhysicalQuantity == null && pointToCompare.AdditionalPhysicalQuantity != null) ||
+                     (this.AdditionalPhysicalQuantity != null && pointToCompare.AdditionalPhysicalQuantity == null))
+            {
+                additionalResult = false;
+                return mainResult && additionalResult;
+            }
 
-            return mainResult ;
+            return mainResult;
         }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            var str = string.Join(" ", MainPhysicalQuantity.Value, MainPhysicalQuantity.Multipliers.GetStringValue() ) +
+            var str = string.Join(" ", MainPhysicalQuantity.Value, MainPhysicalQuantity.Multipliers.GetStringValue()) +
                      MainPhysicalQuantity.Unit.GetStringValue();
             //todo: Необходимо верно конвертировать значение decimal в строку, что бы не появлялась подпись со степенью десятки.
             return AdditionalPhysicalQuantity == null
@@ -74,7 +81,7 @@ namespace ASMC.Data.Model
                 : string.Join(" ", str, Array.ConvertAll(AdditionalPhysicalQuantity, s => s.ToString()));
         }
 
-        #endregion
+        #endregion Methods
 
         /// <inheritdoc />
         public object Clone()
@@ -105,9 +112,9 @@ namespace ASMC.Data.Model
             }
 
             return (MainPhysicalQuantity.Value *
-                    (decimal) MainPhysicalQuantity.Multipliers.GetDoubleValue())
+                    (decimal)MainPhysicalQuantity.Multipliers.GetDoubleValue())
                .CompareTo(other.MainPhysicalQuantity.Value *
-                          (decimal) other.MainPhysicalQuantity.Multipliers.GetDoubleValue());
+                          (decimal)other.MainPhysicalQuantity.Multipliers.GetDoubleValue());
         }
 
         #region Constructor
@@ -208,8 +215,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() +
-                      b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() +
+                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -236,8 +243,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() -
-                      b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() -
+                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -264,8 +271,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
-                      b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
+                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -292,8 +299,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() /
-                b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() /
+                b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -365,8 +372,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A > B;
         }
 
@@ -386,8 +393,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A < B;
         }
 
@@ -407,8 +414,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A >= B;
         }
 
@@ -428,8 +435,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A <= B;
         }
 
@@ -440,8 +447,8 @@ namespace ASMC.Data.Model
                 || !a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
                 return true;
 
-            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A != B;
         }
 
@@ -467,8 +474,8 @@ namespace ASMC.Data.Model
                 return false;
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A == B;
         }
 
@@ -527,7 +534,7 @@ namespace ASMC.Data.Model
 
         MeasureUnits Unit { get; }
 
-        #endregion
+        #endregion Property
     }
 
     /// <summary>
@@ -545,7 +552,7 @@ namespace ASMC.Data.Model
 
         public IPhysicalRange<object>[] Ranges { get; set; }
 
-        #endregion
+        #endregion Property
 
         public RangeStorage(params IPhysicalRange<object>[] inPhysicalRange)
         {
@@ -590,7 +597,7 @@ namespace ASMC.Data.Model
             return false;
         }
 
-        #endregion
+        #endregion Methods
     }
 
     /// <summary>

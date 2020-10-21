@@ -69,7 +69,7 @@ namespace AP.Utils.Helps
     /// <summary>
     /// Предоставляет базовую реализацию физической величины
     /// </summary>
-    public abstract class PhysicalQuantity<T>: IPhysicalQuantity, IEquatable<T> where T: IPhysicalQuantity
+    public abstract class PhysicalQuantity<T>: IPhysicalQuantity, IComparable<T>, IComparable, IEquatable<T> where T: class, IPhysicalQuantity
     {
         private MeasureUnits _unit;
 
@@ -108,10 +108,23 @@ namespace AP.Utils.Helps
             return pq;
         }
 
+        public override bool Equals(object obj) => Equals(obj as T);
+        public int CompareTo(object obj)
+        {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            return string.Compare(this.GetType().Name, obj.GetType().Name, StringComparison.Ordinal);
+        }
+
         public virtual bool Equals(T other)
         {
             return this.Unit == other.Unit && (this.Value * (decimal) this.Multipliers.GetDoubleValue()) ==
                 (other.Value * (decimal) other.Multipliers.GetDoubleValue());
+        }
+
+        public int CompareTo(T other)
+        {
+            if (Unit != other.Unit) throw new ArgumentException();
+            return (Value * (decimal)Multipliers.GetDoubleValue()).CompareTo(other.Value * (decimal)other.Multipliers.GetDoubleValue());
         }
 
         /// <inheritdoc />
