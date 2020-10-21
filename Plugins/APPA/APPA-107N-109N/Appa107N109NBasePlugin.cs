@@ -765,7 +765,7 @@ namespace APPA_107N_109N
 
     #region ACV
 
-    public class Oper4AcvMeasureBase : ParagraphBase<MeasPoint<Voltage>>
+    public abstract class Oper4AcvMeasureBase : ParagraphBase<MeasPoint<Voltage>>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -798,7 +798,7 @@ namespace APPA_107N_109N
         /// </summary>
         public List<MeasPoint<Voltage>> VoltPoint = new List<MeasPoint<Voltage>>();
 
-        #endregion Fields
+       #endregion Fields
 
         #region Property
 
@@ -1156,17 +1156,19 @@ namespace APPA_107N_109N
 
             RangeResolution = new MeasPoint<Voltage>(1,  UnitMultipliers.Micro);
 
-            
 
             
-            VoltPoint.Add(new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40}  ));
-            VoltPoint.Add(new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 1000}));
-            VoltPoint.Add(new MeasPoint<Voltage>(10 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40}  ));
+
+            VoltPoint.Add(new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 40 }));
+            VoltPoint.Add(new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency {Value = 1000}));
+            VoltPoint.Add(new MeasPoint<Voltage>(10 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 40 }));
             VoltPoint.Add(new MeasPoint<Voltage>(10 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 }));
-            VoltPoint.Add(new MeasPoint<Voltage>(18 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40}  ));
+            VoltPoint.Add(new MeasPoint<Voltage>(18 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 40 }));
             VoltPoint.Add(new MeasPoint<Voltage>(18 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 }));
 
         }
+
+       
 
         /// <inheritdoc />
         protected override string GetReportTableName()
@@ -1191,11 +1193,6 @@ namespace APPA_107N_109N
             VoltMultipliers = 10;
 
             RangeResolution = new MeasPoint<Voltage>(10, UnitMultipliers.Micro);
-
-            //HerzVPoint = new MeasPoint<Frequency>[2];
-            //HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40);
-            //HerzVPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 1000);
-
             
             VoltPoint.Add( new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency{Value = 40}  ));
             VoltPoint.Add( new MeasPoint<Voltage>(4 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 }));
@@ -1324,21 +1321,35 @@ namespace APPA_107N_109N
             
             
 
-            HerzVPoint = new MeasPoint[6];
-            HerzVPoint[0] = new MeasPoint<Frequency>(40,   UnitMultipliers.None).IsFake = true;
-            HerzVPoint[1] = new MeasPoint<Frequency>(1000, UnitMultipliers.None);
-            HerzVPoint[2] = new MeasPoint<Frequency>(10  , UnitMultipliers.Kilo);
-            HerzVPoint[3] = new MeasPoint<Frequency>(20  , UnitMultipliers.Kilo);
-            HerzVPoint[4] = new MeasPoint<Frequency>(50  , UnitMultipliers.Kilo);
-            HerzVPoint[5] = new MeasPoint<Frequency>(100 , UnitMultipliers.Kilo).IsFake  =true;
+           Frequency[] HerzVPoint = new Frequency[] { };
+           new Frequency(){Value = 40,   Multipliers = UnitMultipliers.None};//.IsFake = true;
+           new Frequency(){Value = 1000, Multipliers = UnitMultipliers.None};
+           new Frequency(){Value = 10  , Multipliers = UnitMultipliers.Kilo};
+           new Frequency(){Value = 20  , Multipliers = UnitMultipliers.Kilo};
+           new Frequency(){Value = 50  , Multipliers = UnitMultipliers.Kilo};
+           new Frequency(){Value = 100 , Multipliers = UnitMultipliers.Kilo};//.IsFake  =true;
 
-            VoltPoint = new AcVariablePoint[3];
+            
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
-            var trimHerzArr = new MeasPoint[4];
-            Array.Copy(HerzVPoint, trimHerzArr, 4);
-            VoltPoint[0] = new AcVariablePoint((decimal)0.2 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, trimHerzArr);
-            VoltPoint[1] = new AcVariablePoint(1 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, HerzVPoint, true);
-            VoltPoint[2] = new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, HerzVPoint, true);
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency(){Value = 40,   Multipliers = UnitMultipliers.None}));  //.IsFake = true; 
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency(){Value = 1000, Multipliers = UnitMultipliers.None} ));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency(){Value = 10  , Multipliers = UnitMultipliers.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency(){ Value = 20, Multipliers = UnitMultipliers.Kilo } ));
+            
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 40,   Multipliers = UnitMultipliers.None})); //.IsFake = true; 
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 1000, Multipliers = UnitMultipliers.None} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 10  , Multipliers = UnitMultipliers.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 20  , Multipliers = UnitMultipliers.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 50  , Multipliers = UnitMultipliers.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency() { Value = 100, Multipliers = UnitMultipliers.Kilo })); //.IsFake  =true; 
+
+            //VoltPoint[2] = new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, HerzVPoint, true);
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 40,   Multipliers = UnitMultipliers.None})); //.IsFake = true; 
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 1000, Multipliers = UnitMultipliers.None} ));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 10  , Multipliers = UnitMultipliers.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 20  , Multipliers = UnitMultipliers.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers,new Frequency(){Value = 50  , Multipliers = UnitMultipliers.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency() { Value = 100, Multipliers = UnitMultipliers.Kilo })); //.IsFake  =true; 
         }
 
         /// <inheritdoc />
@@ -1360,19 +1371,16 @@ namespace APPA_107N_109N
 
             VoltMultipliers = 1;
 
-            RangeResolution = new AcVariablePoint(100, MeasureUnits.V, UnitMultipliers.Mili);
+            RangeResolution = new MeasPoint<Voltage>(100,  UnitMultipliers.Mili);
+            
+            VoltPoint.Add(new MeasPoint<Voltage>(100 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 40 }));  //fake
+            VoltPoint.Add(new MeasPoint<Voltage>(100 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 })); 
+            
+            VoltPoint.Add(new MeasPoint<Voltage>(400 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 40 }));  //fake
+            VoltPoint.Add(new MeasPoint<Voltage>(400 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 })); 
 
-            HerzVPoint = new MeasPoint[2];
-            HerzVPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 40, true);
-            HerzVPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.None, 1000);
-
-            VoltPoint = new AcVariablePoint[3];
-            VoltPoint[0] = new AcVariablePoint(100 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint, true);
-            VoltPoint[1] = new AcVariablePoint(400 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint, true);
-            VoltPoint[2] = new AcVariablePoint(700 * VoltMultipliers, thisRangeUnits.Units,
-                                               thisRangeUnits.Multipliers, HerzVPoint, true);
+            VoltPoint.Add(new MeasPoint<Voltage>(700 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 40 })); //fake
+            VoltPoint.Add(new MeasPoint<Voltage>(700 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multipliers, new Frequency { Value = 1000 }));
         }
 
         /// <inheritdoc />
@@ -1388,7 +1396,7 @@ namespace APPA_107N_109N
 
     #region DCI
 
-    public class Oper5DciMeasureBase : ParagraphBase<MeasPoint>
+    public class Oper5DciMeasureBase : ParagraphBase<MeasPoint<Amper>>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1467,7 +1475,7 @@ namespace APPA_107N_109N
 
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
-            DataRow = new List<IBasicOperation<MeasPoint>>();
+            DataRow = new List<IBasicOperation<MeasPoint<Amper>>>();
 
             Sheme = new ShemeImage
             {

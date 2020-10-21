@@ -107,4 +107,13 @@ namespace ASMC.Data.Model.PhysicalQuantity
         }
     }
 
+    public sealed class Amper : AP.Utils.Helps.PhysicalQuantity<Amper>
+    {
+        public Amper()
+        {
+            Units = new[] { MeasureUnits.I };
+            Unit = MeasureUnits.I;
+        }
+    }
+
 }
