@@ -362,8 +362,8 @@ namespace ASMC.Data.Model
                 throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             if (a.AdditionalPhysicalQuantity != null)
             {
-                if (b.AdditionalPhysicalQuantity != null ||
-                    a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
+                if (b.AdditionalPhysicalQuantity == null ||
+                    !a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
             else
@@ -383,8 +383,8 @@ namespace ASMC.Data.Model
                 throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             if (a.AdditionalPhysicalQuantity != null)
             {
-                if (b.AdditionalPhysicalQuantity != null ||
-                    a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
+                if (b.AdditionalPhysicalQuantity == null ||
+                    !a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
             else
@@ -404,8 +404,8 @@ namespace ASMC.Data.Model
                 throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             if (a.AdditionalPhysicalQuantity != null)
             {
-                if (b.AdditionalPhysicalQuantity != null ||
-                    a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
+                if (b.AdditionalPhysicalQuantity == null ||
+                    !a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
             else
@@ -416,7 +416,7 @@ namespace ASMC.Data.Model
 
             var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            return A >= B;
+            return A >= B ;//&& a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity);
         }
 
         public static bool operator <=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
@@ -425,8 +425,8 @@ namespace ASMC.Data.Model
                 throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             if (a.AdditionalPhysicalQuantity != null)
             {
-                if (b.AdditionalPhysicalQuantity != null ||
-                    a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
+                if (b.AdditionalPhysicalQuantity == null ||
+                    !a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
             else

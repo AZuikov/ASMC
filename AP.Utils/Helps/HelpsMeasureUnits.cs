@@ -117,7 +117,7 @@ namespace AP.Utils.Helps
 
         public virtual bool Equals(T other)
         {
-            return this.Unit == other.Unit && (this.Value * (decimal) this.Multipliers.GetDoubleValue()) ==
+            return this.Unit == other?.Unit && (this.Value * (decimal) this.Multipliers.GetDoubleValue()) ==
                 (other.Value * (decimal) other.Multipliers.GetDoubleValue());
         }
 
