@@ -354,7 +354,7 @@ namespace Indicator_10
     /// <summary>
     /// Определение размаха показаний
     /// </summary>
-    public sealed class RangeIndications : MainIchProcedur<MeasPoint<Length>>
+    public sealed class RangeIndications : MainIchProcedur<MeasPoint<Length>[]>
     {
         /// <inheritdoc />
         public RangeIndications(IUserItemOperation userItemOperation) : base(userItemOperation)
@@ -383,7 +383,7 @@ namespace Indicator_10
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as MeasuringOperation<double>;
+                var dds = row as MeasuringOperation<MeasPoint<Length>[]>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
 
@@ -408,7 +408,7 @@ namespace Indicator_10
         protected override void InitWork()
         {
             base.InitWork();
-            var operation = new MeasuringOperation<double>();
+            var operation = new MeasuringOperation<MeasPoint<Length>[]>();
 
             var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
             double[] arrGetting = null;
@@ -431,8 +431,8 @@ namespace Indicator_10
             {
                 for (var i = 0; i < arrGetting.Length; i++)
                 {
-                    if (i > 0) operation = (MeasuringOperation<double>)operation.Clone();
-                    operation.Expected = (double)arrPoints[i].Clone();
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                    operation.Expected = (MeasPoint<Length>[])arrPoints[i].Clone();
                     operation.Getting = arrGetting[i];
                     if (i > 0) DataRow.Add(operation);
                 }

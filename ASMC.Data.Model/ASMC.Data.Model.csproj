@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccuracyChatacteristic.cs" />
     <Compile Include="BasicOperation.cs" />
     <Compile Include="IProtocolStringLine.cs" />
     <Compile Include="Interface\IBasicOperation.cs" />

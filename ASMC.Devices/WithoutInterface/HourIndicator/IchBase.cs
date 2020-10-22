@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -7,7 +8,6 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
 {
     public class IchBase : IUserType
     {
-
         #region Property
 
         public MaxMeasuringForce MeasuringForce { get; set; }
@@ -16,7 +16,21 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// Максимальное допустимое отклонение стрелки при перпендикулярном нажиме на его ось.
         /// </summary>
         public double PerpendicularPressureMax { get; set; }
-
+        /// <summary>
+        /// Позволяет задать измерительный диапазон.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual RangeStorage GetRanges()
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// Здает измерительный диапазон.
+        /// </summary>
+        public RangeStorage Ranges
+        {
+            get => GetRanges();
+        }
         public MeasPoint<Length> Range { get; set; }
 
         #endregion
@@ -57,5 +71,9 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
             #endregion
         }
 
+    }
+
+    public class IchGost577 : IchBase
+    {
     }
 }
