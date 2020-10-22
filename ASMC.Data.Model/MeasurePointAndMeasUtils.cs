@@ -22,13 +22,7 @@ namespace ASMC.Data.Model
             set => _additionalPhysicalQuantity = value;
         }
 
-        //public MeasureUnits Units { get; set; }
-
-        ////множитель единицы
-        //public UnitMultipliers UnitMultipliersUnit { get; set; }
-
-        ////номинал величины
-        //public decimal Value { get; set; }
+        
 
         /// <summary>
         /// Строковое описание измерительной точки вида: "номинальное значение" "единицы измерения".
@@ -594,38 +588,40 @@ namespace ASMC.Data.Model
         /// <typeparam name = "T">Тип основноавной физической величины.</typeparam>
         /// <param name = "inPoint">Точка которую нужно проверить.</param>
         /// <returns></returns>
-        public bool PointIsInRange<T>(MeasPoint<T> inPoint) where T : IPhysicalQuantity, IEquatable<T>, new()
-        {
-            bool Flags = true;
-            foreach (var range in Ranges)
-            {
-                if (range.Start.MainPhysicalQuantity <= inPoint.MainPhysicalQuantity &&
-                    inPoint.MainPhysicalQuantity <= range.Stop.MainPhysicalQuantity)
-                {
-                    if (range.Start.AdditionalPhysicalQuantity.Length != inPoint.AdditionalPhysicalQuantity.Length) continue;
+        //public bool PointIsInRange<T>(MeasPoint<T> inPoint) where T : IPhysicalQuantity, IEquatable<T>, new()
+        //{
+        //    bool Flags = false;
+        //    foreach (var range in Ranges)
+        //    {
+        //        if (range.Start.MainPhysicalQuantity <= inPoint.MainPhysicalQuantity &&
+        //            inPoint.MainPhysicalQuantity <= range.Stop.MainPhysicalQuantity)
+        //        {
+        //            if (range.Start.AdditionalPhysicalQuantity.Length != inPoint.AdditionalPhysicalQuantity.Length) continue;
 
-                    bool localMethod(IPhysicalQuantity[] upper, IPhysicalQuantity[] lower)
-                    {
-                        foreach (var st in lower)
-                        {
-                            var res = upper.FirstOrDefault(q => q >= st);
-                            if (res != null) continue;
+        //            bool localMethod(IPhysicalQuantity[] upper, IPhysicalQuantity[] lower)
+        //            {
+        //                foreach (var st in lower)
+        //                {
+        //                    var res = upper.FirstOrDefault(q => q >= st);
+        //                    if (res != null) continue;
 
-                            return false;
-                        }
+        //                    return false;
+        //                }
 
-                        return true;
-                    }
+        //                return true;
+        //            }
 
-                    return localMethod(inPoint.AdditionalPhysicalQuantity, range.Start.AdditionalPhysicalQuantity) &&
-                           localMethod(range.Stop.AdditionalPhysicalQuantity, inPoint.AdditionalPhysicalQuantity);
+        //            Flags = localMethod(inPoint.AdditionalPhysicalQuantity, range.Start.AdditionalPhysicalQuantity)  &&
+        //                    localMethod(range.Stop.AdditionalPhysicalQuantity, inPoint.AdditionalPhysicalQuantity) ;
+        //            if(Flags) break;
 
-                }
-            }
+        //        }
+        //    }
+
+        //    return Flags;
 
 
-            
-        }
+        //}
 
         
 
