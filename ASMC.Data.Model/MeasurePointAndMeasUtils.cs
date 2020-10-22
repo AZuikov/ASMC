@@ -1,8 +1,8 @@
-﻿using AP.Utils.Data;
-using AP.Utils.Helps;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AP.Utils.Data;
+using AP.Utils.Helps;
 
 namespace ASMC.Data.Model
 {
@@ -12,9 +12,15 @@ namespace ASMC.Data.Model
     public class MeasPoint<TPhysicalQuantity> : ICloneable, IComparable<MeasPoint<TPhysicalQuantity>>
         where TPhysicalQuantity : IPhysicalQuantity, IEquatable<TPhysicalQuantity>, new()
     {
+        private IPhysicalQuantity[] _additionalPhysicalQuantity;
         #region Property
 
-        public IPhysicalQuantity[] AdditionalPhysicalQuantity { get; set; }
+        public IPhysicalQuantity[] AdditionalPhysicalQuantity
+        {
+            get => _additionalPhysicalQuantity.OrderBy(q=>q.GetType().Name).ToArray();
+         
+            set => _additionalPhysicalQuantity = value;
+        }
 
         //public MeasureUnits Units { get; set; }
 
@@ -36,32 +42,36 @@ namespace ASMC.Data.Model
 
         public IPhysicalQuantity MainPhysicalQuantity { get; }
 
-        #endregion Property
+        #endregion
 
         #region Methods
 
-        public override bool Equals(object obj) => Equals(obj as MeasPoint<TPhysicalQuantity>);
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as MeasPoint<TPhysicalQuantity>);
+        }
 
-        public  bool Equals(MeasPoint<TPhysicalQuantity> pointToCompare)
+        public bool Equals(MeasPoint<TPhysicalQuantity> pointToCompare)
         {
             var mainResult = false; // равенство основной единицы
             var additionalResult = false; // равенство вложений
             //var pointToCompare = (MeasPoint<TPhysicalQuantity>)obj;
 
             if (MainPhysicalQuantity.Unit == pointToCompare.MainPhysicalQuantity.Unit &&
-                (decimal)MainPhysicalQuantity.Multipliers.GetDoubleValue() * MainPhysicalQuantity.Value ==
-                (decimal)pointToCompare.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
+                (decimal) MainPhysicalQuantity.Multipliers.GetDoubleValue() * MainPhysicalQuantity.Value ==
+                (decimal) pointToCompare.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
                 pointToCompare.MainPhysicalQuantity.Value)
                 mainResult = true;
-            if (this.AdditionalPhysicalQuantity != null && pointToCompare.AdditionalPhysicalQuantity != null)
+            if (AdditionalPhysicalQuantity != null && pointToCompare.AdditionalPhysicalQuantity != null)
             {
                 Array.Sort(AdditionalPhysicalQuantity);
                 Array.Sort(pointToCompare.AdditionalPhysicalQuantity);
                 additionalResult = AdditionalPhysicalQuantity.SequenceEqual(pointToCompare.AdditionalPhysicalQuantity);
                 return mainResult && additionalResult;
             }
-            else if ((this.AdditionalPhysicalQuantity == null && pointToCompare.AdditionalPhysicalQuantity != null) ||
-                     (this.AdditionalPhysicalQuantity != null && pointToCompare.AdditionalPhysicalQuantity == null))
+
+            if (AdditionalPhysicalQuantity == null && pointToCompare.AdditionalPhysicalQuantity != null ||
+                AdditionalPhysicalQuantity != null && pointToCompare.AdditionalPhysicalQuantity == null)
             {
                 additionalResult = false;
                 return mainResult && additionalResult;
@@ -74,14 +84,14 @@ namespace ASMC.Data.Model
         public override string ToString()
         {
             var str = string.Join(" ", MainPhysicalQuantity.Value, MainPhysicalQuantity.Multipliers.GetStringValue()) +
-                     MainPhysicalQuantity.Unit.GetStringValue();
+                      MainPhysicalQuantity.Unit.GetStringValue();
             //todo: Необходимо верно конвертировать значение decimal в строку, что бы не появлялась подпись со степенью десятки.
             return AdditionalPhysicalQuantity == null
                 ? str
                 : string.Join(" ", str, Array.ConvertAll(AdditionalPhysicalQuantity, s => s.ToString()));
         }
 
-        #endregion Methods
+        #endregion
 
         /// <inheritdoc />
         public object Clone()
@@ -112,9 +122,9 @@ namespace ASMC.Data.Model
             }
 
             return (MainPhysicalQuantity.Value *
-                    (decimal)MainPhysicalQuantity.Multipliers.GetDoubleValue())
+                    (decimal) MainPhysicalQuantity.Multipliers.GetDoubleValue())
                .CompareTo(other.MainPhysicalQuantity.Value *
-                          (decimal)other.MainPhysicalQuantity.Multipliers.GetDoubleValue());
+                          (decimal) other.MainPhysicalQuantity.Multipliers.GetDoubleValue());
         }
 
         #region Constructor
@@ -215,8 +225,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() +
-                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() +
+                      b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -243,8 +253,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() -
-                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() -
+                      b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -271,8 +281,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
-                      b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() *
+                      b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -299,8 +309,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var val = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue() /
-                b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var val = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue() /
+                b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return new MeasPoint<TPhysicalQuantity>(val, a.AdditionalPhysicalQuantity);
         }
 
@@ -372,8 +382,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A > B;
         }
 
@@ -393,8 +403,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A < B;
         }
 
@@ -414,9 +424,9 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            return A >= B ;//&& a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity);
+            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            return A >= B; //&& a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity);
         }
 
         public static bool operator <=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
@@ -435,8 +445,8 @@ namespace ASMC.Data.Model
                     throw new InvalidCastException("Не возможно производить операции с разными физическими величинами");
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A <= B;
         }
 
@@ -447,8 +457,8 @@ namespace ASMC.Data.Model
                 || !a.AdditionalPhysicalQuantity.SequenceEqual(b.AdditionalPhysicalQuantity))
                 return true;
 
-            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A != B;
         }
 
@@ -474,8 +484,8 @@ namespace ASMC.Data.Model
                 return false;
             }
 
-            var A = a.MainPhysicalQuantity.Value * (decimal)a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
-            var B = b.MainPhysicalQuantity.Value * (decimal)b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var A = a.MainPhysicalQuantity.Value * (decimal) a.MainPhysicalQuantity.Multipliers.GetDoubleValue();
+            var B = b.MainPhysicalQuantity.Value * (decimal) b.MainPhysicalQuantity.Multipliers.GetDoubleValue();
             return A == B;
         }
 
@@ -485,8 +495,20 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange<T> : IPhysicalRange<object> where T : IPhysicalQuantity, IEquatable<T>, new()
+    public class PhysicalRange<T> where T : IPhysicalQuantity, IEquatable<T>,  new()
     {
+        #region Property
+
+        /// <inheritdoc />
+        public MeasPoint<T> Start { get; protected set; }
+
+        /// <inheritdoc />
+        public MeasPoint<T> Stop { get; protected set; }
+
+        public MeasureUnits Unit { get; protected set; }
+
+        #endregion
+
         public PhysicalRange(MeasPoint<T> startRange, MeasPoint<T> stopRange)
         {
             if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
@@ -508,14 +530,6 @@ namespace ASMC.Data.Model
             Stop = stopRange;
             Unit = startRange.MainPhysicalQuantity.Unit;
         }
-
-        /// <inheritdoc />
-        public object Start { get; protected set; }
-
-        /// <inheritdoc />
-        public object Stop { get; protected set; }
-
-        public MeasureUnits Unit { get; protected set; }
     }
 
     public interface IPhysicalRange<T>
@@ -534,14 +548,13 @@ namespace ASMC.Data.Model
 
         MeasureUnits Unit { get; }
 
-        #endregion Property
+        #endregion
     }
 
     /// <summary>
     /// Предоставляет реализацию хранилища диапазонов (по виду измерения). Фактически перечень пределов СИ.
     /// </summary>
-    //public class RangeStorage<T> where T : IPhysicalQuantity, new()
-    public class RangeStorage
+    public class RangeStorage<T> where T : class, IPhysicalQuantity, IEquatable<T>,  new()
     {
         #region Property
 
@@ -550,11 +563,11 @@ namespace ASMC.Data.Model
         /// </summary>
         public string Name { get; set; }
 
-        public IPhysicalRange<object>[] Ranges { get; set; }
+        public PhysicalRange<T>[] Ranges { get; set; }
 
-        #endregion Property
+        #endregion
 
-        public RangeStorage(params IPhysicalRange<object>[] inPhysicalRange)
+        public RangeStorage(params PhysicalRange<T>[] inPhysicalRange)
         {
             Ranges = inPhysicalRange;
         }
@@ -575,29 +588,48 @@ namespace ASMC.Data.Model
             return new HashSet<MeasureUnits>(result).ToList();
         }
 
+        /// <summary>
+        /// Запрос, находится ли точка в рамках диапазона прибора.
+        /// </summary>
+        /// <typeparam name = "T">Тип основноавной физической величины.</typeparam>
+        /// <param name = "inPoint">Точка которую нужно проверить.</param>
+        /// <returns></returns>
         public bool PointIsInRange<T>(MeasPoint<T> inPoint) where T : IPhysicalQuantity, IEquatable<T>, new()
         {
-            //Если нужно сравнивать вложение точки с пределом, товсе усложняется
-            // нас спасет рекурсия!
+            bool Flags = true;
             foreach (var range in Ranges)
-                if (range.Unit == inPoint.MainPhysicalQuantity.Unit)
+            {
+                if (range.Start.MainPhysicalQuantity <= inPoint.MainPhysicalQuantity &&
+                    inPoint.MainPhysicalQuantity <= range.Stop.MainPhysicalQuantity)
                 {
-                    var start = range.Start as MeasPoint<T>;
-                    var stop = range.Stop as MeasPoint<T>;
-                    return start <= inPoint && stop >= inPoint;
+                    if (range.Start.AdditionalPhysicalQuantity.Length != inPoint.AdditionalPhysicalQuantity.Length) continue;
 
-                    if (inPoint.AdditionalPhysicalQuantity != null)
-                        foreach (var additional in inPoint.AdditionalPhysicalQuantity)
+                    bool localMethod(IPhysicalQuantity[] upper, IPhysicalQuantity[] lower)
+                    {
+                        foreach (var st in lower)
                         {
-                            //inPoint.AdditionalPhysicalQuantity.Where(q => Equals(q.GetType(), typeof(Frequency)))
-                            //new MeasPoint<additional.Unit>(additional.Value, additional.Multipliers);
-                        }
-                }
+                            var res = upper.FirstOrDefault(q => q >= st);
+                            if (res != null) continue;
 
-            return false;
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    return localMethod(inPoint.AdditionalPhysicalQuantity, range.Start.AdditionalPhysicalQuantity) &&
+                           localMethod(range.Stop.AdditionalPhysicalQuantity, inPoint.AdditionalPhysicalQuantity);
+
+                }
+            }
+
+
+            
         }
 
-        #endregion Methods
+        
+
+        #endregion
     }
 
     /// <summary>
