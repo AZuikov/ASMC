@@ -126,28 +126,9 @@ namespace APPA_107N_109N
             {
                 "Интерфейсный кабель для клибратора (GPIB или COM порт)",
                 "Кабель banana - banana 2 шт.",
-                "Интерфейсный кабель для прибора APPA-107N/APPA-109N USB-COM инфракрасный."
-            };
-
-            DocumentName = "APPA_107N_109N";
-        }
-
-        #region Methods
-
-        public override void FindDevice()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void RefreshDevice()
-        {
-            AddresDevice = IeeeBase.AllStringConnect;
-        }
-
-        #endregion Methods
-    }
-
-    public class Oper1VisualTest : ParagraphBase<bool>
+                "Интерфейсный каббора APPA-107N/APPA-109N USB-COM инфракрасный."
+        DocumentName = "APPA_107N_109N";
+blic class Oper1VisualTest : ParagraphBase<bool>
     {
         public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
