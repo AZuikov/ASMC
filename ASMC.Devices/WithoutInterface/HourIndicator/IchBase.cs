@@ -22,7 +22,8 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// <returns></returns>
         protected virtual RangeStorage<Length> GetRanges()
         {
-            return new RangeStorage<Length>(new PhysicalRange<Length>(ne))
+            var dsa = new MeasPoint<Voltage, Frequency>();
+            //return new RangeStorage<Length>(new PhysicalRange<Length>())
         }
         /// <summary>
         /// Здает измерительный диапазон.

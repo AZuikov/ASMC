@@ -26,7 +26,7 @@ namespace ASMC.Data.Model
     public interface IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : IMeasPoint<TPhysicalQuantity>,
                                                                            IComparable<IMeasPoint<TPhysicalQuantity,
                                                                                TAddPhysicalQuantity>>
-        where TAddPhysicalQuantity : IPhysicalQuantity, IEquatable<TPhysicalQuantity>, new()
+        where TAddPhysicalQuantity : IPhysicalQuantity<TAddPhysicalQuantity>, new()
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         #region Property
@@ -191,9 +191,7 @@ namespace ASMC.Data.Model
     }
 
     public class MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : MeasPoint<TPhysicalQuantity>,
-                                                                      IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
-        where TAddPhysicalQuantity : IPhysicalQuantity, IEquatable<TPhysicalQuantity>, new()
+                                                                      IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> where TAddPhysicalQuantity : IPhysicalQuantity<TAddPhysicalQuantity>, new() where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         public MeasPoint(TPhysicalQuantity physical, TAddPhysicalQuantity addPhysicalQuantity)
         {
@@ -218,6 +216,7 @@ namespace ASMC.Data.Model
 
         public MeasPoint()
         {
+
             AdditionalPhysicalQuantity = new TAddPhysicalQuantity();
 
         }
@@ -398,7 +397,7 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange<T,Tadd> : IPhysicalRange<MeasPoint<T,Tadd>> where T : class, IPhysicalQuantity<T>, new() where Tadd : IPhysicalQuantity, IEquatable<T>, new()
+    public class PhysicalRange<T,Tadd> : IPhysicalRange<MeasPoint<T,Tadd>> where Tadd : IPhysicalQuantity<Tadd>, new() where T : class, IPhysicalQuantity<T>, new()
     {
         #region Property
 
