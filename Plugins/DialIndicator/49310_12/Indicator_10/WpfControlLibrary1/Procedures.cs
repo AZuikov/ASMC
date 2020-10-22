@@ -237,8 +237,8 @@ namespace Indicator_10
 
             MeasPoint<Force>[] ConvertWeightToForce(MeasPoint<Weight>[] arr)
             {
-                return arr.Select(q => new MeasPoint<Force>(((Weight) q.MainPhysicalQuantity)
-                                                           .ConvertToForce())).ToArray();
+                return arr.Select(q => new MeasPoint<Force>(q.MainPhysicalQuantity
+                                                             .ConvertToForce())).ToArray();
             }
 
             IEnumerable<MeasPoint<Weight>> Fill(IItemTable item)
@@ -363,19 +363,7 @@ namespace Indicator_10
         }
 
         #region Methods
-        /// <inheritdoc />
-        protected override string[] GenerateDataColumnTypeObject()
-        {
-            return new[]
-            {
-                "Точка диапазона измерений индикатора", "Показания при арретировании",
-                "Показания при арретировании2","Показания при арретировании3",
-                "Показания при арретировании4","Показания при арретировании5",
-                "Размах показаний"
-            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
-            
-            
-        }
+
         /// <inheritdoc />
         protected override DataTable FillData()
         {
@@ -388,10 +376,11 @@ namespace Indicator_10
                 if (dds == null) continue;
 
                 dataRow[0] = dds.Expected.ToString();
-                for (int i = 0; i < 5; i++)
+                for (var i = 0; i < 5; i++)
                 {
                     //dataRow[i + 1]=
                 }
+
                 dataRow[1] = dds.Getting.ToString();
                 dataRow[2] = dds.Error;
                 if (dds.IsGood == null)
@@ -402,6 +391,18 @@ namespace Indicator_10
             }
 
             return dataTable;
+        }
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Точка диапазона измерений индикатора", "Показания при арретировании",
+                "Показания при арретировании2", "Показания при арретировании3",
+                "Показания при арретировании4", "Показания при арретировании5",
+                "Размах показаний"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         /// <inheritdoc />
@@ -431,8 +432,8 @@ namespace Indicator_10
             {
                 for (var i = 0; i < arrGetting.Length; i++)
                 {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    operation.Expected = (MeasPoint<Length>[])arrPoints[i].Clone();
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>) operation.Clone();
+                    operation.Expected = (MeasPoint<Length>[]) arrPoints[i].Clone();
                     operation.Getting = arrGetting[i];
                     if (i > 0) DataRow.Add(operation);
                 }
@@ -445,9 +446,10 @@ namespace Indicator_10
 
             IEnumerable<double> Fill(IItemTable item)
             {
-                foreach (var cell in item.Cells) yield return (double)ObjectToDecimal(cell.Value);
+                foreach (var cell in item.Cells) yield return (double) ObjectToDecimal(cell.Value);
             }
         }
+
         #endregion
     }
 

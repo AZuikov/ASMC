@@ -11,7 +11,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину давление
     /// </summary>
-    public sealed class Pressure : AP.Utils.Helps.PhysicalQuantity<Pressure>, IConvertPhysicalQuantity<Pressure>
+    public sealed class Pressure : PhysicalQuantity<Pressure>, IConvertPhysicalQuantity<Pressure>
     {
         public Pressure()
         {
@@ -20,7 +20,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
         public Pressure Convert(MeasureUnits u)
         {
-            if (this.CheckedAttachmentUnits(u))
+            if (CheckedAttachmentUnits(u))
                 throw new InvalidCastException("Нвозможно преобразовать в другой тип физической величины");
             if (Unit == u) return this;
           var pq=  ThisConvetToSi();
@@ -38,7 +38,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину масса.
     /// </summary>
-    public sealed class Weight : AP.Utils.Helps.PhysicalQuantity<Weight>
+    public sealed class Weight : PhysicalQuantity<Weight>
     {
         public Weight()
         {
@@ -54,7 +54,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину сила.
     /// </summary>
-    public sealed class Force : AP.Utils.Helps.PhysicalQuantity<Force>
+    public sealed class Force : PhysicalQuantity<Force>
     {
         public Force()
         {
@@ -65,7 +65,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину длинны.
     /// </summary>
-    public sealed class Length : AP.Utils.Helps.PhysicalQuantity<Length>
+    public sealed class Length : PhysicalQuantity<Length>
     {
         public Length()
         {
@@ -76,7 +76,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину частоты.
     /// </summary>
-    public sealed class Frequency : AP.Utils.Helps.PhysicalQuantity<Frequency>
+    public sealed class Frequency : PhysicalQuantity<Frequency>
     {
         public Frequency()
         {
@@ -87,7 +87,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину времени.
     /// </summary>
-    public sealed class Time : AP.Utils.Helps.PhysicalQuantity<Time>
+    public sealed class Time : PhysicalQuantity<Time>
     {
         public Time()
         {
@@ -98,7 +98,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину электрического напряжения.
     /// </summary>
-    public sealed class Voltage : AP.Utils.Helps.PhysicalQuantity<Voltage> 
+    public sealed class Voltage : PhysicalQuantity<Voltage>
     {
         public Voltage()
         {
@@ -107,7 +107,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
         }
     }
 
-    public sealed class Amper : AP.Utils.Helps.PhysicalQuantity<Amper>
+    public sealed class Amper : PhysicalQuantity<Amper>
     {
         public Amper()
         {

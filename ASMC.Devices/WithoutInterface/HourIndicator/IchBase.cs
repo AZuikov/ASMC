@@ -20,14 +20,14 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// Позволяет задать измерительный диапазон.
         /// </summary>
         /// <returns></returns>
-        protected virtual RangeStorage GetRanges()
+        protected virtual RangeStorage<Length> GetRanges()
         {
-            throw new NotImplementedException();
+            return new RangeStorage<Length>(new PhysicalRange<Length>(ne))
         }
         /// <summary>
         /// Здает измерительный диапазон.
         /// </summary>
-        public RangeStorage Ranges
+        public RangeStorage<Length> Ranges
         {
             get => GetRanges();
         }

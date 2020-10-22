@@ -30,8 +30,18 @@ namespace AP.Utils.Helps
         [StringValue("Па")] Pressure
     }
 
-    public interface IPhysicalQuantity
+    public interface IPhysicalQuantity<T> : IPhysicalQuantity, IComparable<T>, IEquatable<T> where T : IPhysicalQuantity
     {
+
+    }
+
+    public interface IPhysicalQuantity : IComparable, ICloneable
+    {
+        /// <summary>
+        /// возращает численное занчение в системи СИ.
+        /// </summary>
+        /// <returns></returns>
+        decimal GetNoramalizeValueToSi();
         #region Property
 
         /// <summary>
@@ -78,7 +88,7 @@ namespace AP.Utils.Helps
     /// <summary>
     /// Предоставляет базовую реализацию физической величины
     /// </summary>
-    public abstract class PhysicalQuantity<T> : IPhysicalQuantity, IComparable<T>, IComparable, IEquatable<T>
+    public abstract class PhysicalQuantity<T> : IPhysicalQuantity<T>
         where T : class, IPhysicalQuantity
     {
         #region Fields
@@ -88,6 +98,83 @@ namespace AP.Utils.Helps
         #endregion
 
         #region Methods
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $@"{Value} {Multipliers.GetStringValue()}{Unit.GetStringValue()}";
+        }
+
+        /// <summary>
+        /// Возвращает результат проверки пренадлишности едениц измерения к физической величине.
+        /// </summary>
+        /// <param name = "units"></param>
+        /// <returns></returns>
+        protected bool CheckedAttachmentUnits(MeasureUnits units)
+        {
+            return Array.FindIndex(Units, item => item == units) != -1;
+        }
+
+        protected IPhysicalQuantity ThisConvetToSi()
+        {
+            var pq = (IPhysicalQuantity) Activator.CreateInstance(GetType());
+            pq.Value = Value * (decimal) Multipliers.GetDoubleValue();
+            pq.Multipliers = UnitMultipliers.None;
+            pq.Unit = Unit;
+            return pq;
+        }
+
+        #endregion
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            return string.Compare(GetType().Name, obj.GetType().Name, StringComparison.Ordinal);
+        }
+
+        public int CompareTo(T other)
+        {
+            if (Unit != other.Unit) throw new ArgumentException();
+            return (Value * (decimal) Multipliers.GetDoubleValue()).CompareTo(other.Value *
+                                                                              (decimal) other
+                                                                                       .Multipliers.GetDoubleValue());
+        }
+
+        public virtual bool Equals(T other)
+        {
+            return Unit == other?.Unit && Value * (decimal) Multipliers.GetDoubleValue() ==
+                other.Value * (decimal) other.Multipliers.GetDoubleValue();
+        }
+
+        /// <inheritdoc />
+        public MeasureUnits[] Units { get; protected set; }
+
+        /// <inheritdoc />
+        public MeasureUnits Unit
+        {
+            get => _unit;
+            set
+            {
+                if (!CheckedAttachmentUnits(value))
+                    throw new ArgumentOutOfRangeException($@"{value} не входит в допустимый список едениц измиериний");
+
+                _unit = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public decimal GetNoramalizeValueToSi()
+        {
+            return Value = (decimal) Multipliers.GetDoubleValue();
+        }
+
+        /// <inheritdoc />
+        public UnitMultipliers Multipliers { get; set; }
+
+        /// <inheritdoc />
+        public decimal Value { get; set; }
+
+        #region Operator
 
         public static bool operator >(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
         {
@@ -223,73 +310,16 @@ namespace AP.Utils.Helps
         }
 
         /// <inheritdoc />
-        public override string ToString()
+        public object Clone()
         {
-            return $@"{Value} {Multipliers.GetStringValue()}{Unit.GetStringValue()}";
-        }
-
-        /// <summary>
-        /// Возвращает результат проверки пренадлишности едениц измерения к физической величине.
-        /// </summary>
-        /// <param name = "units"></param>
-        /// <returns></returns>
-        protected bool CheckedAttachmentUnits(MeasureUnits units)
-        {
-            return Array.FindIndex(Units, item => item == units) != -1;
-        }
-
-        protected IPhysicalQuantity ThisConvetToSi()
-        {
-            var pq = (IPhysicalQuantity) Activator.CreateInstance(GetType());
-            pq.Value = Value * (decimal) Multipliers.GetDoubleValue();
-            pq.Multipliers = UnitMultipliers.None;
-            pq.Unit = Unit;
-            return pq;
+            var obj = Activator.CreateInstance(GetType()) as PhysicalQuantity<T>;
+            obj.Value = Value;
+            obj.Multipliers = Multipliers;
+            obj.Unit = Unit;
+            return obj;
         }
 
         #endregion
-
-        public int CompareTo(object obj)
-        {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
-            return string.Compare(GetType().Name, obj.GetType().Name, StringComparison.Ordinal);
-        }
-
-        public int CompareTo(T other)
-        {
-            if (Unit != other.Unit) throw new ArgumentException();
-            return (Value * (decimal) Multipliers.GetDoubleValue()).CompareTo(other.Value *
-                                                                              (decimal) other
-                                                                                       .Multipliers.GetDoubleValue());
-        }
-
-        public virtual bool Equals(T other)
-        {
-            return Unit == other?.Unit && Value * (decimal) Multipliers.GetDoubleValue() ==
-                other.Value * (decimal) other.Multipliers.GetDoubleValue();
-        }
-
-        /// <inheritdoc />
-        public MeasureUnits[] Units { get; protected set; }
-
-        /// <inheritdoc />
-        public MeasureUnits Unit
-        {
-            get => _unit;
-            set
-            {
-                if (!CheckedAttachmentUnits(value))
-                    throw new ArgumentOutOfRangeException($@"{value} не входит в допустимый список едениц измиериний");
-
-                _unit = value;
-            }
-        }
-
-        /// <inheritdoc />
-        public UnitMultipliers Multipliers { get; set; }
-
-        /// <inheritdoc />
-        public decimal Value { get; set; }
     }
 
     /// <summary>
