@@ -122,6 +122,7 @@
     <Compile Include="OWEN\OwenProtocol.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />
+    <Compile Include="Port\IZ_Tech\MIT_8.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B5-71-PRO.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro1.cs" />
     <Compile Include="Port\Profigrupp\B5-71-PRO\B571Pro2.cs" />
