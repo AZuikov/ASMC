@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AP.Utils.Helps;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 
 namespace AP.Extension
 {
@@ -16,7 +16,7 @@ namespace AP.Extension
         /// <param name="range"></param>
         /// <param name="pointParcent">одно или несколько знаечние в процентах. Может принимать значение от 0 до 100</param>
         /// <returns></returns>
-        public static IEnumerable<MeasPoint<T>> GetArayMeasPointsInParcent<T>(this MeasPoint<T> range, params int[] pointParcent) where T: IPhysicalQuantity, IEquatable<T>, new()
+        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> range, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
         {
             var listPoint = new List<MeasPoint<T>>();
             foreach (var countPoint in pointParcent)
@@ -25,8 +25,9 @@ namespace AP.Extension
                 {
                     throw  new ArgumentOutOfRangeException(nameof(pointParcent),countPoint.ToString());
                 }
-                var mp = new MeasPoint<T> {AdditionalPhysicalQuantity = range.AdditionalPhysicalQuantity};
-                mp.MainPhysicalQuantity.Multipliers = range.MainPhysicalQuantity.Multipliers;
+
+                var mp = new MeasPoint<T>();
+                mp.MainPhysicalQuantity.Multiplier = range.MainPhysicalQuantity.Multiplier;
                 mp.MainPhysicalQuantity.Unit = range.MainPhysicalQuantity.Unit;
                 mp.MainPhysicalQuantity.Value = decimal.Parse(range.MainPhysicalQuantity.Value.ToString()) * countPoint / 100;
                 yield return mp;

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AP.Utils.Helps;
+using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Data.Model
 {
@@ -26,7 +27,7 @@ namespace ASMC.Data.Model
     public interface IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : IMeasPoint<TPhysicalQuantity>,
                                                                            IComparable<IMeasPoint<TPhysicalQuantity,
                                                                                TAddPhysicalQuantity>>
-        where TAddPhysicalQuantity : IPhysicalQuantity<TAddPhysicalQuantity>, new()
+        where TAddPhysicalQuantity : class, IPhysicalQuantity<TAddPhysicalQuantity>, new()
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         #region Property
@@ -175,11 +176,11 @@ namespace ASMC.Data.Model
         /// Создает экземпляр измерительной точки <see cref = "MeasPoint{TPhysicalQuantity}" />
         /// </summary>
         /// <param name = "value">Значение</param>
-        /// <param name = "multipliers">Множитель, по умолчению <see cref = "UnitMultipliers.None" /></param>
-        public MeasPoint(decimal value, UnitMultipliers multipliers = UnitMultipliers.None) 
+        /// <param name = "multiplier">Множитель, по умолчению <see cref = "UnitMultiplier.None" /></param>
+        public MeasPoint(decimal value, UnitMultiplier multiplier = UnitMultiplier.None) :this()
         {
             MainPhysicalQuantity.Value = value;
-            MainPhysicalQuantity.Multipliers = multipliers;
+            MainPhysicalQuantity.Multiplier = multiplier;
         }
 
         public MeasPoint()
@@ -191,7 +192,7 @@ namespace ASMC.Data.Model
     }
 
     public class MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : MeasPoint<TPhysicalQuantity>,
-                                                                      IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> where TAddPhysicalQuantity : IPhysicalQuantity<TAddPhysicalQuantity>, new() where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+                                                                      IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> where TAddPhysicalQuantity : class, IPhysicalQuantity<TAddPhysicalQuantity>, new() where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         public MeasPoint(TPhysicalQuantity physical, TAddPhysicalQuantity addPhysicalQuantity)
         {
@@ -221,10 +222,29 @@ namespace ASMC.Data.Model
 
         }
 
-        private MeasPoint(decimal value, TAddPhysicalQuantity addPhysicalQuantity)
+        public MeasPoint(decimal value, TAddPhysicalQuantity addPhysicalQuantity) : this()
         {
             MainPhysicalQuantity.Value = value;
             AdditionalPhysicalQuantity = addPhysicalQuantity;
+        }
+        public MeasPoint(decimal physical, UnitMultiplier multiplier, TAddPhysicalQuantity addPhysicalQuantity) : this()
+        {
+            MainPhysicalQuantity.Value = physical;
+            MainPhysicalQuantity.Multiplier = multiplier;
+            AdditionalPhysicalQuantity = addPhysicalQuantity;
+        }
+        public MeasPoint(decimal physical, UnitMultiplier multiplier, decimal addPhysicalQuantity, UnitMultiplier addmultipliers) :this()
+        {
+            MainPhysicalQuantity.Value = physical;
+            MainPhysicalQuantity.Multiplier = multiplier;
+            AdditionalPhysicalQuantity.Value = addPhysicalQuantity;
+            AdditionalPhysicalQuantity.Multiplier = addmultipliers;
+        }
+
+        public MeasPoint(decimal @decimal, decimal decimal1) : this()
+        {
+            MainPhysicalQuantity.Value = @decimal;
+            AdditionalPhysicalQuantity.Value = decimal1;
         }
 
 
@@ -360,7 +380,7 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange<T>: IPhysicalRange<MeasPoint<T>> where T : class, IPhysicalQuantity<T>, new()
+    public class PhysicalRange<T>: IPhysicalRange<T> where T : class, IPhysicalQuantity<T>,  new()
     {
         #region Property
 
@@ -368,10 +388,10 @@ namespace ASMC.Data.Model
         public AccuracyChatacteristic AccuracyChatacteristic { get; }
 
         /// <inheritdoc />
-        public MeasPoint<T> Start { get; protected set; }
+        public IMeasPoint<T> Start { get; protected set; }
 
         /// <inheritdoc />
-        public MeasPoint<T> Stop { get; protected set; }
+        public IMeasPoint<T> Stop { get; protected set; }
 
         public MeasureUnits Unit { get; protected set; }
 
@@ -393,11 +413,23 @@ namespace ASMC.Data.Model
 
             Unit = startRange.MainPhysicalQuantity.Unit;
         }
+
+        public PhysicalRange()
+        {
+            Start = new MeasPoint<T>();
+            Stop = new MeasPoint<T>();
+        }
+
+        /// <inheritdoc />
+        public int CompareTo(IPhysicalRange<T> other)
+        {
+            return Start.CompareTo(other.Start);
+        }
     }
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange<T,Tadd> : IPhysicalRange<MeasPoint<T,Tadd>> where Tadd : IPhysicalQuantity<Tadd>, new() where T : class, IPhysicalQuantity<T>, new()
+    public class PhysicalRange<TPhysicalQuantity,TAddition> : IPhysicalRange<TPhysicalQuantity,TAddition> where TAddition : class, IPhysicalQuantity<TAddition>, new() where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         #region Property
 
@@ -405,22 +437,22 @@ namespace ASMC.Data.Model
         public AccuracyChatacteristic AccuracyChatacteristic { get; }
 
         /// <inheritdoc />
-        public MeasPoint<T, Tadd> Start { get; protected set; }
+        public IMeasPoint<TPhysicalQuantity, TAddition> Start { get; protected set; }
 
         /// <inheritdoc />
-        public MeasPoint<T, Tadd> Stop { get; protected set; }
+        public IMeasPoint<TPhysicalQuantity, TAddition> Stop { get; protected set; }
 
         public MeasureUnits Unit { get; protected set; }
 
         #endregion
-        public PhysicalRange(MeasPoint<T, Tadd> stopRange, AccuracyChatacteristic accuracy = null)
+        public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
         {
             AccuracyChatacteristic = accuracy;
-            Start = new MeasPoint<T, Tadd>();
+            Start = new MeasPoint<TPhysicalQuantity, TAddition>();
             Stop = stopRange;
             Unit = stopRange.MainPhysicalQuantity.Unit;
         }
-        public PhysicalRange(MeasPoint<T, Tadd> startRange, MeasPoint<T, Tadd> stopRange, AccuracyChatacteristic accuracy = null)
+        public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> startRange, IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
         {
             if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
                 throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
@@ -430,32 +462,66 @@ namespace ASMC.Data.Model
 
             Unit = startRange.MainPhysicalQuantity.Unit;
         }
+
+        public PhysicalRange()
+        {
+            Start = new MeasPoint<TPhysicalQuantity,TAddition>();
+            Stop = new MeasPoint<TPhysicalQuantity, TAddition>();
+        }
+
+        /// <inheritdoc />
+        public int CompareTo(IPhysicalRange<TPhysicalQuantity> other)
+        {
+           return Start.CompareTo(other.Start);
+        }
+    }
+
+    public interface IPhysicalRange
+    {
+        /// <summary>
+        /// позвляет получить харатеристику точности диапазона.
+        /// </summary>
+        AccuracyChatacteristic AccuracyChatacteristic { get; }
+        MeasureUnits Unit { get; }
     }
 
 
 
-
-
-
-    public interface IPhysicalRange<out T>
+    public interface IPhysicalRange<T,T1> : IComparable<IPhysicalRange<T>>, IPhysicalRange where T : class, IPhysicalQuantity<T>, new() where T1 : class, IPhysicalQuantity<T1>, new()
     {
         #region Property
 
-        /// <summary>
-        /// позвляет получить харатеристику точности диапазона.
-        /// </summary>
-        AccuracyChatacteristic AccuracyChatacteristic { get;} 
+
         /// <summary>
         /// Значение величины, описывающее начало диапазона (входит в диапазон).
         /// </summary>
-        T Start { get; }
+        IMeasPoint<T,T1> Start { get; }
 
         /// <summary>
         /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
         /// </summary>
-        T Stop { get; }
+        IMeasPoint<T, T1> Stop { get; }
 
-        MeasureUnits Unit { get; }
+
+        #endregion
+    }
+
+
+    public interface IPhysicalRange<T>:IComparable<IPhysicalRange<T>>, IPhysicalRange where T : class, IPhysicalQuantity<T>, new()
+    {
+        #region Property
+
+
+        /// <summary>
+        /// Значение величины, описывающее начало диапазона (входит в диапазон).
+        /// </summary>
+        IMeasPoint<T> Start { get; }
+
+        /// <summary>
+        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
+        /// </summary>
+        IMeasPoint<T> Stop { get; }
+
 
         #endregion
     }
@@ -463,7 +529,7 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию хранилища диапазонов (по виду измерения). Фактически перечень пределов СИ.
     /// </summary>
-    public class RangeStorage<T> where T : class, IPhysicalQuantity<T>, new()
+    public class RangeStorage<T> :IEnumerable where T : IPhysicalRange
     {
         #region Property
 
@@ -472,21 +538,64 @@ namespace ASMC.Data.Model
         /// </summary>
         public string Name { get; set; }
 
-        public PhysicalRange<T>[] Ranges { get; set; }
+        public T[] Ranges { get; set; }
 
         #endregion
 
-        public RangeStorage(params PhysicalRange<T>[] inPhysicalRange)
+        public RangeStorage(AccuracyChatacteristic accuracy, params T[] inPhysicalRange)
         {
+            AccuracyChatacteristic = accuracy;
             Ranges = inPhysicalRange;
         }
 
-        public Tuple<MeasPoint<T>, MeasPoint<T>> FullRange()
+        public RangeStorage(params T[] inPhysicalRange)
         {
-            return new Tuple<MeasPoint<T>, MeasPoint<T>>(Ranges.Min(q => q.Start), Ranges.Max(q => q.Stop));
+            Ranges = inPhysicalRange;
+        }
+        public bool IsPointBelong<T1>(IMeasPoint<T1> point) where T1 : class, IPhysicalQuantity<T1>, new()
+        {
+                var range = Ranges as IPhysicalRange<T1>[];
+
+                if (range== null) return false;
+
+                var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                      point.MainPhysicalQuantity.GetNoramalizeValueToSi());
+
+                var end = range.FirstOrDefault(q => q.Stop.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                    point.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                return start != null && end != null;
+
+        }
+        public bool IsPointBelong<T1,T2>(IMeasPoint<T1,T2> point) where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+        {
+            var range = Ranges as IPhysicalRange<T1, T2>[];
+
+            if (range == null) return false;
+
+                var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                      point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                      && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()<= point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+
+                var end = range.FirstOrDefault(q => q.Stop.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                    point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                    && q.Stop.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >= point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+
+
+                return start != null && end != null;
+
+            
+
         }
 
 
+        //public Tuple<MeasPoint<T>, MeasPoint<T>> FullRange()
+        //{
+        //    return new Tuple<MeasPoint<T>, MeasPoint<T>>(Ranges.Min(q => q.Start), Ranges.Max(q => q.Stop));
+        //}
+        /// <summary>
+        /// Позволяет получить характеристику точности
+        /// </summary>
+        public AccuracyChatacteristic AccuracyChatacteristic { get; }
 
         #region Methods
 
@@ -506,5 +615,10 @@ namespace ASMC.Data.Model
 
         #endregion
 
+        /// <inheritdoc />
+        public IEnumerator GetEnumerator()
+        {
+            return Ranges.GetEnumerator();
+        }
     }
 }

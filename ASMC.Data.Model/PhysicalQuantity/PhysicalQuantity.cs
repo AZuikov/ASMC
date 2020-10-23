@@ -1,18 +1,319 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AP.Utils.Helps;
+using AP.Utils.Data;
+using ASMC.Data.Model.Interface;
 
 namespace ASMC.Data.Model.PhysicalQuantity
 {
 
+
+    public interface IPhysicalQuantity : IComparable, ICloneable
+    {
+        /// <summary>
+        /// возращает численное занчение в системи СИ.
+        /// </summary>
+        /// <returns></returns>
+        decimal GetNoramalizeValueToSi();
+        #region Property
+
+        /// <summary>
+        /// Позволяет задать или получить множитель фезической величины
+        /// </summary>
+        UnitMultiplier Multiplier { get; set; }
+
+        /// <summary>
+        /// Позволяет задать или получить еденицу езмерения данной физической величины
+        /// </summary>
+        MeasureUnits Unit { get; set; }
+
+        /// <summary>
+        /// Предоставляет перечень допустимый единиц измерений. Например Давение может быть в Па и в м.рт.ст
+        /// </summary>
+        MeasureUnits[] Units { get; }
+
+        /// <summary>
+        /// Позволяет задать или получить знаенчие физической величины
+        /// </summary>
+        decimal Value { get; set; }
+
+        #endregion
+    }
+
+
+    public interface IPhysicalQuantity<T> : IEquatable<T>,IComparable<T>, IPhysicalQuantity where T : class, IPhysicalQuantity
+    {
+
+    }
+    /// <summary>
+    /// Предоставляет базовую реализацию физической величины
+    /// </summary>
+    public abstract class PhysicalQuantity<T> : IPhysicalQuantity<T>
+        where T : class, IPhysicalQuantity
+    {
+        protected PhysicalQuantity(decimal value):this()
+        {
+            Value = value;
+        }
+        protected PhysicalQuantity(decimal value, UnitMultiplier multiplier ) :this(value)
+        {
+            Multiplier = multiplier;
+        }
+        #region Fields
+
+        private MeasureUnits _unit;
+
+        protected PhysicalQuantity()
+        {
+
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $@"{Value} {Multiplier.GetStringValue()}{Unit.GetStringValue()}";
+        }
+
+        /// <summary>
+        /// Возвращает результат проверки пренадлишности едениц измерения к физической величине.
+        /// </summary>
+        /// <param name = "units"></param>
+        /// <returns></returns>
+        protected bool CheckedAttachmentUnits(MeasureUnits units)
+        {
+            return Array.FindIndex(Units, item => item == units) != -1;
+        }
+
+        protected IPhysicalQuantity ThisConvetToSi()
+        {
+            var pq = (IPhysicalQuantity)Activator.CreateInstance(GetType());
+            pq.Value = Value * (decimal)Multiplier.GetDoubleValue();
+            pq.Multiplier = UnitMultiplier.None;
+            pq.Unit = Unit;
+            return pq;
+        }
+
+        #endregion
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            return string.Compare(GetType().Name, obj.GetType().Name, StringComparison.Ordinal);
+        }
+
+        public int CompareTo(T other)
+        {
+            if (Unit != other.Unit) throw new ArgumentException();
+            return (Value * (decimal)Multiplier.GetDoubleValue()).CompareTo(other.Value *
+                                                                              (decimal)other
+                                                                                       .Multiplier.GetDoubleValue());
+        }
+
+        public virtual bool Equals(T other)
+        {
+            return Unit == other?.Unit && Value * (decimal)Multiplier.GetDoubleValue() ==
+                other.Value * (decimal)other.Multiplier.GetDoubleValue();
+        }
+
+        /// <inheritdoc />
+        public MeasureUnits[] Units { get; protected set; }
+
+        /// <inheritdoc />
+        public MeasureUnits Unit
+        {
+            get => _unit;
+            set
+            {
+                if (!CheckedAttachmentUnits(value))
+                    throw new ArgumentOutOfRangeException($@"{value} не входит в допустимый список едениц измиериний");
+
+                _unit = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public decimal GetNoramalizeValueToSi()
+        {
+            return Value = Value * (decimal)Multiplier.GetDoubleValue();
+        }
+
+        /// <inheritdoc />
+        public UnitMultiplier Multiplier { get; set; }
+
+        /// <inheritdoc />
+        public decimal Value { get; set; }
+
+        #region Operator
+
+        public static bool operator >(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit &&
+                a.Value * (decimal)a.Multiplier.GetDoubleValue() >
+                b.Value * (decimal)b.Multiplier.GetDoubleValue())
+                return true;
+
+            return false;
+        }
+
+        public static bool operator <(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit &&
+                a.Value * (decimal)a.Multiplier.GetDoubleValue() <
+                b.Value * (decimal)b.Multiplier.GetDoubleValue())
+                return true;
+
+            return false;
+        }
+
+        public static bool operator ==(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit &&
+                a.Value * (decimal)a.Multiplier.GetDoubleValue() ==
+                b.Value * (decimal)b.Multiplier.GetDoubleValue())
+                return true;
+
+            return false;
+        }
+
+        public static bool operator !=(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit &&
+                a.Value * (decimal)a.Multiplier.GetDoubleValue() !=
+                b.Value * (decimal)b.Multiplier.GetDoubleValue())
+                return true;
+
+            return false;
+        }
+
+        public static PhysicalQuantity<T> operator +(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit)
+            {
+                var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+                obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() +
+                            b.Value * (decimal)b.Multiplier.GetDoubleValue();
+                obj.Unit = a.Unit;
+                return obj;
+            }
+
+            throw new ArgumentException("Не соответствуют единицы измерения операндов");
+        }
+
+        public static PhysicalQuantity<T> operator -(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit)
+            {
+                var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+                obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() -
+                            b.Value * (decimal)b.Multiplier.GetDoubleValue();
+                obj.Unit = a.Unit;
+                return obj;
+            }
+
+            throw new ArgumentException("Не соответствуют единицы измерения операндов");
+        }
+
+        public static PhysicalQuantity<T> operator *(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit)
+            {
+                var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+                obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() *
+                            b.Value * (decimal)b.Multiplier.GetDoubleValue();
+                obj.Unit = a.Unit;
+                return obj;
+            }
+
+            throw new ArgumentException("Не соответствуют единицы измерения операндов");
+        }
+
+        public static PhysicalQuantity<T> operator /(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
+        {
+            if (a.Unit == b.Unit)
+            {
+                var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+                obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() /
+                            (b.Value * (decimal)b.Multiplier.GetDoubleValue());
+                obj.Unit = a.Unit;
+                return obj;
+            }
+
+            throw new ArgumentException("Не соответствуют единицы измерения операндов");
+        }
+
+        public static PhysicalQuantity<T> operator /(PhysicalQuantity<T> a, decimal b)
+        {
+            var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+            obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() / b;
+            obj.Unit = a.Unit;
+            return obj;
+        }
+
+        public static PhysicalQuantity<T> operator *(PhysicalQuantity<T> a, decimal b)
+        {
+            var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+            obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() * b;
+            obj.Unit = a.Unit;
+            return obj;
+        }
+
+        public static PhysicalQuantity<T> operator +(PhysicalQuantity<T> a, decimal b)
+        {
+            var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+            obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() + b;
+            obj.Unit = a.Unit;
+            return obj;
+        }
+
+        public static PhysicalQuantity<T> operator -(PhysicalQuantity<T> a, decimal b)
+        {
+            var obj = Activator.CreateInstance(a.GetType()) as PhysicalQuantity<T>;
+            obj.Value = a.Value * (decimal)a.Multiplier.GetDoubleValue() - b;
+            obj.Unit = a.Unit;
+            return obj;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as T);
+        }
+
+       
+
+        /// <inheritdoc />
+        public object Clone()
+        {
+            var obj = Activator.CreateInstance(GetType()) as PhysicalQuantity<T>;
+            obj.Value = Value;
+            obj.Multiplier = Multiplier;
+            obj.Unit = Unit;
+            return obj;
+        }
+
+        #endregion
+    }
     /// <summary>
     /// Реализует физическую величину давление
     /// </summary>
     public sealed class Pressure : PhysicalQuantity<Pressure>, IConvertPhysicalQuantity<Pressure>
     {
+        /// <inheritdoc />
+        public Pressure(decimal value) : base(value)
+        {
+        }
+
+        /// <inheritdoc />
+        public Pressure(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+        }
+
         public Pressure()
         {
             Units = new[] { MeasureUnits.Pressure, MeasureUnits.MercuryPressure };
@@ -56,6 +357,20 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// </summary>
     public sealed class Force : PhysicalQuantity<Force>
     {
+        /// <inheritdoc />
+        public Force(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.N };
+            Unit = MeasureUnits.N;
+        }
+
+        /// <inheritdoc />
+        public Force(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.N };
+            Unit = MeasureUnits.N;
+        }
+
         public Force()
         {
             Units = new[] { MeasureUnits.N };
@@ -67,6 +382,20 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// </summary>
     public sealed class Length : PhysicalQuantity<Length>
     {
+        /// <inheritdoc />
+        public Length(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.Length };
+            Unit = MeasureUnits.Length;
+        }
+
+        /// <inheritdoc />
+        public Length(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.Length };
+            Unit = MeasureUnits.Length;
+        }
+
         public Length()
         {
             Units = new[] { MeasureUnits.Length };
@@ -107,9 +436,9 @@ namespace ASMC.Data.Model.PhysicalQuantity
         }
     }
 
-    public sealed class Amper : PhysicalQuantity<Amper>
+    public sealed class Current : PhysicalQuantity<Current>
     {
-        public Amper()
+        public Current()
         {
             Units = new[] { MeasureUnits.I };
             Unit = MeasureUnits.I;

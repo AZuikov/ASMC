@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using AP.Utils.Helps;
 using ASMC.Common.UI;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
@@ -18,7 +17,7 @@ using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace Indicator_10.Periodic
 {
-    public class OpertionPeriodicVerf : Operation
+    public class OpertionPeriodicVerf<T> : Operation where T : IchGost577, new()
     {
         public OpertionPeriodicVerf(ServicePack servicePac):base(servicePac)
         {
@@ -33,9 +32,10 @@ namespace Indicator_10.Periodic
                 {
                     Devices = new IUserType[]
                     {
-                        new IchBase
+
+                        new T
                         {
-                            Range = new MeasPoint<Length>(10, UnitMultipliers.Mili),
+                            Range = new MeasPoint<Length>(10, UnitMultiplier.Mili),
                             UserType = "ИЧ, мод. ИЧ10",
                             MeasuringForce = new IchBase.MaxMeasuringForce
                             {

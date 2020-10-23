@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Devices.WithoutInterface.HourIndicator;
 using Indicator_10.First;
 using Indicator_10.Periodic;
 
@@ -30,7 +31,7 @@ namespace Indicator_10
         public Verefication(ServicePack servicePac)
         {
             this.UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePac);
-            this.UserItemOperationPeriodicVerf = new OpertionPeriodicVerf(servicePac);
+            this.UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<Ich_10>(servicePac);
         }
     }
 }

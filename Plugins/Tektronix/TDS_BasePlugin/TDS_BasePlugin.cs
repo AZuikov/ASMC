@@ -1,6 +1,5 @@
 ﻿using AP.Math;
 using AP.Utils.Data;
-using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -385,7 +384,7 @@ namespace TDS_BasePlugin
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.SQU).Source
                                    .SetVoltage((double)operation.Expected.Value,
                                                operation.Expected.UnitMultipliersUnit).Source
-                                   .SetFreq(1, UnitMultipliers.Kilo);
+                                   .SetFreq(1, UnitMultiplier.Kilo);
                         calibr9500B.Source.Output(Calibr9500B.State.On);
                         //6.снять показания с осциллографа
 
@@ -665,15 +664,15 @@ namespace TDS_BasePlugin
             TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation, chanel, inResourceDir)
         {
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.61));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Nano, (decimal)0.61));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.81));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Nano, (decimal)0.81));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)1.63));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Nano, (decimal)1.63));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Micro, (decimal)2.05));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Micro, (decimal)2.05));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Micro, (decimal)10.25));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Micro, (decimal)10.25));
         }
     }
 
@@ -686,15 +685,15 @@ namespace TDS_BasePlugin
             TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation, chanel, inResourceDir)
         {
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.62));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Nano, (decimal)0.62));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_50nSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)0.81));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Nano, (decimal)0.81));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_250nSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)1.63));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Nano, (decimal)1.63));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_500mkSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Micro, (decimal)2.05));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Micro, (decimal)2.05));
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5mSec,
-                             new MeasPoint(MeasureUnits.sec, UnitMultipliers.Micro, (decimal)10.25));
+                             new MeasPoint(MeasureUnits.sec, UnitMultiplier.Micro, (decimal)10.25));
         }
     }
 
@@ -785,7 +784,7 @@ namespace TDS_BasePlugin
                 var dds = row as BasicOperationVerefication<MeasPoint>;
                 if (dds == null) continue;
 
-                dataRow[0] = new MeasPoint(MeasureUnits.sec, UnitMultipliers.Nano, (decimal)2.5).Description + "/Дел";
+                dataRow[0] = new MeasPoint(MeasureUnits.sec, UnitMultiplier.Nano, (decimal)2.5).Description + "/Дел";
                 dataRow[1] = new MeasPoint(dds.Expected.Units, dds.Expected.UnitMultipliersUnit, dds.Expected.Value / 3).Description + "/Дел";
                 dataRow[2] = dds?.Getting.Description;
                 dataRow[3] = dds?.UpperTolerance.Description;

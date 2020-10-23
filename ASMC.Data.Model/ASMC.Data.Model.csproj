@@ -60,6 +60,8 @@
   <ItemGroup>
     <Compile Include="AccuracyChatacteristic.cs" />
     <Compile Include="BasicOperation.cs" />
+    <Compile Include="HelpsMeasureUnits.cs" />
+    <Compile Include="Interface\IConvertPhysicalQuantity.cs" />
     <Compile Include="IProtocolStringLine.cs" />
     <Compile Include="Interface\IBasicOperation.cs" />
     <Compile Include="Interface\ICell.cs" />

@@ -14,16 +14,22 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Позволяет получать или задавать разрешение, включает отклонение едениц младшего разряда
         /// </summary>
-        decimal? Resolution { get; set; }
+       public decimal? Resolution { get;  }
         /// <summary>
         /// Процент от предела
         /// </summary>
-        decimal? Floor { get; set; }
+        public decimal? Floor { get;  }
         /// <summary>
         /// Процент от измеряемой велечины
         /// </summary>
-        decimal? Tol { get; set; }
+        public decimal? Tol { get;  }
 
+        public AccuracyChatacteristic(decimal? resolution, decimal? floor, decimal? tol)
+        {
+            Resolution = resolution;
+            Floor = floor;
+            Tol = tol;
+        }
         decimal GetAccuracy(decimal val, decimal upperRange=0)
         {
             decimal tol = 0;

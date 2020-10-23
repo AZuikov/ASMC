@@ -8,7 +8,7 @@ using System.Threading;
 using System.Timers;
 using AP.Math;
 using AP.Utils.Data;
-using AP.Utils.Helps;
+using ASMC.Data.Model;
 using NLog;
 using Timer = System.Timers.Timer;
 
@@ -589,7 +589,7 @@ namespace ASMC.Devices.Port.APPA
         /// второстепенного.
         /// </param>
         /// <returns></returns>
-        public double GetSingleValue(UnitMultipliers mult = UnitMultipliers.None, bool generalDsiplay = true)
+        public double GetSingleValue(UnitMultiplier mult = UnitMultiplier.None, bool generalDsiplay = true)
         {
             SendQuery();
             double value;
@@ -648,7 +648,7 @@ namespace ASMC.Devices.Port.APPA
         /// второстепенного.
         /// </param>
         /// <returns>Среднее арифметическое на основе выборки из countOfMeasure измерений.</returns>
-        public double GetValue(int countOfMeasure = 10, UnitMultipliers mult = UnitMultipliers.None,
+        public double GetValue(int countOfMeasure = 10, UnitMultiplier mult = UnitMultiplier.None,
             bool generalDsiplay = true)
         {
             double resultValue;

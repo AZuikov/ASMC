@@ -1,5 +1,4 @@
 ﻿using AP.Utils.Data;
-using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -242,7 +241,7 @@ namespace N8957APlugin
                 {
                     try
                     {
-                        double testFreqqPoint = (double)freq * UnitMultipliers.Mega.GetDoubleValue();
+                        double testFreqqPoint = (double)freq * UnitMultiplier.Mega.GetDoubleValue();
                         double startFreq;
                         double stopFreq;
                         int pointsCount = 201;
@@ -356,15 +355,15 @@ namespace N8957APlugin
 
                         //---------------------------------------------------
 
-                        operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(testFreqqPoint / UnitMultipliers.Mega.GetDoubleValue()));
-                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega, (decimal)(freqSTDArr[FreqIndexInArr] / UnitMultipliers.Mega.GetDoubleValue()));
-                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Kilo, freqAndTolDictionary[freq]);
-                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega,
+                        operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega, (decimal)(testFreqqPoint / UnitMultiplier.Mega.GetDoubleValue()));
+                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega, (decimal)(freqSTDArr[FreqIndexInArr] / UnitMultiplier.Mega.GetDoubleValue()));
+                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, freqAndTolDictionary[freq]);
+                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega,
                                                                  (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() +
-                                                                 operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultipliers.Mega.GetDoubleValue());
-                        operation.LowerTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultipliers.Mega,
+                                                                 operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultiplier.Mega.GetDoubleValue());
+                        operation.LowerTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega,
                                                                  (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() -
-                                                                  operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultipliers.Mega.GetDoubleValue());
+                                                                  operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultiplier.Mega.GetDoubleValue());
 
                         operation.IsGood = () =>
                         {
