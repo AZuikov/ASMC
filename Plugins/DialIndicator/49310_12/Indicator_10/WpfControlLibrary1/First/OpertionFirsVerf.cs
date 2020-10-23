@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -23,7 +22,7 @@ namespace Indicator_10.First
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint<Length>(10,UnitMultipliers.Micro ), 
+                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint<Length>(10,UnitMultiplier.Micro ), 
                         UserType="ИЧ, мод. ИЧ10", 
                         MeasuringForce = new IchBase.MaxMeasuringForce{StraightRun=new MeasPoint<Force>((decimal) 1.5), 
                             Oscillatons= new MeasPoint<Force>((decimal)0.6), ChangeCourse= new MeasPoint<Force>((decimal)0.5) }  }}

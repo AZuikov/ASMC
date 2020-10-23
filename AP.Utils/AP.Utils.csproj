@@ -67,7 +67,6 @@
     <Compile Include="Data\ProcedureAttribute.cs" />
     <Compile Include="Data\UdlBuilder.cs" />
     <Compile Include="Data\IDataProvider.cs" />
-    <Compile Include="Helps\HelpsMeasureUnits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\SqlDataProvider.cs" />
     <Compile Include="Utils.cs" />
@@ -79,6 +78,8 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Helps\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

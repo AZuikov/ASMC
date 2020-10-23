@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Threading;
 using System.Xml;
 using AP.Utils.Data;
-using AP.Utils.Helps;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
@@ -352,7 +351,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetFreq(double value, UnitMultipliers mult = UnitMultipliers.None)
+            public Calibr9500B SetFreq(double value, UnitMultiplier mult = UnitMultiplier.None)
             {
                 _calibrMain.WriteLine($@"SOUR:FREQ {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -373,7 +372,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetPeriod(double value, UnitMultipliers mult = UnitMultipliers.None)
+            public Calibr9500B SetPeriod(double value, UnitMultiplier mult = UnitMultiplier.None)
             {
                 _calibrMain.WriteLine($@"SOUR:PER {JoinValueMult(value, mult)}");
                 return _calibrMain;
@@ -385,7 +384,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetVoltage(double value, UnitMultipliers mult = UnitMultipliers.None)
+            public Calibr9500B SetVoltage(double value, UnitMultiplier mult = UnitMultiplier.None)
             {
                 _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value * mult.GetDoubleValue()).ToString().Replace(',', '.')}");
                 return _calibrMain;
@@ -613,7 +612,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                             throw new ArgumentException(errorStr);
                         }
 
-                        _calibrMain.WriteLine($"per {((double)inPoint.MainPhysicalQuantity.Value*inPoint.MainPhysicalQuantity.Multipliers.GetDoubleValue()).ToString().Replace(',','.')}");
+                        _calibrMain.WriteLine($"per {((double)inPoint.MainPhysicalQuantity.Value*inPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue()).ToString().Replace(',','.')}");
                         return _calibrMain;
                     }
 
@@ -817,8 +816,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9510 : ActiveHeadFor9500B
     {
-        public ActiveHead9510() : base(new MeasPoint<Frequency>(1,UnitMultipliers.Giga),
-                                       new [] {new MeasPoint<Time>( 500, UnitMultipliers.Pico) })
+        public ActiveHead9510() : base(new MeasPoint<Frequency>(1,UnitMultiplier.Giga),
+                                       new [] {new MeasPoint<Time>( 500, UnitMultiplier.Pico) })
         {
            
             ModelName = "9510";
@@ -827,11 +826,11 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9530 : ActiveHeadFor9500B
     {
-        public ActiveHead9530() : base(new MeasPoint<Frequency>((decimal) 3.2, UnitMultipliers.Giga),
+        public ActiveHead9530() : base(new MeasPoint<Frequency>((decimal) 3.2, UnitMultiplier.Giga),
                                        new []
                                        {
-                                           new MeasPoint<Time>(150, UnitMultipliers.Pico),
-                                           new MeasPoint<Time>(500, UnitMultipliers.Pico)
+                                           new MeasPoint<Time>(150, UnitMultiplier.Pico),
+                                           new MeasPoint<Time>(500, UnitMultiplier.Pico)
                                        })
         {
            
@@ -841,8 +840,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9550 : ActiveHeadFor9500B
     {
-        public ActiveHead9550() : base(new MeasPoint<Frequency>( 14, UnitMultipliers.Giga),
-                                       new [] {new MeasPoint<Time>(25, UnitMultipliers.Pico) })
+        public ActiveHead9550() : base(new MeasPoint<Frequency>( 14, UnitMultiplier.Giga),
+                                       new [] {new MeasPoint<Time>(25, UnitMultiplier.Pico) })
         {
             
             ModelName = "9550";
@@ -851,8 +850,8 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9560 : ActiveHeadFor9500B
     {
-        public ActiveHead9560() : base(new MeasPoint<Frequency>(6, UnitMultipliers.Giga),
-                                                new [] {new MeasPoint<Time>(70, UnitMultipliers.Pico) })
+        public ActiveHead9560() : base(new MeasPoint<Frequency>(6, UnitMultiplier.Giga),
+                                                new [] {new MeasPoint<Time>(70, UnitMultiplier.Pico) })
         {
            
             ModelName = "9560";

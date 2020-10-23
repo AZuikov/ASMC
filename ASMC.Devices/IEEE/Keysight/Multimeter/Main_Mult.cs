@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using AP.Utils.Data;
-using AP.Utils.Helps;
+using ASMC.Data.Model;
 using MathNet.Numerics.Statistics;
 using NLog;
 
@@ -28,13 +28,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <summary>
         /// Запрос на получение значения (U, I, R, F)
         /// </summary>
-        /// <param name="unitMultipliers">Желаемый множитель.</param>
+        /// <param name="unitMultiplier">Желаемый множитель.</param>
         /// <returns>Возвращает значение с желаемым множителем.</returns>
-        public double GetMeasValue(UnitMultipliers unitMultipliers= AP.Utils.Helps.UnitMultipliers.None)
+        public double GetMeasValue(UnitMultiplier unitMultiplier= UnitMultiplier.None)
         {  
            WriteLine(QueryValue);
            
-            var res = DataStrToDoubleMind(ReadString(), unitMultipliers);
+            var res = DataStrToDoubleMind(ReadString(), unitMultiplier);
             return res;
         }
 
@@ -524,12 +524,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultiplier">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
+        public MultMain Set(double value, UnitMultiplier unitMultiplier = UnitMultiplier.None)
         {
             var val = Math.Abs(value);
-            val *= unitMultipliers.GetDoubleValue();
+            val *= unitMultiplier.GetDoubleValue();
             var res = Ranges.FirstOrDefault(q => q.Value <= val);
 
             if(res == null)
@@ -722,12 +722,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон фильтра взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultiplier">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
+        public MultMain Set(double value, UnitMultiplier unitMultiplier = UnitMultiplier.None)
         {
             var val = Math.Abs(value);
-            val *= unitMultipliers.GetDoubleValue();
+            val *= unitMultiplier.GetDoubleValue();
             var res = Filters.FirstOrDefault(q => q.Value >= val);
 
             if(res == null)
@@ -880,12 +880,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultiplier">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
+        public MultMain Set(double value, UnitMultiplier unitMultiplier = UnitMultiplier.None)
         {
             var val = Math.Abs(value);
-             val *= unitMultipliers.GetDoubleValue();
+             val *= unitMultiplier.GetDoubleValue();
             var res = Ranges.OrderBy(o=>o.Value).FirstOrDefault(q => q.Value <= val);
 
             if(res == null)
@@ -945,12 +945,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Устанавливает диапазон взависимости от значения.
         /// </summary>
         /// <param name = "value">Входное значение.</param>
-        /// <param name = "unitMultipliers">Множитель вногдной величины.</param>
+        /// <param name = "unitMultiplier">Множитель вногдной величины.</param>
         /// <returns></returns>
-        public MultMain Set(double value, UnitMultipliers unitMultipliers = UnitMultipliers.None)
+        public MultMain Set(double value, UnitMultiplier unitMultiplier = UnitMultiplier.None)
         {
             var val = Math.Abs(value);
-            val *= unitMultipliers.GetDoubleValue();
+            val *= unitMultiplier.GetDoubleValue();
             var res = Ranges.FirstOrDefault(q => q.Value <= val);
 
             if(res == null)

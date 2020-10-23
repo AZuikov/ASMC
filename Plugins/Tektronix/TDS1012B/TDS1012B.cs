@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using AP.Utils.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
@@ -102,7 +101,7 @@ namespace TDS1012B
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.Time, UnitMultipliers.Nano, (decimal) 3.5);
+            RiseTimeTol = new MeasPoint(MeasureUnits.Time, UnitMultiplier.Nano, (decimal) 3.5);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using ASMC.Data.Model;
@@ -20,15 +21,14 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// Позволяет задать измерительный диапазон.
         /// </summary>
         /// <returns></returns>
-        protected virtual RangeStorage<Length> GetRanges()
+        protected virtual RangeStorage<PhysicalRange<Length>> GetRanges()
         {
-            var dsa = new MeasPoint<Voltage, Frequency>();
-            //return new RangeStorage<Length>(new PhysicalRange<Length>())
+            return null;
         }
         /// <summary>
         /// Здает измерительный диапазон.
         /// </summary>
-        public RangeStorage<Length> Ranges
+        public RangeStorage<PhysicalRange<Length>> Ranges
         {
             get => GetRanges();
         }
@@ -76,5 +76,33 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
 
     public class IchGost577 : IchBase
     {
+        /// <inheritdoc />
+        protected override RangeStorage<PhysicalRange<Length>> GetRanges()
+        {
+            return base.GetRanges();
+        }
+    }
+    public class Ich_10 : IchGost577
+    {
+        /// <inheritdoc />
+        protected override RangeStorage<PhysicalRange<Length>> GetRanges()
+        {
+            var arr = new List<PhysicalRange<Length>>();
+            for (int i = 1; i <= 10; i++)
+            {
+                arr.Add(GeneratoRanges(i - 1, i));
+            }
+            
+
+            PhysicalRange <Length> GeneratoRanges (decimal start, decimal end)
+            {
+                var st = new MeasPoint<Length>(new Length(start, UnitMultiplier.Mili));
+                var ed = new MeasPoint<Length>(new Length(end, UnitMultiplier.Mili));
+                return new PhysicalRange<Length>(st, ed, new AccuracyChatacteristic((decimal?) 0.08,null,null));
+            }
+
+            var ac = new AccuracyChatacteristic((decimal?) 0.15,null, null);
+            return new RangeStorage<PhysicalRange<Length>>(ac,arr.ToArray());
+        }
     }
 }

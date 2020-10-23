@@ -8,7 +8,6 @@ using System.Windows;
 using AP.Extension;
 using AP.Reports.Utils;
 using AP.Utils.Data;
-using AP.Utils.Helps;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
@@ -51,7 +50,7 @@ namespace Indicator_10
         /// <param name = "UnitCell">отознаечние едениц измерения в ячеках таблицы</param>
         /// <param name = "isHorizantal">При значении <see cref = "true" /> распологает ячейки горизотально</param>
         /// <returns></returns>
-        protected virtual TableViewModel CreateTable(string name, MeasPoint<Length>[] measPoints, string UnitCell,
+        protected virtual TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints, string UnitCell,
             bool isHorizantal = true)
         {
             var table = new TableViewModel {Header = name};
@@ -164,7 +163,9 @@ namespace Indicator_10
             base.InitWork();
             var operation = new MultiErrorMeasuringOperation<object>();
 
-            var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
+            //var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
+            var arrPoints = IchBase.Ranges.Ranges.Max().Stop.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
+
             var arrReversePoint = arrPoints.Reverse().ToArray();
             var arrstraightReversePoint = IchBase.Range.GetArayMeasPointsInParcent(50, 50).ToArray();
             var fullPoints = arrPoints.Concat(arrReversePoint).Concat(arrstraightReversePoint).ToArray();
@@ -180,10 +181,7 @@ namespace Indicator_10
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
-
-                arrPoints.ToArray().Reverse();
-                arrPoints.Reverse();
+               
                 var nameCell = "г"; /*Форматирование ячеек в таблице*/
                 var first = CreateTable("Прямой ход", arrPoints, nameCell);
                 var too = CreateTable("Обратный ход", arrReversePoint, nameCell);
@@ -428,19 +426,19 @@ namespace Indicator_10
                 arrGetting = Fill(vm.Content.First()).ToArray();
             };
 
-            operation.BodyWorkAsync = () =>
-            {
-                for (var i = 0; i < arrGetting.Length; i++)
-                {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>) operation.Clone();
-                    operation.Expected = (MeasPoint<Length>[]) arrPoints[i].Clone();
-                    operation.Getting = arrGetting[i];
-                    if (i > 0) DataRow.Add(operation);
-                }
-            };
-            operation.ErrorCalculation =
-                (expected, getting) => arrGetting.Max();
-            operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
+            //operation.BodyWorkAsync = () =>
+            //{
+            //    for (var i = 0; i < arrGetting.Length; i++)
+            //    {
+            //        if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>) operation.Clone();
+            //        operation.Expected = (MeasPoint<Length>[]) arrPoints[i].Clone();
+            //        operation.Getting = arrGetting[i];
+            //        if (i > 0) DataRow.Add(operation);
+            //    }
+            //};
+            //operation.ErrorCalculation =
+            //    (expected, getting) => arrGetting.Max();
+            //operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
 
