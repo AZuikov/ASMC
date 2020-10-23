@@ -9,6 +9,8 @@ namespace ASMC.Devices.Port.IZ_Tech
 {
    public class MIT_8 : ComPort
     {
+        private byte[] buffer = new byte[20];
+        private bool newDataRead = false;
 
         public MIT_8()
         {
@@ -37,6 +39,17 @@ namespace ASMC.Devices.Port.IZ_Tech
 
         public decimal ReadDataFromChanel(int chanel)
         {
+            while (!newDataRead)
+            {
+                
+            }
+
+            newDataRead = false;
+            char [] chars = new char[buffer.Length];
+
+            for (int i = 0; i < buffer.Length; i++)
+                chars[i] = Convert.ToChar(buffer[i]);
+
             return -5;
         }
 
@@ -47,7 +60,7 @@ namespace ASMC.Devices.Port.IZ_Tech
         /// <param name="e"></param>
         protected override void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-
+            if (ReadByte(buffer, 0, buffer.Length) > 0) newDataRead = true;
         }
     }
 }
