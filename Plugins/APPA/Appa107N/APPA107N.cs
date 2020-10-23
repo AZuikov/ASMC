@@ -121,6 +121,11 @@ namespace Appa107N
 
         #region Methods
 
+        public override void RefreshDevice()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void FindDevice()
         {
             throw new NotImplementedException();
