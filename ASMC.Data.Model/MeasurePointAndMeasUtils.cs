@@ -483,6 +483,10 @@ namespace ASMC.Data.Model
         /// </summary>
         AccuracyChatacteristic AccuracyChatacteristic { get; }
         MeasureUnits Unit { get; }
+        /// <summary>
+        /// Волженные диапазоны
+        /// </summary>
+        IPhysicalRange[] physicalRanges { get; }
     }
 
 

@@ -54,18 +54,17 @@ namespace Indicator_10
             bool isHorizantal = true)
         {
             var table = new TableViewModel {Header = name};
-            for (var i = 0; i < measPoints.Length; i++)
+            var columnIndex = 0;
+            var rowIndex = 0;
+            foreach (var t in measPoints)
             {
-                var columnIndex = 0;
-                var rowIndex = 0;
-                if (isHorizantal) columnIndex++;
-                else columnIndex++;
-
                 table.Cells.Add(new Cell
                 {
-                    ColumnIndex = columnIndex, RowIndex = rowIndex, Name = measPoints[i].Description,
+                    ColumnIndex = columnIndex, RowIndex = rowIndex, Name = t.Description,
                     StringFormat = @"{0} " + UnitCell
                 });
+                if (isHorizantal) rowIndex++;
+                else columnIndex++;
             }
 
             return table;
@@ -91,6 +90,8 @@ namespace Indicator_10
         /// <returns></returns>
         protected decimal ObjectToDecimal(object obj)
         {
+            if (string.IsNullOrEmpty(obj.ToString())) return 0;
+
             return decimal.Parse(obj.ToString().Trim()
                                     .Replace(".",
                                              Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
@@ -164,10 +165,11 @@ namespace Indicator_10
             var operation = new MultiErrorMeasuringOperation<object>();
 
             //var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
-            var arrPoints = IchBase.Ranges.Ranges.Max().Stop.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
+            var maxPoint = IchBase.Ranges.Ranges.Max().Stop;
+            var arrPoints = maxPoint.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
 
             var arrReversePoint = arrPoints.Reverse().ToArray();
-            var arrstraightReversePoint = IchBase.Range.GetArayMeasPointsInParcent(50, 50).ToArray();
+            var arrstraightReversePoint = maxPoint.GetArayMeasPointsInParcent(50, 50).ToArray();
             var fullPoints = arrPoints.Concat(arrReversePoint).Concat(arrstraightReversePoint).ToArray();
             MeasPoint<Weight>[] fullGettingPoints = null;
             IEnumerable<MeasPoint<Force>> fullMeasPoints = null;
