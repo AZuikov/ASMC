@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Xml;
+using Accord.Math;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -386,7 +387,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <returns></returns>
             public Calibr9500B SetVoltage(double value, UnitMultiplier mult = UnitMultiplier.None)
             {
-                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value * mult.GetDoubleValue()).ToString().Replace(',', '.')}");
+                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value * mult.GetDoubleValue()).ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
                 return _calibrMain;
             }
 
@@ -594,7 +595,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public Calibr9500B SetAmplitude(MarkerAmplitude inAmplitude)
                     {
-                        _calibrMain.WriteLine($"volt {(inAmplitude.GetDoubleValue()).ToString().Replace(',','.')}");
+                        _calibrMain.WriteLine($"volt {(inAmplitude.GetDoubleValue()).ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
                         return _calibrMain;
                     }
 
@@ -612,7 +613,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                             throw new ArgumentException(errorStr);
                         }
 
-                        _calibrMain.WriteLine($"per {((double)inPoint.MainPhysicalQuantity.Value*inPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue()).ToString().Replace(',','.')}");
+                        _calibrMain.WriteLine($"per {((double)inPoint.MainPhysicalQuantity.Value*inPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue()).ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
                         return _calibrMain;
                     }
 
@@ -622,7 +623,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                     /// <returns></returns>
                     public MarkerAmplitude GetAmplitude()
                     {
-                        string answer =_calibrMain.QueryLine($"volt?").TrimEnd('\n').Replace(',','.');
+                        string answer =_calibrMain.QueryLine($"volt?").TrimEnd('\n').Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
                         double doubleAnswer;
                         double.TryParse(answer, out doubleAnswer);
                         foreach (MarkerAmplitude amplitude in (MarkerAmplitude[])Enum.GetValues(typeof(MarkerAmplitude)))
@@ -682,7 +683,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 public Impedans GetImpedans()
                 {
                     var answer = _calibMain.QueryLine("ROUT:SIGN:IMP?");
-                    var val = answer.TrimEnd('\n').Replace(".", ",").Split('E');
+                    var val = answer.TrimEnd('\n').Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator).Split('E');
 
                     return (Impedans) (int) (double.Parse(val[0]) * Math.Pow(10, double.Parse(val[1])));
                 }

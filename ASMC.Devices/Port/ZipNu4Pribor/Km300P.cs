@@ -3,10 +3,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Timers;
+using Accord.Math;
 using Microsoft.Build.Utilities;
 using Logger = NLog.Logger;
 using Timer = System.Timers.Timer;
@@ -314,7 +316,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
             inVal = Math.Round(inVal, 6);
 
             var Valstr = inVal.ToString();
-            Valstr = Valstr.Replace(',', '.');
+            Valstr = Valstr.Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
             var splitStr = Valstr.Split('.');
             //массив может быть с одним элементом!!!!
             if (splitStr[0].Length < 2) splitStr[0] = "0" + splitStr[0];

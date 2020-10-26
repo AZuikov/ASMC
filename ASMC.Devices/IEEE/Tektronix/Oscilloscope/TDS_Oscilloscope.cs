@@ -4,6 +4,8 @@
 using AP.Utils.Data;
 using NLog;
 using System;
+using System.Globalization;
+using Accord.Math;
 using ASMC.Data.Model;
 
 namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
@@ -868,7 +870,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 {
                     double setVertScale = inScale.GetUnitMultipliersValue().GetDoubleValue() * inScale.GetDoubleValue();
                     _tdsOscilloscope
-                       .WriteLine($"{chanel}:scale {setVertScale.ToString().Replace(',', '.')}");
+                       .WriteLine($"{chanel}:scale {setVertScale.ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
                     return _tdsOscilloscope;
                 }
 
@@ -880,7 +882,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 /// <returns></returns>
                 public TDS_Oscilloscope SetSCAle(ChanelSet chanel, double inScale)
                 {
-                    _tdsOscilloscope.WriteLine($"{chanel}:scale {inScale.ToString().Replace(',', '.')}");
+                    _tdsOscilloscope.WriteLine($"{chanel}:scale {inScale.ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
                     return _tdsOscilloscope;
                 }
 
@@ -1056,7 +1058,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             public TDS_Oscilloscope SetHorizontalScale(HorizontalSCAle inHorizontalScale)
             {
                 double horizontScale = inHorizontalScale.GetUnitMultipliersValue().GetDoubleValue() * inHorizontalScale.GetDoubleValue();
-                _tdsOscilloscope.WriteLine($"hor:sca {horizontScale.ToString().Replace(',','.')}");
+                _tdsOscilloscope.WriteLine($"hor:sca {horizontScale.ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
                 return _tdsOscilloscope;
             }
 
@@ -1347,7 +1349,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             /// <returns></returns>
             public TDS_Oscilloscope SetTriggerLevel(double inLevel)
             {
-                _tdsOscilloscope.WriteLine($"TRIG:MAI:LEV {inLevel.ToString().Replace(',','.')}");
+                _tdsOscilloscope.WriteLine($"TRIG:MAI:LEV {inLevel.ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
                 return _tdsOscilloscope;
             }
 

@@ -121,7 +121,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <returns></returns>
         private static decimal StrToDecimal(string inStr)
         {
-            var val = inStr.TrimEnd('\n').Replace(".", ",").Split('E');
+            var val = inStr.TrimEnd('\n').Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator).Split('E');
 
             return decimal.Parse(val[0]) * (decimal) Math.Pow(10, double.Parse(val[1]));
         }
@@ -262,7 +262,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             var answer = QueryLine("VOLT?");
 
             //преобразуем строку в число
-            var val = answer.TrimEnd('\n').Replace(".", ",").Split('E');
+            var val = answer.TrimEnd('\n').Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator).Split('E');
             var resultVoltLevel = decimal.Parse(val[0]) * (decimal) Math.Pow(10, double.Parse(val[1]));
 
             //если значение установилось, то ответ прибора будет тем же числом, что мы отправили на прибор - тогда вернем true

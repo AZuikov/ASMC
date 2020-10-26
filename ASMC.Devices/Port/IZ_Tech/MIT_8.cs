@@ -9,7 +9,7 @@ namespace ASMC.Devices.Port.IZ_Tech
 {
    public class MIT_8 : ComPort
     {
-        private byte[] buffer = new byte[20];
+        private byte[] buffer = new byte[15];
         private bool newDataRead = false;
 
         public MIT_8()

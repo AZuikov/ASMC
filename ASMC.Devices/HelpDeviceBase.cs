@@ -80,7 +80,7 @@ namespace ASMC.Devices
         public static double StrToDoubleMindMind(string date, ICommand mult = null)
         {
             var dDate = new double[2];
-            var value = date.Replace(".", ",").Split('E');
+            var value = date.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator).Split('E');
             dDate[0] = Convert.ToDouble(value[0]);
             dDate[1] = Convert.ToDouble(value[1]);
             return math(dDate[0], dDate[1], mult);
