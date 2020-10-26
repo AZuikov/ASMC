@@ -1,13 +1,13 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+using ASMC.Data.Model;
+using NLog;
 using System;
 using System.Globalization;
 using System.IO;
 using System.IO.Ports;
 using System.Threading;
-using ASMC.Data.Model;
-using NLog;
 
 namespace ASMC.Devices.Port
 {
@@ -56,7 +56,7 @@ namespace ASMC.Devices.Port
 
         private readonly SerialPort _sp;
 
-        #endregion
+        #endregion Fields
 
         #region Property
 
@@ -68,6 +68,7 @@ namespace ASMC.Devices.Port
             get => _sp.DtrEnable;
             set => _sp.DtrEnable = value;
         }
+
         /// <summary>
         /// Сигнал запроса передачи RTS.
         /// </summary>
@@ -76,29 +77,27 @@ namespace ASMC.Devices.Port
             get => _sp.RtsEnable;
             set => _sp.RtsEnable = value;
         }
+
         /// <summary>
         /// Состояние линии готовности к приёму.
         /// </summary>
         public bool IsCTS
         {
             get => _sp.CtsHolding;
-           
         }
-
-
 
         public SpeedRate BaudRate
         {
-            get => (SpeedRate) _sp.BaudRate;
-            set => _sp.BaudRate = (int) value;
+            get => (SpeedRate)_sp.BaudRate;
+            set => _sp.BaudRate = (int)value;
         }
 
-       // public DTRMode
+        // public DTRMode
 
         public DBit DataBit
         {
-            get => (DBit) _sp.DataBits;
-            set => _sp.DataBits = (int) value;
+            get => (DBit)_sp.DataBits;
+            set => _sp.DataBits = (int)value;
         }
 
         /// <summary>
@@ -137,7 +136,7 @@ namespace ASMC.Devices.Port
             set => _sp.StopBits = value;
         }
 
-        #endregion
+        #endregion Property
 
         public ComPort()
         {
@@ -146,28 +145,27 @@ namespace ASMC.Devices.Port
 
         public ComPort(string portName)
         {
-            _sp = new SerialPort(portName, (int) SpeedRate.R9600, Parity.None, (int) DBit.Bit8, StopBits.One);
-            
+            _sp = new SerialPort(portName, (int)SpeedRate.R9600, Parity.None, (int)DBit.Bit8, StopBits.One);
         }
 
         public ComPort(string portName, SpeedRate bautRate)
         {
-            _sp = new SerialPort(portName, (int) bautRate, Parity.None, (int) DBit.Bit8, StopBits.One);
+            _sp = new SerialPort(portName, (int)bautRate, Parity.None, (int)DBit.Bit8, StopBits.One);
         }
 
         public ComPort(string portName, SpeedRate bautRate, Parity parity)
         {
-            _sp = new SerialPort(portName, (int) bautRate, parity, (int) DBit.Bit8, StopBits.One);
+            _sp = new SerialPort(portName, (int)bautRate, parity, (int)DBit.Bit8, StopBits.One);
         }
 
         public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit)
         {
-            _sp = new SerialPort(portName, (int) bautRate, parity, (int) databit, StopBits.One);
+            _sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, StopBits.One);
         }
 
         public ComPort(string portName, SpeedRate bautRate, Parity parity, DBit databit, StopBits stopbits)
         {
-            _sp = new SerialPort(portName, (int) bautRate, parity, (int) databit, stopbits);
+            _sp = new SerialPort(portName, (int)bautRate, parity, (int)databit, stopbits);
         }
 
         #region Methods
@@ -194,7 +192,8 @@ namespace ASMC.Devices.Port
 
         protected void DiscardInBuffer()
         {
-            _sp.DiscardInBuffer();
+            if (_sp.IsOpen)
+                _sp.DiscardInBuffer();
         }
 
         protected virtual void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -212,7 +211,7 @@ namespace ASMC.Devices.Port
             _sp.Write(sendData, offset, length);
         }
 
-        #endregion
+        #endregion Methods
 
         /// <summary>
         /// Позволяет получать имя устройства.
@@ -277,6 +276,7 @@ namespace ASMC.Devices.Port
             {
                 _sp.DataReceived -= SerialPort_DataReceived;
                 _sp.Close();
+                DiscardInBuffer();
                 _sp.Dispose();
                 Logger.Debug($"Последовательный порт {_sp.PortName} закрыт и отписались от события считывания.");
             }
@@ -292,7 +292,6 @@ namespace ASMC.Devices.Port
             try
             {
                 return _sp.ReadByte();
-
             }
             catch (TimeoutException e)
             {
@@ -308,8 +307,8 @@ namespace ASMC.Devices.Port
             }
 
             return 0;
-            
         }
+
         /// <summary>
         /// Считывает байты.
         /// </summary>
@@ -318,13 +317,12 @@ namespace ASMC.Devices.Port
         /// <param name="count">Число байт для считывания.</param>
         /// <param name="closePort">Закрывать порт после считывания (еси true закрывает порт).</param>
         /// <returns></returns>
-        public int ReadByte(byte[] buffer, int offset, int count, bool closePort = true )
+        public int ReadByte(byte[] buffer, int offset, int count, bool closePort = true)
         {
             if (!IsOpen) return 0;
             try
             {
                 return _sp.Read(buffer, offset, count);
-                 
             }
             catch (TimeoutException e)
             {
@@ -336,7 +334,7 @@ namespace ASMC.Devices.Port
             }
             finally
             {
-              if (closePort)   Close();
+                if (closePort) Close();
             }
 
             return 0;
@@ -348,7 +346,7 @@ namespace ASMC.Devices.Port
         /// <returns>Возвращает рузультат чтения</returns>
         public string ReadLine()
         {
-            if (IsOpen) return null;
+            if (!IsOpen) Open();
             try
             {
                 return _sp.ReadLine();
