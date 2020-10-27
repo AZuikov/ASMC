@@ -826,7 +826,7 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
 
     public class ActiveHead9530 : ActiveHeadFor9500B
     {
-        public ActiveHead9530() : base(new MeasPoint<Frequency>((decimal) 3.2, UnitMultiplier.Giga),
+        public ActiveHead9530() : base(new MeasPoint<Frequency>( 3.2M, UnitMultiplier.Giga),
                                        new []
                                        {
                                            new MeasPoint<Time>(150, UnitMultiplier.Pico),

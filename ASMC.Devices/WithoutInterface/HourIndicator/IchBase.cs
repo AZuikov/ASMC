@@ -19,7 +19,7 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// <summary>
         /// Максимальное допустимое отклонение стрелки при перпендикулярном нажиме на его ось.
         /// </summary>
-        public double PerpendicularPressureMax { get; set; }
+        public decimal PerpendicularPressureMax { get; set; }
 
         /// <summary>
         /// Позволяет задать полный измерительный диапазон.
@@ -95,9 +95,9 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         {
             MeasuringForce = new MaxMeasuringForce
             {
-                StraightRun = new MeasPoint<Force>((decimal) 1.5),
-                Oscillatons = new MeasPoint<Force>((decimal) 0.6),
-                ChangeCourse = new MeasPoint<Force>((decimal) 0.5)
+                StraightRun = new MeasPoint<Force>( 1.5M),
+                Oscillatons = new MeasPoint<Force>(0.6M),
+                ChangeCourse = new MeasPoint<Force>( 0.5m)
             };
         }
     }

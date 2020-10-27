@@ -160,7 +160,7 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper1Oprobovanie : ParagraphBase<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
+        private static readonly decimal[] MyPoint = {0.1M, 0.5M, 1M};
 
         #region Property
 
@@ -269,7 +269,7 @@ namespace B5_71_PRO_Abstract
 
                         var measVolt = Math.Abs(Load.Voltage.MeasureVolt);
 
-                        operation.IsGood = () => { return Bp.VoltMax / measVolt >= (decimal) 0.7; };
+                        operation.IsGood = () => { return Bp.VoltMax / measVolt >=  0.7M; };
 
                         if (!operation.IsGood())
                         {
@@ -290,7 +290,7 @@ namespace B5_71_PRO_Abstract
                         //измеряем напряжение
 
                         var measCurr = Math.Abs(Load.Current.MeasureCurrent);
-                        operation.IsGood = () => { return Bp.CurrMax / measCurr >= (decimal) 0.7; };
+                        operation.IsGood = () => { return Bp.CurrMax / measCurr >=  0.7M; };
 
                         if (!operation.IsGood())
                         {
@@ -364,7 +364,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        private static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
+        private static readonly decimal[] MyPoint = { 0.1M,  0.5M, 1M};
 
         #region Property
 
@@ -550,7 +550,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
+        public static readonly decimal[] MyPoint = { 0.1M, 0.5m, 1};
 
         #region Property
 
@@ -741,7 +741,7 @@ namespace B5_71_PRO_Abstract
     public class Oper4VoltUnstable : ParagraphBase<decimal>
     {
         //это точки для нагрузки в Омах
-        public static readonly decimal[] ArrСoefVoltUnstable = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
+        public static readonly decimal[] ArrСoefVoltUnstable = { 0.1M,  0.5m, 0.9m};
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -950,7 +950,7 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper5VoltPulsation : ParagraphBase<decimal>
     {
         //это точки для нагрузки в Омах
-        public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27, (decimal) 37.5, (decimal) 187.5};
+        public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27M, (decimal) 37.5M, (decimal) 187.5M};
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1039,7 +1039,7 @@ namespace B5_71_PRO_Abstract
                             throw new
                                 ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-                        var point = Bp.VoltMax / ((decimal) 0.9 * Bp.CurrMax);
+                        var point = Bp.VoltMax / ((decimal) 0.9M * Bp.CurrMax);
                         Load.SetWorkingChanel()
                             .SetModeWork(MainN3300.ModeWorks.Resistance)
                             .Resistance.SetResistanceRange(point)
@@ -1079,7 +1079,7 @@ namespace B5_71_PRO_Abstract
                     Mult.Dc.Voltage.Range.Set(100);
                     var voltPulsV357 = (decimal) Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-                    voltPulsV357 = MathStatistics.Mapping( voltPulsV357, 0, (decimal) 0.99, 0,
+                    voltPulsV357 = MathStatistics.Mapping( voltPulsV357, 0, (decimal) 0.99M, 0,
                                                           (decimal)a.MainPhysicalQuantity.Value);
                     MathStatistics.Round(ref voltPulsV357, 0);
 
@@ -1163,7 +1163,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
+        public static readonly decimal[] MyPoint = {(decimal) 0.1M, (decimal) 0.5M, 1};
 
         #region Property
 
@@ -1271,7 +1271,7 @@ namespace B5_71_PRO_Abstract
                         var setPoint = coef * Bp.CurrMax;
                         //ставим значение тока
                         //плавно подходим, что бы не было перегрузки.
-                        Bp.SetStateCurr(setPoint * (decimal)0.9);
+                        Bp.SetStateCurr(setPoint * (decimal)0.9M);
                         Bp.SetStateCurr(setPoint);
                         Bp.OffOutput();
                         Bp.OnOutput();
@@ -1346,7 +1346,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, 1};
+        public static readonly decimal[] MyPoint = {(decimal) 0.1M, (decimal) 0.5M, 1};
 
         #region Fields
 
@@ -1450,7 +1450,7 @@ namespace B5_71_PRO_Abstract
                         Load.SetOutputState(MainN3300.State.On);
 
                         Bp.InitDevice();
-                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax*(decimal)0.7);
+                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax*(decimal)0.7M);
                         Bp.OnOutput();
                        
 
@@ -1529,7 +1529,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = {(decimal) 0.1, (decimal) 0.5, (decimal) 0.9};
+        public static readonly decimal[] MyPoint = {(decimal) 0.1M, (decimal) 0.5M, (decimal) 0.9M};
 
         #region Fields
 
@@ -1639,12 +1639,12 @@ namespace B5_71_PRO_Abstract
 
                     ////инициализация блока питания
                     Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax*(decimal)0.7);
+                    Bp.SetStateCurr(Bp.CurrMax*(decimal)0.7M);
                     Bp.SetStateVolt(Bp.VoltMax);
                     Bp.OnOutput();
 
-                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8);
-                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9);
+                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8M);
+                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9M);
                     Bp.SetStateCurr(Bp.CurrMax );
 
                     //это нужно для нормальной работы источника
@@ -1818,18 +1818,18 @@ namespace B5_71_PRO_Abstract
                                                   $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                         Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                        var point = (decimal) 0.9 * Bp.VoltMax / Bp.CurrMax;
+                        var point = (decimal) 0.9M * Bp.VoltMax / Bp.CurrMax;
                         Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
                         Load.SetOutputState(MainN3300.State.On);
 
                         //инициализация блока питания
                         Bp.InitDevice();
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.7);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.7M);
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.OnOutput();
 
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8);
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8M);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9M);
                         Bp.SetStateCurr(Bp.CurrMax);
                     });
 
@@ -1884,7 +1884,7 @@ namespace B5_71_PRO_Abstract
                         }
                     }
 
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99, 0, (decimal)a.MainPhysicalQuantity.Value);
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99M, 0, (decimal)a.MainPhysicalQuantity.Value);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации

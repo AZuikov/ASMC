@@ -275,7 +275,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
         /// <summary>
         /// Процент от измеряемой точки для расчета погрешности (уже переведе в абсолютные единицы).
         /// </summary>
-        public decimal BaseTolCoeff = (decimal)0.0006;
+        public decimal BaseTolCoeff = 0.0006M;
 
         /// <summary>
         /// Число пределов для данного режима.
@@ -547,18 +547,18 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             Name = OperationDcRangeNominal.GetStringValue();
 
-            BaseTolCoeff = (decimal)0.0006;
+            BaseTolCoeff = 0.0006M;
             EdMlRaz = 10;
             RangeResolution = new MeasPoint<Voltage>(100,  UnitMultiplier.Micro);
 
             BaseMultipliers = 100;
             VoltPoint = new MeasPoint<Voltage>[6];
-            VoltPoint[0] = new MeasPoint<Voltage>((decimal)0.4, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-            VoltPoint[1] = new MeasPoint<Voltage>((decimal)0.8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-            VoltPoint[2] = new MeasPoint<Voltage>((decimal)1.2, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-            VoltPoint[3] = new MeasPoint<Voltage>((decimal)1.6, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-            VoltPoint[4] = new MeasPoint<Voltage>((decimal)1.8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-            VoltPoint[5] = new MeasPoint<Voltage>((decimal)-1.8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+            VoltPoint[0] = new MeasPoint<Voltage>(0.4m, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+            VoltPoint[1] = new MeasPoint<Voltage>(0.8m, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+            VoltPoint[2] = new MeasPoint<Voltage>(1.2m, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+            VoltPoint[3] = new MeasPoint<Voltage>(1.6m, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+            VoltPoint[4] = new MeasPoint<Voltage>(1.8m, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+            VoltPoint[5] = new MeasPoint<Voltage>(-1.8m, thisRangeUnits.MainPhysicalQuantity.Multiplier);
         }
 
         /// <inheritdoc />
@@ -606,7 +606,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             Name = OperationDcRangeNominal.GetStringValue();
 
-            BaseTolCoeff = (decimal)0.0006;
+            BaseTolCoeff = 0.0006M;
             EdMlRaz = 10;
             RangeResolution = new MeasPoint<Voltage>(10,  UnitMultiplier.Mili);
 
@@ -637,7 +637,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             Name = OperationDcRangeNominal.GetStringValue();
 
-            BaseTolCoeff = (decimal)0.0006;
+            BaseTolCoeff = 0.0006m;
             EdMlRaz = 10;
             RangeResolution = new MeasPoint<Voltage>(100,  UnitMultiplier.Mili);
 
@@ -669,7 +669,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             RangeResolution = new MeasPoint<Voltage>(1,  UnitMultiplier.Micro);
             Name = OperationDcRangeNominal.GetStringValue();
 
-            BaseTolCoeff = (decimal)0.0006;
+            BaseTolCoeff = 0.0006M;
             EdMlRaz = 60;
             RangeResolution = new MeasPoint<Voltage>(1,  UnitMultiplier.Micro);
 
@@ -701,7 +701,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Micro);
             Name = OperationDcRangeNominal.GetStringValue();
 
-            BaseTolCoeff = (decimal)0.0006;
+            BaseTolCoeff = 0.0006M;
             EdMlRaz = 20;
             RangeResolution = new MeasPoint<Voltage>(10,  UnitMultiplier.Micro);
 
@@ -1033,8 +1033,8 @@ blic class Oper1VisualTest : ParagraphBase<bool>
                 inFreq.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
             {
                 EdMlRaz = 80;
-                if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100) BaseTolCoeff = (decimal)0.007;
-                if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000) BaseTolCoeff = (decimal)0.01;
+                if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100) BaseTolCoeff = 0.007M;
+                if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000) BaseTolCoeff =0.01M;
                 return;
             }
 
@@ -1045,8 +1045,8 @@ blic class Oper1VisualTest : ParagraphBase<bool>
                 if (inFreq.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
                 {
                     EdMlRaz = 50;
-                    if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100) BaseTolCoeff = (decimal)0.007;
-                    if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000) BaseTolCoeff = (decimal)0.01;
+                    if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100) BaseTolCoeff = 0.007M;
+                    if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000) BaseTolCoeff = 0.01M;
                     return;
                 }
 
@@ -1054,28 +1054,28 @@ blic class Oper1VisualTest : ParagraphBase<bool>
                 {
                     if (inFreq.MainPhysicalQuantity.Value >= 1 && inFreq.MainPhysicalQuantity.Value <= 10)
                     {
-                        BaseTolCoeff = (decimal)0.02;
+                        BaseTolCoeff = 0.02M;
                         EdMlRaz = 60;
                         return;
                     }
 
                     if (inFreq.MainPhysicalQuantity.Value > 10 && inFreq.MainPhysicalQuantity.Value <= 20)
                     {
-                        BaseTolCoeff = (decimal)0.03;
+                        BaseTolCoeff = 0.03M;
                         EdMlRaz = 70;
                         return;
                     }
 
                     if (inFreq.MainPhysicalQuantity.Value > 20 && inFreq.MainPhysicalQuantity.Value <= 50)
                     {
-                        BaseTolCoeff = (decimal)0.05;
+                        BaseTolCoeff = 0.05m;
                         EdMlRaz = 80;
                         return;
                     }
 
                     if (inFreq.MainPhysicalQuantity.Value > 50 && inFreq.MainPhysicalQuantity.Value <= 100)
                     {
-                        BaseTolCoeff = (decimal)0.1;
+                        BaseTolCoeff = 0.1m;
                         EdMlRaz = 100;
                         return;
                     }
@@ -1085,8 +1085,8 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             if (OperationAcRangeNominal == Mult107_109N.RangeNominal.Range750V)
             {
                 EdMlRaz = 50;
-                if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100) BaseTolCoeff = (decimal)0.007;
-                if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000) BaseTolCoeff = (decimal)0.01;
+                if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100) BaseTolCoeff = 0.007M;
+                if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000) BaseTolCoeff =0.01M;
             }
         }
 
@@ -1204,14 +1204,14 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             VoltMultipliers = 1;
 
-            RangeResolution = new MeasPoint<Voltage>((decimal)0.1, UnitMultiplier.Mili);
+            RangeResolution = new MeasPoint<Voltage>(0.1M, UnitMultiplier.Mili);
 
             
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40 * VoltMultipliers}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000 * VoltMultipliers }));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 20 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40 * VoltMultipliers}));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000 * VoltMultipliers }));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 20 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo }));
 
             VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40 * VoltMultipliers}));
             VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000 * VoltMultipliers }));
@@ -1220,12 +1220,12 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 50 * VoltMultipliers , Multiplier =  UnitMultiplier.Kilo}));
             VoltPoint.Add(new MeasPoint<Voltage>(1,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency { Value = 100 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo }));
 
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40 * VoltMultipliers}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000 * VoltMultipliers }));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency { Value = 20 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo }));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 50 * VoltMultipliers , Multiplier =  UnitMultiplier.Kilo}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency { Value = 100 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40 * VoltMultipliers}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000 * VoltMultipliers }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency { Value = 20 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 50 * VoltMultipliers , Multiplier =  UnitMultiplier.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency { Value = 100 * VoltMultipliers, Multiplier = UnitMultiplier.Kilo }));
         }
 
         /// <inheritdoc />
@@ -1254,10 +1254,10 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             
             //конкретно для первой точки 2 нужны не все частоты, поэтому вырежем только необходимые
             
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10, Multiplier = UnitMultiplier.Kilo}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency {Value = 20, Multiplier = UnitMultiplier.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40}));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000}));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10, Multiplier = UnitMultiplier.Kilo}));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency {Value = 20, Multiplier = UnitMultiplier.Kilo}));
 
             VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier,  new Frequency{Value = 40}));
             VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier,  new Frequency{Value = 1000}));
@@ -1266,12 +1266,12 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier,  new Frequency{Value = 50, Multiplier = UnitMultiplier.Kilo }));
             VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier,  new Frequency{Value = 100, Multiplier = UnitMultiplier.Kilo}));
 
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000}));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10, Multiplier = UnitMultiplier.Kilo }));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 20, Multiplier = UnitMultiplier.Kilo }));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 50, Multiplier = UnitMultiplier.Kilo }));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency { Value = 100, Multiplier = UnitMultiplier.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 40}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 1000}));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 10, Multiplier = UnitMultiplier.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 20, Multiplier = UnitMultiplier.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency{Value = 50, Multiplier = UnitMultiplier.Kilo }));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers,  thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency { Value = 100, Multiplier = UnitMultiplier.Kilo }));
         }
 
         /// <inheritdoc />
@@ -1311,10 +1311,10 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             
             //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){Value = 40,   Multiplier = UnitMultiplier.None}));  //.IsFake = true; 
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){Value = 1000, Multiplier = UnitMultiplier.None} ));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){Value = 10  , Multiplier = UnitMultiplier.Kilo} ));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)0.2 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){ Value = 20, Multiplier = UnitMultiplier.Kilo } ));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){Value = 40,   Multiplier = UnitMultiplier.None}));  //.IsFake = true; 
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){Value = 1000, Multiplier = UnitMultiplier.None} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){Value = 10  , Multiplier = UnitMultiplier.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(0.2M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency(){ Value = 20, Multiplier = UnitMultiplier.Kilo } ));
             
             VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 40,   Multiplier = UnitMultiplier.None})); //.IsFake = true; 
             VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 1000, Multiplier = UnitMultiplier.None} ));
@@ -1324,12 +1324,12 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             VoltPoint.Add(new MeasPoint<Voltage>(1 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency() { Value = 100, Multiplier = UnitMultiplier.Kilo })); //.IsFake  =true; 
 
             //VoltPoint[2] = new AcVariablePoint((decimal)1.8 * VoltMultipliers, thisRangeUnits.Units, thisRangeUnits.Multipliers, HerzVPoint, true);
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 40,   Multiplier = UnitMultiplier.None})); //.IsFake = true; 
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 1000, Multiplier = UnitMultiplier.None} ));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 10  , Multiplier = UnitMultiplier.Kilo} ));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 20  , Multiplier = UnitMultiplier.Kilo} ));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 50  , Multiplier = UnitMultiplier.Kilo} ));
-            VoltPoint.Add(new MeasPoint<Voltage>((decimal)1.8 * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency() { Value = 100, Multiplier = UnitMultiplier.Kilo })); //.IsFake  =true; 
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 40,   Multiplier = UnitMultiplier.None})); //.IsFake = true; 
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 1000, Multiplier = UnitMultiplier.None} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 10  , Multiplier = UnitMultiplier.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 20  , Multiplier = UnitMultiplier.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier,new Frequency(){Value = 50  , Multiplier = UnitMultiplier.Kilo} ));
+            VoltPoint.Add(new MeasPoint<Voltage>(1.8M * VoltMultipliers, thisRangeUnits.MainPhysicalQuantity.Multiplier, new Frequency() { Value = 100, Multiplier = UnitMultiplier.Kilo })); //.IsFake  =true; 
         }
 
         /// <inheritdoc />
@@ -1680,7 +1680,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
                 FileName = @"appa_10XN_ma_5522A.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
-            BaseTolCoeff = (decimal)0.002;
+            BaseTolCoeff = 0.002M;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.I, UnitMultiplier.Micro);
 
@@ -1725,7 +1725,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
                 FileName = @"appa_10XN_ma_5522A.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
-            BaseTolCoeff = (decimal)0.002;
+            BaseTolCoeff = 0.002M;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.I, UnitMultiplier.Micro);
 
@@ -1771,13 +1771,13 @@ blic class Oper1VisualTest : ParagraphBase<bool>
                 FileName = @"appa_10XN_A_Aux_5522A.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
-            BaseTolCoeff = (decimal)0.002;
+            BaseTolCoeff = 0.002M;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.I, UnitMultiplier.Micro);
 
             thisRangeUnits = new MeasPoint(MeasureUnits.I, UnitMultiplier.None, 0);
 
-            BaseMultipliers = (decimal)0.1;
+            BaseMultipliers = 0.1M;
             CurrentDciPoint = new MeasPoint[5];
             CurrentDciPoint[0] =
                 new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 4 * BaseMultipliers);
@@ -1817,7 +1817,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
 
-            BaseTolCoeff = (decimal)0.002;
+            BaseTolCoeff = 0.002M;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.I, UnitMultiplier.Mili);
 
@@ -1855,7 +1855,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             OperationRangeNominal = inRangeNominal;
             Name = OperationRangeNominal.GetStringValue();
 
-            BaseTolCoeff = (decimal)0.002;
+            BaseTolCoeff = 0.002M;
             EdMlRaz = 40;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.I, UnitMultiplier.Mili);
 
@@ -1983,13 +1983,13 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             {
                 if (inFreq.Value >= 40 && inFreq.Value < 500)
                 {
-                    BaseTolCoeff = (decimal)0.008;
+                    BaseTolCoeff = 0.008M;
                     EdMlRaz = 50;
                 }
 
                 if (inFreq.Value >= 500 && inFreq.Value < 1000)
                 {
-                    BaseTolCoeff = (decimal)0.012;
+                    BaseTolCoeff = 0.012M;
                     EdMlRaz = 80;
                 }
             }
@@ -1999,17 +1999,17 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             {
                 if (inFreq.Value >= 40 && inFreq.Value < 500)
                 {
-                    BaseTolCoeff = (decimal)0.008;
+                    BaseTolCoeff = 0.008M;
                     EdMlRaz = 50;
                 }
                 else if (inFreq.Value >= 500 && inFreq.Value < 1000)
                 {
-                    BaseTolCoeff = (decimal)0.012;
+                    BaseTolCoeff = 0.012m;
                     EdMlRaz = 80;
                 }
                 else if (inFreq.Value >= 1000 && inFreq.Value <= 3000)
                 {
-                    BaseTolCoeff = (decimal)0.02;
+                    BaseTolCoeff = 0.02m;
                     EdMlRaz = 80;
                 }
             }
@@ -2235,14 +2235,14 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             {
                 if (realFreq >= 40 && realFreq <= 500)
                 {
-                    BaseTolCoeff = (decimal)0.008;
+                    BaseTolCoeff = 0.008M;
                     EdMlRaz = 50;
                     return;
                 }
 
                 if (realFreq > 500 && realFreq <= 1000)
                 {
-                    BaseTolCoeff = (decimal)0.012;
+                    BaseTolCoeff = 0.012m;
                     EdMlRaz = 80;
                     return;
                 }
@@ -2254,15 +2254,15 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             {
                 if (realFreq >= 40 && realFreq <= 500)
                 {
-                    BaseTolCoeff = (decimal)0.008;
+                    BaseTolCoeff = 0.008M;
                     EdMlRaz = 50;
                     return;
                 }
 
                 EdMlRaz = 80;
 
-                if (realFreq > 500 && realFreq <= 1000) BaseTolCoeff = (decimal)0.012;
-                if (realFreq > 1000 && realFreq <= 3000) BaseTolCoeff = (decimal)0.020;
+                if (realFreq > 500 && realFreq <= 1000) BaseTolCoeff = 0.012M;
+                if (realFreq > 1000 && realFreq <= 3000) BaseTolCoeff = 0.020M;
             }
         }
 
@@ -2374,7 +2374,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
 
             thisRangeUnits = new MeasPoint(MeasureUnits.I, UnitMultiplier.None, 0);
-            CurrentMultipliers = (decimal)0.1;
+            CurrentMultipliers = 0.1M;
 
             HerzPoint = new MeasPoint[3];
             HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 40);
@@ -2738,7 +2738,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
             thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 0);
-            BaseTolCoeff = (decimal)0.0001;
+            BaseTolCoeff = 0.0001M;
             EdMlRaz = 50;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, UnitMultiplier.Mili);
 
@@ -2746,7 +2746,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 10);
 
             VoltPoint = new AcVariablePoint[1];
-            VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+            VoltPoint[0] = new AcVariablePoint(0.5M, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
         }
 
         /// <inheritdoc />
@@ -2769,7 +2769,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
             thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 0);
-            BaseTolCoeff = (decimal)0.0001;
+            BaseTolCoeff = 0.0001M;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, UnitMultiplier.Mili);
 
@@ -2777,7 +2777,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 100);
 
             VoltPoint = new AcVariablePoint[1];
-            VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+            VoltPoint[0] = new AcVariablePoint(0.5M, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
         }
 
         /// <inheritdoc />
@@ -2800,7 +2800,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
             thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, 0);
-            BaseTolCoeff = (decimal)0.0001;
+            BaseTolCoeff = 0.0001M;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, UnitMultiplier.Mili);
 
@@ -2808,7 +2808,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1);
 
             VoltPoint = new AcVariablePoint[1];
-            VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+            VoltPoint[0] = new AcVariablePoint(0.5M, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
         }
 
         /// <inheritdoc />
@@ -2831,7 +2831,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             Sheme = ShemeTemplateDefault.TemplateSheme;
             thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, 0);
-            BaseTolCoeff = (decimal)0.0001;
+            BaseTolCoeff = 0.0001M;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, UnitMultiplier.None);
 
@@ -2839,7 +2839,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 10);
 
             VoltPoint = new AcVariablePoint[1];
-            VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+            VoltPoint[0] = new AcVariablePoint(0.5M, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
         }
 
         /// <inheritdoc />
@@ -2870,7 +2870,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 100);
 
             VoltPoint = new AcVariablePoint[1];
-            VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+            VoltPoint[0] = new AcVariablePoint((decimal)0.5M, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
         }
 
         /// <inheritdoc />
@@ -2901,7 +2901,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1);
 
             VoltPoint = new AcVariablePoint[1];
-            VoltPoint[0] = new AcVariablePoint((decimal)0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+            VoltPoint[0] = new AcVariablePoint((decimal)0.5M, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
         }
 
         /// <inheritdoc />
@@ -2927,7 +2927,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             Name = OperationOhmRangeNominal.GetStringValue();
 
-            BaseTolCoeff = (decimal)0.003;
+            BaseTolCoeff = (decimal)0.003M;
             EdMlRaz = 30;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, UnitMultiplier.Mili);
 
@@ -2958,21 +2958,21 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Kilo, 0);
 
-            BaseTolCoeff = (decimal)0.003;
+            BaseTolCoeff = (decimal)0.003M;
             EdMlRaz = 30;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, UnitMultiplier.Mili);
 
             BaseMultipliers = 1;
             OhmPoint = new MeasPoint[5];
             OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.4 * BaseMultipliers);
+                                        (decimal)0.4M * BaseMultipliers);
             OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.8 * BaseMultipliers);
+                                        (decimal)0.8M * BaseMultipliers);
             OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
             OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.5 * BaseMultipliers);
+                                        (decimal)1.5M * BaseMultipliers);
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.8 * BaseMultipliers);
+                                        (decimal)1.8M * BaseMultipliers);
         }
 
         /// <inheritdoc />
@@ -2994,21 +2994,21 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Kilo, 0);
 
-            BaseTolCoeff = (decimal)0.003;
+            BaseTolCoeff = (decimal)0.003M;
             EdMlRaz = 30;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, UnitMultiplier.None);
 
             BaseMultipliers = 10;
             OhmPoint = new MeasPoint[5];
             OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.4 * BaseMultipliers);
+                                        (decimal)0.4M * BaseMultipliers);
             OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.8 * BaseMultipliers);
+                                        (decimal)0.8M * BaseMultipliers);
             OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
             OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.5 * BaseMultipliers);
+                                        (decimal)1.5M * BaseMultipliers);
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.8 * BaseMultipliers);
+                                        (decimal)1.8M * BaseMultipliers);
         }
 
         /// <inheritdoc />
@@ -3029,21 +3029,21 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Kilo, 0);
 
-            BaseTolCoeff = (decimal)0.003;
+            BaseTolCoeff = (decimal)0.003M;
             EdMlRaz = 30;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, UnitMultiplier.None);
 
             BaseMultipliers = 100;
             OhmPoint = new MeasPoint[5];
             OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.4 * BaseMultipliers);
+                                        (decimal)0.4M * BaseMultipliers);
             OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.8 * BaseMultipliers);
+                                        (decimal)0.8m * BaseMultipliers);
             OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
             OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.5 * BaseMultipliers);
+                                        (decimal)1.5m * BaseMultipliers);
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.8 * BaseMultipliers);
+                                        (decimal)1.8M * BaseMultipliers);
         }
 
         /// <inheritdoc />
@@ -3064,21 +3064,21 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Mega, 0);
 
-            BaseTolCoeff = (decimal)0.003;
+            BaseTolCoeff = (decimal)0.003M;
             EdMlRaz = 50;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, UnitMultiplier.None);
 
             BaseMultipliers = 1;
             OhmPoint = new MeasPoint[5];
             OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.4 * BaseMultipliers);
+                                        (decimal)0.4m * BaseMultipliers);
             OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)0.8 * BaseMultipliers);
+                                        (decimal)0.8M * BaseMultipliers);
             OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
             OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.5 * BaseMultipliers);
+                                        (decimal)1.5M * BaseMultipliers);
             OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                        (decimal)1.8 * BaseMultipliers);
+                                        (decimal)1.8M * BaseMultipliers);
         }
 
         /// <inheritdoc />
@@ -3098,7 +3098,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationOhmRangeNominal.GetStringValue();
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Mega, 0);
-            BaseTolCoeff = (decimal)0.05;
+            BaseTolCoeff = (decimal)0.05M;
             EdMlRaz = 50;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, UnitMultiplier.Kilo);
 
@@ -3127,7 +3127,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Mega, 0);
 
-            BaseTolCoeff = (decimal)0.05;
+            BaseTolCoeff = (decimal)0.05M;
             EdMlRaz = 20;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, UnitMultiplier.Mega);
 
@@ -3156,12 +3156,12 @@ blic class Oper1VisualTest : ParagraphBase<bool>
 
             thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Giga, 0);
 
-            BaseTolCoeff = (decimal)0.05;
+            BaseTolCoeff = (decimal)0.05M;
             EdMlRaz = 8;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, UnitMultiplier.Mega);
 
             OhmPoint = new MeasPoint[1];
-            OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, (decimal)0.9);
+            OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, (decimal)0.9M);
         }
 
         /// <inheritdoc />
@@ -3725,7 +3725,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
         {
             OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
             OperationRangeNominal = inRangeNominal;
-            BaseTolCoeff = (decimal)0.015;
+            BaseTolCoeff = (decimal)0.015M;
             EdMlRaz = 10;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Far, UnitMultiplier.Pico);
 
@@ -3755,7 +3755,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Far, UnitMultiplier.Pico);
-            BaseTolCoeff = (decimal)0.015;
+            BaseTolCoeff = (decimal)0.015M;
             EdMlRaz = 10;
             Name = OperationRangeNominal.GetStringValue();
             thisRangeUnits = new MeasPoint(MeasureUnits.Far, UnitMultiplier.Nano, 0);
@@ -3780,12 +3780,12 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             OperationRangeCode = Mult107_109N.RangeCode.Range3Manual;
             OperationRangeNominal = inRangeNominal;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Far, UnitMultiplier.Pico);
-            BaseTolCoeff = (decimal)0.009;
+            BaseTolCoeff = (decimal)0.009M;
             EdMlRaz = 5;
             Name = OperationRangeNominal.GetStringValue();
             thisRangeUnits = new MeasPoint(MeasureUnits.Far, UnitMultiplier.Nano, 0);
 
-            BaseTolCoeff = (decimal)0.009;
+            BaseTolCoeff = (decimal)0.009M;
             EdMlRaz = 5;
 
             FarMeasPoints = new MeasPoint[1];
@@ -3810,10 +3810,10 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             thisRangeUnits = new MeasPoint(MeasureUnits.Far, UnitMultiplier.Micro, 0);
 
-            BaseTolCoeff = (decimal)0.009;
+            BaseTolCoeff = (decimal)0.009M;
             EdMlRaz = 5;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Far, UnitMultiplier.Nano);
-            BaseTolCoeff = (decimal)0.009;
+            BaseTolCoeff = (decimal)0.009M;
             EdMlRaz = 5;
 
             FarMeasPoints = new MeasPoint[1];
@@ -3838,7 +3838,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             thisRangeUnits = new MeasPoint(MeasureUnits.Far, UnitMultiplier.Micro, 0);
 
-            BaseTolCoeff = (decimal)0.012;
+            BaseTolCoeff = (decimal)0.012M;
             EdMlRaz = 5;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Far, UnitMultiplier.Nano);
 
@@ -3864,7 +3864,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             thisRangeUnits = new MeasPoint(MeasureUnits.Far, UnitMultiplier.Micro, 0);
 
-            BaseTolCoeff = (decimal)0.012;
+            BaseTolCoeff = (decimal)0.012M;
             EdMlRaz = 5;
             RangeResolution = new AcVariablePoint(100, MeasureUnits.Far, UnitMultiplier.Nano);
 
@@ -3890,7 +3890,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             thisRangeUnits = new MeasPoint(MeasureUnits.Far, UnitMultiplier.Mili, 0);
 
-            BaseTolCoeff = (decimal)0.015;
+            BaseTolCoeff = (decimal)0.015M;
             EdMlRaz = 5;
             RangeResolution = new AcVariablePoint(1, MeasureUnits.Far, UnitMultiplier.Micro);
 
@@ -3916,7 +3916,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = OperationRangeNominal.GetStringValue();
             thisRangeUnits = new MeasPoint(MeasureUnits.Far, UnitMultiplier.Mili, 0);
 
-            BaseTolCoeff = (decimal)0.015;
+            BaseTolCoeff = (decimal)0.015M;
             EdMlRaz = 5;
             RangeResolution = new AcVariablePoint(10, MeasureUnits.Far, UnitMultiplier.Micro);
 
@@ -3949,7 +3949,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
         /// <summary>
         /// Процент от измеряемой точки для расчета погрешности (уже переведе в абсолютные единицы).
         /// </summary>
-        public decimal BaseTolCoeff = (decimal)0.0006;
+        public decimal BaseTolCoeff = (decimal)0.0006M;
 
         /// <summary>
         /// Число пределов измерения.
@@ -4223,7 +4223,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = "-200 ⁰C ... -100 ⁰C";
             thisRangeUnits = new MeasPoint(MeasureUnits.degC, UnitMultiplier.None, 0);
 
-            BaseTolCoeff = (decimal)0.001;
+            BaseTolCoeff = (decimal)0.001M;
             EdMlRaz = 60;
 
             DegC_Point = new[] { new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, -200) };
@@ -4248,7 +4248,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = "-100 ⁰C ... 400 ⁰C";
             thisRangeUnits = new MeasPoint(MeasureUnits.degC, UnitMultiplier.None, 0);
 
-            BaseTolCoeff = (decimal)0.001;
+            BaseTolCoeff = (decimal)0.001M;
             EdMlRaz = 30;
 
             DegC_Point = new[]
@@ -4279,7 +4279,7 @@ blic class Oper1VisualTest : ParagraphBase<bool>
             Name = "400 ⁰C ... 1200 ⁰C";
             thisRangeUnits = new MeasPoint(MeasureUnits.degC, UnitMultiplier.None, 0);
 
-            BaseTolCoeff = (decimal)0.001;
+            BaseTolCoeff = (decimal)0.001M;
             EdMlRaz = 3;
 
             DegC_Point = new[]
