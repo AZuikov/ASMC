@@ -195,7 +195,7 @@ namespace Indicator_10
             var operation = new MultiErrorMeasuringOperation<object>();
 
             //var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
-            var maxPoint = IchBase.RangesFull.Ranges.Max().Stop;
+            var maxPoint = IchBase.RangesFull.RealRangeStor.Max().Stop;
             var arrPoints = maxPoint.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
 
             var arrReversePoint = arrPoints.Reverse().ToArray();
@@ -351,7 +351,7 @@ namespace Indicator_10
             base.InitWork();
             var operation = new MeasuringOperation<decimal>();
 
-            var arrPoints = IchBase.RangesFull.Ranges.Max().Stop.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
+            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
             decimal[] arrGetting = null;
 
             operation.InitWork = async () =>
@@ -441,7 +441,7 @@ namespace Indicator_10
         {
             base.InitWork();
             var operation = new MeasuringOperation<MeasPoint<Length>[]>();
-            var arrPoints = IchBase.RangesFull.Ranges.Max().Stop.GetArayMeasPointsInParcent(0,0,0,0,0,50, 50, 50, 50,50,100,100,100,100,100).ToArray();
+            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(0,0,0,0,0,50, 50, 50, 50,50,100,100,100,100,100).ToArray();
             MeasPoint<Length>[] arrGetting = null;
 
             operation.InitWork = async () =>
