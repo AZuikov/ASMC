@@ -2,10 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
@@ -238,6 +240,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     {
                         private readonly CalibrMain _calibrMain;
 
+                        
+
                         public CDc(CalibrMain calibrMain)
                         {
                             this._calibrMain = calibrMain;
@@ -257,6 +261,26 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             _calibrMain.WriteLine(SendComand);
                             new COut(_calibrMain).GetErrors(SendComand);
                             return _calibrMain;
+                        }
+
+                        /// <summary>
+                        /// Позволяет задать измерительный диапазон.
+                        /// </summary>
+                        /// <returns></returns>
+                        protected virtual RangeStorage<PhysicalRange<Voltage>> GetRanges()
+                        {
+                            RangeStorage<PhysicalRange<Voltage>> dcRangeStorage = new RangeStorage<PhysicalRange<Voltage>>[]
+                            {
+                                 new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), )
+                            };
+                            return null;
+                        }
+                        /// <summary>
+                        /// Здает измерительный диапазон.
+                        /// </summary>
+                        public RangeStorage<PhysicalRange<Voltage>> Ranges
+                        {
+                            get => GetRanges();
                         }
 
                     }
