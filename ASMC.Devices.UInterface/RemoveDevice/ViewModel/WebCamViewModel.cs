@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Accord.Video.DirectShow;
 using ASMC.Common.ViewModel;
+using ASMC.Core;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Devices.USB_Device.WebCam;
@@ -36,7 +37,7 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
     /// <summary>
     /// Предоставляет базовый класс для VM использующую видеоустройство.
     /// </summary>
-    public class WebCamViewModel: ClosableViewModel
+    public class WebCamViewModel: BindableBase, ISupportSettings
     {
         /// <summary>
         /// Объект для работы с видеоустройством.
@@ -88,11 +89,6 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
            WebCam.ShowProperty();
         }
 
-        /// <inheritdoc />
-        public override void Close()
-        {
-            StopVideo();
-        }
 
         protected void StartVideo()
         {
@@ -107,9 +103,8 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
 
         }
         /// <inheritdoc />
-        protected override void OnInitialized()
+        public void OnInitialized()
         {
-            base.OnInitialized();
             WebCam = new WebCam();
             WebCam.Notifly += WebCam_Notifly;
             RefreshVideoDevice();
@@ -150,6 +145,8 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
             VideoSourse = bmi;
         }
 
-       
+
+        /// <inheritdoc />
+        public object Settings { get; set; }
     }
 }
