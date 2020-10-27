@@ -123,13 +123,13 @@ namespace ASMC.Data.Model
         [StringValue("")] [DoubleValue(1)] None,
 
         /// <summary>
-        /// Множетель пико 1Е-12.
+        /// Множитель пико 1Е-12.
         /// </summary>
         [StringValue("п")] [DoubleValue(1E-12)]
         Pico,
 
         /// <summary>
-        /// Множетель нано 1Е-9.
+        /// Множитель нано 1Е-9.
         /// </summary>
         [StringValue("н")] [DoubleValue(1E-9)] Nano,
 
@@ -140,7 +140,7 @@ namespace ASMC.Data.Model
         Micro,
 
         /// <summary>
-        /// Множетель мили 1Е-3.
+        /// Множитель мили 1Е-3.
         /// </summary>
         [StringValue("м")] [DoubleValue(1E-3)] Mili,
 
@@ -150,12 +150,12 @@ namespace ASMC.Data.Model
         [StringValue("к")] [DoubleValue(1E3)] Kilo,
 
         /// <summary>
-        /// Мноэитель мега 1Е6
+        /// Множитель мега 1Е6
         /// </summary>
         [StringValue("М")] [DoubleValue(1E6)] Mega,
 
         /// <summary>
-        /// Мноэитель мега 1Е6
+        /// Множитель мега 1Е6
         /// </summary>
         [StringValue("Г")] [DoubleValue(1E9)] Giga
     }

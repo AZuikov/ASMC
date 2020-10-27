@@ -444,6 +444,7 @@ namespace ASMC.Data.Model
 
         public MeasureUnits Unit { get; protected set; }
 
+
         #endregion
         public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
         {
@@ -483,10 +484,6 @@ namespace ASMC.Data.Model
         /// </summary>
         AccuracyChatacteristic AccuracyChatacteristic { get; }
         MeasureUnits Unit { get; }
-        /// <summary>
-        /// Волженные диапазоны
-        /// </summary>
-        IPhysicalRange[] physicalRanges { get; }
     }
 
 

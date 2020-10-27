@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="Indicator_10.View.RangeIcdicationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Indicator_10.View"
+             xmlns:view="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" >
+            <view:InputTableControl Name="Table" Data="{Binding Path=Cells}" SelectValue="{Binding Selected}" />
+        </HeaderedContentControl>
+        <Button Content="Подтвердить" Command="{Binding SelectCommand}"/>
+    </StackPanel>
+</UserControl>

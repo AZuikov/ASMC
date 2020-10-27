@@ -11,7 +11,7 @@ namespace Indicator_10.First
 {
     public class OpertionFirsVerf : Operation
     {
-        public OpertionFirsVerf(ServicePack servicePac):base(servicePac)
+        public OpertionFirsVerf(ServicePack servicePac) : base(servicePac)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -22,24 +22,23 @@ namespace Indicator_10.First
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new IchBase {Range = new MeasPoint<Length>(10,UnitMultiplier.Micro ), 
-                        UserType="ИЧ, мод. ИЧ10", 
-                        MeasuringForce = new IchBase.MaxMeasuringForce{StraightRun=new MeasPoint<Force>((decimal) 1.5), 
-                            Oscillatons= new MeasPoint<Force>((decimal)0.6), ChangeCourse= new MeasPoint<Force>((decimal)0.5) }  }}
+                    Devices = new IUserType[] {new IchBase()}
                 }
             };
-            UserItemOperation = new IUserItemOperationBase[]
-            {
-                new MeasuringForce(this)
-            };
-            Accessories = new[]
-            {
-                "Весы настольные циферблатные РН-3Ц13У",
-                "Приспособление для определения измерительного усилия и его колебаний мод. 253",
-                "Граммометр часового типа Г 3,0",
-                "Прибор для поверки индикаторов ППИ-50"
-            };
         }
+    
+
+    //UserItemOperation = new IUserItemOperationBase[]
+            //{
+            //    new MeasuringForce(this)
+            //};
+            //Accessories = new[]
+            //{
+            //    "Весы настольные циферблатные РН-3Ц13У",
+            //    "Приспособление для определения измерительного усилия и его колебаний мод. 253",
+            //    "Граммометр часового типа Г 3,0",
+            //    "Прибор для поверки индикаторов ППИ-50"
+            //};
         /// <inheritdoc />
         public override void RefreshDevice()
         {

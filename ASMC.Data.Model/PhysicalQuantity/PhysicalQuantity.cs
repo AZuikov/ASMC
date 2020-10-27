@@ -14,6 +14,11 @@ namespace ASMC.Data.Model.PhysicalQuantity
     public interface IPhysicalQuantity : IComparable, ICloneable
     {
         /// <summary>
+        /// Возвращает еденицы измерения с множителем.
+        /// </summary>
+        /// <returns></returns>
+        string GetMultiplierUnit();
+        /// <summary>
         /// возращает численное занчение в системи СИ.
         /// </summary>
         /// <returns></returns>
@@ -78,7 +83,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
         /// <inheritdoc />
         public override string ToString()
         {
-            return $@"{Value} {Multiplier.GetStringValue()}{Unit.GetStringValue()}";
+            return $@"{Value} {GetMultiplierUnit()}";
         }
 
         /// <summary>
@@ -136,6 +141,12 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
                 _unit = value;
             }
+        }
+
+        /// <inheritdoc />
+        public string GetMultiplierUnit()
+        {
+            return Multiplier.GetStringValue() + Unit.GetStringValue();
         }
 
         /// <inheritdoc />

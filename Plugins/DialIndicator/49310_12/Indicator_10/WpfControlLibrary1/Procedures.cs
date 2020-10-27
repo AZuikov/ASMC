@@ -11,8 +11,10 @@ using AP.Utils.Data;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.WithoutInterface.HourIndicator;
+using DevExpress.Mvvm.Native;
 using DevExpress.Mvvm.UI;
 using Indicator_10.ViewModel;
 using WindowService = ASMC.Core.UI.WindowService;
@@ -20,16 +22,32 @@ using WindowService = ASMC.Core.UI.WindowService;
 namespace Indicator_10
 {
     /// <summary>
-    /// Придоставляет базувую реализацию для пунктов поверки индикаторов частового типа
-    /// <see cref = "ASMC.Devices.WithoutInterface.HourIndicator.IchBase" />
+    ///     Придоставляет базувую реализацию для пунктов поверки индикаторов частового типа
+    ///     <see cref="ASMC.Devices.WithoutInterface.HourIndicator.IchBase" />
     /// </summary>
-    /// <typeparam name = "TOperation"></typeparam>
+    /// <typeparam name="TOperation"></typeparam>
     public abstract class MainIchProcedur<TOperation> : ParagraphBase<TOperation>
     {
+        protected class SettingTableViewModel
+        {
+            /// <summary>
+            /// Форматирование яческий
+            /// </summary>
+            public string CellFormat=null;
+            /// <summary>
+            /// Расположение ячеек горизонтальное
+            /// </summary>
+            public bool IsHorizontal=true;
+            /// <summary>
+            /// Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal"/>
+            /// </summary>
+            public int? Breaking=null;
+          
+        }
         #region Property
 
         /// <summary>
-        /// Предоставляет индикатор частового типа
+        ///     Предоставляет индикатор частового типа
         /// </summary>
         protected IchBase IchBase { get; private set; }
 
@@ -43,15 +61,14 @@ namespace Indicator_10
         #region Methods
 
         /// <summary>
-        /// Создает VM
+        ///     Создает VM
         /// </summary>
-        /// <param name = "name">Наименование таблицы</param>
-        /// <param name = "measPoints">Массив измерительных точек</param>
-        /// <param name = "UnitCell">отознаечние едениц измерения в ячеках таблицы</param>
-        /// <param name = "isHorizantal">При значении <see cref = "true" /> распологает ячейки горизотально</param>
+        /// <param name="name">Наименование таблицы</param>
+        /// <param name="measPoints">Массив измерительных точек</param>
+        /// <param name="UnitCell">отознаечние едениц измерения в ячеках таблицы</param>
+        /// <param name="isHorizantal">При значении <see cref="true" /> распологает ячейки горизотально</param>
         /// <returns></returns>
-        protected virtual TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints, string UnitCell,
-            bool isHorizantal = true)
+        protected virtual TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints, SettingTableViewModel setting)
         {
             var table = new TableViewModel {Header = name};
             var columnIndex = 0;
@@ -61,10 +78,23 @@ namespace Indicator_10
                 table.Cells.Add(new Cell
                 {
                     ColumnIndex = columnIndex, RowIndex = rowIndex, Name = t.Description,
-                    StringFormat = @"{0} " + UnitCell
+                    StringFormat = @"{0} " + setting?.CellFormat
                 });
-                if (isHorizantal) rowIndex++;
-                else columnIndex++;
+                if (setting.IsHorizontal) {
+                    columnIndex++;
+                    if (setting.Breaking == null) continue;
+                    if (columnIndex % setting.Breaking == 0) {rowIndex++;
+                        columnIndex = 0;
+                    } 
+                }
+                else
+                {
+                    rowIndex++;
+                    if (setting.Breaking == null) continue;
+                    if (rowIndex % setting.Breaking == 0) {columnIndex++;
+                        rowIndex = 0;
+                    }
+                }
             }
 
             return table;
@@ -84,24 +114,24 @@ namespace Indicator_10
         }
 
         /// <summary>
-        /// Приобразует строку в децимал.
+        ///     Приобразует строку в децимал.
         /// </summary>
-        /// <param name = "obj"></param>
+        /// <param name="obj"></param>
         /// <returns></returns>
         protected decimal ObjectToDecimal(object obj)
         {
             if (string.IsNullOrEmpty(obj.ToString())) return 0;
 
             return decimal.Parse(obj.ToString().Trim()
-                                    .Replace(".",
-                                             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
+                .Replace(".",
+                    Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
         }
 
         #endregion
     }
 
     /// <summary>
-    /// Измерительное усилие
+    ///     Измерительное усилие
     /// </summary>
     public sealed class MeasuringForce : MainIchProcedur<object>
     {
@@ -128,6 +158,7 @@ namespace Indicator_10
                 dataRow[2] = dds.Error[0];
                 dataRow[3] = dds.Error[1];
                 dataRow[4] = dds.Error[2];
+                //todo Указать погрешность  
                 dataRow[5] = IchBase.MeasuringForce.StraightRun;
                 dataRow[6] = IchBase.MeasuringForce.Oscillatons;
                 dataRow[7] = IchBase.MeasuringForce.ChangeCourse;
@@ -165,29 +196,24 @@ namespace Indicator_10
             var operation = new MultiErrorMeasuringOperation<object>();
 
             //var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
-            var maxPoint = IchBase.Ranges.Ranges.Max().Stop;
+            var maxPoint = IchBase.RangesFull.Ranges.Max().Stop;
             var arrPoints = maxPoint.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
 
             var arrReversePoint = arrPoints.Reverse().ToArray();
             var arrstraightReversePoint = maxPoint.GetArayMeasPointsInParcent(50, 50).ToArray();
             var fullPoints = arrPoints.Concat(arrReversePoint).Concat(arrstraightReversePoint).ToArray();
-            MeasPoint<Weight>[] fullGettingPoints = null;
-            IEnumerable<MeasPoint<Force>> fullMeasPoints = null;
-            IEnumerable<MeasPoint<Force>> straight = null;
-            IEnumerable<MeasPoint<Force>> reverse = null;
-            IEnumerable<MeasPoint<Force>> straightReverse = null;
-            IEnumerable<MeasPoint<Weight>> straightGetting = null;
-            IEnumerable<MeasPoint<Weight>> reverseGetting = null;
-            IEnumerable<MeasPoint<Weight>> straightReverseGetting = null;
+            MeasPoint<Weight>[] fullGettingPoints = Array.Empty<MeasPoint<Weight>>();
+       
 
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-               
+
                 var nameCell = "г"; /*Форматирование ячеек в таблице*/
-                var first = CreateTable("Прямой ход", arrPoints, nameCell);
-                var too = CreateTable("Обратный ход", arrReversePoint, nameCell);
-                var tree = CreateTable("Прямой/обратный ход", arrstraightReversePoint, nameCell);
+                var setting = new SettingTableViewModel {CellFormat = nameCell};
+                var first = CreateTable("Прямой ход", arrPoints, setting);
+                var too = CreateTable("Обратный ход", arrReversePoint, setting);
+                var tree = CreateTable("Прямой/обратный ход", arrstraightReversePoint, setting);
                 var vm = new MeasuringForceViewModel();
                 vm.Content.Add(first);
                 vm.Content.Add(too);
@@ -195,17 +221,7 @@ namespace Indicator_10
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("MeasuringForceView", vm, null, null);
-                /*Получаем измерения*/
-                straightGetting = Fill(vm.Content[0]);
-                reverseGetting = Fill(vm.Content[1]);
-                straightReverseGetting = Fill(vm.Content[2]);
-                /*Преобразуем измерения из массы в силу*/
-                straight = ConvertWeightToForce(straightGetting.ToArray());
-                reverse = ConvertWeightToForce(reverseGetting.ToArray());
-                straightReverse = ConvertWeightToForce(straightReverseGetting.ToArray());
-                /*формируем значения для протокола*/
-                fullMeasPoints = straight.Concat(reverse);
-                fullGettingPoints = straightGetting.Concat(reverseGetting).Concat(straightReverseGetting).ToArray();
+                fullGettingPoints = vm.Content.Aggregate(fullGettingPoints, (current, item) => current.Concat(Fill(item)).ToArray());
             };
 
             operation.BodyWorkAsync = () =>
@@ -218,27 +234,53 @@ namespace Indicator_10
                     if (i > 0) DataRow.Add(operation);
                 }
             };
+            //todo Указать погрешность  
             operation.ErrorCalculation = new Func<object, object, object>[]
             {
-                (expected, getting) => { return fullMeasPoints.Max() - fullMeasPoints.Min(); },
-                (expected, getting) => { return straight.Max() - straight.Min(); },
-                (expected, getting) => { return straightReverse.First() - straightReverse.Last(); }
+                (expected, getting) =>
+                {
+                    var fullMeasPoints = new List<MeasPoint<Weight>>(8);
+                    fullMeasPoints.AddRange(DataRow.Select(t => (MeasPoint<Weight>) t.Getting));
+
+                    var fullMeasPointForces = ConvertWeightToForce(fullMeasPoints.ToArray());
+
+                    var array = fullMeasPointForces.Take(6).ToArray();
+                    return array.Max() - array.Min();
+                },
+                (expected, getting) =>
+                {
+                    var fullMeasPoints = new List<MeasPoint<Weight>>(8);
+                    fullMeasPoints.AddRange(DataRow.Select(t => (MeasPoint<Weight>) t.Getting));
+
+                    var fullMeasPointForces = ConvertWeightToForce(fullMeasPoints.ToArray());
+
+                    var array = fullMeasPointForces.Take(3).ToArray();
+                    return array.Max() - array.Min();
+                },
+                (expected, getting) =>
+                {
+                    var fullMeasPoints = new List<MeasPoint<Weight>>(8);
+                    fullMeasPoints.AddRange(DataRow.Select(t => (MeasPoint<Weight>) t.Getting));
+
+                    var fullMeasPointForces = ConvertWeightToForce(fullMeasPoints.ToArray());
+
+                    var array = fullMeasPointForces.Skip(6).Take(2).ToArray();
+                    return array.Max() - array.Min();
+                }
             };
             operation.CompliteWork = async () =>
-            {
-                return operation.Error[0] as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
-                       &&
-                       operation.Error[1] as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons
-                       &&
-                       operation.Error[2] as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons;
-            };
+                operation.Error[0] as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
+                &&
+                operation.Error[1] as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons
+                &&
+                operation.Error[2] as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons;
 
             DataRow.Add(operation);
 
             MeasPoint<Force>[] ConvertWeightToForce(MeasPoint<Weight>[] arr)
             {
                 return arr.Select(q => new MeasPoint<Force>(q.MainPhysicalQuantity
-                                                             .ConvertToForce())).ToArray();
+                    .ConvertToForce())).ToArray();
             }
 
             IEnumerable<MeasPoint<Weight>> Fill(IItemTable item)
@@ -255,7 +297,8 @@ namespace Indicator_10
     }
 
     /// <summary>
-    /// Определение изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его оси.
+    ///     Определение изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его
+    ///     оси.
     /// </summary>
     public sealed class PerpendicularPressure : MainIchProcedur<double>
     {
@@ -309,21 +352,18 @@ namespace Indicator_10
             base.InitWork();
             var operation = new MeasuringOperation<double>();
 
-            var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
+            var arrPoints = IchBase.RangesFull.Ranges.Max().Stop.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
             double[] arrGetting = null;
 
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-
-                var measPoint = CreateTable("Прямой ход", arrPoints, null, false);
-                var vm = new MeasuringForceViewModel();
-                vm.Content.Add(measPoint);
+                var vm = CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints, new SettingTableViewModel { IsHorizontal = false });
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
-                a.Show("MeasuringForceView", vm, null, null);
+                a.Show("PerpendicularPressureView", vm, null, null);
                 /*Получаем измерения*/
-                arrGetting = Fill(vm.Content.First()).ToArray();
+                arrGetting= vm.Cells.Select((cell)=>(double)ObjectToDecimal(cell)).ToArray();
             };
 
             operation.BodyWorkAsync = () =>
@@ -336,23 +376,19 @@ namespace Indicator_10
                     if (i > 0) DataRow.Add(operation);
                 }
             };
-            operation.ErrorCalculation =
-                (expected, getting) => arrGetting.Max();
+            operation.ErrorCalculation = (expected, getting) => DataRow.Max(q => q.Getting);
+            //todo Указать погрешность  
             operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
 
-            IEnumerable<double> Fill(IItemTable item)
-            {
-                foreach (var cell in item.Cells) yield return (double) ObjectToDecimal(cell.Value);
-            }
         }
 
         #endregion
     }
 
     /// <summary>
-    /// Определение размаха показаний
+    ///     Определение размаха показаний
     /// </summary>
     public sealed class RangeIndications : MainIchProcedur<MeasPoint<Length>[]>
     {
@@ -376,17 +412,13 @@ namespace Indicator_10
                 if (dds == null) continue;
 
                 dataRow[0] = dds.Expected.ToString();
-                for (var i = 0; i < 5; i++)
-                {
-                    //dataRow[i + 1]=
-                }
+                for (var i = 0; i < 5; i++) dataRow[i + 1] = dds.Getting[i].ToString();
 
-                dataRow[1] = dds.Getting.ToString();
-                dataRow[2] = dds.Error;
+                dataRow[5] = dds.Error;
                 if (dds.IsGood == null)
-                    dataRow[3] = ConstNotUsed;
+                    dataRow[6] = ConstNotUsed;
                 else
-                    dataRow[3] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[6] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -410,43 +442,46 @@ namespace Indicator_10
         {
             base.InitWork();
             var operation = new MeasuringOperation<MeasPoint<Length>[]>();
-
-            var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
-            double[] arrGetting = null;
+            var arrPoints = IchBase.RangesFull.Ranges.Max().Stop.GetArayMeasPointsInParcent(0,0,0,0,0,50, 50, 50, 50,50,100,100,100,100,100).ToArray();
+            MeasPoint<Length>[] arrGetting = null;
 
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
+                var setting = new SettingTableViewModel{Breaking = 5, CellFormat = "мк" };
 
-                var measPoint = CreateTable("Прямой ход", arrPoints, null, false);
-                var vm = new MeasuringForceViewModel();
-                vm.Content.Add(measPoint);
+                var vm = CreateTable("Показания при арретировании", arrPoints, setting);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
-                a.Show("MeasuringForceView", vm, null, null);
+                a.Show("RangeIcdicationView", vm, null, null);
                 /*Получаем измерения*/
-                arrGetting = Fill(vm.Content.First()).ToArray();
+                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro)).ToArray();
             };
 
-            //operation.BodyWorkAsync = () =>
-            //{
-            //    for (var i = 0; i < arrGetting.Length; i++)
-            //    {
-            //        if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>) operation.Clone();
-            //        operation.Expected = (MeasPoint<Length>[]) arrPoints[i].Clone();
-            //        operation.Getting = arrGetting[i];
-            //        if (i > 0) DataRow.Add(operation);
-            //    }
-            //};
-            //operation.ErrorCalculation =
-            //    (expected, getting) => arrGetting.Max();
-            //operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
+            operation.BodyWorkAsync = () =>
+            {
+                for (var i = 0; i < 3; i++)
+                {
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                    operation.Expected = (MeasPoint<Length>[])arrPoints[i*5].Clone();
+                    operation.Getting = arrGetting.Skip(i*5).Take(5).ToArray();
+                    if (i > 0) DataRow.Add(operation);
+                }
+            };
+            operation.ErrorCalculation =
+                (expected, getting) => { expected-getting.m };
+            operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
 
-            IEnumerable<double> Fill(IItemTable item)
+          
+            IEnumerable<double> Fill(IEnumerable<ICell> cells)
             {
-                foreach (var cell in item.Cells) yield return (double) ObjectToDecimal(cell.Value);
+                foreach (var cell  in cells)
+                {
+                    yield return (double) ObjectToDecimal(cell.Value);
+
+                }
             }
         }
 
@@ -454,7 +489,7 @@ namespace Indicator_10
     }
 
     /// <summary>
-    /// Определение вариации показаний
+    ///     Определение вариации показаний
     /// </summary>
     public sealed class VariationReading : MainIchProcedur<MeasPoint<Length>>
     {

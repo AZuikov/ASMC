@@ -35,14 +35,14 @@ namespace Indicator_10.Periodic
 
                         new T
                         {
-                            Range = new MeasPoint<Length>(10, UnitMultiplier.Mili),
-                            UserType = "ИЧ, мод. ИЧ10",
-                            MeasuringForce = new IchBase.MaxMeasuringForce
-                            {
-                                StraightRun = new MeasPoint<Force>((decimal) 1.5),
-                                Oscillatons = new MeasPoint<Force>((decimal) 0.6),
-                                ChangeCourse = new MeasPoint<Force>((decimal) 0.5)
-                            }
+                            ////Range = new MeasPoint<Length>(10, UnitMultiplier.Mili),
+                            //UserType = "ИЧ, мод. ИЧ10",
+                            //MeasuringForce = new IchBase.MaxMeasuringForce
+                            //{
+                            //    StraightRun = new MeasPoint<Force>((decimal) 1.5),
+                            //    Oscillatons = new MeasPoint<Force>((decimal) 0.6),
+                            //    ChangeCourse = new MeasPoint<Force>((decimal) 0.5)
+                            //}
                         }
                     }
                 }
