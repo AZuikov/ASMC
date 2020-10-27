@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Forms;
 using AP.Reports.Utils;
 using AP.Utils.Data;
@@ -119,6 +120,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     public class CDc :HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
+                        // todo диапазоны должны грузиться из файла точности
+                        private readonly RangeStorage<PhysicalRange<Voltage>> _ranges;
 
                         public CDc(CalibrMain calibrMain)
                         {
@@ -132,7 +135,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             };
 
                             
-                            this._calibrMain = calibrMain;
+                            _calibrMain = calibrMain;
+                            _ranges = new RangeStorage<PhysicalRange<Voltage>>();
                         }
 
                         /// <summary>
@@ -151,23 +155,27 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             return _calibrMain;
                         }
 
-                        /// <summary>
-                        /// Позволяет задать измерительный диапазон.
-                        /// </summary>
-                        /// <returns></returns>
-                        protected virtual RangeStorage<PhysicalRange<Voltage>> GetRanges()
+                        public CalibrMain SetValue(MeasPoint<Voltage> inPoint)
                         {
-                            var arr = new List<PhysicalRange<Voltage>>();
-                            return new RangeStorage<PhysicalRange<Voltage>>(arr.ToArray());
+                            CultureInfo culture = new CultureInfo("en-US"); // для прибора разделитель целой и дробной части должен быть точкой
+                            culture.NumberFormat.CurrencyDecimalSeparator = ".";
+                            string sendLine =
+                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(culture)}V, 0{JoinValueMult((double)0, UnitMultiplier.None)}HZ";
+                            _calibrMain.WriteLine(sendLine);
+                            new COut(_calibrMain).GetErrors(sendLine);
+                            _calibrMain.Sinchronization();
+                            return _calibrMain;
                         }
 
 
+
                         /// <summary>
-                        /// Здает измерительный диапазон.
+                        /// Здает измерительные диапазоны.
                         /// </summary>
                         public RangeStorage<PhysicalRange<Voltage>> Ranges
                         {
-                            get => GetRanges();
+                            get { return _ranges; }
+                            protected internal set { }
                         }
 
                     }
@@ -181,6 +189,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     public class CAc : HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
+                        // todo диапазоны должны грузиться из файла точности
+                        private RangeStorage<PhysicalRange<Voltage,Frequency>> _range;
+
 
                         public CAc(CalibrMain calibrMain)
                         {
@@ -192,6 +203,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                                 new Command("", "", 1),
                                 new Command("K", "к", 1E3), 
                                 new Command("M", "М", 1E6)};
+
+                           
                         }
 
                         /// <summary>
@@ -212,6 +225,17 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                             return _calibrMain;
                         }
+
+                        /// <summary>
+                        /// Здает измерительные диапазоны.
+                        /// </summary>
+                        public RangeStorage<PhysicalRange<Voltage,Frequency>> Ranges
+                        {
+                            get { return _range; }
+                            protected internal set { }
+                        }
+
+
 
                         /// <summary>
                         /// Содержит команды установки формы генерируемого напряжения

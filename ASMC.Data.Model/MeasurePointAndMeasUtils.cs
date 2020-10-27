@@ -539,23 +539,23 @@ namespace ASMC.Data.Model
         /// </summary>
         public string Name { get; set; }
 
-        public T[] Ranges { get; set; }
+        public T[] RealRangeStor { get; set; }
 
         #endregion
 
-        public RangeStorage(AccuracyChatacteristic accuracy, params T[] inPhysicalRange)
+        public RangeStorage(AccuracyChatacteristic accuracy, params T[] inPhysicalRealRangeStor)
         {
             AccuracyChatacteristic = accuracy;
-            Ranges = inPhysicalRange;
+            RealRangeStor = inPhysicalRealRangeStor;
         }
 
-        public RangeStorage(params T[] inPhysicalRange)
+        public RangeStorage(params T[] inPhysicalRealRangeStor)
         {
-            Ranges = inPhysicalRange;
+            RealRangeStor = inPhysicalRealRangeStor;
         }
         public bool IsPointBelong<T1>(IMeasPoint<T1> point) where T1 : class, IPhysicalQuantity<T1>, new()
         {
-                var range = Ranges as IPhysicalRange<T1>[];
+                var range = RealRangeStor as IPhysicalRange<T1>[];
 
                 if (range== null) return false;
 
@@ -569,7 +569,7 @@ namespace ASMC.Data.Model
         }
         public bool IsPointBelong<T1,T2>(IMeasPoint<T1,T2> point) where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
         {
-            var range = Ranges as IPhysicalRange<T1, T2>[];
+            var range = RealRangeStor as IPhysicalRange<T1, T2>[];
 
             if (range == null) return false;
 
@@ -608,7 +608,7 @@ namespace ASMC.Data.Model
         {
             var result = new List<MeasureUnits>();
 
-            foreach (var range in Ranges)
+            foreach (var range in RealRangeStor)
                 result.Add(range.Unit);
             // удаляем дубликаты, если такое возможно!
             return new HashSet<MeasureUnits>(result).ToList();
@@ -619,7 +619,7 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public IEnumerator GetEnumerator()
         {
-            return Ranges.GetEnumerator();
+            return RealRangeStor.GetEnumerator();
         }
     }
 }
