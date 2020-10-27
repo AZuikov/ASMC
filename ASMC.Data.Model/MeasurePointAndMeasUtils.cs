@@ -444,6 +444,7 @@ namespace ASMC.Data.Model
 
         public MeasureUnits Unit { get; protected set; }
 
+
         #endregion
         public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
         {

@@ -10,7 +10,7 @@
     <ItemsControl ItemsSource="{Binding Content}" Margin="20">
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" Height="{DXBinding '@ElementName(Table).ActualHeight*0.65'}">
+                <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" >
                     <view1:InputTableControl Name="Table" Data="{Binding Path=Cells}" SelectValue="{Binding Selected}" />
                 </HeaderedContentControl>
             </DataTemplate>

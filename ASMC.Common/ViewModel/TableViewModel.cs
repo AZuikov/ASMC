@@ -18,7 +18,7 @@ namespace ASMC.Common.ViewModel
         {
             CountRow= Cells.AsQueryable().Max(q => q.RowIndex)+1;
 
-            CountColumn = Cells.AsQueryable().Max(q => q.RowIndex)+1;
+            CountColumn = Cells.AsQueryable().Max(q => q.ColumnIndex)+1;
         }
 
         #region Fields

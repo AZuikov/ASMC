@@ -17,7 +17,7 @@
         <ItemsControl ItemsSource="{Binding Path=Data, RelativeSource={RelativeSource AncestorType={x:Type view1:InputTableControl}}}"  Focusable="False">
               <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
-                    <UniformGrid Rows="{Binding CountRow}" Columns="{Binding CountColumn}" />
+                    <UniformGrid Columns="{Binding CountColumn}" Rows="{Binding CountRow}" />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemContainerStyle>
@@ -42,7 +42,7 @@
                                     </Setter>
                                     <Style.Triggers>
                                         <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="Text" Value="{Binding Value}"/>
+                                            <Setter Property="Text" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
