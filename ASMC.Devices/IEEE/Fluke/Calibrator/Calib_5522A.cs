@@ -2,18 +2,14 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using AP.Utils.Data;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib5522A:CalibrMain
+    public class Calib5522A : CalibrMain
     {
         public Calib5522A()
         {
             UserType = "5522A";
-            
         }
 
         /// <summary>
@@ -27,12 +23,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 if (answer.Length == 2)
                 {
                     int.TryParse(answer[0], out var result);
-                    return (ErrorCode) result;
+                    return (ErrorCode)result;
                 }
 
                 return 0;
             }
-            
         }
 
         /// <summary>
@@ -52,7 +47,4 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             return list.ToArray();
         }
     }
-
-    
-   
 }

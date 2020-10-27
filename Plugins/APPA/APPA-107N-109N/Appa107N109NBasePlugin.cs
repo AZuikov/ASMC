@@ -2463,7 +2463,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Разарешение пределеа измерения (последний значащий разряд)
             /// </summary>
-            protected AcVariablePoint RangeResolution;
+            protected MeasPoint<Current> RangeResolution;
 
             #endregion TolleranceFormula
         }
@@ -2614,7 +2614,7 @@ namespace APPA_107N_109N
                 OperMeasureMode = Mult107_109N.MeasureMode.ACI;
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeNominal = inRangeNominal;
-                RangeResolution = new AcVariablePoint(1, MeasureUnits.I, UnitMultiplier.Mili);
+                RangeResolution = new Meas(1, MeasureUnits.I, UnitMultiplier.Mili);
 
                 thisRangeUnits = new MeasPoint(MeasureUnits.I, UnitMultiplier.None, 0);
 

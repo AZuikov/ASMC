@@ -440,6 +440,18 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// </summary>
     public sealed class Voltage : PhysicalQuantity<Voltage>
     {
+        public Voltage(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.V };
+            Unit = MeasureUnits.V;
+        }
+
+        public Voltage(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.V };
+            Unit = MeasureUnits.V;
+        }
+
         public Voltage()
         {
             Units = new[] { MeasureUnits.V };

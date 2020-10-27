@@ -151,6 +151,25 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             return _calibrMain;
                         }
 
+                        /// <summary>
+                        /// Позволяет задать измерительный диапазон.
+                        /// </summary>
+                        /// <returns></returns>
+                        protected virtual RangeStorage<PhysicalRange<Voltage>> GetRanges()
+                        {
+                            var arr = new List<PhysicalRange<Voltage>>();
+                            return new RangeStorage<PhysicalRange<Voltage>>(arr.ToArray());
+                        }
+
+
+                        /// <summary>
+                        /// Здает измерительный диапазон.
+                        /// </summary>
+                        public RangeStorage<PhysicalRange<Voltage>> Ranges
+                        {
+                            get => GetRanges();
+                        }
+
                     }
                     public CAc Ac
                     {
@@ -263,25 +282,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             return _calibrMain;
                         }
 
-                        /// <summary>
-                        /// Позволяет задать измерительный диапазон.
-                        /// </summary>
-                        /// <returns></returns>
-                        protected virtual RangeStorage<PhysicalRange<Voltage>> GetRanges()
-                        {
-                            RangeStorage<PhysicalRange<Voltage>> dcRangeStorage = new RangeStorage<PhysicalRange<Voltage>>[]
-                            {
-                                 new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), )
-                            };
-                            return null;
-                        }
-                        /// <summary>
-                        /// Здает измерительный диапазон.
-                        /// </summary>
-                        public RangeStorage<PhysicalRange<Voltage>> Ranges
-                        {
-                            get => GetRanges();
-                        }
+                       
 
                     }
                     /// <summary>
