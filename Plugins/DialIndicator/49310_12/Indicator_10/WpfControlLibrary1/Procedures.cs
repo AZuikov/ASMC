@@ -11,7 +11,6 @@ using AP.Utils.Data;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 using DevExpress.Mvvm.Native;
@@ -300,7 +299,7 @@ namespace Indicator_10
     ///     Определение изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его
     ///     оси.
     /// </summary>
-    public sealed class PerpendicularPressure : MainIchProcedur<double>
+    public sealed class PerpendicularPressure : MainIchProcedur<decimal>
     {
         /// <inheritdoc />
         public PerpendicularPressure(IUserItemOperation userItemOperation) : base(userItemOperation)
@@ -318,7 +317,7 @@ namespace Indicator_10
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as MeasuringOperation<double>;
+                var dds = row as MeasuringOperation<decimal>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow[0] = dds.Expected.ToString();
@@ -350,10 +349,10 @@ namespace Indicator_10
         protected override void InitWork()
         {
             base.InitWork();
-            var operation = new MeasuringOperation<double>();
+            var operation = new MeasuringOperation<decimal>();
 
             var arrPoints = IchBase.RangesFull.Ranges.Max().Stop.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
-            double[] arrGetting = null;
+            decimal[] arrGetting = null;
 
             operation.InitWork = async () =>
             {
@@ -363,22 +362,22 @@ namespace Indicator_10
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("PerpendicularPressureView", vm, null, null);
                 /*Получаем измерения*/
-                arrGetting= vm.Cells.Select((cell)=>(double)ObjectToDecimal(cell)).ToArray();
+                arrGetting= vm.Cells.Select((cell)=>ObjectToDecimal(cell)).ToArray();
             };
 
             operation.BodyWorkAsync = () =>
             {
                 for (var i = 0; i < arrGetting.Length; i++)
                 {
-                    if (i > 0) operation = (MeasuringOperation<double>) operation.Clone();
-                    operation.Expected = (double) arrPoints[i].Clone();
+                    if (i > 0) operation = (MeasuringOperation<decimal>) operation.Clone();
+                    operation.Expected = (decimal) arrPoints[i].Clone();
                     operation.Getting = arrGetting[i];
                     if (i > 0) DataRow.Add(operation);
                 }
             };
             operation.ErrorCalculation = (expected, getting) => DataRow.Max(q => q.Getting);
             //todo Указать погрешность  
-            operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
+            operation.CompliteWork = async () => operation.Error <=  IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
 
@@ -468,21 +467,15 @@ namespace Indicator_10
                     if (i > 0) DataRow.Add(operation);
                 }
             };
+
             operation.ErrorCalculation =
-                (expected, getting) => { expected-getting.m };
-            operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
+                (expected, getting) =>
+                {
+                    return new[] {expected.FirstOrDefault() - getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))};
+                };
+            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= (decimal) IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
-
-          
-            IEnumerable<double> Fill(IEnumerable<ICell> cells)
-            {
-                foreach (var cell  in cells)
-                {
-                    yield return (double) ObjectToDecimal(cell.Value);
-
-                }
-            }
         }
 
         #endregion

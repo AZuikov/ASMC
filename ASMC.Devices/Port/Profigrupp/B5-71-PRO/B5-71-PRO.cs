@@ -62,8 +62,8 @@ namespace ASMC.Devices.Port.Profigrupp
         /// </summary>
         public decimal TolleranceCurrentPuls { get; protected set; } = 5;
 
-        public decimal TolleranceCurrentUnstability => TollUnstable(CurrMax, (decimal) 0.05);
-        public decimal TolleranceVoltageUnstability => TollUnstable(VoltMax, (decimal) 0.02);
+        public decimal TolleranceCurrentUnstability => TollUnstable(CurrMax,  0.05M);
+        public decimal TolleranceVoltageUnstability => TollUnstable(VoltMax, 0.02m);
 
         /// <summary>
         /// Допустимый уровень пульсаций по напряжению
@@ -267,7 +267,7 @@ namespace ASMC.Devices.Port.Profigrupp
         public decimal TolleranceFormulaCurrent(decimal value, UnitMultiplier mult = UnitMultiplier.None)
         {
             value *= (decimal) mult.GetDoubleValue();
-            return (decimal) 0.01 * value + (decimal) 0.05;
+            return 0.01M * value + 0.05M;
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace ASMC.Devices.Port.Profigrupp
         public decimal TolleranceFormulaVolt(decimal value, UnitMultiplier mult = UnitMultiplier.None)
         {
             value *= (decimal) mult.GetDoubleValue();
-            return (decimal) 0.002 * value + (decimal) 0.1;
+            return  0.002M * value + 0.1m;
         }
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns></returns>
         private decimal TollUnstable(decimal bpInArg, decimal bpTolArg)
         {
-            return (decimal) 0.001 * bpInArg + bpTolArg;
+            return 0.001M * bpInArg + bpTolArg;
         }
 
         #endregion

@@ -339,9 +339,9 @@ namespace ASMC.Data.Model.PhysicalQuantity
             switch (u)
             {
                 case MeasureUnits.MercuryPressure:
-                    return new Pressure { Unit = u, Value = decimal.Parse(pq.Value.ToString()) / (decimal)0.0000075018754688672 };
+                    return new Pressure { Unit = u, Value = decimal.Parse(pq.Value.ToString()) / 0.0000075018754688672M};
                 case MeasureUnits.Pressure:
-                    return new Pressure { Unit = u, Value = decimal.Parse(pq.Value.ToString()) * (decimal)0.0000075018754688672 };
+                    return new Pressure { Unit = u, Value = decimal.Parse(pq.Value.ToString()) * 0.0000075018754688672M };
             }
 
             return null;

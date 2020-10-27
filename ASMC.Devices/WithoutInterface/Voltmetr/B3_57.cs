@@ -43,9 +43,9 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
             Ranges[9] = new MeasPoint<Voltage>(10, UnitMultiplier.Mili);  
             Ranges[10] = new MeasPoint<Voltage>(3, UnitMultiplier.Mili);
             Ranges[11] = new MeasPoint<Voltage>(1,UnitMultiplier.Mili);
-            Ranges[12] = new MeasPoint<Voltage>((decimal) 0.3,UnitMultiplier.Mili);
-            Ranges[13] = new MeasPoint<Voltage>((decimal) 0.1, UnitMultiplier.Mili);
-            Ranges[14] = new MeasPoint<Voltage>((decimal) 0.03, UnitMultiplier.Mili);
+            Ranges[12] = new MeasPoint<Voltage>( 0.3M,UnitMultiplier.Mili);
+            Ranges[13] = new MeasPoint<Voltage>( 0.1m, UnitMultiplier.Mili);
+            Ranges[14] = new MeasPoint<Voltage>(0.03m, UnitMultiplier.Mili);
         }
 
         
