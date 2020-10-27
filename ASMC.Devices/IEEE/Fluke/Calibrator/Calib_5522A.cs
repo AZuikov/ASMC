@@ -10,7 +10,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public Calib5522A()
         {
             UserType = "5522A";
+            this.Out.Set.Current.Dc.Get
         }
+
+         
 
         /// <summary>
         /// Позволяет получить последнюю ошибку из очереди калибратора.
