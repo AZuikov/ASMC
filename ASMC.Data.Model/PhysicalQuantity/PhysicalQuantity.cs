@@ -418,6 +418,18 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// </summary>
     public sealed class Frequency : PhysicalQuantity<Frequency>
     {
+        public Frequency(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.Frequency };
+            Unit = MeasureUnits.Frequency;
+        }
+
+        public Frequency(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.Frequency };
+            Unit = MeasureUnits.Frequency;
+        }
+
         public Frequency()
         {
             Units = new[] { MeasureUnits.Frequency };
