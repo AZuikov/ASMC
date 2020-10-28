@@ -341,11 +341,18 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
                         public CalibrMain SetValue(decimal value, decimal hertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
                         {
+                            MeasPoint<Current, Frequency> setPoint = new MeasPoint<Current, Frequency>(value,voltMult, 
+                                                                                                       new Frequency(){Value = hertz, Multiplier = herzMult});
+                            return SetValue(setPoint);
+                        }
+
+                        public CalibrMain SetValue(MeasPoint<Current, Frequency> inPoint)
+                        {
                             string SendComand =
-                                $@"OUT {JoinValueMult(value, voltMult)}A, {JoinValueMult(hertz, herzMult)}HZ";
+                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}A, {inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()}HZ";
                             _calibrMain.WriteLine(SendComand);
 
-                           new COut(_calibrMain).GetErrors(SendComand);
+                            new COut(_calibrMain).GetErrors(SendComand);
 
                             return _calibrMain;
                         }
@@ -397,12 +404,20 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <returns></returns>
                     public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
                     {
-                        string SendCommand = $@"OUT {JoinValueMult(value, mult)}OHM";
+                        MeasPoint<Resistance> setPoint = new MeasPoint<Resistance>(value, mult);
+                        return SetValue(setPoint);
+                    }
+
+                    public CalibrMain SetValue(MeasPoint<Resistance> inPoint)
+                    {
+                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}OHM";
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
 
                         return _calibrMain;
                     }
+
+
 
                 }
                 /// <summary>
@@ -446,10 +461,16 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <returns></returns>
                     public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
                     {
-                        string SendCommand = $@"OUT {JoinValueMult(value, mult)}F";
+                        MeasPoint<Capacity> setPoint = new MeasPoint<Capacity>(value,mult);
+                        return SetValue(setPoint);
+                    }
+
+                    public CalibrMain SetValue(MeasPoint<Capacity> inPoint)
+                    {
+                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}F";
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
-                        
+
                         return _calibrMain;
                     }
                 }
@@ -505,10 +526,16 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// </summary>
                     /// <param name="value">Значение</param>
                     /// <returns></returns>
-                    public  CalibrMain SetValue(double value)
+                    public  CalibrMain SetValue(decimal value)
                     {
-                        string SendCommand =
-                            "OUT " + value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")) + "CEL";
+                        MeasPoint<CelsiumGrad> setPoint = new MeasPoint<CelsiumGrad>(value, UnitMultiplier.None);
+                        return SetValue(setPoint);
+                    }
+
+                    public CalibrMain SetValue(MeasPoint<CelsiumGrad> inPoint)
+                    {
+                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()} CEL";
+                           
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
                         return _calibrMain;

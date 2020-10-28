@@ -436,6 +436,34 @@ namespace ASMC.Data.Model.PhysicalQuantity
             Unit = MeasureUnits.Frequency;
         }
     }
+
+    /// <summary>
+    /// Реализует физическую величину сопротивления.
+    /// </summary>
+    public sealed class Resistance : PhysicalQuantity<Resistance>
+    {
+        public Resistance()
+        {
+            Units = new[] { MeasureUnits.Ohm };
+            Unit = MeasureUnits.Ohm;
+        }
+
+        public Resistance(decimal value): base(value)
+        {
+            Units = new[] { MeasureUnits.Ohm };
+            Unit = MeasureUnits.Ohm;
+        }
+
+        public Resistance(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.Ohm };
+            Unit = MeasureUnits.Ohm;
+        }
+    }
+
+   
+
+
     /// <summary>
     /// Реализует физическую величину времени.
     /// </summary>
@@ -470,13 +498,99 @@ namespace ASMC.Data.Model.PhysicalQuantity
             Unit = MeasureUnits.V;
         }
     }
-
+    /// <summary>
+    /// Реализует физическую величину электрического тока.
+    /// </summary>
     public sealed class Current : PhysicalQuantity<Current>
     {
         public Current()
         {
             Units = new[] { MeasureUnits.I };
             Unit = MeasureUnits.I;
+        }
+
+        public Current(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.I };
+            Unit = MeasureUnits.I;
+        }
+
+        public Current(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.I };
+            Unit = MeasureUnits.I;
+        }
+    }
+
+    /// <summary>
+    /// Реализует физическую величину электрического ёмкости.
+    /// </summary>
+    public sealed class Capacity : PhysicalQuantity<Capacity>
+    {
+        public Capacity()
+        {
+            Units = new[] { MeasureUnits.Far };
+            Unit = MeasureUnits.Far;
+        }
+
+        public Capacity(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.Far };
+            Unit = MeasureUnits.Far;
+        }
+
+        public Capacity(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.Far };
+            Unit = MeasureUnits.Far;
+        }
+    }
+
+    /// <summary>
+    /// Реализует физическую величину градусы Цельсия.
+    /// </summary>
+    public sealed class CelsiumGrad : PhysicalQuantity<CelsiumGrad>
+    {
+        public CelsiumGrad()
+        {
+            Units = new[] { MeasureUnits.degC };
+            Unit = MeasureUnits.degC;
+        }
+
+        public CelsiumGrad(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.degC };
+            Unit = MeasureUnits.degC;
+        }
+
+        public CelsiumGrad(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.degC };
+            Unit = MeasureUnits.degC;
+        }
+    }
+
+    /// <summary>
+    /// Реализует физическую величину градусы по Фаренгейту.
+    /// </summary>
+    public sealed class FarengeitGrad : PhysicalQuantity<FarengeitGrad>
+    {
+        public FarengeitGrad()
+        {
+            Units = new[] { MeasureUnits.DegF };
+            Unit = MeasureUnits.DegF;
+        }
+
+        public FarengeitGrad(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.DegF };
+            Unit = MeasureUnits.DegF;
+        }
+
+        public FarengeitGrad(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.DegF };
+            Unit = MeasureUnits.DegF;
         }
     }
 
