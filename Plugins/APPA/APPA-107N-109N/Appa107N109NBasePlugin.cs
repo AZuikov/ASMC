@@ -85,6 +85,30 @@ namespace APPA_107N_109N
             return Task.FromResult(operation.IsGood());
         }
 
+        public static Task<bool> HelpsCompliteWork<T,T1>(BasicOperationVerefication<MeasPoint<T,T1>> operation,
+            IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new() where T1 : class, IPhysicalQuantity<T1>, new()
+        {
+            if (!operation.IsGood())
+            {
+                var answer =
+                    UserItemOperation.ServicePack.MessageBox()
+                                     .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                           $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
+                                           $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
+                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
+                                           $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                           "Повторить измерение этой точки?",
+                                           "Информация по текущему измерению",
+                                           MessageButton.YesNo, MessageIcon.Question,
+                                           MessageResult.Yes);
+
+                if (answer == MessageResult.No) return Task.FromResult(true);
+            }
+
+            return Task.FromResult(operation.IsGood());
+        }
+
         #endregion
     }
 
@@ -462,11 +486,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                     .MainPhysicalQuantity.Multiplier
-                                                                     .GetDoubleValue() /
-                                                                      currPoint.MainPhysicalQuantity.Multiplier
-                                                                               .GetDoubleValue()));
+                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -485,12 +505,7 @@ namespace APPA_107N_109N
                                               .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
                                                currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
                                 var mantisa =
-                                    MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                         .MainPhysicalQuantity.Multiplier
-                                                                         .GetDoubleValue() /
-                                                                          currPoint.MainPhysicalQuantity
-                                                                                   .Multiplier
-                                                                                   .GetDoubleValue()));
+                                    MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
                                 MathStatistics.Round(ref result, mantisa);
                                 return new MeasPoint<Voltage>(result, thisRangeUnits.MainPhysicalQuantity.Multiplier);
                             };
@@ -502,10 +517,8 @@ namespace APPA_107N_109N
                             {
                                 if (operation.Getting == null || operation.Expected == null ||
                                     operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                return (operation.Getting.MainPhysicalQuantity.Value <
-                                        operation.UpperTolerance.MainPhysicalQuantity.Value) &
-                                       (operation.Getting.MainPhysicalQuantity.Value >
-                                        operation.LowerTolerance.MainPhysicalQuantity.Value);
+                                return (operation.Getting< operation.UpperTolerance) &
+                                       (operation.Getting > operation.LowerTolerance);
                             };
                         }
                         catch (Exception e)
@@ -959,25 +972,9 @@ namespace APPA_107N_109N
                         {
                             //вычисляе на сколько знаков округлять
                             var mantisa =
-                                MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                     .MainPhysicalQuantity.Multiplier
-                                                                     .GetDoubleValue() /
-                                                                      point.MainPhysicalQuantity
-                                                                           .Multiplier
-                                                                           .GetDoubleValue()));
+                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
 
-                            operation.Expected = new MeasPoint<Voltage, Frequency>(point.MainPhysicalQuantity.Value,
-                                                                                   point.MainPhysicalQuantity
-                                                                                        .Multiplier, new Frequency
-                                                                                   {
-                                                                                       Value = point
-                                                                                              .AdditionalPhysicalQuantity
-                                                                                              .Value,
-                                                                                       Multiplier =
-                                                                                           point
-                                                                                              .AdditionalPhysicalQuantity
-                                                                                              .Multiplier
-                                                                                   });
+                            operation.Expected = point;
 
                             //расчет погрешности для конкретной точки предела измерения
                             ConstructTooleranceFormula(new MeasPoint<Frequency>(point.AdditionalPhysicalQuantity.Value,
@@ -1653,11 +1650,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                     .MainPhysicalQuantity.Multiplier
-                                                                     .GetDoubleValue() /
-                                                                      currPoint.MainPhysicalQuantity.Multiplier
-                                                                               .GetDoubleValue()));
+                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -1674,29 +1667,15 @@ namespace APPA_107N_109N
                                                        .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
                                                         currPoint.MainPhysicalQuantity.Multiplier
                                                                  .GetDoubleValue());
-                                var mantisa =
-                                    MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                         .MainPhysicalQuantity.Multiplier
-                                                                         .GetDoubleValue() *
-                                                                          (double) RangeResolution
-                                                                                  .MainPhysicalQuantity.Value /
-                                                                          currPoint.MainPhysicalQuantity.Multiplier
-                                                                                   .GetDoubleValue()));
+                                
                                 MathStatistics.Round(ref result, mantisa);
                                 return new MeasPoint<Current>(result, currPoint.MainPhysicalQuantity.Multiplier);
                             };
 
-                            operation.LowerTolerance =
-                                new
-                                    MeasPoint<Current
-                                    >(operation.Expected.MainPhysicalQuantity.Value - operation.Error.MainPhysicalQuantity.Value,
-                                      currPoint.MainPhysicalQuantity.Multiplier);
+                            operation.LowerTolerance = operation.Expected - operation.Error;
 
-                            operation.UpperTolerance =
-                                new
-                                    MeasPoint<Current
-                                    >(operation.Expected.MainPhysicalQuantity.Value + operation.Error.MainPhysicalQuantity.Value,
-                                      currPoint.MainPhysicalQuantity.Multiplier);
+                            operation.UpperTolerance = operation.Expected + operation.Error;
+
 
                             operation.IsGood = () =>
                             {
@@ -1704,10 +1683,8 @@ namespace APPA_107N_109N
                                     operation.UpperTolerance == null || operation.LowerTolerance == null)
                                     return false;
 
-                                return (operation.Getting.MainPhysicalQuantity.Value <
-                                        operation.UpperTolerance.MainPhysicalQuantity.Value) &
-                                       (operation.Getting.MainPhysicalQuantity.Value >
-                                        operation.LowerTolerance.MainPhysicalQuantity.Value);
+                                return (operation.Getting<operation.UpperTolerance) &
+                                       (operation.Getting > operation.LowerTolerance);
                                 ;
                             };
                         }
@@ -2129,11 +2106,7 @@ namespace APPA_107N_109N
            
            
 
-            /// <inheritdoc />
-            protected override string GetReportTableName()
-            {
-                return null;
-            }
+           
 
             /// <inheritdoc />
             protected override string GetReportTableName()
@@ -2221,13 +2194,7 @@ namespace APPA_107N_109N
                         try
                         {
                             var mantisa =
-                                MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                     .MainPhysicalQuantity.Multiplier
-                                                                     .GetDoubleValue() * (double) RangeResolution
-                                                                                                 .MainPhysicalQuantity
-                                                                                                 .Value /
-                                                                      curr.MainPhysicalQuantity.Multiplier
-                                                                          .GetDoubleValue()), true);
+                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi(), true);
 
                             operation.Expected = (MeasPoint<Current, Frequency>) curr.Clone();
 
@@ -2298,7 +2265,7 @@ namespace APPA_107N_109N
                         }
                     };
 
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWork = () => Hepls.HelpsCompliteWork<Current,Frequency>(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Current,Frequency>>) operation.Clone());
@@ -2584,10 +2551,7 @@ namespace APPA_107N_109N
 
             
 
-            /// <summary>
-            /// Массив поверяемых точек напряжения.
-            /// </summary>
-            protected MeasPoint<Voltage>[] VoltPoint;
+           
 
             #endregion
 
@@ -2625,7 +2589,7 @@ namespace APPA_107N_109N
                 OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
-                DataRow = new List<IBasicOperation<MeasPoint>>();
+                DataRow = new List<IBasicOperation<MeasPoint<Frequency>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
             }
@@ -2639,7 +2603,7 @@ namespace APPA_107N_109N
                 foreach (var row in DataRow)
                 {
                     var dataRow = dataTable.NewRow();
-                    var dds = row as BasicOperationVerefication<MeasPoint>;
+                    var dds = row as BasicOperationVerefication<MeasPoint<Frequency>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
                     dataRow[0] = OperationRangeNominal.GetStringValue();
@@ -2680,10 +2644,10 @@ namespace APPA_107N_109N
                 base.InitWork();
                 if (appa107N == null || flkCalib5522A == null) return;
 
-                foreach (var voltPoint in VoltPoint)
-                foreach (var freqPoint in voltPoint.Herz)
+                
+                foreach (var freqPoint in HerzPoint)
                 {
-                    var operation = new BasicOperationVerefication<MeasPoint>();
+                    var operation = new BasicOperationVerefication<MeasPoint<Frequency>>();
                     operation.InitWork = async () =>
                     {
                         try
@@ -2718,10 +2682,8 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            flkCalib5522A.Out.Set.Voltage.Ac.SetValue(voltPoint.MainPhysicalQuantity.Value,
-                                                                      freqPoint.Value,
-                                                                      voltPoint.MainPhysicalQuantity.Multiplier,
-                                                                      freqPoint.Multiplier);
+                            MeasPoint<Voltage,Frequency> setPoint = new MeasPoint<Voltage, Frequency>(0.5M, new Frequency(){Value = freqPoint.MainPhysicalQuantity.Value, Multiplier = freqPoint.MainPhysicalQuantity.Multiplier});
+                            flkCalib5522A.Out.Set.Voltage.Ac.SetValue(setPoint);
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                             Thread.Sleep(100);
                             //измеряем
@@ -2730,45 +2692,35 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             operation.Getting =
-                                new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, measurePoint);
+                                new MeasPoint<Frequency>(measurePoint, freqPoint.MainPhysicalQuantity.Multiplier );
                             operation.Expected = freqPoint;
 
                             var mantisa =
-                                MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                     .MainPhysicalQuantity.Multiplier
-                                                                     .GetDoubleValue() *
-                                                                      (double) RangeResolution
-                                                                              .MainPhysicalQuantity.Value /
-                                                                      freqPoint.Multiplier
-                                                                               .GetDoubleValue()));
+                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
 
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
                             {
-                                var result = BaseTolCoeff * operation.Expected.Value + EdMlRaz *
+                                var result = BaseTolCoeff * operation.Expected.MainPhysicalQuantity.Value + EdMlRaz *
                                     RangeResolution.MainPhysicalQuantity.Value *
                                     (decimal) (RangeResolution
                                               .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                               freqPoint.Multiplier
+                                               freqPoint.MainPhysicalQuantity.Multiplier
                                                         .GetDoubleValue()
                                     );
 
                                 MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, result);
+                                return new MeasPoint<Frequency>(result, freqPoint.MainPhysicalQuantity.Multiplier);
                             };
 
-                            operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier,
-                                                                     operation.Expected.Value -
-                                                                     operation.Error.Value);
-                            operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier,
-                                                                     operation.Expected.Value +
-                                                                     operation.Error.Value);
+                            operation.LowerTolerance = operation.Expected - operation.Error;
+                            operation.UpperTolerance = operation.Expected + operation.Error;
                             operation.IsGood = () =>
                             {
                                 if (operation.Expected == null || operation.Getting == null ||
                                     operation.LowerTolerance == null || operation.UpperTolerance == null) return false;
-                                return (operation.Getting.Value < operation.UpperTolerance.Value) &
-                                       (operation.Getting.Value > operation.LowerTolerance.Value);
+                                return (operation.Getting < operation.UpperTolerance) &
+                                       (operation.Getting > operation.LowerTolerance);
                             };
                         }
                         catch (Exception e)
@@ -2780,7 +2732,7 @@ namespace APPA_107N_109N
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint>) operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Frequency>>) operation.Clone());
                 }
             }
 
@@ -2806,16 +2758,18 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
                 Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 0);
+                
                 BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 50;
-                RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Frequency>(1, UnitMultiplier.Mili);
 
-                HerzPoint = new MeasPoint[1];
-                HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 10);
+                HerzPoint = new []
+                {
+                    new MeasPoint<Frequency>(10)
+                };
+                
 
-                VoltPoint = new AcVariablePoint[1];
-                VoltPoint[0] = new AcVariablePoint((decimal) 0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+               
             }
 
             #region Methods
@@ -3517,13 +3471,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                     .MainPhysicalQuantity.Multiplier
-                                                                     .GetDoubleValue() *
-                                                                      (double) RangeResolution
-                                                                              .MainPhysicalQuantity.Value /
-                                                                      currPoint.Multiplier
-                                                                               .GetDoubleValue()));
+                                MathStatistics.GetMantissa((decimal) (RangeResolution.MainPhysicalQuantity);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
