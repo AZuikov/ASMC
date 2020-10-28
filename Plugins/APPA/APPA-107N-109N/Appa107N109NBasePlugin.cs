@@ -486,7 +486,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi()/currPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -504,8 +504,7 @@ namespace APPA_107N_109N
                                     (decimal) (RangeResolution
                                               .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
                                                currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
-                                var mantisa =
-                                    MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                                
                                 MathStatistics.Round(ref result, mantisa);
                                 return new MeasPoint<Voltage>(result, thisRangeUnits.MainPhysicalQuantity.Multiplier);
                             };
@@ -972,7 +971,7 @@ namespace APPA_107N_109N
                         {
                             //вычисляе на сколько знаков округлять
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / point.MainPhysicalQuantity.GetNoramalizeValueToSi());
 
                             operation.Expected = point;
 
@@ -1650,7 +1649,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi()/currPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -2194,7 +2193,7 @@ namespace APPA_107N_109N
                         try
                         {
                             var mantisa =
-                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi(), true);
+                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi()/curr.MainPhysicalQuantity.GetNoramalizeValueToSi() , true);
 
                             operation.Expected = (MeasPoint<Current, Frequency>) curr.Clone();
 
@@ -2696,7 +2695,7 @@ namespace APPA_107N_109N
                             operation.Expected = freqPoint;
 
                             var mantisa =
-                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                                MathStatistics.GetMantissa( RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi()/freqPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
 
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
@@ -3490,7 +3489,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.Value);
+                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi()/ currPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
                             
@@ -3499,37 +3498,26 @@ namespace APPA_107N_109N
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
                             {
-                                var result = BaseTolCoeff * Math.Abs(operation.Expected.Value) + EdMlRaz *
+                                var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) + EdMlRaz *
                                     RangeResolution.MainPhysicalQuantity.Value *
                                     (decimal) (RangeResolution
                                               .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                               currPoint.Multiplier
+                                               currPoint.MainPhysicalQuantity.Multiplier
                                                         .GetDoubleValue());
-                                var mantisa =
-                                    MathStatistics.GetMantissa((decimal) (RangeResolution
-                                                                         .MainPhysicalQuantity.Multiplier
-                                                                         .GetDoubleValue() *
-                                                                          (double) RangeResolution
-                                                                                  .MainPhysicalQuantity.Value /
-                                                                          currPoint.Multiplier
-                                                                                   .GetDoubleValue()));
+                                
                                 MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, result);
+                                return new MeasPoint<Resistance>(result);
                             };
 
-                            operation.LowerTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier,
-                                                                     operation.Expected.Value -
-                                                                     operation.Error.Value);
-                            operation.UpperTolerance = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier,
-                                                                     operation.Expected.Value +
-                                                                     operation.Error.Value);
+                            operation.LowerTolerance = operation.Expected - operation.Error;
+                            operation.UpperTolerance = operation.Expected + operation.Error;
                             operation.IsGood = () =>
                             {
                                 if (operation.Expected == null || operation.Getting == null ||
                                     operation.LowerTolerance == null || operation.UpperTolerance == null) return false;
 
-                                return (operation.Getting.Value < operation.UpperTolerance.Value) &
-                                       (operation.Getting.Value > operation.LowerTolerance.Value);
+                                return (operation.Getting < operation.UpperTolerance) &
+                                       (operation.Getting > operation.LowerTolerance);
                             };
                         }
                         catch (Exception e)
@@ -3538,10 +3526,10 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWork = () => Hepls.HelpsCompliteWork<Resistance>(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint>) operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Resistance>>) operation.Clone());
                 }
             }
 
