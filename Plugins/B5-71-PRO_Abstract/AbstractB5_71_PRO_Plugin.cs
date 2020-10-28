@@ -1067,7 +1067,7 @@ namespace B5_71_PRO_Abstract
                                            MessageResult.OK);
 
                     var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow();
-                    var vm = new SelectRangeViewModel<ASMC.Data.Model.PhysicalQuantity.Voltage>();
+                    var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
                     windows.MaxHeight = 200;
@@ -1850,7 +1850,7 @@ namespace B5_71_PRO_Abstract
                                                                   MessageResult.OK);
 
                     var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow();
-                    var vm = new SelectRangeViewModel<ASMC.Data.Model.PhysicalQuantity.Voltage>();
+                    var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
                     windows.MaxHeight = 200;

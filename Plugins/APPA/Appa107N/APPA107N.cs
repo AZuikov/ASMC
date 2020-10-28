@@ -3,6 +3,7 @@ using System.Reflection;
 using APPA_107N_109N;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Port.APPA;
 
@@ -39,7 +40,7 @@ namespace Appa107N
             TestDevices = new IDeviceUi[]
                 {new Device { Devices = new IDeviceBase[] { new MultAPPA107N()}, Description = "Цифровой портативный мультиметр"}};
             var DcvMode = new Oper3DcvMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
-            DcvMode.Nodes.Add(new Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
+            DcvMode.Nodes.Add(new Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this, Assembly.GetExecutingAssembly().GetName().Name));
             DcvMode.Nodes.Add(new Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal.Range200mV, this));
             DcvMode.Nodes.Add(new Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
             DcvMode.Nodes.Add(new Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal.Range20V, this));
@@ -138,7 +139,7 @@ namespace Appa107N
 
     #region DCV
 
-    public class Oper3_1DC_20mV_Measure : APPA_107N_109N.Oper3_1DC_20mV_Measure
+    public class Oper3_1DC_20mV_Measure : APPA_107N_109N.OpertionFirsVerf.Oper3_1DC_20mV_Measure
     {
         public Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -149,7 +150,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper3_1DC_200mV_Measure : APPA_107N_109N.Oper3_1DC_200mV_Measure
+    public class Oper3_1DC_200mV_Measure : APPA_107N_109N.OpertionFirsVerf.Oper3_1DC_200mV_Measure
     {
         public Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -160,7 +161,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper3_1DC_2V_Measure : APPA_107N_109N.Oper3_1DC_2V_Measure
+    public class Oper3_1DC_2V_Measure : APPA_107N_109N.OpertionFirsVerf.Oper3_1DC_2V_Measure
     {
         public Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -171,7 +172,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper3_1DC_20V_Measure : APPA_107N_109N.Oper3_1DC_20V_Measure
+    public class Oper3_1DC_20V_Measure : APPA_107N_109N.OpertionFirsVerf.Oper3_1DC_20V_Measure
     {
         public Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -182,7 +183,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper3_1DC_200V_Measure : APPA_107N_109N.Oper3_1DC_200V_Measure
+    public class Oper3_1DC_200V_Measure : APPA_107N_109N.OpertionFirsVerf.Oper3_1DC_200V_Measure
     {
         public Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -193,7 +194,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper3_1DC_1000V_Measure : APPA_107N_109N.Oper3_1DC_1000V_Measure
+    public class Oper3_1DC_1000V_Measure : APPA_107N_109N.OpertionFirsVerf.Oper3_1DC_1000V_Measure
     {
         public Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -208,7 +209,7 @@ namespace Appa107N
 
     #region ACV
 
-    public class Ope4_1_AcV_20mV_Measure : APPA_107N_109N.Ope4_1_AcV_20mV_Measure
+    public class Ope4_1_AcV_20mV_Measure : APPA_107N_109N.OpertionFirsVerf.Ope4_1_AcV_20mV_Measure
     {
         public Ope4_1_AcV_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -219,7 +220,7 @@ namespace Appa107N
         }
     }
 
-    public class Ope4_1_AcV_200mV_Measure : APPA_107N_109N.Ope4_1_AcV_200mV_Measure
+    public class Ope4_1_AcV_200mV_Measure : APPA_107N_109N.OpertionFirsVerf.Ope4_1_AcV_200mV_Measure
     {
         public Ope4_1_AcV_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -231,7 +232,7 @@ namespace Appa107N
         }
     }
 
-    public class Ope4_1_AcV_2V_Measure : APPA_107N_109N.Ope4_1_AcV_2V_Measure
+    public class Ope4_1_AcV_2V_Measure : APPA_107N_109N.OpertionFirsVerf.Ope4_1_AcV_2V_Measure
     {
         public Ope4_1_AcV_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -242,7 +243,7 @@ namespace Appa107N
         }
     }
 
-    public class Ope4_1_AcV_20V_Measure : APPA_107N_109N.Ope4_1_AcV_20V_Measure
+    public class Ope4_1_AcV_20V_Measure : APPA_107N_109N.OpertionFirsVerf.Ope4_1_AcV_20V_Measure
     {
         public Ope4_1_AcV_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -253,7 +254,7 @@ namespace Appa107N
         }
     }
 
-    public class Ope4_1_AcV_200V_Measure : APPA_107N_109N.Ope4_1_AcV_200V_Measure
+    public class Ope4_1_AcV_200V_Measure : APPA_107N_109N.OpertionFirsVerf.Ope4_1_AcV_200V_Measure
     {
         public Ope4_1_AcV_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -264,7 +265,7 @@ namespace Appa107N
         }
     }
 
-    public class Ope41AcV750VMeasure : Ope4_1_AcV_750V_Measure
+    public class Ope41AcV750VMeasure : APPA_107N_109N.OpertionFirsVerf.Ope4_1_AcV_750V_Measure
     {
         public Ope41AcV750VMeasure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -280,7 +281,7 @@ namespace Appa107N
 
     #region OHM
 
-    public class Oper8_1Resistance_200Ohm_Measure : APPA_107N_109N.Oper8_1Resistance_200Ohm_Measure
+    public class Oper8_1Resistance_200Ohm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_200Ohm_Measure
     {
         public Oper8_1Resistance_200Ohm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -292,7 +293,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper8_1Resistance_2kOhm_Measure : APPA_107N_109N.Oper8_1Resistance_2kOhm_Measure
+    public class Oper8_1Resistance_2kOhm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_2kOhm_Measure
     {
         public Oper8_1Resistance_2kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -304,7 +305,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper8_1Resistance_20kOhm_Measure : APPA_107N_109N.Oper8_1Resistance_20kOhm_Measure
+    public class Oper8_1Resistance_20kOhm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_20kOhm_Measure
     {
         public Oper8_1Resistance_20kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -316,7 +317,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper8_1Resistance_200kOhm_Measure : APPA_107N_109N.Oper8_1Resistance_200kOhm_Measure
+    public class Oper8_1Resistance_200kOhm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_200kOhm_Measure
     {
         public Oper8_1Resistance_200kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -328,7 +329,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper8_1Resistance_2MOhm_Measure : APPA_107N_109N.Oper8_1Resistance_2MOhm_Measure
+    public class Oper8_1Resistance_2MOhm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_2MOhm_Measure
     {
         public Oper8_1Resistance_2MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -340,7 +341,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper8_1Resistance_20MOhm_Measure : APPA_107N_109N.Oper8_1Resistance_20MOhm_Measure
+    public class Oper8_1Resistance_20MOhm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_20MOhm_Measure
     {
         public Oper8_1Resistance_20MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -352,7 +353,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper8_1Resistance_200MOhm_Measure : APPA_107N_109N.Oper8_1Resistance_200MOhm_Measure
+    public class Oper8_1Resistance_200MOhm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_200MOhm_Measure
     {
         public Oper8_1Resistance_200MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -364,7 +365,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper8_1Resistance_2GOhm_Measure : APPA_107N_109N.Oper8_1Resistance_2GOhm_Measure
+    public class Oper8_1Resistance_2GOhm_Measure : APPA_107N_109N.OpertionFirsVerf.Oper8_1Resistance_2GOhm_Measure
     {
         public Oper8_1Resistance_2GOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -380,7 +381,7 @@ namespace Appa107N
 
     #region FAR
 
-    public class Oper9_1Far_4nF_Measure : APPA_107N_109N.Oper9_1Far_4nF_Measure
+    public class Oper9_1Far_4nF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_4nF_Measure
     {
         public Oper9_1Far_4nF_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -391,7 +392,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper9_1Far_40nF_Measure : APPA_107N_109N.Oper9_1Far_40nF_Measure
+    public class Oper9_1Far_40nF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_40nF_Measure
     {
         public Oper9_1Far_40nF_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
@@ -402,7 +403,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper9_1Far_400nF_Measure : APPA_107N_109N.Oper9_1Far_400nF_Measure
+    public class Oper9_1Far_400nF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_400nF_Measure
     {
         public Oper9_1Far_400nF_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -414,7 +415,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper9_1Far_4uF_Measure : APPA_107N_109N.Oper9_1Far_4uF_Measure
+    public class Oper9_1Far_4uF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_4uF_Measure
     {
         public Oper9_1Far_4uF_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
@@ -425,7 +426,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper9_1Far_40uF_Measure : APPA_107N_109N.Oper9_1Far_40uF_Measure
+    public class Oper9_1Far_40uF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_40uF_Measure
     {
         public Oper9_1Far_40uF_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
@@ -436,7 +437,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper9_1Far_400uF_Measure : APPA_107N_109N.Oper9_1Far_400uF_Measure
+    public class Oper9_1Far_400uF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_400uF_Measure
     {
         public Oper9_1Far_400uF_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -448,7 +449,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper9_1Far_4mF_Measure : APPA_107N_109N.Oper9_1Far_4mF_Measure
+    public class Oper9_1Far_4mF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_4mF_Measure
     {
         public Oper9_1Far_4mF_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
@@ -459,7 +460,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper9_1Far_40mF_Measure : APPA_107N_109N.Oper9_1Far_40mF_Measure
+    public class Oper9_1Far_40mF_Measure : APPA_107N_109N.OpertionFirsVerf.Oper9_1Far_40mF_Measure
     {
         public Oper9_1Far_40mF_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
@@ -474,7 +475,7 @@ namespace Appa107N
 
     #region DCI
 
-    public class Oper5_1Dci_20mA_Measure : APPA_107N_109N.Oper5_1Dci_20mA_Measure
+    public class Oper5_1Dci_20mA_Measure : APPA_107N_109N.OpertionFirsVerf.Oper5_1Dci_20mA_Measure
     {
         public Oper5_1Dci_20mA_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -485,7 +486,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper5_1Dci_200mA_Measure : APPA_107N_109N.Oper5_1Dci_200mA_Measure
+    public class Oper5_1Dci_200mA_Measure : APPA_107N_109N.OpertionFirsVerf.Oper5_1Dci_200mA_Measure
     {
         public Oper5_1Dci_200mA_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -497,7 +498,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper5_1Dci_2A_Measure : APPA_107N_109N.Oper5_1Dci_2A_Measure
+    public class Oper5_1Dci_2A_Measure : APPA_107N_109N.OpertionFirsVerf.Oper5_1Dci_2A_Measure
     {
         public Oper5_1Dci_2A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -508,7 +509,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper5_2_1Dci_10A_Measure : APPA_107N_109N.Oper5_2_1Dci_10A_Measure
+    public class Oper5_2_1Dci_10A_Measure : APPA_107N_109N.OpertionFirsVerf.Oper5_2_1Dci_10A_Measure
     {
         public Oper5_2_1Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -520,7 +521,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper5_2_2Dci_10A_Measure : APPA_107N_109N.Oper5_2_2Dci_10A_Measure
+    public class Oper5_2_2Dci_10A_Measure : APPA_107N_109N.OpertionFirsVerf.Oper5_2_2Dci_10A_Measure
     {
         public Oper5_2_2Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
             IUserItemOperation userItemOperation) :
@@ -536,7 +537,7 @@ namespace Appa107N
 
     #region ACI
 
-    public class Oper6_1Aci_20mA_Measure : APPA_107N_109N.Oper6_1Aci_20mA_Measure
+    public class Oper6_1Aci_20mA_Measure : APPA_107N_109N.OpertionFirsVerf.Oper6_1Aci_20mA_Measure
     {
         public Oper6_1Aci_20mA_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -547,7 +548,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper6_1Aci_200mA_Measure : APPA_107N_109N.Oper6_1Aci_200mA_Measure
+    public class Oper6_1Aci_200mA_Measure : APPA_107N_109N.OpertionFirsVerf.Oper6_1Aci_200mA_Measure
     
     {
         public Oper6_1Aci_200mA_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
@@ -559,7 +560,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper6_1Aci_2A_Measure : APPA_107N_109N.Oper6_1Aci_2A_Measure
+    public class Oper6_1Aci_2A_Measure : APPA_107N_109N.OpertionFirsVerf.Oper6_1Aci_2A_Measure
     {
         public Oper6_1Aci_2A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -570,7 +571,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper6_2_1Aci_10A_Measure : APPA_107N_109N.Oper6_2_1Aci_10A_Measure
+    public class Oper6_2_1Aci_10A_Measure : APPA_107N_109N.OpertionFirsVerf.Oper6_2_1Aci_10A_Measure
     {
         public Oper6_2_1Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -581,7 +582,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper6_2_2Aci_10A_Measure : APPA_107N_109N.Oper6_2_2Aci_10A_Measure
+    public class Oper6_2_2Aci_10A_Measure : APPA_107N_109N.OpertionFirsVerf.Oper6_2_2Aci_10A_Measure
     {
         public Oper6_2_2Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -597,7 +598,7 @@ namespace Appa107N
 
     #region Freq
 
-    public class Oper71Freq20HzMeasureBase : APPA_107N_109N.Oper71Freq20HzMeasureBase
+    public class Oper71Freq20HzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq20HzMeasureBase
     {
         public Oper71Freq20HzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -609,7 +610,7 @@ namespace Appa107N
 
     }
 
-    public class Oper71Freq200HzMeasureBase : APPA_107N_109N.Oper71Freq200HzMeasureBase
+    public class Oper71Freq200HzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq200HzMeasureBase
     {
         public Oper71Freq200HzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -621,7 +622,7 @@ namespace Appa107N
 
     }
 
-    public class Oper71Freq2kHzMeasureBase : APPA_107N_109N.Oper71Freq2kHzMeasureBase
+    public class Oper71Freq2kHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq2kHzMeasureBase
     {
         public Oper71Freq2kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -633,7 +634,7 @@ namespace Appa107N
 
     }
 
-    public class Oper71Freq20kHzMeasureBase : APPA_107N_109N.Oper71Freq20kHzMeasureBase
+    public class Oper71Freq20kHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq20kHzMeasureBase
     {
         public Oper71Freq20kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -645,7 +646,7 @@ namespace Appa107N
 
     }
 
-    public class Oper71Freq200kHzMeasureBase : APPA_107N_109N.Oper71Freq200kHzMeasureBase
+    public class Oper71Freq200kHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq200kHzMeasureBase
     {
         public Oper71Freq200kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -657,7 +658,7 @@ namespace Appa107N
 
     }
 
-    public class Oper71Freq1MHzMeasureBase : APPA_107N_109N.Oper71Freq1MHzMeasureBase
+    public class Oper71Freq1MHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq1MHzMeasureBase
     {
         public Oper71Freq1MHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
@@ -673,7 +674,7 @@ namespace Appa107N
 
     #region TEMP
 
-    public class Oper10_1Temperature_Minus200_Minus100_Measure : APPA_107N_109N.Oper10_1Temperature_Minus200_Minus100_Measure
+    public class Oper10_1Temperature_Minus200_Minus100_Measure : APPA_107N_109N.OpertionFirsVerf.Oper10_1Temperature_Minus200_Minus100_Measure
     {
         public Oper10_1Temperature_Minus200_Minus100_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
@@ -684,7 +685,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper10_1Temperature_Minus100_400_Measure : APPA_107N_109N.Oper10_1Temperature_Minus100_400_Measure
+    public class Oper10_1Temperature_Minus100_400_Measure : APPA_107N_109N.OpertionFirsVerf.Oper10_1Temperature_Minus100_400_Measure
     {
         public Oper10_1Temperature_Minus100_400_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
@@ -695,7 +696,7 @@ namespace Appa107N
         }
     }
 
-    public class Oper10_1Temperature_400_1200_Measure : APPA_107N_109N.Oper10_1Temperature_400_1200_Measure
+    public class Oper10_1Temperature_400_1200_Measure : APPA_107N_109N.OpertionFirsVerf.Oper10_1Temperature_400_1200_Measure
     {
         public Oper10_1Temperature_400_1200_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation)
