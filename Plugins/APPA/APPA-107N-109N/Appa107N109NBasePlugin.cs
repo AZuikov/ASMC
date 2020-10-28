@@ -2471,19 +2471,19 @@ namespace APPA_107N_109N
                 OperMeasureMode = Mult107_109N.MeasureMode.ACI;
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeNominal = inRangeNominal;
-                RangeResolution = new Meas(1, MeasureUnits.I, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Current>(1,  UnitMultiplier.Mili);
 
-                thisRangeUnits = new MeasPoint(MeasureUnits.I, UnitMultiplier.None, 0);
 
-                HerzPoint = new MeasPoint[3];
-                HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 40);
-                HerzPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 1000);
-                HerzPoint[2] = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, 3);
 
-                AciPoint = new AcVariablePoint[1];
-                AciPoint[0] = new AcVariablePoint(2, thisRangeUnits.Units, thisRangeUnits.Multiplier, HerzPoint);
+                AciPoint = new MeasPoint<Current, Frequency>[]
+                {
+                    new MeasPoint<Current, Frequency>(2, new Frequency(){Value = 40} ),
+                    new MeasPoint<Current, Frequency>(2, new Frequency(){Value = 1000} ),
+                    new MeasPoint<Current, Frequency>(2, new Frequency(){Value = 3, Multiplier = UnitMultiplier.Kilo} )
+                };
+
                 Name = OperationRangeNominal.GetStringValue() +
-                       $" точка {AciPoint[0].MainPhysicalQuantity.Description}";
+                       $" точка {AciPoint[0].Description}";
 
                 Sheme = new ShemeImage
                 {
@@ -2514,18 +2514,21 @@ namespace APPA_107N_109N
                 OperMeasureMode = Mult107_109N.MeasureMode.ACI;
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeNominal = inRangeNominal;
-                RangeResolution = new AcVariablePoint(1, MeasureUnits.I, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Current>(1,  UnitMultiplier.Mili);
                 Name = OperationRangeNominal.GetStringValue();
-                thisRangeUnits = new MeasPoint(MeasureUnits.I, UnitMultiplier.None, 0);
+                
+                AciPoint = new []
+                {
+                    new MeasPoint<Current, Frequency>(5, new Frequency(){Value = 40}),
+                    new MeasPoint<Current, Frequency>(5, new Frequency(){Value = 1, Multiplier = UnitMultiplier.Kilo}),
+                    new MeasPoint<Current, Frequency>(5, new Frequency(){Value = 3, Multiplier = UnitMultiplier.Kilo}),
 
-                HerzPoint = new MeasPoint[3];
-                HerzPoint[0] = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 40, true);
-                HerzPoint[1] = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 1000);
-                HerzPoint[2] = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, 3);
-
-                AciPoint = new AcVariablePoint[2];
-                AciPoint[0] = new AcVariablePoint(5, thisRangeUnits.Units, thisRangeUnits.Multiplier, HerzPoint);
-                AciPoint[1] = new AcVariablePoint(9, thisRangeUnits.Units, thisRangeUnits.Multiplier, HerzPoint);
+                    new MeasPoint<Current, Frequency>(9, new Frequency(){Value = 40}),
+                    new MeasPoint<Current, Frequency>(9, new Frequency(){Value = 1, Multiplier = UnitMultiplier.Kilo}),
+                    new MeasPoint<Current, Frequency>(9, new Frequency(){Value = 3, Multiplier = UnitMultiplier.Kilo})
+                };
+                
+                
 
                 Sheme = new ShemeImage
                 {
@@ -2554,7 +2557,7 @@ namespace APPA_107N_109N
 
         #region FREQ
 
-        public class Oper7FreqMeasureBase : ParagraphBase<MeasPoint>
+        public class Oper7FreqMeasureBase : ParagraphBase<MeasPoint<Frequency>>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -2575,20 +2578,16 @@ namespace APPA_107N_109N
             /// </summary>
             public int EdMlRaz;
 
-            protected MeasPoint[] HerzPoint;
+            protected MeasPoint<Frequency>[] HerzPoint;
 
-            protected AcVariablePoint RangeResolution;
+            protected MeasPoint<Frequency> RangeResolution;
 
-            /// <summary>
-            /// Это пустая точка, которая содержит только единицы измерения текущего
-            /// поверяемого предела и множитель для единицы измерения.
-            /// </summary>
-            protected MeasPoint thisRangeUnits;
+            
 
             /// <summary>
             /// Массив поверяемых точек напряжения.
             /// </summary>
-            protected AcVariablePoint[] VoltPoint;
+            protected MeasPoint<Voltage>[] VoltPoint;
 
             #endregion
 

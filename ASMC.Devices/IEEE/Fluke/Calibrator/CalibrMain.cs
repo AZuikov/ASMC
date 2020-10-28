@@ -147,12 +147,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
                         public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
                         {
-                            string sendLine =
-                                $@"OUT {JoinValueMult(value, mult)}V, 0{JoinValueMult((double) 0, UnitMultiplier.None)}HZ";
-                            _calibrMain.WriteLine(sendLine);
-                            new COut(_calibrMain).GetErrors(sendLine);
-                            _calibrMain.Sinchronization();
-                            return _calibrMain;
+                            MeasPoint<Voltage> setPoint = new MeasPoint<Voltage>(value, mult);
+                            return SetValue(setPoint);
                         }
 
                         public CalibrMain SetValue(MeasPoint<Voltage> inPoint)
@@ -217,14 +213,22 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
 
                         //todo: множитель для частоты нужно уточнить в документации и сделать перечисление
-                        public CalibrMain SetValue(decimal value,decimal hertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
+                        public CalibrMain SetValue(decimal valueVolt,decimal valueHertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
                         {
-                            string SendComand = $@"OUT {JoinValueMult(value, voltMult)}V, {JoinValueMult(hertz, herzMult)}HZ";
+                            MeasPoint < Voltage,Frequency > setPoint = new MeasPoint<Voltage, Frequency>(valueVolt, voltMult, new Frequency(){Value = valueHertz, Multiplier = herzMult});
+                            return SetValue(setPoint);
+                        }
+
+                        public CalibrMain SetValue(MeasPoint<Voltage,Frequency> setPoint)
+                        {
+                            string SendComand = $@"OUT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}V, {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()}HZ";
                             _calibrMain.WriteLine(SendComand);
                             new COut(_calibrMain).GetErrors(SendComand);
 
                             return _calibrMain;
                         }
+
+
 
                         /// <summary>
                         /// Здает измерительные диапазоны.
