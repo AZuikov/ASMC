@@ -9,9 +9,9 @@ namespace Indicator_10.ViewModel
     public class PerpendicularPressureViewModel: TableViewModel
     {
         /// <inheritdoc />
-        protected override bool CanSelect()
-        {
-           return this.Cells.All(p => !string.IsNullOrWhiteSpace(p?.Value?.ToString()));
-        }
+        //protected override bool CanSelect()
+        //{
+        //   return this.Cells.All(p => !string.IsNullOrWhiteSpace(p?.Value?.ToString()));
+        //}
     }
 }
