@@ -397,12 +397,20 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <returns></returns>
                     public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
                     {
-                        string SendCommand = $@"OUT {JoinValueMult(value, mult)}OHM";
+                        MeasPoint<OHM> setPoint = new MeasPoint<OHM>(value, mult);
+                        return SetValue(setPoint);
+                    }
+
+                    public CalibrMain SetValue(MeasPoint<OHM> inPoint)
+                    {
+                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}OHM";
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
 
                         return _calibrMain;
                     }
+
+
 
                 }
                 /// <summary>

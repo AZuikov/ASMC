@@ -424,6 +424,34 @@ namespace ASMC.Data.Model.PhysicalQuantity
             Unit = MeasureUnits.Frequency;
         }
     }
+
+    /// <summary>
+    /// Реализует физическую величину сопротивления.
+    /// </summary>
+    public sealed class Resistance : PhysicalQuantity<Resistance>
+    {
+        public Resistance()
+        {
+            Units = new[] { MeasureUnits.Ohm };
+            Unit = MeasureUnits.Ohm;
+        }
+
+        public Resistance(decimal value): base(value)
+        {
+            Units = new[] { MeasureUnits.Ohm };
+            Unit = MeasureUnits.Ohm;
+        }
+
+        public Resistance(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.Ohm };
+            Unit = MeasureUnits.Ohm;
+        }
+    }
+
+   
+
+
     /// <summary>
     /// Реализует физическую величину времени.
     /// </summary>
@@ -458,7 +486,9 @@ namespace ASMC.Data.Model.PhysicalQuantity
             Unit = MeasureUnits.V;
         }
     }
-
+    /// <summary>
+    /// Реализует физическую величину электрического тока.
+    /// </summary>
     public sealed class Current : PhysicalQuantity<Current>
     {
         public Current()

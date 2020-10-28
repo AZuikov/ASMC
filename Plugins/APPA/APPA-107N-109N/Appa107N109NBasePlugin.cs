@@ -2795,16 +2795,18 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
                 Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.None, 0);
+                
                 BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
-                RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Frequency>(10, UnitMultiplier.Mili);
 
-                HerzPoint = new MeasPoint[1];
-                HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 100);
+                HerzPoint = new MeasPoint<Frequency>[]
+                {
+                    new MeasPoint<Frequency>( 100)
+            };
+                
 
-                VoltPoint = new AcVariablePoint[1];
-                VoltPoint[0] = new AcVariablePoint((decimal) 0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+                
             }
 
             #region Methods
@@ -2830,16 +2832,16 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
                 Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, 0);
+                
                 BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
-                RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Frequency>(100, UnitMultiplier.Mili);
 
-                HerzPoint = new MeasPoint[1];
-                HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 1);
-
-                VoltPoint = new AcVariablePoint[1];
-                VoltPoint[0] = new AcVariablePoint((decimal) 0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+                HerzPoint = new MeasPoint<Frequency>[]
+                {
+                    new MeasPoint<Frequency>( 1, UnitMultiplier.Kilo)
+            };
+               
             }
 
             #region Methods
@@ -2865,16 +2867,17 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
                 Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, 0);
                 BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
-                RangeResolution = new AcVariablePoint(1, MeasureUnits.Herz, UnitMultiplier.None);
+                RangeResolution = new MeasPoint<Frequency>(1) ;
 
-                HerzPoint = new MeasPoint[1];
-                HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 10);
+                HerzPoint = new MeasPoint<Frequency>[]
+                {
+                    new MeasPoint<Frequency>( 10, UnitMultiplier.Kilo)
+                };
+                
 
-                VoltPoint = new AcVariablePoint[1];
-                VoltPoint[0] = new AcVariablePoint((decimal) 0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+                
             }
 
             #region Methods
@@ -2900,16 +2903,18 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
                 Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, 0);
+                
                 BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
-                RangeResolution = new AcVariablePoint(10, MeasureUnits.Herz, UnitMultiplier.None);
+                RangeResolution = new MeasPoint<Frequency>(10);
 
-                HerzPoint = new MeasPoint[1];
-                HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 100);
+                HerzPoint = new MeasPoint<Frequency>[]
+                {
+                    new MeasPoint<Frequency>( 100, UnitMultiplier.Kilo)
+            };
+                 
 
-                VoltPoint = new AcVariablePoint[1];
-                VoltPoint[0] = new AcVariablePoint((decimal) 0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+                
             }
 
             #region Methods
@@ -2935,16 +2940,17 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
                 Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                thisRangeUnits = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega, 0);
                 BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
-                RangeResolution = new AcVariablePoint(100, MeasureUnits.Herz, UnitMultiplier.None);
+                RangeResolution = new MeasPoint<Frequency>(100);
 
-                HerzPoint = new MeasPoint[1];
-                HerzPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 1);
+                HerzPoint = new MeasPoint<Frequency>[]
+                {
+                    new MeasPoint<Frequency>( 1, UnitMultiplier.Mega)
+                };
+                
 
-                VoltPoint = new AcVariablePoint[1];
-                VoltPoint[0] = new AcVariablePoint((decimal) 0.5, MeasureUnits.V, UnitMultiplier.None, HerzPoint);
+               
             }
 
             #region Methods
@@ -2976,15 +2982,16 @@ namespace APPA_107N_109N
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
-                RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, UnitMultiplier.Mili);
-
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.None, 0);
-
+                RangeResolution = new MeasPoint<Resistance>(10,  UnitMultiplier.Mili);
+                
                 BaseMultiplier = 1;
-                OhmPoint = new MeasPoint[3];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 50 * BaseMultiplier);
-                OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 100 * BaseMultiplier);
-                OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 200 * BaseMultiplier);
+                OhmPoint = new []
+                {
+                    new MeasPoint<Resistance>(  50 * BaseMultiplier),
+                    new MeasPoint<Resistance>(  100 * BaseMultiplier),
+                    new MeasPoint<Resistance>(  200 * BaseMultiplier)
+            };
+                
             }
 
             #region Methods
@@ -3006,24 +3013,25 @@ namespace APPA_107N_109N
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationOhmRangeNominal = inRangeNominal;
                 Name = OperationOhmRangeNominal.GetStringValue();
-
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Kilo, 0);
-
+                
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
-                RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Resistance>(100,  UnitMultiplier.Mili);
 
-                BaseMultipliers = 1;
-                OhmPoint = new MeasPoint[5];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.4 * BaseMultipliers);
-                OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.8 * BaseMultipliers);
-                OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
-                OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.5 * BaseMultipliers);
-                OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.8 * BaseMultipliers);
+                BaseMultiplier = 1;
+                OhmPoint = new []
+                {
+                    new MeasPoint<Resistance>( (decimal) 0.4 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)0.8 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)1 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)1.5 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)1.8 * BaseMultiplier, UnitMultiplier.Kilo)
+            };
+                
+                
+                
+                
+                
             }
 
             #region Methods
@@ -3047,23 +3055,26 @@ namespace APPA_107N_109N
 
                 Name = OperationOhmRangeNominal.GetStringValue();
 
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Kilo, 0);
+                
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
-                RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, UnitMultiplier.None);
+                RangeResolution = new MeasPoint<Resistance>(1);
 
-                BaseMultipliers = 10;
-                OhmPoint = new MeasPoint[5];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.4 * BaseMultipliers);
-                OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.8 * BaseMultipliers);
-                OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
-                OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.5 * BaseMultipliers);
-                OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.8 * BaseMultipliers);
+                BaseMultiplier = 10;
+                OhmPoint = new[]
+                {
+                    new MeasPoint<Resistance>((decimal) 0.4 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)0.8 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)1 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)1.5 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal)1.8 * BaseMultiplier, UnitMultiplier.Kilo)
+            };
+                
+                
+                
+                
+                
             }
 
             #region Methods
@@ -3086,23 +3097,22 @@ namespace APPA_107N_109N
                 OperationOhmRangeNominal = inRangeNominal;
                 Name = OperationOhmRangeNominal.GetStringValue();
 
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Kilo, 0);
+                
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
-                RangeResolution = new AcVariablePoint(10, MeasureUnits.Ohm, UnitMultiplier.None);
+                RangeResolution = new MeasPoint<Resistance>(10);
 
-                BaseMultipliers = 100;
-                OhmPoint = new MeasPoint[5];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.4 * BaseMultipliers);
-                OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.8 * BaseMultipliers);
-                OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
-                OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.5 * BaseMultipliers);
-                OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.8 * BaseMultipliers);
+                BaseMultiplier = 100;
+                OhmPoint = new []
+                {
+                    new MeasPoint<Resistance>((decimal) 0.4 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal) 0.8 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal) 1 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal) 1.5 * BaseMultiplier, UnitMultiplier.Kilo),
+                    new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Kilo)
+                };
+                 
             }
 
             #region Methods
@@ -3125,23 +3135,26 @@ namespace APPA_107N_109N
                 OperationOhmRangeNominal = inRangeNominal;
                 Name = OperationOhmRangeNominal.GetStringValue();
 
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Mega, 0);
+                
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 50;
-                RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, UnitMultiplier.None);
+                RangeResolution = new MeasPoint<Resistance>(100 );
 
-                BaseMultipliers = 1;
-                OhmPoint = new MeasPoint[5];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.4 * BaseMultipliers);
-                OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 0.8 * BaseMultipliers);
-                OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, 1 * BaseMultipliers);
-                OhmPoint[3] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.5 * BaseMultipliers);
-                OhmPoint[4] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers,
-                                            (decimal) 1.8 * BaseMultipliers);
+                BaseMultiplier = 1;
+                OhmPoint = new []
+                {
+                    new MeasPoint<Resistance>((decimal) 0.4 * BaseMultiplier, UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>((decimal) 0.8 * BaseMultiplier,UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>((decimal) 1 * BaseMultiplier,UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>((decimal) 1.5 * BaseMultiplier,UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier,UnitMultiplier.Mega)
+            };
+                
+                
+                
+                
+                
             }
 
             #region Methods
@@ -3163,17 +3176,21 @@ namespace APPA_107N_109N
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range6Manual;
                 OperationOhmRangeNominal = inRangeNominal;
                 Name = OperationOhmRangeNominal.GetStringValue();
-
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Mega, 0);
+                
                 BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 50;
-                RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, UnitMultiplier.Kilo);
+                RangeResolution = new MeasPoint<Resistance>(1,  UnitMultiplier.Kilo);
 
                 BaseMultiplier = 1;
-                OhmPoint = new MeasPoint[3];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 5 * BaseMultiplier);
-                OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 10 * BaseMultiplier);
-                OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 20 * BaseMultiplier);
+                OhmPoint = new []
+                {
+                    new MeasPoint<Resistance>( 5 * BaseMultiplier ,UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>( 10 * BaseMultiplier,UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>( 20 * BaseMultiplier,UnitMultiplier.Mega)
+            };
+                
+                
+                
             }
 
             #region Methods
@@ -3195,18 +3212,21 @@ namespace APPA_107N_109N
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range7Manual;
                 OperationOhmRangeNominal = inRangeNominal;
                 Name = OperationOhmRangeNominal.GetStringValue();
-
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Mega, 0);
-
+                
                 BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 20;
-                RangeResolution = new AcVariablePoint(1, MeasureUnits.Ohm, UnitMultiplier.Mega);
+                RangeResolution = new MeasPoint<Resistance>(1,  UnitMultiplier.Mega);
 
                 BaseMultiplier = 10;
-                OhmPoint = new MeasPoint[3];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 5 * BaseMultiplier);
-                OhmPoint[1] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 10 * BaseMultiplier);
-                OhmPoint[2] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, 20 * BaseMultiplier);
+                OhmPoint = new []
+                {
+                    new MeasPoint<Resistance>( 5 * BaseMultiplier, UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>( 10 * BaseMultiplier, UnitMultiplier.Mega),
+                    new MeasPoint<Resistance>( 20 * BaseMultiplier, UnitMultiplier.Mega)
+                };
+                
+                
+                
             }
 
             #region Methods
@@ -3229,14 +3249,17 @@ namespace APPA_107N_109N
                 OperationOhmRangeNominal = inRangeNominal;
                 Name = OperationOhmRangeNominal.GetStringValue();
 
-                thisRangeUnits = new MeasPoint(MeasureUnits.Ohm, UnitMultiplier.Giga, 0);
+                
 
                 BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 8;
-                RangeResolution = new AcVariablePoint(100, MeasureUnits.Ohm, UnitMultiplier.Mega);
+                RangeResolution = new MeasPoint<Resistance>(100,  UnitMultiplier.Mega);
 
-                OhmPoint = new MeasPoint[1];
-                OhmPoint[0] = new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multipliers, (decimal) 0.9);
+                OhmPoint = new []
+                {
+                    new MeasPoint<Resistance>( (decimal) 0.9, UnitMultiplier.Giga)
+            };
+                 
             }
 
             #region Methods
@@ -3250,7 +3273,7 @@ namespace APPA_107N_109N
             #endregion
         }
 
-        public class Oper8ResistanceMeasureBase : ParagraphBase<MeasPoint>
+        public class Oper8ResistanceMeasureBase : ParagraphBase<MeasPoint<Resistance>>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -3260,6 +3283,8 @@ namespace APPA_107N_109N
             public decimal BaseMultiplier;
 
             public decimal BaseTolCoeff;
+
+            
 
             /// <summary>
             /// Число пределов измерения
@@ -3274,15 +3299,11 @@ namespace APPA_107N_109N
             /// <summary>
             /// Массив поверяемых точек напряжения.
             /// </summary>
-            protected MeasPoint[] OhmPoint;
+            protected MeasPoint<Resistance>[] OhmPoint;
 
-            protected AcVariablePoint RangeResolution;
+            protected MeasPoint<Resistance> RangeResolution;
 
-            /// <summary>
-            /// Это пустая точка, которая содержит только единицы измерения текущего
-            /// поверяемого предела и множитель для единицы измерения.
-            /// </summary>
-            protected MeasPoint thisRangeUnits;
+           
 
             #endregion
 
@@ -3320,7 +3341,7 @@ namespace APPA_107N_109N
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationOhmRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
-                DataRow = new List<IBasicOperation<MeasPoint>>();
+                DataRow = new List<IBasicOperation<MeasPoint<Resistance>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
             }
@@ -3334,7 +3355,7 @@ namespace APPA_107N_109N
                 foreach (var row in DataRow)
                 {
                     var dataRow = dataTable.NewRow();
-                    var dds = row as BasicOperationVerefication<MeasPoint>;
+                    var dds = row as BasicOperationVerefication<MeasPoint<Resistance>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
                     dataRow[0] = OperationOhmRangeNominal.GetStringValue();
@@ -3377,7 +3398,7 @@ namespace APPA_107N_109N
 
                 foreach (var currPoint in OhmPoint)
                 {
-                    var operation = new BasicOperationVerefication<MeasPoint>();
+                    var operation = new BasicOperationVerefication<MeasPoint<Resistance>>();
                     operation.InitWork = async () =>
                     {
                         try
@@ -3408,7 +3429,7 @@ namespace APPA_107N_109N
                             {
                                 int countPushRangeButton;
 
-                                if (thisRangeUnits.Multiplier == UnitMultiplier.Mili)
+                                if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili)
                                 {
                                     UserItemOperation.ServicePack.MessageBox()
                                                      .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
@@ -3447,7 +3468,7 @@ namespace APPA_107N_109N
                         {
                             // компенсаци проводов на младших пределах
                             decimal refValue = 0;
-                            if (thisRangeUnits.Multiplier == UnitMultiplier.None)
+                            if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
                             {
                                 flkCalib5522A.Out.Set.Resistance.SetValue(0);
                                 flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
@@ -3456,27 +3477,24 @@ namespace APPA_107N_109N
                                 refValue = (decimal) appa107N.GetValue();
                             }
 
-                            flkCalib5522A.Out.Set.Resistance.SetValue(currPoint.Value *
-                                                                      (decimal) currPoint
-                                                                               .Multiplier.GetDoubleValue());
+                            flkCalib5522A.Out.Set.Resistance.SetValue(currPoint);
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
 
-                            if (thisRangeUnits.Multiplier == UnitMultiplier.Mega) Thread.Sleep(9000);
-                            else if (thisRangeUnits.Multiplier == UnitMultiplier.Giga) Thread.Sleep(12000);
+                            if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mega) Thread.Sleep(9000);
+                            else if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Giga) Thread.Sleep(12000);
                             else
                                 Thread.Sleep(3000);
                             //измеряем
-                            var measurePoint = (decimal) appa107N.GetValue() - refValue;
+                            decimal measurePoint = (decimal) appa107N.GetValue() - refValue;
 
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa((decimal) (RangeResolution.MainPhysicalQuantity);
+                                MathStatistics.GetMantissa(RangeResolution.MainPhysicalQuantity.Value);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
-
-                            operation.Getting =
-                                new MeasPoint(thisRangeUnits.Units, thisRangeUnits.Multiplier, measurePoint);
+                            
+                            operation.Getting = new MeasPoint<Resistance>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier );
                             operation.Expected = currPoint;
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
