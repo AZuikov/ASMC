@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
 using AP.Reports.Utils;
@@ -121,7 +122,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     {
                         private readonly CalibrMain _calibrMain;
                         // todo диапазоны должны грузиться из файла точности
-                        private readonly RangeStorage<PhysicalRange<Voltage>> _ranges;
 
                         public CDc(CalibrMain calibrMain)
                         {
@@ -136,7 +136,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                             
                             _calibrMain = calibrMain;
-                            _ranges = new RangeStorage<PhysicalRange<Voltage>>();
+                            Ranges = new RangeStorage<PhysicalRange<Voltage>>();
                         }
 
                         /// <summary>
@@ -168,12 +168,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <summary>
                         /// Здает измерительные диапазоны.
                         /// </summary>
-                        public RangeStorage<PhysicalRange<Voltage>> Ranges
-                        {
-                            get { return _ranges; }
-                            protected internal set { }
-                        }
-
+                        [AccRange("Mode: Volts", typeof(MeasPoint<Voltage>))]
+                        public RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }
                     }
                     public CAc Ac
                     {
@@ -186,7 +182,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     {
                         private readonly CalibrMain _calibrMain;
                         // todo диапазоны должны грузиться из файла точности
-                        private RangeStorage<PhysicalRange<Voltage,Frequency>> _range;
 
 
                         public CAc(CalibrMain calibrMain)
@@ -231,14 +226,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
 
                         /// <summary>
-                        /// Здает измерительные диапазоны.
+                        /// Задает измерительные диапазоны.
                         /// </summary>
-                        public RangeStorage<PhysicalRange<Voltage,Frequency>> Ranges
-                        {
-                            get { return _range; }
-                            protected internal set { }
-                        }
-
+                        [AccRange("Mode: Volts SI", typeof(MeasPoint<Voltage,Frequency>))]
+                        public RangeStorage<PhysicalRange<Voltage,Frequency>> Ranges { get; set; }
 
 
                         /// <summary>
@@ -300,6 +291,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                                 new Command("K", "к", 1E3)};
                         }
                         /// <summary>
+                        /// Задает измерительные диапазоны.
+                        /// </summary>
+                        [AccRange("Mode: Amps", typeof(MeasPoint<Current>))]
+                        public RangeStorage<PhysicalRange<Current>> Ranges { get; set; }
+                        /// <summary>
                         /// Генерирует команду установки постоянного тока указной величины
                         /// </summary> 
                         public CalibrMain SetValue(decimal value, UnitMultiplier mult= UnitMultiplier.None)
@@ -330,7 +326,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                                 new Command("", "", 1),
                                 new Command("K", "к", 1E3)};
                         }
-
+                        /// <summary>
+                        /// Задает измерительные диапазоны.
+                        /// </summary>
+                        [AccRange("Mode: Amps SI", typeof(MeasPoint<Current,Frequency>))]
+                        public RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
                         /// <summary>
                         /// Генерирует команду установки переменного тока указной величины и частоты
                         /// </summary>

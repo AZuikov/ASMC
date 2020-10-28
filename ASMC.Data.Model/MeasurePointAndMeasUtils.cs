@@ -385,15 +385,18 @@ namespace ASMC.Data.Model
         #region Property
 
         /// <inheritdoc />
-        public AccuracyChatacteristic AccuracyChatacteristic { get; }
+        public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
 
         /// <inheritdoc />
-        public IMeasPoint<T> Start { get; protected set; }
+        public IMeasPoint<T> Start { get;  set; }
 
         /// <inheritdoc />
-        public IMeasPoint<T> Stop { get; protected set; }
+        public IMeasPoint<T> Stop { get;  set; }
 
-        public MeasureUnits Unit { get; protected set; }
+        public MeasureUnits Unit
+        {
+            get => Start.MainPhysicalQuantity.Unit;
+        }
 
         #endregion
         public PhysicalRange(MeasPoint<T> stopRange, AccuracyChatacteristic accuracy=null)
@@ -401,7 +404,6 @@ namespace ASMC.Data.Model
             AccuracyChatacteristic = accuracy;
             Start = new MeasPoint<T>();
             Stop = stopRange;
-            Unit = stopRange.MainPhysicalQuantity.Unit;
         }
         public PhysicalRange(MeasPoint<T> startRange, MeasPoint<T> stopRange, AccuracyChatacteristic accuracy = null)
         {
@@ -411,7 +413,6 @@ namespace ASMC.Data.Model
             Start = startRange;
             Stop = stopRange;
 
-            Unit = startRange.MainPhysicalQuantity.Unit;
         }
 
         public PhysicalRange()
@@ -434,13 +435,13 @@ namespace ASMC.Data.Model
         #region Property
 
         /// <inheritdoc />
-        public AccuracyChatacteristic AccuracyChatacteristic { get; }
+        public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
 
         /// <inheritdoc />
-        public IMeasPoint<TPhysicalQuantity, TAddition> Start { get; protected set; }
+        public IMeasPoint<TPhysicalQuantity, TAddition> Start { get; set; }
 
         /// <inheritdoc />
-        public IMeasPoint<TPhysicalQuantity, TAddition> Stop { get; protected set; }
+        public IMeasPoint<TPhysicalQuantity, TAddition> Stop { get; set; }
 
         public MeasureUnits Unit { get; protected set; }
 
@@ -482,7 +483,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// позвляет получить харатеристику точности диапазона.
         /// </summary>
-        AccuracyChatacteristic AccuracyChatacteristic { get; }
+        AccuracyChatacteristic AccuracyChatacteristic { get; set; }
         MeasureUnits Unit { get; }
     }
 
@@ -516,12 +517,12 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Значение величины, описывающее начало диапазона (входит в диапазон).
         /// </summary>
-        IMeasPoint<T> Start { get; }
+        IMeasPoint<T> Start { get; set; }
 
         /// <summary>
         /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
         /// </summary>
-        IMeasPoint<T> Stop { get; }
+        IMeasPoint<T> Stop { get; set; }
 
 
         #endregion
@@ -596,7 +597,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Позволяет получить характеристику точности
         /// </summary>
-        public AccuracyChatacteristic AccuracyChatacteristic { get; }
+        public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
 
         #region Methods
 
