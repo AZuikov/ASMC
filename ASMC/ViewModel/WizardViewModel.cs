@@ -385,7 +385,16 @@ namespace ASMC.ViewModel
             }
             catch (Exception e)
             {
-                Logger.Warn(e);
+                if (e is ReflectionTypeLoadException)
+                {
+                    Logger.Warn((e as ReflectionTypeLoadException).LoaderExceptions);
+                   
+                }
+                else
+                {
+                    Logger.Warn(e);
+                }
+             
             }
 
             var servicePack = new ServicePack

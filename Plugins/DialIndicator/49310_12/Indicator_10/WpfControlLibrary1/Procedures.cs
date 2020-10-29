@@ -26,28 +26,17 @@ namespace Indicator_10
     /// <typeparam name="TOperation"></typeparam>
     public abstract class MainIchProcedur<TOperation> : ParagraphBase<TOperation>
     {
-        protected class SettingTableViewModel
-        {
-            /// <summary>
-            /// Форматирование яческий
-            /// </summary>
-            public string CellFormat;
-            /// <summary>
-            /// Расположение ячеек горизонтальное
-            /// </summary>
-            public bool IsHorizontal=true;
-            /// <summary>
-            /// Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal"/>
-            /// </summary>
-            public int? Breaking;
-          
-        }
         #region Property
 
         /// <summary>
         ///     Предоставляет индикатор частового типа
         /// </summary>
         protected IchBase IchBase { get; private set; }
+        /// <summary>
+        /// Позволяет получить конец диапазона чисоваого индикатора
+        /// </summary>
+        protected MeasPoint<Length> EndRange { get; private set; }
+
 
         #endregion
 
@@ -55,6 +44,32 @@ namespace Indicator_10
         protected MainIchProcedur(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
         }
+
+        #region Nested type: SettingTableViewModel
+
+        protected class SettingTableViewModel
+        {
+            #region Field
+
+            /// <summary>
+            ///     Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal" />
+            /// </summary>
+            public int? Breaking;
+
+            /// <summary>
+            ///     Форматирование яческий
+            /// </summary>
+            public string CellFormat;
+
+            /// <summary>
+            ///     Расположение ячеек горизонтальное
+            /// </summary>
+            public bool IsHorizontal = true;
+
+            #endregion
+        }
+
+        #endregion
 
         #region Methods
 
@@ -66,7 +81,8 @@ namespace Indicator_10
         /// <param name="UnitCell">отознаечние едениц измерения в ячеках таблицы</param>
         /// <param name="isHorizantal">При значении <see cref="true" /> распологает ячейки горизотально</param>
         /// <returns></returns>
-        protected virtual TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints, SettingTableViewModel setting)
+        protected virtual TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints,
+            SettingTableViewModel setting)
         {
             var table = new TableViewModel {Header = name};
             var columnIndex = 0;
@@ -78,18 +94,23 @@ namespace Indicator_10
                     ColumnIndex = columnIndex, RowIndex = rowIndex, Name = t.Description,
                     StringFormat = @"{0} " + setting?.CellFormat
                 });
-                if (setting.IsHorizontal) {
+                if (setting.IsHorizontal)
+                {
                     columnIndex++;
                     if (setting.Breaking == null) continue;
-                    if (columnIndex % setting.Breaking == 0) {rowIndex++;
+                    if (columnIndex % setting.Breaking == 0)
+                    {
+                        rowIndex++;
                         columnIndex = 0;
-                    } 
+                    }
                 }
                 else
                 {
                     rowIndex++;
                     if (setting.Breaking == null) continue;
-                    if (rowIndex % setting.Breaking == 0) {columnIndex++;
+                    if (rowIndex % setting.Breaking == 0)
+                    {
+                        columnIndex++;
                         rowIndex = 0;
                     }
                 }
@@ -108,6 +129,7 @@ namespace Indicator_10
         protected override void InitWork()
         {
             IchBase = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
+            EndRange = (MeasPoint<Length>) IchBase.RangesFull.RealRangeStor.Max().Stop;
             base.InitWork();
         }
 
@@ -193,15 +215,14 @@ namespace Indicator_10
             base.InitWork();
             var operation = new MultiErrorMeasuringOperation<object>();
 
-            //var arrPoints = IchBase.Range.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
-            var maxPoint = IchBase.RangesFull.RealRangeStor.Max().Stop;
-            var arrPoints = maxPoint.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
+          
+            var arrPoints = EndRange.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
 
             var arrReversePoint = arrPoints.Reverse().ToArray();
-            var arrstraightReversePoint = maxPoint.GetArayMeasPointsInParcent(50, 50).ToArray();
+            var arrstraightReversePoint = EndRange.GetArayMeasPointsInParcent(50, 50).ToArray();
             var fullPoints = arrPoints.Concat(arrReversePoint).Concat(arrstraightReversePoint).ToArray();
-            MeasPoint<Weight>[] fullGettingPoints = Array.Empty<MeasPoint<Weight>>();
-       
+            var fullGettingPoints = Array.Empty<MeasPoint<Weight>>();
+
 
             operation.InitWork = async () =>
             {
@@ -219,7 +240,8 @@ namespace Indicator_10
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("MeasuringForceView", vm, null, null);
-                fullGettingPoints = vm.Content.Aggregate(fullGettingPoints, (current, item) => current.Concat(Fill(item)).ToArray());
+                fullGettingPoints = vm.Content.Aggregate(fullGettingPoints,
+                    (current, item) => current.Concat(Fill(item)).ToArray());
             };
 
             operation.BodyWorkAsync = () =>
@@ -350,18 +372,20 @@ namespace Indicator_10
             base.InitWork();
             var operation = new MeasuringOperation<decimal>();
 
-            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(50, 50, 50, 50).ToArray();
+            var arrPoints = EndRange.GetArayMeasPointsInParcent(50, 50, 50, 50)
+                .ToArray();
             decimal[] arrGetting = null;
 
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                var vm = CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints, new SettingTableViewModel { IsHorizontal = false });
+                var vm = CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints,
+                    new SettingTableViewModel {IsHorizontal = false});
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("PerpendicularPressureView", vm, null, null);
                 /*Получаем измерения*/
-                arrGetting= vm.Cells.Select(cell=>ObjectToDecimal(cell)).ToArray();
+                arrGetting = vm.Cells.Select(cell => ObjectToDecimal(cell)).ToArray();
             };
 
             operation.BodyWorkAsync = () =>
@@ -376,10 +400,9 @@ namespace Indicator_10
             };
             operation.ErrorCalculation = (expected, getting) => DataRow.Max(q => q.Getting);
             //todo Указать погрешность  
-            operation.CompliteWork = async () => operation.Error <=  IchBase.PerpendicularPressureMax;
+            operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
-
         }
 
         #endregion
@@ -440,13 +463,16 @@ namespace Indicator_10
         {
             base.InitWork();
             var operation = new MeasuringOperation<MeasPoint<Length>[]>();
-            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(GeneratenParcent(5,0,50,100)).ToArray();
+            var arrPoints = EndRange.GetArayMeasPointsInParcent(GeneratenParcent(5, 0, 50, 100)).ToArray();
             MeasPoint<Length>[] arrGetting = null;
+
             int[] GeneratenParcent(int count, params int[] parcent)
             {
                 var array = new List<int>(parcent.Length);
 
-                foreach (var par in parcent) for (var i = 0; i < count; i++) array.Add(par);
+                foreach (var par in parcent)
+                    for (var i = 0; i < count; i++)
+                        array.Add(par);
 
                 return array.ToArray();
             }
@@ -454,23 +480,24 @@ namespace Indicator_10
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                var setting = new SettingTableViewModel{Breaking = 5, CellFormat = "мкм" };
+                var setting = new SettingTableViewModel {Breaking = 5, CellFormat = "мкм"};
 
                 var vm = CreateTable("Показания при арретировании", arrPoints, setting);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("RangeIcdicationView", vm, null, null);
                 /*Получаем измерения*/
-                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro)).ToArray();
+                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
+                    .ToArray();
             };
 
             operation.BodyWorkAsync = () =>
             {
                 for (var i = 0; i < 3; i++)
                 {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    operation.Expected = (MeasPoint<Length>[])arrPoints[i*5].Clone();
-                    operation.Getting = arrGetting.Skip(i*5).Take(5).ToArray();
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>) operation.Clone();
+                    operation.Expected = (MeasPoint<Length>[]) arrPoints[i * 5].Clone();
+                    operation.Getting = arrGetting.Skip(i * 5).Take(5).ToArray();
                     if (i > 0) DataRow.Add(operation);
                 }
             };
@@ -478,9 +505,15 @@ namespace Indicator_10
             operation.ErrorCalculation =
                 (expected, getting) =>
                 {
-                    return new[] {expected.FirstOrDefault() - getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))};
+                    return new[]
+                    {
+                        expected.FirstOrDefault() -
+                        getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))
+                    };
                 };
-            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= IchBase.PerpendicularPressureMax;
+            operation.CompliteWork = async () =>
+                operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
         }
@@ -543,35 +576,38 @@ namespace Indicator_10
 
             int[] GeneratenParcent(int count, params int[] parcent)
             {
-                var  array = new List<int>(parcent.Length);
+                var array = new List<int>(parcent.Length);
 
-                foreach (var par in parcent) for (var i = 0; i < count; i++) array.Add(par);
+                foreach (var par in parcent)
+                    for (var i = 0; i < count; i++)
+                        array.Add(par);
 
                 return array.ToArray();
             }
-             
 
-            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(GeneratenParcent(6,0,50,100)).ToArray();
+
+            var arrPoints = EndRange.GetArayMeasPointsInParcent(GeneratenParcent(6, 0, 50, 100)).ToArray();
             MeasPoint<Length>[] arrGetting = { };
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                var setting = new SettingTableViewModel { Breaking = 2, CellFormat = "мкм" };
+                var setting = new SettingTableViewModel {Breaking = 2, CellFormat = "мкм"};
 
                 var vm = CreateTable("Определение вариации показаний", arrPoints, setting);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("RangeIcdicationView", vm, null, null);
                 /*Получаем измерения*/
-                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro)).ToArray();
+                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
+                    .ToArray();
             };
 
             operation.BodyWorkAsync = () =>
             {
                 for (var i = 0; i < 9; i++)
                 {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    operation.Expected = (MeasPoint<Length>[])arrPoints[i * 3].Clone();
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>) operation.Clone();
+                    operation.Expected = (MeasPoint<Length>[]) arrPoints[i * 3].Clone();
                     operation.Getting = arrGetting.Skip(i * 5).Take(5).ToArray();
                     if (i > 0) DataRow.Add(operation);
                 }
@@ -580,14 +616,63 @@ namespace Indicator_10
             operation.ErrorCalculation =
                 (expected, getting) =>
                 {
-                    return new[] { expected.FirstOrDefault() - getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi())) };
+                    return new[]
+                    {
+                        expected.FirstOrDefault() -
+                        getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))
+                    };
                 };
             // ReSharper disable once PossibleNullReferenceException
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= IchBase.PerpendicularPressureMax;
+            operation.CompliteWork = async () =>
+                operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                IchBase.PerpendicularPressureMax;
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
 
             DataRow.Add(operation);
+        }
+    }
+
+    public sealed class DeterminationError : MainIchProcedur<MeasPoint<Length>[]>
+    {
+        /// <inheritdoc />
+        public DeterminationError(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности на всем диапазоне и на участке 1 мм";
+        }
+
+        /// <inheritdoc />
+        protected override void InitWork()
+        {
+            base.InitWork();
+            var operation = new MultiErrorMeasuringOperation<MeasPoint<Length>[]>();
+            var measpoint =
+                IchBase.RangesFull.RealRangeStor.SelectMany(q =>
+                    q.Stop.GetArayMeasPointsInParcent(0, 20, 40, 60, 80, 100)).ToArray();
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            operation.InitWork = async ()  =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            {
+                var setting = new  SettingTableViewModel();
+                setting.Breaking = 6;
+                setting.CellFormat = "мкм";
+                this.CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм", measpoint, setting);
+            };
+            operation.ErrorCalculation = null;
+
+
+        }
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return base.GenerateDataColumnTypeObject();
+        }
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            return base.FillData();
         }
     }
 }
