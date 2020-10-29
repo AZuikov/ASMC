@@ -23,25 +23,24 @@ namespace TDS_BasePlugin
     {
         #region Methods
 
-        public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
-            IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
+        public static Task<bool> HelpsCompliteWork<T>(IBasicOperationVerefication<T> operation,
+            IUserItemOperation UserItemOperation) 
         {
             if (!operation.IsGood())
             {
-                var answer =
+                
+                   var answer =
                     UserItemOperation.ServicePack.MessageBox()
-                                     .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
-                                           $"Минимально допустимое значение {operation.LowerTolerance?.Description}\n" +
-                                           $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                           $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                           "Повторить измерение этой точки?",
+                                     .Show($"Текущая точка {((IMeasPoint<IPhysicalQuantity>)operation.Expected).Description} не проходит по допуску:\n" +
+                                           $"Минимально допустимое значение {((IMeasPoint<IPhysicalQuantity>)operation.LowerTolerance)?.Description}\n" +
+                                           $"Максимально допустимое значение {((IMeasPoint<IPhysicalQuantity>)operation.UpperTolerance).Description}\n" +
+                                           $"Допустимое значение погрешности {((IMeasPoint<IPhysicalQuantity>)operation.Error).Description}\n" +
+                                           $"ИЗМЕРЕННОЕ значение {((IMeasPoint<IPhysicalQuantity>)operation.Getting).Description}\n\n" +
+                                          "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
                                            MessageResult.Yes);
-                object dsada = null;
-                var ghghg = dsada as IMeasPoint<IPhysicalQuantity>;
+                
                 if (answer == MessageResult.No) return Task.FromResult(true);
             }
 
@@ -432,7 +431,7 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
                     }
                 };
-                operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => Hepls.HelpsCompliteWork<MeasPoint<Voltage>>(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Voltage>>)operation.Clone());
@@ -876,7 +875,7 @@ namespace TDS_BasePlugin
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<Object>)operation.Clone());
+                                : (BasicOperationVerefication<object>)operation.Clone());
             }
         }
 
