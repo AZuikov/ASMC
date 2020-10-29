@@ -78,10 +78,10 @@ namespace ASMC.Data.Model.Interface
     }
 
 
-    public interface IMultiErrorMeasuringOperation<T>
+    public interface IMultiErrorMeasuringOperation<T> :IBasicOperation<T>
     {
         /// <summary>
-        /// Позволяет получить и задать значение погрешности.
+        /// Позволяет получить значение погрешности.
         /// </summary>
         T[] Error
         {
@@ -104,7 +104,7 @@ namespace ASMC.Data.Model.Interface
     public interface IMeasuringOperation<T> :IBasicOperation<T>   
     {
         /// <summary>
-        /// Позволяет получить и задать значение погрешности.
+        /// Позволяет получить значение погрешности.
         /// </summary>
         T Error
         {
@@ -123,7 +123,7 @@ namespace ASMC.Data.Model.Interface
     /// Предоставляет интерфейс операции измерения.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IBasicOperationVerefication<T> :  IBasicOperation<T>
+    public interface IBasicOperationVerefication<T> : IMeasuringOperation<T>
     {
         /// <summary>
         /// Позволяет получить или задать нижнюю допустимую границу.

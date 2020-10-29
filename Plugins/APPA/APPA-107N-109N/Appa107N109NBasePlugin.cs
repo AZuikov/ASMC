@@ -530,11 +530,7 @@ namespace APPA_107N_109N
 
             #endregion
 
-            //public override async Task StartWork(CancellationToken token)
-            //{
-            //    await base.StartWork(token);
-            //    appa107N?.Dispose();
-            //}
+            
         }
 
         public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
