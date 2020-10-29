@@ -385,9 +385,15 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
             /// <param name = "value">The value.</param>
             /// <param name = "mult">The mult.</param>
             /// <returns></returns>
-            public Calibr9500B SetVoltage(double value, UnitMultiplier mult = UnitMultiplier.None)
+            public Calibr9500B SetVoltage(decimal value, UnitMultiplier mult = UnitMultiplier.None)
             {
-                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {(value * mult.GetDoubleValue()).ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
+                MeasPoint<Voltage> setPoint = new MeasPoint<Voltage>(value, mult);
+                return SetVoltage(setPoint);
+            }
+
+            public Calibr9500B SetVoltage(MeasPoint<Voltage> inPoint)
+            {
+                _calibrMain.WriteLine($@"SOUR:VOLT:ampl {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}");
                 return _calibrMain;
             }
 
