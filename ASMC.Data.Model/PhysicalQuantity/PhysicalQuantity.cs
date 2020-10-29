@@ -474,6 +474,18 @@ namespace ASMC.Data.Model.PhysicalQuantity
             Units = new[] { MeasureUnits.Time };
             Unit = MeasureUnits.Time;
         }
+
+        public Time(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.Time };
+            Unit = MeasureUnits.Time;
+        }
+
+        public Time(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.Time };
+            Unit = MeasureUnits.Time;
+        }
     }
     /// <summary>
     /// Реализует физическую величину электрического напряжения.

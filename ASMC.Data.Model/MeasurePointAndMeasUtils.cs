@@ -7,7 +7,7 @@ using ASMC.Data.Model.PhysicalQuantity;
 namespace ASMC.Data.Model
 {
     public interface IMeasPoint<TPhysicalQuantity> : ICloneable, IComparable<IMeasPoint<TPhysicalQuantity>>
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, IEquatable<TPhysicalQuantity>, new()
+        where TPhysicalQuantity : IPhysicalQuantity /*class, IPhysicalQuantity<TPhysicalQuantity>, IEquatable<TPhysicalQuantity>, new()*/
     {
         #region Property
 
