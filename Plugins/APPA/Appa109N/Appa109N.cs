@@ -96,7 +96,7 @@ namespace Appa109N
             FreqMode.Nodes.Add(new Freq200kHzMeasureBase(Mult107_109N.RangeNominal.Range200kHz, this));
             FreqMode.Nodes.Add(new Freq1MHzMeasureBase(Mult107_109N.RangeNominal.Range1MHz, this));
 
-            var TempMode = new APPA_107N_109N.OpertionFirsVerf.Oper10TemperatureMeasureBase(this);
+            var TempMode = new APPA_107N_109N.OpertionFirsVerf.Oper10TemperatureMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
             TempMode.Nodes.Add(new Temperature_Minus200_Minus100_Measure(Mult107_109N.RangeNominal.Range400degC, this));
             TempMode.Nodes.Add(new Temperature_Minus100_400_Measure(Mult107_109N.RangeNominal.Range400degC, this));
             TempMode.Nodes.Add(new Temperature_400_1200_Measure(Mult107_109N.RangeNominal.Range1200degC, this));
@@ -121,15 +121,7 @@ namespace Appa109N
 
         #region Methods
 
-        public override void RefreshDevice()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void FindDevice()
-        {
-            throw new NotImplementedException();
-        }
+        
 
         #endregion
     }
@@ -676,7 +668,7 @@ namespace Appa109N
     public class Temperature_Minus200_Minus100_Measure : APPA_107N_109N.OpertionFirsVerf.Oper10_1Temperature_Minus200_Minus100_Measure
     {
         public Temperature_Minus200_Minus100_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
-            base(inRangeNominal, userItemOperation)
+            base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA109N();
             flkCalib5522A = new Calib5522A();
@@ -687,7 +679,7 @@ namespace Appa109N
     public class Temperature_Minus100_400_Measure : APPA_107N_109N.OpertionFirsVerf.Oper10_1Temperature_Minus100_400_Measure
     {
         public Temperature_Minus100_400_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
-            base(inRangeNominal, userItemOperation)
+            base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA109N();
             flkCalib5522A = new Calib5522A();
@@ -698,7 +690,7 @@ namespace Appa109N
     public class Temperature_400_1200_Measure : APPA_107N_109N.OpertionFirsVerf.Oper10_1Temperature_400_1200_Measure
     {
         public Temperature_400_1200_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
-            base(inRangeNominal, userItemOperation)
+            base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA109N();
             flkCalib5522A = new Calib5522A();

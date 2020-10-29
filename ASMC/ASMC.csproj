@@ -257,6 +257,18 @@
       <Project>{8056D2DD-58E0-4FE8-9FF2-95F11AE8A4AC}</Project>
       <Name>ASMC.Interpreter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Plugins\APPA\APPA-107N-109N\APPA-107N-109NBasePlugin.csproj">
+      <Project>{2bc759a0-2e5f-46ef-aa23-555d6475ea6c}</Project>
+      <Name>APPA-107N-109NBasePlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\B5-71-PRO_Abstract\B5-71-PRO_Abstract.csproj">
+      <Project>{9e15a5e6-f812-4e56-bf83-2b5c0d247f96}</Project>
+      <Name>B5-71-PRO_Abstract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\Tektronix\TDS_BasePlugin\TDS_BasePlugin.csproj">
+      <Project>{c362fa9e-df8d-49b0-a86a-64661ecdba9e}</Project>
+      <Name>TDS_BasePlugin</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ce91c577bcf0a799e275968ebe599d0e.png" />

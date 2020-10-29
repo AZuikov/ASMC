@@ -19,6 +19,7 @@ using ASMC.Core.Model;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.Native;
 using NLog;
 
 namespace ASMC.ViewModel
@@ -387,8 +388,7 @@ namespace ASMC.ViewModel
             {
                 if (e is ReflectionTypeLoadException)
                 {
-                    Logger.Warn((e as ReflectionTypeLoadException).LoaderExceptions);
-                   
+                   (e as ReflectionTypeLoadException).LoaderExceptions.ForEach(q => Logger.Warn(q));
                 }
                 else
                 {

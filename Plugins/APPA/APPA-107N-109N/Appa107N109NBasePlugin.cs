@@ -11,6 +11,7 @@ using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Port.APPA;
 using DevExpress.Mvvm;
@@ -115,6 +116,16 @@ namespace APPA_107N_109N
 
     public abstract class OpertionFirsVerf : ASMC.Core.Model.Operation
     {
+        public override void RefreshDevice()
+        {
+            AddresDevice = IeeeBase.AllStringConnect;
+        }
+
+        public override void FindDevice()
+        {
+            throw new NotImplementedException();
+        }
+
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             //Необходимые устройства
@@ -1951,11 +1962,11 @@ namespace APPA_107N_109N
                 BaseMultiplier = (decimal) 0.1;
                 CurrentDciPoint = new[]
                 {
-                    CurrentDciPoint[0] = new MeasPoint<Current>(4 * BaseMultiplier),
-                    CurrentDciPoint[1] = new MeasPoint<Current>(8 * BaseMultiplier),
-                    CurrentDciPoint[2] = new MeasPoint<Current>(12 * BaseMultiplier),
-                    CurrentDciPoint[3] = new MeasPoint<Current>(18 * BaseMultiplier),
-                    CurrentDciPoint[4] = new MeasPoint<Current>(-18 * BaseMultiplier)
+                     new MeasPoint<Current>(4 * BaseMultiplier),
+                     new MeasPoint<Current>(8 * BaseMultiplier),
+                     new MeasPoint<Current>(12 * BaseMultiplier),
+                     new MeasPoint<Current>(18 * BaseMultiplier),
+                     new MeasPoint<Current>(-18 * BaseMultiplier)
                 };
 
                 Sheme = new ShemeImage
@@ -4185,7 +4196,7 @@ namespace APPA_107N_109N
 
             #endregion
 
-            public Oper10TemperatureMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
+            public Oper10TemperatureMeasureBase(IUserItemOperation userItemOperation, string inDirectory) : base(userItemOperation)
             {
                 Name = "Определение погрешности измерения температуры, градусы Цельсия";
                 OperMeasureMode = Mult107_109N.MeasureMode.degC;
@@ -4196,7 +4207,7 @@ namespace APPA_107N_109N
                 DataRow = new List<IBasicOperation<MeasPoint<CelsiumGrad>>>();
                 Sheme = new ShemeImage
                 {
-                    AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                    AssemblyLocalName = inDirectory,
                     Description = "Измерительная схема",
                     Number = 5,
                     FileName = @"appa_10XN_Temp_5522.jpg",
@@ -4389,8 +4400,8 @@ namespace APPA_107N_109N
         public class Oper10_1Temperature_Minus200_Minus100_Measure : Oper10TemperatureMeasureBase
         {
             public Oper10_1Temperature_Minus200_Minus100_Measure(Mult107_109N.RangeNominal inRangeNominal,
-                IUserItemOperation userItemOperation) :
-                base(userItemOperation)
+                IUserItemOperation userItemOperation, string inDirectory) :
+                base(userItemOperation, inDirectory)
             {
                 OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationRangeNominal = inRangeNominal;
@@ -4417,8 +4428,8 @@ namespace APPA_107N_109N
         public class Oper10_1Temperature_Minus100_400_Measure : Oper10TemperatureMeasureBase
         {
             public Oper10_1Temperature_Minus100_400_Measure(Mult107_109N.RangeNominal inRangeNominal,
-                IUserItemOperation userItemOperation) :
-                base(userItemOperation)
+                IUserItemOperation userItemOperation, string inDirecory) :
+                base(userItemOperation, inDirecory)
             {
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeNominal = inRangeNominal;
@@ -4450,8 +4461,8 @@ namespace APPA_107N_109N
         public class Oper10_1Temperature_400_1200_Measure : Oper10TemperatureMeasureBase
         {
             public Oper10_1Temperature_400_1200_Measure(Mult107_109N.RangeNominal inRangeNominal,
-                IUserItemOperation userItemOperation) :
-                base(userItemOperation)
+                IUserItemOperation userItemOperation, string inDirectory) :
+                base(userItemOperation, inDirectory)
             {
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeNominal = inRangeNominal;

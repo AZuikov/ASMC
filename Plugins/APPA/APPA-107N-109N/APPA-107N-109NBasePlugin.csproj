@@ -87,7 +87,9 @@
     <None Include="packages.config" />
     <None Include="Resources\APPA_107N_109N.dotx" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\appa_10XN_Temp_5522.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\appa_10XN_20A_5522A.jpg" />
     <Resource Include="Resources\appa_10XN_A_Aux_5522A.jpg" />
