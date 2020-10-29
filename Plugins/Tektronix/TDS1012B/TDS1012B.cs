@@ -2,6 +2,7 @@
 using System.Reflection;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
@@ -66,7 +67,7 @@ namespace TDS1012B
         public Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) :
             base(userItemOperation, inTestingChanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            calibr9500B = new Calibr9500();
+            calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
 
             
@@ -91,7 +92,7 @@ namespace TDS1012B
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.Time, UnitMultiplier.Nano, (decimal) 3.5M);
+            RiseTimeTol = new MeasPoint<Time>(3.5M, UnitMultiplier.Nano);
         }
     }
 }
