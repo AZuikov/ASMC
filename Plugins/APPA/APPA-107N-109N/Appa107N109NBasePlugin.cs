@@ -328,7 +328,7 @@ namespace APPA_107N_109N
             public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
             //контрлируемый прибор
-            protected Mult107_109N appa107N { get; set; }
+            protected Mult107_109N AppaMult107109N { get; set; }
 
             //эталон
             protected Calib5522A flkCalib5522A { get; set; }
@@ -397,7 +397,7 @@ namespace APPA_107N_109N
             protected override void InitWork()
             {
                 base.InitWork();
-                if (appa107N == null || flkCalib5522A == null) return;
+                if (AppaMult107109N == null || flkCalib5522A == null) return;
 
                 foreach (var currPoint in VoltPoint)
                 {
@@ -406,21 +406,21 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            if (appa107N.StringConnection.Equals("COM1"))
-                                appa107N.StringConnection = GetStringConnect(appa107N);
+                            if (AppaMult107109N.StringConnection.Equals("COM1"))
+                                AppaMult107109N.StringConnection = GetStringConnect(AppaMult107109N);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
                             await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                             while (OperMeasureMode !=
-                                   await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa107N.GetMeasureMode))
+                                   await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => AppaMult107109N.GetMeasureMode))
                                 UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
                                                        "Указание оператору", MessageButton.OK,
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
 
-                            while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa107N
+                            while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => AppaMult107109N
                                                                                                 .GetRangeSwitchMode) ==
                                    Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox()
@@ -428,7 +428,7 @@ namespace APPA_107N_109N
 
                             while (OperationDcRangeNominal !=
                                    await Task<Mult107_109N.RangeNominal>
-                                        .Factory.StartNew(() => appa107N.GetRangeNominal))
+                                        .Factory.StartNew(() => AppaMult107109N.GetRangeNominal))
                             {
                                 int countPushRangeButton;
 
@@ -436,7 +436,7 @@ namespace APPA_107N_109N
                                 {
                                     CountOfRanges = 2;
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -446,13 +446,13 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 4;
-                                    var curRange = (int) appa107N.GetRangeCode - 127;
+                                    var curRange = (int) AppaMult107109N.GetRangeCode - 127;
                                     var targetRange = (int) OperationDcRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -470,13 +470,12 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint.MainPhysicalQuantity.Value,
-                                                                      currPoint.MainPhysicalQuantity.Multiplier);
+                            flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint);
                             flkCalib5522A.Out.ClearMemoryRegister();
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                             Thread.Sleep(2000);
                             //измеряем
-                            var measurePoint = (decimal) appa107N.GetValue();
+                            var measurePoint = (decimal) AppaMult107109N.GetValue();
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
@@ -803,7 +802,7 @@ namespace APPA_107N_109N
 
         #region ACV
 
-        public abstract class Oper4AcvMeasureBase : ParagraphBase<MeasPoint<Voltage>>
+        public  class Oper4AcvMeasureBase : ParagraphBase<MeasPoint<Voltage>>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
