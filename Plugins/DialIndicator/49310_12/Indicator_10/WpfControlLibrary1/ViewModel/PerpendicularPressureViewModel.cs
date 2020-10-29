@@ -1,17 +1,14 @@
-﻿using System.Linq;
-using AP.Extension;
-using ASMC.Common.ViewModel;
-using ASMC.Core.ViewModel;
-using ASMC.Devices.WithoutInterface.HourIndicator;
+﻿using ASMC.Core.ViewModel;
 
 namespace Indicator_10.ViewModel
 {
-    public class PerpendicularPressureViewModel: TableViewModel
+    public class PerpendicularPressureViewModel: FromBaseViewModel
     {
         /// <inheritdoc />
         //protected override bool CanSelect()
         //{
         //   return this.Cells.All(p => !string.IsNullOrWhiteSpace(p?.Value?.ToString()));
         //}
+
     }
 }

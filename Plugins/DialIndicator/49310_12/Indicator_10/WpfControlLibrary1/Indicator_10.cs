@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using System.Threading.Tasks;
-using ASMC.Core.Model;
-using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
+﻿using ASMC.Core.Model;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 using Indicator_10.First;
 using Indicator_10.Periodic;
@@ -19,9 +12,9 @@ namespace Indicator_10
         /// <inheritdoc />
         public Indicator10(ServicePack service) : base(service)
         {
-            this.Type = "ИЧ10";
-            this.Grsi = "318-49, 32512-06, 33841-07, 40149-08, 42499-09, 49310-12, 54058-13, 57937-14, 64188-16, 69534-17, До 26 декабря 1991 года";
-            this.Range = "(0...10) мм";
+            Type = "ИЧ10";
+            Grsi = "318-49, 32512-06, 33841-07, 40149-08, 42499-09, 49310-12, 54058-13, 57937-14, 64188-16, 69534-17, До 26 декабря 1991 года";
+            Range = "(0...10) мм";
         }
     }
 
@@ -30,8 +23,8 @@ namespace Indicator_10
 
         public Verefication(ServicePack servicePac)
         {
-            this.UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePac);
-            this.UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<Ich_10>(servicePac);
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePac);
+            UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<Ich_10>(servicePac);
         }
     }
 }

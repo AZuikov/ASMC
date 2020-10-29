@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using ASMC.Common.UI;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
-using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.UInterface.AnalogDevice.ViewModel;
 using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using ASMC.Devices.WithoutInterface.HourIndicator;
@@ -33,17 +23,7 @@ namespace Indicator_10.Periodic
                     Devices = new IUserType[]
                     {
 
-                        new T
-                        {
-                            ////Range = new MeasPoint<Length>(10, UnitMultiplier.Mili),
-                            //UserType = "ИЧ, мод. ИЧ10",
-                            //MeasuringForce = new IchBase.MaxMeasuringForce
-                            //{
-                            //    StraightRun = new MeasPoint<Force>((decimal) 1.5),
-                            //    Oscillatons = new MeasPoint<Force>((decimal) 0.6),
-                            //    ChangeCourse = new MeasPoint<Force>((decimal) 0.5)
-                            //}
-                        }
+                        new T()
                     }
                 }
             };

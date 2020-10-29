@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using Accord.Video.DirectShow;
-using ASMC.Common.ViewModel;
+﻿using ASMC.Common.ViewModel;
 using ASMC.Core.ViewModel;
 using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
 

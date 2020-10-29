@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Input;
-using AP.Extension;
 using ASMC.Common.ViewModel;
-using ASMC.Core.ViewModel;
-using ASMC.Data.Model;
-using ASMC.Devices.WithoutInterface.HourIndicator;
-using DevExpress.Mvvm;
 
 namespace Indicator_10.ViewModel
 {
@@ -16,10 +9,10 @@ namespace Indicator_10.ViewModel
     {
         public MeasuringForceViewModel()
         {
-            this.Content.CollectionChanged += Content_CollectionChanged;
+            Content.CollectionChanged += Content_CollectionChanged;
         }
 
-        private void Content_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Content_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (Content.Count <= 2) return;
 
@@ -32,7 +25,7 @@ namespace Indicator_10.ViewModel
         {
             if (e.PropertyName == nameof(Cell.Value))
             {
-                this.Content[2].Cells[1].Value = ((Cell)sender).Value;
+                Content[2].Cells[1].Value = ((Cell)sender).Value;
             }
         }
 
@@ -40,7 +33,7 @@ namespace Indicator_10.ViewModel
         {
             if (e.PropertyName==nameof(Cell.Value))
             {
-                this.Content[2].Cells[0].Value = ((Cell) sender).Value;
+                Content[2].Cells[0].Value = ((Cell) sender).Value;
             }
         }
 
