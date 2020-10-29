@@ -6,7 +6,7 @@ using DevExpress.Mvvm;
 
 namespace ASMC.Common.ViewModel
 {
-    public class TableViewModel : FromBaseViewModel, IItemTable
+    public class TableViewModel : BindableBase, IItemTable
     {
         public TableViewModel()
         {

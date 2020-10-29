@@ -441,13 +441,21 @@ namespace Indicator_10
         {
             base.InitWork();
             var operation = new MeasuringOperation<MeasPoint<Length>[]>();
-            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(0,0,0,0,0,50, 50, 50, 50,50,100,100,100,100,100).ToArray();
+            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(GeneratenParcent(5,0,50,100)).ToArray();
             MeasPoint<Length>[] arrGetting = null;
+            int[] GeneratenParcent(int count, params int[] parcent)
+            {
+                var array = new List<int>(parcent.Length);
+
+                foreach (var par in parcent) for (var i = 0; i < count; i++) array.Add(par);
+
+                return array.ToArray();
+            }
 
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                var setting = new SettingTableViewModel{Breaking = 5, CellFormat = "мк" };
+                var setting = new SettingTableViewModel{Breaking = 5, CellFormat = "мкм" };
 
                 var vm = CreateTable("Показания при арретировании", arrPoints, setting);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
@@ -484,12 +492,100 @@ namespace Indicator_10
     /// <summary>
     ///     Определение вариации показаний
     /// </summary>
-    public sealed class VariationReading : MainIchProcedur<MeasPoint<Length>>
+    public sealed class VariationReading : MainIchProcedur<MeasPoint<Length>[]>
     {
         /// <inheritdoc />
         public VariationReading(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение вариации показаний";
+        }
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+            foreach (var row in DataRow)
+            {
+                //var dataRow = dataTable.NewRow();
+                //var dds = row as MeasuringOperation<MeasPoint<Length>[]>;
+                //// ReSharper disable once PossibleNullReferenceException
+                //if (dds == null) continue;
+
+                //dataRow[0] = dds.Expected.ToString();
+                //for (var i = 0; i < 5; i++) dataRow[i + 1] = dds.Getting[i].ToString();
+
+                //dataRow[5] = dds.Error;
+                //if (dds.IsGood == null)
+                //    dataRow[6] = ConstNotUsed;
+                //else
+                //    dataRow[6] = dds.IsGood() ? ConstGood : ConstBad;
+                //dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Точка диапазона измерений индикатора", "Прямой ход",
+                "Обратный ход", "Вариация показаний,",
+                "Допустимая вариация"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
+        /// <inheritdoc />
+        protected override void InitWork()
+        {
+            base.InitWork();
+            var operation = new MeasuringOperation<MeasPoint<Length>[]>();
+
+            int[] GeneratenParcent(int count, params int[] parcent)
+            {
+                var  array = new List<int>(parcent.Length);
+
+                foreach (var par in parcent) for (var i = 0; i < count; i++) array.Add(par);
+
+                return array.ToArray();
+            }
+             
+
+            var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(GeneratenParcent(6,0,50,100)).ToArray();
+            MeasPoint<Length>[] arrGetting = new MeasPoint<Length>[] { };
+            operation.InitWork = async () =>
+            {
+                var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
+                var setting = new SettingTableViewModel { Breaking = 2, CellFormat = "мкм" };
+
+                var vm = CreateTable("Определение вариации показаний", arrPoints, setting);
+                a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                a.SizeToContent = SizeToContent.WidthAndHeight;
+                a.Show("RangeIcdicationView", vm, null, null);
+                /*Получаем измерения*/
+                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro)).ToArray();
+            };
+
+            operation.BodyWorkAsync = () =>
+            {
+                for (var i = 0; i < 9; i++)
+                {
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                    operation.Expected = (MeasPoint<Length>[])arrPoints[i * 3].Clone();
+                    operation.Getting = arrGetting.Skip(i * 5).Take(5).ToArray();
+                    if (i > 0) DataRow.Add(operation);
+                }
+            };
+
+            operation.ErrorCalculation =
+                (expected, getting) =>
+                {
+                    return new[] { expected.FirstOrDefault() - getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi())) };
+                };
+            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= (decimal)IchBase.PerpendicularPressureMax;
+
+            DataRow.Add(operation);
         }
     }
 }

@@ -132,6 +132,7 @@ namespace ASMC.Devices.IEEE
             get
             {
                 if (_info != null) return _info;
+                if (string.IsNullOrWhiteSpace(StringConnection)) return null;
 
                 var arr = GetBaseInfoFromDevice();
                 string manufacturer = null, serial = null, type = null, fwv = null;
@@ -471,7 +472,7 @@ namespace ASMC.Devices.IEEE
             catch (Exception e)
             {
                 Logger.Error(e, $@"Порт не удалось открыть для устроства {UserType}.");
-                Session.Clear();
+                Session?.Clear();
                 IsOpen = false;
                 throw;
             }

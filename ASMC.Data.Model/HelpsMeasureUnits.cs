@@ -54,7 +54,7 @@ namespace ASMC.Data.Model
     }
 
     [AttributeUsage(AttributeTargets.Field)]
-     public class MeasureUnitsValueAttribute : Attribute
+     public class MeasureUnitsValueAttribute : System.Attribute
      {
      /// &lt;inheritdoc /&gt;
      public MeasureUnitsValueAttribute(MeasureUnits value)
@@ -70,7 +70,7 @@ namespace ASMC.Data.Model
      
      /// &lt;inheritdoc /&gt;
      [AttributeUsage(AttributeTargets.Field)]
-     public class UnitMultipliersAttribute : Attribute
+     public class UnitMultipliersAttribute : System.Attribute
      {
      /// &lt;inheritdoc /&gt;
      public UnitMultipliersAttribute(UnitMultiplier value)

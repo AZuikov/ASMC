@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.Random;
 
 namespace AP.Math
 {
@@ -15,23 +16,23 @@ namespace AP.Math
         /// <param name="from">От</param>
         /// <param name="to">До</param>
         /// <returns>Случайно знаечние</returns>
-        public static double RandomToRange(double from, double to)
+        public static decimal RandomToRange(decimal from, decimal to)
         {
             if (from >= to) throw new ArgumentOutOfRangeException($"Значение аргумента from({from}) больше значения to({to}).");
             Random rand = new Random((int)Stopwatch.GetTimestamp());
             if (from < 0 && to > 0)
             {
-                var positive = rand.NextDouble() * (to - 0) + 0;
-                var negative = (rand.NextDouble() * (0 - from * -1) + from * -1) * -1;
+                var positive = rand.NextDecimal() * (to - 0) + 0;
+                var negative = (rand.NextDecimal() * (0 - from * -1) + from * -1) * -1;
                 return rand.Next(1) == 1 ? positive : negative;
             }
 
             if (from < 0 && to < 0)
             {
-                return (rand.NextDouble() * (System.Math.Abs(from) - System.Math.Abs(to)) + System.Math.Abs(to)) * -1;
+                return (rand.NextDecimal() * (System.Math.Abs(from) - System.Math.Abs(to)) + System.Math.Abs(to)) * -1;
             }
 
-            return rand.NextDouble() * (to - from) + from;
+            return rand.NextDecimal() * (to - from) + from;
 
 
         }

@@ -12,54 +12,54 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public Calib5522A()
         {
             UserType = "5522A";
-            Out.Set.Voltage.Dc.Ranges.RealRangeStor = new[]
-            {
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(329.9999M, UnitMultiplier.Mili)),
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(330M, UnitMultiplier.Mili), new MeasPoint<Voltage>(3.299999M)),
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(3.3M), new MeasPoint<Voltage>(32.99999M)),
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(33M), new MeasPoint<Voltage>(329.99999M)),
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(330M), new MeasPoint<Voltage>(1020M))
-            };
+            //Out.Set.Voltage.Dc.Ranges.RealRangeStor = new[]
+            //{
+            //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(329.9999M, UnitMultiplier.Mili)),
+            //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(330M, UnitMultiplier.Mili), new MeasPoint<Voltage>(3.299999M)),
+            //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(3.3M), new MeasPoint<Voltage>(32.99999M)),
+            //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(33M), new MeasPoint<Voltage>(329.99999M)),
+            //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(330M), new MeasPoint<Voltage>(1020M))
+            //};
             
-            Out.Set.Voltage.Ac.Ranges.RealRangeStor = new[]
-            {
-                CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.None, 45, UnitMultiplier.None) , 
-                CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) , 
-                CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) , 
-                CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) , 
-                CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) , 
-                CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
+            //Out.Set.Voltage.Ac.Ranges.RealRangeStor = new[]
+            //{
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.None, 45, UnitMultiplier.None) , 
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) , 
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) , 
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) , 
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) , 
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
 
-                CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
-                CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) ,
-                CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) ,
-                CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) ,
-                CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) ,
-                CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
+            //    CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
 
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
 
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) ,
-                CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(330M, UnitMultiplier.Mili,3.29999M, UnitMultiplier.None,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
 
-            };
+            //};
 
-            PhysicalRange<Voltage, Frequency> CreateAcPoint(decimal startVolt, UnitMultiplier multForStartVolt, decimal stopVolt, UnitMultiplier multForStopVolt , decimal freqValStart, UnitMultiplier multFreqStart , decimal freqStopVal, UnitMultiplier multFreqStop)
-            {
-                return new
-                    PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(startVolt, multForStartVolt, freqValStart, multFreqStart),
-                                                      new MeasPoint<Voltage, Frequency>(stopVolt, multForStopVolt,
-                                                                                        freqStopVal, multFreqStop));
-            }
+            //PhysicalRange<Voltage, Frequency> CreateAcPoint(decimal startVolt, UnitMultiplier multForStartVolt, decimal stopVolt, UnitMultiplier multForStopVolt , decimal freqValStart, UnitMultiplier multFreqStart , decimal freqStopVal, UnitMultiplier multFreqStop)
+            //{
+            //    return new
+            //        PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(startVolt, multForStartVolt, freqValStart, multFreqStart),
+            //                                          new MeasPoint<Voltage, Frequency>(stopVolt, multForStopVolt,
+            //                                                                            freqStopVal, multFreqStop));
+            //}
 
             
 

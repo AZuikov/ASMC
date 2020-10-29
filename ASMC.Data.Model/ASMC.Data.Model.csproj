@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccuracyChatacteristic.cs" />
+    <Compile Include="AccRangeAttribute.cs" />
     <Compile Include="BasicOperation.cs" />
     <Compile Include="HelpsMeasureUnits.cs" />
     <Compile Include="Interface\IConvertPhysicalQuantity.cs" />

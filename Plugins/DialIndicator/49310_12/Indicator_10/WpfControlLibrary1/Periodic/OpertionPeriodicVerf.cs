@@ -52,7 +52,8 @@ namespace Indicator_10.Periodic
             {
                 new MeasuringForce(this), 
                 new PerpendicularPressure(this),
-                new RangeIndications(this)
+                new RangeIndications(this),
+                new  VariationReading(this)
             };
             Accessories = new[]
             {
