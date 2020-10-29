@@ -1,10 +1,11 @@
-﻿using ASMC.Core.Model;
+﻿using System;
+using System.Reflection;
+using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
-using System;
-using System.Reflection;
 using TDS_BasePlugin;
 
 namespace TDS2004B
@@ -17,7 +18,6 @@ namespace TDS2004B
             Range = "no range";
             Accuracy = "no accuracy";
         }
-    
     }
 
     public class Operation : OperationMetrControlBase
@@ -42,18 +42,21 @@ namespace TDS2004B
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH1),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH1,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH3),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH3, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH3,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH3),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH4),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH4, Assembly.GetExecutingAssembly().GetName().Name),
+                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH4,
+                                              Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH4)
-
             };
         }
 
@@ -64,7 +67,7 @@ namespace TDS2004B
             throw new NotImplementedException();
         }
 
-        #endregion Methods
+        #endregion
     }
 
     public class Oper3KoefOtkl : TDS_BasePlugin.Oper3KoefOtkl
@@ -74,18 +77,6 @@ namespace TDS2004B
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
-
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_10mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_20mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_50mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_100mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_200mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_500mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_1V);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2V);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5V);
         }
     }
 
@@ -107,7 +98,7 @@ namespace TDS2004B
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
-            RiseTimeTol = new MeasPoint(MeasureUnits.Time, UnitMultiplier.Nano, (decimal)5.8M);
+            RiseTimeTol = new MeasPoint<Time>(5.8M, UnitMultiplier.Nano);
         }
     }
 }

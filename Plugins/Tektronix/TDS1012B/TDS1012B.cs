@@ -66,20 +66,10 @@ namespace TDS1012B
         public Oper3KoefOtkl(IUserItemOperation userItemOperation, TDS_Oscilloscope.ChanelSet inTestingChanel) :
             base(userItemOperation, inTestingChanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            calibr9500B = new Calibr9500
+            calibr9500B = new Calibr9500();
             someTdsOscilloscope = new TDS_2022B();
 
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_10mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_20mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_50mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_100mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_200mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_500mV);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_1V);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2V);
-            verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5V);
+            
         }
     }
 
