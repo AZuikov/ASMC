@@ -139,7 +139,7 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            public List<IBasicOperation<bool>> DataRow { get; set; }
+            
 
             #endregion
 
@@ -2651,10 +2651,7 @@ namespace APPA_107N_109N
 
             public decimal BaseTolCoeff;
 
-            /// <summary>
-            /// Число пределов измерения
-            /// </summary>
-            private int CountOfRanges;
+            
 
             /// <summary>
             /// довесок к формуле погрешности- единица младшего разряда

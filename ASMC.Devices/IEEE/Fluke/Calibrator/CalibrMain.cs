@@ -293,7 +293,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <summary>
                         /// Задает измерительные диапазоны.
                         /// </summary>
-                        [AccRange("Mode: Amps", typeof(MeasPoint<Current>))]
+                        
                         public RangeStorage<PhysicalRange<Current>> Ranges { get; set; }
                         /// <summary>
                         /// Генерирует команду установки постоянного тока указной величины
@@ -329,7 +329,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <summary>
                         /// Задает измерительные диапазоны.
                         /// </summary>
-                        [AccRange("Mode: Amps SI", typeof(MeasPoint<Current,Frequency>))]
+                        
                         public RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
                         /// <summary>
                         /// Генерирует команду установки переменного тока указной величины и частоты
