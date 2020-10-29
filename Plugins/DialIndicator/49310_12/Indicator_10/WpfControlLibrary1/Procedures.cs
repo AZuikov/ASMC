@@ -13,7 +13,6 @@ using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.WithoutInterface.HourIndicator;
-using DevExpress.Mvvm.Native;
 using DevExpress.Mvvm.UI;
 using Indicator_10.ViewModel;
 using WindowService = ASMC.Core.UI.WindowService;
@@ -32,7 +31,7 @@ namespace Indicator_10
             /// <summary>
             /// Форматирование яческий
             /// </summary>
-            public string CellFormat=null;
+            public string CellFormat;
             /// <summary>
             /// Расположение ячеек горизонтальное
             /// </summary>
@@ -40,7 +39,7 @@ namespace Indicator_10
             /// <summary>
             /// Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal"/>
             /// </summary>
-            public int? Breaking=null;
+            public int? Breaking;
           
         }
         #region Property
@@ -362,7 +361,7 @@ namespace Indicator_10
                 a.SizeToContent = SizeToContent.WidthAndHeight;
                 a.Show("PerpendicularPressureView", vm, null, null);
                 /*Получаем измерения*/
-                arrGetting= vm.Cells.Select((cell)=>ObjectToDecimal(cell)).ToArray();
+                arrGetting= vm.Cells.Select(cell=>ObjectToDecimal(cell)).ToArray();
             };
 
             operation.BodyWorkAsync = () =>
@@ -481,7 +480,7 @@ namespace Indicator_10
                 {
                     return new[] {expected.FirstOrDefault() - getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))};
                 };
-            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= (decimal) IchBase.PerpendicularPressureMax;
+            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= IchBase.PerpendicularPressureMax;
 
             DataRow.Add(operation);
         }
@@ -553,7 +552,7 @@ namespace Indicator_10
              
 
             var arrPoints = IchBase.RangesFull.RealRangeStor.Max().Stop.GetArayMeasPointsInParcent(GeneratenParcent(6,0,50,100)).ToArray();
-            MeasPoint<Length>[] arrGetting = new MeasPoint<Length>[] { };
+            MeasPoint<Length>[] arrGetting = { };
             operation.InitWork = async () =>
             {
                 var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
@@ -583,7 +582,10 @@ namespace Indicator_10
                 {
                     return new[] { expected.FirstOrDefault() - getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi())) };
                 };
-            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= (decimal)IchBase.PerpendicularPressureMax;
+            // ReSharper disable once PossibleNullReferenceException
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            operation.CompliteWork = async () => operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <= IchBase.PerpendicularPressureMax;
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
 
             DataRow.Add(operation);
         }
