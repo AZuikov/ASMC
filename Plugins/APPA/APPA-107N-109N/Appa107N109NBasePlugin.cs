@@ -299,16 +299,9 @@ namespace APPA_107N_109N
             /// </summary>
             protected MeasPoint<Voltage> RangeResolution;
 
-            ///// <summary>
-            ///// Имя закладки таблички в результирующем протоколе doc (Ms Word).
-            ///// </summary>
-            //protected string ReportTableName;
+            
 
-            /// <summary>
-            /// Это пустая точка, которая содержит только единицы измерения текущего
-            /// поверяемого предела и множитель для единицы измерения.
-            /// </summary>
-            protected MeasPoint<Voltage> thisRangeUnits;
+          
 
             /// <summary>
             /// Массив поверяемых точек напряжения.
@@ -345,7 +338,7 @@ namespace APPA_107N_109N
             public Oper3DcvMeasureBase(IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation)
             {
-                thisRangeUnits = new MeasPoint<Voltage>();
+               
                 Name = "Определение погрешности измерения постоянного напряжения";
                 OperMeasureMode = Mult107_109N.MeasureMode.DCV;
 
@@ -439,7 +432,7 @@ namespace APPA_107N_109N
                             {
                                 int countPushRangeButton;
 
-                                if (thisRangeUnits.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili)
+                                if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili)
                                 {
                                     CountOfRanges = 2;
                                     UserItemOperation.ServicePack.MessageBox()
@@ -494,7 +487,7 @@ namespace APPA_107N_109N
                             MathStatistics.Round(ref measurePoint, mantisa);
 
                             operation.Getting =
-                                new MeasPoint<Voltage>(measurePoint, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                                new MeasPoint<Voltage>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
                             //new AcVariablePoint(measurePoint, MeasureUnits.V, thisRangeUnits.Multiplier);
                             operation.Expected = currPoint;
                             //расчет погрешности для конкретной точки предела измерения
@@ -509,7 +502,7 @@ namespace APPA_107N_109N
                                                currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
 
                                 MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Voltage>(result, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                                return new MeasPoint<Voltage>(result, currPoint.MainPhysicalQuantity.Multiplier);
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -560,13 +553,21 @@ namespace APPA_107N_109N
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Voltage>(100, UnitMultiplier.Micro);
 
-                VoltPoint = new MeasPoint<Voltage>[6];
-                VoltPoint[0] = new MeasPoint<Voltage>((decimal) 0.4, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[1] = new MeasPoint<Voltage>((decimal) 0.8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[2] = new MeasPoint<Voltage>((decimal) 1.2, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[3] = new MeasPoint<Voltage>((decimal) 1.6, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[4] = new MeasPoint<Voltage>((decimal) 1.8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[5] = new MeasPoint<Voltage>((decimal) -1.8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                VoltPoint = new []
+                {
+                    new MeasPoint<Voltage>((decimal) 0.4),
+                    new MeasPoint<Voltage>((decimal) 0.8),
+                    new MeasPoint<Voltage>((decimal) 1.2),
+                    new MeasPoint<Voltage>((decimal) 1.6),
+                    new MeasPoint<Voltage>((decimal) 1.8),
+                    new MeasPoint<Voltage>((decimal) -1.8)
+                };
+                
+                
+                
+                
+                
+                
             }
 
             #region Methods
@@ -591,13 +592,16 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Mili);
                 Name = OperationDcRangeNominal.GetStringValue();
 
-                VoltPoint = new MeasPoint<Voltage>[6];
-                VoltPoint[0] = new MeasPoint<Voltage>(4, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[1] = new MeasPoint<Voltage>(8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[2] = new MeasPoint<Voltage>(12, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[3] = new MeasPoint<Voltage>(16, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[4] = new MeasPoint<Voltage>(18, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[5] = new MeasPoint<Voltage>(-18, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                VoltPoint = new []
+                {
+                    new MeasPoint<Voltage>(4 ),
+                    new MeasPoint<Voltage>(8 ),
+                    new MeasPoint<Voltage>(12),
+                    new MeasPoint<Voltage>(16),
+                    new MeasPoint<Voltage>(18),
+                    new MeasPoint<Voltage>(-18)
+                };
+                 
             }
 
             #region Methods
@@ -627,13 +631,16 @@ namespace APPA_107N_109N
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Mili);
 
-                VoltPoint = new MeasPoint<Voltage>[6];
-                VoltPoint[0] = new MeasPoint<Voltage>(40, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[1] = new MeasPoint<Voltage>(80, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[2] = new MeasPoint<Voltage>(120, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[3] = new MeasPoint<Voltage>(160, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[4] = new MeasPoint<Voltage>(180, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[5] = new MeasPoint<Voltage>(-180, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                VoltPoint = new []
+                {
+                    new MeasPoint<Voltage>(40   ),
+                    new MeasPoint<Voltage>(80   ),
+                    new MeasPoint<Voltage>(120  ),
+                    new MeasPoint<Voltage>(160  ),
+                    new MeasPoint<Voltage>(180  ),
+                    new MeasPoint<Voltage>(-180 )
+                };
+                 
             }
 
             #region Methods
@@ -662,13 +669,21 @@ namespace APPA_107N_109N
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Voltage>(100, UnitMultiplier.Mili);
 
-                VoltPoint = new MeasPoint<Voltage>[6];
-                VoltPoint[0] = new MeasPoint<Voltage>(100, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[1] = new MeasPoint<Voltage>(200, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[2] = new MeasPoint<Voltage>(400, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[3] = new MeasPoint<Voltage>(700, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[4] = new MeasPoint<Voltage>(900, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[5] = new MeasPoint<Voltage>(-900, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                VoltPoint = new []
+                {
+                    new MeasPoint<Voltage>(100 ),
+                    new MeasPoint<Voltage>(200 ),
+                    new MeasPoint<Voltage>(400 ),
+                    new MeasPoint<Voltage>(700 ),
+                    new MeasPoint<Voltage>(900 ),
+                    new MeasPoint<Voltage>(-900)
+                };
+                
+                
+                
+                
+                
+                
             }
 
             #region Methods
@@ -688,7 +703,7 @@ namespace APPA_107N_109N
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
-                thisRangeUnits = new MeasPoint<Voltage>(0, UnitMultiplier.Mili);
+                
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationDcRangeNominal = inRangeNominal;
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Micro);
@@ -698,13 +713,21 @@ namespace APPA_107N_109N
                 EdMlRaz = 60;
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Micro);
 
-                VoltPoint = new MeasPoint<Voltage>[6];
-                VoltPoint[0] = new MeasPoint<Voltage>(4, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[1] = new MeasPoint<Voltage>(8, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[2] = new MeasPoint<Voltage>(12, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[3] = new MeasPoint<Voltage>(16, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[4] = new MeasPoint<Voltage>(18, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[5] = new MeasPoint<Voltage>(-18, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                VoltPoint = new []
+                {
+                    new MeasPoint<Voltage>(4,   UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(8, UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(12, UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(16, UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(18, UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(-18, UnitMultiplier.Mili)
+            };
+                
+                
+                
+                
+                
+                
             }
 
             #region Methods
@@ -724,7 +747,7 @@ namespace APPA_107N_109N
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
-                thisRangeUnits = new MeasPoint<Voltage>(0, UnitMultiplier.Mili);
+                
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationDcRangeNominal = inRangeNominal;
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Micro);
@@ -734,13 +757,16 @@ namespace APPA_107N_109N
                 EdMlRaz = 20;
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Micro);
 
-                VoltPoint = new MeasPoint<Voltage>[6];
-                VoltPoint[0] = new MeasPoint<Voltage>(40, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[1] = new MeasPoint<Voltage>(80, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[2] = new MeasPoint<Voltage>(120, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[3] = new MeasPoint<Voltage>(160, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[4] = new MeasPoint<Voltage>(180, thisRangeUnits.MainPhysicalQuantity.Multiplier);
-                VoltPoint[5] = new MeasPoint<Voltage>(-180, thisRangeUnits.MainPhysicalQuantity.Multiplier);
+                VoltPoint = new []
+                {
+                    new MeasPoint<Voltage>(40,   UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(80,   UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(120,  UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(160,  UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(180,  UnitMultiplier.Mili),
+                    new MeasPoint<Voltage>(-180, UnitMultiplier.Mili)
+                };
+                 
             }
 
             #region Methods
