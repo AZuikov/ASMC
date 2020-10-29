@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using ASMC.Core.Model;
+﻿using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
+using System;
+using System.Reflection;
 using TDS_BasePlugin;
 
 namespace TDS2024
@@ -78,18 +75,6 @@ namespace TDS2024
             {
                 calibr9500B = new Calibr9500B();
                 someTdsOscilloscope = new TDS_2022B();
-
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_10mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_20mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_50mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_100mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_200mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_500mV);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_1V);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2V);
-                verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5V);
             }
         }
 
@@ -111,7 +96,7 @@ namespace TDS2024
                 calibr9500B = new Calibr9500B();
                 someTdsOscilloscope = new TDS_2022B();
                 horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
-                RiseTimeTol = new MeasPoint(MeasureUnits.Time, UnitMultiplier.Nano, (decimal)2.1M);
+                RiseTimeTol = new MeasPoint<Time>(2.1M, UnitMultiplier.Nano);
             }
         }
     }

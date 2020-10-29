@@ -11,7 +11,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     {
         public Calib5522A()
         {
-            UserType = "5522A";
+            UserType = "Fluke 5522A";
             //Out.Set.Voltage.Dc.Ranges.RealRangeStor = new[]
             //{
             //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(329.9999M, UnitMultiplier.Mili)),
