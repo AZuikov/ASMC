@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
+using ASMC.Data.Model;
 using ASMC.Devices.Port;
 using NLog;
 using OwenioNet;
@@ -9,16 +10,22 @@ using OwenioNet.Types;
 
 namespace ASMC.Devices.OWEN
 {
-    internal class OwenProtocol : ComPort, IStreamResource
+    public class OwenProtocol : ComPort, IStreamResource
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+        public int DeviceAddres { get;  set; }
+        
+        /// <summary>
+        /// Инициализирует объект.
+        /// </summary>
+        /// <param name="Addres">Адрес устройства ТРМ202. Его нужно знать заранее.</param>
         public OwenProtocol()
         {
             BaudRate = SpeedRate.R115200;
             Parity = Parity.None;
             DataBit = DBit.Bit8;
             StopBit = StopBits.One;
+            
         }
 
         #region Methods
@@ -30,9 +37,9 @@ namespace ASMC.Devices.OWEN
         /// <param name = "addresDevice">Удрес устройства.</param>
         /// <param name = "ParametrName">Имя параметра, который необходимо считать.</param>
         /// <returns>Массив байт, требующий конверткации.</returns>
-        public byte[] OwenReadParam(int PortNumber, int addresDevice, string ParametrName, ushort? Register = null)
+        public byte[] OwenReadParam(  string ParametrName, ushort? Register = null)
         {
-            //var port = new SerialPortAdapter(PortNumber, 115200, Parity.None, 8, StopBits.One);
+            
 
             try
             {
@@ -47,11 +54,11 @@ namespace ASMC.Devices.OWEN
 
             if (IsOpen != true) Logger.Error("Ошибка открытия порта: {0}", StringConnection);
 
-            byte[] dataFromDevice = {0x00};
+            byte[] dataFromDevice = {0x00, 0x23, 0x4d};
 
             try
             {
-                dataFromDevice = owenProtocol.OwenRead(addresDevice, AddressLengthType.Bits8, ParametrName, Register);
+                dataFromDevice = owenProtocol.OwenRead(DeviceAddres, AddressLengthType.Bits8, ParametrName, Register);
             }
             catch (Exception ex)
             {
@@ -72,7 +79,7 @@ namespace ASMC.Devices.OWEN
         /// <param name = "ParametrName">Наименование параметра устройства.</param>
         /// <param name = "writeDataBytes">Массив байт дял записи в устройство (значение параметра).</param>
         /// <param name = "Register">Индекс параметра (если есть).</param>
-        public void OwenWriteParam(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
+        public void OwenWriteParam(AddressLengthType addressLengthType,
             string ParametrName, byte[] writeDataBytes, ushort? Register = null)
         {
             try
@@ -93,7 +100,7 @@ namespace ASMC.Devices.OWEN
             try
             {
                 //dataFromDevice = owenProtocol.OwenRead(addresDevice, AddressLengthType.Bits8, ParametrName, ParIndex);
-                owenProtocol.OwenWrite(addresDevice, AddressLengthType.Bits8, ParametrName, writeDataBytes, Register);
+                owenProtocol.OwenWrite(DeviceAddres, AddressLengthType.Bits8, ParametrName, writeDataBytes, Register);
             }
             catch (Exception ex)
             {
@@ -113,10 +120,9 @@ namespace ASMC.Devices.OWEN
         /// <param name = "size">Размер ожидаемого числа в байтах.</param>
         /// <param name = "Register">Индекс параметра (если есть).</param>
         /// <returns>Считанное значение параметра.</returns>
-        public float ReadFloatParam(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
-            string ParametrName, int size, ushort? Register = null)
+        public  float ReadFloatParam( AddressLengthType addressLengthType, string ParametrName, int size,  ushort? Register = null)
         {
-            var answerDevice = OwenReadParam(PortNumber, addresDevice, ParametrName, Register);
+            byte[] answerDevice = OwenReadParam( ParametrName, Register);
             var converter = new ConverterFloat(size);
             var value = converter.ConvertBack(answerDevice);
             return value;
@@ -135,7 +141,7 @@ namespace ASMC.Devices.OWEN
         public int ReadShortIntParam(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
             string ParametrName, int size, ushort? Register = null)
         {
-            var answerDevice = OwenReadParam(PortNumber, addresDevice, ParametrName, Register);
+            var answerDevice = OwenReadParam( ParametrName, Register);
             var converter = new ConverterI(size);
             var value = converter.ConvertBack(answerDevice);
             return value;
@@ -153,7 +159,7 @@ namespace ASMC.Devices.OWEN
         public string ReadStringAscii(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
             string ParametrName, ushort? Register = null)
         {
-            var answerDevice = OwenReadParam(PortNumber, addresDevice, ParametrName, Register);
+            var answerDevice = OwenReadParam( ParametrName, Register);
             var converter = new ConverterAscii(answerDevice.Length);
             var value = converter.ConvertBack(answerDevice);
             return value;
@@ -161,7 +167,7 @@ namespace ASMC.Devices.OWEN
 
         #endregion
 
-        public void DiscardInBuffer()
+        public new void DiscardInBuffer()
         {
             base.DiscardInBuffer();
 

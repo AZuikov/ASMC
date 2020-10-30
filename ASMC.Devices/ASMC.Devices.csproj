@@ -119,8 +119,8 @@
     <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_2022B\TDS_2022B.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
-    <Compile Include="OWEN\OwenProtocol.cs" />
-    <Compile Include="OWEN\TRM202Device.cs" />
+    <Compile Include="Port\OWEN\OwenProtocol.cs" />
+    <Compile Include="Port\OWEN\TRM202Device.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />
     <Compile Include="Port\IZ_Tech\MIT_8.cs" />
@@ -140,6 +140,7 @@
     <Compile Include="SimpleScada\Parametr\ScadaParametr.cs" />
     <Compile Include="SimpleScada\Parametr\ScadaParametrDecorator.cs" />
     <Compile Include="SimpleScada\Dv2TsSensor.cs" />
+    <Compile Include="Port\OWEN\TrmException.cs" />
     <Compile Include="USB_Device\SKBIS\Lir917\Driver.cs" />
     <Compile Include="USB_Device\SiliconLabs\UsbExpressWrapper.cs" />
     <Compile Include="USB_Device\SiliconLabs\Exception.cs" />
@@ -153,8 +154,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
-    <None Include="OWEN\ki_parametry_trm202_105_a3.pdf" />
-    <None Include="OWEN\opisanie_biblioteki_owenionet.pdf" />
+    <None Include="Port\OWEN\ki_parametry_trm202_105_a3.pdf" />
+    <None Include="Port\OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>

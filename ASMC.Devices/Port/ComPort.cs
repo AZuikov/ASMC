@@ -342,7 +342,7 @@ namespace ASMC.Devices.Port
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            return ReadByte(buffer, offset, count);
+            return ReadByte(buffer, offset, count, false);
         }
 
         /// <summary>
