@@ -120,6 +120,7 @@
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_2022B\TDS_2022B.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
     <Compile Include="OWEN\OwenProtocol.cs" />
+    <Compile Include="OWEN\TRM202Device.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
     <Compile Include="Port\ComPort.cs" />
     <Compile Include="Port\IZ_Tech\MIT_8.cs" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="OWEN\ki_parametry_trm202_105_a3.pdf" />
     <None Include="OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />

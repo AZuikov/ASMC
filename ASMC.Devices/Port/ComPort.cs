@@ -200,7 +200,7 @@ namespace ASMC.Devices.Port
         {
         }
 
-        protected void Write(byte[] sendData, int offset, int length)
+        public void Write(byte[] sendData, int offset, int length)
         {
             if (!IsOpen)
             {
@@ -338,6 +338,11 @@ namespace ASMC.Devices.Port
             }
 
             return 0;
+        }
+
+        public int Read(byte[] buffer, int offset, int count)
+        {
+            return ReadByte(buffer, offset, count);
         }
 
         /// <summary>

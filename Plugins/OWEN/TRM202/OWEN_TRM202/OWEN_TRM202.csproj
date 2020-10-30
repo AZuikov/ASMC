@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevExpress.Mvvm.v17.2">
+      <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,6 +49,33 @@
   <ItemGroup>
     <Compile Include="TRM202_Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AP.Math\AP.Math.csproj">
+      <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
+      <Name>AP.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\AP.Utils\AP.Utils.csproj">
+      <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
+      <Name>AP.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{adb547eb-33aa-4c07-a493-c80729632a8b}</Project>
+      <Name>ASMC.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Devices\ASMC.Devices.csproj">
+      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
+      <Name>ASMC.Devices</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resource\TRM_IsolationTest.rtf" />
+    <None Include="Resource\TRM_Visual_test.rtf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

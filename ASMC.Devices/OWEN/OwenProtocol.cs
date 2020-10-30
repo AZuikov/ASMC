@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
+using ASMC.Devices.Port;
 using NLog;
 using OwenioNet;
 using OwenioNet.DataConverter.Converter;
@@ -8,9 +9,17 @@ using OwenioNet.Types;
 
 namespace ASMC.Devices.OWEN
 {
-    internal class OwenProtocol
+    internal class OwenProtocol : ComPort, IStreamResource
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        public OwenProtocol()
+        {
+            BaudRate = SpeedRate.R115200;
+            Parity = Parity.None;
+            DataBit = DBit.Bit8;
+            StopBit = StopBits.One;
+        }
 
         #region Methods
 
@@ -23,20 +32,20 @@ namespace ASMC.Devices.OWEN
         /// <returns>Массив байт, требующий конверткации.</returns>
         public byte[] OwenReadParam(int PortNumber, int addresDevice, string ParametrName, ushort? Register = null)
         {
-            var port = new SerialPortAdapter(PortNumber, 115200, Parity.None, 8, StopBits.One);
+            //var port = new SerialPortAdapter(PortNumber, 115200, Parity.None, 8, StopBits.One);
 
             try
             {
-                if (port.IsOpened != true) port.Open();
+                if (IsOpen != true) Open();
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
 
-            var owenProtocol = OwenProtocolMaster.Create(port);
+            var owenProtocol = OwenProtocolMaster.Create(this);
 
-            if (port.IsOpened != true) Logger.Error("Ошибка открытия порта: {0}", port.ToString());
+            if (IsOpen != true) Logger.Error("Ошибка открытия порта: {0}", StringConnection);
 
             byte[] dataFromDevice = {0x00};
 
@@ -49,7 +58,7 @@ namespace ASMC.Devices.OWEN
                 Logger.Error("Ошибка чтения ОВЕН: " + ex);
             }
 
-            port.Close();
+            Close();
 
             return dataFromDevice;
         }
@@ -66,20 +75,18 @@ namespace ASMC.Devices.OWEN
         public void OwenWriteParam(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
             string ParametrName, byte[] writeDataBytes, ushort? Register = null)
         {
-            var port = new SerialPortAdapter(PortNumber, 115200, Parity.None, 8, StopBits.One);
-
             try
             {
-                if (port.IsOpened != true) port.Open();
+                if (IsOpen != true) Open();
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
 
-            var owenProtocol = OwenProtocolMaster.Create(port);
+            var owenProtocol = OwenProtocolMaster.Create(this);
 
-            if (port.IsOpened != true) Logger.Error("Ошибка открытия порта: {0}", port.ToString());
+            if (IsOpened != true) Logger.Error("Ошибка открытия порта: {0}", StringConnection);
 
             byte[] dataFromDevice = {0x00};
 
@@ -93,7 +100,7 @@ namespace ASMC.Devices.OWEN
                 Logger.Error("Ошибка записи ОВЕН: " + ex);
             }
 
-            port.Close();
+            Close();
         }
 
         /// <summary>
@@ -153,5 +160,15 @@ namespace ASMC.Devices.OWEN
         }
 
         #endregion
+
+        public void DiscardInBuffer()
+        {
+            base.DiscardInBuffer();
+
+        }
+
+        public bool IsOpened => IsOpen;
+        public int ReadTimeout { get; set; }
+        public int WriteTimeout { get; set; }
     }
 }
