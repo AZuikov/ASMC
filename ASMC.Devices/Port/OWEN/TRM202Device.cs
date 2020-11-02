@@ -1,10 +1,18 @@
-﻿using AP.Utils.Data;
+﻿using System;
+using AP.Utils.Data;
 using System.ComponentModel;
+using Accord;
+using Accord.Imaging.Filters;
+using ASMC.Devices.Port.OWEN;
+using Microsoft.Build.Utilities;
+using OwenioNet.DataConverter.Converter;
+using OwenioNet.Types;
 
 namespace ASMC.Devices.OWEN
 {
     public class TRM202Device : OwenProtocol
     {
+        ////todo логгер подключить нужно 
         public enum ParametrTRM
         {
             /// <summary>
@@ -251,39 +259,39 @@ namespace ASMC.Devices.OWEN
 
         public enum TrmError
         {
-            [Description("ошибка на входе")] ErroInput = 0Xfd,
+            [Description("ошибка на входе")] Input = 0Xfd,
 
             [Description("отсутствие связи с АЦП")]
             NoAcpConnect = 0Xfe,
 
             [Description("вычисленное значение заведомо не верно")]
-            ValueError = 0Xf0,
+            Value = 0Xf0,
 
             [Description("Запись недопустимого значения в r.oUt(выдается при попытке записи значения отличного от 0 или 1 при ВУ ключевого типа)")]
             InvalidWriteValue = 0Xf1,
 
             [Description("Значение мантиссы превышает ограничения дескриптора")]
-            MantissaError = 0X06,
+            Mantissa = 0X06,
 
-            [Description("Не найден дескриптор")] DescriptorError = 0X28,
+            [Description("Не найден дескриптор")] Descriptor = 0X28,
 
             [Description("Размер поля данных не соответствует ожидаемому")]
-            FieldValueError = 0X31,
+            FieldValue = 0X31,
 
             [Description("Значение бита запроса не соответствует ожидаемому")]
-            BitValueErroe = 0X32,
+            BitValue = 0X32,
 
             [Description("Редактирование параметра запрещено индивидуальным атрибутом")]
-            EditError = 0X33,
+            Edit = 0X33,
 
             [Description("Недопустимо большой линейный индекс")]
-            IndexError = 0X34,
+            Index = 0X34,
 
             [Description("Ошибка при чтении EEPROM (ответ при наличии Er.64)")]
-            ReadError = 0X48,
+            Read = 0X48,
 
             [Description("Недопустимое сочетание значений параметров (редактирование параметра заблокировано значением другого или значениями нескольких других)")]
-            UnecpectedError = 0X34
+            Unecpected = 0X47
         }
 
         /// <summary>
@@ -318,5 +326,53 @@ namespace ASMC.Devices.OWEN
             U_50,
             U0_1
         }
+        
+        public override byte[] OwenReadParam(string ParametrName, ushort? Register = null)
+        {
+            byte[] answerDevice = base.OwenReadParam(ParametrName, Register);
+            //отловим ошибку
+            if (answerDevice.Length == 1)
+                if (Enum.IsDefined(typeof(TrmError), (Int32) answerDevice[0]))
+                {
+                    GenericException((TrmError)answerDevice[0]);
+                }
+
+            return answerDevice;
+
+        }
+
+        private static void GenericException(TrmError err)
+        {
+            switch (err)
+            {
+                case TrmError.BitValue:
+                    throw new TrmException { Code = err};
+                case TrmError.Descriptor:
+                    throw new TrmException{ Code = err };
+                case TrmError.Edit:
+                    throw new TrmException{ Code = err };
+                case TrmError.FieldValue:
+                    throw new TrmException{ Code = err };
+                case TrmError.Index:
+                    throw new TrmException{ Code = err };
+                case TrmError.Input:
+                    throw new TrmException{ Code = err };
+                case TrmError.InvalidWriteValue:
+                    throw new TrmException{ Code = err };
+                case TrmError.Mantissa:
+                    throw new TrmException{ Code = err };
+                case TrmError.NoAcpConnect:
+                    throw new TrmException{ Code = err };
+                case TrmError.Read:
+                    throw new TrmException{ Code = err };
+                case TrmError.Unecpected:
+                    throw new TrmException{ Code = err };
+                case TrmError.Value:
+                    throw new TrmException{ Code = err };
+                
+            }
+        }
+
+
     }
 }

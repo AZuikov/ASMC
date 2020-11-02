@@ -37,7 +37,7 @@ namespace ASMC.Devices.OWEN
         /// <param name = "addresDevice">Удрес устройства.</param>
         /// <param name = "ParametrName">Имя параметра, который необходимо считать.</param>
         /// <returns>Массив байт, требующий конверткации.</returns>
-        public byte[] OwenReadParam(  string ParametrName, ushort? Register = null)
+        public virtual byte[] OwenReadParam(  string ParametrName, ushort? Register = null)
         {
             
 
@@ -54,7 +54,7 @@ namespace ASMC.Devices.OWEN
 
             if (IsOpen != true) Logger.Error("Ошибка открытия порта: {0}", StringConnection);
 
-            byte[] dataFromDevice = {0x00, 0x23, 0x4d};
+            byte[] dataFromDevice = {0x00};
 
             try
             {
@@ -120,7 +120,7 @@ namespace ASMC.Devices.OWEN
         /// <param name = "size">Размер ожидаемого числа в байтах.</param>
         /// <param name = "Register">Индекс параметра (если есть).</param>
         /// <returns>Считанное значение параметра.</returns>
-        public  float ReadFloatParam( AddressLengthType addressLengthType, string ParametrName, int size,  ushort? Register = null)
+        public   float ReadFloatParam( AddressLengthType addressLengthType, string ParametrName, int size,  ushort? Register = null)
         {
             byte[] answerDevice = OwenReadParam( ParametrName, Register);
             var converter = new ConverterFloat(size);

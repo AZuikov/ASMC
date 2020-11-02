@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using ASMC.Devices.USB_Device.SiliconLabs;
+using ASMC.Devices.OWEN;
 using Palsys.Utils.Data;
 
 namespace ASMC.Devices.Port.OWEN
@@ -8,7 +8,7 @@ namespace ASMC.Devices.Port.OWEN
     [Serializable]
     public class TrmException:Exception
     {
-        public UsbExpressWrapper.StatusCode Code
+        public TRM202Device.TrmError Code
         {
             get; set;
         }
@@ -44,15 +44,13 @@ namespace ASMC.Devices.Port.OWEN
 
         }
 
-        public TrmException(string message):base(message)
-        {
-        }
+       
         public TrmException(string message, Exception inner) : base(message,inner)
         {
         }
         protected TrmException(SerializationInfo inf, StreamingContext context) :base(inf,context)
         {
-            this.Code = (UsbExpressWrapper.StatusCode) inf.GetInt32(nameof(Code));
+            this.Code = (TRM202Device.TrmError) inf.GetInt32(nameof(Code));
         }
 
 
