@@ -14,6 +14,15 @@ namespace ASMC.Common.ViewModel
         private string _pathImage;
         private string _text;
 
+        /// <inheritdoc />
+        protected override void OnEntityChanged()
+        {
+            if (Shema==null)
+            {
+                Shema = Entity as ShemeImage;
+            }
+        }
+
         /// <summary>
         /// ПОзволяет получать или задавать  отображенную схему.
         /// </summary>
@@ -37,8 +46,6 @@ namespace ASMC.Common.ViewModel
 
         private void ChangedCallback()
         {
-
-
             var path = $@"{Directory.GetCurrentDirectory()}\Plugins\{Shema.AssemblyLocalName}";
             Logger.Debug($"Ищем путь к картинке {path}");
             if (!Directory.Exists(path))

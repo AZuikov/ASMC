@@ -106,7 +106,7 @@
     <Compile Include="ViewModel\ShemViewModel.cs" />
     <Compile Include="ViewModel\TableViewModel.cs" />
     <Compile Include="View\ImageView.xaml.cs">
-      <DependentUpon>ImageView.xaml</DependentUpon>
+      <DependentUpon>ShemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\InputTableControl.xaml.cs">
       <DependentUpon>InputTableControl.xaml</DependentUpon>
@@ -129,7 +129,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ImageView.xaml">
+    <Page Include="View\ShemView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
