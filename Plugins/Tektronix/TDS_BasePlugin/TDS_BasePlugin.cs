@@ -133,9 +133,9 @@ namespace TDS_BasePlugin
             return "ITBmVisualTest";
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -198,9 +198,9 @@ namespace TDS_BasePlugin
             return "ITBmOprobovanie";
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -329,9 +329,9 @@ namespace TDS_BasePlugin
             return $"FillTabBmOper3KoefOtkl{_testingChanel}";
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork( token);
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
             foreach (var currScale in verticalScalesList)
@@ -545,9 +545,9 @@ namespace TDS_BasePlugin
             return $"FillTabBmOper4MeasureTimeIntervalsl{_testingChanel}";
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
             foreach (var currScale in ScaleTolDict.Keys)
@@ -804,9 +804,9 @@ namespace TDS_BasePlugin
             return $"FillTabBmOper5MeasureRiseTime{_testingChanel}";
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
             foreach (var verticalScale in verticalScalesList)

@@ -29,7 +29,7 @@
         <ui1:QuestionTextService x:Name="QuestionTextService" />
         <ui1:ImageService x:Name="ImageService" />
         <ui:MessageBoxService />
-        <ui:TaskMessageService />
+
     </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>

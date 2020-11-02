@@ -4,11 +4,11 @@ using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
 
 namespace Indicator_10.ViewModel
 {
-    public class WorkInPpiViewModel: FromBaseViewModel
+    public class WorkInPpiViewModel: SelectionViewModel
     {
-        protected WebCamViewModel WebCam { get; private set; } 
+        public WebCamViewModel WebCam { get; private set; } 
 
-        protected TableViewModel Content { get; private set; }
+        public TableViewModel Content { get; set; }
         /// <inheritdoc />
         protected override void OnInitializing()
         {

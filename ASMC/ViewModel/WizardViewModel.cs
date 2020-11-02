@@ -400,9 +400,9 @@ namespace ASMC.ViewModel
             var servicePack = new ServicePack
             {
                 MessageBox = () => GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
-                ShemForm = () => GetService<IFormService>("ImageService"),
-                QuestionText = () => GetService<IFormService>("QuestionTextService"),
-                FreeWindow = ()=> GetService<IWindowService>("FreeWindow")
+                ShemForm = () => GetService<ISelectionService>("ImageService"),
+                QuestionText = () => GetService<ISelectionService>("QuestionTextService"),
+                FreeWindow = ()=> GetService<ISelectionService>("SelectionService")
             };
             if (types == null) return;
             foreach (var type in types)
@@ -456,7 +456,7 @@ namespace ASMC.ViewModel
 
         private void OnPauseCommand()
         {
-            var servise = GetService<IFormService>("ShemService");
+            var servise = GetService<ISelectionService>("ShemService");
             servise.Show();
             throw new NotImplementedException();
         }

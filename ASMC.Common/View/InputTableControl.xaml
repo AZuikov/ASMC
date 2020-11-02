@@ -14,7 +14,7 @@
         <converter:StringFormatter x:Key="StringFormatter"/>
     </UserControl.Resources>
       <StackPanel>
-        <ItemsControl ItemsSource="{Binding Path=Data, RelativeSource={RelativeSource AncestorType={x:Type view1:InputTableControl}}}"  Focusable="False">
+        <ItemsControl ItemsSource="{Binding Data, RelativeSource={RelativeSource AncestorType={x:Type view1:InputTableControl}}}"  Focusable="False">
               <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
                     <UniformGrid Columns="{Binding CountColumn}" Rows="{Binding CountRow}" />

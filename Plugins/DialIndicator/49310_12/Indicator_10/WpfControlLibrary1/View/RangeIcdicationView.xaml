@@ -7,10 +7,10 @@
              xmlns:view="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" >
-            <view:InputTableControl Name="Table" Data="{Binding Path=Cells}" SelectValue="{Binding Selected}" />
+    <DockPanel>
+        <Image DockPanel.Dock="Left"></Image>
+        <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" DockPanel.Dock="Right" >
+            <view:InputTableControl Name="Table" Data="{Binding Content.Cells}" SelectValue="{Binding Selected}" />
         </HeaderedContentControl>
-        <Button Content="Подтвердить" Command="{Binding SelectCommand}"/>
-    </StackPanel>
+    </DockPanel>
 </UserControl>

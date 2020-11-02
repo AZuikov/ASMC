@@ -1,12 +1,17 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using ASMC.Common.ViewModel;
+using ASMC.Core.UI;
+using ASMC.Core.ViewModel;
 
 namespace Indicator_10.ViewModel
 {
-    public class MeasuringForceViewModel : MultiGridViewModel
+    public class MeasuringForceViewModel : SelectionViewModel
     {
+        public ObservableCollection<IItemTable> Content { get; } = new ObservableCollection<IItemTable>();
+
         public MeasuringForceViewModel()
         {
             Content.CollectionChanged += Content_CollectionChanged;
@@ -43,5 +48,6 @@ namespace Indicator_10.ViewModel
             if (Content.Count <= 2) return false;
             return Content.All(q => q.Cells.All(p => !string.IsNullOrWhiteSpace(p?.Value?.ToString())));
         }
+
     }
 }

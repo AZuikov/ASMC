@@ -8,10 +8,8 @@
              xmlns:view1="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <GroupBox Header="Введите измереное значение с весов в граммах." Margin="20" Focusable="False">
+
+    <GroupBox Header="Введите измереное значение с весов в граммах." Margin="20" Focusable="False">
             <view1:MultiGridView/>
         </GroupBox>
-        <Button Content="Подтвердить" Command="{Binding SelectCommand}"/>
-    </StackPanel>
 </UserControl>

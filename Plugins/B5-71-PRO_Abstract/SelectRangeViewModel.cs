@@ -13,12 +13,12 @@ using ASMC.Devices.WithoutInterface.Voltmetr;
 
 namespace B5_71_PRO_Abstract
 {
-    public class SelectRangeViewModel : FromBaseViewModel 
+    public class SelectRangeViewModel : SelectionViewModel 
 
     {
     private string _description = "Выбор установленного предела измерения:";
     private List<MeasPoint<Voltage>> _ranges;
-    private MeasPoint<Voltage> _SelectRange;
+    private MeasPoint<Voltage> _selectRange;
 
     /// <summary>
     /// Текст комментария для пользователя.
@@ -43,8 +43,8 @@ namespace B5_71_PRO_Abstract
     /// </summary>
     public MeasPoint<Voltage> SelectRange
     {
-        get => _SelectRange;
-        set => SetProperty(ref _SelectRange, value, nameof(SelectRange));
+        get => _selectRange;
+        set => SetProperty(ref _selectRange, value, nameof(SelectRange));
     }
 
     public SelectRangeViewModel()

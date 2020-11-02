@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
-using ASMC.Common.ViewModel;
+using ASMC.Core;
+using ASMC.Core.UI;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 using NLog;
-using WindowService = ASMC.Core.UI.WindowService;
 
 namespace ASMC.ViewModel
 {
@@ -89,12 +89,13 @@ namespace ASMC.ViewModel
         private void OnSettingOpenCommand()
         {
             var device = SelectedDevice as IControlPannelDevice;
-            var service = GetService<IWindowService>("FreeWindow") as WindowService;
-            if (service != null)
-            {
-                service.ViewLocator = new ViewLocator(device?.Assembly);
-                service.Show(device?.DocumentType, device?.ViewModel);
-            }
+            var service = GetService<ISelectionService>("SelectionService") as SelectionService;
+            if (service == null) return;
+
+            service.ViewLocator = new ViewLocator(device?.Assembly);
+            service.DocumentType = device?.DocumentType;
+            service.ViewModel = device?.ViewModel;
+            service.Show();
         }
 
         #region Methods

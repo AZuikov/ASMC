@@ -218,7 +218,8 @@ namespace ASMC.Core.UI
             if (viewModel != null)
             {
                 if (viewModel is BaseViewModel bvm)
-                    bvm.Settings = settings;
+
+
                 if (WindowPosition.ContainsKey(viewModel.GetType()))
                 {
                     var pos = (Point) WindowPosition[viewModel.GetType()];

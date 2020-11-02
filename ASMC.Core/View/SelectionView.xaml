@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ASMC.Core.View.FormView"
+﻿<UserControl x:Class="ASMC.Core.View.SelectionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -31,8 +31,6 @@
                   Orientation="Horizontal"
                   HorizontalAlignment="Right">
           <Button Content="Выбрать"
-                  IsCancel="True"
-                  Visibility="{Binding AllowSelect, Converter={StaticResource BooleanToVisibilityConverter}}"
                   Command="{Binding SelectCommand}"
                   Margin="5,0,0,0"
                   MinWidth="80" />

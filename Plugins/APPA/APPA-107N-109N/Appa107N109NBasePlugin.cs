@@ -190,9 +190,9 @@ namespace APPA_107N_109N
                 return "ITBmVisualTest";
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
                 operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -253,9 +253,9 @@ namespace APPA_107N_109N
                 return "ITBmOprobovanie";
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
                 operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -405,9 +405,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (AppaMult107109N == null || flkCalib5522A == null) return;
 
                 foreach (var currPoint in VoltPoint)
@@ -928,9 +928,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (flkCalib5522A == null || appa107N == null) return;
 
                 foreach (var point in VoltPoint)
@@ -1690,9 +1690,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
                 foreach (var currPoint in CurrentDciPoint)
                 {
@@ -2239,9 +2239,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (flkCalib5522A == null || appa107N == null) return;
 
                 foreach (var curr in AciPoint)
@@ -2759,9 +2759,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
 
                 foreach (var freqPoint in HerzPoint)
@@ -3467,9 +3467,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
 
                 foreach (var currPoint in OhmPoint)
@@ -3742,9 +3742,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
 
                 foreach (var currPoint in FarMeasPoints)
@@ -4259,9 +4259,9 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork()
+            protected override void InitWork(CancellationToken token)
             {
-                base.InitWork();
+                base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
 
                 foreach (var currPoint in DegC_Point)

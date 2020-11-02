@@ -104,7 +104,7 @@
     <Compile Include="Converter\StringFormatter.cs" />
     <Compile Include="EnumFlagToBoolConverter.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="IFormService.cs" />
+    <Compile Include="ISelectionService.cs" />
     <Compile Include="ISupportClose.cs" />
     <Compile Include="ISupportDialog.cs" />
     <Compile Include="ISupportSettings.cs" />
@@ -123,10 +123,9 @@
     <Compile Include="Settings\IWindowSettings.cs" />
     <Compile Include="Settings\SettingsSelector.cs" />
     <Compile Include="Settings\WindowSettingsBase.cs" />
-    <Compile Include="UI\FormServiceBase.cs" />
     <Compile Include="UI\GridHelpers.cs" />
     <Compile Include="UI\MessageBoxService.cs" />
-    <Compile Include="UI\TaskMessageService.cs" />
+    <Compile Include="UI\SelectionService.cs" />
     <Compile Include="UI\ValueContentControl.cs" />
     <Compile Include="UI\WindowAttachedProperties.cs" />
     <Compile Include="UI\WindowService.cs" />
@@ -134,9 +133,9 @@
     <Compile Include="ViewExtensions.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\ClosableViewModel.cs" />
-    <Compile Include="ViewModel\FromBaseViewModel.cs" />
-    <Compile Include="View\FormView.xaml.cs">
-      <DependentUpon>FormView.xaml</DependentUpon>
+    <Compile Include="ViewModel\SelectionViewModel.cs" />
+    <Compile Include="View\SelectionView.xaml.cs">
+      <DependentUpon>SelectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\WorkView.xaml.cs">
       <DependentUpon>WorkView.xaml</DependentUpon>
@@ -147,7 +146,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\FormView.xaml">
+    <Page Include="View\SelectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

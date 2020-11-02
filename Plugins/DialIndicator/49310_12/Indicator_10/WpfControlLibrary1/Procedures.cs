@@ -10,6 +10,8 @@ using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
+using ASMC.Core.UI;
+using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.WithoutInterface.HourIndicator;
@@ -32,11 +34,11 @@ namespace Indicator_10
         ///     Предоставляет индикатор частового типа
         /// </summary>
         protected IchBase IchBase { get; private set; }
+
         /// <summary>
-        /// Позволяет получить конец диапазона чисоваого индикатора
+        ///     Позволяет получить конец диапазона чисоваого индикатора
         /// </summary>
         protected MeasPoint<Length> EndRange { get; private set; }
-
 
         #endregion
 
@@ -115,7 +117,6 @@ namespace Indicator_10
                     }
                 }
             }
-
             return table;
         }
 
@@ -125,12 +126,14 @@ namespace Indicator_10
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
             IchBase = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
             EndRange = (MeasPoint<Length>) IchBase.RangesFull.RealRangeStor.Max().Stop;
-            base.InitWork();
+            base.InitWork(token);
         }
 
         /// <summary>
@@ -209,13 +212,15 @@ namespace Indicator_10
             ;
         }
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new MultiErrorMeasuringOperation<object>();
 
-          
+
             var arrPoints = EndRange.GetArayMeasPointsInParcent(0, 50, 100).ToArray();
 
             var arrReversePoint = arrPoints.Reverse().ToArray();
@@ -224,9 +229,11 @@ namespace Indicator_10
             var fullGettingPoints = Array.Empty<MeasPoint<Weight>>();
 
 
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
-                var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
+                var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
 
                 var nameCell = "г"; /*Форматирование ячеек в таблице*/
                 var setting = new SettingTableViewModel {CellFormat = nameCell};
@@ -238,8 +245,9 @@ namespace Indicator_10
                 vm.Content.Add(too);
                 vm.Content.Add(tree);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                a.SizeToContent = SizeToContent.WidthAndHeight;
-                a.Show("MeasuringForceView", vm, null, null);
+                a.DocumentType = "MeasuringForceView";
+                a.ViewModel = vm;
+                a.Show();
                 fullGettingPoints = vm.Content.Aggregate(fullGettingPoints,
                     (current, item) => current.Concat(Fill(item)).ToArray());
             };
@@ -288,7 +296,9 @@ namespace Indicator_10
                     return array.Max() - array.Min();
                 }
             };
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.CompliteWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
                 operation.Error[0] as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
                 &&
                 operation.Error[1] as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons
@@ -366,26 +376,34 @@ namespace Indicator_10
         }
 
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new MeasuringOperation<decimal>();
 
             var arrPoints = EndRange.GetArayMeasPointsInParcent(50, 50, 50, 50)
                 .ToArray();
             decimal[] arrGetting = null;
 
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
-                var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
-                var vm = CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints,
-                    new SettingTableViewModel {IsHorizontal = false});
+                var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+
+
+                var vm = new PerpendicularPressureViewModel();
+                vm.Data= CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints,
+                    new SettingTableViewModel { IsHorizontal = false });
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                a.SizeToContent = SizeToContent.WidthAndHeight;
-                a.Show("PerpendicularPressureView", vm, null, null);
+                a.ViewModel = vm;
+                a.DocumentType = "PerpendicularPressureView";
+                a.Show();
                 /*Получаем измерения*/
-                arrGetting = vm.Cells.Select(cell => ObjectToDecimal(cell)).ToArray();
+                arrGetting = vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).ToArray();
             };
 
             operation.BodyWorkAsync = () =>
@@ -393,14 +411,16 @@ namespace Indicator_10
                 for (var i = 0; i < arrGetting.Length; i++)
                 {
                     if (i > 0) operation = (MeasuringOperation<decimal>) operation.Clone();
-                    operation.Expected = (decimal) arrPoints[i].Clone();
+                    operation.Expected = arrPoints[i].MainPhysicalQuantity.Value;
                     operation.Getting = arrGetting[i];
                     if (i > 0) DataRow.Add(operation);
                 }
             };
             operation.ErrorCalculation = (expected, getting) => DataRow.Max(q => q.Getting);
             //todo Указать погрешность  
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
 
             DataRow.Add(operation);
         }
@@ -458,10 +478,12 @@ namespace Indicator_10
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new MeasuringOperation<MeasPoint<Length>[]>();
             var arrPoints = EndRange.GetArayMeasPointsInParcent(GeneratenParcent(5, 0, 50, 100)).ToArray();
             MeasPoint<Length>[] arrGetting = null;
@@ -477,15 +499,18 @@ namespace Indicator_10
                 return array.ToArray();
             }
 
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
-                var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
+                var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
                 var setting = new SettingTableViewModel {Breaking = 5, CellFormat = "мкм"};
 
                 var vm = CreateTable("Показания при арретировании", arrPoints, setting);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                a.SizeToContent = SizeToContent.WidthAndHeight;
-                a.Show("RangeIcdicationView", vm, null, null);
+                a.ViewModel = vm;
+                a.DocumentType = "RangeIcdicationView";
+                a.Show();
                 /*Получаем измерения*/
                 arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
                     .ToArray();
@@ -511,7 +536,9 @@ namespace Indicator_10
                         getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))
                     };
                 };
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.CompliteWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
                 operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <=
                 IchBase.PerpendicularPressureMax;
 
@@ -568,10 +595,12 @@ namespace Indicator_10
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new MeasuringOperation<MeasPoint<Length>[]>();
 
             int[] GeneratenParcent(int count, params int[] parcent)
@@ -588,15 +617,18 @@ namespace Indicator_10
 
             var arrPoints = EndRange.GetArayMeasPointsInParcent(GeneratenParcent(6, 0, 50, 100)).ToArray();
             MeasPoint<Length>[] arrGetting = { };
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
-                var a = UserItemOperation.ServicePack.FreeWindow() as WindowService;
+                var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
                 var setting = new SettingTableViewModel {Breaking = 2, CellFormat = "мкм"};
 
                 var vm = CreateTable("Определение вариации показаний", arrPoints, setting);
                 a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                a.SizeToContent = SizeToContent.WidthAndHeight;
-                a.Show("RangeIcdicationView", vm, null, null);
+                a.ViewModel = vm;
+                a.DocumentType = "RangeIcdicationView";
+                a.Show();
                 /*Получаем измерения*/
                 arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
                     .ToArray();
@@ -641,26 +673,37 @@ namespace Indicator_10
             Name = "Определение погрешности на всем диапазоне и на участке 1 мм";
         }
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new MultiErrorMeasuringOperation<MeasPoint<Length>[]>();
             var measpoint =
                 IchBase.RangesFull.RealRangeStor.SelectMany(q =>
                     q.Stop.GetArayMeasPointsInParcent(0, 20, 40, 60, 80, 100)).ToArray();
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async ()  =>
+            operation.InitWork = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
-                var setting = new  SettingTableViewModel();
-                setting.Breaking = 6;
+
+                var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+                var setting = new SettingTableViewModel();
+                setting.Breaking = 5;
                 setting.CellFormat = "мкм";
-                this.CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм", measpoint, setting);
+                var rm1 = new WorkInPpiViewModel();
+                rm1.Content = CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм", measpoint, setting); 
+                a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                a.ViewModel = rm1;
+                a.DocumentType = "RangeIcdicationView";
+                a.Show();
             };
-            operation.ErrorCalculation = null;
+            operation.BodyWorkAsync = () =>
+            {
 
-
+            };
+            DataRow.Add(operation);
         }
 
         /// <inheritdoc />

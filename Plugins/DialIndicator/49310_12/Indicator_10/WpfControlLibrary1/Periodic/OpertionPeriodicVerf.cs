@@ -22,9 +22,8 @@ namespace Indicator_10.Periodic
                 {
                     Devices = new IUserType[]
                     {
-
                         new T()
-                    }
+                    }, Description = $@"Индикатор частового типа {new T().UserType}"
                 }
             };
 
@@ -33,7 +32,8 @@ namespace Indicator_10.Periodic
                 new MeasuringForce(this), 
                 new PerpendicularPressure(this),
                 new RangeIndications(this),
-                new  VariationReading(this)
+                new  VariationReading(this),
+                new  DeterminationError(this)
             };
             Accessories = new[]
             {
