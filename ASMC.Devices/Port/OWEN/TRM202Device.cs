@@ -2,14 +2,47 @@
 using System.ComponentModel;
 using AP.Utils.Data;
 using ASMC.Devices.Port.OWEN;
+using NLog;
 using OwenioNet.Types;
 
 namespace ASMC.Devices.OWEN
 {
     public class TRM202Device : OwenProtocol
     {
-        ////todo логгер подключить нужно
-        public enum ParametrTRM
+        /// <summary>
+        /// Тип входного датчика или сигнала для входа 1 (2)
+        /// </summary>
+        public enum in_t
+        {
+            r385 = 1,
+            r_385,
+            r391,
+            r_391,
+            r_21,
+            r426,
+            r_426,
+            r_23,
+            r428,
+            r_428,
+            E_A1,
+            E_A2,
+            E_A3,
+            E__b,
+            E__j,
+            E__K,
+            E__L,
+            E__n,
+            E__r,
+            E__S,
+            E__t,
+            i0_5,
+            i0_20,
+            i4_20,
+            U_50,
+            U0_1
+        }
+
+        public enum Parametr
         {
             /// <summary>
             /// Измеренное значение входной величины.
@@ -301,6 +334,8 @@ namespace ASMC.Devices.OWEN
             Unecpected = 0X47
         }
 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         #region Methods
 
         private static void GenericException(TrmError err)
@@ -334,9 +369,45 @@ namespace ASMC.Devices.OWEN
             }
         }
 
+        public decimal GetLuPvChanel2()
+        {
+            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + 1,
+                                            Parametr.LuPV.GetStringValue(), 3);
+        }
+
+        public decimal GetLuPvValChanel1()
+        {
+            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres, Parametr.LuPV.GetStringValue(),
+                                            3);
+        }
+
+        public decimal GetMeasValChanel1()
+        {
+            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres, Parametr.PV.GetStringValue(), 3);
+        }
+
+        public decimal GetMeasValChanel2()
+        {
+            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + 1, Parametr.PV.GetStringValue(),
+                                            3);
+        }
+
+        public decimal GetNumericParam(AddressLengthType addressLengthType, int addresDevice, Parametr parName,
+            int size, ushort? Register = null)
+        {
+            return (decimal) ReadFloatParam(addressLengthType, addresDevice, parName.GetStringValue(), size, Register);
+        }
+
+        public int GetShortIntPar(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
+            Parametr parName, int size, ushort? Register = null)
+        {
+            return ReadShortIntParam(PortNumber, addresDevice, addressLengthType, parName.GetStringValue(), size,
+                                     Register);
+        }
+
         public override byte[] OwenReadParam(string ParametrName, int addres, ushort? Register = null)
         {
-            var answerDevice = base.OwenReadParam(ParametrName,addres, Register);
+            var answerDevice = base.OwenReadParam(ParametrName, addres, Register);
             //отловим ошибку
             if (answerDevice.Length == 1)
                 if (Enum.IsDefined(typeof(TrmError), (int) answerDevice[0]))
@@ -345,75 +416,8 @@ namespace ASMC.Devices.OWEN
             return answerDevice;
         }
 
+
+
         #endregion
-
-        /// <summary>
-        /// Тип входного датчика или сигнала для входа 1 (2)
-        /// </summary>
-        public enum in_t
-        {
-            r385 = 1,
-            r_385,
-            r391,
-            r_391,
-            r_21,
-            r426,
-            r_426,
-            r_23,
-            r428,
-            r_428,
-            E_A1,
-            E_A2,
-            E_A3,
-            E__b,
-            E__j,
-            E__K,
-            E__L,
-            E__n,
-            E__r,
-            E__S,
-            E__t,
-            i0_5,
-            i0_20,
-            i4_20,
-            U_50,
-            U0_1
-        }
-
-        public decimal GetMeasValChanel1()
-        {
-            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres, ParametrTRM.PV.GetStringValue(), 3);
-
-        }
-
-        public decimal GetMeasValChanel2()
-        {
-            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres+1, ParametrTRM.PV.GetStringValue(), 3);
-
-        }
-
-        public decimal GetLuPvValChanel1()
-        {
-            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres, ParametrTRM.LuPV.GetStringValue(), 3);
-
-        }
-
-        public decimal GetLuPvChanel2()
-        {
-            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres + 1, ParametrTRM.LuPV.GetStringValue(), 3);
-
-        }
-
-        public decimal GetNumericParam(AddressLengthType addressLengthType, int addresDevice, ParametrTRM parName, int size, ushort? Register = null)
-        { 
-            return (decimal)ReadFloatParam(addressLengthType, addresDevice, parName.GetStringValue(), size, Register);
-        }
-
-        public int GetShortIntPar(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
-            ParametrTRM parName, int size, ushort? Register = null)
-        {
-            return ReadShortIntParam(PortNumber, addresDevice, addressLengthType, parName.GetStringValue(),size, Register);
-        }
-
     }
 }

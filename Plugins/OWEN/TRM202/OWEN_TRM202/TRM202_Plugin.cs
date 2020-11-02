@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
-using AP.Math;
-using AP.Utils.Data;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
-using ASMC.Devices.IEEE.Fluke.Calibrator;
+using ASMC.Devices.OWEN;
+using ASMC.Devices.Port.OWEN;
 using ASMC.Devices.Port.IZ_Tech;
 using ASMC.Devices.Port.ZipNu4Pribor;
 
@@ -56,9 +52,13 @@ namespace OWEN_TRM202
                 };
                 TestDevices = new IDeviceUi[]
                 {
-                    new Device {Devices = new IDeviceBase[] {new MIT_8()}, Description = "измеритель температуры прецизионный"}
+                    new Device
+                    {
+                        Devices = new IDeviceBase[] {new TRM202Device(),  },
+                        Description = "измеритель температуры прецизионный"
+                    }
                 };
-                DocumentName = "APPA_107N_109N";
+                DocumentName = "TRM202_protocol";
             }
 
             public override void RefreshDevice()
@@ -97,6 +97,12 @@ namespace OWEN_TRM202
                 }
 
                 return data;
+            }
+
+            protected override void InitWork(CancellationToken token)
+            {
+                base.InitWork(token);
+                
             }
         }
 
