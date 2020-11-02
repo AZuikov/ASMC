@@ -1,18 +1,13 @@
 ﻿using System;
-using AP.Utils.Data;
 using System.ComponentModel;
-using Accord;
-using Accord.Imaging.Filters;
+using AP.Utils.Data;
 using ASMC.Devices.Port.OWEN;
-using Microsoft.Build.Utilities;
-using OwenioNet.DataConverter.Converter;
-using OwenioNet.Types;
 
 namespace ASMC.Devices.OWEN
 {
     public class TRM202Device : OwenProtocol
     {
-        ////todo логгер подключить нужно 
+        ////todo логгер подключить нужно
         public enum ParametrTRM
         {
             /// <summary>
@@ -189,50 +184,62 @@ namespace ASMC.Devices.OWEN
             /// Задержка при ответе по RS485.
             /// </summary>
             [StringValue("rSdL")] RSdL,
+
             /// <summary>
             /// Длина слова данных.
             /// </summary>
-            [StringValue("LEn")]LEn,
+            [StringValue("LEn")] LEn,
+
             /// <summary>
             /// Состояние бита четности в посылке.
             /// </summary>
-            [StringValue("PrtY")]PrtY,
+            [StringValue("PrtY")] PrtY,
+
             /// <summary>
             /// Количество стоп-бит в посылке.
             /// </summary>
-            [StringValue("Sbit")]Sbit,
+            [StringValue("Sbit")] Sbit,
+
             /// <summary>
             /// Версия программы.
             /// </summary>
-            [StringValue("VER")]VER,
+            [StringValue("VER")] VER,
+
             /// <summary>
             /// Название прибора.
             /// </summary>
-            [StringValue("Dev")]Dev,
+            [StringValue("Dev")] Dev,
+
             /// <summary>
             /// Команда смены протокола обмена.
             /// </summary>
-            [StringValue("PRTL")]PRTL,
+            [StringValue("PRTL")] PRTL,
+
             /// <summary>
             /// Команда перехода на новые сетевые настройки.
             /// </summary>
-            [StringValue("APLY")]APLY,
+            [StringValue("APLY")] APLY,
+
             /// <summary>
             /// Команда перезагрузки прибора (эквивалент выкл/вкл питания).
             /// </summary>
-            [StringValue("INIT")]INIT,
+            [StringValue("INIT")] INIT,
+
             /// <summary>
             /// Код сетевой ошибки при последнем обращении.
             /// </summary>
             [StringValue("N.err")] N_Err,
+
             /// <summary>
             /// Для чтения/записи атрибута «редактирования».
             /// </summary>
             [StringValue("Attr")] Attr,
+
             /// <summary>
             /// Перевод канала на внешнее управление.
             /// </summary>
             [StringValue("r-L")] R_L,
+
             /// <summary>
             /// Значение выходного сигнала или код ошибки.
             /// </summary>
@@ -244,17 +251,16 @@ namespace ASMC.Devices.OWEN
             /// Защита параметров от просмотра.
             /// </summary>
             [StringValue("oAPt")] O_APt,
+
             /// <summary>
             /// Защита параметров от изменения.
             /// </summary>
             [StringValue("wtPt")] WtPt,
+
             /// <summary>
             /// Защита отдельных параметров от просмотра и изменений (включение или отключение действия атрибутов).
             /// </summary>
             [StringValue("EdPt")] EdPt
-
-
-
         }
 
         public enum TrmError
@@ -294,10 +300,56 @@ namespace ASMC.Devices.OWEN
             Unecpected = 0X47
         }
 
+        #region Methods
+
+        private static void GenericException(TrmError err)
+        {
+            switch (err)
+            {
+                case TrmError.BitValue:
+                    throw new TrmException {Code = err};
+                case TrmError.Descriptor:
+                    throw new TrmException {Code = err};
+                case TrmError.Edit:
+                    throw new TrmException {Code = err};
+                case TrmError.FieldValue:
+                    throw new TrmException {Code = err};
+                case TrmError.Index:
+                    throw new TrmException {Code = err};
+                case TrmError.Input:
+                    throw new TrmException {Code = err};
+                case TrmError.InvalidWriteValue:
+                    throw new TrmException {Code = err};
+                case TrmError.Mantissa:
+                    throw new TrmException {Code = err};
+                case TrmError.NoAcpConnect:
+                    throw new TrmException {Code = err};
+                case TrmError.Read:
+                    throw new TrmException {Code = err};
+                case TrmError.Unecpected:
+                    throw new TrmException {Code = err};
+                case TrmError.Value:
+                    throw new TrmException {Code = err};
+            }
+        }
+
+        public override byte[] OwenReadParam(string ParametrName, ushort? Register = null)
+        {
+            var answerDevice = base.OwenReadParam(ParametrName, Register);
+            //отловим ошибку
+            if (answerDevice.Length == 1)
+                if (Enum.IsDefined(typeof(TrmError), (int) answerDevice[0]))
+                    GenericException((TrmError) answerDevice[0]);
+
+            return answerDevice;
+        }
+
+        #endregion
+
         /// <summary>
         /// Тип входного датчика или сигнала для входа 1 (2)
         /// </summary>
-        private enum in_t
+        public enum in_t
         {
             r385 = 1,
             r_385,
@@ -326,53 +378,5 @@ namespace ASMC.Devices.OWEN
             U_50,
             U0_1
         }
-        
-        public override byte[] OwenReadParam(string ParametrName, ushort? Register = null)
-        {
-            byte[] answerDevice = base.OwenReadParam(ParametrName, Register);
-            //отловим ошибку
-            if (answerDevice.Length == 1)
-                if (Enum.IsDefined(typeof(TrmError), (Int32) answerDevice[0]))
-                {
-                    GenericException((TrmError)answerDevice[0]);
-                }
-
-            return answerDevice;
-
-        }
-
-        private static void GenericException(TrmError err)
-        {
-            switch (err)
-            {
-                case TrmError.BitValue:
-                    throw new TrmException { Code = err};
-                case TrmError.Descriptor:
-                    throw new TrmException{ Code = err };
-                case TrmError.Edit:
-                    throw new TrmException{ Code = err };
-                case TrmError.FieldValue:
-                    throw new TrmException{ Code = err };
-                case TrmError.Index:
-                    throw new TrmException{ Code = err };
-                case TrmError.Input:
-                    throw new TrmException{ Code = err };
-                case TrmError.InvalidWriteValue:
-                    throw new TrmException{ Code = err };
-                case TrmError.Mantissa:
-                    throw new TrmException{ Code = err };
-                case TrmError.NoAcpConnect:
-                    throw new TrmException{ Code = err };
-                case TrmError.Read:
-                    throw new TrmException{ Code = err };
-                case TrmError.Unecpected:
-                    throw new TrmException{ Code = err };
-                case TrmError.Value:
-                    throw new TrmException{ Code = err };
-                
-            }
-        }
-
-
     }
 }
