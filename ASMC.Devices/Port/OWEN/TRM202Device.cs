@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using AP.Utils.Data;
 using ASMC.Devices.Port.OWEN;
+using OwenioNet.Types;
 
 namespace ASMC.Devices.OWEN
 {
@@ -333,9 +334,9 @@ namespace ASMC.Devices.OWEN
             }
         }
 
-        public override byte[] OwenReadParam(string ParametrName, ushort? Register = null)
+        public override byte[] OwenReadParam(string ParametrName, int addres, ushort? Register = null)
         {
-            var answerDevice = base.OwenReadParam(ParametrName, Register);
+            var answerDevice = base.OwenReadParam(ParametrName,addres, Register);
             //отловим ошибку
             if (answerDevice.Length == 1)
                 if (Enum.IsDefined(typeof(TrmError), (int) answerDevice[0]))
@@ -378,5 +379,41 @@ namespace ASMC.Devices.OWEN
             U_50,
             U0_1
         }
+
+        public decimal GetMeasValChanel1()
+        {
+            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres, ParametrTRM.PV.GetStringValue(), 3);
+
+        }
+
+        public decimal GetMeasValChanel2()
+        {
+            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres+1, ParametrTRM.PV.GetStringValue(), 3);
+
+        }
+
+        public decimal GetLuPvValChanel1()
+        {
+            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres, ParametrTRM.LuPV.GetStringValue(), 3);
+
+        }
+
+        public decimal GetLuPvChanel2()
+        {
+            return (decimal)ReadFloatParam(AddressLengthType.Bits8, this.DeviceAddres + 1, ParametrTRM.LuPV.GetStringValue(), 3);
+
+        }
+
+        public decimal GetNumericParam(AddressLengthType addressLengthType, int addresDevice, ParametrTRM parName, int size, ushort? Register = null)
+        { 
+            return (decimal)ReadFloatParam(addressLengthType, addresDevice, parName.GetStringValue(), size, Register);
+        }
+
+        public int GetShortIntPar(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
+            ParametrTRM parName, int size, ushort? Register = null)
+        {
+            return ReadShortIntParam(PortNumber, addresDevice, addressLengthType, parName.GetStringValue(),size, Register);
+        }
+
     }
 }
