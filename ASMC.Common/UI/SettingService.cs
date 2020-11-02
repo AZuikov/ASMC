@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel;
+using System.Reflection;
 using System.Windows;
 using ASMC.Common.ViewModel;
 using ASMC.Core.UI;
@@ -6,7 +7,7 @@ using DevExpress.Mvvm.UI;
 
 namespace ASMC.Common.UI
 {
-    public class SettingService : FormServiceBase
+    public class SettingService : SelectionService
     {
         public SettingService()
         {
@@ -16,7 +17,8 @@ namespace ASMC.Common.UI
             MaxSize= new Size(1024,768);
         }
 
-        protected override object CreateViewModel()
+        /// <inheritdoc />
+        protected override INotifyPropertyChanged CreateViewModel()
         {
             return new ShemViewModel();
         }

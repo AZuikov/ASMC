@@ -7,20 +7,15 @@ using NLog;
 
 namespace ASMC.Core.ViewModel
 {
-    public class BaseViewModel : ViewModelBase, ISupportSettings
+    public abstract class BaseViewModel : ViewModelBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region  Fields
 
         private readonly WeakEvent<EventHandler, EventArgs> _initializing = new WeakEvent<EventHandler, EventArgs>();
-        private readonly object _syncRoot = new object();
-        private object _entity;
-        private bool _isBusy;
         private bool _isInitialized;
-        private string _regionName = Guid.NewGuid().ToString();
 
-        private object _settings;
 
         #endregion
 
@@ -40,40 +35,8 @@ namespace ASMC.Core.ViewModel
             remove => _initializing.Remove(value);
         }
 
-        /// <summary>
-        /// Происходит при изменении объекта,
-        /// содержащего пользовательские параметры.
-        /// </summary>
-        public event EventHandler SettingsChanged;
 
         #region Property
-
-        /// <summary>
-        /// Возвращает или задает сущность,
-        /// данные которой содержит справочник.
-        /// </summary>
-        public object Entity
-        {
-            get => _entity;
-            set => SetProperty(ref _entity, value, nameof(Entity), OnEntityChanged);
-        }
-
-        /// <summary>
-        /// Возвращает истинно, если выполняется
-        /// операция с данными; иначе ложно
-        /// </summary>
-        public bool IsBusy
-        {
-            get => _isBusy;
-            protected set
-            {
-                lock (_syncRoot)
-                {
-                    if (SetProperty(ref _isBusy, value))
-                        CommandManager.InvalidateRequerySuggested();
-                }
-            }
-        }
 
         /// <summary>
         /// Возвращает значение, показывающее, была
@@ -86,15 +49,6 @@ namespace ASMC.Core.ViewModel
             private set => SetProperty(ref _isInitialized, value);
         }
 
-        /// <summary>
-        /// Возвращает или задает имя региона
-        /// для представления. Служебное свойство.
-        /// </summary>
-        public string RegionName
-        {
-            get => _regionName;
-            set => SetProperty(ref _regionName, value, nameof(RegionName));
-        }
 
         #endregion
 
@@ -184,7 +138,6 @@ namespace ASMC.Core.ViewModel
                 "Ошибка",
                 TaskMessageButton.Ok,
                 criticalState ? TaskMessageIcon.Error : TaskMessageIcon.Warning);
-
             return true;
         }
 
@@ -429,14 +382,6 @@ namespace ASMC.Core.ViewModel
         }
 
         /// <summary>
-        /// Вызывается при изменении текущей
-        /// выбранной сущности справочника.
-        /// </summary>
-        protected virtual void OnEntityChanged()
-        {
-        }
-
-        /// <summary>
         /// Вызывает событие <see cref = "Initialized" />.
         /// </summary>
         protected virtual void OnInitialized()
@@ -460,17 +405,7 @@ namespace ASMC.Core.ViewModel
             base.OnParentViewModelChanged(parentViewModel);
         }
 
-        /// <summary>
-        /// Вызывает событие <see cref = "SettingsChanged" />.
-        /// </summary>
-        /// <param name = "settings">
-        /// Объект, содержащий
-        /// пользовательские параметры.
-        /// </param>
-        protected virtual void OnSettingsChanged(object settings)
-        {
-            SettingsChanged?.Invoke(this, new EventArgs());
-        }
+   
 
         /// <summary>
         /// Задает значение поля для свойства.
@@ -505,15 +440,5 @@ namespace ASMC.Core.ViewModel
 
         #endregion
 
-        /// <summary>
-        /// Возвращает или задает объект,
-        /// содержащий пользовательские
-        /// параметры модели представления.
-        /// </summary>
-        public object Settings
-        {
-            get => _settings;
-            set => SetProperty(ref _settings, value, () => OnSettingsChanged(_settings));
-        }
     }
 }

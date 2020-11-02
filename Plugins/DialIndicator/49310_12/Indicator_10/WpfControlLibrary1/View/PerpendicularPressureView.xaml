@@ -7,10 +7,8 @@
              xmlns:view="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
+
         <GroupBox Header="Изменение показаний индикатора, делений шкалы." Margin="20" Focusable="False">
-            <view:MultiGridView/>
+        <view:InputTableControl  Data="{Binding Path=Data.Cells}" />
         </GroupBox>
-        <Button Content="Подтвердить" Command="{Binding SelectCommand}"/>
-    </StackPanel>
 </UserControl>

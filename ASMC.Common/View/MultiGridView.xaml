@@ -11,7 +11,7 @@
         <ItemsControl.ItemTemplate>
             <DataTemplate>
                 <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" >
-                    <view1:InputTableControl Name="Table" Data="{Binding Path=Cells}" SelectValue="{Binding Selected}" />
+                    <view1:InputTableControl  Data="{Binding Path=Cells}" SelectValue="{Binding Selected}" />
                 </HeaderedContentControl>
             </DataTemplate>
         </ItemsControl.ItemTemplate>

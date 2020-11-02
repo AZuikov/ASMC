@@ -7,7 +7,7 @@ using NLog;
 
 namespace ASMC.Common.ViewModel
 {
-    public class ShemViewModel : FromBaseViewModel
+    public class ShemViewModel : SelectionViewModel
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private ShemeImage _shema;
@@ -23,11 +23,7 @@ namespace ASMC.Common.ViewModel
             set => SetProperty(ref _shema, value, nameof(Shema), ChangedCallback);
         }
 
-        protected override void OnEntityChanged()
-        {
-            Shema = Entity as ShemeImage;
-            base.OnEntityChanged();
-        }
+     
         public string Text
         {
             get => _text;

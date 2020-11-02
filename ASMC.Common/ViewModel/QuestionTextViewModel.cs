@@ -7,17 +7,13 @@ using DevExpress.Xpf.Core.Native;
 
 namespace ASMC.Common.ViewModel
 {
-    public class QuestionTextViewModel : FromBaseViewModel
+    public class QuestionTextViewModel : SelectionViewModel
     {
         private string _resultStr;
         private bool _checkBox=true;
         private string _description;
         private string _fileNameDescription;
         private string AssemblyLocalName { get; set; }
-        public QuestionTextViewModel()
-        {
-            this.AllowSelect = true;
-        }
 
         /// <inheritdoc />
         protected override void OnEntityChanged()

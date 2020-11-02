@@ -12,12 +12,12 @@ namespace ASMC.Core.Model
         /// <summary>
         /// Позволяет получать или задавать сервис схемы.
         /// </summary>
-        public Func<IFormService> ShemForm { get; set; }
+        public Func<ISelectionService> ShemForm { get; set; }
         /// <summary>
         /// Позволяет получать или задавать сервис диалога опробования или внешнего осмотра.
         /// </summary>
-        public Func<IFormService> QuestionText { get; set; }
+        public Func<ISelectionService> QuestionText { get; set; }
 
-        public Func<IWindowService> FreeWindow { get; set; }
+        public Func<ISelectionService> FreeWindow { get; set; }
     }
 }

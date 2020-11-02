@@ -23,7 +23,7 @@ namespace Indicator_10
 
         public Verefication(ServicePack servicePac)
         {
-            UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePac);
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf<Ich_10>(servicePac);
             UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<Ich_10>(servicePac);
         }
     }

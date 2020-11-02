@@ -95,13 +95,13 @@
     <Compile Include="Behavior\BindableSelectedItemBeheavior.cs" />
     <Compile Include="Behavior\IsFocesedUiBehavior.cs" />
     <Compile Include="Behavior\TabOnEnterBehavior.cs" />
+    <Compile Include="ISelectionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\ImageService.cs" />
     <Compile Include="UI\QuestionTextService.cs" />
     <Compile Include="UI\SettingService.cs" />
     <Compile Include="ViewModel\Cell.cs" />
     <Compile Include="ViewModel\IItemTable.cs" />
-    <Compile Include="ViewModel\MultiGridViewModel.cs" />
     <Compile Include="ViewModel\QuestionTextViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />
     <Compile Include="ViewModel\TableViewModel.cs" />

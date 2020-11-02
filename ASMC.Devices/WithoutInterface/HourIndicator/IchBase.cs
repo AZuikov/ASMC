@@ -106,6 +106,10 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
     /// </summary>
     public sealed class Ich_10 : IchGost577
     {
+        public Ich_10()
+        {
+            this.UserType = "ИЧ10";
+        }
         /// <inheritdoc />
         protected override MeasPoint<Length> GetArresting(AccuracyClass.Standart currentAccuracyClass)
         {

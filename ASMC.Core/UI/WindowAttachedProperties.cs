@@ -22,7 +22,7 @@ namespace ASMC.Core.UI
 
         private static void DialogResultChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if(d is Window window && ComponentDispatcher.IsThreadModal && window.IsLoaded)
+            if (d is Window window && ComponentDispatcher.IsThreadModal && window.IsLoaded) 
                 window.DialogResult = e.NewValue as bool?;
         }
 

@@ -3,11 +3,11 @@
 namespace ASMC.Core.View
 {
     /// <summary>
-    /// Логика взаимодействия для FormView.xaml
+    /// Логика взаимодействия для SelectionView.xaml
     /// </summary>
-    public partial class FormView : UserControl
+    public partial class SelectionView : UserControl
     {
-        public FormView()
+        public SelectionView()
         {
             InitializeComponent();
         }

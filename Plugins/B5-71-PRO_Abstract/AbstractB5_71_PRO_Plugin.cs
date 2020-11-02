@@ -126,9 +126,9 @@ namespace B5_71_PRO_Abstract
             return data;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
@@ -211,9 +211,9 @@ namespace B5_71_PRO_Abstract
             return data;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperationVerefication<bool>();
             operation.InitWork = async () =>
             {
@@ -425,9 +425,9 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -614,10 +614,13 @@ namespace B5_71_PRO_Abstract
 
             return dataTable;
         }
+
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -813,9 +816,9 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
             operation.InitWork = async () =>
             {
@@ -1017,9 +1020,9 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
 
             operation.InitWork = async () =>
@@ -1225,9 +1228,9 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -1410,9 +1413,9 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
@@ -1603,9 +1606,9 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
             operation.InitWork = async () =>
             {
@@ -1794,9 +1797,9 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork()
+        protected override void InitWork(CancellationToken token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
 
             operation.InitWork = async () =>

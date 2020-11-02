@@ -197,7 +197,7 @@ namespace ASMC.Core.Model
         public virtual async Task StartSinglWork(CancellationToken token, Guid guid)
         {
             Logger.Info($@"Начато выполнение пункта {Name}");
-            InitWork();
+            InitWork(token);
             IsWork = true;
             try
             {
@@ -221,7 +221,7 @@ namespace ASMC.Core.Model
         public virtual async Task StartWork(CancellationToken token)
         {
             Logger.Info($@"Выполняется пункт {Name}");
-            InitWork();
+            InitWork(token);
             if (Parent != null) Parent.IsWork = true;
             IsWork = true;
             IsGood = null;
@@ -258,10 +258,13 @@ namespace ASMC.Core.Model
                Logger.Info($@"Пункт выполнился с результатом {IsGood}");
             }
         }
+
         /// <summary>
         /// Проводит инициализацию необходимую для реализации интерфейса <see cref = "IUserItemOperation&lt; T &gt;" />
         /// </summary>
-        protected virtual void InitWork()
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
+        protected virtual void InitWork(CancellationToken token)
         {
             DataRow?.Clear();
         }

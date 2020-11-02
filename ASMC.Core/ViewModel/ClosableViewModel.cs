@@ -1,6 +1,6 @@
-﻿using System;
+﻿using DevExpress.Mvvm;
+using System;
 using System.Windows.Input;
-using DevExpress.Mvvm;
 
 namespace ASMC.Core.ViewModel
 {
@@ -31,6 +31,7 @@ namespace ASMC.Core.ViewModel
         {
             CloseCommand = new DelegateCommand(OnClose);
         }
+
         /// <summary>
         /// Закрывает связанное представление.
         /// </summary>
@@ -38,7 +39,6 @@ namespace ASMC.Core.ViewModel
         {
             RequestClose?.Invoke(this, EventArgs.Empty);
         }
-
 
         /// <summary>
         /// Возвращает значение, задающее
