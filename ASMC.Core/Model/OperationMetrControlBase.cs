@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using ASMC.Data.Model;
+using DevExpress.Mvvm.UI;
+using DevExpress.Xpf.Bars;
 using NLog;
 
 namespace ASMC.Core.Model
@@ -165,6 +169,7 @@ namespace ASMC.Core.Model
             if (sheme == null || LastShem?.Number == sheme.Number) return;
             LastShem = sheme;
             var ser = SelectedOperation.ServicePack.ShemForm();
+            
             if (ser == null)
             {
                 Logger.Error("Сервис не найден");
@@ -173,8 +178,8 @@ namespace ASMC.Core.Model
 
             ser.Entity = sheme;
             do
-            {
-                ser.Show();
+            {             
+                 ser.Show();
                 Logger.Debug($@"Была показана схема №{sheme.Number}");
             } while (!await sheme.ChekShem());
         }
