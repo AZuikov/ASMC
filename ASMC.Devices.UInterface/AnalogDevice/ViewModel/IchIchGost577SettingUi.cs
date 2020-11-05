@@ -34,10 +34,18 @@ namespace ASMC.Devices.UInterface.AnalogDevice.ViewModel
         public Assembly Assembly { get; }
 
         /// <inheritdoc />
-        public string UserType { get=> Device?.UserType; }
+        public string UserType => Device?.UserType;
+
+
     }
     public class IchSettingViewModel<T> : SelectionViewModel where T : IchGost577, IUserType, new()
     {
+        /// <inheritdoc />
+        protected override bool CanSelect()
+        {
+            return true;
+        }
+
         public T IchBaseSettingUi
         {
             get => _ichBaseSettingUi;
