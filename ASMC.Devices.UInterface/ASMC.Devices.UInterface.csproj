@@ -75,6 +75,9 @@
     <Compile Include="RemoveDevice\View\WebCamView.xaml.cs">
       <DependentUpon>WebCamView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TRM\View\TrmSettingView.xaml.cs">
+      <DependentUpon>TrmSettingView.xaml</DependentUpon>
+    </Compile>
     <Page Include="AnalogDevice\View\IchSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -87,6 +90,10 @@
       <DependentUpon>SelectRangeAnalog.xaml</DependentUpon>
     </Compile>
     <Page Include="RemoveDevice\View\WebCamView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TRM\View\TrmSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -116,7 +123,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TRM\ViewModel\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ASMC.Common\ASMC.Common.csproj">
       <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>

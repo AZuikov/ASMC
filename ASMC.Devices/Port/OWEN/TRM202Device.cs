@@ -395,7 +395,7 @@ namespace ASMC.Devices.OWEN
         /// <returns></returns>
         public decimal GetMeasValChanel(ushort chanel)
         {
-            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + chanel, Parametr.PV.GetStringValue(), 3);
+            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + (chanel-1), Parametr.PV.GetStringValue(), 3);
         }
 
         
@@ -403,19 +403,19 @@ namespace ASMC.Devices.OWEN
         public decimal GetNumericParam(AddressLengthType addressLengthType, int addresDevice, Parametr parName,
             int size, ushort? Register = null)
         {
-            return (decimal) ReadFloatParam(addressLengthType, addresDevice, parName.GetStringValue(), size, Register);
+            return (decimal) ReadFloatParam(addressLengthType, addresDevice, parName.GetStringValue(), size, --Register);
         }
 
         public int GetShortIntPar(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
             Parametr parName, int size, ushort? Register = null)
         {
             return ReadShortIntParam(PortNumber, addresDevice, addressLengthType, parName.GetStringValue(), size,
-                                     Register);
+                                     --Register);
         }
 
         public override byte[] OwenReadParam(string ParametrName, int addres, ushort? Register = null)
         {
-            var answerDevice = base.OwenReadParam(ParametrName, addres, Register);
+            var answerDevice = base.OwenReadParam(ParametrName, addres, --Register);
             //отловим ошибку
             if (answerDevice.Length == 1)
                 if (Enum.IsDefined(typeof(TrmError), (int) answerDevice[0]))
@@ -426,7 +426,7 @@ namespace ASMC.Devices.OWEN
 
         public void WriteParametrToTRM(Parametr parName, byte[] writeDataBytes, ushort? Register = null)
         {
-            OwenWriteParam(AddressLengthType.Bits8, parName.GetStringValue(), writeDataBytes,Register);
+            OwenWriteParam(AddressLengthType.Bits8, parName.GetStringValue(), writeDataBytes,--Register);
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Utils.Data;
@@ -135,6 +136,7 @@ namespace OWEN_TRM202
             private ushort _chanelNumber;
             protected TRM202DeviceUI trm202 { get; set; }
             
+            
            
             /// <summary>
             /// Объекта операции опробования.
@@ -143,9 +145,9 @@ namespace OWEN_TRM202
             /// <param name="chanelNumb">Номер канала прибора 1 или 2.</param>
             public Oprobovanie_7_3_5(IUserItemOperation userItemOperation, ushort chanelNumb) : base(userItemOperation)
             {
+                _chanelNumber = chanelNumb;
                 Name = $"Опробование: 7.3.5 проверка исправности измерительных входов канала {_chanelNumber}";
                 DataRow = new List<IBasicOperation<MeasPoint<CelsiumGrad>>>();
-                _chanelNumber = --chanelNumb;
                 Sheme = new ShemeImage()
                 {
                     Number = _chanelNumber,
@@ -190,7 +192,7 @@ namespace OWEN_TRM202
             {
                 base.InitWork(token);
                 //нужно проверсти инициализацию
-                //trm202 = UserItemOperation.
+                trm202 = (TRM202DeviceUI)UserItemOperation.TestDevices.FirstOrDefault(q => (q.SelectedDevice as TRM202DeviceUI) != null);
                 
                     var operation = new BasicOperationVerefication<MeasPoint<CelsiumGrad>>();
                     operation.InitWork = async () =>
@@ -200,7 +202,7 @@ namespace OWEN_TRM202
                             await Task.Run(() =>
                             {
                                 trm202.StringConnection = GetStringConnect(trm202);
-                                //делаем предварительные настройка каналов прибора
+                                //делаем предварительные настройка канала прибора
 
                                 //1. задаем на каналах нужную характеристику НСХ 50М (W100 = 1,4280)
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT,
@@ -208,7 +210,6 @@ namespace OWEN_TRM202
                                 //2. ставим сдвиги и наклоны характеристик
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.SH, new byte[] { 0x00 }, _chanelNumber);
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.KU, new byte[] { 0x00 }, _chanelNumber);
-
                                 //3. ставим полосы фильтров и постоянную времени фильтра
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.Fb, new byte[] { 0x00 }, _chanelNumber);
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InF, new byte[] { 0x00 }, _chanelNumber);
