@@ -16,13 +16,14 @@ using DevExpress.Xpf.Core.Commands;
 
 namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
 {
-    public class WebCamUi : WebCam, IControlPannelDevice
+    public class WebCamUi : IControlPannelDevice
     {
         public WebCamUi()
         {
             ViewModel = new WebCamViewModel();
             DocumentType = "WebCamView";
             Assembly = Assembly.GetExecutingAssembly();
+            Device = new WebCam();
         }
 
         /// <inheritdoc />
@@ -33,6 +34,12 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
 
         /// <inheritdoc />
         public Assembly Assembly { get; }
+
+        /// <inheritdoc />
+        public IUserType Device { get; }
+
+        /// <inheritdoc />
+        public string UserType => Device.UserType;
     }
     /// <summary>
     /// Предоставляет базовый класс для VM использующую видеоустройство.

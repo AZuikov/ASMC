@@ -137,7 +137,7 @@ namespace Indicator_10
         /// <inheritdoc />
         protected override void InitWork(CancellationToken token)
         {
-            IchBase = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
+            IchBase = ((IControlPannelDevice)UserItemOperation.TestDevices.First().SelectedDevice).Device as IchBase;
             EndRange = (MeasPoint<Length>) IchBase.RangesFull.RealRangeStor.Max().Stop;
             base.InitWork(token);
         }
