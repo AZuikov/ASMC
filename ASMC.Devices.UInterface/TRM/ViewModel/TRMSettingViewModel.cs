@@ -48,10 +48,12 @@ namespace ASMC.Devices.UInterface.TRM.ViewModel
             this.ViewModel = new TRMSettingViewModel();
             Assembly = Assembly.GetExecutingAssembly();
             DocumentType = "TrmSettingView";
+            Device = this;
         }
 
         public string DocumentType { get; }
         public INotifyPropertyChanged ViewModel { get; }
         public Assembly Assembly { get; }
+        public IUserType Device { get; }
     }
 }

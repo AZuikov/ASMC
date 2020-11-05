@@ -33,6 +33,8 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
 
         /// <inheritdoc />
         public Assembly Assembly { get; }
+
+        public IUserType Device { get; }
     }
     /// <summary>
     /// Предоставляет базовый класс для VM использующую видеоустройство.

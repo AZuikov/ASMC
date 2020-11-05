@@ -21,17 +21,17 @@
         </Grid.RowDefinitions>
         <ui:ValueContentControl Header="ggfgf" Grid.Row ="0">
             <ComboBox ItemsSource="{Binding BaudSpeedRatesArr}"
-                      SelectedItem="{Binding BaudSpeedRates}"
-                      DisplayMemberPath=""/>
+                      SelectedItem="{Binding BaudSpeedRates}" Width="100" Height="30"
+                      />
         </ui:ValueContentControl>
-        <ui:ValueContentControl Grid.Row ="1">
+        <!--<ui:ValueContentControl Grid.Row ="1">
             <ComboBox  ItemsSource="{Binding  }"
                        SelectedItem="{Binding }"
-                       DisplayMemberPath=""/>
+                       />
         </ui:ValueContentControl>
         <ui:ValueContentControl Grid.Row ="2">
             <TextBox Text="{Binding }"/>
-        </ui:ValueContentControl>
+        </ui:ValueContentControl>-->
           
             
 
