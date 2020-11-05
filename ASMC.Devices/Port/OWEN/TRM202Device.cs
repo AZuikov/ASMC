@@ -391,7 +391,7 @@ namespace ASMC.Devices.OWEN
         /// <summary>
         /// Запрос измеренного значения, по протоколу ОВЕН. Для второго канала нужно увеличить адрес прибора на 1.
         /// </summary>
-        /// <param name="chanel">Номер канала (регистр, 0 или 1).</param>
+        /// <param name="chanel">Номер канала (регистр, 0 или 1). Номер канала нужно задавать начиная с 1.</param>
         /// <returns></returns>
         public decimal GetMeasValChanel(ushort chanel)
         {
@@ -434,10 +434,5 @@ namespace ASMC.Devices.OWEN
         #endregion
     }
 
-    public class TRM202DeviceUI : TRM202Device, IControlPannelDevice
-    {
-        public string DocumentType { get; }
-        public INotifyPropertyChanged ViewModel { get; }
-        public Assembly Assembly { get; }
-    }
+    
 }

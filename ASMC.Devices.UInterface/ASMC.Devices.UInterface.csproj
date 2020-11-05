@@ -90,6 +90,7 @@
     <Compile Include="RemoveDevice\View\WebCamView.xaml.cs">
       <DependentUpon>WebCamView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TRM\ViewModel\TRMSettingViewModel.cs" />
     <Compile Include="TRM\View\TrmSettingView.xaml.cs">
       <DependentUpon>TrmSettingView.xaml</DependentUpon>
     </Compile>
@@ -138,9 +139,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TRM\ViewModel\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\ASMC.Common\ASMC.Common.csproj">
       <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>

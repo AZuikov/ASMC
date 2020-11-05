@@ -71,6 +71,10 @@
       <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Devices.UInterface\ASMC.Devices.UInterface.csproj">
+      <Project>{e9310a9c-14ab-4c55-83b9-83fe13e1ec3b}</Project>
+      <Name>ASMC.Devices.UInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\ASMC.Devices\ASMC.Devices.csproj">
       <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
       <Name>ASMC.Devices</Name>
@@ -81,6 +85,7 @@
     <Content Include="Resource\TRM202_Oprobovanie735_chanel2.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Resource\TRM_IsolationTest.rtf" />
     <None Include="Resource\TRM_Visual_test.rtf" />
   </ItemGroup>

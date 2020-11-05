@@ -13,6 +13,7 @@ using ASMC.Devices.IEEE;
 using ASMC.Devices.OWEN;
 using ASMC.Devices.Port.IZ_Tech;
 using ASMC.Devices.Port.ZipNu4Pribor;
+using ASMC.Devices.UInterface.TRM.ViewModel;
 using DevExpress.Mvvm;
 using NLog;
 using OwenioNet.Types;
