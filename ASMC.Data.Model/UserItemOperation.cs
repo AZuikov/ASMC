@@ -98,6 +98,8 @@ namespace ASMC.Data.Model
         /// </summary>
         Assembly Assembly { get; }
 
+        IUserType Device { get; }
+
     }
     /// <summary>
     /// Предоставляет интерфес пункта(параграфа) операции

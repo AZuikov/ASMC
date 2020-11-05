@@ -15,12 +15,12 @@ namespace ASMC.Devices.UInterface.AnalogDevice.ViewModel
 {
     public class IchIchGost577SettingUi<T> : IControlPannelDevice where T : IchGost577, IUserType,new()
     {
-        public T Device { get; set; }
+        public IUserType Device { get; set; }
 
         public IchIchGost577SettingUi()
         {
             Device = new T();
-            ViewModel = new IchSettingViewModel<T> { IchBaseSettingUi = Device };
+            ViewModel = new IchSettingViewModel<T> { IchBaseSettingUi = Device as T};
             Assembly = Assembly.GetExecutingAssembly();
             DocumentType = "IchSettingView";
         }
