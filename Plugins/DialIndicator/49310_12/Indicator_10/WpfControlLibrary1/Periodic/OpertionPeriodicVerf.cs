@@ -9,7 +9,7 @@ using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace Indicator_10.Periodic
 {
-    public class OpertionPeriodicVerf<T> : Operation where T : IchGost577, new()
+    public class OpertionPeriodicVerf<T> : Operation where T : IUserType, new()
     {
         public OpertionPeriodicVerf(ServicePack servicePac):base(servicePac)
         {

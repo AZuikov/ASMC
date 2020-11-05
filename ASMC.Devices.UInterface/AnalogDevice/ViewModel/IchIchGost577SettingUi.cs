@@ -8,20 +8,21 @@ using System.Threading.Tasks;
 using ASMC.Common.ViewModel;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace ASMC.Devices.UInterface.AnalogDevice.ViewModel
 {
-    public class IchBaseSettingUi:IchBase, IControlPannelDevice
+    public class IchIchGost577SettingUi<T> : IControlPannelDevice where T : IchGost577, IUserType,new()
     {
+        public T Device { get; set; }
 
-
-        public IchBaseSettingUi()
+        public IchIchGost577SettingUi()
         {
-            ViewModel = new IchSettingViewModel{ IchBaseSettingUi= this };
-
-            DocumentType = "IchSettingView";
+            Device = new T();
+            ViewModel = new IchSettingViewModel<T> { IchBaseSettingUi = Device };
             Assembly = Assembly.GetExecutingAssembly();
+            DocumentType = "IchSettingView";
         }
         /// <inheritdoc />
         public string DocumentType { get; }
@@ -31,17 +32,19 @@ namespace ASMC.Devices.UInterface.AnalogDevice.ViewModel
 
         /// <inheritdoc />
         public Assembly Assembly { get; }
-    }
 
-    public class IchSettingViewModel : ClosableViewModel
+        /// <inheritdoc />
+        public string UserType { get=> Device?.UserType; }
+    }
+    public class IchSettingViewModel<T> : SelectionViewModel where T : IchGost577, IUserType, new()
     {
-        public IchBaseSettingUi IchBaseSettingUi
+        public T IchBaseSettingUi
         {
             get => _ichBaseSettingUi;
             set => SetProperty(ref _ichBaseSettingUi, value, nameof(IchBaseSettingUi),()=> Init());
         }
         private AccuracyClass.Standart[] _availabeAccuracyClass;
-        private IchBaseSettingUi _ichBaseSettingUi;
+        private T _ichBaseSettingUi;
         private AccuracyClass.Standart _currentAccuracyClass;
 
         public AccuracyClass.Standart[] AvailabeAccuracyClass

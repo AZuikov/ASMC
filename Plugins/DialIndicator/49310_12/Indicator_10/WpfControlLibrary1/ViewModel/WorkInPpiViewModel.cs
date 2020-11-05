@@ -60,9 +60,9 @@ namespace Indicator_10.ViewModel
             {
                 base.OnInitialized();
                 WebCam.StartVideo();
-                //Ppi.Initialization();
-                //Ppi.StartContinuousMeas();
-                //_timer.Start();
+                Ppi.Initialization();
+                Ppi.StartContinuousMeas();
+                _timer.Start();
             }
             catch (Exception e)
             {
