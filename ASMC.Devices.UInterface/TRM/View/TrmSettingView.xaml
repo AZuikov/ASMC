@@ -1,18 +1,16 @@
-﻿<Window x:Class="ASMC.Devices.UInterface.TRM.View.TrmSettingView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ASMC.Devices.UInterface.TRM.View"
-        mc:Ignorable="d"
-        Title="Выбор адреса прибора" Height="150" Width="400">
-    <Grid >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0.25*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Label Content="Введите адрес прибора" Grid.Row="0" HorizontalAlignment="Center" Height="*"/>
-        <TextBox x:Name="AddresInputTextBox" Grid.Row="1"/>
+﻿<UserControl x:Class="ASMC.Devices.UInterface.TRM.View.TrmSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ASMC.Devices.UInterface.TRM.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+            <ComboBox Grid.Row ="0"/>
+            <ComboBox Grid.Row ="0"/>
+            
 
+            
     </Grid>
-</Window>
+</UserControl>

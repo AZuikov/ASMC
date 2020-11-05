@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ASMC.Devices.UInterface.TRM.View
@@ -17,7 +18,7 @@ namespace ASMC.Devices.UInterface.TRM.View
     /// <summary>
     /// Логика взаимодействия для TrmSettingView.xaml
     /// </summary>
-    public partial class TrmSettingView : Window
+    public partial class TrmSettingView : UserControl
     {
         public TrmSettingView()
         {
