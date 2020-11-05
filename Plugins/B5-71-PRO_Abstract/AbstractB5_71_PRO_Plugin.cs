@@ -233,11 +233,7 @@ namespace B5_71_PRO_Abstract
                                 ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                     });
 
-                    //while (!Mult.IsTerminal)
-                    //    this.UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
-                    //                                                       " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
-                    //                                                       "Указание оператору", MessageButton.OK, MessageIcon.Information,
-                    //                                                       MessageResult.OK);
+                    
                 }
                 catch (Exception e)
                 {

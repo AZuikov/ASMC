@@ -1837,17 +1837,7 @@ namespace APPA_107N_109N
             ///// </summary>
             //protected string ReportTableName;
 
-            /// <summary>
-            /// Это пустая точка, которая содержит только единицы измерения текущего
-            /// поверяемого предела и множитель для единицы измерения.
-            /// </summary>
-            //protected MeasPoint<Current> thisRangeUnits;
-
-            //public override async Task StartWork(CancellationToken token)
-            //{
-            //    await base.StartWork(token);
-            //    appa107N?.Dispose();
-            //}
+           
         }
 
         public class Oper5_1Dci_20mA_Measure : Oper5DciMeasureBase

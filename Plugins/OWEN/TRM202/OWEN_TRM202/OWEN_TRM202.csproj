@@ -76,10 +76,18 @@
       <Name>ASMC.Devices</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resource\TRM202_Oprobovanie735_chanel1.jpg" />
+    <Content Include="Resource\TRM202_Oprobovanie735_chanel2.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resource\TRM_IsolationTest.rtf" />
     <None Include="Resource\TRM_Visual_test.rtf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
+mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

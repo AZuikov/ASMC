@@ -81,7 +81,7 @@ namespace ASMC.Devices.OWEN
         /// <param name = "ParametrName">Наименование параметра устройства.</param>
         /// <param name = "writeDataBytes">Массив байт дял записи в устройство (значение параметра).</param>
         /// <param name = "Register">Индекс параметра (если есть).</param>
-        internal void OwenWriteParam(AddressLengthType addressLengthType,
+        public void OwenWriteParam(AddressLengthType addressLengthType,
             string ParametrName, byte[] writeDataBytes, ushort? Register = null)
         {
             try
@@ -122,7 +122,7 @@ namespace ASMC.Devices.OWEN
         /// <param name = "size">Размер ожидаемого числа в байтах.</param>
         /// <param name = "Register">Индекс параметра (если есть).</param>
         /// <returns>Считанное значение параметра.</returns>
-        internal float ReadFloatParam(AddressLengthType addressLengthType, int addresDevice, string ParametrName,
+        public float ReadFloatParam(AddressLengthType addressLengthType, int addresDevice, string ParametrName,
             int size, ushort? Register = null)
         {
             var answerDevice = OwenReadParam(ParametrName, addresDevice, Register);
@@ -141,7 +141,7 @@ namespace ASMC.Devices.OWEN
         /// <param name = "size">Размер ожидаемого числа в байтах.</param>
         /// <param name = "Register">Индекс параметра (если есть).</param>
         /// <returns>Считанное значение параметра.</returns>
-        internal int ReadShortIntParam(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
+        public int ReadShortIntParam(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
             string ParametrName, int size, ushort? Register = null)
         {
             var answerDevice = OwenReadParam(ParametrName, DeviceAddres, Register);
@@ -159,7 +159,7 @@ namespace ASMC.Devices.OWEN
         /// <param name = "ParametrName">Наименование параметра устройства.</param>
         /// <param name = "Register">Индекс параметра (если есть).</param>
         /// <returns>Считанное значение параметра.</returns>
-        internal string ReadStringAscii(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
+        public string ReadStringAscii(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
             string ParametrName, ushort? Register = null)
         {
             var answerDevice = OwenReadParam(ParametrName, DeviceAddres, Register);

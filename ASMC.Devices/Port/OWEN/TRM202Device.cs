@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reflection;
 using AP.Utils.Data;
+using ASMC.Data.Model;
 using ASMC.Devices.Port.OWEN;
 using NLog;
 using OwenioNet.Types;
@@ -9,6 +11,12 @@ namespace ASMC.Devices.OWEN
 {
     public class TRM202Device : OwenProtocol
     {
+
+        public TRM202Device()
+        {
+            UserType = "ТРМ202";
+        }
+
         /// <summary>
         /// Тип входного датчика или сигнала для входа 1 (2)
         /// </summary>
@@ -380,17 +388,17 @@ namespace ASMC.Devices.OWEN
             return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres, Parametr.LuPV.GetStringValue(),
                                             3);
         }
-
-        public decimal GetMeasValChanel1()
+        /// <summary>
+        /// Запрос измеренного значения, по протоколу ОВЕН. Для второго канала нужно увеличить адрес прибора на 1.
+        /// </summary>
+        /// <param name="chanel">Номер канала (регистр, 0 или 1).</param>
+        /// <returns></returns>
+        public decimal GetMeasValChanel(ushort chanel)
         {
-            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres, Parametr.PV.GetStringValue(), 3);
+            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + chanel, Parametr.PV.GetStringValue(), 3);
         }
 
-        public decimal GetMeasValChanel2()
-        {
-            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + 1, Parametr.PV.GetStringValue(),
-                                            3);
-        }
+        
 
         public decimal GetNumericParam(AddressLengthType addressLengthType, int addresDevice, Parametr parName,
             int size, ushort? Register = null)
@@ -416,8 +424,20 @@ namespace ASMC.Devices.OWEN
             return answerDevice;
         }
 
+        public void WriteParametrToTRM(Parametr parName, byte[] writeDataBytes, ushort? Register = null)
+        {
+            OwenWriteParam(AddressLengthType.Bits8, parName.GetStringValue(), writeDataBytes,Register);
+        }
+
 
 
         #endregion
+    }
+
+    public class TRM202DeviceUI : TRM202Device, IControlPannelDevice
+    {
+        public string DocumentType { get; }
+        public INotifyPropertyChanged ViewModel { get; }
+        public Assembly Assembly { get; }
     }
 }
