@@ -42,7 +42,8 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
         /// <summary>
         /// Объект для работы с видеоустройством.
         /// </summary>
-        public WebCam WebCam { get; set; }
+        public WebCam WebCam { get; private set; }
+
         /// <summary>
         /// Источник видеопотока.
         /// </summary>
@@ -78,6 +79,7 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
         public System.Windows.Input.ICommand RefreshVideoDeviceCommand { get; }
         public WebCamViewModel()
         {
+            WebCam = new WebCam();
             PropertyWebCamShowCommand = new DelegateCommand(OnPropertyWebCamShowCommand);
             StartVideoCommand = new DelegateCommand(StartVideo);
             StopVideoCommand = new DelegateCommand(StopVideo);
@@ -90,13 +92,13 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
         }
 
 
-        protected void StartVideo()
+        public void StartVideo()
         {
             if (WebCam.Source == null) return;
             WebCam.Start();
         }
 
-        protected void StopVideo()
+        public void StopVideo()
         {
             WebCam.Notifly -= WebCam_Notifly;
             WebCam.Stop();
@@ -105,7 +107,6 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
         /// <inheritdoc />
         public void OnInitialized()
         {
-            WebCam = new WebCam();
             WebCam.Notifly += WebCam_Notifly;
             RefreshVideoDevice();
         }

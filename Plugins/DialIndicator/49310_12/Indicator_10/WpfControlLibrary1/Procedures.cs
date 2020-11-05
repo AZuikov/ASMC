@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
+using Accord.Video.DirectShow;
 using AP.Extension;
 using AP.Reports.Utils;
 using AP.Utils.Data;
@@ -14,6 +16,10 @@ using ASMC.Core.UI;
 using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.UInterface.AnalogDevice.ViewModel;
+using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
+using ASMC.Devices.USB_Device.SKBIS.Lir917;
+using ASMC.Devices.USB_Device.WebCam;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 using DevExpress.Mvvm.UI;
 using Indicator_10.ViewModel;
@@ -154,7 +160,7 @@ namespace Indicator_10
     }
 
     /// <summary>
-    ///     Измерительное усилие
+    ///     Предоставляет реализацию определения измерительного усилия.
     /// </summary>
     public sealed class MeasuringForce : MainIchProcedur<object>
     {
@@ -327,7 +333,7 @@ namespace Indicator_10
     }
 
     /// <summary>
-    ///     Определение изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его
+    ///   Предоставляет реализацию  Определения изменений показаний индикатор при нажиме на измерительный стержень в направлении перпендикулярном его
     ///     оси.
     /// </summary>
     public sealed class PerpendicularPressure : MainIchProcedur<decimal>
@@ -429,7 +435,7 @@ namespace Indicator_10
     }
 
     /// <summary>
-    ///     Определение размаха показаний
+    ///     Предоставляет реализацию определение размаха показаний.
     /// </summary>
     public sealed class RangeIndications : MainIchProcedur<MeasPoint<Length>[]>
     {
@@ -549,7 +555,7 @@ namespace Indicator_10
     }
 
     /// <summary>
-    ///     Определение вариации показаний
+    ///   Предоставляет реализацию  определение вариации показаний
     /// </summary>
     public sealed class VariationReading : MainIchProcedur<MeasPoint<Length>[]>
     {
@@ -624,13 +630,18 @@ namespace Indicator_10
                 var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
                 var setting = new SettingTableViewModel {Breaking = 2, CellFormat = "мкм"};
 
-                var vm = CreateTable("Определение вариации показаний", arrPoints, setting);
-                a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                a.ViewModel = vm;
+              
+                var rm1 = new WorkInPpiViewModel();
+                var webCam = this.UserItemOperation.ControlDevices.FirstOrDefault(q => (q.SelectedDevice as WebCam) != null);
+                //rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
+                var ppi = this.UserItemOperation.ControlDevices.FirstOrDefault(q => (q.SelectedDevice as Ppi) != null);
+                //rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? string.Empty);
+                rm1.Content = CreateTable("Определение вариации показаний", arrPoints, setting);
+                a.ViewModel = rm1;
                 a.DocumentType = "RangeIcdicationView";
                 a.Show();
                 /*Получаем измерения*/
-                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
+                arrGetting = rm1.Content.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
 
@@ -665,6 +676,9 @@ namespace Indicator_10
         }
     }
 
+    /// <summary>
+    /// Предоставляет реализацию определение погрешности на участке 1 мм.
+    /// </summary>
     public sealed class DeterminationError : MainIchProcedur<MeasPoint<Length>[]>
     {
         /// <inheritdoc />
@@ -679,30 +693,68 @@ namespace Indicator_10
         protected override void InitWork(CancellationToken token)
         {
             base.InitWork(token);
-            var operation = new MultiErrorMeasuringOperation<MeasPoint<Length>[]>();
-            var measpoint =
-                IchBase.RangesFull.RealRangeStor.SelectMany(q =>
-                    q.Stop.GetArayMeasPointsInParcent(0, 20, 40, 60, 80, 100)).ToArray();
+            var operation = new MeasuringOperation<MeasPoint<Length>[]>();
+            MeasPoint<Length>[] arrPoints=null;
+            var measpoint = new List<MeasPoint<Length>>();
+            for (decimal i = 0.2m; i <= EndRange.MainPhysicalQuantity.Value; i+=0.2m)
+            {
+                measpoint.Add(new MeasPoint<Length>(i, UnitMultiplier.Mili));
+                //if (i==Math.Truncate(i) && i!= EndRange.MainPhysicalQuantity.Value && i!=0)
+                //{
+                //    measpoint.Add(new MeasPoint<Length>(i));
+                //}
+            }
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.InitWork = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
-                var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+                var freeWindow = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
                 var setting = new SettingTableViewModel();
                 setting.Breaking = 5;
                 setting.CellFormat = "мкм";
                 var rm1 = new WorkInPpiViewModel();
-                rm1.Content = CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм", measpoint, setting); 
-                a.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                a.ViewModel = rm1;
-                a.DocumentType = "RangeIcdicationView";
-                a.Show();
+                var webCam = this.UserItemOperation.ControlDevices.FirstOrDefault(q => (q.SelectedDevice as WebCam) != null);
+                //rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
+                var ppi = this.UserItemOperation.ControlDevices.FirstOrDefault(q => (q.SelectedDevice as Ppi)!=null);
+                //rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? string.Empty);
+                rm1.Content =  CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм", measpoint.ToArray(), setting); 
+                freeWindow.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                freeWindow.ViewModel = rm1;
+                freeWindow.DocumentType = "RangeIcdicationView";
+                freeWindow.Show();
+                arrPoints= rm1.Content.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
             };
             operation.BodyWorkAsync = () =>
             {
+                for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
+                {
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>) operation.Clone();
+                    if (i == 0)
+                    {
+                        operation.Expected = new[] {new MeasPoint<Length>(0, UnitMultiplier.Mili)}
+                            .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
+                        operation.Getting = new[] {new MeasPoint<Length>(0, UnitMultiplier.Mili)}
+                            .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
+                    }
+                    else
+                    {
+                        operation.Expected = new[] {arrPoints.Skip(i * 5 - 1).Take(1).First()}
+                            .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
+                        operation.Getting = new[] {measpoint.Skip(i * 5 - 1).Take(1).First()}
+                            .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
+                    }
 
+                    if (i > 0) DataRow.Add(operation);
+                }
             };
+            operation.ErrorCalculation = (expected, getting) =>
+            {
+                var a = expected.Select((t, index) => t - getting[index]).ToArray();
+                var res = (Length)(a.Max() -a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
+                return new[] {new MeasPoint<Length>(res)};
+            };
+
             DataRow.Add(operation);
         }
 

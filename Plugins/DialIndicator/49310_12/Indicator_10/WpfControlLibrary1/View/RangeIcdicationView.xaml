@@ -8,9 +8,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
-        <Image DockPanel.Dock="Left"></Image>
-        <HeaderedContentControl Header="{Binding Path=Header}" Focusable="False" DockPanel.Dock="Right" >
-            <view:InputTableControl Name="Table" Data="{Binding Content.Cells}" SelectValue="{Binding Selected}" />
+        <StackPanel DockPanel.Dock="Left" >
+            <Image  Source="{Binding WebCam.VideoSourse}" Stretch="Fill" Height="250" Width="250"/>
+            <Grid>
+                <Button Content="Установка нуля ППИ" Command="{Binding SetNullCommand}"/>
+            </Grid>
+        </StackPanel>
+        <StackPanel DataContext="{Binding Content}">
+       <HeaderedContentControl Header="{Binding Header}" Focusable="False" DockPanel.Dock="Right" >
+                <view:InputTableControl Name="Table" Data="{Binding Cells}" SelectValue="{Binding Selected}" />
         </HeaderedContentControl>
-    </DockPanel>
+        </StackPanel>
+
+</DockPanel>
 </UserControl>

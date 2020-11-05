@@ -31,8 +31,6 @@ namespace ASMC.Common.ViewModel
             get => _shema;
             set => SetProperty(ref _shema, value, nameof(Shema), ChangedCallback);
         }
-
-     
         public string Text
         {
             get => _text;

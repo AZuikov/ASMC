@@ -22,7 +22,7 @@ namespace ASMC.Data.Model
         TPhysicalQuantity MainPhysicalQuantity { get; set; }
 
         #endregion
-    }
+        }
 
     public interface IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : IMeasPoint<TPhysicalQuantity>,
                                                                            IComparable<IMeasPoint<TPhysicalQuantity,

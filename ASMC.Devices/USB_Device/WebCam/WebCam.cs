@@ -76,7 +76,7 @@ namespace ASMC.Devices.USB_Device.WebCam
             set
             {
                 _videoCaptureDevice.Source = value.MonikerString;
-                _videoCaptureDevice.VideoResolution = _videoCaptureDevice.VideoCapabilities[7];
+                //_videoCaptureDevice.VideoResolution = _videoCaptureDevice.VideoCapabilities[7];
                 Logger.Debug($@"Назначен источник {value.Name}.");
             }
         }
