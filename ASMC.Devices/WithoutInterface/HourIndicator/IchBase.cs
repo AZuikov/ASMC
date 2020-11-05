@@ -172,18 +172,20 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
                 arr.Add(GeneratoRanges(i - 1, i));
             }
 
-            
-            PhysicalRange <Length> GeneratoRanges (decimal start, decimal end)
+
+            PhysicalRange<Length> GeneratoRanges(decimal start, decimal end)
             {
                 var st = new MeasPoint<Length>(new Length(start, UnitMultiplier.Mili));
                 var ed = new MeasPoint<Length>(new Length(end, UnitMultiplier.Mili));
-                return new PhysicalRange<Length>(st, ed, new AccuracyChatacteristic((decimal?) range,null,null));
+                return new PhysicalRange<Length>(st, ed, new AccuracyChatacteristic((decimal?)range, null, null));
             }
 
-            var ac = new AccuracyChatacteristic((decimal?) fullRange,null, null);
-            return new RangeStorage<PhysicalRange<Length>>(ac,arr.ToArray());
+            var ac = new AccuracyChatacteristic((decimal?)fullRange, null, null);
+            return new RangeStorage<PhysicalRange<Length>>(ac, arr.ToArray());
         }
 
 
     }
+   
+   
 }

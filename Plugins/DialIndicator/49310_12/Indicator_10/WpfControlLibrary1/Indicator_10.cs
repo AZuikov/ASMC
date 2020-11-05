@@ -1,4 +1,5 @@
 ﻿using ASMC.Core.Model;
+using ASMC.Devices.UInterface.AnalogDevice.ViewModel;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 using Indicator_10.First;
 using Indicator_10.Periodic;
@@ -24,7 +25,7 @@ namespace Indicator_10
         public Verefication(ServicePack servicePac)
         {
             UserItemOperationPrimaryVerf = new OpertionFirsVerf<Ich_10>(servicePac);
-            UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<Ich_10>(servicePac);
+            UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<IchIchGost577SettingUi<Ich_10>>(servicePac);
         }
     }
 }
