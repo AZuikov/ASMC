@@ -13,6 +13,12 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
     public interface IPhysicalQuantity : IComparable, ICloneable
     {
+        ///  <summary>
+        /// Изменяет множитель на заданный
+        ///  </summary>
+        ///  <param name="multiplier"></param>
+        ///  <returns></returns>
+        IPhysicalQuantity ChangeMultiplier(UnitMultiplier multiplier);
         /// <summary>
         /// Возвращает еденицы измерения с множителем.
         /// </summary>
@@ -141,6 +147,14 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
                 _unit = value;
             }
+        }
+
+        /// <inheritdoc />
+        public IPhysicalQuantity ChangeMultiplier(UnitMultiplier multiplier)
+        {
+            this.Value = this.GetNoramalizeValueToSi() / (decimal) multiplier.GetDoubleValue();
+            this.Multiplier = multiplier;
+            return this;
         }
 
         /// <inheritdoc />

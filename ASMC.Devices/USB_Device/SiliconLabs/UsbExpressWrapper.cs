@@ -342,8 +342,8 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
                 var poduct = new List<Product>();
                 for (var i = 0; i < GetCountDevices(); i++)
                 {
-                    poduct.Add(GetProduct(i));
-                    poduct[i].Number = i;
+                        poduct.Add(GetProduct(i));
+                        poduct[i].Number = i;
                 }
 
                 return poduct.ToArray();
@@ -415,7 +415,15 @@ namespace ASMC.Devices.USB_Device.SiliconLabs
         {
             uint count = 0;
             var code = NativeMethods.SI_GetNumDevices(ref count);
-            GenericException(nameof(GetProductString), (StatusCode) code);
+            try
+            {
+                GenericException(nameof(GetCountDevices), (StatusCode)code);
+            }
+            catch (Efm32USBEpressException)
+            {
+
+            }
+           
             return (int) count;
         }
 

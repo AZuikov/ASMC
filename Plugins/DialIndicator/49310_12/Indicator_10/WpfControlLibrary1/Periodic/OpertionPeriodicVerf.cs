@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
+using ASMC.Devices.USB_Device.WebCam;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace Indicator_10.Periodic
@@ -48,7 +50,7 @@ namespace Indicator_10.Periodic
         /// <inheritdoc />
         public override void RefreshDevice()
         {
-           // AddresDevice = ASMC.Devices.USB_Device.SiliconLabs.UsbExpressWrapper.FindAllDevice.Select(q => q.Number.ToString()).Concat(WebCam.GetVideoInputDevice.Select(q => q.MonikerString)).ToArray();
+            AddresDevice = ASMC.Devices.USB_Device.SiliconLabs.UsbExpressWrapper.FindAllDevice?.Select(q => q.Number.ToString()).Concat(WebCam.GetVideoInputDevice?.Select(q => q.MonikerString) ?? Array.Empty<string>()).ToArray();
         }
 
         /// <inheritdoc />

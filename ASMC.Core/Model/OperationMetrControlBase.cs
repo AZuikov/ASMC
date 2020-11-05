@@ -148,7 +148,7 @@ namespace ASMC.Core.Model
                 {
                     if (userItemOperationBase.IsCheked || !IsManual)
                     {
-                        ShowShem(userItemOperationBase.Sheme);
+                        ShowShem(userItemOperationBase.Sheme, source);
                         await userItemOperationBase.StartWork(source.Token);
                     }
                 }
@@ -164,7 +164,7 @@ namespace ASMC.Core.Model
             }
         }
 
-        private async void ShowShem(ShemeImage sheme)
+        private async void ShowShem(ShemeImage sheme, CancellationTokenSource source)
         {
             if (sheme == null || LastShem?.Number == sheme.Number) return;
             LastShem = sheme;
@@ -178,8 +178,11 @@ namespace ASMC.Core.Model
 
             ser.Entity = sheme;
             do
-            {             
-                 ser.Show();
+            {
+                if (!(ser.Show() is true))
+                {
+                    source.Cancel(true);
+                }
                 Logger.Debug($@"Была показана схема №{sheme.Number}");
             } while (!await sheme.ChekShem());
         }

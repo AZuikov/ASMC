@@ -29,7 +29,7 @@ namespace AP.Extension
                 var mp = new MeasPoint<T>();
                 mp.MainPhysicalQuantity.Multiplier = range.MainPhysicalQuantity.Multiplier;
                 mp.MainPhysicalQuantity.Unit = range.MainPhysicalQuantity.Unit;
-                mp.MainPhysicalQuantity.Value = decimal.Parse(range.MainPhysicalQuantity.Value.ToString()) * countPoint / 100;
+                mp.MainPhysicalQuantity.Value =range.MainPhysicalQuantity.Value * (countPoint / 100M);
                 yield return mp;
             }
         }
