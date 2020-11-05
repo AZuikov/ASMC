@@ -215,7 +215,7 @@ namespace Indicator_10
                 "Допуск Колебание при прямом/ обратном ходе",
                 "Допуск Максимальное при прямом ходе"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
-            ;
+         
         }
 
         /// <param name="token"></param>
