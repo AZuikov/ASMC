@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Reflection;
 using AP.Utils.Data;
-using ASMC.Data.Model;
 using ASMC.Devices.Port.OWEN;
 using NLog;
 using OwenioNet.Types;
@@ -12,11 +10,7 @@ namespace ASMC.Devices.OWEN
     public class TRM202Device : OwenProtocol
     {
 
-        public TRM202Device()
-        {
-            UserType = "ТРМ202";
-        }
-
+        public int DeviceAddres { get; set; }
         /// <summary>
         /// Тип входного датчика или сигнала для входа 1 (2)
         /// </summary>
@@ -342,7 +336,30 @@ namespace ASMC.Devices.OWEN
             Unecpected = 0X47
         }
 
+        /// <summary>
+        /// Виды протоколов передачи данных, которые поддерживает ТРМ
+        /// </summary>
+        public enum TrmProtocol
+        {
+            Owen, //работаем только по протоколу ОВЕН
+            ModBusRtu,
+            ModBusASCII
+        }
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Property
+
+        public AddressLengthType AddressLength { get; set; }
+
+        public TrmProtocol Protocol { get; set; }
+
+        #endregion
+
+        public TRM202Device()
+        {
+            UserType = "ТРМ202";
+        }
 
         #region Methods
 
@@ -377,39 +394,38 @@ namespace ASMC.Devices.OWEN
             }
         }
 
-        public decimal GetLuPvChanel2()
+        /// <summary>
+        /// Входная величина для регулятора/регистратора.
+        /// </summary>
+        /// <param name = "chanel">Номер канала (регистр, 0 или 1). Номер канала нужно задавать начиная с 1.</param>
+        /// <returns></returns>
+        public decimal GetLuPvValChanel(ushort chanel)
         {
-            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + 1,
-                                            Parametr.LuPV.GetStringValue(), 3);
-        }
-
-        public decimal GetLuPvValChanel1()
-        {
-            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres, Parametr.LuPV.GetStringValue(),
+            return (decimal) ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength,  Parametr.LuPV.GetStringValue(),
                                             3);
         }
+
         /// <summary>
-        /// Запрос измеренного значения, по протоколу ОВЕН. Для второго канала нужно увеличить адрес прибора на 1.
+        /// Запрос измеренного значения, по протоколу ОВЕН.
         /// </summary>
-        /// <param name="chanel">Номер канала (регистр, 0 или 1). Номер канала нужно задавать начиная с 1.</param>
+        /// <param name = "chanel">Номер канала (регистр, 0 или 1). Номер канала нужно задавать начиная с 1.</param>
         /// <returns></returns>
         public decimal GetMeasValChanel(ushort chanel)
         {
-            return (decimal) ReadFloatParam(AddressLengthType.Bits8, DeviceAddres + (chanel-1), Parametr.PV.GetStringValue(), 3);
+            // Для второго канала нужно увеличить адрес прибора на 1.
+            return (decimal) ReadFloatParam(DeviceAddres + (chanel - 1),AddressLength,  Parametr.PV.GetStringValue(),
+                                            3);
         }
 
-        
-
-        public decimal GetNumericParam(AddressLengthType addressLengthType, int addresDevice, Parametr parName,
+        public decimal GetNumericParam( Parametr parName,
             int size, ushort? Register = null)
         {
-            return (decimal) ReadFloatParam(addressLengthType, addresDevice, parName.GetStringValue(), size, --Register);
+            return (decimal) ReadFloatParam(DeviceAddres, AddressLength,  parName.GetStringValue(), size, --Register);
         }
 
-        public int GetShortIntPar(int PortNumber, int addresDevice, AddressLengthType addressLengthType,
-            Parametr parName, int size, ushort? Register = null)
+        public int GetShortIntPar(Parametr parName, int size, ushort? Register = null)
         {
-            return ReadShortIntParam(PortNumber, addresDevice, addressLengthType, parName.GetStringValue(), size,
+            return ReadShortIntParam(DeviceAddres, AddressLength, parName.GetStringValue(), size,
                                      --Register);
         }
 
@@ -426,13 +442,9 @@ namespace ASMC.Devices.OWEN
 
         public void WriteParametrToTRM(Parametr parName, byte[] writeDataBytes, ushort? Register = null)
         {
-            OwenWriteParam(AddressLengthType.Bits8, parName.GetStringValue(), writeDataBytes,--Register);
+            OwenWriteParam(DeviceAddres,AddressLength, parName.GetStringValue(), writeDataBytes, --Register);
         }
-
-
 
         #endregion
     }
-
-    
 }

@@ -63,7 +63,7 @@ namespace OWEN_TRM202
                 {
                     new Device
                     {
-                        Devices = new IDeviceBase[] {new TRM202DeviceUI(),  },
+                        Devices = new IDeviceBase[] {new TRM202DeviceUI()  },
                         Description = "измеритель температуры прецизионный"
                     }
                 };
@@ -140,7 +140,7 @@ namespace OWEN_TRM202
             
            
             /// <summary>
-            /// Объекта операции опробования.
+            /// Объект операции опробования.
             /// </summary>
             /// <param name="userItemOperation"></param>
             /// <param name="chanelNumb">Номер канала прибора 1 или 2.</param>
@@ -156,6 +156,8 @@ namespace OWEN_TRM202
                     Description = "Соберите схему, как показано на рисунке."
 
                 };
+                
+                
             }
 
             /// <inheritdoc />
@@ -193,27 +195,31 @@ namespace OWEN_TRM202
             {
                 base.InitWork(token);
                 //нужно проверсти инициализацию
-                trm202 = (TRM202DeviceUI)UserItemOperation.TestDevices.FirstOrDefault(q => (q.SelectedDevice as TRM202DeviceUI) != null);
-                
-                    var operation = new BasicOperationVerefication<MeasPoint<CelsiumGrad>>();
+                if (UserItemOperation != null)
+                {
+                    trm202 = ((UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI !=null)).SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
+                    trm202.StringConnection = GetStringConnect(trm202);
+
+                var operation = new BasicOperationVerefication<MeasPoint<CelsiumGrad>>();
                     operation.InitWork = async () =>
                     {
                         try
                         {
                             await Task.Run(() =>
                             {
-                                trm202.StringConnection = GetStringConnect(trm202);
+                               
+
                                 //делаем предварительные настройка канала прибора
 
                                 //1. задаем на каналах нужную характеристику НСХ 50М (W100 = 1,4280)
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.InT,
-                                                          BitConverter.GetBytes((int)(TRM202Device.in_t.r428)), _chanelNumber);
+                                var typeTermoCouple = BitConverter.GetBytes((int) (TRM202Device.in_t.r428));
+                                trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple,_chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.SH, new byte[] { 0x00 }, _chanelNumber);
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.KU, new byte[] { 0x00 }, _chanelNumber);
+                                trm202.WriteParametrToTRM(TRM202Device.Parametr.SH, new byte[] {0x00}, _chanelNumber);
+                                trm202.WriteParametrToTRM(TRM202Device.Parametr.KU, new byte[] {0x01}, _chanelNumber);
                                 //3. ставим полосы фильтров и постоянную времени фильтра
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.Fb, new byte[] { 0x00 }, _chanelNumber);
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.InF, new byte[] { 0x00 }, _chanelNumber);
+                                trm202.WriteParametrToTRM(TRM202Device.Parametr.Fb, new byte[] {0x00}, _chanelNumber);
+                                trm202.WriteParametrToTRM(TRM202Device.Parametr.InF, new byte[] {0x00}, _chanelNumber);
                             });
                         }
                         catch (Exception e)
@@ -229,31 +235,31 @@ namespace OWEN_TRM202
                         operation.LowerTolerance = operation.Expected - operation.Error;
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.Getting = new MeasPoint<CelsiumGrad>(trm202.GetMeasValChanel(_chanelNumber));
-
                     };
 
-                operation.CompliteWork = () =>
-                {
-                    if (!operation.IsGood())
+                    operation.CompliteWork = () =>
                     {
-                        var answer =
-                            UserItemOperation.ServicePack.MessageBox().Show(operation +
-                                                                            $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                            "Повторить измерение этой точки?",
-                                                                            "Информация по текущему измерению",
-                                                                            MessageButton.YesNo, MessageIcon.Question,
-                                                                            MessageResult.Yes);
+                        if (!operation.IsGood())
+                        {
+                            var answer =
+                                UserItemOperation.ServicePack.MessageBox().Show(operation +
+                                                                                $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                                "Повторить измерение этой точки?",
+                                                                                "Информация по текущему измерению",
+                                                                                MessageButton.YesNo,
+                                                                                MessageIcon.Question,
+                                                                                MessageResult.Yes);
 
-                        if (answer == MessageResult.No) return Task.FromResult(true);
-                    }
+                            if (answer == MessageResult.No) return Task.FromResult(true);
+                        }
 
-                    return Task.FromResult(operation.IsGood());
-                };
+                        return Task.FromResult(operation.IsGood());
+                    };
 
-                DataRow.Add(DataRow.IndexOf(operation) == -1
-                                ? operation
-                                : (BasicOperationVerefication<MeasPoint<CelsiumGrad>>)operation.Clone());
-
+                    DataRow.Add(DataRow.IndexOf(operation) == -1
+                                    ? operation
+                                    : (BasicOperationVerefication<MeasPoint<CelsiumGrad>>) operation.Clone());
+                }
             }
 
             
