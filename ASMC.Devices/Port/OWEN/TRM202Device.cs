@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using AP.Utils.Data;
 using ASMC.Devices.Port.OWEN;
@@ -425,8 +426,7 @@ namespace ASMC.Devices.OWEN
 
         public int GetShortIntPar(Parametr parName, int size, ushort? Register = null)
         {
-            return ReadShortIntParam(DeviceAddres, AddressLength, parName.GetStringValue(), size,
-                                     --Register);
+            return ReadShortIntParam(DeviceAddres, AddressLength, parName.GetStringValue(), size, --Register);
         }
 
         public override byte[] OwenReadParam(string ParametrName, int addres, ushort? Register = null)
@@ -442,7 +442,31 @@ namespace ASMC.Devices.OWEN
 
         public void WriteParametrToTRM(Parametr parName, byte[] writeDataBytes, ushort? Register = null)
         {
-            OwenWriteParam(DeviceAddres,AddressLength, parName.GetStringValue(), writeDataBytes, --Register);
+            ushort? localRegister = null;
+            if (Register != null)
+            {
+                localRegister = (ushort?) (Register-1);//адрес канала начинается с нуля
+            }
+
+            OwenWriteParam(DeviceAddres,AddressLength, parName.GetStringValue(), writeDataBytes, localRegister);
+        }
+
+        public void WriteFloat24Parametr(Parametr parName, float writeValue, ushort? Register = null)
+        {
+            int maxArrSize = 3;//3 байта максимум для этой модели устройства
+            List<byte> list = new List<byte>(BitConverter.GetBytes(writeValue));
+            list.Reverse();
+            if (list.Count < maxArrSize)
+            {
+                do
+                {
+                    list.Add(0x00);
+                } while (list.Count!=maxArrSize);
+            }
+            if(list.Count > maxArrSize)
+                list.RemoveRange(maxArrSize,list.Count-maxArrSize);
+
+            WriteParametrToTRM(parName,list.ToArray(),Register);
         }
 
         #endregion

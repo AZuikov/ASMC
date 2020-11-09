@@ -100,23 +100,22 @@ namespace ASMC.Devices.OWEN
             var owenProtocol = OwenProtocolMaster.Create(this);
 
             if (IsOpened != true) Logger.Error("Ошибка открытия порта: {0}", StringConnection);
-
             try
             {
                 owenProtocol.OwenWrite(addresDevice, addressLengthType, ParametrName, writeDataBytes, Register);
             }
-            catch (Exception ex)
+            finally
             {
-                Logger.Error("Ошибка записи ОВЕН: " + ex);
-            }
-
-            Close();
+                Close();
+            } 
+            
+            
+            
         }
 
         /// <summary>
         /// Функция для считывания параметра типа float.
         /// </summary>
-        /// <param name = "PortNumber">Номер последовательного порта.</param>
         /// <param name = "addresDevice">Адрес устройства.</param>
         /// <param name = "addressLengthType">Длина сетевого адреса устройства.</param>
         /// <param name = "ParametrName">Наименование параметра устройства.</param>
@@ -131,6 +130,12 @@ namespace ASMC.Devices.OWEN
             var value = converter.ConvertBack(answerDevice);
             return value;
            
+        }
+
+        public void WriteFloatParam(int addresDevice, AddressLengthType addressLengthType, string ParametrName, float ParVal, ushort? Register = null)
+        {
+            var bitBuffer = BitConverter.GetBytes(ParVal);
+            OwenWriteParam( addresDevice,  addressLengthType, ParametrName, bitBuffer ,Register);
         }
 
         /// <summary>
@@ -150,6 +155,11 @@ namespace ASMC.Devices.OWEN
             var converter = new ConverterI(size);
             var value = converter.ConvertBack(answerDevice);
             return value;
+        }
+        public void WriteIntParam(int addresDevice, AddressLengthType addressLengthType, string ParametrName, int ParVal, ushort? Register = null)
+        {
+            var bitBuffer = BitConverter.GetBytes(ParVal);
+            OwenWriteParam(addresDevice, addressLengthType, ParametrName, bitBuffer, Register);
         }
 
         /// <summary>
