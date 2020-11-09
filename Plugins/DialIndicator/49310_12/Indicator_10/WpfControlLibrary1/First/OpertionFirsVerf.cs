@@ -25,6 +25,24 @@ namespace Indicator_10.First
                     Devices = new IUserType[] {new T()}
                 }
             };
+            UserItemOperation = new IUserItemOperationBase[]
+            {
+                new VisualInspection(this),
+                new Testing(this),
+                new ConnectionDiametr(this), 
+                new LinerRoughness(this),
+                new TipRoughness(this),
+                new ArrowWidch(this),
+                new StrokeWidch(this),
+                new StrokeLength(this),
+
+                new MeasuringForce(this),
+                new PerpendicularPressure(this),
+                new RangeIndications(this),
+                new VariationReading(this),
+                new DeterminationError(this),
+
+            };
         }
     
 

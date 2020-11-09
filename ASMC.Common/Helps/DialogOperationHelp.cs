@@ -39,5 +39,31 @@ namespace ASMC.Common.Helps
             };
             this.CompliteWork = () => Task.FromResult(true);
         }
+
+        public DialogOperationHelp(IUserItemOperationBase operation, Func<Task<bool>> initWork, string nameFile,
+            Assembly findProjectFile = null)
+        {
+            Logger.Debug($@"Указан файл для загрузки {nameFile} и будет поиск в папке сборке {findProjectFile ?? Assembly.GetExecutingAssembly()}");
+            Expected = true;
+            IsGood = () => Equals(Expected, Getting);
+            InitWork = async () =>
+            {
+                var accessor = TypeAccessor.Create(operation.GetType());
+                var service = ((IUserItemOperation)accessor[operation, nameof(ParagraphBase<object>.UserItemOperation)]).ServicePack.QuestionText();
+                service.Title = operation.Name;
+                service.Entity = new Tuple<string, Assembly>(nameFile, findProjectFile);
+                //Bug необходима отмена операции
+                if (service.Show() != true)
+                {
+                    Logger.Info($@"Операция {operation.Name} была отменена");
+                    return;
+                }
+                var res = service.Entity as Tuple<string, bool>;
+                Getting = res.Item2 && initWork().Result;
+                Comment = res.Item1;
+                operation.IsGood = Getting;
+            };
+            this.CompliteWork = () => Task.FromResult(true);
+        }
     }
 }

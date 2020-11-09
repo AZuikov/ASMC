@@ -153,10 +153,6 @@ namespace ASMC
         {
             var viewModel = new WizardViewModel();
             //var mainSettings = Settings.UserScope.Main;
-
-          
-          
-
             return viewModel;
         }
 

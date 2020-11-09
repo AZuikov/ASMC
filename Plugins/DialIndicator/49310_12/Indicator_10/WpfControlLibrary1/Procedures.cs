@@ -239,7 +239,7 @@ namespace Indicator_10
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            DataRow.Add(new DialogOperationHelp(this,""));
+            DataRow.Add(new DialogOperationHelp(this, ""));
         }
     }
     /// <summary>
@@ -902,7 +902,7 @@ namespace Indicator_10
                 var vm = CreateTable("Присоединительный диаметр", arrPoints, setting);
                 Service.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 Service.ViewModel = vm;
-                Service.DocumentType = "RangeIcdicationView";
+                Service.DocumentType = "OneTableView";
                 Service.Show();
                 /*Получаем измерения*/
                 arrGettin = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
@@ -934,22 +934,66 @@ namespace Indicator_10
     /// <summary>
     /// Предотсавляет реализацию проерку  шероховатости наружной поверхности гильзы.
     /// </summary>
-    public sealed class LinerRoughness : MainIchProcedur<object>
+    public sealed class LinerRoughness : MainIchProcedur<bool>
     {
         /// <inheritdoc />
         public LinerRoughness(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Name = "Контроль шероховатости наружной поверхности гильзы.";
+        }
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var data = base.FillData();
+
+            var dataRow = data.NewRow();
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
+            return data;
+        }
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            DataRow.Add(new DialogOperationHelp(this, ""));
         }
     }
 
     /// <summary>
     /// Предотсавляет реализацию проерку  шероховатости поверхности измерительного наконечника.
     /// </summary>
-    public sealed class TipRoughness : MainIchProcedur<object>
+    public sealed class TipRoughness : MainIchProcedur<bool>
     {
         /// <inheritdoc />
         public TipRoughness(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Name = "Контроль шероховатости рабочей поверхности измерительного наконечника";
+        }
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var data = base.FillData();
+
+            var dataRow = data.NewRow();
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
+            return data;
+        }
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            DataRow.Add(new DialogOperationHelp(this, ""));
         }
     }
 
@@ -961,6 +1005,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public ArrowWidch(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Name = "Определение ширины стрелк.";
         }
     }
     /// <summary>
@@ -971,6 +1016,29 @@ namespace Indicator_10
         /// <inheritdoc />
         public StrokeWidch(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Name = "Определение ширины штрихов.";
+        }
+
+        /// <inheritdoc />
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+        }
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return  new []{ "Измерение штриха на отметках шкалы",
+                "Ширина штриха",
+                "Разность ширины отдельных штрихов",
+                "Допустимая ширина штрихов", 
+                "Допустимая разность"}.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            return base.FillData();
         }
     }
 
@@ -982,6 +1050,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public StrokeLength(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
+            Name = "Определение длины деления штрихов";
         }
     }
     #endregion
