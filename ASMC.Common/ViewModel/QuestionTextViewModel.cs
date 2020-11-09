@@ -69,6 +69,13 @@ namespace ASMC.Common.ViewModel
         }
 
         /// <inheritdoc />
+        protected override void OnSelect()
+        {
+            base.OnSelect();
+            Entity = new Tuple<string, bool>(ResultStr, CheckBox);
+        }
+
+        /// <inheritdoc />
         protected override void OnInitializing()
         {
             base.OnInitializing();

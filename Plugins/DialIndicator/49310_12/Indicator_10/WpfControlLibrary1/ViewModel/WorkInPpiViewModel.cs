@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Timers;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using ASMC.Common.ViewModel;
 using ASMC.Core.ViewModel;
 using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
@@ -21,6 +22,7 @@ namespace Indicator_10.ViewModel
         {
             SetNullCommand = new DelegateCommand(OnSetNull);
             WebCam = new WebCamViewModel();
+
             Ppi = new Ppi();
             _timer = new Timer(50);
             _timer.Elapsed += _timer_Elapsed;
@@ -48,6 +50,8 @@ namespace Indicator_10.ViewModel
         }
 
         private readonly Timer _timer;
+        private BitmapImage _VideoSourse;
+
         public Ppi Ppi
         {
             get => _ppi;
@@ -59,6 +63,7 @@ namespace Indicator_10.ViewModel
             try
             {
                 base.OnInitialized();
+                WebCam.OnInitialized();
                 WebCam.StartVideo();
                 Ppi.Initialization();
                 Ppi.StartContinuousMeas();

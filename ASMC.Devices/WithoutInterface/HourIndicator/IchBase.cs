@@ -19,7 +19,7 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         /// <summary>
         /// Максимальное допустимое отклонение стрелки при перпендикулярном нажиме на его ось.
         /// </summary>
-        public decimal PerpendicularPressureMax { get; set; }
+        public decimal PerpendicularPressureMax { get; protected set; }
 
         /// <summary>
         /// Позволяет задать полный измерительный диапазон.
@@ -56,12 +56,32 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
 
         public MeasPoint<Length> Variation { get => GetVariation(CurrentAccuracyClass); }
         public MeasPoint<Length> Diametr { get; set; }
-
+        /// <summary>
+        /// Позволяет получить тест соответствия допуску шероховатости наружной поверхности гильзы.
+        /// </summary>
+        public string LinerRoughness { get; protected set; }
+        /// <summary>
+        /// Позволяет получить тест соответствия допуску шероховатости поверхности измерительного наконечника.
+        /// </summary>
+        public string TipRoughness { get; protected set; }
         protected virtual MeasPoint<Length> GetVariation(AccuracyClass.Standart currentAccuracyClass)
         {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// Позволяет получить допустимый диапазон ширины стрелки.
+        /// </summary>
+        public PhysicalRange<Length> ArrowWidch { get; protected set; }
 
+        /// <summary>
+        /// Позволяет получить минимальную допустимую длинну штриха деления.
+        /// </summary>
+        public MeasPoint<Length> StrokeLength { get; protected set; }
+
+        /// <summary>
+        ///   Позволяет получить 
+        /// </summary>
+        public ConnectionDiametr ConnectDiametr { get; protected set; } = new ConnectionDiametr();
         /// <summary>
         /// Максимальное допутсимое усилие
         /// </summary>
@@ -83,9 +103,20 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
             /// Максимальное усилие прямом ходе
             /// </summary>
             public MeasPoint<Force> StraightRun { get; set; }
-
+           
             #endregion
         }
+
+        public class ConnectionDiametr
+        {
+            public PhysicalRange<Length> Range { get; set; }
+            public MeasPoint<Length> MaxDelta { get; set; }
+        }
+        /// <summary>
+        /// Позволяет получить максимальное растояние между концом стрелки и циферблатом.
+        /// </summary>
+        public MeasPoint<Length> BetweenArrowDial { get; protected set; }
+
     }
     /// <summary>
     /// Предоставляет реализацию часового индикатора по ГОСТ 577
@@ -100,8 +131,18 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
                 Oscillatons = new MeasPoint<Force>(0.6M),
                 ChangeCourse = new MeasPoint<Force>( 0.5m)
             };
+            PerpendicularPressureMax = 0.5m;
+            LinerRoughness = "Ra не более 0,63 мкм";
+            TipRoughness = "Ra не более 0,1 мкм";
+            ArrowWidch = new PhysicalRange<Length>(new MeasPoint<Length>(0.15m, UnitMultiplier.Mili), new MeasPoint<Length>(0.20m, UnitMultiplier.Mili));
+            StrokeLength = new MeasPoint<Length>(1, UnitMultiplier.Mili);
+            ConnectDiametr.Range = new PhysicalRange<Length>(new MeasPoint<Length>(7.985m, UnitMultiplier.Mili),
+                new MeasPoint<Length>(8, UnitMultiplier.Mili));
+            ConnectDiametr.MaxDelta = new MeasPoint<Length>(8, UnitMultiplier.Micro);
+            BetweenArrowDial = new MeasPoint<Length>(0.7m, UnitMultiplier.Mili);
         }
     }
+
     /// <summary>
     /// Предоставляет реализацию индикатора часовога дити с диапазоном 10мм  по <see cref="IchGost577"/>
     /// </summary>

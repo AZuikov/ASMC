@@ -38,11 +38,10 @@ namespace Indicator_10
         /// </summary>
         protected IchBase IchBase { get; private set; }
 
-        protected WebCam WebCam { get; private set; }
-
+        /// <summary>
+        /// Предоставляет сервис окна ввода данных.
+        /// </summary>
         protected SelectionService Service { get; private set; }
-
-        protected Ppi Ppi { get; private set; }
 
         /// <summary>
         ///     Позволяет получить конец диапазона чисоваого индикатора
@@ -210,6 +209,7 @@ namespace Indicator_10
     }
 
     #region Periodic
+
     /// <summary>
     /// Предоставляет реализацию внешнего осномотра.
     /// </summary>
@@ -288,9 +288,10 @@ namespace Indicator_10
                 dataRow[3] = dds.Error[1];
                 dataRow[4] = dds.Error[2];
                 //todo Указать погрешность  
-                dataRow[5] = IchBase.MeasuringForce.StraightRun;
+
+                dataRow[5] = IchBase.MeasuringForce.ChangeCourse;
+                dataRow[7] = IchBase.MeasuringForce.StraightRun;
                 dataRow[6] = IchBase.MeasuringForce.Oscillatons;
-                dataRow[7] = IchBase.MeasuringForce.ChangeCourse;
                 if (dds.IsGood == null)
                     dataRow[8] = ConstNotUsed;
                 else
@@ -441,7 +442,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public PerpendicularPressure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Изменение показания индикатора при нажиме с усилием";
+            Name = "Изменение показания индикатора при нажиме с усилием.";
         }
 
         #region Methods
@@ -450,7 +451,6 @@ namespace Indicator_10
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
-            var ich = UserItemOperation.TestDevices.First().SelectedDevice as IchBase;
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
@@ -459,7 +459,7 @@ namespace Indicator_10
                 if (dds == null) continue;
                 dataRow[0] = dds.Expected.ToString();
                 dataRow[1] = dds.Getting.ToString();
-                dataRow[2] = dds.Error;
+                dataRow[2] =IchBase.PerpendicularPressureMax;
                 if (dds.IsGood == null)
                     dataRow[3] = ConstNotUsed;
                 else
@@ -481,10 +481,6 @@ namespace Indicator_10
             ;
         }
 
-
-        /// <param name="token"></param>
-        /// <param name="token1"></param>
-        /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
@@ -526,7 +522,6 @@ namespace Indicator_10
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-
             DataRow.Add(operation);
         }
 
@@ -541,7 +536,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public RangeIndications(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение размаха показаний";
+            Name = "Определение размаха показаний.";
         }
 
         #region Methods
@@ -661,7 +656,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public VariationReading(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение вариации показаний";
+            Name = "Определение вариации показаний.";
         }
 
         /// <inheritdoc />
@@ -784,7 +779,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public DeterminationError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности на всем диапазоне и на участке 1 мм";
+            Name = "Определение погрешности на всем диапазоне и на участке 1 мм.";
         }
 
         /// <param name="token"></param>
@@ -810,7 +805,7 @@ namespace Indicator_10
 
                 var webCam = UserItemOperation.ControlDevices.FirstOrDefault(q =>
                     (q.SelectedDevice as IControlPannelDevice)?.Device as WebCam != null);
-                rm1.WebCam.WebCam = (webCam as IControlPannelDevice).Device as WebCam;
+                rm1.WebCam.WebCam = (webCam.SelectedDevice as IControlPannelDevice).Device as WebCam;
                 rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
                 var ppi = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as Ppi != null);
                 rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
@@ -882,7 +877,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public ConnectionDiametr(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Контроль присоединительного диаметра и отклонения от цилиндричности гильзы";
+            Name = "Контроль присоединительного диаметра и отклонения от цилиндричности гильзы.";
         }
 
         /// <inheritdoc />
@@ -972,7 +967,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public TipRoughness(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Контроль шероховатости рабочей поверхности измерительного наконечника";
+            Name = "Контроль шероховатости рабочей поверхности измерительного наконечника.";
         }
         /// <inheritdoc />
         protected override DataTable FillData()
@@ -1005,7 +1000,7 @@ namespace Indicator_10
         /// <inheritdoc />
         public ArrowWidch(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение ширины стрелк.";
+            Name = "Определение ширины стрелки.";
         }
     }
     /// <summary>
@@ -1050,7 +1045,16 @@ namespace Indicator_10
         /// <inheritdoc />
         public StrokeLength(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение длины деления штрихов";
+            Name = "Определение длины деления штрихов.";
+        }
+    }
+
+    public sealed class BetweenArrowDial : MainIchProcedur<MeasPoint<Length>>
+    {
+        /// <inheritdoc />
+        public BetweenArrowDial(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение расстояния между концом стрелки и циферблатом.";
         }
     }
     #endregion
