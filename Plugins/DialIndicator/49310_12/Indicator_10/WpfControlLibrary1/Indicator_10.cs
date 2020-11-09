@@ -24,8 +24,8 @@ namespace Indicator_10
 
         public Verefication(ServicePack servicePac)
         {
-            UserItemOperationPrimaryVerf = new OpertionFirsVerf<Ich_10>(servicePac);
-            UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<IchIchGost577SettingUi<Ich_10>>(servicePac);
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf<IchGost577SettingUi<Ich_10>>(servicePac);
+            UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<IchGost577SettingUi<Ich_10>>(servicePac);
         }
     }
 }

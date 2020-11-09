@@ -190,7 +190,7 @@ namespace APPA_107N_109N
                 return "ITBmVisualTest";
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 var operation = new BasicOperation<bool>();
@@ -253,7 +253,7 @@ namespace APPA_107N_109N
                 return "ITBmOprobovanie";
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 var operation = new BasicOperation<bool>();
@@ -405,7 +405,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (AppaMult107109N == null || flkCalib5522A == null) return;
@@ -928,7 +928,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa107N == null) return;
@@ -1690,7 +1690,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
@@ -2239,7 +2239,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa107N == null) return;
@@ -2759,7 +2759,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
@@ -3467,7 +3467,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
@@ -3742,7 +3742,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;
@@ -4259,7 +4259,7 @@ namespace APPA_107N_109N
                 return null;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
                 if (appa107N == null || flkCalib5522A == null) return;

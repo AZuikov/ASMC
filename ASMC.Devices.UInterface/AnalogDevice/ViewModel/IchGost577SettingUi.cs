@@ -13,11 +13,11 @@ using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace ASMC.Devices.UInterface.AnalogDevice.ViewModel
 {
-    public class IchIchGost577SettingUi<T> : IControlPannelDevice where T : IchGost577, IUserType,new()
+    public class IchGost577SettingUi<T> : IControlPannelDevice where T : IchGost577, IUserType,new()
     {
         public IUserType Device { get; set; }
 
-        public IchIchGost577SettingUi()
+        public IchGost577SettingUi()
         {
             Device = new T();
             ViewModel = new IchSettingViewModel<T> { IchBaseSettingUi = Device as T};

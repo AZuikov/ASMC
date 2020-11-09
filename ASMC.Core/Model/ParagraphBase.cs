@@ -16,7 +16,7 @@ namespace ASMC.Core.Model
     /// <summary>
     /// Предоставляет базовый клас для пункта операции.
     /// </summary>
-    public abstract class ParagraphBase<T> : ViewModelBase, ITreeNode, IUserItemOperation<T>
+    public abstract class ParagraphBase<T> : BindableBase, ITreeNode, IUserItemOperation<T>
     {
         protected const string ConstGood = "Годен";
         protected const string ConstBad = "Брак";
@@ -38,8 +38,7 @@ namespace ASMC.Core.Model
         /// <summary>
         /// Позволяет получить операции и необходимые настройки для ее выполнения.
         /// </summary>
-        protected IUserItemOperation UserItemOperation { get; }
-
+        public IUserItemOperation UserItemOperation { get; }
         #endregion
 
         protected ParagraphBase(IUserItemOperation userItemOperation)
@@ -194,7 +193,7 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public virtual async Task StartSinglWork(CancellationToken token, Guid guid)
+        public virtual async Task StartSinglWork(CancellationTokenSource token, Guid guid)
         {
             Logger.Info($@"Начато выполнение пункта {Name}");
             InitWork(token);
@@ -218,7 +217,7 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public virtual async Task StartWork(CancellationToken token)
+        public virtual async Task StartWork(CancellationTokenSource token)
         {
             Logger.Info($@"Выполняется пункт {Name}");
             InitWork(token);
@@ -236,7 +235,7 @@ namespace ASMC.Core.Model
                 {
                    
                     Logger.Debug($@"Выполняется строка №{Array.IndexOf(array, row)}");
-                    var metod = row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals("WorkAsync"));
+                    var metod = row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals(nameof(IBasicOperation<object>.WorkAsync)));
                     if (metod != null) await (Task) metod.Invoke(row, new object[] {token});
                     checkResult.Add((Func<bool>) row.GetType().GetProperty(nameof(IBasicOperation<object>.IsGood))
                                                     .GetValue(row));
@@ -264,12 +263,14 @@ namespace ASMC.Core.Model
         /// </summary>
         /// <param name="token"></param>
         /// <param name="token1"></param>
-        protected virtual void InitWork(CancellationToken token)
+        protected virtual void InitWork(CancellationTokenSource token)
         {
             DataRow?.Clear();
         }
         /// <inheritdoc />
         public bool IsCheked { get; set; }
+
+      
 
         /// <inheritdoc />
         public DataTable Data => FillData();

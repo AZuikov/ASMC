@@ -10,9 +10,7 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Left" >
             <Image  Source="{Binding WebCam.VideoSourse}" Stretch="Fill" Height="250" Width="250"/>
-            <Grid>
-                <Button Content="Установка нуля ППИ" Command="{Binding SetNullCommand}"/>
-            </Grid>
+            <Grid><Button Content="Установка нуля ППИ" Command="{Binding SetNullCommand}"/></Grid>
         </StackPanel>
         <StackPanel DataContext="{Binding Content}">
        <HeaderedContentControl Header="{Binding Header}" Focusable="False" DockPanel.Dock="Right" >

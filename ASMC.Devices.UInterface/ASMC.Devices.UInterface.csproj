@@ -82,7 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnalogDevice\ViewModel\IchIchGost577SettingUi.cs" />
+    <Compile Include="AnalogDevice\ViewModel\IchGost577SettingUi.cs" />
     <Compile Include="AnalogDevice\View\IchSettingView.xaml.cs">
       <DependentUpon>IchSettingView.xaml</DependentUpon>
     </Compile>

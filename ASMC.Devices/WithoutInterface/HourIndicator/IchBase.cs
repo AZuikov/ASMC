@@ -55,6 +55,7 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         }
 
         public MeasPoint<Length> Variation { get => GetVariation(CurrentAccuracyClass); }
+        public MeasPoint<Length> Diametr { get; set; }
 
         protected virtual MeasPoint<Length> GetVariation(AccuracyClass.Standart currentAccuracyClass)
         {

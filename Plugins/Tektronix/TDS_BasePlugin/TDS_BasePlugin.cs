@@ -133,7 +133,7 @@ namespace TDS_BasePlugin
             return "ITBmVisualTest";
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
@@ -198,7 +198,7 @@ namespace TDS_BasePlugin
             return "ITBmOprobovanie";
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
@@ -329,7 +329,7 @@ namespace TDS_BasePlugin
             return $"FillTabBmOper3KoefOtkl{_testingChanel}";
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork( token);
             if (calibr9500B == null || someTdsOscilloscope == null) return;
@@ -545,7 +545,7 @@ namespace TDS_BasePlugin
             return $"FillTabBmOper4MeasureTimeIntervalsl{_testingChanel}";
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             if (calibr9500B == null || someTdsOscilloscope == null) return;
@@ -804,7 +804,7 @@ namespace TDS_BasePlugin
             return $"FillTabBmOper5MeasureRiseTime{_testingChanel}";
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             if (calibr9500B == null || someTdsOscilloscope == null) return;

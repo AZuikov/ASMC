@@ -9,9 +9,9 @@ using System.Threading;
 
 namespace AP.Extension
 {
-    public static class ObjectExtension
+    public static class IDeviceBaseExtension
     {
-        public static void FillRangesDevice(this object Devise, string path)
+        public static void FillRangesDevice(this IDeviceBase Devise, string path)
         {
             GetMember(Devise, Devise.GetType());
 
