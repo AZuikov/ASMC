@@ -18,7 +18,7 @@
                 </dxmvvm:WindowService.SettingsSelector>-->
             </ui:WindowService>
 
-            <ui:SelectionService x:Key="SelectionService"/>
+            <ui:SelectionService x:Key="SelectionService" SizeToContent="Height"/>
 
         </ResourceDictionary>
     </Application.Resources>

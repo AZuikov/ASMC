@@ -156,12 +156,12 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Запускает выполнение операций с указаном Гуидом.
         /// </summary>
-        Task StartSinglWork(CancellationToken token, Guid guid);
+        Task StartSinglWork(CancellationTokenSource token, Guid guid);
 
         /// <summary>
         /// Запускает выполнение всех операций.
         /// </summary>
-        Task StartWork(CancellationToken token);
+        Task StartWork(CancellationTokenSource token);
 
         #endregion
     }

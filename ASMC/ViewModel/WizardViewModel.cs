@@ -144,7 +144,10 @@ namespace ASMC.ViewModel
 
         // ReSharper disable once UnusedMember.Global
         public bool[] ModeWork { get; set; } = {true, false};
-
+        /// <summary>
+        /// Предоставляет команжу смены режима работы <see cref="IsManual"/>
+        /// </summary>
+        public ICommand ChangeModeKeyCommand { get; }
         public ICommand PauseCommand { get; }
 
         /// <summary>
@@ -235,6 +238,13 @@ namespace ASMC.ViewModel
             CreatDocumetCommandCommand =
                 new DelegateCommand(OnCreatDocumetCommand);
             PauseCommand = new DelegateCommand(OnPauseCommand);
+
+            ChangeModeKeyCommand =new DelegateCommand(OnChangeModeKeyCommand);
+        }
+
+        private void OnChangeModeKeyCommand()
+        {
+            IsManual = !IsManual;
         }
 
         #region Methods

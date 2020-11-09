@@ -51,6 +51,9 @@
     <Reference Include="DevExpress.Xpf.Core.v17.2">
       <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Xpf.Core.v17.2.dll</HintPath>
     </Reference>
+    <Reference Include="FastMember, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.1.5.0\lib\net461\FastMember.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -95,6 +98,7 @@
     <Compile Include="Behavior\BindableSelectedItemBeheavior.cs" />
     <Compile Include="Behavior\IsFocesedUiBehavior.cs" />
     <Compile Include="Behavior\TabOnEnterBehavior.cs" />
+    <Compile Include="Helps\DialogOperationHelp.cs" />
     <Compile Include="ISelectionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\ImageService.cs" />
@@ -102,6 +106,7 @@
     <Compile Include="UI\SettingService.cs" />
     <Compile Include="ViewModel\Cell.cs" />
     <Compile Include="ViewModel\IItemTable.cs" />
+    <Compile Include="ViewModel\OneTableViewModel.cs" />
     <Compile Include="ViewModel\QuestionTextViewModel.cs" />
     <Compile Include="ViewModel\ShemViewModel.cs" />
     <Compile Include="ViewModel\TableViewModel.cs" />
@@ -113,6 +118,9 @@
     </Compile>
     <Compile Include="View\MultiGridView.xaml.cs">
       <DependentUpon>MultiGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\OneTableView.xaml.cs">
+      <DependentUpon>OneTableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\QuestionTextView.xaml.cs">
       <DependentUpon>QuestionTextView.xaml</DependentUpon>
@@ -128,6 +136,10 @@
     <Page Include="Themes\ValueContentControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\OneTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ShemView.xaml">
       <Generator>MSBuild:Compile</Generator>

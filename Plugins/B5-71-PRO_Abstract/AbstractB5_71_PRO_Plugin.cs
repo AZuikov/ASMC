@@ -126,7 +126,7 @@ namespace B5_71_PRO_Abstract
             return data;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
@@ -211,7 +211,7 @@ namespace B5_71_PRO_Abstract
             return data;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<bool>();
@@ -421,7 +421,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             foreach (var point in MyPoint)
@@ -614,7 +614,7 @@ namespace B5_71_PRO_Abstract
         /// <param name="token"></param>
         /// <param name="token1"></param>
         /// <inheritdoc />
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             foreach (var point in MyPoint)
@@ -812,7 +812,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
@@ -1016,7 +1016,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
@@ -1224,7 +1224,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             foreach (var coef in MyPoint)
@@ -1409,7 +1409,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             foreach (var coef in MyPoint)
@@ -1602,7 +1602,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
@@ -1793,7 +1793,7 @@ namespace B5_71_PRO_Abstract
             return dataTable;
         }
 
-        protected override void InitWork(CancellationToken token)
+        protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();

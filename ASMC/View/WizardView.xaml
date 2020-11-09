@@ -29,7 +29,7 @@
         <ui1:QuestionTextService x:Name="QuestionTextService" />
         <ui1:ImageService x:Name="ImageService" />
         <ui:MessageBoxService />
-
+        <dxmvvm:KeyToCommand Command="{Binding ChangeModeKeyCommand}" KeyGesture="Alt+M"/>
     </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>
@@ -37,14 +37,14 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Menu Margin="0,0,0,10">
-            <MenuItem Header="Файл">
+            <MenuItem Header="Файл" IsEnabled="False">
                 <MenuItem Header="Открыть">
                     <MenuItem Header="Папку с шаблонами протоколов" />
                     <MenuItem Header="Предыдущие измерения" />
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Инструменты">
-                <MenuItem Header="Выбрать режим" HorizontalContentAlignment="Stretch">
+                <MenuItem Header="Выбрать режим" HorizontalContentAlignment="Stretch" ToolTip="Alt + M">
                         <ComboBox ItemsSource="{Binding ModeWork}" SelectedValue="{Binding IsManual}" Width="150">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -53,13 +53,13 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                 </MenuItem>
-                <MenuItem Header="Сокращенные операции" IsCheckable="True" />
-                <MenuItem Header="Игноировать не соответствия" IsCheckable="True" />
+                <MenuItem Header="Сокращенные операции" IsCheckable="True" IsEnabled="False"/>
+                <MenuItem Header="Игноировать не соответствия" IsCheckable="True" IsEnabled="False"/>
             </MenuItem>
-            <MenuItem Header="Средства">
+            <MenuItem Header="Средства" IsEnabled="False">
                 <MenuItem Header="Управление" />
             </MenuItem>
-            <MenuItem Header="Справка" />
+            <MenuItem Header="Справка" IsEnabled="False" />
         </Menu>
         <DockPanel Grid.Row="1">
             <StackPanel DockPanel.Dock="Bottom">

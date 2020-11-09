@@ -70,8 +70,7 @@ namespace ASMC.ViewModel
                     AddresDivece = AddresDivece,
                     StringConnect = device.StringConnect,
                     IsCanStringConnect = device.IsCanStringConnect,
-                    IsConnect = device.IsConnect
-                });
+                    IsConnect = device.IsConnect});
         }
 
         private void ChangedCallback1()

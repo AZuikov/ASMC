@@ -66,6 +66,7 @@ namespace ASMC.Core.UI
                 MinHeight = MinSize.Height,
                 MaxWidth = MaxSize.Width,
                 MaxHeight = MaxSize.Height,
+                //SizeToContent = SizeToContent,
                 WindowShowMode = WindowShowMode.Dialog,
                 ResizeMode = ResizeMode.CanResize,
                 ViewLocator = ViewLocatorCore
@@ -99,6 +100,12 @@ namespace ASMC.Core.UI
 
             return cb?.DialogResult;
         }
+        /// <summary>
+        /// Возвращает или задает значение, определяющее
+        /// каким образом размер карточки будет автоматически
+        /// подбираться под размер содержимого.
+        /// </summary>
+        public SizeToContent SizeToContent { get; set; }
 
         #endregion
 

@@ -49,7 +49,7 @@ namespace ASMC.Devices.UInterface.RemoveDevice.ViewModel
         /// <summary>
         /// Объект для работы с видеоустройством.
         /// </summary>
-        public WebCam WebCam { get; private set; }
+        public WebCam WebCam { get; set; }
 
         /// <summary>
         /// Источник видеопотока.

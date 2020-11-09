@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using ASMC.Common.ViewModel;
 using ASMC.Core.ViewModel;
 
-namespace Indicator_10.ViewModel
+namespace ASMC.Common.ViewModel
 {
-    public class PerpendicularPressureViewModel: SelectionViewModel
+    public class OneTableViewModel: SelectionViewModel
     {
         private TableViewModel _data;
 

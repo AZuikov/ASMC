@@ -91,7 +91,6 @@ namespace ASMC
                     Shutdown();
                 }
 
-                await InitializeUserLangAsync();
             }
             catch(Exception error)
             {
@@ -140,18 +139,6 @@ namespace ASMC
         }   
      
 
-        private async Task InitializeUserLangAsync()
-        {
-            try
-            {
-                //var lang = await Task.Factory.StartNew(() => UserContext.GetLang(DataProvider));
-
-            }
-            catch(Exception error)
-            {
-                
-            }
-        }
 
 
         private bool LaunchWindow(string serviceKey)
@@ -166,10 +153,6 @@ namespace ASMC
         {
             var viewModel = new WizardViewModel();
             //var mainSettings = Settings.UserScope.Main;
-
-          
-          
-
             return viewModel;
         }
 

@@ -95,13 +95,9 @@
     </Compile>
     <Compile Include="Procedures.cs" />
     <Compile Include="ViewModel\MeasuringForceViewModel.cs" />
-    <Compile Include="ViewModel\PerpendicularPressureViewModel.cs" />
     <Compile Include="ViewModel\WorkInPpiViewModel.cs" />
     <Compile Include="View\MeasuringForceView.xaml.cs">
       <DependentUpon>MeasuringForceView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\PerpendicularPressureView.xaml.cs">
-      <DependentUpon>PerpendicularPressureView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\RangeIcdicationView.xaml.cs">
       <DependentUpon>RangeIcdicationView.xaml</DependentUpon>
@@ -159,10 +155,6 @@
   <ItemGroup />
   <ItemGroup>
     <Page Include="View\MeasuringForceView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\PerpendicularPressureView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -61,20 +61,20 @@ namespace ASMC.Data.Model
         }
 
         /// <inheritdoc />
-        public async Task WorkAsync(CancellationToken token )
+        public async Task WorkAsync(CancellationTokenSource token )
         {
             do
             {
                 if(token.IsCancellationRequested)
                 { 
-                    token.ThrowIfCancellationRequested();
+                    token.Token.ThrowIfCancellationRequested();
                 }
 
                 Logger.Debug("Начата инициализация");
                 await InitWork();
                 Logger.Debug("Закончено выполнение инициализации");
                 Logger.Debug("Начато выполнение тела");
-                var task = Task.Run(BodyWorkAsync, token);
+                var task = Task.Run(BodyWorkAsync, token.Token);
                 try
                 {
                     await task;

@@ -6,10 +6,43 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    </UserControl.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ContentControl Margin="15,10,15,0" Focusable="False">
+            <dxmvvm:Interaction.Behaviors>
+                <dxmvvm:ViewInjectionService RegionName="{Binding RegionName}" />
+            </dxmvvm:Interaction.Behaviors>
+        </ContentControl>
+
+        <StackPanel Grid.Row="1"
+                    Margin="11"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="Выбрать"
+                            Command="{Binding SelectCommand}"
+                            Margin="5,0,0,0"
+                            MinWidth="80" />
+                    <Button Content="Закрыть"
+                            IsCancel="True"
+                            Command="{Binding CloseCommand}"
+                            Margin="5,0,0,0"
+                            MinWidth="80" />
+                </StackPanel>
+               
+            </Grid>
+           
+        </StackPanel>
+    </Grid>
+    <!--<Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="30"/>
         <RowDefinition Height="70*"/>
@@ -19,26 +52,7 @@
         <ColumnDefinition />
         <ColumnDefinition  />
       </Grid.ColumnDefinitions>
-      <ContentControl Margin="15,10,15,0" Focusable="False" MaxHeight="800" MaxWidth="600"
-                    Grid.Row="1" Grid.ColumnSpan="2">
-      <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:ViewInjectionService RegionName="{Binding RegionName}" />
-      </dxmvvm:Interaction.Behaviors>
-    </ContentControl>
-      <StackPanel Grid.Column="1"
-                  Grid.Row="2"
-                  Margin="11"
-                  Orientation="Horizontal"
-                  HorizontalAlignment="Right">
-          <Button Content="Выбрать"
-                  Command="{Binding SelectCommand}"
-                  Margin="5,0,0,0"
-                  MinWidth="80" />
-            <Button Content="Закрыть"
-                  IsCancel="True"
-                  Command="{Binding CloseCommand}"
-                  Margin="5,0,0,0"
-                  MinWidth="80" />
-      </StackPanel>
-  </Grid>
+    
+      
+  </Grid>-->
 </UserControl>

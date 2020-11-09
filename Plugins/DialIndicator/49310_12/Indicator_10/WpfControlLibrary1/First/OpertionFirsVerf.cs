@@ -9,7 +9,7 @@ using ASMC.Devices.WithoutInterface.HourIndicator;
 
 namespace Indicator_10.First
 {
-    public class OpertionFirsVerf<T> : Operation where T : IchGost577, new()
+    public class OpertionFirsVerf<T> : Operation where T : IUserType, new()
     {
         public OpertionFirsVerf(ServicePack servicePac) : base(servicePac)
         {
@@ -24,6 +24,24 @@ namespace Indicator_10.First
                 {
                     Devices = new IUserType[] {new T()}
                 }
+            };
+            UserItemOperation = new IUserItemOperationBase[]
+            {
+                new VisualInspection(this),
+                new Testing(this),
+                new ConnectionDiametr(this), 
+                new LinerRoughness(this),
+                new TipRoughness(this),
+                new ArrowWidch(this),
+                new StrokeWidch(this),
+                new StrokeLength(this),
+
+                new MeasuringForce(this),
+                new PerpendicularPressure(this),
+                new RangeIndications(this),
+                new VariationReading(this),
+                new DeterminationError(this),
+
             };
         }
     
