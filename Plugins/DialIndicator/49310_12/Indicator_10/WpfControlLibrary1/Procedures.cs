@@ -107,21 +107,17 @@ namespace Indicator_10
                 {
                     columnIndex++;
                     if (setting.Breaking == null) continue;
-                    if (columnIndex % setting.Breaking == 0)
-                    {
-                        rowIndex++;
-                        columnIndex = 0;
-                    }
+                    if (columnIndex % setting.Breaking != 0) continue;
+                    rowIndex++;
+                    columnIndex = 0;
                 }
                 else
                 {
                     rowIndex++;
                     if (setting.Breaking == null) continue;
-                    if (rowIndex % setting.Breaking == 0)
-                    {
-                        columnIndex++;
-                        rowIndex = 0;
-                    }
+                    if (rowIndex % setting.Breaking != 0) continue;
+                    columnIndex++;
+                    rowIndex = 0;
                 }
             }
 

@@ -21,13 +21,20 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestGetNoramalizeValueToSi()
         {
-
             var point = new MeasPoint<Voltage, Frequency>(15, 20);
             Assert.IsTrue(point.MainPhysicalQuantity.GetNoramalizeValueToSi() == 15);
             point = new MeasPoint<Voltage, Frequency>(15, UnitMultiplier.Kilo, 20, UnitMultiplier.Mega);
 
             Assert.IsTrue(point.MainPhysicalQuantity.GetNoramalizeValueToSi() == (decimal) (15*1E3));
         }
-     
+        [TestMethod]
+        public void TesSubtractionMeasPoint()
+        {
+            var point = new MeasPoint<Voltage>(15, UnitMultiplier.Mili );
+            var point1 = new MeasPoint<Voltage>(15, UnitMultiplier.Micro);
+            Assert.IsTrue(point - point1 == new MeasPoint<Voltage>(0.014985m));
+          
+        }
+
     }
 }

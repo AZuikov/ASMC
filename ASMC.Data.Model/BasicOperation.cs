@@ -63,6 +63,7 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public async Task WorkAsync(CancellationTokenSource token )
         {
+            var taskColmplit = CompliteWork();
             do
             {
                 if(token.IsCancellationRequested)
@@ -94,7 +95,17 @@ namespace ASMC.Data.Model
                     }
                 }
                 Logger.Debug("Закончено выполнение тела");
-            } while (!await CompliteWork());
+              
+                try
+                {
+                    await taskColmplit;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(taskColmplit.Exception != null ? taskColmplit.Exception.InnerException : e);
+                }
+
+            } while (taskColmplit.Result);
             Logger.Debug("Закончено точка");
         }
 
