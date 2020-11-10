@@ -813,7 +813,7 @@ namespace APPA_107N_109N
 
         #region ACV
 
-        public  class Oper4AcvMeasureBase : ParagraphBase<MeasPoint<Voltage>>
+        public  class Oper4AcvMeasureBase : ParagraphBase<MeasPoint<Voltage, Frequency>>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -880,7 +880,7 @@ namespace APPA_107N_109N
 
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationAcRangeNominal = Mult107_109N.RangeNominal.RangeNone;
-                DataRow = new List<IBasicOperation<MeasPoint<Voltage>>>();
+                DataRow = new List<IBasicOperation<MeasPoint<Voltage,Frequency>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
             }
@@ -939,7 +939,7 @@ namespace APPA_107N_109N
 
                 foreach (var point in VoltPoint)
                 {
-                    var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+                    var operation = new BasicOperationVerefication<MeasPoint<Voltage,Frequency>>();
                     operation.InitWork = async () =>
                     {
                         try
@@ -1032,7 +1032,7 @@ namespace APPA_107N_109N
                                              );
 
                                 MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Voltage>(result, point.MainPhysicalQuantity.Multiplier);
+                                return new MeasPoint<Voltage,Frequency>(result, point.MainPhysicalQuantity.Multiplier,point.AdditionalPhysicalQuantity);
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -1063,7 +1063,7 @@ namespace APPA_107N_109N
                             MathStatistics.Round(ref measurePoint, mantisa);
 
                             operation.Getting =
-                                new MeasPoint<Voltage>(measurePoint, point.MainPhysicalQuantity.Multiplier);
+                                new MeasPoint<Voltage,Frequency>(measurePoint, point.MainPhysicalQuantity.Multiplier,point.AdditionalPhysicalQuantity);
                         }
                         catch (Exception e)
                         {
@@ -1074,7 +1074,7 @@ namespace APPA_107N_109N
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Voltage,Frequency>>) operation.Clone());
                 }
             }
 
