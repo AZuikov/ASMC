@@ -85,13 +85,12 @@ namespace ASMC.Data.Model
             return new MeasPoint<TPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                     * b.MainPhysicalQuantity.GetNoramalizeValueToSi());
         }
-        public static MeasPoint<TPhysicalQuantity> operator /(MeasPoint<TPhysicalQuantity> a,
+        public static decimal operator /(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
-            return new MeasPoint<TPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi())
-                                                    / (b.MainPhysicalQuantity.GetNoramalizeValueToSi());
+            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() / b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
 
         public static MeasPoint<TPhysicalQuantity> operator +(MeasPoint<TPhysicalQuantity> a,
@@ -296,7 +295,7 @@ namespace ASMC.Data.Model
             return new MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                     * b.MainPhysicalQuantity.GetNoramalizeValueToSi(), (TAddPhysicalQuantity)a.AdditionalPhysicalQuantity.Clone());
         }
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator /(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+        public static decimal operator /(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) 
@@ -305,8 +304,7 @@ namespace ASMC.Data.Model
                 ||
                 !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(), b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
-            return new MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>((a.MainPhysicalQuantity.GetNoramalizeValueToSi())
-                                                    / (b.MainPhysicalQuantity.GetNoramalizeValueToSi()),(TAddPhysicalQuantity)a.AdditionalPhysicalQuantity.Clone());
+            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() /b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
 
         public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator +(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,

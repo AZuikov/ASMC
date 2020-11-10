@@ -89,9 +89,7 @@ namespace ASMC.ViewModel
         private void OnSettingOpenCommand()
         {
             var device = SelectedDevice as IControlPannelDevice;
-            var service = GetService<ISelectionService>("SelectionService") as SelectionService;
-            if (service == null) return;
-
+            if (!(GetService<ISelectionService>("SelectionService") is SelectionService service)) return;
             service.ViewLocator = new ViewLocator(device?.Assembly);
             service.DocumentType = device?.DocumentType;
             service.ViewModel = device?.ViewModel;

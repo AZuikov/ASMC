@@ -166,7 +166,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
         /// <inheritdoc />
         public decimal GetNoramalizeValueToSi()
         {
-            return Value = Value * (decimal)Multiplier.GetDoubleValue();
+            return Value * (decimal)Multiplier.GetDoubleValue();
         }
 
         /// <inheritdoc />

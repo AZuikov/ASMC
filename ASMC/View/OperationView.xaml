@@ -27,10 +27,10 @@
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate  ItemsSource="{Binding Nodes}">
                         <StackPanel Orientation="Horizontal" >
-                            <CheckBox IsChecked="{Binding Path=IsCheked}" Grid.Column="0"
+                            <CheckBox IsChecked="{Binding Path=IsCheked}"
                                       HorizontalAlignment="Left"
                                       VerticalAlignment="Center"  Visibility="{Binding IsManual, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding Path= Name}" Grid.Column="1" >
+                            <TextBlock Text="{Binding Path= Name}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
