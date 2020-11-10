@@ -726,10 +726,12 @@ namespace Indicator_10
 
 
                 var rm1 = new WorkInPpiViewModel();
-                var webCam = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as WebCam != null);
-                //rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
+                var webCam = UserItemOperation.ControlDevices.FirstOrDefault(q =>
+                    (q.SelectedDevice as IControlPannelDevice)?.Device as WebCam != null);
+                rm1.WebCam.WebCam = (webCam.SelectedDevice as IControlPannelDevice).Device as WebCam;
+                rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
                 var ppi = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as Ppi != null);
-                //rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? string.Empty);
+                rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
                 rm1.Content = CreateTable("Определение вариации показаний", arrPoints, setting);
                 a.ViewModel = rm1;
                 a.DocumentType = "RangeIcdicationView";

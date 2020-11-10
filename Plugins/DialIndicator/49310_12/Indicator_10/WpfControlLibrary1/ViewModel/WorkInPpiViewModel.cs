@@ -50,7 +50,6 @@ namespace Indicator_10.ViewModel
         }
 
         private readonly Timer _timer;
-        private BitmapImage _VideoSourse;
 
         public Ppi Ppi
         {
