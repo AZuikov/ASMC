@@ -82,7 +82,8 @@ namespace APPA_107N_109N
 
                 if (answer == MessageResult.No) return Task.FromResult(true);
             }
-
+            if (operation.IsGood==null)
+                return Task.FromResult(true);
             return Task.FromResult(operation.IsGood());
         }
 
@@ -107,7 +108,8 @@ namespace APPA_107N_109N
 
                 if (answer == MessageResult.No) return Task.FromResult(true);
             }
-
+            if (operation.IsGood == null)
+                return Task.FromResult(true);
             return Task.FromResult(operation.IsGood());
         }
 
