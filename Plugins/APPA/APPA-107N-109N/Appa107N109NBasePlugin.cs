@@ -498,7 +498,7 @@ namespace APPA_107N_109N
 
                             operation.Getting =
                                 new MeasPoint<Voltage>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
-                            //new AcVariablePoint(measurePoint, MeasureUnits.V, thisRangeUnits.Multiplier);
+                            
                             operation.Expected = currPoint;
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>

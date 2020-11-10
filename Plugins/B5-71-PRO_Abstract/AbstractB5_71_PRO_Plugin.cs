@@ -6,7 +6,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Math;
+using ASMC.Core;
 using ASMC.Core.Model;
+using ASMC.Core.UI;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -1065,13 +1067,13 @@ namespace B5_71_PRO_Abstract
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
 
-                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow();
+                    var windows =  UserItemOperation.ServicePack.FreeWindow();
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
-                    windows.MaxHeight = 200;
-                    windows.MaxWidth = 350;
-                    windows.Show("SelectRangeView", vm);
+                    windows.ViewModel = vm;
+                    windows.DocumentType = "SelectRangeView";
+                    windows.Show();
 
                     var a = vm.SelectRange;
 
@@ -1848,13 +1850,13 @@ namespace B5_71_PRO_Abstract
                                                                   MessageIcon.Information,
                                                                   MessageResult.OK);
 
-                    var windows = (WindowService) UserItemOperation.ServicePack.FreeWindow();
+                    var windows = UserItemOperation.ServicePack.FreeWindow();
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
-                    windows.MaxHeight = 200;
-                    windows.MaxWidth = 350;
-                    windows.Show("SelectRangeView", vm);
+                    windows.ViewModel = vm;
+                    windows.DocumentType = "SelectRangeView";
+                    windows.Show();
 
                     var a = vm.SelectRange;
 

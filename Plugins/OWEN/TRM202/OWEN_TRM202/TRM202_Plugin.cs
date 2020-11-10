@@ -191,9 +191,9 @@ namespace OWEN_TRM202
                 return data;
             }
 
-            protected override void InitWork(CancellationToken token)
+            protected void InitWork(CancellationToken token)
             {
-                base.InitWork(token);
+               // base.InitWork(token);
                 //нужно проверсти инициализацию
                 if (UserItemOperation != null)
                 {

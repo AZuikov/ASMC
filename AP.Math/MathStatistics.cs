@@ -264,7 +264,7 @@ namespace AP.Math
         /// <returns></returns>
         public static int GetMantissa<T>(T value, bool reduceZeros = false)
         {
-            return GetMantissa(Convert.ToString(value, CultureInfo.CurrentCulture), CultureInfo.CurrentCulture, reduceZeros);
+            return GetMantissa(Convert.ToString(value, new CultureInfo("en-US")), new CultureInfo("en-US"), reduceZeros);
         }
 
         /// <summary>
