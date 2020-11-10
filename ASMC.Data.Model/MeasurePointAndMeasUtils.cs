@@ -144,14 +144,14 @@ namespace ASMC.Data.Model
         public static bool operator <=(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity?.Unit, b?.MainPhysicalQuantity?.Unit)) return false;
 
             return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
         public static bool operator >=(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) return false;
 
             return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() >= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }

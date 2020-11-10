@@ -850,7 +850,8 @@ namespace Indicator_10
             operation.ErrorCalculation = (expected, getting) =>
             {
                 var a = expected.Select((t, index) => t - getting[index]).ToArray();
-                var res = (Length)(a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
+
+                var res = (a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
                 return new[] { new MeasPoint<Length>(res) };
             };
 
