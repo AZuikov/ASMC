@@ -153,10 +153,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                         public CalibrMain SetValue(MeasPoint<Voltage> inPoint)
                         {
-                            CultureInfo culture = new CultureInfo("en-US"); // для прибора разделитель целой и дробной части должен быть точкой
-                            culture.NumberFormat.CurrencyDecimalSeparator = ".";
+                            
                             string sendLine =
-                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(culture)}V, 0{JoinValueMult((double)0, UnitMultiplier.None)}HZ";
+                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}V, 0{JoinValueMult((double)0, UnitMultiplier.None)}HZ";
                             _calibrMain.WriteLine(sendLine);
                             new COut(_calibrMain).GetErrors(sendLine);
                             _calibrMain.Sinchronization();
@@ -216,7 +215,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                         public CalibrMain SetValue(MeasPoint<Voltage,Frequency> setPoint)
                         {
-                            string SendComand = $@"OUT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}V, {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()}HZ";
+                            string SendComand = $@"OUT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}V, {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}HZ";
                             _calibrMain.WriteLine(SendComand);
                             new COut(_calibrMain).GetErrors(SendComand);
 
@@ -300,13 +299,19 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// </summary> 
                         public CalibrMain SetValue(decimal value, UnitMultiplier mult= UnitMultiplier.None)
                         {
-                            string SendComand = $@"OUT {JoinValueMult(value, mult)}A, 0Hz";
+                            MeasPoint<Current> setPoint = new MeasPoint<Current>(value,mult);
+                            return SetValue(setPoint);
+                        }
+
+                        public CalibrMain SetValue(MeasPoint<Current> inPoint)
+                        {
+                            string SendComand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}A, 0Hz";
                             _calibrMain.WriteLine(SendComand);
                             new COut(_calibrMain).GetErrors(SendComand);
                             return _calibrMain;
                         }
 
-                       
+
 
                     }
                     /// <summary>
@@ -349,7 +354,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         public CalibrMain SetValue(MeasPoint<Current, Frequency> inPoint)
                         {
                             string SendComand =
-                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}A, {inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()}HZ";
+                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}A, {inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}HZ";
                             _calibrMain.WriteLine(SendComand);
 
                             new COut(_calibrMain).GetErrors(SendComand);
@@ -410,7 +415,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                     public CalibrMain SetValue(MeasPoint<Resistance> inPoint)
                     {
-                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}OHM";
+                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}OHM";
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
 
@@ -467,7 +472,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                     public CalibrMain SetValue(MeasPoint<Capacity> inPoint)
                     {
-                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()}F";
+                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}F";
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
 
@@ -534,7 +539,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                     public CalibrMain SetValue(MeasPoint<CelsiumGrad> inPoint)
                     {
-                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()} CEL";
+                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))} CEL";
                            
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);

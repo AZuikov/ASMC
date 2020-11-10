@@ -264,7 +264,7 @@ namespace AP.Math
         /// <returns></returns>
         public static int GetMantissa<T>(T value, bool reduceZeros = false)
         {
-            return GetMantissa(Convert.ToString(value, new CultureInfo("en-US")), new CultureInfo("en-US"), reduceZeros);
+            return GetMantissa(Convert.ToString(value, CultureInfo.CurrentCulture), CultureInfo.CurrentCulture, reduceZeros);
         }
 
         /// <summary>
@@ -288,9 +288,10 @@ namespace AP.Math
         private static int GetMantissa(string value, CultureInfo cultureInfo, bool reduceZeros = false)
         {
             if (string.IsNullOrEmpty(value)) return 0;
-            if (!double.TryParse(value, NumberStyles.Number, cultureInfo, out _))
+            var numeric = 0m;
+            if (!decimal.TryParse(value, NumberStyles.Any, cultureInfo, out numeric))
                 throw new InvalidCastException();
-            var splitted = value.Split(Convert.ToChar(cultureInfo.NumberFormat.CurrencyDecimalSeparator));
+            var splitted = numeric.ToString(cultureInfo).Split(Convert.ToChar(cultureInfo.NumberFormat.CurrencyDecimalSeparator));
             if (splitted.Length != 2)
                 return 0;
             if (!reduceZeros) return splitted[1].Length;
