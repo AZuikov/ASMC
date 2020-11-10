@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using AP.Utils.Data;
+﻿using AP.Utils.Data;
 using ASMC.Devices.Port.OWEN;
 using NLog;
 using OwenioNet.Types;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ASMC.Devices.OWEN
 {
     public class TRM202Device : OwenProtocol
     {
-
         public int DeviceAddres { get; set; }
+
         /// <summary>
         /// Тип входного датчика или сигнала для входа 1 (2)
         /// </summary>
@@ -48,34 +48,19 @@ namespace ASMC.Devices.OWEN
         public enum Parametr
         {
             /// <summary>
-            /// Измеренное значение входной величины.
-            /// </summary>
-            [StringValue("PV")] PV,
-
-            /// <summary>
-            /// Значение, посчитанное вычислителем или код ошибки (аналогичный Pv).
-            /// </summary>
-            [StringValue("LuPV")] LuPV,
-
-            /// <summary>
-            /// Уставка
-            /// </summary>
-            [StringValue("SP")] SP,
-
-            /// <summary>
             /// Тип входного датчика или сигнала для входа 1 (2).
             /// </summary>
-            [StringValue("in.t")] InT,
+            [ReadOnly(false)] [StringValue("in.t")] InT,
 
             /// <summary>
             /// Точность вывода температуры на входе 1 (2).
             /// </summary>
-            [StringValue("dPt")] dPt,
+            [ReadOnly(false)] [StringValue("dPt")] dPt,
 
             /// <summary>
             /// Положение десятичной точки для входа 1 (2).
             /// </summary>
-            [StringValue("dP")] dP,
+            [ReadOnly(false)] [StringValue("dP")] dP,
 
             /// <summary>
             /// Нижняя граница диапазона измерения для входа 1 (2).
@@ -85,219 +70,234 @@ namespace ASMC.Devices.OWEN
             /// <summary>
             /// Верхняя граница диапазона измерения для входа 1 (2).
             /// </summary>
-            [StringValue("in.H")] InH,
+            [ReadOnly(false)] [StringValue("in.H")] InH,
 
             /// <summary>
             /// Вычислитель квадратного корня для аналогового входа 1.
             /// </summary>
-            [StringValue("Sqr")] Sqr,
+            [ReadOnly(false)] [StringValue("Sqr")] Sqr,
 
             /// <summary>
             /// Входная величина для ЛУ1 (2).
             /// </summary>
-            [StringValue("iLU")] I_LU,
+            [ReadOnly(false)] [StringValue("iLU")] I_LU,
 
             /// <summary>
             /// Сдвиг характеристики для входа 1 (2).
             /// </summary>
-            [StringValue("SH")] SH,
+            [ReadOnly(false)] [StringValue("SH")] SH,
 
             /// <summary>
             /// Наклон характеристики для входа 1 (2).
             /// </summary>
-            [StringValue("KU")] KU,
+            [ReadOnly(false)] [StringValue("KU")] KU,
 
             /// <summary>
             /// Полоса фильтра для входа 1 (2).
             /// </summary>
-            [StringValue("Fb")] Fb,
+            [ReadOnly(false)] [StringValue("Fb")] Fb,
 
             /// <summary>
             /// Постоянная времени цифрового фильтра для входа 1 (2).
             /// </summary>
-            [StringValue("inF")] InF,
-
-            /// <summary>
-            /// Режим индикации.
-            /// </summary>
-            [StringValue("diSP")] DiSP,
-
-            /// <summary>
-            /// Время выхода из режима программирования.
-            /// </summary>
-            [StringValue("rESt")] RESt,
+            [ReadOnly(false)] [StringValue("inF")] InF,
 
             /// <summary>
             /// Нижняя граница задания уставки ЛУ1 (2).
             /// </summary>
-            [StringValue("SL.L")] SL_L,
+            [ReadOnly(true)] [StringValue("SL.L")] SL_L,
 
             /// <summary>
             /// Верхняя граница задания уставки ЛУ1(2).
             /// </summary>
-            [StringValue("SL.H")] SL_H,
+            [ReadOnly(true)] [StringValue("SL.H")] SL_H,
 
             /// <summary>
             /// Тип логики компаратора 1 (2).
             /// </summary>
-            [StringValue("CmP")] CmP,
+            [ReadOnly(false)] [StringValue("CmP")] CmP,
 
             /// <summary>
             /// Гистерезис для компаратора 1 (2).
             /// </summary>
-            [StringValue("HYS")] HYS,
+            [ReadOnly(true)] [StringValue("HYS")] HYS,
 
             /// <summary>
             /// Задержка включения компаратора 1 (2).
             /// </summary>
-            [StringValue("don")] Don,
+            [ReadOnly(false)] [StringValue("don")] Don,
 
             /// <summary>
             /// Задержка выключения компаратора 1 (2).
             /// </summary>
-            [StringValue("doF")] DoF,
+            [ReadOnly(false)] [StringValue("doF")] DoF,
 
             /// <summary>
             /// Минимальное время удерживания компаратора 1 (2) во вкл. состоянии.
             /// </summary>
-            [StringValue("ton")] Ton,
+            [ReadOnly(false)] [StringValue("ton")] Ton,
 
             /// <summary>
             /// Минимальное время удерживания компаратора 1 (2) в выкл.состоянии.
             /// </summary>
-            [StringValue("toF")] ToF,
+            [ReadOnly(false)] [StringValue("toF")] ToF,
 
             /// <summary>
             /// Режим работы ЦАП 1.
             /// </summary>
-            [StringValue("dAC")] DAC,
+            [ReadOnly(false)] [StringValue("dAC")] DAC,
 
             /// <summary>
             /// Способ управления для выхода 1 (2).
             /// </summary>
-            [StringValue("CtL")] CtL,
+            [ReadOnly(false)] [StringValue("CtL")] CtL,
 
             /// <summary>
             /// Полоса пропорциональности для выхода 1 (2).
             /// </summary>
-            [StringValue("XP")] XP,
+            [ReadOnly(true)] [StringValue("XP")] XP,
 
             /// <summary>
             /// Нижняя граница выходного диапазона регистрации ЦАП 1 (2).
             /// </summary>
-            [StringValue("An.L")] An_L,
+            [ReadOnly(true)] [StringValue("An.L")] An_L,
 
             /// <summary>
             /// Верхняя граница выходного диапазона регистрации ЦАП 1 (2).
             /// </summary>
-            [StringValue("An.H")] An_H,
+            [ReadOnly(true)] [StringValue("An.H")] An_H,
 
             /// <summary>
             /// Состояние выхода 1 (2) в режиме «ошибка».
             /// </summary>
-            [StringValue("oEr")] O_Er,
+            [ReadOnly(true)] [StringValue("oEr")] O_Er,
+
+            /// <summary>
+            /// Измеренное значение входной величины.
+            /// </summary>
+            [ReadOnly(true)] [StringValue("PV")] PV,
+
+            /// <summary>
+            /// Значение, посчитанное вычислителем или код ошибки (аналогичный Pv).
+            /// </summary>
+            [ReadOnly(true)] [StringValue("LuPV")] LuPV,
+
+            /// <summary>
+            /// Уставка
+            /// </summary>
+            [ReadOnly(true)] [StringValue("SP")] SP,
+
+            /// <summary>
+            /// Режим индикации.
+            /// </summary>
+            [ReadOnly(false)] [StringValue("diSP")] DiSP,
+
+            /// <summary>
+            /// Время выхода из режима программирования.
+            /// </summary>
+            [ReadOnly(false)] [StringValue("rESt")] RESt,
 
             /// <summary>
             /// Протокол обмена.
             /// </summary>
-            [StringValue("PROT")] PROT,
+            [ReadOnly(true)] [StringValue("PROT")] PROT,
 
             /// <summary>
             /// Скорость обмена в сети.
             /// </summary>
-            [StringValue("bPS")] BPS,
+            [ReadOnly(true)] [StringValue("bPS")] BPS,
 
             /// <summary>
             /// Длина сетевого адреса.
             /// </summary>
-            [StringValue("A.LEn")] A_LEn,
+            [ReadOnly(true)] [StringValue("A.LEn")] A_LEn,
 
             /// <summary>
             /// Базовый адрес прибора в сети.
             /// </summary>
-            [StringValue("Addr")] Addr,
+            [ReadOnly(true)] [StringValue("Addr")] Addr,
 
             /// <summary>
             /// Задержка при ответе по RS485.
             /// </summary>
-            [StringValue("rSdL")] RSdL,
+            [ReadOnly(true)] [StringValue("rSdL")] RSdL,
 
             /// <summary>
             /// Длина слова данных.
             /// </summary>
-            [StringValue("LEn")] LEn,
+            [ReadOnly(true)] [StringValue("LEn")] LEn,
 
             /// <summary>
             /// Состояние бита четности в посылке.
             /// </summary>
-            [StringValue("PrtY")] PrtY,
+            [ReadOnly(true)] [StringValue("PrtY")] PrtY,
 
             /// <summary>
             /// Количество стоп-бит в посылке.
             /// </summary>
-            [StringValue("Sbit")] Sbit,
+            [ReadOnly(true)] [StringValue("Sbit")] Sbit,
 
             /// <summary>
             /// Версия программы.
             /// </summary>
-            [StringValue("VER")] VER,
+            [ReadOnly(true)] [StringValue("VER")] VER,
 
             /// <summary>
             /// Название прибора.
             /// </summary>
-            [StringValue("Dev")] Dev,
+            [ReadOnly(true)] [StringValue("Dev")] Dev,
 
             /// <summary>
             /// Команда смены протокола обмена.
             /// </summary>
-            [StringValue("PRTL")] PRTL,
+            [ReadOnly(true)] [StringValue("PRTL")] PRTL,
 
             /// <summary>
             /// Команда перехода на новые сетевые настройки.
             /// </summary>
-            [StringValue("APLY")] APLY,
+            [ReadOnly(true)] [StringValue("APLY")] APLY,
 
             /// <summary>
             /// Команда перезагрузки прибора (эквивалент выкл/вкл питания).
             /// </summary>
-            [StringValue("INIT")] INIT,
+            [ReadOnly(true)] [StringValue("INIT")] INIT,
 
             /// <summary>
             /// Код сетевой ошибки при последнем обращении.
             /// </summary>
-            [StringValue("N.err")] N_Err,
+            [ReadOnly(true)] [StringValue("N.err")] N_Err,
 
             /// <summary>
             /// Для чтения/записи атрибута «редактирования».
             /// </summary>
-            [StringValue("Attr")] Attr,
+            [ReadOnly(true)] [StringValue("Attr")] Attr,
 
             /// <summary>
             /// Перевод канала на внешнее управление.
             /// </summary>
-            [StringValue("r-L")] R_L,
+            [ReadOnly(true)] [StringValue("r-L")] R_L,
 
             /// <summary>
             /// Значение выходного сигнала или код ошибки.
             /// </summary>
-            [StringValue("r.oUt")] RoUt,
+            [ReadOnly(true)] [StringValue("r.oUt")] RoUt,
 
             // Параметры секретности (группа скрыта под паролем PASS = 100).
 
             /// <summary>
             /// Защита параметров от просмотра.
             /// </summary>
-            [StringValue("oAPt")] O_APt,
+            [ReadOnly(true)] [StringValue("oAPt")] O_APt,
 
             /// <summary>
             /// Защита параметров от изменения.
             /// </summary>
-            [StringValue("wtPt")] WtPt,
+            [ReadOnly(true)] [StringValue("wtPt")] WtPt,
 
             /// <summary>
             /// Защита отдельных параметров от просмотра и изменений (включение или отключение действия атрибутов).
             /// </summary>
-            [StringValue("EdPt")] EdPt
+            [ReadOnly(true)] [StringValue("EdPt")] EdPt
         }
 
         public enum TrmError
@@ -355,7 +355,7 @@ namespace ASMC.Devices.OWEN
 
         public TrmProtocol Protocol { get; set; }
 
-        #endregion
+        #endregion Property
 
         public TRM202Device()
         {
@@ -369,29 +369,29 @@ namespace ASMC.Devices.OWEN
             switch (err)
             {
                 case TrmError.BitValue:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Descriptor:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Edit:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.FieldValue:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Index:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Input:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.InvalidWriteValue:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Mantissa:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.NoAcpConnect:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Read:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Unecpected:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
                 case TrmError.Value:
-                    throw new TrmException {Code = err};
+                    throw new TrmException { Code = err };
             }
         }
 
@@ -402,7 +402,7 @@ namespace ASMC.Devices.OWEN
         /// <returns></returns>
         public decimal GetLuPvValChanel(ushort chanel)
         {
-            return (decimal) ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength,  Parametr.LuPV.GetStringValue(),
+            return (decimal)ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength, Parametr.LuPV.GetStringValue(),
                                             3);
         }
 
@@ -414,14 +414,14 @@ namespace ASMC.Devices.OWEN
         public decimal GetMeasValChanel(ushort chanel)
         {
             // Для второго канала нужно увеличить адрес прибора на 1.
-            return (decimal) ReadFloatParam(DeviceAddres + (chanel - 1),AddressLength,  Parametr.PV.GetStringValue(),
+            return (decimal)ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength, Parametr.PV.GetStringValue(),
                                             3);
         }
 
-        public decimal GetNumericParam( Parametr parName,
+        public decimal GetNumericParam(Parametr parName,
             int size, ushort? Register = null)
         {
-            return (decimal) ReadFloatParam(DeviceAddres, AddressLength,  parName.GetStringValue(), size, --Register);
+            return (decimal)ReadFloatParam(DeviceAddres, AddressLength, parName.GetStringValue(), size, --Register);
         }
 
         public int GetShortIntPar(Parametr parName, int size, ushort? Register = null)
@@ -434,8 +434,8 @@ namespace ASMC.Devices.OWEN
             var answerDevice = base.OwenReadParam(ParametrName, addres, --Register);
             //отловим ошибку
             if (answerDevice.Length == 1)
-                if (Enum.IsDefined(typeof(TrmError), (int) answerDevice[0]))
-                    GenericException((TrmError) answerDevice[0]);
+                if (Enum.IsDefined(typeof(TrmError), (int)answerDevice[0]))
+                    GenericException((TrmError)answerDevice[0]);
 
             return answerDevice;
         }
@@ -445,10 +445,10 @@ namespace ASMC.Devices.OWEN
             ushort? localRegister = null;
             if (Register != null)
             {
-                localRegister = (ushort?) (Register-1);//адрес канала начинается с нуля
+                localRegister = (ushort?)(Register - 1);//адрес канала начинается с нуля
             }
 
-            OwenWriteParam(DeviceAddres,AddressLength, parName.GetStringValue(), writeDataBytes, localRegister);
+            OwenWriteParam(DeviceAddres, AddressLength, parName.GetStringValue(), writeDataBytes, localRegister);
         }
 
         public void WriteFloat24Parametr(Parametr parName, float writeValue, ushort? Register = null)
@@ -461,14 +461,21 @@ namespace ASMC.Devices.OWEN
                 do
                 {
                     list.Add(0x00);
-                } while (list.Count!=maxArrSize);
+                } while (list.Count != maxArrSize);
             }
-            if(list.Count > maxArrSize)
-                list.RemoveRange(maxArrSize,list.Count-maxArrSize);
+            if (list.Count > maxArrSize)
+                list.RemoveRange(maxArrSize, list.Count - maxArrSize);
 
-            WriteParametrToTRM(parName,list.ToArray(),Register);
+            WriteParametrToTRM(parName, list.ToArray(), Register);
         }
 
-        #endregion
+        #endregion Methods
+
+        /// <summary>
+        /// Хранит настройки прибора
+        /// </summary>
+        public class ParametrBackup
+        {
+        }
     }
 }

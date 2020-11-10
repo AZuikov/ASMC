@@ -215,11 +215,11 @@ namespace OWEN_TRM202
                                 var typeTermoCouple = BitConverter.GetBytes((int) (TRM202Device.in_t.r428));
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple,_chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.SH, new byte[] {0x00}, _chanelNumber);
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.KU, new byte[] {0x01}, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.SH, 0, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.KU, 1, _chanelNumber);
                                 //3. ставим полосы фильтров и постоянную времени фильтра
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.Fb, new byte[] {0x00}, _chanelNumber);
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.InF, new byte[] {0x00}, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.Fb, 0, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.InF, 0, _chanelNumber);
                             });
                         }
                         catch (Exception e)
