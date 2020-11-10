@@ -50,7 +50,7 @@ namespace APPA_107N_109N
         /// <summary>
         /// Позволяет посчитать, сколько раз нужно нажать кнопку переключения пределов, что бы попасть на нужный предел измерения.
         /// </summary>
-        /// <param name = "CountOfRange"> Общее количество пределов измерения на данном режиме.</param>
+        /// <param name = "CountOfRange">Общее количество пределов измерения на данном режиме.</param>
         /// <param name = "CurrentRange">Номер текущего установленного предела измерения.</param>
         /// <param name = "TargetRange">Номер предела измерения, на который нужно переключиться.</param>
         /// <returns></returns>
@@ -65,7 +65,7 @@ namespace APPA_107N_109N
         public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
-            if (!operation.IsGood())
+            if (operation.IsGood!= null && !operation.IsGood())
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
@@ -90,7 +90,7 @@ namespace APPA_107N_109N
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
                                                   where T1 : class, IPhysicalQuantity<T1>, new()
         {
-            if (!operation.IsGood())
+            if (operation.IsGood != null && !operation.IsGood())
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()

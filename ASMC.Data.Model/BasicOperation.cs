@@ -105,7 +105,7 @@ namespace ASMC.Data.Model
                     Logger.Error(taskColmplit.Exception != null ? taskColmplit.Exception.InnerException : e);
                 }
 
-            } while (taskColmplit.Result);
+            } while (!taskColmplit.Result);
             Logger.Debug("Закончено точка");
         }
 
