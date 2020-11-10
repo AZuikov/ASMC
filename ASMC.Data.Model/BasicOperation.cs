@@ -63,7 +63,7 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public async Task WorkAsync(CancellationTokenSource token )
         {
-            var taskColmplit = CompliteWork();
+            Task<bool> taskColmplit = null;
             do
             {
                 if(token.IsCancellationRequested)
@@ -95,7 +95,7 @@ namespace ASMC.Data.Model
                     }
                 }
                 Logger.Debug("Закончено выполнение тела");
-              
+                taskColmplit = CompliteWork();
                 try
                 {
                     await taskColmplit;

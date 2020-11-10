@@ -143,7 +143,6 @@ namespace ASMC.Data.Model
         public static bool operator <=(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-
             if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
 
             return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();

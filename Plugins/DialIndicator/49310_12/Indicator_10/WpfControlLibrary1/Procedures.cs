@@ -345,6 +345,7 @@ namespace Indicator_10
                 vm.Content.Add(first);
                 vm.Content.Add(too);
                 vm.Content.Add(tree);
+                Service.Title = Name;
                 Service.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 Service.DocumentType = "MeasuringForceView";
                 Service.ViewModel = vm;
@@ -399,12 +400,16 @@ namespace Indicator_10
             };
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             operation.CompliteWork = async () =>
+            {
+                return operation?.Error.FirstOrDefault() as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
+                       &&
+                       operation?.Error?.Skip(1).Take(1) as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons
+                       &&
+                       operation?.Error?.Skip(2).Take(1) as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons;
+            };
+                
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-                operation.Error[0] as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
-                &&
-                operation.Error[1] as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons
-                &&
-                operation.Error[2] as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons;
+             
 
             DataRow.Add(operation);
 
@@ -603,6 +608,7 @@ namespace Indicator_10
                 var setting = new SettingTableViewModel { Breaking = 5, CellFormat = "мкм" };
 
                 var vm = CreateTable("Показания при арретировании", arrPoints, setting);
+                Service.Title = Name;
                 Service.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 Service.ViewModel = vm;
                 Service.DocumentType = "RangeIcdicationView";
@@ -717,7 +723,7 @@ namespace Indicator_10
             operation.InitWork = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
-                var a = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+                var service = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
                 var setting = new SettingTableViewModel { Breaking = 2, CellFormat = "мкм" };
 
 
@@ -729,9 +735,10 @@ namespace Indicator_10
                 var ppi = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as Ppi != null);
                 rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
                 rm1.Content = CreateTable("Определение вариации показаний", arrPoints, setting);
-                a.ViewModel = rm1;
-                a.DocumentType = "RangeIcdicationView";
-                a.Show();
+                service.Title = Name;
+                service.ViewModel = rm1;
+                service.DocumentType = "RangeIcdicationView";
+                service.Show();
                 /*Получаем измерения*/
                 arrGetting = rm1.Content.Cells.Select(cell =>
                         new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
