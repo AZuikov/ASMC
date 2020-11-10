@@ -18,7 +18,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
         ///  </summary>
         ///  <param name="multiplier"></param>
         ///  <returns></returns>
-        IPhysicalQuantity ChangeMultiplier(UnitMultiplier multiplier);
+        void ChangeMultiplier(UnitMultiplier multiplier);
         /// <summary>
         /// Возвращает еденицы измерения с множителем.
         /// </summary>
@@ -150,11 +150,10 @@ namespace ASMC.Data.Model.PhysicalQuantity
         }
 
         /// <inheritdoc />
-        public IPhysicalQuantity ChangeMultiplier(UnitMultiplier multiplier)
+        public void ChangeMultiplier(UnitMultiplier multiplier)
         {
             this.Value = this.GetNoramalizeValueToSi() / (decimal) multiplier.GetDoubleValue();
             this.Multiplier = multiplier;
-            return this;
         }
 
         /// <inheritdoc />

@@ -56,6 +56,7 @@ namespace ASMC.Data.Model
             return MainPhysicalQuantity.CompareTo(other.MainPhysicalQuantity);
         }
 
+        
         #region Operators
 
         #region Arifmetic
@@ -157,14 +158,21 @@ namespace ASMC.Data.Model
         public static bool operator ==(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit))
+            {
+                return false;
+            }
 
             return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() == b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
         public static bool operator !=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit))
+            {
+                return true;
+                //throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            }
             return a.MainPhysicalQuantity?.GetNoramalizeValueToSi() != b.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
@@ -179,8 +187,11 @@ namespace ASMC.Data.Model
         {
             MainPhysicalQuantity = quantity;
         }
+        public MeasPoint(IPhysicalQuantity quantity)
+        {
+            MainPhysicalQuantity = (TPhysicalQuantity) quantity;
+        }
 
-        
 
         /// <summary>
         /// Создает экземпляр измерительной точки <see cref = "MeasPoint{TPhysicalQuantity}" />
@@ -396,6 +407,8 @@ namespace ASMC.Data.Model
         }
 
         #endregion
+
+       
     }
 
 
