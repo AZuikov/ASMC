@@ -22,7 +22,6 @@ namespace Indicator_10.ViewModel
         {
             SetNullCommand = new DelegateCommand(OnSetNull);
             WebCam = new WebCamViewModel();
-
             Ppi = new Ppi();
             _timer = new Timer(50);
             _timer.Elapsed += _timer_Elapsed;

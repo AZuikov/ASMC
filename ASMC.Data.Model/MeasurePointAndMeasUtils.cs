@@ -144,29 +144,29 @@ namespace ASMC.Data.Model
             MeasPoint<TPhysicalQuantity> b)
         {
 
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
 
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() <= b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
         public static bool operator >=(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
 
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() >= b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() >= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
         public static bool operator ==(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
 
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() == b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() == b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
         public static bool operator !=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() != b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a.MainPhysicalQuantity?.GetNoramalizeValueToSi() != b.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
         #endregion
@@ -370,30 +370,30 @@ namespace ASMC.Data.Model
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
 
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) || !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit) || !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
 
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() <= b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
         public static bool operator >=(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) || !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit) || !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
 
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() >= b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() >= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
         public static bool operator ==(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) || !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit) || !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
 
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() == b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a.MainPhysicalQuantity?.GetNoramalizeValueToSi() == b.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
         public static bool operator !=(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) || !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() != b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit) || !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() != b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
         #endregion
