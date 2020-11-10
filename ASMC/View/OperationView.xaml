@@ -9,7 +9,10 @@
              xmlns:asmc="clr-namespace:ASMC"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-        <Grid>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:KeyToCommand Command="{Binding ChangeModeKeyCommand}" KeyGesture="Alt+M"/>
+    </dxmvvm:Interaction.Behaviors>
+    <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" Name="ColumnDefinitionThree"/>
                 <ColumnDefinition Width="Auto" />
