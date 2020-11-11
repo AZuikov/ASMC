@@ -475,8 +475,6 @@ namespace ASMC.Data.Model.PhysicalQuantity
         }
     }
 
-   
-
 
     /// <summary>
     /// Реализует физическую величину времени.

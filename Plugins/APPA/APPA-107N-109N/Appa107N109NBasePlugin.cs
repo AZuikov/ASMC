@@ -100,7 +100,7 @@ namespace APPA_107N_109N
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                            $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.MainPhysicalQuantity.Value - operation.Getting.MainPhysicalQuantity.Value}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -880,7 +880,7 @@ namespace APPA_107N_109N
 
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationAcRangeNominal = Mult107_109N.RangeNominal.RangeNone;
-                DataRow = new List<IBasicOperation<MeasPoint<Voltage,Frequency>>>();
+                
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
             }
@@ -898,16 +898,15 @@ namespace APPA_107N_109N
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
                     dataRow[0] = OperationAcRangeNominal.GetStringValue();
-                    dataRow[1] = dds.Expected?.MainPhysicalQuantity.ToString();
+                    dataRow[1] = dds.Expected?.Description;
                     //Нужно выводить в таблицу напряжение и частоты!!!
-                    dataRow[2] = dds.Expected?.AdditionalPhysicalQuantity.ToString();
-                    dataRow[3] = dds.Getting?.MainPhysicalQuantity.ToString();
-                    dataRow[4] = dds.LowerTolerance?.MainPhysicalQuantity.ToString();
-                    dataRow[5] = dds.UpperTolerance?.MainPhysicalQuantity.ToString();
+                    dataRow[2] = dds.Getting?.MainPhysicalQuantity.ToString();
+                    dataRow[3] = dds.LowerTolerance?.MainPhysicalQuantity.ToString();
+                    dataRow[4] = dds.UpperTolerance?.MainPhysicalQuantity.ToString();
                     if (dds.IsGood == null)
-                        dataRow[6] = "не выполнено";
+                        dataRow[5] = "не выполнено";
                     else
-                        dataRow[6] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
