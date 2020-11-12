@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ASMC.Data.Model.PhysicalQuantity;
-using DevExpress.Xpf.Core.Native;
 
 namespace ASMC.Data.Model
 {
@@ -23,7 +22,7 @@ namespace ASMC.Data.Model
         TPhysicalQuantity MainPhysicalQuantity { get; set; }
 
         #endregion
-        }
+    }
 
     public interface IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : IMeasPoint<TPhysicalQuantity>,
                                                                            IComparable<IMeasPoint<TPhysicalQuantity,
@@ -57,23 +56,25 @@ namespace ASMC.Data.Model
             return MainPhysicalQuantity.CompareTo(other.MainPhysicalQuantity);
         }
 
-        
         #region Operators
 
         #region Arifmetic
 
         public static MeasPoint<TPhysicalQuantity> operator +(MeasPoint<TPhysicalQuantity> a,
-           MeasPoint<TPhysicalQuantity> b)
+            MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
             return new MeasPoint<TPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                     + b.MainPhysicalQuantity.GetNoramalizeValueToSi());
         }
+
         public static MeasPoint<TPhysicalQuantity> operator -(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
             return new MeasPoint<TPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                     - b.MainPhysicalQuantity.GetNoramalizeValueToSi());
@@ -82,15 +83,18 @@ namespace ASMC.Data.Model
         public static MeasPoint<TPhysicalQuantity> operator *(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
             return new MeasPoint<TPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                     * b.MainPhysicalQuantity.GetNoramalizeValueToSi());
         }
+
         public static decimal operator /(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
             return a.MainPhysicalQuantity.GetNoramalizeValueToSi() / b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
@@ -98,14 +102,15 @@ namespace ASMC.Data.Model
         public static MeasPoint<TPhysicalQuantity> operator +(MeasPoint<TPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value + b;
             return mp;
         }
+
         public static MeasPoint<TPhysicalQuantity> operator -(MeasPoint<TPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value - b;
             return mp;
         }
@@ -113,31 +118,35 @@ namespace ASMC.Data.Model
         public static MeasPoint<TPhysicalQuantity> operator *(MeasPoint<TPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value * b;
             return mp;
         }
+
         public static MeasPoint<TPhysicalQuantity> operator /(MeasPoint<TPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value / b;
             return mp;
         }
 
-        #endregion
+        #endregion Arifmetic
 
         public static bool operator <(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
-            
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+
             return a.MainPhysicalQuantity.GetNoramalizeValueToSi() < b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
+
         public static bool operator >(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
 
             return a.MainPhysicalQuantity.GetNoramalizeValueToSi() > b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
@@ -147,40 +156,41 @@ namespace ASMC.Data.Model
         {
             if (!Equals(a?.MainPhysicalQuantity?.Unit, b?.MainPhysicalQuantity?.Unit)) return false;
 
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <=
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
+
         public static bool operator >=(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
             if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) return false;
 
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() >= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() >=
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
+
         public static bool operator ==(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
-            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit))
-            {
-                return false;
-            }
+            if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit)) return false;
 
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() == b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() ==
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
         public static bool operator !=(MeasPoint<TPhysicalQuantity> a, MeasPoint<TPhysicalQuantity> b)
         {
             if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit))
-            {
                 return true;
-                //throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
-            }
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() != b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            //throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() !=
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
-        #endregion
-
+        #endregion Operators
 
         #region Constructor
+
         /// <summary>
         /// Создает экземпляр измерительной точки <see cref = "MeasPoint{TPhysicalQuantity}" />
         /// </summary>
@@ -188,18 +198,18 @@ namespace ASMC.Data.Model
         {
             MainPhysicalQuantity = quantity;
         }
+
         public MeasPoint(IPhysicalQuantity quantity)
         {
             MainPhysicalQuantity = (TPhysicalQuantity) quantity;
         }
-
 
         /// <summary>
         /// Создает экземпляр измерительной точки <see cref = "MeasPoint{TPhysicalQuantity}" />
         /// </summary>
         /// <param name = "value">Значение</param>
         /// <param name = "multiplier">Множитель, по умолчению <see cref = "UnitMultiplier.None" /></param>
-        public MeasPoint(decimal value, UnitMultiplier multiplier = UnitMultiplier.None) :this()
+        public MeasPoint(decimal value, UnitMultiplier multiplier = UnitMultiplier.None) : this()
         {
             MainPhysicalQuantity.Value = value;
             MainPhysicalQuantity.Multiplier = multiplier;
@@ -214,7 +224,10 @@ namespace ASMC.Data.Model
     }
 
     public class MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : MeasPoint<TPhysicalQuantity>,
-                                                                      IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> where TAddPhysicalQuantity : class, IPhysicalQuantity<TAddPhysicalQuantity>, new() where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+                                                                      IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity
+                                                                      > where TAddPhysicalQuantity : class, IPhysicalQuantity<TAddPhysicalQuantity>, new()
+                                                                        where TPhysicalQuantity : class,
+                                                                        IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         public MeasPoint(TPhysicalQuantity physical, TAddPhysicalQuantity addPhysicalQuantity)
         {
@@ -222,26 +235,9 @@ namespace ASMC.Data.Model
             AdditionalPhysicalQuantity = addPhysicalQuantity;
         }
 
-        /// <inheritdoc />
-        public TAddPhysicalQuantity AdditionalPhysicalQuantity { get; set; }
-
-        /// <inheritdoc />
-        public override string Description => MainPhysicalQuantity +" "+ AdditionalPhysicalQuantity.ToString();
-
-        /// <inheritdoc />
-        public override object Clone()
-        {
-            return new
-                MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>((TPhysicalQuantity) MainPhysicalQuantity.Clone(),
-                                                                   (TAddPhysicalQuantity) AdditionalPhysicalQuantity
-                                                                      .Clone());
-        }
-
         public MeasPoint()
         {
-
             AdditionalPhysicalQuantity = new TAddPhysicalQuantity();
-
         }
 
         public MeasPoint(decimal value, TAddPhysicalQuantity addPhysicalQuantity) : this()
@@ -249,13 +245,16 @@ namespace ASMC.Data.Model
             MainPhysicalQuantity.Value = value;
             AdditionalPhysicalQuantity = addPhysicalQuantity;
         }
+
         public MeasPoint(decimal physical, UnitMultiplier multiplier, TAddPhysicalQuantity addPhysicalQuantity) : this()
         {
             MainPhysicalQuantity.Value = physical;
             MainPhysicalQuantity.Multiplier = multiplier;
             AdditionalPhysicalQuantity = addPhysicalQuantity;
         }
-        public MeasPoint(decimal physical, UnitMultiplier multiplier, decimal addPhysicalQuantity, UnitMultiplier addmultipliers) :this()
+
+        public MeasPoint(decimal physical, UnitMultiplier multiplier, decimal addPhysicalQuantity,
+            UnitMultiplier addmultipliers = UnitMultiplier.None) : this()
         {
             MainPhysicalQuantity.Value = physical;
             MainPhysicalQuantity.Multiplier = multiplier;
@@ -269,6 +268,20 @@ namespace ASMC.Data.Model
             AdditionalPhysicalQuantity.Value = decimal1;
         }
 
+        /// <inheritdoc />
+        public TAddPhysicalQuantity AdditionalPhysicalQuantity { get; set; }
+
+        /// <inheritdoc />
+        public override string Description => MainPhysicalQuantity + " " + AdditionalPhysicalQuantity;
+
+        /// <inheritdoc />
+        public override object Clone()
+        {
+            return new
+                MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>((TPhysicalQuantity) MainPhysicalQuantity.Clone(),
+                                                                   (TAddPhysicalQuantity) AdditionalPhysicalQuantity
+                                                                      .Clone());
+        }
 
         /// <inheritdoc />
         public int CompareTo(IMeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> other)
@@ -280,99 +293,134 @@ namespace ASMC.Data.Model
 
         #region Arifmetic
 
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator +(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
-           MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
-        {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
-                ||
-                !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)
-                ||
-                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(), b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
-
-
-            return new MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                    + b.MainPhysicalQuantity.GetNoramalizeValueToSi(),(TAddPhysicalQuantity)a.AdditionalPhysicalQuantity.Clone() );
-        }
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator -(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator +(
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 ||
                 !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)
                 ||
-                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(), b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(),
+                        b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
-            return new MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                    - b.MainPhysicalQuantity.GetNoramalizeValueToSi(), (TAddPhysicalQuantity)a.AdditionalPhysicalQuantity.Clone());
+            return new
+                MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                                   + b.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                                                   (TAddPhysicalQuantity) a
+                                                                                         .AdditionalPhysicalQuantity
+                                                                                         .Clone());
         }
 
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator *(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator -(
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
             if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 ||
                 !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)
                 ||
-                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(), b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(),
+                        b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
-            return new MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                    * b.MainPhysicalQuantity.GetNoramalizeValueToSi(), (TAddPhysicalQuantity)a.AdditionalPhysicalQuantity.Clone());
+            return new
+                MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                                   - b.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                                                   (TAddPhysicalQuantity) a
+                                                                                         .AdditionalPhysicalQuantity
+                                                                                         .Clone());
         }
+
+        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator *(
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
+        {
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
+                ||
+                !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)
+                ||
+                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(),
+                        b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+
+            return new
+                MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>(a.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                                   * b.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                                                   (TAddPhysicalQuantity) a
+                                                                                         .AdditionalPhysicalQuantity
+                                                                                         .Clone());
+        }
+
         public static decimal operator /(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) 
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit)
                 ||
                 !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)
                 ||
-                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(), b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())) throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
+                !Equals(a.AdditionalPhysicalQuantity.GetNoramalizeValueToSi(),
+                        b.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()))
+                throw new ArgumentException("Не возможно выполнить операцию с разными физическими величинами");
 
-            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() /b.MainPhysicalQuantity.GetNoramalizeValueToSi();
+            return a.MainPhysicalQuantity.GetNoramalizeValueToSi() / b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
 
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator +(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator +(
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value + b;
             return mp;
         }
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator -(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+
+        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator -(
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value - b;
             return mp;
         }
 
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator *(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator *(
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value * b;
             return mp;
         }
-        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator /(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
+
+        public static MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> operator /(
+            MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             decimal b)
         {
-            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>)a.Clone();
+            var mp = (MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity>) a.Clone();
             mp.MainPhysicalQuantity.Value = mp.MainPhysicalQuantity.Value / b;
             return mp;
         }
 
-        #endregion
+        #endregion Arifmetic
 
         public static bool operator <(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) || !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) ||
+                !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
 
             return a.MainPhysicalQuantity.GetNoramalizeValueToSi() < b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
+
         public static bool operator >(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
-            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) || !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit)) throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
+            if (!Equals(a.MainPhysicalQuantity.Unit, b.MainPhysicalQuantity.Unit) ||
+                !Equals(a.AdditionalPhysicalQuantity.Unit, b.AdditionalPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно выполнить сравнение точек с разными физическими величинами");
 
             return a.MainPhysicalQuantity.GetNoramalizeValueToSi() > b.MainPhysicalQuantity.GetNoramalizeValueToSi();
         }
@@ -380,13 +428,14 @@ namespace ASMC.Data.Model
         public static bool operator <=(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
-
             if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit) ||
                 !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit))
                 return false;
 
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() <=
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
+
         public static bool operator >=(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
@@ -394,8 +443,10 @@ namespace ASMC.Data.Model
                 !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit))
                 return false;
 
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() >= b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() >=
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
+
         public static bool operator ==(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> b)
         {
@@ -403,7 +454,8 @@ namespace ASMC.Data.Model
                 !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit))
                 return false;
 
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() == b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() ==
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
         public static bool operator !=(MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> a,
@@ -412,58 +464,50 @@ namespace ASMC.Data.Model
             if (!Equals(a?.MainPhysicalQuantity.Unit, b?.MainPhysicalQuantity.Unit) ||
                 !Equals(a?.AdditionalPhysicalQuantity.Unit, b?.AdditionalPhysicalQuantity.Unit))
                 return true;
-            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() != b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
+            return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() !=
+                   b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
 
-        #endregion
-
-       
+        #endregion Operators
     }
-
 
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange<T>: IPhysicalRange<T> where T : class, IPhysicalQuantity<T>,  new()
+    public class PhysicalRange<T> : IPhysicalRange<T> where T : class, IPhysicalQuantity<T>, new()
     {
-        #region Property
-
-        /// <inheritdoc />
-        public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
-
-        /// <inheritdoc />
-        public IMeasPoint<T> Start { get;  set; }
-
-        /// <inheritdoc />
-        public IMeasPoint<T> Stop { get;  set; }
-
-        public MeasureUnits Unit
-        {
-            get => Start.MainPhysicalQuantity.Unit;
-        }
-
-        #endregion
-        public PhysicalRange(MeasPoint<T> stopRange, AccuracyChatacteristic accuracy=null)
+        public PhysicalRange(MeasPoint<T> stopRange, AccuracyChatacteristic accuracy = null)
         {
             AccuracyChatacteristic = accuracy;
             Start = new MeasPoint<T>();
-            Stop = stopRange;
+            End = stopRange;
         }
+
         public PhysicalRange(MeasPoint<T> startRange, MeasPoint<T> stopRange, AccuracyChatacteristic accuracy = null)
         {
             if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
                 throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
             AccuracyChatacteristic = accuracy;
             Start = startRange;
-            Stop = stopRange;
-
+            End = stopRange;
         }
 
         public PhysicalRange()
         {
             Start = new MeasPoint<T>();
-            Stop = new MeasPoint<T>();
+            End = new MeasPoint<T>();
         }
+
+        /// <inheritdoc />
+        public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
+
+        /// <inheritdoc />
+        public IMeasPoint<T> Start { get; set; }
+
+        /// <inheritdoc />
+        public IMeasPoint<T> End { get; set; }
+
+        public MeasureUnits Unit => Start.MainPhysicalQuantity.Unit;
 
         /// <inheritdoc />
         public int CompareTo(IPhysicalRange<T> other)
@@ -471,12 +515,39 @@ namespace ASMC.Data.Model
             return Start.CompareTo(other.Start);
         }
     }
+
     /// <summary>
     /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
-    public class PhysicalRange<TPhysicalQuantity,TAddition> : IPhysicalRange<TPhysicalQuantity,TAddition> where TAddition : class, IPhysicalQuantity<TAddition>, new() where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    public class PhysicalRange<TPhysicalQuantity, TAddition> : IPhysicalRange<TPhysicalQuantity, TAddition>
+        where TAddition : class, IPhysicalQuantity<TAddition>, new()
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
-        #region Property
+        public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
+        {
+            AccuracyChatacteristic = accuracy;
+            Start = new MeasPoint<TPhysicalQuantity, TAddition>();
+            End = stopRange;
+            Unit = stopRange.MainPhysicalQuantity.Unit;
+        }
+
+        public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> startRange,
+            IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
+        {
+            if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
+                throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
+            AccuracyChatacteristic = accuracy;
+            Start = startRange;
+            End = stopRange;
+
+            Unit = startRange.MainPhysicalQuantity.Unit;
+        }
+
+        public PhysicalRange()
+        {
+            Start = new MeasPoint<TPhysicalQuantity, TAddition>();
+            End = new MeasPoint<TPhysicalQuantity, TAddition>();
+        }
 
         /// <inheritdoc />
         public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
@@ -485,89 +556,63 @@ namespace ASMC.Data.Model
         public IMeasPoint<TPhysicalQuantity, TAddition> Start { get; set; }
 
         /// <inheritdoc />
-        public IMeasPoint<TPhysicalQuantity, TAddition> Stop { get; set; }
+        public IMeasPoint<TPhysicalQuantity, TAddition> End { get; set; }
 
         public MeasureUnits Unit { get; protected set; }
-
-
-        #endregion
-        public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
-        {
-            AccuracyChatacteristic = accuracy;
-            Start = new MeasPoint<TPhysicalQuantity, TAddition>();
-            Stop = stopRange;
-            Unit = stopRange.MainPhysicalQuantity.Unit;
-        }
-        public PhysicalRange(IMeasPoint<TPhysicalQuantity, TAddition> startRange, IMeasPoint<TPhysicalQuantity, TAddition> stopRange, AccuracyChatacteristic accuracy = null)
-        {
-            if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
-                throw new ArgumentException("Не возможно сравнить точки с разными физическими величинами");
-            AccuracyChatacteristic = accuracy;
-            Start = startRange;
-            Stop = stopRange;
-
-            Unit = startRange.MainPhysicalQuantity.Unit;
-        }
-
-        public PhysicalRange()
-        {
-            Start = new MeasPoint<TPhysicalQuantity,TAddition>();
-            Stop = new MeasPoint<TPhysicalQuantity, TAddition>();
-        }
 
         /// <inheritdoc />
         public int CompareTo(IPhysicalRange<TPhysicalQuantity> other)
         {
-           return Start.CompareTo(other.Start);
+            return Start.CompareTo(other.Start);
         }
     }
 
     public interface IPhysicalRange
     {
+        #region Property
+
         /// <summary>
         /// позвляет получить харатеристику точности диапазона.
         /// </summary>
         AccuracyChatacteristic AccuracyChatacteristic { get; set; }
+
         MeasureUnits Unit { get; }
-    }
-
-
-
-    public interface IPhysicalRange<T,T1> : IComparable<IPhysicalRange<T>>, IPhysicalRange where T : class, IPhysicalQuantity<T>, new() where T1 : class, IPhysicalQuantity<T1>, new()
-    {
-        #region Property
-
-
-        /// <summary>
-        /// Значение величины, описывающее начало диапазона (входит в диапазон).
-        /// </summary>
-        IMeasPoint<T,T1> Start { get; }
-
-        /// <summary>
-        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
-        /// </summary>
-        IMeasPoint<T, T1> Stop { get; }
-
 
         #endregion
     }
 
-
-    public interface IPhysicalRange<T>:IComparable<IPhysicalRange<T>>, IPhysicalRange where T : class, IPhysicalQuantity<T>, new()
+    public interface IPhysicalRange<T, T1> : IComparable<IPhysicalRange<T>>, IPhysicalRange
+        where T : class, IPhysicalQuantity<T>, new() where T1 : class, IPhysicalQuantity<T1>, new()
     {
         #region Property
 
+        /// <summary>
+        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
+        /// </summary>
+        IMeasPoint<T, T1> End { get; }
+
+        /// <summary>
+        /// Значение величины, описывающее начало диапазона (входит в диапазон).
+        /// </summary>
+        IMeasPoint<T, T1> Start { get; }
+
+        #endregion
+    }
+
+    public interface IPhysicalRange<T> : IComparable<IPhysicalRange<T>>, IPhysicalRange
+        where T : class, IPhysicalQuantity<T>, new()
+    {
+        #region Property
+
+        /// <summary>
+        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
+        /// </summary>
+        IMeasPoint<T> End { get; set; }
 
         /// <summary>
         /// Значение величины, описывающее начало диапазона (входит в диапазон).
         /// </summary>
         IMeasPoint<T> Start { get; set; }
-
-        /// <summary>
-        /// Значение величины описывающая верхнюю (граничную) точку диапазона (входит в диапазон).
-        /// </summary>
-        IMeasPoint<T> Stop { get; set; }
-
 
         #endregion
     }
@@ -575,64 +620,9 @@ namespace ASMC.Data.Model
     /// <summary>
     /// Предоставляет реализацию хранилища диапазонов (по виду измерения). Фактически перечень пределов СИ.
     /// </summary>
-    public class RangeStorage<T> :IEnumerable where T : IPhysicalRange
+    public class RangeStorage<T> : IEnumerable where T : IPhysicalRange
     {
         #region Property
-
-        /// <summary>
-        /// Наименование.
-        /// </summary>
-        public string Name { get; set; }
-
-        public T[] RealRangeStor { get; set; }
-
-        #endregion
-
-        public RangeStorage(AccuracyChatacteristic accuracy, params T[] inPhysicalRealRangeStor)
-        {
-            AccuracyChatacteristic = accuracy;
-            RealRangeStor = inPhysicalRealRangeStor;
-        }
-
-        public RangeStorage(params T[] inPhysicalRealRangeStor)
-        {
-            RealRangeStor = inPhysicalRealRangeStor;
-        }
-        public bool IsPointBelong<T1>(IMeasPoint<T1> point) where T1 : class, IPhysicalQuantity<T1>, new()
-        {
-                var range = RealRangeStor as IPhysicalRange<T1>[];
-
-                if (range== null) return false;
-
-                var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
-                                                      point.MainPhysicalQuantity.GetNoramalizeValueToSi());
-
-                var end = range.FirstOrDefault(q => q.Stop.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                    point.MainPhysicalQuantity.GetNoramalizeValueToSi());
-                return start != null && end != null;
-
-        }
-        public bool IsPointBelong<T1,T2>(IMeasPoint<T1,T2> point) where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
-        {
-            var range = RealRangeStor as IPhysicalRange<T1, T2>[];
-
-            if (range == null) return false;
-
-                var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
-                                                      point.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                      && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()<= point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-
-                var end = range.FirstOrDefault(q => q.Stop.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                    point.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                    && q.Stop.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >= point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-
-
-                return start != null && end != null;
-
-            
-
-        }
-
 
         //public Tuple<MeasPoint<T>, MeasPoint<T>> FullRange()
         //{
@@ -642,6 +632,26 @@ namespace ASMC.Data.Model
         /// Позволяет получить характеристику точности
         /// </summary>
         public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
+
+        /// <summary>
+        /// Наименование.
+        /// </summary>
+        public string Name { get; set; }
+
+        public T[] Ranges { get; set; }
+
+        #endregion
+
+        public RangeStorage(AccuracyChatacteristic accuracy, params T[] inPhysicalRanges)
+        {
+            AccuracyChatacteristic = accuracy;
+            Ranges = inPhysicalRanges;
+        }
+
+        public RangeStorage(params T[] inPhysicalRanges)
+        {
+            Ranges = inPhysicalRanges;
+        }
 
         #region Methods
 
@@ -653,10 +663,91 @@ namespace ASMC.Data.Model
         {
             var result = new List<MeasureUnits>();
 
-            foreach (var range in RealRangeStor)
+            foreach (var range in Ranges)
                 result.Add(range.Unit);
             // удаляем дубликаты, если такое возможно!
             return new HashSet<MeasureUnits>(result).ToList();
+        }
+
+        /// <summary>
+        /// Возвращает диапазон к которому относится точка.
+        /// </summary>
+        /// <typeparam name = "T1"></typeparam>
+        /// <param name = "inPoint">Точка (значение) физической велечины.</param>
+        /// <returns></returns>
+        public T GetRangePointBelong<T1>(IMeasPoint<T1> inPoint) where T1 : class, IPhysicalQuantity<T1>, new()
+        {
+            var range = Ranges as IPhysicalRange<T1>[];
+            return (T) range?.FirstOrDefault(q => q.Start as MeasPoint<T1> <= (inPoint as MeasPoint<T1>) &&
+                                                  q.End as MeasPoint<T1> >= (inPoint as MeasPoint<T1>));
+        }
+
+        public T GetRangePointBelong<T1, T2>(IMeasPoint<T1, T2> inPoint) where T1 : class, IPhysicalQuantity<T1>, new()
+                                                                         where T2 : class, IPhysicalQuantity<T2>, new()
+        {
+            var range = Ranges as IPhysicalRange<T1, T2>[];
+            return (T) range?.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                  inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi() &&
+                                                  q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                  inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                  && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                  inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()
+                                                  && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                  inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        /// <summary>
+        /// Возвращает величину погрешности физической величины, если она входит хотя бы в один диапазон.
+        /// </summary>
+        /// <typeparam name = "T1"></typeparam>
+        /// <param name = "inPoint"></param>
+        /// <returns></returns>
+        public IMeasPoint<T1> GetTolMeasPoint<T1>(IMeasPoint<T1> inPoint) where T1 : class, IPhysicalQuantity<T1>, new()
+        {
+            var returnPoint = new MeasPoint<T1>(GetRangePointBelong(inPoint)
+                                               .AccuracyChatacteristic
+                                               .GetAccuracy(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()));
+            returnPoint.MainPhysicalQuantity.ChangeMultiplier(inPoint.MainPhysicalQuantity.Multiplier);
+            return returnPoint;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <typeparam name = "T1"></typeparam>
+        /// <param name = "point"></param>
+        /// <returns></returns>
+        public bool IsPointBelong<T1>(IMeasPoint<T1> point) where T1 : class, IPhysicalQuantity<T1>, new()
+        {
+            var range = Ranges as IPhysicalRange<T1>[];
+
+            if (range == null) return false;
+
+            var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                  point.MainPhysicalQuantity.GetNoramalizeValueToSi());
+
+            var end = range.FirstOrDefault(q => q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                point.MainPhysicalQuantity.GetNoramalizeValueToSi());
+            return start != null && end != null;
+        }
+
+        public bool IsPointBelong<T1, T2>(IMeasPoint<T1, T2> point) where T1 : class, IPhysicalQuantity<T1>, new()
+                                                                    where T2 : class, IPhysicalQuantity<T2>, new()
+        {
+            var range = Ranges as IPhysicalRange<T1, T2>[];
+
+            if (range == null) return false;
+
+            var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                  point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                  && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                  point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+
+            var end = range.FirstOrDefault(q => q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+
+            return start != null && end != null;
         }
 
         #endregion
@@ -664,9 +755,7 @@ namespace ASMC.Data.Model
         /// <inheritdoc />
         public IEnumerator GetEnumerator()
         {
-            return RealRangeStor.GetEnumerator();
+            return Ranges.GetEnumerator();
         }
     }
-
-   
 }

@@ -12,33 +12,33 @@ namespace ASMC.Data.Model
     public sealed class AccuracyChatacteristic
     {
         /// <summary>
-        /// Позволяет получать или задавать разрешение, включает отклонение едениц младшего разряда
+        /// Позволяет получать или задавать разрешение, включает число едениц младшего разряда
         /// </summary>
        public decimal? Resolution { get;  }
         /// <summary>
         /// Процент от предела
         /// </summary>
-        public decimal? Floor { get;  }
+        public decimal? RangePercentFloor { get;  }
         /// <summary>
         /// Процент от измеряемой велечины
         /// </summary>
-        public decimal? Tol { get;  }
+        public decimal? PercentOfMeasurePointTol { get;  }
 
-        public AccuracyChatacteristic(decimal? resolution, decimal? floor, decimal? tol)
+        public AccuracyChatacteristic(decimal? resolution, decimal? rangePercentFloor, decimal? percentOfMeasurePointTol)
         {
             Resolution = resolution;
-            Floor = floor;
-            Tol = tol;
+            RangePercentFloor = rangePercentFloor;
+            PercentOfMeasurePointTol = percentOfMeasurePointTol;
         }
-        decimal GetAccuracy(decimal val, decimal upperRange=0)
+       public  decimal GetAccuracy(decimal val, decimal upperRange=0)
         {
-            decimal tol = 0;
-            decimal flr = 0;
-            if (Tol!=null) tol = (decimal) ((Tol * val) / 100);
+            decimal TolOfMeasPoint = 0;
+            decimal rangeFloor = 0;
+            if (PercentOfMeasurePointTol!=null) TolOfMeasPoint = (decimal) (PercentOfMeasurePointTol  / 100);
 
-            if (Floor!=null) flr = (decimal) (Floor * upperRange / 100);
+            if (RangePercentFloor!=null) rangeFloor = (decimal) (RangePercentFloor * upperRange / 100);
 
-            return tol+ flr+Resolution??0;
+            return val*TolOfMeasPoint + rangeFloor+Resolution??0;
         }
     }
 }

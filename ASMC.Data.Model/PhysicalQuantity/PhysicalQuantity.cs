@@ -199,9 +199,9 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
         public static bool operator ==(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
         {
-            if (a.Unit == b.Unit &&
-                a.Value * (decimal)a.Multiplier.GetDoubleValue() ==
-                b.Value * (decimal)b.Multiplier.GetDoubleValue())
+            if (a?.Unit == b?.Unit &&
+                a?.Value * (decimal)a?.Multiplier.GetDoubleValue() ==
+                b?.Value * (decimal)b?.Multiplier.GetDoubleValue())
                 return true;
 
             return false;
@@ -209,9 +209,9 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
         public static bool operator !=(PhysicalQuantity<T> a, PhysicalQuantity<T> b)
         {
-            if (a.Unit == b.Unit &&
-                a.Value * (decimal)a.Multiplier.GetDoubleValue() !=
-                b.Value * (decimal)b.Multiplier.GetDoubleValue())
+            if (a?.Unit == b?.Unit &&
+                a?.Value * (decimal)a?.Multiplier.GetDoubleValue() !=
+                b?.Value * (decimal)b?.Multiplier.GetDoubleValue())
                 return true;
 
             return false;

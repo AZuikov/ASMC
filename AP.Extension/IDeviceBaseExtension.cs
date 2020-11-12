@@ -83,7 +83,7 @@ namespace AP.Extension
                     var range = Activator.CreateInstance(generit);
 
                     at[range, nameof(PhysicalRange<Voltage, Voltage>.Start)] = star;
-                    at[range, nameof(PhysicalRange<Voltage, Voltage>.Stop)] = end;
+                    at[range, nameof(PhysicalRange<Voltage, Voltage>.End)] = end;
                     at[range, nameof(PhysicalRange<Voltage, Voltage>.AccuracyChatacteristic)] = acc;
                     return range;
                 }
@@ -111,7 +111,7 @@ namespace AP.Extension
                     var range = Activator.CreateInstance(generit);
 
                     at[range, nameof(PhysicalRange<Voltage>.Start)] = star;
-                    at[range, nameof(PhysicalRange<Voltage>.Stop)] = end;
+                    at[range, nameof(PhysicalRange<Voltage>.End)] = end;
                     at[range, nameof(PhysicalRange<Voltage>.AccuracyChatacteristic)] = acc;
                     return range;
                 }

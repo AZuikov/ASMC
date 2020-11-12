@@ -9,14 +9,34 @@ using System.Timers;
 using AP.Math;
 using AP.Utils.Data;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 using Timer = System.Timers.Timer;
+using Voltage = ASMC.Devices.IEEE.Keysight.ElectronicLoad.Voltage;
 
 namespace ASMC.Devices.Port.APPA
 {
     // ReSharper disable once InconsistentNaming
     public class Mult107_109N : ComPort
     {
+        public RangeStorage<PhysicalRange<Current, Frequency>> aciRangeStorage
+        {
+            get => GetAciRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Current, Frequency>> GetAciRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Current, Frequency>>(new []
+            {
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili,40),
+                                                      new MeasPoint<Current, Frequency>(20,UnitMultiplier.Mili, 500),
+                                                      new AccuracyChatacteristic(0.000050m,0,0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili,500),
+                                                      new MeasPoint<Current, Frequency>(20,UnitMultiplier.Mili, 1,UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.000050m,0,0.8M))
+            });
+        }
+
         public enum BlueState
         {
             NoPress = 0,
