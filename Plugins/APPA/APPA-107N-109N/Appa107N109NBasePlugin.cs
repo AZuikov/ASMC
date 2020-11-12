@@ -492,9 +492,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                           currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
+                                MathStatistics.GetMantissa(measurePoint);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -1007,11 +1005,19 @@ namespace APPA_107N_109N
                     {
                         try
                         {
+                           
+                            //todo тут есть точки которые не может воспроизвести калибратор, это нужно проверять как-то
+                            flkCalib5522A.Out.Set.Voltage.Ac.SetValue(point);
+                            flkCalib5522A.Out.ClearMemoryRegister();
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            Thread.Sleep(2000);
+                            //измеряем
+                            decimal measurePoint = (decimal) appa107N.GetValue();
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+
                             //вычисляе на сколько знаков округлять
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                           point.MainPhysicalQuantity.Multiplier.GetDoubleValue());
+                                MathStatistics.GetMantissa(measurePoint);
 
                             operation.Expected = point;
 
@@ -1024,14 +1030,14 @@ namespace APPA_107N_109N
                                 var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
                                              EdMlRaz *
                                              RangeResolution.MainPhysicalQuantity.Value *
-                                             (decimal) (RangeResolution
+                                             (decimal)(RangeResolution
                                                        .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
                                                         point.MainPhysicalQuantity.Multiplier
                                                              .GetDoubleValue()
                                              );
 
                                 MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Voltage,Frequency>(result, point.MainPhysicalQuantity.Multiplier,point.AdditionalPhysicalQuantity);
+                                return new MeasPoint<Voltage, Frequency>(result, point.MainPhysicalQuantity.Multiplier, point.AdditionalPhysicalQuantity);
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -1046,17 +1052,6 @@ namespace APPA_107N_109N
                                 return (operation.Getting < operation.UpperTolerance) &
                                        (operation.Getting > operation.LowerTolerance);
                             };
-
-                            decimal measurePoint = 0;
-
-                            //todo тут есть точки которые не может воспроизвести калибратор, это нужно проверять как-то
-                            flkCalib5522A.Out.Set.Voltage.Ac.SetValue(point);
-                            flkCalib5522A.Out.ClearMemoryRegister();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(2000);
-                            //измеряем
-                            measurePoint = (decimal) appa107N.GetValue();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
@@ -1780,9 +1775,7 @@ namespace APPA_107N_109N
 
                            
                                 var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                           currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
+                                MathStatistics.GetMantissa(measurePoint);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -2311,12 +2304,18 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                           curr.MainPhysicalQuantity.Multiplier.GetDoubleValue());
+                            //todo здесь нужно проверять точки на возможность воспроизведения калибратором
+                            flkCalib5522A.Out.Set.Current.Ac.SetValue(curr);
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            Thread.Sleep(2000);
+                            //измеряем
+                            decimal measurePoint = (decimal) appa107N.GetValue();
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            operation.Expected = (MeasPoint<Current, Frequency>) curr.Clone();
+                            var mantisa =
+                                MathStatistics.GetMantissa(measurePoint);
+
+                            operation.Expected = (MeasPoint<Current, Frequency>)curr.Clone();
 
                             //расчет погрешности для конкретной точки предела измерения
                             ConstructTooleranceFormula(curr); // функция подбирает коэффициенты для формулы погрешности
@@ -2325,7 +2324,7 @@ namespace APPA_107N_109N
                                 var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
                                              EdMlRaz *
                                              RangeResolution.MainPhysicalQuantity.Value *
-                                             (decimal) (RangeResolution
+                                             (decimal)(RangeResolution
                                                        .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
                                                         curr.MainPhysicalQuantity.Multiplier
                                                             .GetDoubleValue());
@@ -2350,15 +2349,6 @@ namespace APPA_107N_109N
                                 return (operation.Getting < operation.UpperTolerance) &
                                        (operation.Getting > operation.LowerTolerance);
                             };
-
-                            decimal measurePoint = 0;
-                            //todo здесь нужно проверять точки на возможность воспроизведения калибратором
-                            flkCalib5522A.Out.Set.Current.Ac.SetValue(curr);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(2000);
-                            //измеряем
-                            measurePoint = (decimal) appa107N.GetValue();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
@@ -2815,9 +2805,7 @@ namespace APPA_107N_109N
                             operation.Expected = freqPoint;
 
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                           freqPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
+                                MathStatistics.GetMantissa(measurePoint);
 
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
@@ -3562,10 +3550,8 @@ namespace APPA_107N_109N
 
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            var mantisa = MathStatistics.GetMantissa((double) measurePoint);
-                                //MathStatistics.GetMantissa(RangeResolution
-                                //                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                //                           currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
+                            var mantisa = MathStatistics.GetMantissa( measurePoint);
+                               
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -3573,6 +3559,7 @@ namespace APPA_107N_109N
                                 new MeasPoint<Resistance>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
                             operation.Expected = currPoint;
                             //расчет погрешности для конкретной точки предела измерения
+                            
                             operation.ErrorCalculation = (inA, inB) =>
                             {
                                 var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
@@ -3584,7 +3571,7 @@ namespace APPA_107N_109N
                                                                  .GetDoubleValue());
 
                                 MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Resistance>(result);
+                                return new MeasPoint<Resistance>(result, currPoint.MainPhysicalQuantity.Multiplier);
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -3816,9 +3803,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                           currPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                                MathStatistics.GetMantissa(measurePoint);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -4344,10 +4329,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                           currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                           true);
+                                MathStatistics.GetMantissa(measurePoint);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
