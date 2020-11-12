@@ -74,7 +74,7 @@ namespace APPA_107N_109N
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                            $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {((operation.Expected - operation.Getting) as MeasPoint<T>).Description}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -100,7 +100,7 @@ namespace APPA_107N_109N
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                            $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.MainPhysicalQuantity.Value - operation.Getting.MainPhysicalQuantity.Value}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {((operation.Expected- operation.Getting) as MeasPoint<T>).Description}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -3562,10 +3562,10 @@ namespace APPA_107N_109N
 
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
-                            var mantisa =
-                                MathStatistics.GetMantissa(RangeResolution
-                                                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                           currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
+                            var mantisa = MathStatistics.GetMantissa((double) measurePoint);
+                                //MathStatistics.GetMantissa(RangeResolution
+                                //                          .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
+                                //                           currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
