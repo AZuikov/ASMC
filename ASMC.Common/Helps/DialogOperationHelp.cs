@@ -32,6 +32,7 @@ namespace ASMC.Common.Helps
                     return default;
                 }
                 var res = service.Entity as Tuple<string, bool>;
+                Logger.Debug($@"{this} {res.Item2} {res.Item1}");
                 Getting = res.Item2;
                 Comment = res.Item1;
                 operation.IsGood = Getting;
@@ -59,7 +60,11 @@ namespace ASMC.Common.Helps
                     return;
                 }
                 var res = service.Entity as Tuple<string, bool>;
-                Getting = res.Item2 && initWork().Result;
+
+             
+                var resinit = initWork().Result;
+                Logger.Debug($@"{this} {res?.Item2} {res?.Item1} Функция вернула результат {resinit}");
+                Getting = res.Item2 && resinit;
                 Comment = res.Item1;
                 operation.IsGood = Getting;
             };
