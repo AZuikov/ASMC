@@ -394,6 +394,22 @@ namespace Indicator_10
                     operation.Expected = fullPoints[i].Clone();
                     operation.Getting = fullGettingPoints[i].Clone();
                     Logger.Debug($@"Ожидаемое:{((IMeasPoint<Length>)operation.Expected).Description} измеренное {((IMeasPoint<Weight>)operation.Getting).Description}");
+                    if (i==0)
+                    {
+                        operation.IsGood = () =>
+                        {
+                            Logger.Debug($@"Максимальное усилие {(operation?.Error?.Take(1).First() as MeasPoint<Force>).Description }");
+                            Logger.Debug($@"Прямой/обратный ход {(operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force>).Description }");
+                            Logger.Debug($@"Изменение хода{(operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force>).Description }");
+                            return operation?.Error?.Take(1).First() as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
+                                   &&
+                                   operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force> <=
+                                   IchBase.MeasuringForce.Oscillatons
+                                   &&
+                                   operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force> <=
+                                   IchBase.MeasuringForce.ChangeCourse;
+                        };
+                    }
                     if (i > 0) DataRow.Add(operation);
                 }
             };
@@ -436,17 +452,8 @@ namespace Indicator_10
                     return array.Max() - array.Min();
                 }
             };
-            operation.IsGood = () =>
-            {
-
-                return operation?.Error?.Take(1).First() as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
-                       &&
-                       operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force> <=
-                       IchBase.MeasuringForce.Oscillatons
-                       &&
-                       operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force> <=
-                       IchBase.MeasuringForce.Oscillatons;
-            };
+ 
+           
              
 
             DataRow.Add(operation);
@@ -478,6 +485,7 @@ namespace Indicator_10
     /// </summary>
     public sealed class PerpendicularPressure : MainIchProcedur<decimal>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public PerpendicularPressure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -553,14 +561,21 @@ namespace Indicator_10
                     if (i > 0) operation = (MeasuringOperation<decimal>)operation.Clone();
                     operation.Expected = arrPoints[i].MainPhysicalQuantity.Value;
                     operation.Getting = arrGetting[i];
+                    Logger.Debug($@"Ожидаемое:{(operation.Expected)} измеренное {operation.Getting}");
                     if (i > 0) DataRow.Add(operation);
+                    if (i == 0)
+                    {
+                        operation.IsGood = () =>
+                        {
+                            Logger.Debug($@"Максимальное усиле {operation?.Error}");
+                            return operation.Error <= IchBase.PerpendicularPressureMax;
+                        };
+                    }
                 }
+
             };
             operation.ErrorCalculation = (expected, getting) => DataRow.Max(q => q.Getting);
-            //todo Указать погрешность  
-#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.IsGood = () => operation.Error <= IchBase.PerpendicularPressureMax;
-#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+
             DataRow.Add(operation);
         }
 
@@ -644,15 +659,18 @@ namespace Indicator_10
             {
             
                 var setting = new SettingTableViewModel { Breaking = 5, CellFormat = "мкм" };
-
-                var vm = CreateTable("Показания при арретировании", arrPoints, setting);
+                
+                var vm = new OneTableViewModel();
+                vm.Data = CreateTable("Показания при арретировании", arrPoints,
+                    setting);
                 Service.Title = Name;
-                Service.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
-                Service.DocumentType = "RangeIcdicationView";
+                Service.DocumentType = "OneTableView";
                 Service.Show();
+
                 /*Получаем измерения*/
-                arrGetting = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
+                arrGetting = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
 
@@ -676,11 +694,8 @@ namespace Indicator_10
                         getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))
                     };
                 };
-#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.CompliteWork = async () =>
-#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-                operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <=
-                IchBase.PerpendicularPressureMax;
+            operation.IsGood = () =>  operation.Error.FirstOrDefault() <=
+                                     IchBase.Arresting;
 
             DataRow.Add(operation);
         }

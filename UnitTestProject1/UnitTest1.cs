@@ -11,11 +11,20 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestIsPointBelong()
         {
-            var point = new MeasPoint<Voltage, Frequency>( 15, 20);
-            var a = new RangeStorage<PhysicalRange<Voltage, Frequency>>(new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(1, 1), new MeasPoint<Voltage, Frequency>(50, 50)));
+            var point = new MeasPoint<Voltage, Frequency>( 2.5m, 20);
+            var a = new RangeStorage<PhysicalRange<Voltage, Frequency>>(
+                new PhysicalRange<Voltage, Frequency>(
+                    new MeasPoint<Voltage, Frequency>(1, 1), 
+                    new MeasPoint<Voltage, Frequency>(2, 50)),
+
+                new PhysicalRange<Voltage, Frequency>(
+                    new MeasPoint<Voltage, Frequency>(3, 1),
+                    new MeasPoint<Voltage, Frequency>(4, 50)));
             Assert.IsTrue(a.IsPointBelong(point));
-            a = new RangeStorage<PhysicalRange<Voltage, Frequency>>(new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(20, 1), new MeasPoint<Voltage, Frequency>(50, 50)));
-            Assert.IsTrue(!a.IsPointBelong(point));
+            //a = new RangeStorage<PhysicalRange<Voltage, Frequency>>(
+            //    new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(20, 1), 
+            //        new MeasPoint<Voltage, Frequency>(50, 50)));
+            //Assert.IsTrue(!a.IsPointBelong(point));
 
         }
         [TestMethod]

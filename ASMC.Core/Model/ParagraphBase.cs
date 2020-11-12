@@ -9,6 +9,7 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
+using FastMember;
 using NLog;
 
 namespace ASMC.Core.Model
@@ -217,7 +218,7 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public virtual async Task StartWork(CancellationTokenSource token)
+        public  virtual async Task StartWork(CancellationTokenSource token)
         {
             Logger.Info($@"Выполняется пункт {Name}");
             InitWork(token);
@@ -235,7 +236,8 @@ namespace ASMC.Core.Model
                 {
                    
                     Logger.Debug($@"Выполняется строка №{Array.IndexOf(array, row)}");
-                    var metod = row.GetType().GetMethods().FirstOrDefault(q => q.Name.Equals(nameof(IBasicOperation<object>.WorkAsync)));
+
+                    var metod = row.GetType().GetMethod(nameof(IBasicOperation<object>.WorkAsync));
                     if (metod != null) await (Task) metod.Invoke(row, new object[] {token});
                     checkResult.Add((Func<bool>) row.GetType().GetProperty(nameof(IBasicOperation<object>.IsGood))
                                                     .GetValue(row));
