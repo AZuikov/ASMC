@@ -711,6 +711,15 @@ namespace ASMC.Data.Model
             return returnPoint;
         }
 
+        public IMeasPoint<T1,T2> GetTolMeasPoint<T1,T2>(IMeasPoint<T1,T2> inPoint) where T1 : class, IPhysicalQuantity<T1>, new() 
+                                                                                   where T2 : class, IPhysicalQuantity<T2>, new()
+        {
+            var returnPoint = new MeasPoint<T1,T2>(GetRangePointBelong(inPoint).AccuracyChatacteristic.GetAccuracy(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()),
+                                                   inPoint.AdditionalPhysicalQuantity);
+            returnPoint.MainPhysicalQuantity.ChangeMultiplier(inPoint.MainPhysicalQuantity.Multiplier);
+            return returnPoint;
+        }
+
         /// <summary>
         /// </summary>
         /// <typeparam name = "T1"></typeparam>
