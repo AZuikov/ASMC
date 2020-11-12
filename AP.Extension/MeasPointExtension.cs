@@ -30,7 +30,7 @@ namespace AP.Extension
                 mp.MainPhysicalQuantity.Multiplier = range.MainPhysicalQuantity.Multiplier;
                 mp.MainPhysicalQuantity.Unit = range.MainPhysicalQuantity.Unit;
                 mp.MainPhysicalQuantity.Value =range.MainPhysicalQuantity.Value * (countPoint / 100M);
-                yield return mp;
+                yield return  mp;
             }
         }
     }

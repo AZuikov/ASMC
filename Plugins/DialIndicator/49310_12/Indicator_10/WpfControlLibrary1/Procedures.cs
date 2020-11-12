@@ -21,6 +21,7 @@ using ASMC.Devices.USB_Device.WebCam;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 using DevExpress.Mvvm.UI;
 using Indicator_10.ViewModel;
+using NLog;
 
 namespace Indicator_10
 {
@@ -211,6 +212,7 @@ namespace Indicator_10
     /// </summary>
     public sealed class VisualInspection : MainIchProcedur<bool>
     {
+        
         /// <inheritdoc />
         public VisualInspection(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -232,6 +234,12 @@ namespace Indicator_10
 
             return data;
         }
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
+        }
+        /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
@@ -244,6 +252,11 @@ namespace Indicator_10
     public sealed class Testing : MainIchProcedur<bool>
     {
         /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
+        }
+        /// <inheritdoc />
         public Testing(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробывание";
@@ -253,6 +266,22 @@ namespace Indicator_10
             base.InitWork(token);
             DataRow.Add(new DialogOperationHelp(this, ""));
         }
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var data = base.FillData();
+
+            var dataRow = data.NewRow();
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
+            return data;
+        }
     }
 
     /// <summary>
@@ -260,6 +289,7 @@ namespace Indicator_10
     /// </summary>
     public sealed class MeasuringForce : MainIchProcedur<object>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public MeasuringForce(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -278,16 +308,16 @@ namespace Indicator_10
                 var dds = row as MultiErrorMeasuringOperation<object>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
-                dataRow[0] = dds.Expected?.ToString();
-                dataRow[1] = dds.Getting?.ToString();
-                dataRow[2] = dds.Error[0];
-                dataRow[3] = dds.Error[1];
-                dataRow[4] = dds.Error[2];
+                dataRow[0] =((MeasPoint<Length>)dds.Expected)?.Description;
+                dataRow[1] = ((MeasPoint<Weight>)dds.Getting)?.Description;
+                dataRow[2] = ((MeasPoint<Force>)dds.Error[0]).Description;
+                dataRow[3] = ((MeasPoint<Force>)dds.Error[1]).Description;
+                dataRow[4] = ((MeasPoint<Force>)dds.Error[2]).Description;
                 //todo Указать погрешность  
 
-                dataRow[5] = IchBase.MeasuringForce.ChangeCourse;
-                dataRow[7] = IchBase.MeasuringForce.StraightRun;
-                dataRow[6] = IchBase.MeasuringForce.Oscillatons;
+                dataRow[5] = IchBase.MeasuringForce.ChangeCourse.Description;
+                dataRow[7] = IchBase.MeasuringForce.StraightRun.Description;
+                dataRow[6] = IchBase.MeasuringForce.Oscillatons.Description;
                 if (dds.IsGood == null)
                     dataRow[8] = ConstNotUsed;
                 else
@@ -352,6 +382,8 @@ namespace Indicator_10
                 Service.Show();
                 fullGettingPoints = vm.Content.Aggregate(fullGettingPoints,
                     (current, item) => current.Concat(Fill(item)).ToArray());
+
+
             };
 
             operation.BodyWorkAsync = () =>
@@ -361,6 +393,7 @@ namespace Indicator_10
                     if (i > 0) operation = (MultiErrorMeasuringOperation<object>)operation.Clone();
                     operation.Expected = fullPoints[i].Clone();
                     operation.Getting = fullGettingPoints[i].Clone();
+                    Logger.Debug($@"Ожидаемое:{((IMeasPoint<Length>)operation.Expected).Description} измеренное {((IMeasPoint<Weight>)operation.Getting).Description}");
                     if (i > 0) DataRow.Add(operation);
                 }
             };
@@ -375,6 +408,7 @@ namespace Indicator_10
                     var fullMeasPointForces = ConvertWeightToForce(fullMeasPoints.ToArray());
 
                     var array = fullMeasPointForces.Take(6).ToArray();
+                    Logger.Debug($@"Полное: Максимум {array.Max().Description} и минимум {array.Min().Description}");
                     return array.Max() - array.Min();
                 },
                 (expected, getting) =>
@@ -385,6 +419,8 @@ namespace Indicator_10
                     var fullMeasPointForces = ConvertWeightToForce(fullMeasPoints.ToArray());
 
                     var array = fullMeasPointForces.Take(3).ToArray();
+
+                    Logger.Debug($@"Прямое: Максимум {array.Max().Description} и минимум {array.Min().Description}");
                     return array.Max() - array.Min();
                 },
                 (expected, getting) =>
@@ -395,20 +431,22 @@ namespace Indicator_10
                     var fullMeasPointForces = ConvertWeightToForce(fullMeasPoints.ToArray());
 
                     var array = fullMeasPointForces.Skip(6).Take(2).ToArray();
+
+                    Logger.Debug($@"прямой/обратный: Максимум {array.Max().Description} и минимум {array.Min().Description}");
                     return array.Max() - array.Min();
                 }
             };
-#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.CompliteWork = async () =>
+            operation.IsGood = () =>
             {
-                return operation?.Error.FirstOrDefault() as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
+
+                return operation?.Error?.Take(1).First() as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
                        &&
-                       operation?.Error?.Skip(1).Take(1) as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons
+                       operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force> <=
+                       IchBase.MeasuringForce.Oscillatons
                        &&
-                       operation?.Error?.Skip(2).Take(1) as MeasPoint<Force> <= IchBase.MeasuringForce.Oscillatons;
+                       operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force> <=
+                       IchBase.MeasuringForce.Oscillatons;
             };
-                
-#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
              
 
             DataRow.Add(operation);
@@ -500,7 +538,7 @@ namespace Indicator_10
                 var vm = new OneTableViewModel();
                 vm.Data = CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints,
                     new SettingTableViewModel { IsHorizontal = false });
-                Service.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
                 Service.DocumentType = "OneTableView";
                 Service.Show();
@@ -521,7 +559,7 @@ namespace Indicator_10
             operation.ErrorCalculation = (expected, getting) => DataRow.Max(q => q.Getting);
             //todo Указать погрешность  
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.CompliteWork = async () => operation.Error <= IchBase.PerpendicularPressureMax;
+            operation.IsGood = () => operation.Error <= IchBase.PerpendicularPressureMax;
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             DataRow.Add(operation);
         }

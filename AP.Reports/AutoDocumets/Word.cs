@@ -152,12 +152,12 @@ namespace AP.Reports.AutoDocumets
         public void FillTableToBookmark(string bm, DataTable dt, bool del = false,
             ConditionalFormatting cf = default(ConditionalFormatting))
         {
-            if (string.IsNullOrEmpty(bm) || dt == null) return;
+            if (string.IsNullOrEmpty(bm) || dt == null || _document.Bookmarks[bm]==null) return;
             DocumentRange = _document.Bookmarks[bm]?.Range;
             if (_document?.Tables == null || _document.Tables.Get(DocumentRange).Count <= 0) return;
 
             var table = _document.Tables.Get(DocumentRange).First();
-            if (dt.Rows.Count < 1)
+            if (dt.Rows.Count < 1 && del)
             {
                 _document.BeginUpdate();
                 _document.Tables.Remove(table);

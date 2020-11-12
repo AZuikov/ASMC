@@ -6,7 +6,9 @@
              xmlns:local="clr-namespace:ASMC.Common.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <GroupBox Header="{Binding Data.Header}" Margin="20" Focusable="False">
-        <local:InputTableControl  Data="{Binding Path=Data.Cells}" />
-    </GroupBox>
+    <StackPanel DataContext="{Binding Data}">
+        <GroupBox Header="{Binding Header}" Margin="20" Focusable="False">
+            <local:InputTableControl  Data="{Binding Path=Cells}" />
+        </GroupBox>
+    </StackPanel>
 </UserControl>
