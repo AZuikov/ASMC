@@ -2314,24 +2314,11 @@ namespace APPA_107N_109N
 
                             //расчет погрешности для конкретной точки предела измерения
                             ConstructTooleranceFormula(curr); // функция подбирает коэффициенты для формулы погрешности
-                            operation.ErrorCalculation = (expected, getting) =>
-                            {
-                                var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
-                                             EdMlRaz *
-                                             RangeResolution.MainPhysicalQuantity.Value *
-                                             (decimal) (RangeResolution
-                                                       .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                        curr.MainPhysicalQuantity.Multiplier
-                                                            .GetDoubleValue());
-
-                                MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Current, Frequency>(result, curr.MainPhysicalQuantity.Multiplier,
-                                                                         curr.AdditionalPhysicalQuantity);
-                            };
+                            operation.ErrorCalculation = (expected, getting) => {return appa107N.aciRangeStorage.GetTolMeasPoint(curr);};
                             
                             operation.LowerTolerance = operation.Expected - operation.Error;
                             operation.UpperTolerance = operation.Expected + operation.Error;
-                            var myTol = appa107N.aciRangeStorage.GetTolMeasPoint(curr);
+                            //var myTol = appa107N.aciRangeStorage.GetTolMeasPoint(curr);
                             operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(operation
                                                                                           .Expected.MainPhysicalQuantity
                                                                                           .Multiplier);
