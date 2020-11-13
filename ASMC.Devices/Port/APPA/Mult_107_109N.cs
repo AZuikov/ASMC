@@ -28,12 +28,45 @@ namespace ASMC.Devices.Port.APPA
         {
             return new RangeStorage<PhysicalRange<Current, Frequency>>(new []
             {
+                // 20 mA
                 new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili,40),
                                                       new MeasPoint<Current, Frequency>(20,UnitMultiplier.Mili, 500),
-                                                      new AccuracyChatacteristic(0.000050m,0,0.8M)),
+                                                      new AccuracyChatacteristic(0.000050m,null,0.8M)),
                 new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili,500),
                                                       new MeasPoint<Current, Frequency>(20,UnitMultiplier.Mili, 1,UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.000050m,0,0.8M))
+                                                      new AccuracyChatacteristic(0.000080m,null,1.2M)),
+                //200 mA
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.Mili,40),
+                                                      new MeasPoint<Current, Frequency>(200,UnitMultiplier.Mili,500),
+                                                      new AccuracyChatacteristic(0.0005M, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.Mili,500),
+                                                      new MeasPoint<Current, Frequency>(200,UnitMultiplier.Mili,1, UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.0008M, null, 1.2M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.Mili,1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(200,UnitMultiplier.Mili,3, UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.0008M, null, 2M)),
+
+                //2 A
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,40),
+                                                      new MeasPoint<Current, Frequency>(2,UnitMultiplier.None,500),
+                                                      new AccuracyChatacteristic(0.005M, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,500),
+                                                      new MeasPoint<Current, Frequency>(2,UnitMultiplier.None,1, UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.008M, null, 1.2M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(2,UnitMultiplier.None,3, UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.008M, null, 2M)),
+
+                // 10 A
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,40),
+                                                      new MeasPoint<Current, Frequency>(10,UnitMultiplier.None,500),
+                                                      new AccuracyChatacteristic(0.05M, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,500),
+                                                      new MeasPoint<Current, Frequency>(10,UnitMultiplier.None,1, UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.08M, null, 1.2M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(10,UnitMultiplier.None,3, UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.08M, null, 2M)),
             });
         }
 
