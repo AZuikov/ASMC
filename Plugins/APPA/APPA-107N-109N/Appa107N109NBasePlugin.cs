@@ -2131,8 +2131,6 @@ namespace APPA_107N_109N
             /// <returns>Результат вычисления.</returns>
             protected void ConstructTooleranceFormula(MeasPoint<Current, Frequency> inFreq)
             {
-                
-
                 if (OperationRangeNominal == Mult107_109N.RangeNominal.Range20mA &&
                     inFreq.AdditionalPhysicalQuantity.Multiplier == UnitMultiplier.None)
                 {
@@ -2313,9 +2311,12 @@ namespace APPA_107N_109N
                             operation.Expected = (MeasPoint<Current, Frequency>) curr.Clone();
 
                             //расчет погрешности для конкретной точки предела измерения
-                            ConstructTooleranceFormula(curr); // функция подбирает коэффициенты для формулы погрешности
-                            operation.ErrorCalculation = (expected, getting) => {return appa107N.aciRangeStorage.GetTolMeasPoint(curr);};
-                            
+                            //ConstructTooleranceFormula(curr); // функция подбирает коэффициенты для формулы погрешности
+                            operation.ErrorCalculation = (expected, getting) =>
+                            {
+                                return appa107N.aciRangeStorage.GetTolMeasPoint(curr);
+                            };
+
                             operation.LowerTolerance = operation.Expected - operation.Error;
                             operation.UpperTolerance = operation.Expected + operation.Error;
                             //var myTol = appa107N.aciRangeStorage.GetTolMeasPoint(curr);

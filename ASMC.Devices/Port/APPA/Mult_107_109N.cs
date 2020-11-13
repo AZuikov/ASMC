@@ -1,24 +1,180 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using System.Threading;
-using System.Timers;
 using AP.Math;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
+using System;
+using System.Collections.Generic;
+using System.IO.Ports;
+using System.Threading;
+using System.Timers;
+using Accord.Statistics;
 using Timer = System.Timers.Timer;
-using Voltage = ASMC.Devices.IEEE.Keysight.ElectronicLoad.Voltage;
 
 namespace ASMC.Devices.Port.APPA
 {
     // ReSharper disable once InconsistentNaming
     public class Mult107_109N : ComPort
     {
+        #region MeasureCharacteristic
+
+        public RangeStorage<PhysicalRange<Frequency>> FrequencyRangeStorage
+        {
+            get => getFrequencyRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Frequency>> getFrequencyRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Frequency>>(new []
+            {
+                //20 Hz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(20),
+                                             new AccuracyChatacteristic(0.050M,null,0.01M)), 
+                //200 Hz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200),
+                                             new AccuracyChatacteristic(0.10M,null,0.01M)),
+                //2 kHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(2,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(1.0M,null,0.01M)),
+                //20 kHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(20,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(0.010M,null,0.01M)),
+                //200 kHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(0.00010M,null,0.01M)),
+                //1 MHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(0.0010M,null,0.01M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<CelsiumGrad>> GetCelsiumRangeStorage
+        {
+            get => CelsiumRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<CelsiumGrad>> CelsiumRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<CelsiumGrad>>(new []{
+                
+                //-200....-100
+                new PhysicalRange<CelsiumGrad>(new MeasPoint<CelsiumGrad>(-200),new MeasPoint<CelsiumGrad>(-100),
+                                               new AccuracyChatacteristic(6.0M,null,0.1M)),
+                //-100...400
+                new PhysicalRange<CelsiumGrad>(new MeasPoint<CelsiumGrad>(-100), new MeasPoint<CelsiumGrad>(400), 
+                                               new AccuracyChatacteristic(3.0M, null, 0.1M)),
+                //400...1200
+                new PhysicalRange<CelsiumGrad>(new MeasPoint<CelsiumGrad>(400),new MeasPoint<CelsiumGrad>(1200), 
+                                               new AccuracyChatacteristic(3M, null,0.1M))
+                
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Capacity>> CapacityRangeStorage
+        {
+            get => getCapacityRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Capacity>> getCapacityRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Capacity>>(new []
+            {
+                // 4 nF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Nano), 
+                                            new AccuracyChatacteristic(0.00000000001M, null,1.5M)), 
+                // 40 nF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Nano),
+                                            new AccuracyChatacteristic(0.00000000010M, null,1.5M)),
+                // 400 nF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(400,UnitMultiplier.Nano),
+                                            new AccuracyChatacteristic(0.0000000005M, null,0.9M)),
+                // 4 uF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Micro),
+                                            new AccuracyChatacteristic(0.000000005M, null,0.9M)),
+                // 40 uF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Micro),
+                                            new AccuracyChatacteristic(0.00000005M, null,1.2M)),
+                // 400 uF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(400,UnitMultiplier.Micro),
+                                            new AccuracyChatacteristic(0.00000005M, null,1.2M)),
+                // 4 mF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Mili),
+                                            new AccuracyChatacteristic(0.000005M, null,1.5M)),
+                // 40 mF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Mili),
+                                            new AccuracyChatacteristic(0.00005M, null,1.5M)),
+            });
+        }
+
+
+        public RangeStorage<PhysicalRange<Resistance>> ResistanceRangeStorage
+        {
+            get => getResistanceRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Resistance>> getResistanceRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Resistance>>(new[]
+            {
+                //200 Om
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200),
+                                              new AccuracyChatacteristic(0.30M,null,0.3M)),
+                // 2kOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Kilo), 
+                                              new AccuracyChatacteristic(0.0030M,null,0.3M)),
+                // 20kOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(20,UnitMultiplier.Kilo),
+                                              new AccuracyChatacteristic(0.030M,null,0.3M)),
+                // 200kOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200,UnitMultiplier.Kilo),
+                                              new AccuracyChatacteristic(0.30M,null,0.3M)),
+                // 2MOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Mega),
+                                              new AccuracyChatacteristic(0.0050M,null,0.3M)),
+
+                // 20MOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(20,UnitMultiplier.Mega),
+                                              new AccuracyChatacteristic(0.050M,null,5M)),
+                // 200MOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200,UnitMultiplier.Mega),
+                                              new AccuracyChatacteristic(20M,null,5M)),
+                // 2GOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Giga),
+                                              new AccuracyChatacteristic(0.8M,null,5M))
+
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Current>> DciRangeStorage
+        {
+            get => getDciStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Current>> getDciStorage()
+        {
+            return new RangeStorage<PhysicalRange<Current>>(new[]
+            {
+                // 20 mA
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(20,UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.000040M,null,0.2M)),
+                // 200 mA
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(200,UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.00040M,null,0.2M)),
+                // 2 A
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(2),
+                                           new AccuracyChatacteristic(0.0040M,null,0.2M)),
+                // 10 A
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(10),
+                                           new AccuracyChatacteristic(0.040M,null,0.2M)),
+            });
+        }
+
+        /// <summary>
+        /// Пределы измерения с характеристиками точности для переменного тока.
+        /// </summary>
         public RangeStorage<PhysicalRange<Current, Frequency>> aciRangeStorage
         {
             get => GetAciRangeStorage();
@@ -26,49 +182,213 @@ namespace ASMC.Devices.Port.APPA
 
         protected virtual RangeStorage<PhysicalRange<Current, Frequency>> GetAciRangeStorage()
         {
-            return new RangeStorage<PhysicalRange<Current, Frequency>>(new []
+            return new RangeStorage<PhysicalRange<Current, Frequency>>(new[]
             {
                 // 20 mA
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili,40),
-                                                      new MeasPoint<Current, Frequency>(20,UnitMultiplier.Mili, 500),
-                                                      new AccuracyChatacteristic(0.000050m,null,0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili,500),
-                                                      new MeasPoint<Current, Frequency>(20,UnitMultiplier.Mili, 1,UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.000080m,null,1.2M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 40),
+                                                      new MeasPoint<Current, Frequency>(20, UnitMultiplier.Mili, 500),
+                                                      new AccuracyChatacteristic(0.000050m, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 500),
+                                                      new MeasPoint<Current, Frequency>(20, UnitMultiplier.Mili, 1,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.000080m, null, 1.2M)),
                 //200 mA
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.Mili,40),
-                                                      new MeasPoint<Current, Frequency>(200,UnitMultiplier.Mili,500),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 40),
+                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 500),
                                                       new AccuracyChatacteristic(0.0005M, null, 0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.Mili,500),
-                                                      new MeasPoint<Current, Frequency>(200,UnitMultiplier.Mili,1, UnitMultiplier.Kilo),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 500),
+                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 1,
+                                                                                        UnitMultiplier.Kilo),
                                                       new AccuracyChatacteristic(0.0008M, null, 1.2M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.Mili,1, UnitMultiplier.Kilo),
-                                                      new MeasPoint<Current, Frequency>(200,UnitMultiplier.Mili,3, UnitMultiplier.Kilo),
+                new
+                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 3,
+                                                                                        UnitMultiplier.Kilo),
                                                       new AccuracyChatacteristic(0.0008M, null, 2M)),
 
                 //2 A
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,40),
-                                                      new MeasPoint<Current, Frequency>(2,UnitMultiplier.None,500),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 40),
+                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 500),
                                                       new AccuracyChatacteristic(0.005M, null, 0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,500),
-                                                      new MeasPoint<Current, Frequency>(2,UnitMultiplier.None,1, UnitMultiplier.Kilo),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 500),
+                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 1,
+                                                                                        UnitMultiplier.Kilo),
                                                       new AccuracyChatacteristic(0.008M, null, 1.2M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,1, UnitMultiplier.Kilo),
-                                                      new MeasPoint<Current, Frequency>(2,UnitMultiplier.None,3, UnitMultiplier.Kilo),
+                new
+                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 3,
+                                                                                        UnitMultiplier.Kilo),
                                                       new AccuracyChatacteristic(0.008M, null, 2M)),
 
                 // 10 A
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,40),
-                                                      new MeasPoint<Current, Frequency>(10,UnitMultiplier.None,500),
-                                                      new AccuracyChatacteristic(0.05M, null, 0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,500),
-                                                      new MeasPoint<Current, Frequency>(10,UnitMultiplier.None,1, UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.08M, null, 1.2M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0,UnitMultiplier.None,1, UnitMultiplier.Kilo),
-                                                      new MeasPoint<Current, Frequency>(10,UnitMultiplier.None,3, UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.08M, null, 2M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 40),
+                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 500),
+                                                      new AccuracyChatacteristic(0.005M, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 500),
+                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 1,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.008M, null, 1.2M)),
+                new
+                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 3,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.008M, null, 2M)),
             });
         }
+
+        /// <summary>
+        /// Пределы измерения постоянного напряжения.
+        /// </summary>
+        public RangeStorage<PhysicalRange<Voltage>> DcvRangeStorage
+        {
+            get => GetDcvRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Voltage>> GetDcvRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Voltage>>(new[]
+            {
+                // 20 мВ
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(20, UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.000060M,null,0.06M)),
+                // 200 мВ
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(200,UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.00020M, null,0.06M)),
+
+                // 2 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),new MeasPoint<Voltage>(2),
+                                           new AccuracyChatacteristic(0.0010M, null, 0.06M)),
+
+                // 20 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),new MeasPoint<Voltage>(20),
+                                           new AccuracyChatacteristic(0.010M, null, 0.06M)),
+
+                //200 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),new MeasPoint<Voltage>(200),
+                                           new AccuracyChatacteristic(0.10M, null, 0.06M)),
+
+                //1000 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),new MeasPoint<Voltage>(1000),
+                                           new AccuracyChatacteristic(1M, null, 0.06M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Voltage, Frequency>> AcvStorage
+        {
+            get => GetAcvStorage();
+        }
+
+        protected RangeStorage<PhysicalRange<Voltage, Frequency>> GetAcvStorage()
+        {
+            return new RangeStorage<PhysicalRange<Voltage, Frequency>>(new[]
+            {
+                //20 mV 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.Mili, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.000080M,null,0.7M)),
+                //20 mV 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.Mili, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.000080M,null,1M)),
+
+                //200 mV 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.Mili, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.00080M,null,0.7M)),
+                //200 mV 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.Mili, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.00080M,null,1M)),
+
+                //2 V 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.0050M,null,0.7M)),
+                //2 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.0050M,null,1M)),
+
+                //2 V 1kHz-10kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0060M,null,2M)),
+
+                //2 V 10kHz-20kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0070M,null,3M)),
+
+                //2 V 20kHz-50kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0080M,null,5M)),
+                //2 V 50kHz-100kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(100, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0100M,null,10M)),
+
+                //20 V 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.050M,null,0.7M)),
+                //20 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.050M,null,1M)),
+
+                //20 V 1kHz-10kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.060M,null,2M)),
+
+                //20 V 10kHz-20kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.070M,null,3M)),
+
+                //20 V 20kHz-50kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.080M,null,5M)),
+                //20 V 50kHz-100kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(100, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.100M,null,10M)),
+
+                //200 V 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.50M,null,0.7M)),
+                //200 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.50M,null,1M)),
+                //200 V 1kHz-10kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.60M,null,2M)),
+                //200 V 10kHz-20kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(20,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.70M,null,3M)),
+                //200 V 20kHz-50kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(50,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.80M,null,5M)),
+
+                //750 V 40Hz-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(750, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(5.0M,null,0.7M)),
+                //750 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(750, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(5.0M,null,1M))
+            });
+        }
+
+        #endregion MeasureCharacteristic
 
         public enum BlueState
         {
@@ -147,6 +467,7 @@ namespace ASMC.Devices.Port.APPA
 
             [StringValue("Испытание p-n переходов")]
             Diode,
+
             [StringValue("Прозвонка цепей")] Beeper,
             [StringValue("Измерение ёмкости")] Cap,
             [StringValue("Измерение частоты")] Herz,
@@ -159,6 +480,7 @@ namespace ASMC.Devices.Port.APPA
 
             [StringValue("Измерение температуры в град. Фарингейта")]
             DegF,
+
             [StringValue("Неизвестный режим")] None
         }
 
@@ -265,64 +587,88 @@ namespace ASMC.Devices.Port.APPA
             [DoubleValue(1)] [StringValue("")] None,
             [DoubleValue(1)] [StringValue("В")] V,
 
-            [DoubleValue(1E-3)] [StringValue("мВ")]
+            [DoubleValue(1E-3)]
+            [StringValue("мВ")]
             mV,
+
             [DoubleValue(1)] [StringValue("А")] A,
 
-            [DoubleValue(1E-3)] [StringValue("мА")]
+            [DoubleValue(1E-3)]
+            [StringValue("мА")]
             mA,
+
             [DoubleValue(1)] [StringValue("дБ")] dB,
             [DoubleValue(1)] [StringValue("дБм")] dBm,
 
-            [DoubleValue(1E-9)] [StringValue("нФ")]
+            [DoubleValue(1E-9)]
+            [StringValue("нФ")]
             nF,
 
-            [DoubleValue(1E-6)] [StringValue("мкФ")]
+            [DoubleValue(1E-6)]
+            [StringValue("мкФ")]
             uF,
 
-            [DoubleValue(1E-3)] [StringValue("мФ")]
+            [DoubleValue(1E-3)]
+            [StringValue("мФ")]
             mF,
+
             [DoubleValue(1)] [StringValue("Ом")] Ohm,
 
-            [DoubleValue(1E3)] [StringValue("кОм")]
+            [DoubleValue(1E3)]
+            [StringValue("кОм")]
             KOhm,
 
-            [DoubleValue(1E6)] [StringValue("МОм")]
+            [DoubleValue(1E6)]
+            [StringValue("МОм")]
             MOhm,
 
-            [DoubleValue(1E9)] [StringValue("ГОм")]
+            [DoubleValue(1E9)]
+            [StringValue("ГОм")]
             GOhm,
+
             [DoubleValue(1)] [StringValue("%")] Percent,
             [DoubleValue(1)] [StringValue("Гц")] Hz,
 
-            [DoubleValue(1E3)] [StringValue("кГц")]
+            [DoubleValue(1E3)]
+            [StringValue("кГц")]
             KHz,
 
-            [DoubleValue(1E6)] [StringValue("МГц")]
+            [DoubleValue(1E6)]
+            [StringValue("МГц")]
             MHz,
+
             [DoubleValue(1)] [StringValue("⁰C")] CelciumGrad,
             [DoubleValue(1)] [StringValue("⁰F")] FaringeitGrad,
             [DoubleValue(1)] [StringValue("сек")] Sec,
 
-            [DoubleValue(1E-3)] [StringValue("мсек")]
+            [DoubleValue(1E-3)]
+            [StringValue("мсек")]
             mSec,
 
-            [DoubleValue(1E-9)] [StringValue("нсек")]
+            [DoubleValue(1E-9)]
+            [StringValue("нсек")]
             nSec,
+
             [DoubleValue(1)] [StringValue("В")] Volt,
 
-            [DoubleValue(1E-3)] [StringValue("мВ")]
+            [DoubleValue(1E-3)]
+            [StringValue("мВ")]
             mVolt,
+
             [DoubleValue(1)] [StringValue("А")] Amp,
 
-            [DoubleValue(1E-3)] [StringValue("мА")]
+            [DoubleValue(1E-3)]
+            [StringValue("мА")]
             mAmp,
+
             [DoubleValue(1)] [StringValue("Ом")] Ohm2,
 
-            [DoubleValue(1E3)] [StringValue("кОм")]
+            [DoubleValue(1E3)]
+            [StringValue("кОм")]
             KOhm2,
 
-            [DoubleValue(1E6)] [StringValue("МОм")]
+            [DoubleValue(1E6)]
+            [StringValue("МОм")]
             MOhm3
         }
 
@@ -335,20 +681,19 @@ namespace ASMC.Devices.Port.APPA
 
         #region Fields
 
-        private readonly byte[] _readData = {0x55, 0x55, 0x00, 0x0E};
+        private readonly byte[] _readData = { 0x55, 0x55, 0x00, 0x0E };
 
         //хранит считанные с прибора данные
         private readonly List<byte> _readingBuffer;
 
         //данные для начало обмена информацией с прибором
-        private readonly byte[] _sendData = {0x55, 0x55, 0x00, 0x00, 0xAA};
-
+        private readonly byte[] _sendData = { 0x55, 0x55, 0x00, 0x00, 0xAA };
 
         private readonly Timer _wait;
         private List<byte> _data;
         private bool _flagTimeout;
 
-        #endregion
+        #endregion Fields
 
         #region Property
 
@@ -360,8 +705,8 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Debug($"Единицы измерения на втором экране {((Units) (_data[16] >> 3)).ToString()}");
-                return (Units) (_data[16] >> 3);
+                Logger.Debug($"Единицы измерения на втором экране {((Units)(_data[16] >> 3)).ToString()}");
+                return (Units)(_data[16] >> 3);
             }
         }
 
@@ -370,8 +715,8 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Debug($"Статус синей клавиши {UserType} {((BlueState) _data[5]).ToString()}");
-                return (BlueState) _data[5];
+                Logger.Debug($"Статус синей клавиши {UserType} {((BlueState)_data[5]).ToString()}");
+                return (BlueState)_data[5];
             }
         }
 
@@ -383,8 +728,8 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Info($"{UserType} дополнительная функция {((Function) _data[12]).ToString()}");
-                return (Function) _data[12];
+                Logger.Info($"{UserType} дополнительная функция {((Function)_data[12]).ToString()}");
+                return (Function)_data[12];
             }
         }
 
@@ -395,8 +740,8 @@ namespace ASMC.Devices.Port.APPA
         {
             get
             {
-                Logger.Debug($"Единицы измерени на основном экране {((Units) (_data[11] >> 3)).ToString()}");
-                return (Units) (_data[11] >> 3);
+                Logger.Debug($"Единицы измерени на основном экране {((Units)(_data[11] >> 3)).ToString()}");
+                return (Units)(_data[11] >> 3);
             }
         }
 
@@ -409,7 +754,6 @@ namespace ASMC.Devices.Port.APPA
             {
                 var currBlueState = GetBlueState;
                 var currRotor = GetRotor;
-
 
                 if (currRotor == Rotor.V && currBlueState == BlueState.NoPress) return MeasureMode.ACV;
                 if (currRotor == Rotor.V && currBlueState == BlueState.OnPress) return MeasureMode.DCV;
@@ -445,14 +789,13 @@ namespace ASMC.Devices.Port.APPA
             }
         }
 
-
         public RangeCode GetRangeCode
         {
             get
             {
                 SendQuery();
-                Logger.Info($"{UserType} диапазон измерения {((RangeCode) _data[7]).ToString()}");
-                return (RangeCode) _data[7];
+                Logger.Info($"{UserType} диапазон измерения {((RangeCode)_data[7]).ToString()}");
+                return (RangeCode)_data[7];
             }
         }
 
@@ -468,108 +811,102 @@ namespace ASMC.Devices.Port.APPA
 
                 if (currMode == MeasureMode.DCV)
                 {
-                    if (((int) currRangeCode & 3) == 3) return RangeNominal.Range1000V;
-                    if (((int) currRangeCode & 2) == 2) return RangeNominal.Range200V;
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range1000V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
                     return RangeNominal.Range2V;
                 }
 
                 if (currMode == MeasureMode.ACV)
                 {
-                    if (((int) currRangeCode & 3) == 3) return RangeNominal.Range750V;
-                    if (((int) currRangeCode & 2) == 2) return RangeNominal.Range200V;
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
                     return RangeNominal.Range2V;
                 }
 
                 if (currMode == MeasureMode.AC_DC_V)
                 {
-                    if (((int) currRangeCode & 3) == 3) return RangeNominal.Range750V;
-                    if (((int) currRangeCode & 2) == 2) return RangeNominal.Range200V;
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range20V;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
                     return RangeNominal.Range2V;
                 }
 
                 if (currMode == MeasureMode.DCmV || currMode == MeasureMode.ACmV || currMode == MeasureMode.AC_DC_mV)
                 {
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range200mV;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200mV;
                     return RangeNominal.Range20mV;
                 }
 
-
                 if (currMode == MeasureMode.DCmA || currMode == MeasureMode.ACmA || currMode == MeasureMode.AC_DC_mA)
                 {
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range200mA;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200mA;
                     return RangeNominal.Range20mA;
                 }
 
                 if (currMode == MeasureMode.DCI || currMode == MeasureMode.ACI || currMode == MeasureMode.AC_DC_I)
                 {
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range10A;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range10A;
                     return RangeNominal.Range2A;
                 }
 
                 if (currMode == MeasureMode.Ohm)
                 {
-                    if (((int) currRangeCode & 7) == 7) return RangeNominal.Range2Gohm;
-                    if (((int) currRangeCode & 6) == 6) return RangeNominal.Range200Mohm;
-                    if (((int) currRangeCode & 5) == 5) return RangeNominal.Range20Mohm;
-                    if (((int) currRangeCode & 4) == 4) return RangeNominal.Range2Mohm;
-                    if (((int) currRangeCode & 3) == 3) return RangeNominal.Range200kOhm;
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range2kOhm;
-                    if (((int) currRangeCode & 2) == 2) return RangeNominal.Range20kOhm;
+                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range2Gohm;
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range200Mohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range20Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range2Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range2kOhm;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range20kOhm;
                     return RangeNominal.Range200Ohm;
                 }
 
-
                 if (currMode == MeasureMode.LowOhm)
                 {
-                    if (((int) currRangeCode & 6) == 6) return RangeNominal.Range2Gohm;
-                    if (((int) currRangeCode & 5) == 5) return RangeNominal.Range200Mohm;
-                    if (((int) currRangeCode & 4) == 4) return RangeNominal.Range20Mohm;
-                    if (((int) currRangeCode & 3) == 3) return RangeNominal.Range2Mohm;
-                    if (((int) currRangeCode & 2) == 2) return RangeNominal.Range200kOhm;
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range20kOhm;
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range2Gohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range200Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range20Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range2Mohm;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20kOhm;
                     return RangeNominal.Range2kOhm;
                 }
 
                 if (currMode == MeasureMode.Cap)
                 {
-                    if (((int) currRangeCode & 7) == 7) return RangeNominal.Range40mF;
-                    if (((int) currRangeCode & 6) == 6) return RangeNominal.Range4mF;
-                    if (((int) currRangeCode & 5) == 5) return RangeNominal.Range400uF;
-                    if (((int) currRangeCode & 4) == 4) return RangeNominal.Range40uF;
-                    if (((int) currRangeCode & 3) == 3) return RangeNominal.Range4uF;
-                    if (((int) currRangeCode & 2) == 2) return RangeNominal.Range400nF;
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range40nF;
+                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range40mF;
+                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range4mF;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range400uF;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range40uF;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range4uF;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range400nF;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range40nF;
                     return RangeNominal.Range4nF;
                 }
 
-
                 if (currMode == MeasureMode.Herz)
                 {
-                    if (((int) currRangeCode & 5) == 5) return RangeNominal.Range1MHz;
-                    if (((int) currRangeCode & 4) == 4) return RangeNominal.Range200kHz;
-                    if (((int) currRangeCode & 3) == 3) return RangeNominal.Range20kHz;
-                    if (((int) currRangeCode & 2) == 2) return RangeNominal.Range2kHz;
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range200Hz;
+                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range1MHz;
+                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range200kHz;
+                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range20kHz;
+                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range2kHz;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200Hz;
                     return RangeNominal.Range20Hz;
                 }
 
-
                 if (currMode == MeasureMode.degC)
                 {
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range1200degC;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range1200degC;
                     return RangeNominal.Range400degC;
                 }
 
-
                 if (currMode == MeasureMode.DegF)
                 {
-                    if (((int) currRangeCode & 1) == 1) return RangeNominal.Range2192degF;
+                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range2192degF;
                     return RangeNominal.Range400degF;
                 }
-
 
                 return RangeNominal.RangeNone;
             }
@@ -582,7 +919,7 @@ namespace ASMC.Devices.Port.APPA
         {
             get
             {
-                if (((int) GetRangeCode & (int) RangeSwitchMode.Manual) == (int) RangeSwitchMode.Manual)
+                if (((int)GetRangeCode & (int)RangeSwitchMode.Manual) == (int)RangeSwitchMode.Manual)
                     return RangeSwitchMode.Manual;
                 return RangeSwitchMode.Auto;
             }
@@ -593,8 +930,8 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Info($"{UserType} положение переключателя {((Rotor) _data[4]).ToString()}");
-                return (Rotor) _data[4];
+                Logger.Info($"{UserType} положение переключателя {((Rotor)_data[4]).ToString()}");
+                return (Rotor)_data[4];
             }
         }
 
@@ -606,12 +943,12 @@ namespace ASMC.Devices.Port.APPA
             get
             {
                 SendQuery();
-                Logger.Info($"{UserType} дополнительные функции на втором экране {((Function) _data[17]).ToString()}");
-                return (Function) _data[17];
+                Logger.Info($"{UserType} дополнительные функции на втором экране {((Function)_data[17]).ToString()}");
+                return (Function)_data[17];
             }
         }
 
-        #endregion
+        #endregion Property
 
         public Mult107_109N()
         {
@@ -668,24 +1005,22 @@ namespace ASMC.Devices.Port.APPA
             {
                 switch (addres & 0x07)
                 {
-                    case (int) Point.Point1:
+                    case (int)Point.Point1:
                         return val /= 10.0;
 
-
-                    case (int) Point.Point2:
+                    case (int)Point.Point2:
                         return val /= 100.0;
 
-
-                    case (int) Point.Point3:
+                    case (int)Point.Point3:
                         return val /= 1000.0;
 
-                    case (int) Point.Point4:
+                    case (int)Point.Point4:
                         return val /= 10000.0;
+
                     default:
                         return val;
                 }
             }
-
 
             Logger.Info($"{UserType} Измеренное значение {value}");
             return value;
@@ -710,12 +1045,11 @@ namespace ASMC.Devices.Port.APPA
             do
             {
                 for (var i = 0; i < valBuffer.Length; i++)
-                    valBuffer[i] = (decimal) GetSingleValue(mult, generalDsiplay);
+                    valBuffer[i] = (decimal)GetSingleValue(mult, generalDsiplay);
             } while (!MathStatistics.IntoTreeSigma(valBuffer));
 
-
             MathStatistics.Grubbs(ref valBuffer);
-            resultValue = (double) MathStatistics.GetArithmeticalMean(valBuffer);
+            resultValue = (double)MathStatistics.GetArithmeticalMean(valBuffer);
 
             return resultValue;
         }
@@ -755,13 +1089,13 @@ namespace ASMC.Devices.Port.APPA
         {
             var CountResend = 0;
             _readingBuffer.Clear();
-            var port = (SerialPort) sender;
+            var port = (SerialPort)sender;
 
             try
             {
                 for (var i = 0; i < _readData.Length; i++)
                 {
-                    var bt = (byte) port.ReadByte();
+                    var bt = (byte)port.ReadByte();
                     if (bt == _readData[i])
                     {
                         _readingBuffer.Add(bt);
@@ -783,7 +1117,7 @@ namespace ASMC.Devices.Port.APPA
                     }
                 }
 
-                while (_readingBuffer.Count < Cadr) _readingBuffer.Add((byte) port.ReadByte());
+                while (_readingBuffer.Count < Cadr) _readingBuffer.Add((byte)port.ReadByte());
 
                 DiscardInBuffer();
 
@@ -817,7 +1151,6 @@ namespace ASMC.Devices.Port.APPA
                 return;
             }
 
-
             //если сумма совпадает тогда считанные данные из буфера пишем в поле
             _data = _readingBuffer;
             _wait.Stop();
@@ -830,7 +1163,7 @@ namespace ASMC.Devices.Port.APPA
             WaitEvent.Set();
         }
 
-        #endregion
+        #endregion Methods
 
         private enum Point
         {
