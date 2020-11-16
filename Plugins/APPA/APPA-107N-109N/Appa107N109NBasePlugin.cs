@@ -282,6 +282,21 @@ namespace APPA_107N_109N
             #endregion
         }
 
+        /// <summary>
+        /// Атрибут содержит максимальное значение физической величины для конкретного предела. Нужен для коректного выбора предела измерения при расчете погрешности.
+        /// </summary>
+        
+        public class MaxRangeValueAttribute : System.Attribute
+        {
+            public double  MaxRangeValue { get; set; }
+
+            public MaxRangeValueAttribute(double inPoint)
+            {
+                MaxRangeValue = inPoint;
+            }
+        }
+       
+
         //////////////////////////////******DCV*******///////////////////////////////
 
         #region DCV
@@ -324,12 +339,12 @@ namespace APPA_107N_109N
             /// <summary>
             /// Код предела измерения на поверяемого прибора.
             /// </summary>
-            public Mult107_109N.RangeCode OperationDcRangeCode { get; protected set; }
+            public virtual  Mult107_109N.RangeCode OperationDcRangeCode { get; protected set; }
 
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы.
             /// </summary>
-            public Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            public virtual Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора.
@@ -548,6 +563,8 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
         {
+
+            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
             public Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -585,6 +602,7 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_20V_Measure : Oper3DcvMeasureBase
         {
+            [MaxRangeValue(20)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
             public Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -619,6 +637,7 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_200V_Measure : Oper3DcvMeasureBase
         {
+            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
             public Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -656,6 +675,7 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_1000V_Measure : Oper3DcvMeasureBase
         {
+            [MaxRangeValue(1000)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
             public Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -693,6 +713,7 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_20mV_Measure : Oper3DcvMeasureBase
         {
+            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
             public Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -730,6 +751,7 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_200mV_Measure : Oper3DcvMeasureBase
         {
+            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
             public Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -832,7 +854,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы
             /// </summary>
-            public Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            public virtual  Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора
@@ -1167,6 +1189,7 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_20mV_Measure : Oper4AcvMeasureBase
         {
+            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
             public Ope4_1_AcV_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -1208,6 +1231,7 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_200mV_Measure : Oper4AcvMeasureBase
         {
+            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
             public Ope4_1_AcV_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir)
                 : base(userItemOperation, inResourceDir)
@@ -1249,6 +1273,8 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_2V_Measure : Oper4AcvMeasureBase
         {
+            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+
             public Ope4_1_AcV_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -1329,6 +1355,9 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_20V_Measure : Oper4AcvMeasureBase
         {
+
+            [MaxRangeValue(20)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+
             public Ope4_1_AcV_20V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -1402,6 +1431,7 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_200V_Measure : Oper4AcvMeasureBase
         {
+            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
             public Ope4_1_AcV_200V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -1509,6 +1539,7 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_750V_Measure : Oper4AcvMeasureBase
         {
+            [MaxRangeValue(750)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
             public Ope4_1_AcV_750V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir)
                 : base(userItemOperation, inResourceDir)
@@ -1597,7 +1628,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы
             /// </summary>
-            public Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+            public virtual Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора
@@ -1829,6 +1860,7 @@ namespace APPA_107N_109N
 
         public class Oper5_1Dci_20mA_Measure : Oper5DciMeasureBase
         {
+            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper5_1Dci_20mA_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -1872,6 +1904,7 @@ namespace APPA_107N_109N
 
         public class Oper5_1Dci_200mA_Measure : Oper5DciMeasureBase
         {
+            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper5_1Dci_200mA_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir)
                 : base(userItemOperation, inResourceDir)
@@ -1915,6 +1948,7 @@ namespace APPA_107N_109N
 
         public class Oper5_1Dci_2A_Measure : Oper5DciMeasureBase
         {
+            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper5_1Dci_2A_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
@@ -1969,6 +2003,7 @@ namespace APPA_107N_109N
 
         public class Oper5_2_1Dci_10A_Measure : Oper5DciMeasureBase
         {
+            [MaxRangeValue(10)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper5_2_1Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir)
                 : base(userItemOperation, inResourceDir)
@@ -2009,6 +2044,8 @@ namespace APPA_107N_109N
 
         public class Oper5_2_2Dci_10A_Measure : Oper5DciMeasureBase
         {
+            [MaxRangeValue(10)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+
             public Oper5_2_2Dci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir)
                 : base(userItemOperation, inResourceDir)
@@ -2087,7 +2124,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы
             /// </summary>
-            public Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+            public virtual  Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора
@@ -2361,16 +2398,7 @@ namespace APPA_107N_109N
 
             #endregion
 
-            /// <summary>
-            /// Набор частот, характерный для данного предела измерения
-            /// </summary>
-            //protected MeasPoint[] HerzPoint;
-
-            /// <summary>
-            /// Это пустая точка, которая содержит только единицы измерения текущего
-            /// поверяемого предела и множитель для единицы измерения.
-            /// </summary>
-            //protected MeasPoint thisRangeUnits;
+           
 
             #region TolleranceFormula
 
@@ -2394,6 +2422,8 @@ namespace APPA_107N_109N
 
         public class Oper6_1Aci_20mA_Measure : Oper6AciMeasureBase
         {
+            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+
             public Oper6_1Aci_20mA_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -2435,6 +2465,7 @@ namespace APPA_107N_109N
 
         public class Oper6_1Aci_200mA_Measure : Oper6AciMeasureBase
         {
+            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper6_1Aci_200mA_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -2482,6 +2513,7 @@ namespace APPA_107N_109N
 
         public class Oper6_1Aci_2A_Measure : Oper6AciMeasureBase
         {
+            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper6_1Aci_2A_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -2534,6 +2566,7 @@ namespace APPA_107N_109N
 
         public class Oper6_2_1Aci_10A_Measure : Oper6AciMeasureBase
         {
+            [MaxRangeValue(10)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper6_2_1Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -2575,6 +2608,7 @@ namespace APPA_107N_109N
 
         public class Oper6_2_2Aci_10A_Measure : Oper6AciMeasureBase
         {
+            [MaxRangeValue(10)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper6_2_2Aci_10A_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3060,6 +3094,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_200Ohm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_200Ohm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3094,6 +3129,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_2kOhm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(2000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_2kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3129,6 +3165,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_20kOhm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(20000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_20kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3165,6 +3202,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_200kOhm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(200000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_200kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3200,6 +3238,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_2MOhm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(2000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_2MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3235,6 +3274,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_20MOhm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(20000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_20MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3268,6 +3308,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_200MOhm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(200000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_200MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3301,6 +3342,7 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_2GOhm_Measure : Oper8ResistanceMeasureBase
         {
+            [MaxRangeValue(2000000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
             public Oper8_1Resistance_2GOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
@@ -3364,12 +3406,12 @@ namespace APPA_107N_109N
             /// <summary>
             /// Код предела измерения на приборе
             /// </summary>
-            public Mult107_109N.RangeCode OperationOhmRangeCode { get; protected set; }
+            public  Mult107_109N.RangeCode OperationOhmRangeCode { get; protected set; }
 
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы
             /// </summary>
-            public Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            public virtual Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора
@@ -3655,7 +3697,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы
             /// </summary>
-            public Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+            public virtual Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора
@@ -3862,6 +3904,7 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_4nF_Measure : Oper9FarMeasureBase
         {
+            [MaxRangeValue(0.000000004)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_4nF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation)
@@ -3896,6 +3939,7 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_40nF_Measure : Oper9FarMeasureBase
         {
+            [MaxRangeValue(0.00000004)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_40nF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation) :
                 base(userItemOperation)
@@ -3926,6 +3970,7 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_400nF_Measure : Oper9FarMeasureBase
         {
+            [MaxRangeValue(0.0000004)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_400nF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation)
                 : base(userItemOperation)
@@ -3959,6 +4004,7 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_4uF_Measure : Oper9FarMeasureBase
         {
+            [MaxRangeValue(0.000004)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_4uF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation) :
                 base(userItemOperation)
@@ -3992,6 +4038,8 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_40uF_Measure : Oper9FarMeasureBase
         {
+
+            [MaxRangeValue(0.00004)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_40uF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation) :
                 base(userItemOperation)
@@ -4023,6 +4071,7 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_400uF_Measure : Oper9FarMeasureBase
         {
+            [MaxRangeValue(0.0004)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_400uF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation)
                 : base(userItemOperation)
@@ -4054,6 +4103,7 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_4mF_Measure : Oper9FarMeasureBase
         {
+            [MaxRangeValue(0.004)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_4mF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation) :
                 base(userItemOperation)
@@ -4085,6 +4135,7 @@ namespace APPA_107N_109N
 
         public class Oper9_1Far_40mF_Measure : Oper9FarMeasureBase
         {
+            [MaxRangeValue(0.04)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper9_1Far_40mF_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation) :
                 base(userItemOperation)
