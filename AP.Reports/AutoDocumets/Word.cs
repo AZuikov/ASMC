@@ -460,7 +460,7 @@ namespace AP.Reports.AutoDocumets
                         cell.BackgroundColor = cf.Color;
                     }
                 }
-                catch
+                catch (Exception e)
                 {
 
                 }

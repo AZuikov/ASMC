@@ -183,7 +183,7 @@ namespace Indicator_10
         protected override void InitWork(CancellationTokenSource token)
         {
             IchBase = ((IControlPannelDevice) UserItemOperation.TestDevices.First().SelectedDevice).Device as IchBase;
-            EndRange = (MeasPoint<Length>) IchBase.RangesFull.RealRangeStor.Max().Stop;
+            EndRange = (MeasPoint<Length>) IchBase.RangesFull.Ranges.Max().End;
             Service = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
             base.InitWork(token);
         }
@@ -606,14 +606,15 @@ namespace Indicator_10
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
 
-                dataRow[0] = dds.Expected.ToString();
-                for (var i = 0; i < 5; i++) dataRow[i + 1] = dds.Getting[i].ToString();
+                dataRow[0] =dds.Expected[0].Description;
+                for (var i = 0; i < dds.Getting.Length; i++) dataRow[i+1] = dds.Getting[i].Description;
 
-                dataRow[5] = dds.Error;
+                dataRow[6] = dds.Error[0].Description;
+                dataRow[7] = IchBase.Arresting.Description;
                 if (dds.IsGood == null)
-                    dataRow[6] = ConstNotUsed;
+                    dataRow[8] = ConstNotUsed;
                 else
-                    dataRow[6] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[8] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -628,7 +629,7 @@ namespace Indicator_10
                 "Точка диапазона измерений индикатора", "Показания при арретировании",
                 "Показания при арретировании2", "Показания при арретировании3",
                 "Показания при арретировании4", "Показания при арретировании5",
-                "Размах показаний"
+                "Размах показаний", "Допустимый размах"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
@@ -679,14 +680,14 @@ namespace Indicator_10
                 for (var i = 0; i < 3; i++)
                 {
                     if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    operation.Expected = (MeasPoint<Length>[])arrPoints[i * 5].Clone();
+                    operation.Expected = new[] {(MeasPoint<Length>) arrPoints[i * 5].Clone()}  ;
                     operation.Getting = arrGetting.Skip(i * 5).Take(5).ToArray();
                     if (i > 0) DataRow.Add(operation);
                 }
             };
 
             operation.ErrorCalculation =
-                (expected, getting) =>
+                (getting,  expected) =>
                 {
                     return new[]
                     {
