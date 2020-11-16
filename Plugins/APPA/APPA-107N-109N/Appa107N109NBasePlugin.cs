@@ -353,7 +353,7 @@ namespace APPA_107N_109N
             public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
             //контрлируемый прибор
-            protected Mult107_109N AppaMult107109N { get; set; }
+            protected Mult107_109N appa10XN { get; set; }
 
             //эталон
             protected Calib5522A flkCalib5522A { get; set; }
@@ -421,7 +421,7 @@ namespace APPA_107N_109N
             protected override void InitWork(CancellationTokenSource token)
             {
                 base.InitWork(token);
-                if (AppaMult107109N == null || flkCalib5522A == null) return;
+                if (appa10XN == null || flkCalib5522A == null) return;
 
                 foreach (var currPoint in VoltPoint)
                 {
@@ -430,14 +430,14 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            if (AppaMult107109N.StringConnection.Equals("COM1"))
-                                AppaMult107109N.StringConnection = GetStringConnect(AppaMult107109N);
+                            if (appa10XN.StringConnection.Equals("COM1"))
+                                appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
                             await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
 
                             while (OperMeasureMode !=
-                                   await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => AppaMult107109N
+                                   await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN
                                                                                             .GetMeasureMode))
                                 UserItemOperation.ServicePack.MessageBox()
                                                  .Show($"Установите режим измерения: {OperMeasureMode.GetStringValue()} {OperMeasureMode}",
@@ -445,7 +445,7 @@ namespace APPA_107N_109N
                                                        MessageIcon.Information,
                                                        MessageResult.OK);
 
-                            while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => AppaMult107109N
+                            while (await Task<Mult107_109N.RangeSwitchMode>.Factory.StartNew(() => appa10XN
                                                                                                 .GetRangeSwitchMode) ==
                                    Mult107_109N.RangeSwitchMode.Auto)
                                 UserItemOperation.ServicePack.MessageBox()
@@ -453,7 +453,7 @@ namespace APPA_107N_109N
 
                             while (OperationRangeNominal !=
                                    await Task<Mult107_109N.RangeNominal>
-                                        .Factory.StartNew(() => AppaMult107109N.GetRangeNominal))
+                                        .Factory.StartNew(() => appa10XN.GetRangeNominal))
                             {
                                 int countPushRangeButton;
 
@@ -461,7 +461,7 @@ namespace APPA_107N_109N
                                 {
                                     CountOfRanges = 2;
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {appa10XN.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -471,13 +471,13 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 4;
-                                    var curRange = (int) AppaMult107109N.GetRangeCode - 127;
+                                    var curRange = (int) appa10XN.GetRangeCode - 127;
                                     var targetRange = (int) OperationDcRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {appa10XN.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -500,7 +500,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                             Thread.Sleep(2000);
                             //измеряем
-                            var measurePoint = (decimal) AppaMult107109N.GetValue();
+                            var measurePoint = (decimal) appa10XN.GetValue();
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 
                             var mantisa =
@@ -517,16 +517,14 @@ namespace APPA_107N_109N
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
                             {
-                                var result =
-                                    BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
-                                    EdMlRaz *
-                                    RangeResolution.MainPhysicalQuantity.Value *
-                                    (decimal) (RangeResolution
-                                              .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                               currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue());
-
-                                MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Voltage>(result, currPoint.MainPhysicalQuantity.Multiplier);
+                                //получаем из атрибута значение максимума предела
+                                var MyVar = this.GetType();
+                                MaxRangeValueAttribute attArr = (MaxRangeValueAttribute)MyVar.GetProperty(nameof(OperationRangeNominal)).
+                                                                                              GetCustomAttribute(typeof(MaxRangeValueAttribute));
+                                MeasPoint<Resistance> maxOfThisRange = new MeasPoint<Resistance>((decimal)attArr.MaxRangeValue, UnitMultiplier.None);
+                                PhysicalRange<Voltage> range = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                                MeasPoint<Voltage> tolMeasPoint = range.CalculateTollerance(currPoint);
+                                return tolMeasPoint;
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -1023,26 +1021,16 @@ namespace APPA_107N_109N
                             operation.Expected = currPoint;
 
                             //расчет погрешности для конкретной точки предела измерения
-                            ConstructTooleranceFormula(new
-                                                           MeasPoint<Frequency
-                                                           >(currPoint.AdditionalPhysicalQuantity.Value,
-                                                             currPoint.AdditionalPhysicalQuantity
-                                                                      .Multiplier)); // функция подбирает коэффициенты для формулы погрешности
                             operation.ErrorCalculation = (inA, inB) =>
                             {
-                                var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
-                                             EdMlRaz *
-                                             RangeResolution.MainPhysicalQuantity.Value *
-                                             (decimal) (RangeResolution
-                                                       .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                        currPoint.MainPhysicalQuantity.Multiplier
-                                                                 .GetDoubleValue()
-                                             );
-
-                                MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Voltage, Frequency>(result,
-                                                                         currPoint.MainPhysicalQuantity.Multiplier,
-                                                                         currPoint.AdditionalPhysicalQuantity);
+                                //получаем из атрибута значение максимума предела
+                                var MyVar = this.GetType();
+                                MaxRangeValueAttribute attArr = (MaxRangeValueAttribute)MyVar.GetProperty(nameof(OperationRangeNominal)).
+                                                                                              GetCustomAttribute(typeof(MaxRangeValueAttribute));
+                                MeasPoint<Voltage, Frequency> maxOfThisRange = new MeasPoint<Voltage, Frequency>((decimal)attArr.MaxRangeValue, UnitMultiplier.None, currPoint.AdditionalPhysicalQuantity);
+                                PhysicalRange<Voltage, Frequency> range = appa107N.AcvStorage.GetRangePointBelong(maxOfThisRange);
+                                MeasPoint<Voltage, Frequency> tolMeasPoint = range.CalculateTollerance(currPoint);
+                                return tolMeasPoint;
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -1080,83 +1068,6 @@ namespace APPA_107N_109N
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Voltage, Frequency>>) operation.Clone());
-                }
-            }
-
-            /// <summary>
-            /// Метод выбирает необходимый значения коэффициентов для формулы погрешности, исходя из предела измерения и диапазона
-            /// частот.
-            /// </summary>
-            /// <returns>Результат вычисления.</returns>
-            private void ConstructTooleranceFormula(MeasPoint<Frequency> inFreq)
-            {
-                //разрешение предела измерения должно быть проинициализировано в коснтсрукторе соответсвующего класса
-
-                if ((OperationRangeNominal == Mult107_109N.RangeNominal.Range200mV ||
-                     OperationRangeNominal == Mult107_109N.RangeNominal.Range20mV) &&
-                    inFreq.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
-                {
-                    EdMlRaz = 80;
-                    if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100)
-                        BaseTolCoeff = (decimal) 0.007;
-                    if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000)
-                        BaseTolCoeff = (decimal) 0.01;
-                    return;
-                }
-
-                if (OperationRangeNominal == Mult107_109N.RangeNominal.Range2V ||
-                    OperationRangeNominal == Mult107_109N.RangeNominal.Range20V ||
-                    OperationRangeNominal == Mult107_109N.RangeNominal.Range200V)
-                {
-                    if (inFreq.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
-                    {
-                        EdMlRaz = 50;
-                        if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100)
-                            BaseTolCoeff = (decimal) 0.007;
-                        if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000)
-                            BaseTolCoeff = (decimal) 0.01;
-                        return;
-                    }
-
-                    if (inFreq.MainPhysicalQuantity.Multiplier == UnitMultiplier.Kilo)
-                    {
-                        if (inFreq.MainPhysicalQuantity.Value >= 1 && inFreq.MainPhysicalQuantity.Value <= 10)
-                        {
-                            BaseTolCoeff = (decimal) 0.02;
-                            EdMlRaz = 60;
-                            return;
-                        }
-
-                        if (inFreq.MainPhysicalQuantity.Value > 10 && inFreq.MainPhysicalQuantity.Value <= 20)
-                        {
-                            BaseTolCoeff = (decimal) 0.03;
-                            EdMlRaz = 70;
-                            return;
-                        }
-
-                        if (inFreq.MainPhysicalQuantity.Value > 20 && inFreq.MainPhysicalQuantity.Value <= 50)
-                        {
-                            BaseTolCoeff = (decimal) 0.05;
-                            EdMlRaz = 80;
-                            return;
-                        }
-
-                        if (inFreq.MainPhysicalQuantity.Value > 50 && inFreq.MainPhysicalQuantity.Value <= 100)
-                        {
-                            BaseTolCoeff = (decimal) 0.1;
-                            EdMlRaz = 100;
-                            return;
-                        }
-                    }
-                }
-
-                if (OperationRangeNominal == Mult107_109N.RangeNominal.Range750V)
-                {
-                    EdMlRaz = 50;
-                    if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100)
-                        BaseTolCoeff = (decimal) 0.007;
-                    if (inFreq.MainPhysicalQuantity.Value > 100 && inFreq.MainPhysicalQuantity.Value <= 1000)
-                        BaseTolCoeff = (decimal) 0.01;
                 }
             }
 
@@ -2162,53 +2073,6 @@ namespace APPA_107N_109N
 
             #region Methods
 
-            /// <summary>
-            /// Метод выбирает необходимый значения коэффициентов для формулы погрешности, исходя из предела измерения и диапазона
-            /// частот.
-            /// </summary>
-            /// <returns>Результат вычисления.</returns>
-            protected void ConstructTooleranceFormula(MeasPoint<Current, Frequency> inFreq)
-            {
-                if (OperationRangeNominal == Mult107_109N.RangeNominal.Range20mA &&
-                    inFreq.AdditionalPhysicalQuantity.Multiplier == UnitMultiplier.None)
-                {
-                    if (inFreq.AdditionalPhysicalQuantity.Value >= 40 && inFreq.AdditionalPhysicalQuantity.Value < 500)
-                    {
-                        BaseTolCoeff = (decimal) 0.008;
-                        EdMlRaz = 50;
-                    }
-
-                    if (inFreq.AdditionalPhysicalQuantity.Value >= 500 &&
-                        inFreq.AdditionalPhysicalQuantity.Value <= 1000)
-                    {
-                        BaseTolCoeff = (decimal) 0.012;
-                        EdMlRaz = 80;
-                    }
-                }
-                else if (OperationRangeNominal == Mult107_109N.RangeNominal.Range200mA ||
-                         OperationRangeNominal == Mult107_109N.RangeNominal.Range2A ||
-                         OperationRangeNominal == Mult107_109N.RangeNominal.Range10A)
-                {
-                    if (inFreq.AdditionalPhysicalQuantity.Value >= 40 && inFreq.AdditionalPhysicalQuantity.Value < 500)
-                    {
-                        BaseTolCoeff = (decimal) 0.008;
-                        EdMlRaz = 50;
-                    }
-                    else if (inFreq.AdditionalPhysicalQuantity.Value >= 500 &&
-                             inFreq.AdditionalPhysicalQuantity.Value <= 1000)
-                    {
-                        BaseTolCoeff = (decimal) 0.012;
-                        EdMlRaz = 80;
-                    }
-                    else if (inFreq.AdditionalPhysicalQuantity.Value > 1000 &&
-                             inFreq.AdditionalPhysicalQuantity.Value <= 3000)
-                    {
-                        BaseTolCoeff = (decimal) 0.02;
-                        EdMlRaz = 80;
-                    }
-                }
-            }
-
             protected override DataTable FillData()
             {
                 var dataTable = base.FillData();
@@ -2348,8 +2212,7 @@ namespace APPA_107N_109N
 
                             operation.Expected = (MeasPoint<Current, Frequency>) curr.Clone();
 
-                            //расчет погрешности для конкретной точки предела измерения
-                            //ConstructTooleranceFormula(curr); // функция подбирает коэффициенты для формулы погрешности
+                            
                             operation.ErrorCalculation = (expected, getting) =>
                             {
                                 //получаем из атрибута значение максимума предела
@@ -3607,16 +3470,14 @@ namespace APPA_107N_109N
 
                             operation.ErrorCalculation = (inA, inB) =>
                             {
-                                var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
-                                             EdMlRaz *
-                                             RangeResolution.MainPhysicalQuantity.Value *
-                                             (decimal) (RangeResolution
-                                                       .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                        currPoint.MainPhysicalQuantity.Multiplier
-                                                                 .GetDoubleValue());
-
-                                MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Resistance>(result, currPoint.MainPhysicalQuantity.Multiplier);
+                                //получаем из атрибута значение максимума предела
+                                var MyVar = this.GetType();
+                                MaxRangeValueAttribute attArr = (MaxRangeValueAttribute)MyVar.GetProperty(nameof(OperationRangeNominal)).
+                                                                                              GetCustomAttribute(typeof(MaxRangeValueAttribute));
+                                MeasPoint<Resistance> maxOfThisRange = new MeasPoint<Resistance>((decimal)attArr.MaxRangeValue, UnitMultiplier.None);
+                                PhysicalRange<Resistance> range = appa107N.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                                MeasPoint<Resistance> tolMeasPoint = range.CalculateTollerance(currPoint);
+                                return tolMeasPoint;
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -3864,17 +3725,14 @@ namespace APPA_107N_109N
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
                             {
-                                var result = BaseTolCoeff * Math.Abs(operation.Expected.MainPhysicalQuantity.Value) +
-                                             EdMlRaz *
-                                             RangeResolution.MainPhysicalQuantity.Value *
-                                             (decimal) (RangeResolution
-                                                       .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                                        currPoint.MainPhysicalQuantity.Multiplier
-                                                                 .GetDoubleValue());
-
-                                //округляем измерения
-                                MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Capacity>(result, currPoint.MainPhysicalQuantity.Multiplier);
+                                //получаем из атрибута значение максимума предела
+                                var MyVar = this.GetType();
+                                MaxRangeValueAttribute attArr = (MaxRangeValueAttribute)MyVar.GetProperty(nameof(OperationRangeNominal)).
+                                                                                              GetCustomAttribute(typeof(MaxRangeValueAttribute));
+                                MeasPoint<Capacity> maxOfThisRange = new MeasPoint<Capacity>((decimal)attArr.MaxRangeValue, UnitMultiplier.None);
+                                PhysicalRange<Capacity> range = appa107N.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
+                                MeasPoint<Capacity> tolMeasPoint = range.CalculateTollerance(currPoint);
+                                return tolMeasPoint;
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;

@@ -139,7 +139,7 @@ namespace Appa107N
         public DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            AppaMult107109N = new MultAPPA107N();
+            appa10XN = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
             OperMeasureMode = Mult107_109N.MeasureMode.DCmV;
         }
@@ -150,7 +150,7 @@ namespace Appa107N
         public DC_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            AppaMult107109N = new MultAPPA107N();
+            appa10XN = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
             OperMeasureMode = Mult107_109N.MeasureMode.DCmV;
         }
@@ -161,7 +161,7 @@ namespace Appa107N
         public DC_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            AppaMult107109N = new MultAPPA107N();
+            appa10XN = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
             OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
@@ -172,7 +172,7 @@ namespace Appa107N
         public DC_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            AppaMult107109N = new MultAPPA107N();
+            appa10XN = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
             OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
@@ -183,7 +183,7 @@ namespace Appa107N
         public DC_200V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            AppaMult107109N = new MultAPPA107N();
+            appa10XN = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
             OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
@@ -194,7 +194,7 @@ namespace Appa107N
         public DC_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
-            AppaMult107109N = new MultAPPA107N();
+            appa10XN = new MultAPPA107N();
             flkCalib5522A = new Calib5522A();
             OperMeasureMode = Mult107_109N.MeasureMode.DCV;
         }
