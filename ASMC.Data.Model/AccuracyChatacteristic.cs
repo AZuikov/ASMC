@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AP.Math;
 
 namespace ASMC.Data.Model
 {
@@ -11,34 +8,56 @@ namespace ASMC.Data.Model
     /// </summary>
     public sealed class AccuracyChatacteristic
     {
-        /// <summary>
-        /// Позволяет получать или задавать разрешение, включает число едениц младшего разряда
-        /// </summary>
-       public decimal? Resolution { get;  }
-        /// <summary>
-        /// Процент от предела
-        /// </summary>
-        public decimal? RangePercentFloor { get;  }
+        #region Property
+
         /// <summary>
         /// Процент от измеряемой велечины
         /// </summary>
-        public decimal? PercentOfMeasurePointTol { get;  }
+        public decimal? PercentOfMeasurePointTol { get; }
 
-        public AccuracyChatacteristic(decimal? resolution, decimal? rangePercentFloor, decimal? percentOfMeasurePointTol)
+        /// <summary>
+        /// Процент от предела
+        /// </summary>
+        public decimal? RangePercentFloor { get; }
+
+        /// <summary>
+        /// Позволяет получать или задавать разрешение, включает число едениц младшего разряда
+        /// </summary>
+        public decimal? Resolution { get; }
+
+        #endregion
+
+        public AccuracyChatacteristic(decimal? resolution, decimal? rangePercentFloor,
+            decimal? percentOfMeasurePointTol)
         {
             Resolution = resolution;
             RangePercentFloor = rangePercentFloor;
             PercentOfMeasurePointTol = percentOfMeasurePointTol;
         }
-       public  decimal GetAccuracy(decimal val, decimal upperRange=0)
+
+        #region Methods
+
+        /// <summary>
+        /// Расчет погрешности.
+        /// </summary>
+        /// <param name = "val">Значение для которого расчитывается погрешность.</param>
+        /// <param name = "upperRange">Значение предела измерения.</param>
+        /// <returns></returns>
+        public decimal GetAccuracy(decimal val, decimal upperRange = 0)
         {
             decimal TolOfMeasPoint = 0;
             decimal rangeFloor = 0;
-            if (PercentOfMeasurePointTol!=null) TolOfMeasPoint = (decimal) (PercentOfMeasurePointTol  / 100);
+            if (PercentOfMeasurePointTol != null) TolOfMeasPoint = (decimal) (PercentOfMeasurePointTol / 100);
 
-            if (RangePercentFloor!=null) rangeFloor = (decimal) (RangePercentFloor * upperRange / 100);
-
-            return val*TolOfMeasPoint + rangeFloor+Resolution??0;
+            if (RangePercentFloor != null) rangeFloor = (decimal) (RangePercentFloor * upperRange / 100);
+            //посчитаем погрешность
+            var resultTol = val * TolOfMeasPoint + rangeFloor + Resolution ?? 0;
+            //округлим по числу знаков разрешения
+            var mantisa = MathStatistics.GetMantissa(Resolution);
+            resultTol = Math.Round(resultTol, mantisa);
+            return resultTol;
         }
+
+        #endregion
     }
 }

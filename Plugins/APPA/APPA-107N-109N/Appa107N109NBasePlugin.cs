@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Math;
@@ -344,7 +345,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы.
             /// </summary>
-            public virtual Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            public virtual Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора.
@@ -366,7 +367,7 @@ namespace APPA_107N_109N
                 OperMeasureMode = Mult107_109N.MeasureMode.DCV;
 
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationDcRangeNominal = Mult107_109N.RangeNominal.RangeNone;
+                OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
                 DataRow = new List<IBasicOperation<MeasPoint<Voltage>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
@@ -385,7 +386,7 @@ namespace APPA_107N_109N
                     var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
-                    dataRow[0] = OperationDcRangeNominal.GetStringValue();
+                    dataRow[0] = OperationRangeNominal.GetStringValue();
                     dataRow[1] = dds.Expected?.Description;
                     dataRow[2] = dds.Getting?.Description;
                     dataRow[3] = dds.LowerTolerance?.Description;
@@ -450,7 +451,7 @@ namespace APPA_107N_109N
                                 UserItemOperation.ServicePack.MessageBox()
                                                  .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationDcRangeNominal !=
+                            while (OperationRangeNominal !=
                                    await Task<Mult107_109N.RangeNominal>
                                         .Factory.StartNew(() => AppaMult107109N.GetRangeNominal))
                             {
@@ -460,7 +461,7 @@ namespace APPA_107N_109N
                                 {
                                     CountOfRanges = 2;
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -476,7 +477,7 @@ namespace APPA_107N_109N
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationDcRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {AppaMult107109N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -564,15 +565,15 @@ namespace APPA_107N_109N
         public class Oper3_1DC_2V_Measure : Oper3DcvMeasureBase
         {
 
-            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper3_1DC_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationDcRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
 
-                Name = OperationDcRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 10;
@@ -602,15 +603,15 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_20V_Measure : Oper3DcvMeasureBase
         {
-            [MaxRangeValue(20)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            [MaxRangeValue(20)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper3_1DC_20V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range2Manual;
-                OperationDcRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Mili);
-                Name = OperationDcRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 VoltPoint = new[]
                 {
@@ -637,15 +638,15 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_200V_Measure : Oper3DcvMeasureBase
         {
-            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper3_1DC_200V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range3Manual;
-                OperationDcRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
 
-                Name = OperationDcRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 10;
@@ -675,15 +676,15 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_1000V_Measure : Oper3DcvMeasureBase
         {
-            [MaxRangeValue(1000)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            [MaxRangeValue(1000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper3_1DC_1000V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range4Manual;
-                OperationDcRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
 
-                Name = OperationDcRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 10;
@@ -713,15 +714,15 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_20mV_Measure : Oper3DcvMeasureBase
         {
-            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper3_1DC_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationDcRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Micro);
-                Name = OperationDcRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 60;
@@ -751,15 +752,15 @@ namespace APPA_107N_109N
 
         public class Oper3_1DC_200mV_Measure : Oper3DcvMeasureBase
         {
-            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationDcRangeNominal { get; protected set; }
+            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper3_1DC_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperationDcRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationDcRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Micro);
-                Name = OperationDcRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 20;
@@ -854,7 +855,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы
             /// </summary>
-            public virtual  Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            public virtual  Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора
@@ -876,7 +877,7 @@ namespace APPA_107N_109N
                 OperMeasureMode = Mult107_109N.MeasureMode.ACV;
 
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationAcRangeNominal = Mult107_109N.RangeNominal.RangeNone;
+                OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
@@ -894,7 +895,7 @@ namespace APPA_107N_109N
                     var dds = row as BasicOperationVerefication<MeasPoint<Voltage, Frequency>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
-                    dataRow[0] = OperationAcRangeNominal.GetStringValue();
+                    dataRow[0] = OperationRangeNominal.GetStringValue();
                     dataRow[1] = dds.Expected?.Description;
                     //Нужно выводить в таблицу напряжение и частоты!!!
                     dataRow[2] = dds.Getting?.MainPhysicalQuantity.ToString();
@@ -961,7 +962,7 @@ namespace APPA_107N_109N
                                 UserItemOperation.ServicePack.MessageBox()
                                                  .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationAcRangeNominal !=
+                            while (OperationRangeNominal !=
                                    await Task<Mult107_109N.RangeNominal>
                                         .Factory.StartNew(() => appa107N.GetRangeNominal))
                             {
@@ -970,7 +971,7 @@ namespace APPA_107N_109N
                                 if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili)
                                 {
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -986,7 +987,7 @@ namespace APPA_107N_109N
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationAcRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -1091,8 +1092,8 @@ namespace APPA_107N_109N
             {
                 //разрешение предела измерения должно быть проинициализировано в коснтсрукторе соответсвующего класса
 
-                if ((OperationAcRangeNominal == Mult107_109N.RangeNominal.Range200mV ||
-                     OperationAcRangeNominal == Mult107_109N.RangeNominal.Range20mV) &&
+                if ((OperationRangeNominal == Mult107_109N.RangeNominal.Range200mV ||
+                     OperationRangeNominal == Mult107_109N.RangeNominal.Range20mV) &&
                     inFreq.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
                 {
                     EdMlRaz = 80;
@@ -1103,9 +1104,9 @@ namespace APPA_107N_109N
                     return;
                 }
 
-                if (OperationAcRangeNominal == Mult107_109N.RangeNominal.Range2V ||
-                    OperationAcRangeNominal == Mult107_109N.RangeNominal.Range20V ||
-                    OperationAcRangeNominal == Mult107_109N.RangeNominal.Range200V)
+                if (OperationRangeNominal == Mult107_109N.RangeNominal.Range2V ||
+                    OperationRangeNominal == Mult107_109N.RangeNominal.Range20V ||
+                    OperationRangeNominal == Mult107_109N.RangeNominal.Range200V)
                 {
                     if (inFreq.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
                     {
@@ -1149,7 +1150,7 @@ namespace APPA_107N_109N
                     }
                 }
 
-                if (OperationAcRangeNominal == Mult107_109N.RangeNominal.Range750V)
+                if (OperationRangeNominal == Mult107_109N.RangeNominal.Range750V)
                 {
                     EdMlRaz = 50;
                     if (inFreq.MainPhysicalQuantity.Value >= 40 && inFreq.MainPhysicalQuantity.Value <= 100)
@@ -1189,15 +1190,15 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_20mV_Measure : Oper4AcvMeasureBase
         {
-            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            [MaxRangeValue(0.02)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Ope4_1_AcV_20mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperMeasureMode = Mult107_109N.MeasureMode.ACmV;
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationAcRangeNominal = inRangeNominal;
-                Name = OperationAcRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
                 VoltMultiplier = 1;
@@ -1231,15 +1232,15 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_200mV_Measure : Oper4AcvMeasureBase
         {
-            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            [MaxRangeValue(0.2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Ope4_1_AcV_200mV_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir)
                 : base(userItemOperation, inResourceDir)
             {
                 OperMeasureMode = Mult107_109N.MeasureMode.ACmV;
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range2Manual;
-                OperationAcRangeNominal = inRangeNominal;
-                Name = OperationAcRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
                 VoltMultiplier = 10;
@@ -1273,7 +1274,7 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_2V_Measure : Oper4AcvMeasureBase
         {
-            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            [MaxRangeValue(2)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             public Ope4_1_AcV_2V_Measure(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation,
                 string inResourceDir) :
@@ -1281,8 +1282,8 @@ namespace APPA_107N_109N
             {
                 OperMeasureMode = Mult107_109N.MeasureMode.ACV;
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationAcRangeNominal = inRangeNominal;
-                Name = OperationAcRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
                 VoltMultiplier = 1;
@@ -1356,7 +1357,7 @@ namespace APPA_107N_109N
         public class Ope4_1_AcV_20V_Measure : Oper4AcvMeasureBase
         {
 
-            [MaxRangeValue(20)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            [MaxRangeValue(20)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             public Ope4_1_AcV_20V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
@@ -1364,8 +1365,8 @@ namespace APPA_107N_109N
             {
                 OperMeasureMode = Mult107_109N.MeasureMode.ACV;
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range2Manual;
-                OperationAcRangeNominal = inRangeNominal;
-                Name = OperationAcRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
                 VoltMultiplier = 10;
@@ -1431,15 +1432,15 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_200V_Measure : Oper4AcvMeasureBase
         {
-            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Ope4_1_AcV_200V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
                 OperMeasureMode = Mult107_109N.MeasureMode.ACV;
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range3Manual;
-                OperationAcRangeNominal = inRangeNominal;
-                Name = OperationAcRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
                 VoltMultiplier = 100;
@@ -1539,15 +1540,15 @@ namespace APPA_107N_109N
 
         public class Ope4_1_AcV_750V_Measure : Oper4AcvMeasureBase
         {
-            [MaxRangeValue(750)] public override Mult107_109N.RangeNominal OperationAcRangeNominal { get; protected set; }
+            [MaxRangeValue(750)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Ope4_1_AcV_750V_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir)
                 : base(userItemOperation, inResourceDir)
             {
                 OperMeasureMode = Mult107_109N.MeasureMode.ACV;
                 OperationAcRangeCode = Mult107_109N.RangeCode.Range4Manual;
-                OperationAcRangeNominal = inRangeNominal;
-                Name = OperationAcRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
 
                 VoltMultiplier = 1;
 
@@ -2351,7 +2352,14 @@ namespace APPA_107N_109N
                             //ConstructTooleranceFormula(curr); // функция подбирает коэффициенты для формулы погрешности
                             operation.ErrorCalculation = (expected, getting) =>
                             {
-                                return appa107N.aciRangeStorage.GetTolMeasPoint(curr);
+                                //получаем из атрибута значение максимума предела
+                                var MyVar = this.GetType();
+                                MaxRangeValueAttribute attArr = (MaxRangeValueAttribute)MyVar.GetProperty(nameof(OperationRangeNominal)).
+                                                                                              GetCustomAttribute(typeof(MaxRangeValueAttribute));
+                                MeasPoint<Current,Frequency> maxOfThisRange = new MeasPoint<Current, Frequency>((decimal)attArr.MaxRangeValue,UnitMultiplier.None,curr.AdditionalPhysicalQuantity);
+                                PhysicalRange<Current,Frequency> range = appa107N.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
+                                MeasPoint<Current,Frequency> tolMeasPoint = range.CalculateTollerance(curr);
+                                return tolMeasPoint;
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -3094,14 +3102,14 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_200Ohm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(200)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_200Ohm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationOhmRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
 
-                Name = OperationOhmRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
@@ -3129,13 +3137,13 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_2kOhm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(2000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(2000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_2kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range2Manual;
-                OperationOhmRangeNominal = inRangeNominal;
-                Name = OperationOhmRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
@@ -3165,14 +3173,14 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_20kOhm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(20000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(20000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_20kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range3Manual;
-                OperationOhmRangeNominal = inRangeNominal;
+                OperationRangeNominal = inRangeNominal;
 
-                Name = OperationOhmRangeNominal.GetStringValue();
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
@@ -3202,13 +3210,13 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_200kOhm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(200000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(200000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_200kOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range4Manual;
-                OperationOhmRangeNominal = inRangeNominal;
-                Name = OperationOhmRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
@@ -3238,13 +3246,13 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_2MOhm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(2000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(2000000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_2MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range5Manual;
-                OperationOhmRangeNominal = inRangeNominal;
-                Name = OperationOhmRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 50;
@@ -3274,13 +3282,13 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_20MOhm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(20000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(20000000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_20MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range6Manual;
-                OperationOhmRangeNominal = inRangeNominal;
-                Name = OperationOhmRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 50;
@@ -3308,13 +3316,13 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_200MOhm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(200000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(200000000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_200MOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range7Manual;
-                OperationOhmRangeNominal = inRangeNominal;
-                Name = OperationOhmRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 20;
@@ -3342,13 +3350,13 @@ namespace APPA_107N_109N
 
         public class Oper8_1Resistance_2GOhm_Measure : Oper8ResistanceMeasureBase
         {
-            [MaxRangeValue(2000000000)] public override Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            [MaxRangeValue(2000000000)] public override Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
             public Oper8_1Resistance_2GOhm_Measure(Mult107_109N.RangeNominal inRangeNominal,
                 IUserItemOperation userItemOperation, string inResourceDir) : base(userItemOperation, inResourceDir)
             {
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range8Manual;
-                OperationOhmRangeNominal = inRangeNominal;
-                Name = OperationOhmRangeNominal.GetStringValue();
+                OperationRangeNominal = inRangeNominal;
+                Name = OperationRangeNominal.GetStringValue();
 
                 BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 8;
@@ -3411,7 +3419,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Предел измерения поверяемого прибора, необходимый для работы
             /// </summary>
-            public virtual Mult107_109N.RangeNominal OperationOhmRangeNominal { get; protected set; }
+            public virtual Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
 
             /// <summary>
             /// Режим операции измерения прибора
@@ -3433,7 +3441,7 @@ namespace APPA_107N_109N
                 OperMeasureMode = Mult107_109N.MeasureMode.Ohm;
 
                 OperationOhmRangeCode = Mult107_109N.RangeCode.Range1Manual;
-                OperationOhmRangeNominal = Mult107_109N.RangeNominal.RangeNone;
+                OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
                 DataRow = new List<IBasicOperation<MeasPoint<Resistance>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
@@ -3452,7 +3460,7 @@ namespace APPA_107N_109N
                     var dds = row as BasicOperationVerefication<MeasPoint<Resistance>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
-                    dataRow[0] = OperationOhmRangeNominal.GetStringValue();
+                    dataRow[0] = OperationRangeNominal.GetStringValue();
                     dataRow[1] = dds.Expected?.Description;
                     dataRow[2] = dds.Getting?.Description;
                     dataRow[3] = dds.LowerTolerance?.Description;
@@ -3517,7 +3525,7 @@ namespace APPA_107N_109N
                                 UserItemOperation.ServicePack.MessageBox()
                                                  .Show("Установите ручной режим переключения пределов.");
 
-                            while (OperationOhmRangeNominal !=
+                            while (OperationRangeNominal !=
                                    await Task<Mult107_109N.RangeNominal>
                                         .Factory.StartNew(() => appa107N.GetRangeNominal))
                             {
@@ -3526,7 +3534,7 @@ namespace APPA_107N_109N
                                 if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili)
                                 {
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton = 1} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
@@ -3542,7 +3550,7 @@ namespace APPA_107N_109N
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
                                     UserItemOperation.ServicePack.MessageBox()
-                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationOhmRangeNominal.GetStringValue()} " +
+                                                     .Show($"Текущий предел измерения прибора {appa107N.GetRangeNominal.GetStringValue()}\n Необходимо установить предел {OperationRangeNominal.GetStringValue()} " +
                                                            $"Нажмите на приборе клавишу Range {countPushRangeButton} раз.",
                                                            "Указание оператору", MessageButton.OK,
                                                            MessageIcon.Information,
