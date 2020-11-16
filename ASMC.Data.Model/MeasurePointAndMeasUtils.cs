@@ -483,6 +483,21 @@ namespace ASMC.Data.Model
             End = stopRange;
         }
 
+        /// <summary>
+        /// Расчитывает для текущего предела погрешность, с учетом заданных точностных характеристик
+        /// </summary>
+        /// <param name="inPoint">Точка, внутри предела, для которой считаем погрешность.</param>
+        /// <returns></returns>
+        public MeasPoint<T> CalculateTollerance(MeasPoint<T> inPoint)
+        {
+            if (inPoint < (MeasPoint<T>) Start || inPoint > (MeasPoint<T>) End)
+                throw new
+                    ArgumentOutOfRangeException($"Невозможно рассчитать погрешность предела ({this}). Значение точки {inPoint.Description} лежит вне диапазонов предела.");
+            decimal tol = AccuracyChatacteristic.GetAccuracy(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi(), End.MainPhysicalQuantity.Value);
+            return new MeasPoint<T>(tol,inPoint.MainPhysicalQuantity.Multiplier);
+
+        }
+
         public PhysicalRange(MeasPoint<T> startRange, MeasPoint<T> stopRange, AccuracyChatacteristic accuracy = null)
         {
             if (!Equals(startRange.MainPhysicalQuantity.Unit, stopRange.MainPhysicalQuantity.Unit))
@@ -496,6 +511,11 @@ namespace ASMC.Data.Model
         {
             Start = new MeasPoint<T>();
             End = new MeasPoint<T>();
+        }
+
+        public override string ToString()
+        {
+            return $"от {Start.Description} до {End.Description}";
         }
 
         /// <inheritdoc />
@@ -543,6 +563,8 @@ namespace ASMC.Data.Model
             Unit = startRange.MainPhysicalQuantity.Unit;
         }
 
+
+
         public PhysicalRange()
         {
             Start = new MeasPoint<TPhysicalQuantity, TAddition>();
@@ -551,6 +573,18 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public AccuracyChatacteristic AccuracyChatacteristic { get; set; }
+
+        public MeasPoint<TPhysicalQuantity,TAddition> CalculateTollerance(MeasPoint<TPhysicalQuantity, TAddition> inPoint)
+        {
+            if (inPoint < (MeasPoint<TPhysicalQuantity, TAddition>)Start || inPoint > (MeasPoint<TPhysicalQuantity>)End)
+                throw new
+                    ArgumentOutOfRangeException($"Невозможно рассчитать погрешность предела ({this}). Значение точки {inPoint.Description} лежит вне диапазонов предела.");
+            decimal tol = AccuracyChatacteristic.GetAccuracy(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi(), End.MainPhysicalQuantity.GetNoramalizeValueToSi());
+            MeasPoint < TPhysicalQuantity, TAddition > tolPoint = new MeasPoint<TPhysicalQuantity, TAddition>(tol, UnitMultiplier.None,inPoint.AdditionalPhysicalQuantity);
+            tolPoint.MainPhysicalQuantity= (TPhysicalQuantity)tolPoint.MainPhysicalQuantity.ChangeMultiplier(inPoint.MainPhysicalQuantity.Multiplier);
+            return tolPoint;
+
+        }
 
         /// <inheritdoc />
         public IMeasPoint<TPhysicalQuantity, TAddition> Start { get; set; }
@@ -672,7 +706,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Возвращает диапазон к которому относится точка.
         /// </summary>
-        /// <typeparam name = "T1"></typeparam>
+        /// <typeparam name = "T1">Основная физическ4ая величина.</typeparam>
         /// <param name = "inPoint">Точка (значение) физической велечины.</param>
         /// <returns></returns>
         public T GetRangePointBelong<T1>(IMeasPoint<T1> inPoint) where T1 : class, IPhysicalQuantity<T1>, new()
@@ -681,7 +715,13 @@ namespace ASMC.Data.Model
             return (T) range?.FirstOrDefault(q => q.Start as MeasPoint<T1> <= (inPoint as MeasPoint<T1>) &&
                                                   q.End as MeasPoint<T1> >= (inPoint as MeasPoint<T1>));
         }
-
+        /// <summary>
+        /// Возвращает диапазон к которому относится точка.
+        /// </summary>
+        /// <typeparam name="T1">Основная физическ4ая величина.</typeparam>
+        /// <typeparam name="T2">Дополнительная физическая величина.</typeparam>
+        /// <param name="inPoint"></param>
+        /// <returns></returns>
         public T GetRangePointBelong<T1, T2>(IMeasPoint<T1, T2> inPoint) where T1 : class, IPhysicalQuantity<T1>, new()
                                                                          where T2 : class, IPhysicalQuantity<T2>, new()
         {
