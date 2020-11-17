@@ -331,11 +331,21 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                                 new Command("", "", 1),
                                 new Command("K", "к", 1E3)};
                         }
+
                         /// <summary>
                         /// Задает измерительные диапазоны.
                         /// </summary>
-                        
+                        [AccRange("Mode: Amps SI", typeof(MeasPoint<Current, Frequency>))]
                         public RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
+
+                        /// <summary>
+                        /// Задает измерительные диапазоны.
+                        /// </summary>
+                        [AccRange("Mode: Amps SI HC", typeof(MeasPoint<Current, Frequency>))]
+                        public RangeStorage<PhysicalRange<Current, Frequency>> RangesHiCurrent { get; set; }
+
+
+
                         /// <summary>
                         /// Генерирует команду установки переменного тока указной величины и частоты
                         /// </summary>

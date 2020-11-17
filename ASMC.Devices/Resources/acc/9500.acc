@@ -1,0 +1,513 @@
+Begin Header
+        instrument = Datron 9500
+        interval   = 365 days
+        confidence = 2 sigma
+End Header
+
+        # $Revision: 8678 $
+
+# This file contains the 9500(B) 365 day, +/- 5degC, 95% Confidence Level
+# specifications.
+
+# Values contained herein represent Absolute Specifications unless
+# otherwise noted
+
+# Source: Fluke 9500B User's Handbook, Part No. 1625019, Issue 6.0,
+# March 2003
+
+# Specifications apply both to Wavetek/Datron 9500 as well as to
+# Fluke 9500B unless otherwise noted
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+Mode: Volts
+
+        # 1 MOhm load impedance
+        # Includes +/-11.2% overrange using Deviation mode
+        # Excludes resistance loss variability in mating connectors
+
+        # NOMINAL (V)              MOD1 (blank)      Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        -222.4       -888E-6       NA      NA        0.025  25E-6   NA
+         0.0          0.0          NA      NA        0.0    25E-6   NA
+         888E-6       222.4        NA      NA        0.025  25E-6   NA
+
+Mode: Volts L
+
+        # 50 Ohm load impedance
+        # Includes +/-11.2% overrange using Deviation mode
+        # Excludes resistance loss variability in mating connectors
+
+        # NOMINAL (V)              MOD1 (blank)      Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        -5.56        -888E-6       NA      NA        0.025  25E-6   NA
+         0.0          0.0          NA      NA        0.0    25E-6   NA
+         888E-6       5.56         NA      NA        0.025  25E-6   NA
+
+Mode: Vpp SQ ZQ ZN
+
+        # 1 MOhm load impedance
+        # Includes +/-11.2% overrange using Deviation mode
+        # Excludes resistance loss variability in mating connectors
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        35.52E-6      999.99E-6    10      10E+3     1.00   10E-6   NA
+        1E-3          222.4        10      10E+3     0.10   10E-6   NA
+
+        35.52E-6      222.4        10E+3   100E+3    NA     NA      NA
+
+Mode: Vpp SQ ZQ ZN L
+
+        # 50 Ohm load impedance
+        # Includes +/-11.2% overrange using Deviation mode
+        # Excludes resistance loss variability in mating connectors
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        35.52E-6      999.99E-6    10      10E+3     1.00   10E-6   NA
+        1E-3          222.4        10      10E+3     0.10   10E-6   NA
+
+        35.52E-6      5.56         10E+3   100E+3    NA     NA      NA
+
+Mode: Vpp LS
+
+        # Absolute uncertainty of Leveled Sine output
+        # Volts peak-to-peak, 1 MOhm load impedance
+        # Includes +/-11.2% overrange using Deviation mode
+        # For flatness, see the following mode strings, depending on
+        # Active Head used
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       5.56         50E+3    10E+6    1.5    0.0     NA
+        4.44E-3       5.56         100E-3  550E+6    NA     NA      NA
+        4.44E-3       3.336        550E+6  1.1E+9    NA     NA      NA
+
+Mode: Vpp LS L
+
+        # Absolute uncertainty of Leveled Sine output
+        # 50 Ohm load impedance, Volts peak-to-peak
+        # For flatness, see the following mode strings, depending on
+        # Active Head used
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       5.56         50E+3   10E+6     1.5    0.0     NA
+        4.44E-3       5.56         100E-3  550E+6    NA     NA      NA
+        4.44E-3       3.336        550E+6  2.5E+9    NA     NA      NA
+        4.44E-3       2.224        2.5E+9  3.2E+9    NA     NA      NA
+        22.24E-3      2.224        3.2E+9  6.4E+9    NA     NA      NA
+
+Mode: Vpp LS G1
+
+        # 1 MOhm load impedance, Volts peak-to-peak
+        # Applicable to 9510 & 9520 (1.1 GHz) Active Heads only!
+        # Flatness wrt to Reference Frequency into VSWR of < 1.2:1
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       5.56         100E-3  300E+6    2.0    0.0     NA
+        4.44E-3       5.56         300E+6  550E+6    2.5    0.0     NA
+        4.44E-3       3.336        550E+6  1.1E+9    3.5    0.0     NA
+
+Mode: Vpp LS G1 L
+
+        # 50 Ohm load impedance, Volts peak-to-peak
+        # Applicable to 9510 & 9520 (1.1 GHz) Active Heads only!
+        # Flatness wrt to Reference Frequency into VSWR of < 1.2:1
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       5.56         100E-3  300E+6    2.0    0.0     NA
+        4.44E-3       5.56         300E+6  550E+6    2.5    0.0     NA
+        4.44E-3       3.336        550E+6  1.1E+9    3.5    0.0     NA
+
+Mode: Vpp LS G3
+
+        # 50 Ohm load impedance, Volts peak-to-peak
+        # Applicable to 9530 (3.2 GHz) Active Head only!
+        # Flatness wrt to Reference Frequency into VSWR of < 1.2:1
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       5.56         100E-3  300E+6    2.0    0.0     NA
+        4.44E-3       5.56         300E+6  550E+6    2.5    0.0     NA
+        4.44E-3       3.336        550E+6  1.1E+9    3.5    0.0     NA
+        4.44E-3       3.336        1.1E+6  2.5E+9    4.0    0.0     NA
+        4.44E-3       2.224        2.5E+6  3.2E+9    4.0    0.0     NA
+
+Mode: Vpp LS G3 L
+
+        # 1 MOhm load impedance, Volts peak-to-peak
+        # Applicable to 9530 (3.2 GHz) Active Head only!
+        # Flatness wrt to Reference Frequency into VSWR of < 1.2:1
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       5.56         100E-3  300E+6    2.0    0.0     NA
+        4.44E-3       5.56         300E+6  550E+6    2.5    0.0     NA
+        4.44E-3       3.336        550E+6  1.1E+9    3.5    0.0     NA
+        4.44E-3       3.336        1.1E+6  2.5E+9    4.0    0.0     NA
+        4.44E-3       2.224        2.5E+6  3.2E+9    4.0    0.0     NA
+
+Mode: Vpp LS G6 L
+
+        # 50 Ohm load impedance only, Volts peak-to-peak
+        # Applicable to 9560 (6.4 GHz) Active Head only!
+        # Flatness wrt to Reference Frequency into VSWR of < 1.2:1
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       5.56         100E-3  300E+6    2.0    0.0     NA
+        4.44E-3       5.56         300E+6  550E+6    2.5    0.0     NA
+        4.44E-3       3.336        550E+6  2.5E+9    3.5    0.0     NA
+        4.44E-3       2.224        2.5E+6  3.0E+9    3.5    0.0     NA
+        4.44E-3       2.224        3.0E+6  3.2E+9    4.0    0.0     NA
+        22.24E-3      2.224        3.2E+9  6.0E+9    4.0    0.0     NA
+
+Mode: Vpp ED
+
+        # Low Edge signal, Volts peak-to-peak
+        # 9510, 9520, & 9530 Active Heads only!
+        # 1 MOhm load impedance
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       3.1          10      2E+6      2.0    0.0     NA
+
+Mode: Vpp ED L
+
+        # Low Edge signal, Volts peak-to-peak
+        # 9510, 9520, & 9530 Active Heads only!
+        # 50 Ohm load impedance
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       3.1          10      2E+6      2.0    0.0     NA
+
+Mode: Vpp HE
+
+        # High Edge signal, Volts peak-to-peak
+        # 9510, 9520, & 9530 Active Heads only!
+        # 1 MOhm load impedance
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        888E-3        222.4        10      100E+3    2.0    0.0     NA
+
+Mode: Vpp HE L
+
+        # High Edge signal, Volts peak-to-peak
+        # 9510, 9520, & 9530 Active Heads only!
+        # 50 Ohm load impedance
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        888E-3        5.56         10      100E+3    2.0    0.0     NA
+
+Mode: Vpp FE
+
+        # Fast Edge signal, Volts peak-to-peak
+        # 9520 & 9530 Active Heads only!
+        # 1 MOhm load impedance
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       3.1          10      2E+6      2.0    0.0     NA
+
+Mode: Vpp FE L
+
+        # Fast Edge signal, Volts peak-to-peak
+        # 9520 & 9530 Active Heads only!
+        # 50 Ohm load impedance
+
+        # NOMINAL (Vpp)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        4.44E-3       3.1          10      2E+6      2.0    0.0     NA
+
+Mode: Vpp Video
+
+        # No spec
+
+        # NOMINAL (Vpp)            MOD1 (blank)      Tol.    Floor   Res.
+        # -----------------------  ----------------  ------  ------  -----
+        0.3           0.3          NA      NA        NA      NA      NA
+        0.7           0.7          NA      NA        NA      NA      NA
+        1.0           1.0          NA      NA        NA      NA      NA
+
+Mode: Vpp Video L
+
+        # No spec
+
+        # NOMINAL (Vpp)            MOD1 (blank)      Tol.    Floor   Res.
+        # -----------------------  ----------------  ------  ------  -----
+        0.3           0.3          NA      NA        NA      NA      NA
+        0.7           0.7          NA      NA        NA      NA      NA
+        1.0           1.0          NA      NA        NA      NA      NA
+
+Mode: Vpp LR
+
+        # No spec
+
+        # NOMINAL (Vpp)            MOD1 (s)          Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        1             1            3E-3    3E-3      NA     NA      NA
+        1             1            30E-3   30E-3     NA     NA      NA
+        1             1            300E-3  300E-3    NA     NA      NA
+        1             1            3       3         NA     NA      NA
+
+Mode: Vpp LR L
+
+        # No spec
+
+        # NOMINAL (Vpp)            MOD1 (s)          Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        1             1            3E-3    3E-3      NA     NA      NA
+        1             1            30E-3   30E-3     NA     NA      NA
+        1             1            300E-3  300E-3    NA     NA      NA
+        1             1            3       3         NA     NA      NA
+
+Mode: Volts OP L
+
+        # Transient Signal
+
+        # NOMINAL (V)              MOD1 (J)          Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        5             20           1.6     50        NA     NA      NA
+
+Mode: Amps L
+
+        # DC
+        # Includes +/-11.2% overrange using Deviation mode
+
+        # NOMINAL (A)              MOD1 (blank)      Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        -111.2E-3     -88.8E-6     NA      NA        0.25   0.5E-6  NA
+         0.0           0.0         NA      NA        0.0    0.5E-6  NA
+         88.8E-6       111.2E-3    NA      NA        0.25   0.5E-6  NA
+
+Mode: App SQ L
+
+        # Amperes peak-to-peak
+        # Includes +/-11.2% overrange using Deviation mode
+
+        # NOMINAL (App)            MOD1 (Hz)         Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+         88.8E-6       111.2E-3    1E+3      1E+3    0.25   0.5E-6  NA
+         88.8E-6       111.2E-3    10      100E+3    NA     NA      NA
+         88.8E-6       111.2E-3    10      100E+3    NA     NA      NA
+
+Mode: Time M1
+
+        # Triangle Markers (Basic)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  -----   ------  -----
+        901E-9        55.002       100E-3  1         10E-4   0.0     NA
+
+Mode: Time M1 B
+
+        # Triangle Markers (9500 Option 100 and 9500B)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        901E-9        55.002       100E-3  1         0.25E-4 0.0     NA
+
+Mode: Time M2
+
+        # Square Markers (Basic)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  -----   ------  -----
+        9.0009E-9     55.002       100E-3  1         10E-4   0.0     NA
+
+Mode: Time M2 B
+
+        # Square Markers (9500 Option 100 and 9500B)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        9.0009E-9     55.002       100E-3  1         0.25E-4 0.0   NA
+
+Mode: Time M3
+
+        # Pulse Markers (Basic)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  -----   ------  -----
+        901E-9        55.002       100E-3  1         10E-4   0.0     NA
+
+Mode: Time M3 B
+
+        # Pulse Markers (9500 Option 100 and 9500B)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        901E-9        55.002       100E-3  1         0.25E-4 0.0     NA
+
+Mode: Time M4
+
+        # Sinusoid Markers (Basic)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  -----   ------  -----
+        180.19E-12    9.0001E-9    100E-3  1         10E-4   0.0     NA
+
+Mode: Time M4 B
+
+        # Sinusoid Markers (9500 Option 100 and 9500B)
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        180.19E-12    9.0001E-9    100E-3  1         0.25E-4 0.0     NA
+
+Mode: Time PU
+
+        # Pulse Width function
+        # Available in Fluke 9500B only!
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  -----   ------  -----
+        450E-12       110E-9       1       1         5       200e-12 NA
+
+Mode: Hertz PU
+
+        # Pulse Repetition Frequency
+        # Available in Fluke 9500B only!
+
+        # NOMINAL (s)              MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        1E+3          10E+6        1       1         0.25E-4 0.0     NA
+
+Mode: Hertz SQ ZQ ZN
+
+        # Basic
+
+        # NOMINAL (Hz)             MOD1 (Vpp or App) Tol.    Floor   Res.
+        # -----------------------  ----------------  ------  ------  -----
+        10            100E+3       35.52E-6 222.4    10E-4   0.0     NA
+
+Mode: Hertz SQ ZQ ZN B
+
+        # 9500 Option 100 and 9500B only!
+
+        # NOMINAL (Hz)             MOD1 (Vpp or App) Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        10            100E+3       35.52E-6 222.4    0.25E-4 0.0     NA
+
+Mode: Hertz ED HE FE
+
+        # Basic
+
+        # NOMINAL (Hz)             MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------  ------  -----
+        10            2E+6         4.44E-3 222.4     10E-4   0.0     NA
+
+Mode: Hertz ED HE FE B
+
+        # 9500 Option 100 and 9500B only!
+
+        # NOMINAL (Hz)             MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        10            2E+6         4.44E-3 222.4     0.25E-4 0.0     NA
+
+Mode: Hertz LS
+
+        # Basic
+
+        # NOMINAL (Hz)             MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------  ------  -----
+        100E-3        11.999E+3    4.44E-3   5.56    12E-4   0.0     NA
+        12E+3         1.1E+9       4.44E-3   5.56    10E-4   0.0     NA
+        1.1E+9        2.5E+9       4.44E-3   3.336   10E-4   0.0     NA
+        2.5E+9        3.2E+9       4.44E-3   2.224   10E-4   0.0     NA
+        3.2E+9        6.4E+9       22.24E-3  2.224   10E-4   0.0     NA
+
+Mode: Hertz LS B
+
+        # 9500 Option 100 and 9500B only!
+
+        # NOMINAL (Hz)             MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        100E-3        11.999E+3    4.44E-3   5.56       3E-4 0.0     NA
+        12E+3         1.1E+9       4.44E-3   5.56    0.25E-4 0.0     NA
+        1.1E+9        2.5E+9       4.44E-3   3.336   0.25E-4 0.0     NA
+        2.5E+9        3.2E+9       4.44E-3   2.224   0.25E-4 0.0     NA
+        3.2E+9        6.4E+9       22.24E-3  2.224   0.25E-4 0.0     NA
+
+Mode: Hertz LR
+
+        # Basic
+        # 3 ms, 30 ms, 300 ms, and 3 s
+
+        # NOMINAL (Hz)             MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------  ------  -----
+        0.3333333332 0.3333333334  1       1         10E-4   0.0     NA
+        3.3333333332 3.3333333334  1       1         10E-4   0.0     NA
+        33.333333332 33.333333334  1       1         10E-4   0.0     NA
+        333.33333332 333.33333334  1       1         10E-4   0.0     NA
+
+Mode: Hertz LR B
+
+        # 9500 Option 100 and 9500B only!
+        # 3 ms, 30 ms, 300 ms, and 3 s
+
+        # NOMINAL (Hz)             MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------- ------  -----
+        0.3333333332 0.3333333334  1       1         0.25E-4 0.0     NA
+        3.3333333332 3.3333333334  1       1         0.25E-4 0.0     NA
+        33.333333332 33.333333334  1       1         0.25E-4 0.0     NA
+        333.33333332 3333.3333334  1       1         0.25E-4 0.0     NA
+
+Mode: Hertz ZK
+
+        # No Spec
+
+        # NOMINAL (Hz)             MOD1 (Vpp)        Tol.    Floor   Res.
+        # -----------------------  ----------------  ------  ------  -----
+        10            100E+6       1       1         NA      NA      NA
+
+Mode: Ohms ZM
+
+        # Input Impedance function
+
+        # NOMINAL (Ohms)           MOD1 (blank)      Tol.    Floor   Res.
+        # -----------------------  ----------------  -----   ------  -----
+        40            90           NA      NA        0.1     0.0     NA
+        10            150          NA      NA        0.5     0.0     NA
+        800E+3        1.2E+6       NA      NA        0.1     0.0     NA
+        50E+3         12E+6        NA      NA        0.5     0.0     NA
+
+Mode: Farads ZM
+
+        # Input Impedance function
+
+        # NOMINAL (farads)         MOD1 (blank)      Tol.    Floor   Res.
+        # -----------------------  ----------------  -----   ------  -----
+        1E-12         35E-12       NA      NA        2.0     .25E-12 NA
+        35E-12        95E-12       NA      NA        3.0     .25E-12 NA
+
+Mode: Rise ED 9510/20/30
+
+        # NOMINAL (s)              Not used          Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        500E-12       500E-12      NA      NA        0.0    40E-12  NA
+
+Mode: Rise FE 9520/30
+
+        # NOMINAL (s)              Not used          Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        150E-12      150E-12       NA      NA        0.0    15E-12  NA
+
+Mode: Rise FE 9550
+
+        # NOMINAL (s)              Not used          Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        25E-12       25E-12        NA      NA        0.0    4E-12   NA
+
+Mode: Rise FE 9560
+
+        # NOMINAL (s)              Not used          Tol.   Floor   Res.
+        # -----------------------  ----------------  -----  ------  -----
+        70E-12       70E-12        NA      NA        0.0    11E-12  NA

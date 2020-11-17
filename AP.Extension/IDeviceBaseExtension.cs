@@ -9,8 +9,14 @@ using System.Threading;
 
 namespace AP.Extension
 {
+    
     public static class IDeviceBaseExtension
     {
+        /// <summary>
+        /// Заполняет характеристики метрологические характеристикик устройства, которые загружаются из внешнего файла точности.
+        /// </summary>
+        /// <param name="Devise">Устройство, реализующее интерфейс IDeviceBase.</param>
+        /// <param name="path">Полный путь к файлу с характеристиками, включая имя и разрешение.</param>
         public static void FillRangesDevice(this IDeviceBase Devise, string path)
         {
             GetMember(Devise, Devise.GetType());
@@ -28,7 +34,7 @@ namespace AP.Extension
                         using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                         {
                             var file = File.ReadAllLines(path).ToList();
-                            var str = file.FindIndex(s => s.StartsWith(att.Mode));
+                            var str = file.FindIndex(s => s.Equals(att.Mode));
                             //todo Не кооретно находит конец и начало некоторых диапазонов. также в диапазон можеет попасть текст
                             var end = file.Skip(str + 1).ToList().FindIndex(s => s.StartsWith("Mode:"));
 
@@ -37,7 +43,7 @@ namespace AP.Extension
                             var res = date.Select(q => reg.Replace(q, " ")).Where(q => !q.StartsWith("#")).ToArray();
                             /*заполняемое хранилище диапазонов*/
                             accessor[obj, cl.Name] = Activator.CreateInstance(cl.Type, res.Where(q => !string.IsNullOrWhiteSpace(q)).Select(q => (IPhysicalRange)GenerateRange(q, accessor[obj, cl.Name], cl.Type, att.MeasPointType)).ToArray());
-                            return;
+                           // return;
                         }
                     }
                     if (obj == null) continue;

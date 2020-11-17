@@ -493,8 +493,10 @@ namespace ASMC.Data.Model
             if (inPoint < (MeasPoint<T>) Start || inPoint > (MeasPoint<T>) End)
                 throw new
                     ArgumentOutOfRangeException($"Невозможно рассчитать погрешность предела ({this}). Значение точки {inPoint.Description} лежит вне диапазонов предела.");
-            decimal tol = AccuracyChatacteristic.GetAccuracy(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi(), End.MainPhysicalQuantity.Value);
-            return new MeasPoint<T>(tol,inPoint.MainPhysicalQuantity.Multiplier);
+            decimal tol = AccuracyChatacteristic.GetAccuracy(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi(), End.MainPhysicalQuantity.GetNoramalizeValueToSi());
+            MeasPoint<T> tolPoint = new MeasPoint<T>(tol);
+            tolPoint.MainPhysicalQuantity = (T)tolPoint.MainPhysicalQuantity.ChangeMultiplier(inPoint.MainPhysicalQuantity.Multiplier);
+            return tolPoint;
 
         }
 
@@ -726,14 +728,16 @@ namespace ASMC.Data.Model
                                                                          where T2 : class, IPhysicalQuantity<T2>, new()
         {
             var range = Ranges as IPhysicalRange<T1, T2>[];
-            return (T) range?.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
-                                                  inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi() &&
-                                                  q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                  inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                  && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
-                                                  inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()
-                                                  && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                  inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+            T returnRange = (T)range?.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                          inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi() &&
+                                                          q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                          inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                          && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                          inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()
+                                                          && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                          inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+
+            return returnRange;
         }
 
         /// <summary>
@@ -786,18 +790,25 @@ namespace ASMC.Data.Model
 
             if (range == null) return false;
 
-            var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+            var start = range.FirstOrDefault(q => (q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
                                                   point.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                   && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
-                                                  point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                                                  point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())
+                                             &&
+                                             (q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                              point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                              && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                              point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()));
 
-            var end = range.FirstOrDefault(q => q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                point.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+            //var end = range.FirstOrDefault(q => q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+            //                                    point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+            //                                    && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+            //                                    point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
 
-            return start != null && end != null;
+            return start != null ;
         }
+
+
 
         #endregion
 
