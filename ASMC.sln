@@ -65,9 +65,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keysight", "Keysight", "{EF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DialIndicator", "DialIndicator", "{138B1DBE-B890-44E6-A881-641AE158F54B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "49310_12", "49310_12", "{8F36E485-02DA-4915-B635-48BC69099B7C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mp2192_92", "mp2192_92", "{8F36E485-02DA-4915-B635-48BC69099B7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Indicator_10", "Plugins\DialIndicator\49310_12\Indicator_10\WpfControlLibrary1\Indicator_10.csproj", "{A591274A-2626-4FA6-8C9C-BBAC6586EF07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialIndicator", "Plugins\DialIndicator\49310_12\Indicator_10\WpfControlLibrary1\DialIndicator.csproj", "{A591274A-2626-4FA6-8C9C-BBAC6586EF07}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDS_BasePlugin", "Plugins\Tektronix\TDS_BasePlugin\TDS_BasePlugin.csproj", "{C362FA9E-DF8D-49B0-A86A-64661ECDBA9E}"
 EndProject

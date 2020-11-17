@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Linq;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
-using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using ASMC.Devices.USB_Device.WebCam;
-using ASMC.Devices.WithoutInterface.HourIndicator;
 
-namespace Indicator_10.First
+namespace mp2192_92.DialIndicator.First
 {
     public class OpertionFirsVerf<T> : Operation where T : IUserType, new()
     {
@@ -29,6 +26,7 @@ namespace Indicator_10.First
             {
                 new VisualInspection(this),
                 new Testing(this),
+
                 new ConnectionDiametr(this), 
                 new LinerRoughness(this),
                 new TipRoughness(this),
@@ -43,6 +41,7 @@ namespace Indicator_10.First
                 new DeterminationError(this),
 
             };
+            DocumentName = "ИЧ-10 Первичная МП 2192-92";
         }
     
 

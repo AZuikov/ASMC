@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using Accord.Video.DirectShow;
 using AP.Extension;
 using AP.Reports.Utils;
@@ -14,16 +13,15 @@ using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
 using ASMC.Core.UI;
 using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using ASMC.Devices.USB_Device.WebCam;
 using ASMC.Devices.WithoutInterface.HourIndicator;
 using DevExpress.Mvvm.UI;
-using Indicator_10.ViewModel;
+using mp2192_92.DialIndicator.ViewModel;
 using NLog;
 
-namespace Indicator_10
+namespace mp2192_92.DialIndicator
 {
     /// <summary>
     ///     Придоставляет базувую реализацию для пунктов поверки индикаторов частового типа
@@ -689,10 +687,12 @@ namespace Indicator_10
             operation.ErrorCalculation =
                 (getting,  expected) =>
                 {
+                    var res = new MeasPoint<Length>(getting.Select(q => expected.First() - q)
+                        .Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi())));
+                    res.MainPhysicalQuantity.ChangeMultiplier(getting.First().MainPhysicalQuantity.Multiplier);
                     return new[]
                     {
-                        expected.FirstOrDefault() -
-                        getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))
+                        res
                     };
                 };
             operation.IsGood = () =>  operation.Error.FirstOrDefault() <=

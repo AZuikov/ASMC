@@ -1,17 +1,17 @@
 ﻿using ASMC.Core.Model;
 using ASMC.Devices.UInterface.AnalogDevice.ViewModel;
 using ASMC.Devices.WithoutInterface.HourIndicator;
-using Indicator_10.First;
-using Indicator_10.Periodic;
+using mp2192_92.DialIndicator.First;
+using mp2192_92.DialIndicator.Periodic;
 
-namespace Indicator_10
+namespace mp2192_92.DialIndicator
 {
     /// <inheritdoc />
     // ReSharper disable once UnusedMember.Global
-    public class Indicator10 : Program<Verefication>
+    public class DialIndicator10 : Program<Verefication>
     {
         /// <inheritdoc />
-        public Indicator10(ServicePack service) : base(service)
+        public DialIndicator10(ServicePack service) : base(service)
         {
             Type = "ИЧ10";
             Grsi = "318-49, 32512-06, 33841-07, 40149-08, 42499-09, 49310-12, 54058-13, 57937-14, 64188-16, 69534-17, До 26 декабря 1991 года";
@@ -28,4 +28,6 @@ namespace Indicator_10
             UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<IchGost577SettingUi<Ich_10>>(servicePac);
         }
     }
+
+
 }
