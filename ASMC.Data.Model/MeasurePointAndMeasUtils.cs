@@ -527,6 +527,13 @@ namespace ASMC.Data.Model
         public IMeasPoint<T> Start { get; set; }
 
         /// <inheritdoc />
+        public bool IsPointBelong<T1>(IMeasPoint<T1> point) where T1 : class, IPhysicalQuantity<T1>, new()
+        {
+            return Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <= point.MainPhysicalQuantity.GetNoramalizeValueToSi()&& End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                   point.MainPhysicalQuantity.GetNoramalizeValueToSi();
+        }
+
+        /// <inheritdoc />
         public IMeasPoint<T> End { get; set; }
 
         public MeasureUnits Unit => Start.MainPhysicalQuantity.Unit;
@@ -592,6 +599,22 @@ namespace ASMC.Data.Model
         public IMeasPoint<TPhysicalQuantity, TAddition> Start { get; set; }
 
         /// <inheritdoc />
+        public bool IsPointBelong<T, T1>(IMeasPoint<T, T1> point) where T : class, IPhysicalQuantity<T>, new() where T1 : class, IPhysicalQuantity<T1>, new()
+        {
+                if (point == null) return false;
+
+               return Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                       point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                       && Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
+                                                       point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()
+                                                      &&
+                                                      (End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                       point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                                       && End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                       point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        /// <inheritdoc />
         public IMeasPoint<TPhysicalQuantity, TAddition> End { get; set; }
 
         public MeasureUnits Unit { get; protected set; }
@@ -620,6 +643,10 @@ namespace ASMC.Data.Model
     public interface IPhysicalRange<T, T1> : IComparable<IPhysicalRange<T>>, IPhysicalRange
         where T : class, IPhysicalQuantity<T>, new() where T1 : class, IPhysicalQuantity<T1>, new()
     {
+
+        bool IsPointBelong<T, T1>(IMeasPoint<T, T1> point) where T : class, IPhysicalQuantity<T>, new()
+            where T1 : class, IPhysicalQuantity<T1>, new();
+        
         #region Property
 
         /// <summary>
@@ -651,6 +678,15 @@ namespace ASMC.Data.Model
         IMeasPoint<T> Start { get; set; }
 
         #endregion
+
+        /// <summary>
+        /// </summary>
+        /// <typeparam name = "T1"></typeparam>
+        /// <param name = "point"></param>
+        /// <returns></returns>
+        bool IsPointBelong<T>(IMeasPoint<T> point) where T : class, IPhysicalQuantity<T>, new();
+
+
     }
 
     /// <summary>

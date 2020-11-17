@@ -932,8 +932,9 @@ namespace mp2192_92.DialIndicator
     /// <summary>
     /// Предоставляет реализацию проверки присоеденительного диаметра
     /// </summary>
-    public sealed class ConnectionDiametr : MainIchProcedur<MeasPoint<Length>>
+    public sealed class ConnectionDiametr : MainIchProcedur<object>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public ConnectionDiametr(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -944,7 +945,7 @@ namespace mp2192_92.DialIndicator
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            var operation = new MeasuringOperation<MeasPoint<Length>>();
+            var operation = new MeasuringOperation<object>();
             var arrPoints = new [] {"1-e", "2-e", "3-e", "4-e"};
             MeasPoint<Length>[] arrGettin = null;
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
@@ -953,20 +954,40 @@ namespace mp2192_92.DialIndicator
             {
 
                 var setting = new SettingTableViewModel { Breaking = 1, CellFormat = "мкм" };
-
-                var vm = CreateTable("Присоединительный диаметр", arrPoints, setting);
-                Service.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                var vm = new OneTableViewModel();
+                    vm.Data = CreateTable("Присоединительный диаметр", arrPoints, setting);
+                    Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
                 Service.DocumentType = "OneTableView";
                 Service.Show();
                 /*Получаем измерения*/
-                arrGettin = vm.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell), UnitMultiplier.Micro))
+                arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
+            };
+            operation.BodyWorkAsync = () =>
+            {
+                for (var i = 0; i < arrGettin.Length; i++)
+                {
+                    if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
+                    operation.Expected = arrPoints[i];
+                    operation.Getting = arrGettin[i];
+                    Logger.Debug($@"Измеренное {operation.Getting}");
+                    if (i > 0) DataRow.Add(operation);
+                    if (i == 0)
+                    {
+                        operation.IsGood = () =>
+                        {
+                            Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
+                            return operation.Error as MeasPoint<Length> <= IchBase.ConnectDiametr.MaxDelta &&  DataRow.All(q=> IchBase.ConnectDiametr.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
+                        };
+                    }
+                }
             };
             operation.ErrorCalculation = (exped, getting) =>
             {
-                return DataRow.Select(q => IchBase.Diametr - q.Getting).Max();
+                return DataRow.Select(q =>q.Getting as MeasPoint<Length>).Max() - DataRow.Select(q => q.Getting as MeasPoint<Length>).Min();
             };
+            DataRow.Add(operation);
         }
 
         /// <inheritdoc />
@@ -983,7 +1004,26 @@ namespace mp2192_92.DialIndicator
         /// <inheritdoc />
         protected override DataTable FillData()
         {
-            return base.FillData();
+            var dataTable = base.FillData();
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as MeasuringOperation<object>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow[0] = dds.Expected;
+                dataRow[1] = IchBase.ConnectDiametr.Range.End.Description;
+                dataRow[2] = (dds.Expected as MeasPoint<Length>).Description;
+                dataRow[3] = (dds.Error as MeasPoint<Length>).Description;
+                dataRow[4] = IchBase.ConnectDiametr.MaxDelta;
+                if (dds.IsGood == null)
+                    dataRow[5] = ConstNotUsed;
+                else
+                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
         }
     }
     /// <summary>
@@ -1057,12 +1097,86 @@ namespace mp2192_92.DialIndicator
     /// </summary>
     public sealed class ArrowWidch : MainIchProcedur<MeasPoint<Length>>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public ArrowWidch(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение ширины стрелки.";
         }
-    }
+        #region Methods
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as MeasuringOperation<MeasPoint<Length>>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow[0] = dds.Getting.Description;
+                dataRow[1] = IchBase.ArrowWidch.Start.Description + " - " +IchBase.ArrowWidch.End.Description;
+                if (dds.IsGood == null)
+                    dataRow[2] = ConstNotUsed;
+                else
+                    dataRow[2] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Ширина стрелки", "Допустимая ширина",
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+            ;
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            var operation = new MeasuringOperation<MeasPoint<Length>>();
+
+            var arrPoints = EndRange.GetArayMeasPointsInParcent(50, 50, 50, 50)
+                .ToArray();
+            MeasPoint<Length> arrGetting = null;
+
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            {
+
+
+                var vm = new OneTableViewModel();
+                vm.Data = CreateTable("Ширина стрелки", new []{"Ширина стрелки"}, new SettingTableViewModel {CellFormat = "мм"});
+                Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
+                Service.ViewModel = vm;
+                Service.DocumentType = "OneTableView";
+                Service.Show();
+                /*Получаем измерения*/
+                arrGetting = new MeasPoint<Length>(vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).First(), UnitMultiplier.Mili);
+            };
+
+            operation.BodyWorkAsync = () =>
+            {
+              
+                    operation.Getting = arrGetting;
+                    Logger.Debug($@"Измеренное {operation.Getting}");
+                 
+
+            };
+            operation.IsGood = () => IchBase.ArrowWidch.IsPointBelong(operation.Getting);
+
+            DataRow.Add(operation);
+        }
+
+        #endregion
+    } //todo готово
     /// <summary>
     /// Предотсавляет реализацию определения ширины штриха.
     /// </summary>
@@ -1102,12 +1216,86 @@ namespace mp2192_92.DialIndicator
     /// </summary>
     public sealed class StrokeLength : MainIchProcedur<MeasPoint<Length>>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public StrokeLength(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение длины деления штрихов.";
         }
-    }
+        #region Methods
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as MeasuringOperation<MeasPoint<Length>>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow[0] = dds.Getting.Description;
+                dataRow[1] = IchBase.StrokeLength.Description;
+                if (dds.IsGood == null)
+                    dataRow[2] = ConstNotUsed;
+                else
+                    dataRow[2] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Ширина стрелки", "Допустимая ширина",
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+            ;
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            var operation = new MeasuringOperation<MeasPoint<Length>>();
+
+            var arrPoints = EndRange.GetArayMeasPointsInParcent(50, 50, 50, 50)
+                .ToArray();
+            MeasPoint<Length> arrGetting = null;
+
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            {
+
+
+                var vm = new OneTableViewModel();
+                vm.Data = CreateTable("Определение длины деления шкалы", new[] { "Длина деления" }, new SettingTableViewModel { CellFormat = "мм" });
+                Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
+                Service.ViewModel = vm;
+                Service.DocumentType = "OneTableView";
+                Service.Show();
+                /*Получаем измерения*/
+                arrGetting = new MeasPoint<Length>(vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).First(), UnitMultiplier.Mili);
+            };
+
+            operation.BodyWorkAsync = () =>
+            {
+
+                operation.Getting = arrGetting;
+                Logger.Debug($@"Измеренное {operation.Getting}");
+
+
+            };
+            operation.IsGood = () => IchBase.StrokeLength<=operation.Getting;
+
+            DataRow.Add(operation);
+        }
+
+        #endregion
+    } //todo готово
 
     public sealed class BetweenArrowDial : MainIchProcedur<MeasPoint<Length>>
     {

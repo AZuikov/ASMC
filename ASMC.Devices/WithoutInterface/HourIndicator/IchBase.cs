@@ -141,6 +141,7 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
             ConnectDiametr.MaxDelta = new MeasPoint<Length>(8, UnitMultiplier.Micro);
             BetweenArrowDial = new MeasPoint<Length>(0.7m, UnitMultiplier.Mili);
         }
+
     }
 
     /// <summary>

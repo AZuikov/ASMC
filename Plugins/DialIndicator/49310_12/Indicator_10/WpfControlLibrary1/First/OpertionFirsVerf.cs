@@ -33,7 +33,7 @@ namespace mp2192_92.DialIndicator.First
                 new ArrowWidch(this),
                 new StrokeWidch(this),
                 new StrokeLength(this),
-
+                new BetweenArrowDial(this),
                 new MeasuringForce(this),
                 new PerpendicularPressure(this),
                 new RangeIndications(this),
@@ -44,11 +44,6 @@ namespace mp2192_92.DialIndicator.First
             DocumentName = "ИЧ-10 Первичная МП 2192-92";
         }
     
-
-    //UserItemOperation = new IUserItemOperationBase[]
-            //{
-            //    new MeasuringForce(this)
-            //};
             //Accessories = new[]
             //{
             //    "Весы настольные циферблатные РН-3Ц13У",
