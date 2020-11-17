@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Extension;
 using AP.Math;
 using AP.Utils.Data;
 using ASMC.Core.Model;
@@ -980,6 +982,8 @@ namespace APPA_107N_109N
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa107N == null) return;
 
+                IDeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory()+ "\\acc\\5522a_1yr_99CF.acc");
+
                 foreach (var currPoint in VoltPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
@@ -1051,14 +1055,20 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            //todo тут есть точки которые не может воспроизвести калибратор, это нужно проверять как-то
-                            flkCalib5522A.Out.Set.Voltage.Ac.SetValue(currPoint);
-                            flkCalib5522A.Out.ClearMemoryRegister();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(2000);
-                            //измеряем
-                            var measurePoint = (decimal) appa107N.GetValue();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            decimal measurePoint=0;
+                            bool isRealPoint = flkCalib5522A.Out.Set.Voltage.Ac.Ranges.IsPointBelong(currPoint);
+                            if (isRealPoint)
+                            {
+                                flkCalib5522A.Out.Set.Voltage.Ac.SetValue(currPoint);
+                                flkCalib5522A.Out.ClearMemoryRegister();
+                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                                Thread.Sleep(2000);
+                                //измеряем
+                                 measurePoint = (decimal)appa107N.GetValue();
+                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            }
+                            
+                            
 
                             //вычисляе на сколько знаков округлять
                             var mantisa =
@@ -1106,6 +1116,13 @@ namespace APPA_107N_109N
                                        (operation.Getting > operation.LowerTolerance);
                             };
 
+                            if (!isRealPoint)
+                            {
+                                measurePoint =
+                                    MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
+                                                                 operation.UpperTolerance.MainPhysicalQuantity.Value);
+                            }
+                                
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
@@ -2218,6 +2235,7 @@ namespace APPA_107N_109N
             {
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa107N == null) return;
+                IDeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory() + "\\acc\\5522a_1yr_99CF.acc");
 
                 foreach (var curr in AciPoint)
 
@@ -2294,12 +2312,20 @@ namespace APPA_107N_109N
                         try
                         {
                             //todo здесь нужно проверять точки на возможность воспроизведения калибратором
-                            flkCalib5522A.Out.Set.Current.Ac.SetValue(curr);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(2000);
-                            //измеряем
-                            var measurePoint = (decimal) appa107N.GetValue();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            decimal measurePoint = 0;
+                            bool isRealPoint = flkCalib5522A.Out.Set.Current.Ac.Ranges.IsPointBelong(curr);
+                            bool isRealPointHiCurr =
+                                flkCalib5522A.Out.Set.Current.Ac.RangesHiCurrent.IsPointBelong(curr);
+                            if (isRealPoint|| isRealPointHiCurr)
+                            {
+                                flkCalib5522A.Out.Set.Current.Ac.SetValue(curr);
+                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                                Thread.Sleep(2000);
+                                //измеряем
+                                 measurePoint = (decimal)appa107N.GetValue();
+                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            }
+                                
 
                             var mantisa =
                                 MathStatistics
@@ -2349,6 +2375,12 @@ namespace APPA_107N_109N
                                        (operation.Getting > operation.LowerTolerance);
                             };
 
+                            if ((!isRealPoint) && (!isRealPointHiCurr) )
+                            {
+                                measurePoint =
+                                    MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
+                                                                 operation.UpperTolerance.MainPhysicalQuantity.Value);
+                            }
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 

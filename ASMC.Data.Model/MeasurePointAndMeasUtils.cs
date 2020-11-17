@@ -790,17 +790,22 @@ namespace ASMC.Data.Model
 
             if (range == null) return false;
 
-            var start = range.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
+            var start = range.FirstOrDefault(q => (q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
                                                   point.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                   && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
-                                                  point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                                                  point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())
+                                             &&
+                                             (q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                              point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+                                              && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                              point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()));
 
-            var end = range.FirstOrDefault(q => q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                point.MainPhysicalQuantity.GetNoramalizeValueToSi()
-                                                && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
-                                                point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+            //var end = range.FirstOrDefault(q => q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+            //                                    point.MainPhysicalQuantity.GetNoramalizeValueToSi()
+            //                                    && q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >=
+            //                                    point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
 
-            return start != null && end != null;
+            return start != null ;
         }
 
 

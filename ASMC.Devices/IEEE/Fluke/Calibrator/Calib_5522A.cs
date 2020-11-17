@@ -2,13 +2,33 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System.Collections.Generic;
-using ASMC.Data.Model;
-using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
     public class Calib5522A : CalibrMain
     {
+        #region Property
+
+        /// <summary>
+        /// Позволяет получить последнюю ошибку из очереди калибратора.
+        /// </summary>
+        public ErrorCode GetLastErrorCode
+        {
+            get
+            {
+                var answer = QueryLine("err?").Split(',');
+                if (answer.Length == 2)
+                {
+                    int.TryParse(answer[0], out var result);
+                    return (ErrorCode) result;
+                }
+
+                return 0;
+            }
+        }
+
+        #endregion
+
         public Calib5522A()
         {
             UserType = "Fluke 5522A";
@@ -20,14 +40,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(33M), new MeasPoint<Voltage>(329.99999M)),
             //    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(330M), new MeasPoint<Voltage>(1020M))
             //};
-            
+
             //Out.Set.Voltage.Ac.Ranges.RealRangeStor = new[]
             //{
-            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.None, 45, UnitMultiplier.None) , 
-            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) , 
-            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) , 
-            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) , 
-            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) , 
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,45, UnitMultiplier.None, 10,  UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,10M, UnitMultiplier.Kilo, 20, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,20, UnitMultiplier.Kilo, 50, UnitMultiplier.Kilo) ,
+            //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,50, UnitMultiplier.Kilo, 100, UnitMultiplier.Kilo) ,
             //    CreateAcPoint(1M, UnitMultiplier.Mili,32.999M, UnitMultiplier.Mili,100, UnitMultiplier.Kilo, 500, UnitMultiplier.Kilo) ,
 
             //    CreateAcPoint(33M, UnitMultiplier.Mili,329.99M, UnitMultiplier.Mili,10M, UnitMultiplier.None, 45, UnitMultiplier.None) ,
@@ -60,31 +80,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             //                                          new MeasPoint<Voltage, Frequency>(stopVolt, multForStopVolt,
             //                                                                            freqStopVal, multFreqStop));
             //}
-
-            
-
-
         }
 
-         
-
-        /// <summary>
-        /// Позволяет получить последнюю ошибку из очереди калибратора.
-        /// </summary>
-        public ErrorCode GetLastErrorCode
-        {
-            get
-            {
-                string[] answer = this.QueryLine("err?").Split(',');
-                if (answer.Length == 2)
-                {
-                    int.TryParse(answer[0], out var result);
-                    return (ErrorCode)result;
-                }
-
-                return 0;
-            }
-        }
+        #region Methods
 
         /// <summary>
         /// Возвращает массив очереди ошибок калибратора. Порядок массива обратный - первый элемент это последняя ошибка.
@@ -92,7 +90,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         /// <returns></returns>
         public ErrorCode[] GetErrorStack()
         {
-            List<ErrorCode> list = new List<ErrorCode>();
+            var list = new List<ErrorCode>();
             ErrorCode err;
             do
             {
@@ -102,5 +100,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             return list.ToArray();
         }
+
+        #endregion
     }
 }

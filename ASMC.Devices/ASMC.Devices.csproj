@@ -157,6 +157,9 @@
     <None Include="Port\OWEN\ki_parametry_trm202_105_a3.pdf" />
     <None Include="Port\OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
+    <None Include="Resources\ACC\5522a_1yr_99CF.acc" />
+    <None Include="Resources\ACC\5700_99.1yr" />
+    <None Include="Resources\ACC\9500.acc" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>
   <ItemGroup>
@@ -196,4 +199,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Accord.3.8.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.0\build\Accord.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\acc" 2&gt; NUL
+xcopy "$(ProjectDir)Resources\acc" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\acc" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
