@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Timers;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using ASMC.Common.ViewModel;
 using ASMC.Core.ViewModel;
 using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
@@ -10,7 +9,7 @@ using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using DevExpress.Mvvm;
 using NLog;
 
-namespace Indicator_10.ViewModel
+namespace mp2192_92.DialIndicator.ViewModel
 {
     public class WorkInPpiViewModel: SelectionViewModel
     {

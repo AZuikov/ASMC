@@ -3,10 +3,9 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using ASMC.Common.ViewModel;
-using ASMC.Core.UI;
 using ASMC.Core.ViewModel;
 
-namespace Indicator_10.ViewModel
+namespace mp2192_92.DialIndicator.ViewModel
 {
     public class MeasuringForceViewModel : SelectionViewModel
     {

@@ -7,7 +7,7 @@ using ASMC.Devices.USB_Device.SiliconLabs;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using ASMC.Devices.USB_Device.WebCam;
 
-namespace Indicator_10.Periodic
+namespace mp2192_92.DialIndicator.Periodic
 {
     public class OpertionPeriodicVerf<T> : Operation where T : IUserType, new()
     {
