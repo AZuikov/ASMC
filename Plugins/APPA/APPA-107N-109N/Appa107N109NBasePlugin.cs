@@ -1809,7 +1809,11 @@ namespace APPA_107N_109N
                                 if (range == null)
                                     throw new
                                         Exception($"Не удалось подобрать предел измерения прибора для точки {currPoint.Description}");
-                                var tolMeasPoint = range.CalculateTollerance(currPoint);
+                                MeasPoint<Current> tolMeasPoint; 
+                                if (currPoint.MainPhysicalQuantity.Value < 0)
+                                    tolMeasPoint = range.CalculateTollerance(currPoint * -1);
+                                else
+                                    tolMeasPoint = range.CalculateTollerance(currPoint);
                                 return tolMeasPoint;
                             };
 
@@ -2311,7 +2315,7 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            //todo здесь нужно проверять точки на возможность воспроизведения калибратором
+                            
                             decimal measurePoint = 0;
                             bool isRealPoint = flkCalib5522A.Out.Set.Current.Ac.Ranges.IsPointBelong(curr);
                             bool isRealPointHiCurr =
@@ -2385,7 +2389,7 @@ namespace APPA_107N_109N
                             MathStatistics.Round(ref measurePoint, mantisa);
 
                             operation.Getting =
-                                new MeasPoint<Current, Frequency>(measurePoint, curr.AdditionalPhysicalQuantity);
+                                new MeasPoint<Current, Frequency>(measurePoint,curr.MainPhysicalQuantity.Multiplier, curr.AdditionalPhysicalQuantity);
                         }
                         catch (Exception e)
                         {
@@ -4397,15 +4401,15 @@ namespace APPA_107N_109N
                     var dds = row as BasicOperationVerefication<MeasPoint<CelsiumGrad>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
-                    dataRow[0] = OperationRangeNominal.GetStringValue();
-                    dataRow[1] = dds.Expected?.Description;
-                    dataRow[2] = dds.Getting?.Description;
-                    dataRow[3] = dds.LowerTolerance?.Description;
-                    dataRow[4] = dds.UpperTolerance?.Description;
+                    dataRow[0] = dds.Expected?.Description;
+                    dataRow[1] = dds.Getting?.Description;
+                    dataRow[2] = dds.LowerTolerance?.Description;
+                    dataRow[3] = dds.UpperTolerance?.Description;
+                    
                     if (dds.IsGood == null)
-                        dataRow[5] = "не выполнено";
+                        dataRow[4] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
