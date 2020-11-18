@@ -2197,20 +2197,19 @@ namespace APPA_107N_109N
                 foreach (var row in DataRow)
                 {
                     var dataRow = dataTable.NewRow();
-                    var dds = row as BasicOperationVerefication<MeasPoint<Voltage, Frequency>>;
+                    var dds = row as BasicOperationVerefication<MeasPoint<Current, Frequency>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
                     dataRow[0] = OperationRangeNominal.GetStringValue();
-                    dataRow[1] = dds.Expected.MainPhysicalQuantity.ToString();
+                    dataRow[1] = dds.Expected?.Description;
                     //тут может упасть!!!
-                    dataRow[2] = dds.Expected?.AdditionalPhysicalQuantity.ToString();
-                    dataRow[3] = dds.Getting?.MainPhysicalQuantity.ToString();
-                    dataRow[4] = dds.LowerTolerance?.MainPhysicalQuantity.ToString();
-                    dataRow[5] = dds.UpperTolerance?.MainPhysicalQuantity.ToString();
+                    dataRow[2] = dds.Getting?.MainPhysicalQuantity.ToString();
+                    dataRow[3] = dds.LowerTolerance?.MainPhysicalQuantity.ToString();
+                    dataRow[4] = dds.UpperTolerance?.MainPhysicalQuantity.ToString();
                     if (dds.IsGood == null)
-                        dataRow[6] = "не выполнено";
+                        dataRow[5] = "не выполнено";
                     else
-                        dataRow[6] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 

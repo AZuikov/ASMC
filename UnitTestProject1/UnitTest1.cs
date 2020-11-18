@@ -20,7 +20,7 @@ namespace UnitTestProject1
                 new PhysicalRange<Voltage, Frequency>(
                     new MeasPoint<Voltage, Frequency>(3, 1),
                     new MeasPoint<Voltage, Frequency>(4, 50)));
-            Assert.IsTrue(a.IsPointBelong(point));
+            Assert.IsFalse(a.IsPointBelong(point));
             //a = new RangeStorage<PhysicalRange<Voltage, Frequency>>(
             //    new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(20, 1), 
             //        new MeasPoint<Voltage, Frequency>(50, 50)));
