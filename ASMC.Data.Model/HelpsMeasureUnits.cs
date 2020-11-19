@@ -108,7 +108,8 @@ namespace ASMC.Data.Model
         [StringValue("Н")] N,
 
         [StringValue("м.рт.ст")] MercuryPressure,
-        [StringValue("Па")] Pressure
+        [StringValue("Па")] Pressure,
+        [StringValue("%")] Percent
     }
 
 

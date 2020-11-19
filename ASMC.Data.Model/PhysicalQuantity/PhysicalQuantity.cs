@@ -573,49 +573,50 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину градусы Цельсия.
     /// </summary>
-    public sealed class CelsiumGrad : PhysicalQuantity<CelsiumGrad>
+    public sealed class Temperature : PhysicalQuantity<Temperature>
     {
-        public CelsiumGrad()
+        public Temperature()
         {
             Units = new[] { MeasureUnits.degC };
             Unit = MeasureUnits.degC;
         }
 
-        public CelsiumGrad(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        public Temperature(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
         {
-            Units = new[] { MeasureUnits.degC };
+            Units = new[] { MeasureUnits.degC, MeasureUnits.DegF };
             Unit = MeasureUnits.degC;
         }
 
-        public CelsiumGrad(decimal value) : base(value)
+        public Temperature(decimal value) : base(value)
         {
             Units = new[] { MeasureUnits.degC };
             Unit = MeasureUnits.degC;
         }
     }
 
-    /// <summary>
-    /// Реализует физическую величину градусы по Фаренгейту.
-    /// </summary>
-    public sealed class FarengeitGrad : PhysicalQuantity<FarengeitGrad>
+    public sealed class Percent : PhysicalQuantity<Percent>
     {
-        public FarengeitGrad()
+        public Percent()
         {
-            Units = new[] { MeasureUnits.DegF };
-            Unit = MeasureUnits.DegF;
+            Units = new[] {MeasureUnits.Percent};
+            Unit = MeasureUnits.Percent;
         }
 
-        public FarengeitGrad(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        public Percent(decimal value,UnitMultiplier multiplier) : base(value, multiplier)
         {
-            Units = new[] { MeasureUnits.DegF };
-            Unit = MeasureUnits.DegF;
+            Units = new[] { MeasureUnits.Percent };
+            Unit = MeasureUnits.Percent;
         }
 
-        public FarengeitGrad(decimal value) : base(value)
+        public Percent(decimal value): base(value)
         {
-            Units = new[] { MeasureUnits.DegF };
-            Unit = MeasureUnits.DegF;
+            Units = new[] { MeasureUnits.Percent };
+            Unit = MeasureUnits.Percent;
         }
     }
+
+
+
+
 
 }

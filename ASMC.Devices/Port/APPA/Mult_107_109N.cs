@@ -54,23 +54,23 @@ namespace ASMC.Devices.Port.APPA
             });
         }
 
-        public RangeStorage<PhysicalRange<CelsiumGrad>> GetCelsiumRangeStorage
+        public RangeStorage<PhysicalRange<Temperature>> GetCelsiumRangeStorage
         {
             get => CelsiumRangeStorage();
         }
 
-        protected virtual RangeStorage<PhysicalRange<CelsiumGrad>> CelsiumRangeStorage()
+        protected virtual RangeStorage<PhysicalRange<Temperature>> CelsiumRangeStorage()
         {
-            return new RangeStorage<PhysicalRange<CelsiumGrad>>(new []{
+            return new RangeStorage<PhysicalRange<Temperature>>(new []{
                 
                 //-200....-100
-                new PhysicalRange<CelsiumGrad>(new MeasPoint<CelsiumGrad>(-200),new MeasPoint<CelsiumGrad>(-100),
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(-100),
                                                new AccuracyChatacteristic(6.0M,null,0.1M)),
                 //-100...400
-                new PhysicalRange<CelsiumGrad>(new MeasPoint<CelsiumGrad>(-100), new MeasPoint<CelsiumGrad>(400), 
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-100), new MeasPoint<Temperature>(400), 
                                                new AccuracyChatacteristic(3.0M, null, 0.1M)),
                 //400...1200
-                new PhysicalRange<CelsiumGrad>(new MeasPoint<CelsiumGrad>(400),new MeasPoint<CelsiumGrad>(1200), 
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(400),new MeasPoint<Temperature>(1200), 
                                                new AccuracyChatacteristic(3M, null,0.1M))
                 
             });

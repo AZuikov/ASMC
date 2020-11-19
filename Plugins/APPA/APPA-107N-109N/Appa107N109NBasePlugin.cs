@@ -4307,7 +4307,7 @@ namespace APPA_107N_109N
 
         #region TEMP
 
-        public class Oper10TemperatureMeasureBase : ParagraphBase<MeasPoint<CelsiumGrad>>
+        public class Oper10TemperatureMeasureBase : ParagraphBase<MeasPoint<Temperature>>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -4329,7 +4329,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Массив поверяемых точек напряжения.
             /// </summary>
-            protected MeasPoint<CelsiumGrad>[] DegC_Point;
+            protected MeasPoint<Temperature>[] DegC_Point;
 
             /// <summary>
             /// довесок к формуле погрешности- число единиц младшего разряда
@@ -4339,7 +4339,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Разарешение пределеа измерения (последний значащий разряд)
             /// </summary>
-            protected MeasPoint<CelsiumGrad> RangeResolution;
+            protected MeasPoint<Temperature> RangeResolution;
 
             #endregion
 
@@ -4377,7 +4377,7 @@ namespace APPA_107N_109N
                 OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
-                DataRow = new List<IBasicOperation<MeasPoint<CelsiumGrad>>>();
+                DataRow = new List<IBasicOperation<MeasPoint<Temperature>>>();
                 Sheme = new ShemeImage
                 {
                     AssemblyLocalName = inDirectory,
@@ -4397,7 +4397,7 @@ namespace APPA_107N_109N
                 foreach (var row in DataRow)
                 {
                     var dataRow = dataTable.NewRow();
-                    var dds = row as BasicOperationVerefication<MeasPoint<CelsiumGrad>>;
+                    var dds = row as BasicOperationVerefication<MeasPoint<Temperature>>;
                     // ReSharper disable once PossibleNullReferenceException
                     if (dds == null) continue;
                     dataRow[0] = dds.Expected?.Description;
@@ -4439,7 +4439,7 @@ namespace APPA_107N_109N
 
                 foreach (var currPoint in DegC_Point)
                 {
-                    var operation = new BasicOperationVerefication<MeasPoint<CelsiumGrad>>();
+                    var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
                     operation.InitWork = async () =>
                     {
                         try
@@ -4526,7 +4526,7 @@ namespace APPA_107N_109N
                             MathStatistics.Round(ref measurePoint, mantisa);
 
                             operation.Getting =
-                                new MeasPoint<CelsiumGrad>(measurePoint);
+                                new MeasPoint<Temperature>(measurePoint);
                             operation.Expected = currPoint;
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
@@ -4539,7 +4539,7 @@ namespace APPA_107N_109N
                                     );
 
                                 MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<CelsiumGrad>(result, currPoint.MainPhysicalQuantity.Multiplier);
+                                return new MeasPoint<Temperature>(result, currPoint.MainPhysicalQuantity.Multiplier);
                             };
 
                             operation.LowerTolerance = operation.Expected - operation.Error;
@@ -4569,7 +4569,7 @@ namespace APPA_107N_109N
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<CelsiumGrad>>) operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Temperature>>) operation.Clone());
                 }
             }
 
@@ -4584,7 +4584,7 @@ namespace APPA_107N_109N
             {
                 OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationRangeNominal = inRangeNominal;
-                RangeResolution = new MeasPoint<CelsiumGrad>(100, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Temperature>(100, UnitMultiplier.Mili);
                 Name = "-200 ⁰C ... -100 ⁰C";
 
                 BaseTolCoeff = (decimal) 0.001;
@@ -4592,8 +4592,8 @@ namespace APPA_107N_109N
 
                 DegC_Point = new[]
                 {
-                    new MeasPoint<CelsiumGrad>(-200),
-                    new MeasPoint<CelsiumGrad>(-100)
+                    new MeasPoint<Temperature>(-200),
+                    new MeasPoint<Temperature>(-100)
                 };
             }
 
@@ -4616,7 +4616,7 @@ namespace APPA_107N_109N
             {
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeNominal = inRangeNominal;
-                RangeResolution = new MeasPoint<CelsiumGrad>(100, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Temperature>(100, UnitMultiplier.Mili);
                 Name = "-100 ⁰C ... 400 ⁰C";
 
                 BaseTolCoeff = (decimal) 0.001;
@@ -4624,8 +4624,8 @@ namespace APPA_107N_109N
 
                 DegC_Point = new[]
                 {
-                    new MeasPoint<CelsiumGrad>(0),
-                    new MeasPoint<CelsiumGrad>(100)
+                    new MeasPoint<Temperature>(0),
+                    new MeasPoint<Temperature>(100)
                 };
             }
 
@@ -4648,7 +4648,7 @@ namespace APPA_107N_109N
             {
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeNominal = inRangeNominal;
-                RangeResolution = new MeasPoint<CelsiumGrad>(1);
+                RangeResolution = new MeasPoint<Temperature>(1);
                 Name = "400 ⁰C ... 1200 ⁰C";
 
                 BaseTolCoeff = (decimal) 0.001;
@@ -4656,9 +4656,9 @@ namespace APPA_107N_109N
 
                 DegC_Point = new[]
                 {
-                    new MeasPoint<CelsiumGrad>(500),
-                    new MeasPoint<CelsiumGrad>(800),
-                    new MeasPoint<CelsiumGrad>(1200)
+                    new MeasPoint<Temperature>(500),
+                    new MeasPoint<Temperature>(800),
+                    new MeasPoint<Temperature>(1200)
                 };
             }
 
