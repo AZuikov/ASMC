@@ -543,11 +543,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <returns></returns>
                     public  CalibrMain SetValue(decimal value)
                     {
-                        MeasPoint<CelsiumGrad> setPoint = new MeasPoint<CelsiumGrad>(value, UnitMultiplier.None);
+                        MeasPoint<Temperature> setPoint = new MeasPoint<Temperature>(value, UnitMultiplier.None);
                         return SetValue(setPoint);
                     }
 
-                    public CalibrMain SetValue(MeasPoint<CelsiumGrad> inPoint)
+                    public CalibrMain SetValue(MeasPoint<Temperature> inPoint)
                     {
                         string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))} CEL";
                            
