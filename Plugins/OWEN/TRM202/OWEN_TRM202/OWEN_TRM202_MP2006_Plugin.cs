@@ -19,30 +19,30 @@ using NLog;
 
 namespace OWEN_TRM202
 {
-    public class TRM202_Plugin : Program<Operation>
+    public class OWEN_TRM202_MP2006_Plugin : Program<Operation2006>
     {
-        public TRM202_Plugin(ServicePack service) : base(service)
+        public OWEN_TRM202_MP2006_Plugin(ServicePack service) : base(service)
         {
-            Grsi = "32478-06";
+            Grsi = "32478-06 (МП2006)";
             Type = "ТРМ202";
         }
     }
 
-    public class Operation : OperationMetrControlBase
+    public class Operation2006 : OperationMetrControlBase
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
-        public Operation(ServicePack servicePac)
+        public Operation2006(ServicePack servicePac)
         {
             //это операция первичной поверки
-            UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePac);
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf2006(servicePac);
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
         }
     }
 
-    public class OpertionFirsVerf : ASMC.Core.Model.Operation
+    public class OpertionFirsVerf2006 : ASMC.Core.Model.Operation
     {
-        public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
+        public OpertionFirsVerf2006(ServicePack servicePack) : base(servicePack)
         {
             //Необходимые устройства
             ControlDevices = new IDeviceUi[]
