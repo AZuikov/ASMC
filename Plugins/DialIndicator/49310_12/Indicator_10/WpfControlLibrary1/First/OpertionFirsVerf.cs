@@ -39,6 +39,7 @@ namespace mp2192_92.DialIndicator.First
                 new RangeIndications(this),
                 new VariationReading(this),
                 new DeterminationError(this),
+                new Determination_01Error(this)
 
             };
             DocumentName = "ИЧ-10 Первичная МП 2192-92";

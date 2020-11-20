@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -54,121 +55,121 @@ namespace mp2192_92.DialIndicator
         {
         }
 
-        #region Nested type: SettingTableViewModel
+        //#region Nested type: SettingTableViewModel
 
-        protected class SettingTableViewModel
-        {
-            #region Field
+        //protected class SettingTableViewModel
+        //{
+        //    #region Field
 
-            /// <summary>
-            ///     Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal" />
-            /// </summary>
-            public int? Breaking;
+        //    /// <summary>
+        //    ///     Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal" />
+        //    /// </summary>
+        //    public int? Breaking;
 
-            /// <summary>
-            ///     Форматирование яческий
-            /// </summary>
-            public string CellFormat;
+        //    /// <summary>
+        //    ///     Форматирование яческий
+        //    /// </summary>
+        //    public string CellFormat;
 
-            /// <summary>
-            ///     Расположение ячеек горизонтальное
-            /// </summary>
-            public bool IsHorizontal = true;
+        //    /// <summary>
+        //    ///     Расположение ячеек горизонтальное
+        //    /// </summary>
+        //    public bool IsHorizontal = true;
 
-            #endregion
-        }
+        //    #endregion
+        //}
 
-        #endregion
+        //#endregion
 
         #region Methods
 
-        /// <summary>
-        ///     Создает VM
-        /// </summary>
-        /// <param name="name">Наименование таблицы</param>
-        /// <param name="measPoints">Массив измерительных точек</param>
-        /// <param name="setting"></param>
-        /// <returns></returns>
-        protected TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints,
-            SettingTableViewModel setting)
-        {
-            var table = new TableViewModel {Header = name};
-            var columnIndex = 0;
-            var rowIndex = 0;
-            foreach (var t in measPoints)
-            {
-                table.Cells.Add(new Cell
-                {
-                    ColumnIndex = columnIndex, RowIndex = rowIndex, Name = t.Description,
-                    StringFormat = @"{0} " + setting?.CellFormat
-                });
-                if (setting.IsHorizontal)
-                {
-                    columnIndex++;
-                    if (setting.Breaking == null) continue;
-                    if (columnIndex % setting.Breaking != 0) continue;
-                    rowIndex++;
-                    columnIndex = 0;
-                }
-                else
-                {
-                    rowIndex++;
-                    if (setting.Breaking == null) continue;
-                    if (rowIndex % setting.Breaking != 0) continue;
-                    columnIndex++;
-                    rowIndex = 0;
-                }
-            }
+        ///// <summary>
+        /////     Создает VM
+        ///// </summary>
+        ///// <param name="name">Наименование таблицы</param>
+        ///// <param name="measPoints">Массив измерительных точек</param>
+        ///// <param name="setting"></param>
+        ///// <returns></returns>
+        //protected TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints,
+        //    SettingTableViewModel setting)
+        //{
+        //    var table = new TableViewModel {Header = name};
+        //    var columnIndex = 0;
+        //    var rowIndex = 0;
+        //    foreach (var t in measPoints)
+        //    {
+        //        table.Cells.Add(new Cell
+        //        {
+        //            ColumnIndex = columnIndex, RowIndex = rowIndex, Name = t.Description,
+        //            StringFormat = @"{0} " + setting?.CellFormat
+        //        });
+        //        if (setting.IsHorizontal)
+        //        {
+        //            columnIndex++;
+        //            if (setting.Breaking == null) continue;
+        //            if (columnIndex % setting.Breaking != 0) continue;
+        //            rowIndex++;
+        //            columnIndex = 0;
+        //        }
+        //        else
+        //        {
+        //            rowIndex++;
+        //            if (setting.Breaking == null) continue;
+        //            if (rowIndex % setting.Breaking != 0) continue;
+        //            columnIndex++;
+        //            rowIndex = 0;
+        //        }
+        //    }
 
-            return table;
-        }
+        //    return table;
+        //}
 
-        /// <summary>
-        ///     Создает VM
-        /// </summary>
-        /// <param name="name">Наименование таблицы</param>
-        /// <param name="measPoints">Массив измерительных точек</param>
-        /// <param name="setting"></param>
-        /// <returns></returns>
-        protected TableViewModel CreateTable(string name, string[] measPoints,
-            SettingTableViewModel setting)
-        {
-            var table = new TableViewModel { Header = name };
-            var columnIndex = 0;
-            var rowIndex = 0;
-            foreach (var t in measPoints)
-            {
-                table.Cells.Add(new Cell
-                {
-                    ColumnIndex = columnIndex,
-                    RowIndex = rowIndex,
-                    Name = t,
-                    StringFormat = @"{0} " + setting?.CellFormat
-                });
-                if (setting.IsHorizontal)
-                {
-                    columnIndex++;
-                    if (setting.Breaking == null) continue;
-                    if (columnIndex % setting.Breaking == 0)
-                    {
-                        rowIndex++;
-                        columnIndex = 0;
-                    }
-                }
-                else
-                {
-                    rowIndex++;
-                    if (setting.Breaking == null) continue;
-                    if (rowIndex % setting.Breaking == 0)
-                    {
-                        columnIndex++;
-                        rowIndex = 0;
-                    }
-                }
-            }
+        ///// <summary>
+        /////     Создает VM
+        ///// </summary>
+        ///// <param name="name">Наименование таблицы</param>
+        ///// <param name="measPoints">Массив измерительных точек</param>
+        ///// <param name="setting"></param>
+        ///// <returns></returns>
+        //protected TableViewModel CreateTable(string name, string[] measPoints,
+        //    SettingTableViewModel setting)
+        //{
+        //    var table = new TableViewModel { Header = name };
+        //    var columnIndex = 0;
+        //    var rowIndex = 0;
+        //    foreach (var t in measPoints)
+        //    {
+        //        table.Cells.Add(new Cell
+        //        {
+        //            ColumnIndex = columnIndex,
+        //            RowIndex = rowIndex,
+        //            Name = t,
+        //            StringFormat = @"{0} " + setting?.CellFormat
+        //        });
+        //        if (setting.IsHorizontal)
+        //        {
+        //            columnIndex++;
+        //            if (setting.Breaking == null) continue;
+        //            if (columnIndex % setting.Breaking == 0)
+        //            {
+        //                rowIndex++;
+        //                columnIndex = 0;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            rowIndex++;
+        //            if (setting.Breaking == null) continue;
+        //            if (rowIndex % setting.Breaking == 0)
+        //            {
+        //                columnIndex++;
+        //                rowIndex = 0;
+        //            }
+        //        }
+        //    }
 
-            return table;
-        }
+        //    return table;
+        //}
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -365,10 +366,10 @@ namespace mp2192_92.DialIndicator
             {
                
                 var nameCell = "г"; /*Форматирование ячеек в таблице*/
-                var setting = new SettingTableViewModel { CellFormat = nameCell };
-                var first = CreateTable("Прямой ход", arrPoints, setting);
-                var too = CreateTable("Обратный ход", arrReversePoint, setting);
-                var tree = CreateTable("Прямой/обратный ход", arrstraightReversePoint, setting);
+                var setting = new TableViewModel.SettingTableViewModel { CellFormat = nameCell };
+                var first = TableViewModel.CreateTable("Прямой ход", arrPoints, setting);
+                var too = TableViewModel.CreateTable("Обратный ход", arrReversePoint, setting);
+                var tree = TableViewModel.CreateTable("Прямой/обратный ход", arrstraightReversePoint, setting);
                 var vm = new MeasuringForceViewModel();
                 vm.Content.Add(first);
                 vm.Content.Add(too);
@@ -542,8 +543,8 @@ namespace mp2192_92.DialIndicator
 
 
                 var vm = new OneTableViewModel();
-                vm.Data = CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints,
-                    new SettingTableViewModel { IsHorizontal = false });
+                vm.Data = TableViewModel.CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints,
+                    new TableViewModel.SettingTableViewModel { IsHorizontal = false });
                 Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
                 Service.DocumentType = "OneTableView";
@@ -657,10 +658,10 @@ namespace mp2192_92.DialIndicator
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
             
-                var setting = new SettingTableViewModel { Breaking = 5, CellFormat = "мкм" };
+                var setting = new TableViewModel.SettingTableViewModel { Breaking = 5, CellFormat = "мкм" };
                 
                 var vm = new OneTableViewModel();
-                vm.Data = CreateTable("Показания при арретировании", arrPoints,
+                vm.Data = TableViewModel.CreateTable("Показания при арретировании", arrPoints,
                     setting);
                 Service.Title = Name;
                 Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
@@ -778,7 +779,7 @@ namespace mp2192_92.DialIndicator
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
                 var service = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
-                var setting = new SettingTableViewModel { Breaking = 2, CellFormat = "мкм" };
+                var setting = new TableViewModel.SettingTableViewModel { Breaking = 2, CellFormat = "мкм" };
 
 
                 var rm1 = new WorkInPpiViewModel();
@@ -788,7 +789,7 @@ namespace mp2192_92.DialIndicator
                 rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
                 var ppi = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as Ppi != null);
                 rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
-                rm1.Content = CreateTable("Определение вариации показаний", arrPoints, setting);
+                rm1.Content = TableViewModel.CreateTable("Определение вариации показаний",  arrPoints, setting);
                 service.Title = Name;
                 service.ViewModel = rm1;
                 service.DocumentType = "RangeIcdicationView";
@@ -857,25 +858,32 @@ namespace mp2192_92.DialIndicator
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
                 var freeWindow = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
-                var setting = new SettingTableViewModel();
+                var setting = new TableViewModel.SettingTableViewModel();
                 setting.Breaking = 5;
                 setting.CellFormat = "мкм";
-                var rm1 = new WorkInPpiViewModel();
+                var viewModel = new WorkInPpiViewModel();
 
                 var webCam = UserItemOperation.ControlDevices.FirstOrDefault(q =>
                     (q.SelectedDevice as IControlPannelDevice)?.Device as WebCam != null);
-                rm1.WebCam.WebCam = (webCam.SelectedDevice as IControlPannelDevice).Device as WebCam;
-                rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
                 var ppi = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as Ppi != null);
-                rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
-                rm1.Content = CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм",
-                    measpoint.ToArray(), setting);
+                if (ppi != null)
+                {
+                    viewModel.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
+                }
+                if (webCam != null)
+                {
+                    viewModel.WebCam.WebCam = (webCam.SelectedDevice as IControlPannelDevice)?.Device as WebCam;
+                    viewModel.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
+                }
+
+                viewModel.Content = TableViewModel.CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм",
+                     measpoint.ToArray(), setting);
                 freeWindow.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
-                freeWindow.ViewModel = rm1;
+                freeWindow.ViewModel = viewModel;
                 freeWindow.DocumentType = "RangeIcdicationView";
                 freeWindow.Show();
 
-                arrPoints = rm1.Content.Cells
+                arrPoints = viewModel.Content.Cells
                     .Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
             };
             operation.BodyWorkAsync = () =>
@@ -915,7 +923,7 @@ namespace mp2192_92.DialIndicator
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return base.GenerateDataColumnTypeObject();
+            return new[] { "Участок индикатора", "0", "20", "40", "60", "80", "0", "На любом участке 1 мм", "На всём диапазоне измерений", "На любом участке в 1 мм", "На всём диапазоне измерений" }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         /// <inheritdoc />
@@ -931,7 +939,7 @@ namespace mp2192_92.DialIndicator
     #region First
     /// <summary>
     /// Предоставляет реализацию проверки присоеденительного диаметра
-    /// </summary>
+    /// </summary>  
     public sealed class ConnectionDiametr : MainIchProcedur<object>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -953,9 +961,9 @@ namespace mp2192_92.DialIndicator
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
-                var setting = new SettingTableViewModel { Breaking = 1, CellFormat = "мкм" };
+                var setting = new TableViewModel.SettingTableViewModel { Breaking = 1, CellFormat = "мкм" };
                 var vm = new OneTableViewModel();
-                    vm.Data = CreateTable("Присоединительный диаметр", arrPoints, setting);
+                    vm.Data = TableViewModel.CreateTable("Присоединительный диаметр", arrPoints, setting);
                     Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
                 Service.DocumentType = "OneTableView";
@@ -985,7 +993,10 @@ namespace mp2192_92.DialIndicator
             };
             operation.ErrorCalculation = (exped, getting) =>
             {
-                return DataRow.Select(q =>q.Getting as MeasPoint<Length>).Max() - DataRow.Select(q => q.Getting as MeasPoint<Length>).Min();
+                var res = (DataRow.Select(q => q.Getting as MeasPoint<Length>).Max() -
+                           DataRow.Select(q => q.Getting as MeasPoint<Length>).Min());
+                res.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
+                return res;
             };
             DataRow.Add(operation);
         }
@@ -1013,9 +1024,9 @@ namespace mp2192_92.DialIndicator
                 if (dds == null) continue;
                 dataRow[0] = dds.Expected;
                 dataRow[1] = IchBase.ConnectDiametr.Range.End.Description;
-                dataRow[2] = (dds.Expected as MeasPoint<Length>).Description;
+                dataRow[2] = (dds.Getting as MeasPoint<Length>).Description;
                 dataRow[3] = (dds.Error as MeasPoint<Length>).Description;
-                dataRow[4] = IchBase.ConnectDiametr.MaxDelta;
+                dataRow[4] = IchBase.ConnectDiametr.MaxDelta.Description;
                 if (dds.IsGood == null)
                     dataRow[5] = ConstNotUsed;
                 else
@@ -1025,12 +1036,17 @@ namespace mp2192_92.DialIndicator
 
             return dataTable;
         }
-    }
+    } //todo готово
     /// <summary>
     /// Предотсавляет реализацию проерку  шероховатости наружной поверхности гильзы.
     /// </summary>
     public sealed class LinerRoughness : MainIchProcedur<bool>
     {
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
+        }
         /// <inheritdoc />
         public LinerRoughness(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1057,13 +1073,17 @@ namespace mp2192_92.DialIndicator
             base.InitWork(token);
             DataRow.Add(new DialogOperationHelp(this, ""));
         }
-    }
-
+    }//todo готово
     /// <summary>
     /// Предотсавляет реализацию проерку  шероховатости поверхности измерительного наконечника.
     /// </summary>
     public sealed class TipRoughness : MainIchProcedur<bool>
     {
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
+        }
         /// <inheritdoc />
         public TipRoughness(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1090,8 +1110,7 @@ namespace mp2192_92.DialIndicator
             base.InitWork(token);
             DataRow.Add(new DialogOperationHelp(this, ""));
         }
-    }
-
+    }//todo готово
     /// <summary>
     /// Предотсавляет реализацию определения ширины стрелки.
     /// </summary>
@@ -1153,7 +1172,7 @@ namespace mp2192_92.DialIndicator
 
 
                 var vm = new OneTableViewModel();
-                vm.Data = CreateTable("Ширина стрелки", new []{"Ширина стрелки"}, new SettingTableViewModel {CellFormat = "мм"});
+                vm.Data = TableViewModel.CreateTable("Ширина стрелки", new []{"Ширина стрелки"}, new TableViewModel.SettingTableViewModel { CellFormat = "мм"});
                 Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
                 Service.DocumentType = "OneTableView";
@@ -1180,8 +1199,9 @@ namespace mp2192_92.DialIndicator
     /// <summary>
     /// Предотсавляет реализацию определения ширины штриха.
     /// </summary>
-    public sealed class StrokeWidch : MainIchProcedur<MeasPoint<Length>>
+    public sealed class StrokeWidch : MainIchProcedur<object>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public StrokeWidch(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1192,6 +1212,52 @@ namespace mp2192_92.DialIndicator
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
+            var operation = new MeasuringOperation<object>();
+            var arrPoints = new[] { "0", "20", "40", "60", "80" };
+            MeasPoint<Length>[] arrGettin = null;
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            {
+
+                var setting = new TableViewModel.SettingTableViewModel { Breaking = 1, CellFormat = "мкм" };
+                var vm = new OneTableViewModel();
+                vm.Data = TableViewModel.CreateTable("Определение ширины штрихов", arrPoints, setting);
+                Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
+                Service.ViewModel = vm;
+                Service.DocumentType = "OneTableView";
+                Service.Show();
+                /*Получаем измерения*/
+                arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
+                    .ToArray();
+            };
+            operation.BodyWorkAsync = () =>
+            {
+                for (var i = 0; i < arrGettin.Length; i++)
+                {
+                    if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
+                    operation.Expected = arrPoints[i];
+                    operation.Getting = arrGettin[i];
+                    Logger.Debug($@"Измеренное {operation.Getting}");
+                    if (i > 0) DataRow.Add(operation);
+                    if (i == 0)
+                    {
+                        operation.IsGood = () =>
+                        {
+                            Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
+                            return operation.Error as MeasPoint<Length> <= IchBase.StrokeWidch.MaxDelta && DataRow.All(q => IchBase.StrokeWidch.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
+                        };
+                    }
+                }
+            };
+            operation.ErrorCalculation = (exped, getting) =>
+            {
+                var res = (DataRow.Select(q => q.Getting as MeasPoint<Length>).Max() -
+                           DataRow.Select(q => q.Getting as MeasPoint<Length>).Min());
+                res.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
+                return res;
+            };
+            DataRow.Add(operation);
         }
 
         /// <inheritdoc />
@@ -1207,10 +1273,28 @@ namespace mp2192_92.DialIndicator
         /// <inheritdoc />
         protected override DataTable FillData()
         {
-            return base.FillData();
-        }
-    }
+            var dataTable = base.FillData();
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as MeasuringOperation<object>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow[0] = dds.Expected;
+                dataRow[1] = IchBase.StrokeWidch.Range.Start.Description +" - "+ IchBase.StrokeWidch.Range.End.Description;
+                dataRow[2] = (dds.Getting as MeasPoint<Length>).Description;
+                dataRow[3] = (dds.Error as MeasPoint<Length>).Description;
+                dataRow[4] = IchBase.StrokeWidch.MaxDelta.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = ConstNotUsed;
+                else
+                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
 
+            return dataTable;
+        }
+    }//todo готово
     /// <summary>
     /// Предотсавляет реализацию определения длинны штриха.
     /// </summary>
@@ -1272,7 +1356,7 @@ namespace mp2192_92.DialIndicator
 
 
                 var vm = new OneTableViewModel();
-                vm.Data = CreateTable("Определение длины деления шкалы", new[] { "Длина деления" }, new SettingTableViewModel { CellFormat = "мм" });
+                vm.Data = TableViewModel.CreateTable("Определение длины деления шкалы", new[] { "Длина деления" }, new TableViewModel.SettingTableViewModel { CellFormat = "мм" });
                 Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
                 Service.DocumentType = "OneTableView";
@@ -1296,13 +1380,203 @@ namespace mp2192_92.DialIndicator
 
         #endregion
     } //todo готово
-
-    public sealed class BetweenArrowDial : MainIchProcedur<MeasPoint<Length>>
+    /// <summary>
+    /// Предотсавляет реализацию определения расстояния между концом стрелки и циферблатом.
+    /// </summary>
+    public sealed class BetweenArrowDial : MainIchProcedur<object>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public BetweenArrowDial(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение расстояния между концом стрелки и циферблатом.";
+        }
+        /// <inheritdoc />
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            var operation = new MeasuringOperation<object>();
+            var arrPoints = new[] { "1 – е", "2 – е", "3 – е", "4 – е" };
+            MeasPoint<Length>[] arrGettin = null;
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            {
+
+                var setting = new TableViewModel.SettingTableViewModel { Breaking = 1, CellFormat = "мкм" };
+                var vm = new OneTableViewModel();
+                vm.Data = TableViewModel.CreateTable("пределение расстояния между концом стрелки и циферблатом.", arrPoints, setting);
+                Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
+                Service.ViewModel = vm;
+                Service.DocumentType = "OneTableView";
+                Service.Show();
+                /*Получаем измерения*/
+                arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
+                    .ToArray();
+            };
+            operation.BodyWorkAsync = () =>
+            {
+                for (var i = 0; i < arrGettin.Length; i++)
+                {
+                    if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
+                    operation.Expected = arrPoints[i];
+                    operation.Getting = arrGettin[i];
+                    Logger.Debug($@"Измеренное {operation.Getting}");
+                    if (i > 0) DataRow.Add(operation);
+                    if (i == 0)
+                    {
+                        operation.IsGood = () =>
+                        {
+                            Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
+                            return operation.Error as MeasPoint<Length> <= IchBase.BetweenArrowDial;
+                        };
+                    }
+                }
+            };
+            operation.ErrorCalculation = (exped, getting) =>
+            {
+                var res = DataRow.Select(q => q.Getting as MeasPoint<Length>).Max();
+                res.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
+                return res;
+            };
+            DataRow.Add(operation);
+        }
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]{ "Измерение расстояния между концом стрелки и циферблатом",
+                "Расстояние между концом стрелки и циферблатом",
+                "Наибольшее расстояние между концом стрелки и циферблатом",
+                "Максимальное допустимое расстояние",}.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as MeasuringOperation<object>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow[0] = dds.Expected;
+                dataRow[1] = (dds.Getting as MeasPoint<Length>).Description;
+                dataRow[2] = (dds.Error as MeasPoint<Length>).Description;
+                dataRow[3] = IchBase.BetweenArrowDial.Description;
+                if (dds.IsGood == null)
+                    dataRow[4] = ConstNotUsed;
+                else
+                    dataRow[4] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+    }//todo готово
+
+
+    /// <summary>
+    ///     Предоставляет реализацию определение погрешности на участке 1 мм.
+    /// </summary>
+    public sealed class Determination_01Error : MainIchProcedur<MeasPoint<Length>[]>
+    {
+        /// <inheritdoc />
+        public Determination_01Error(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности на всем диапазоне и на участке 0,1 мм.";
+        }
+
+        /// <param name="token"></param>
+        /// <inheritdoc />
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            var operation = new MeasuringOperation<MeasPoint<Length>[]>();
+            MeasPoint<Length>[] arrPoints = null;
+            var first = (MeasPoint<Length>)EndRange.GetArayMeasPointsInParcent(10).First();
+            var mid = ((MeasPoint<Length>)EndRange.GetArayMeasPointsInParcent(50).First())-0.05m;
+            var last = (MeasPoint<Length>)EndRange.GetArayMeasPointsInParcent(90).First();
+
+            List<MeasPoint<Length>> measpointarr = new List<MeasPoint<Length>>(15);
+            FillMeasPoints(first, ref measpointarr);
+            FillMeasPoints(mid, ref measpointarr);
+            FillMeasPoints(last, ref measpointarr);
+            void FillMeasPoints(MeasPoint<Length> start, ref List<MeasPoint<Length>> measpoint)
+            {
+                for (var i = start; i <= start + 0.1m; i += 0.02m)
+                    measpoint.Add(i);
+            }
+           
+
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            operation.InitWork = async () =>
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+            {
+                var freeWindow = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+                var setting = new TableViewModel.SettingTableViewModel();
+                setting.Breaking = 6;
+                setting.CellFormat = "мкм";
+                var viewModel = new WorkInPpiViewModel();
+
+                var webCam = UserItemOperation.ControlDevices.FirstOrDefault(q =>
+                    (q.SelectedDevice as IControlPannelDevice)?.Device as WebCam != null);
+              
+              
+                var ppi = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as Ppi != null);
+                if (ppi != null)
+                {
+                    viewModel.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
+                }
+                if (webCam != null)
+                {
+                    viewModel.WebCam.WebCam = (webCam.SelectedDevice as IControlPannelDevice)?.Device as WebCam;
+                    viewModel.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
+                }
+                viewModel.Content = TableViewModel.CreateTable("Определение погрешности на всем диапазоне и на участке 1 мм",
+                    measpointarr.ToArray(), setting);
+                freeWindow.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                freeWindow.ViewModel = viewModel;
+                freeWindow.DocumentType = "RangeIcdicationView";
+                freeWindow.Show();
+
+                arrPoints = viewModel.Content.Cells
+                    .Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
+            };
+            operation.BodyWorkAsync = () =>
+            {
+                for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
+                {
+                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                        operation.Expected = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
+                            .Concat(arrPoints.Skip(i * 6).Take(6)).ToArray();
+                        operation.Getting = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
+                            .Concat(measpointarr.Skip(i * 6).Take(6)).ToArray();
+                        if (i > 0) DataRow.Add(operation);
+                }
+            };
+            operation.ErrorCalculation = (expected, getting) =>
+            {
+                var a = expected.Select((t, index) => t - getting[index]).ToArray();
+
+                var res = (a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
+                return new[] { new MeasPoint<Length>(res) };
+            };
+
+            DataRow.Add(operation);
+        }
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new []{ "Участок индикатора", "0", "20", "40", "60", "80", "100", "На любом участке 0.1 мм", "На допуск любом участке в 0.1 мм"} 
+                .Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            
+            return base.FillData();
         }
     }
     #endregion

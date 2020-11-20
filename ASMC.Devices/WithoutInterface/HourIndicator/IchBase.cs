@@ -79,9 +79,13 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
         public MeasPoint<Length> StrokeLength { get; protected set; }
 
         /// <summary>
-        ///   Позволяет получить 
+        ///   Позволяет получить допуски для присоеденительного диаметра.
         /// </summary>
-        public ConnectionDiametr ConnectDiametr { get; protected set; } = new ConnectionDiametr();
+        public RangeAndDelta ConnectDiametr { get; protected set; } = new RangeAndDelta();
+        /// <summary>
+        ///   Позволяет получить допуски для присоеденительного диаметра.
+        /// </summary>
+        public RangeAndDelta StrokeWidch { get; protected set; } = new RangeAndDelta();
         /// <summary>
         /// Максимальное допутсимое усилие
         /// </summary>
@@ -107,7 +111,7 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
             #endregion
         }
 
-        public class ConnectionDiametr
+        public class RangeAndDelta
         {
             public PhysicalRange<Length> Range { get; set; }
             public MeasPoint<Length> MaxDelta { get; set; }
@@ -140,6 +144,8 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
                 new MeasPoint<Length>(8, UnitMultiplier.Mili));
             ConnectDiametr.MaxDelta = new MeasPoint<Length>(8, UnitMultiplier.Micro);
             BetweenArrowDial = new MeasPoint<Length>(0.7m, UnitMultiplier.Mili);
+            StrokeWidch.MaxDelta = new MeasPoint<Length>(50, UnitMultiplier.Micro);
+            StrokeWidch.Range = new PhysicalRange<Length>(new MeasPoint<Length>(0.15m, UnitMultiplier.Mili), new MeasPoint<Length>(0.25m, UnitMultiplier.Mili));
         }
 
     }

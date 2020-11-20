@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using ASMC.Core.ViewModel;
+using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Data.Model.PhysicalQuantity;
 using DevExpress.Mvvm;
 
 namespace ASMC.Common.ViewModel
@@ -65,5 +67,116 @@ namespace ASMC.Common.ViewModel
 
         #endregion
 
+        /// <summary>
+        ///     Создает VM
+        /// </summary>
+        /// <param name="name">Наименование таблицы</param>
+        /// <param name="measPoints">Массив измерительных точек</param>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static TableViewModel CreateTable<T>(string name, IMeasPoint<T>[] measPoints,
+            SettingTableViewModel setting) where T: IPhysicalQuantity
+        {
+            var table = new TableViewModel { Header = name };
+            var columnIndex = 0;
+            var rowIndex = 0;
+            foreach (var t in measPoints)
+            {
+                table.Cells.Add(new Cell
+                {
+                    ColumnIndex = columnIndex,
+                    RowIndex = rowIndex,
+                    Name = t.Description,
+                    StringFormat = @"{0} " + setting?.CellFormat
+                });
+                if (setting.IsHorizontal)
+                {
+                    columnIndex++;
+                    if (setting.Breaking == null) continue;
+                    if (columnIndex % setting.Breaking != 0) continue;
+                    rowIndex++;
+                    columnIndex = 0;
+                }
+                else
+                {
+                    rowIndex++;
+                    if (setting.Breaking == null) continue;
+                    if (rowIndex % setting.Breaking != 0) continue;
+                    columnIndex++;
+                    rowIndex = 0;
+                }
+            }
+
+            return table;
+        }
+
+        /// <summary>
+        ///     Создает VM
+        /// </summary>
+        /// <param name="name">Наименование таблицы</param>
+        /// <param name="measPoints">Массив измерительных точек</param>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static TableViewModel CreateTable(string name, string[] measPoints,
+            SettingTableViewModel setting)
+        {
+            var table = new TableViewModel { Header = name };
+            var columnIndex = 0;
+            var rowIndex = 0;
+            foreach (var t in measPoints)
+            {
+                table.Cells.Add(new Cell
+                {
+                    ColumnIndex = columnIndex,
+                    RowIndex = rowIndex,
+                    Name = t,
+                    StringFormat = @"{0} " + setting?.CellFormat
+                });
+                if (setting.IsHorizontal)
+                {
+                    columnIndex++;
+                    if (setting.Breaking == null) continue;
+                    if (columnIndex % setting.Breaking == 0)
+                    {
+                        rowIndex++;
+                        columnIndex = 0;
+                    }
+                }
+                else
+                {
+                    rowIndex++;
+                    if (setting.Breaking == null) continue;
+                    if (rowIndex % setting.Breaking == 0)
+                    {
+                        columnIndex++;
+                        rowIndex = 0;
+                    }
+                }
+            }
+
+            return table;
+        }
+
+        public class SettingTableViewModel
+        {
+            #region Field
+
+            /// <summary>
+            ///     Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal" />
+            /// </summary>
+            public int? Breaking;
+
+            /// <summary>
+            ///     Форматирование яческий
+            /// </summary>
+            public string CellFormat;
+
+            /// <summary>
+            ///     Расположение ячеек горизонтальное
+            /// </summary>
+            public bool IsHorizontal = true;
+
+            #endregion
+        }
     }
 }

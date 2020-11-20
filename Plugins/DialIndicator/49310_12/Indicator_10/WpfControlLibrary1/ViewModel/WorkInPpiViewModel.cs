@@ -39,11 +39,19 @@ namespace mp2192_92.DialIndicator.ViewModel
             }
         }
 
-        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void _timer_Elapsed(object sender, ElapsedEventArgs args)
         {
             if (Content?.Selected!=null)
             {
-                Content.Selected.Value = Ppi.MeasValue;
+                try
+                {
+                    Content.Selected.Value = Ppi.MeasValue;
+                }
+                catch(Exception e)
+                {
+                    _timer.Elapsed -= _timer_Elapsed;
+                    Alert(e);
+                }
             }
         }
 
