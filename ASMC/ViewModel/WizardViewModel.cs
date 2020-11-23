@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AP.Reports.AutoDocumets;
+using AP.Reports.Utils;
 using ASMC.Common;
 using ASMC.Common.ViewModel;
 using ASMC.Core;
@@ -295,7 +296,7 @@ namespace ASMC.ViewModel
             using (var report = new Word())
             {
                 report.OpenDocument(document);
-
+                bool res = true;
                 var regInsTextByMark = new Regex(@"(^ITBm\w.+)");
                 var regInsTextByReplase = new Regex(@"(^RepT\w.+)");
                 var regInTableByMark = new Regex(@"(^ITabBm\w.+)");
@@ -304,17 +305,21 @@ namespace ASMC.ViewModel
                 {
                     var tree = uio as ITreeNode;
                     if (tree == null) continue;
-                    FillDoc(tree);
+                    if (!FillDoc(tree))
+                    {
+                        res = false;
+                    }
                 }
 
+                report.FindStringAndReplace("Result", res?"Пригоден к применению":"Не пригоден к применению");
                 path = GetUniqueFileName(".docx");
                 report.SaveAs(path);
                 Logger.Info($@"Протокол сформирован по пути {path}");
 
-                void FillDoc(ITreeNode userItem)
+                bool FillDoc(ITreeNode userItem)
                 {
+                    bool result = true;
                     var n = userItem as IUserItemOperationBase;
-
                     if (n?.Data != null)
                     {
                         var markName = n.Data.TableName;
@@ -334,8 +339,21 @@ namespace ASMC.ViewModel
                         }
                     }
 
-                    foreach (var node in userItem.Nodes) FillDoc(node);
+                    if (n.IsGood==false)
+                    {
+                        result = false;
+                    }
+                    foreach (var node in userItem.Nodes)
+                    {
+                        if (n.IsGood == FillDoc(node))
+                        {
+                            result = false;
+                        }
+                    }
+
+                    return result;
                 }
+
             }
 
             Process.Start(path);

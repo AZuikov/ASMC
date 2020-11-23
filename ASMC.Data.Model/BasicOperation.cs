@@ -151,7 +151,7 @@ namespace ASMC.Data.Model
     public class MeasuringOperation<T> : BasicOperation <T>, IMeasuringOperation<T> 
     {
         /// <inheritdoc />
-        public T Error => ErrorCalculation(Getting, Expected);
+        public T Error => ErrorCalculation(Expected,Getting);
 
         /// <inheritdoc />
         public Func<T, T, T> ErrorCalculation

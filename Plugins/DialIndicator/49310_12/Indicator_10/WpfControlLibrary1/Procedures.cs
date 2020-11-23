@@ -55,121 +55,10 @@ namespace mp2192_92.DialIndicator
         {
         }
 
-        //#region Nested type: SettingTableViewModel
-
-        //protected class SettingTableViewModel
-        //{
-        //    #region Field
-
-        //    /// <summary>
-        //    ///     Рабите ячеек на столцы/строки в зависимости от <see cref="IsHorizontal" />
-        //    /// </summary>
-        //    public int? Breaking;
-
-        //    /// <summary>
-        //    ///     Форматирование яческий
-        //    /// </summary>
-        //    public string CellFormat;
-
-        //    /// <summary>
-        //    ///     Расположение ячеек горизонтальное
-        //    /// </summary>
-        //    public bool IsHorizontal = true;
-
-        //    #endregion
-        //}
-
-        //#endregion
+     
 
         #region Methods
 
-        ///// <summary>
-        /////     Создает VM
-        ///// </summary>
-        ///// <param name="name">Наименование таблицы</param>
-        ///// <param name="measPoints">Массив измерительных точек</param>
-        ///// <param name="setting"></param>
-        ///// <returns></returns>
-        //protected TableViewModel CreateTable(string name, IMeasPoint<Length>[] measPoints,
-        //    SettingTableViewModel setting)
-        //{
-        //    var table = new TableViewModel {Header = name};
-        //    var columnIndex = 0;
-        //    var rowIndex = 0;
-        //    foreach (var t in measPoints)
-        //    {
-        //        table.Cells.Add(new Cell
-        //        {
-        //            ColumnIndex = columnIndex, RowIndex = rowIndex, Name = t.Description,
-        //            StringFormat = @"{0} " + setting?.CellFormat
-        //        });
-        //        if (setting.IsHorizontal)
-        //        {
-        //            columnIndex++;
-        //            if (setting.Breaking == null) continue;
-        //            if (columnIndex % setting.Breaking != 0) continue;
-        //            rowIndex++;
-        //            columnIndex = 0;
-        //        }
-        //        else
-        //        {
-        //            rowIndex++;
-        //            if (setting.Breaking == null) continue;
-        //            if (rowIndex % setting.Breaking != 0) continue;
-        //            columnIndex++;
-        //            rowIndex = 0;
-        //        }
-        //    }
-
-        //    return table;
-        //}
-
-        ///// <summary>
-        /////     Создает VM
-        ///// </summary>
-        ///// <param name="name">Наименование таблицы</param>
-        ///// <param name="measPoints">Массив измерительных точек</param>
-        ///// <param name="setting"></param>
-        ///// <returns></returns>
-        //protected TableViewModel CreateTable(string name, string[] measPoints,
-        //    SettingTableViewModel setting)
-        //{
-        //    var table = new TableViewModel { Header = name };
-        //    var columnIndex = 0;
-        //    var rowIndex = 0;
-        //    foreach (var t in measPoints)
-        //    {
-        //        table.Cells.Add(new Cell
-        //        {
-        //            ColumnIndex = columnIndex,
-        //            RowIndex = rowIndex,
-        //            Name = t,
-        //            StringFormat = @"{0} " + setting?.CellFormat
-        //        });
-        //        if (setting.IsHorizontal)
-        //        {
-        //            columnIndex++;
-        //            if (setting.Breaking == null) continue;
-        //            if (columnIndex % setting.Breaking == 0)
-        //            {
-        //                rowIndex++;
-        //                columnIndex = 0;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            rowIndex++;
-        //            if (setting.Breaking == null) continue;
-        //            if (rowIndex % setting.Breaking == 0)
-        //            {
-        //                columnIndex++;
-        //                rowIndex = 0;
-        //            }
-        //        }
-        //    }
-
-        //    return table;
-        //}
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -722,20 +611,20 @@ namespace mp2192_92.DialIndicator
             var dataTable = base.FillData();
             foreach (var row in DataRow)
             {
-                //var dataRow = dataTable.NewRow();
-                //var dds = row as MeasuringOperation<MeasPoint<Length>[]>;
-                //// ReSharper disable once PossibleNullReferenceException
-                //if (dds == null) continue;
+                var dataRow = dataTable.NewRow();
+                var dds = row as MeasuringOperation<MeasPoint<Length>[]>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
 
-                //dataRow[0] = dds.Expected.ToString();
-                //for (var i = 0; i < 5; i++) dataRow[i + 1] = dds.Getting[i].ToString();
+                dataRow[0] = dds.Expected.ToString();
+                for (var i = 0; i < 5; i++) dataRow[i + 1] = dds.Getting[i].ToString();
 
-                //dataRow[5] = dds.Error;
-                //if (dds.IsGood == null)
-                //    dataRow[6] = ConstNotUsed;
-                //else
-                //    dataRow[6] = dds.IsGood() ? ConstGood : ConstBad;
-                //dataTable.Rows.Add(dataRow);
+                dataRow[5] = dds.Error;
+                if (dds.IsGood == null)
+                    dataRow[6] = ConstNotUsed;
+                else
+                    dataRow[6] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
             }
 
             return dataTable;
@@ -894,16 +783,16 @@ namespace mp2192_92.DialIndicator
                     if (i == 0)
                     {
                         operation.Expected = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
-                            .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
-                        operation.Getting = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
                             .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
+                        operation.Getting = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
+                            .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
                     }
                     else
                     {
-                        operation.Expected = new[] { arrPoints.Skip(i * 5 - 1).Take(1).First() }
-                            .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
-                        operation.Getting = new[] { measpoint.Skip(i * 5 - 1).Take(1).First() }
+                        operation.Expected = new[] { measpoint.Skip(i * 5 - 1).Take(1).First() }
                             .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
+                        operation.Getting = new[] { arrPoints.Skip(i * 5 - 1).Take(1).First() }
+                                .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
                     }
 
                     if (i > 0) DataRow.Add(operation);
@@ -916,6 +805,14 @@ namespace mp2192_92.DialIndicator
                 var res = (a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
                 return new[] { new MeasPoint<Length>(res) };
             };
+            operation.IsGood = () =>
+            {
+                var full = (DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]) -
+                            DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]));
+                var one = DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]);
+                return full <= new MeasPoint<Length>((decimal) IchBase.RangesFull.AccuracyChatacteristic.Resolution) && one <= new MeasPoint<Length>((decimal)IchBase.RangesFull.Ranges[0].AccuracyChatacteristic.Resolution);
+
+            };
 
             DataRow.Add(operation);
         }
@@ -923,13 +820,38 @@ namespace mp2192_92.DialIndicator
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { "Участок индикатора", "0", "20", "40", "60", "80", "0", "На любом участке 1 мм", "На всём диапазоне измерений", "На любом участке в 1 мм", "На всём диапазоне измерений" }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+            return new[] { "Участок индикатора", "0", "20", "40", "60", "80", "100", "На любом участке 1 мм", "На всём диапазоне измерений", " Допуск на любом участке в 1 мм", "Допуск на всём диапазоне измерений" }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         /// <inheritdoc />
         protected override DataTable FillData()
         {
-            return base.FillData();
+            var dataTable = base.FillData();
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as MeasuringOperation<MeasPoint<Length>[]>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+
+                dataRow[0] = dds.Expected.First().MainPhysicalQuantity.Value + " – " +dds.Expected.Last().Description;
+                for (var i = 0; i < 6; i++) dataRow[i + 1] = dds.Getting[i].Description;
+
+                dataRow[7] = DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]).Description;
+                    dataRow[8] = (DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]) - 
+                                  DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0])).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).ToString();
+                    dataRow[9] =
+                        new MeasPoint<Length>((decimal) IchBase.RangesFull.Ranges[0].AccuracyChatacteristic.Resolution).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).ToString();
+
+                    dataRow[10] = new MeasPoint<Length>((decimal)IchBase.RangesFull.AccuracyChatacteristic.Resolution).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).ToString();
+                if (dds.IsGood == null)
+                    dataRow[11] = ConstNotUsed;
+                else
+                    dataRow[11] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
         }
     }
 
