@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Devices.UInterface.RemoveDevice.ViewModel;
@@ -11,7 +12,7 @@ namespace mp2192_92.DialIndicator.Periodic
 {
     public class OpertionPeriodicVerf<T> : Operation where T : IUserType, new()
     {
-        public OpertionPeriodicVerf(ServicePack servicePac) : base(servicePac)
+        public OpertionPeriodicVerf(string documentName, ServicePack servicePac) : base(servicePac)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -26,6 +27,7 @@ namespace mp2192_92.DialIndicator.Periodic
                     {
                         new T()
                     },
+                    IsCanStringConnect = false,
                     Description = $@"Индикатор частового типа {new T().UserType}"
                 }
             };
@@ -46,14 +48,17 @@ namespace mp2192_92.DialIndicator.Periodic
                 "Граммометр часового типа Г 3,0",
                 "Прибор для поверки индикаторов ППИ-50"
             };
-            DocumentName = "ИЧ-10 Периодическая МП 2192-92";
+            DocumentName = documentName;
         }
 
         /// <inheritdoc />
-        public override void RefreshDevice()
+        public override async void RefreshDevice()
         {
-            AddresDevice = UsbExpressWrapper.FindAllDevice?.Select(q => q.Number.ToString())
-                .Concat(WebCam.GetVideoInputDevice?.Select(q => q.MonikerString) ?? Array.Empty<string>()).ToArray();
+            await Task.Factory.StartNew(() =>
+            {
+                AddresDevice = UsbExpressWrapper.FindAllDevice?.Select(q => q.Number.ToString())
+                    .Concat(WebCam.GetVideoInputDevice?.Select(q => q.MonikerString) ?? Array.Empty<string>()).ToArray();
+            });
         }
 
         /// <inheritdoc />

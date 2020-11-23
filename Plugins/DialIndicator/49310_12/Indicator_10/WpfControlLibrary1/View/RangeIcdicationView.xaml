@@ -9,8 +9,9 @@
              xmlns:ui1="clr-namespace:ASMC.Core.UI;assembly=ASMC.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
     <dxmvvm:Interaction.Behaviors>
-        <ui1:MessageBoxService />
+        <ui1:MessageBoxService  />
     </dxmvvm:Interaction.Behaviors>
     <DockPanel>
         <Grid>

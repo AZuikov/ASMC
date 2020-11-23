@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="First\OpertionFirsVerf.cs" />
-    <Compile Include="DialIndicator_10.cs" />
+    <Compile Include="DialIndicator.cs" />
     <Compile Include="Periodic\OpertionPeriodicVerf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -112,6 +112,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="ИЧ-02 Первичная МП 2192-92.dotx" />
+    <None Include="ИЧ-02 Периодическая МП 2192-92.dotx" />
+    <None Include="ИЧ-03 Первичная МП 2192-92.dotx" />
+    <None Include="ИЧ-03 Периодическая МП 2192-92.dotx" />
     <None Include="ИЧ-10 Первичная МП 2192-92.dotx" />
     <None Include="ИЧ-10 Периодическая МП 2192-92.dotx" />
   </ItemGroup>

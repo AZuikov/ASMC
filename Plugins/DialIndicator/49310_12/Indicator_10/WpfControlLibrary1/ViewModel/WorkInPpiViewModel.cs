@@ -34,7 +34,6 @@ namespace mp2192_92.DialIndicator.ViewModel
             }
             catch (Exception e)
             {
-                Logger.Error(e);
                 Alert(e);
             }
         }
@@ -76,7 +75,6 @@ namespace mp2192_92.DialIndicator.ViewModel
             }
             catch (Exception e)
             {
-                Logger.Error(e);
                 Alert(e);
             }
            

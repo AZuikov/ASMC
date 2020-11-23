@@ -153,12 +153,9 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
     /// <summary>
     /// Предоставляет реализацию индикатора часовога дити с диапазоном 10мм  по <see cref="IchGost577"/>
     /// </summary>
-    public sealed class Ich_10 : IchGost577
+    public abstract class Ich_10_03_02 : IchGost577
     {
-        public Ich_10()
-        {
-            this.UserType = "ИЧ10";
-        }
+       
         /// <inheritdoc />
         protected override MeasPoint<Length> GetArresting(AccuracyClass.Standart currentAccuracyClass)
         {
@@ -191,27 +188,38 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
             }
         }
 
+        
+
+
+    }
+
+    public sealed class Ich_10 : Ich_10_03_02
+    {
+        public Ich_10()
+        {
+            this.UserType = "ИЧ10";
+        }
         /// <param name="currentAccuracyClass"></param>
         /// <inheritdoc />
         protected override RangeStorage<PhysicalRange<Length>> GetRangesFull(
             AccuracyClass.Standart currentAccuracyClass)
         {
             var arr = new List<PhysicalRange<Length>>();
-            double fullRange;
-            double range;
+            decimal fullRange;
+            decimal range;
             switch (currentAccuracyClass)
             {
                 case AccuracyClass.Standart.Zero:
-                    fullRange = 0.15;
-                    range = 0.08;
+                    fullRange = 0.000015m;
+                    range = 0.000008m;
                     break;
                 case AccuracyClass.Standart.First:
-                    fullRange = 0.20;
-                    range = 0.10;
+                    fullRange = 0.000020m;
+                    range = 0.000010m;
                     break;
                 case AccuracyClass.Standart.Second:
-                    fullRange = 0.25;
-                    range = 0.12;
+                    fullRange = 0.000025m;
+                    range = 0.000012m;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(currentAccuracyClass), currentAccuracyClass, null);
@@ -232,9 +240,102 @@ namespace ASMC.Devices.WithoutInterface.HourIndicator
             var ac = new AccuracyChatacteristic((decimal?)fullRange, null, null);
             return new RangeStorage<PhysicalRange<Length>>(ac, arr.ToArray());
         }
-
-
     }
-   
-   
+    public sealed class Ich_03 : Ich_10_03_02
+    {
+        public Ich_03()
+        {
+            this.UserType = "ИЧ03";
+        }
+        /// <param name="currentAccuracyClass"></param>
+        /// <inheritdoc />
+        protected override RangeStorage<PhysicalRange<Length>> GetRangesFull(
+            AccuracyClass.Standart currentAccuracyClass)
+        {
+            var arr = new List<PhysicalRange<Length>>();
+            decimal fullRange;
+            decimal range;
+            switch (currentAccuracyClass)
+            {
+                case AccuracyClass.Standart.Zero:
+                    fullRange = 0.000015m;
+                    range = 0.000008m;
+                    break;
+                case AccuracyClass.Standart.First:
+                    fullRange = 0.000020m;
+                    range = 0.000010m;
+                    break;
+                case AccuracyClass.Standart.Second:
+                    fullRange = 0.000025m;
+                    range = 0.000012m;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(currentAccuracyClass), currentAccuracyClass, null);
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                arr.Add(GeneratoRanges(i - 1, i));
+            }
+
+
+            PhysicalRange<Length> GeneratoRanges(decimal start, decimal end)
+            {
+                var st = new MeasPoint<Length>(new Length(start, UnitMultiplier.Mili));
+                var ed = new MeasPoint<Length>(new Length(end, UnitMultiplier.Mili));
+                return new PhysicalRange<Length>(st, ed, new AccuracyChatacteristic((decimal?)range, null, null));
+            }
+
+            var ac = new AccuracyChatacteristic((decimal?)fullRange, null, null);
+            return new RangeStorage<PhysicalRange<Length>>(ac, arr.ToArray());
+        }
+    }
+    public sealed class Ich_02 : Ich_10_03_02
+    {
+        public Ich_02()
+        {
+            this.UserType = "ИЧ02";
+        }
+        /// <param name="currentAccuracyClass"></param>
+        /// <inheritdoc />
+        protected override RangeStorage<PhysicalRange<Length>> GetRangesFull(
+            AccuracyClass.Standart currentAccuracyClass)
+        {
+            var arr = new List<PhysicalRange<Length>>();
+            decimal fullRange;
+            decimal range;
+            switch (currentAccuracyClass)
+            {
+                case AccuracyClass.Standart.Zero:
+                    fullRange = 0.000015m;
+                    range = 0.000008m;
+                    break;
+                case AccuracyClass.Standart.First:
+                    fullRange = 0.000020m;
+                    range = 0.000010m;
+                    break;
+                case AccuracyClass.Standart.Second:
+                    fullRange = 0.000025m;
+                    range = 0.000012m;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(currentAccuracyClass), currentAccuracyClass, null);
+            }
+            for (int i = 1; i <= 2; i++)
+            {
+                arr.Add(GeneratoRanges(i - 1, i));
+            }
+
+
+            PhysicalRange<Length> GeneratoRanges(decimal start, decimal end)
+            {
+                var st = new MeasPoint<Length>(new Length(start, UnitMultiplier.Mili));
+                var ed = new MeasPoint<Length>(new Length(end, UnitMultiplier.Mili));
+                return new PhysicalRange<Length>(st, ed, new AccuracyChatacteristic((decimal?)range, null, null));
+            }
+
+            var ac = new AccuracyChatacteristic((decimal?)fullRange, null, null);
+            return new RangeStorage<PhysicalRange<Length>>(ac, arr.ToArray());
+        }
+    }
+
 }
