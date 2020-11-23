@@ -92,7 +92,7 @@ namespace ASMC.Data.Model
         [StringValue("NONE")] NONE,
         [StringValue("В")] V,
         [StringValue("А")] I,
-        [StringValue("Ом")] Ohm,
+        [StringValue("Ом")] Resistance,
         [StringValue("Ф")] Far,
         [StringValue("Гц")] Frequency,
         [StringValue("°C")] degC,

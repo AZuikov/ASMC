@@ -26,9 +26,7 @@ namespace ASMC.Common.Behavior
         {
             var tb = (Control) sender;
             SelectValue =tb.DataContext;
-            //SelectValue1.Getting = rnd.NextDouble();
-            //tb.Text = SelectValue1.Getting.ToString();
-            // throw new NotImplementedException();
+            
         }
 
         protected override void OnDetaching()

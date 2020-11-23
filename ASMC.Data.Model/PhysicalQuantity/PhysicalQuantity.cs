@@ -458,20 +458,20 @@ namespace ASMC.Data.Model.PhysicalQuantity
     {
         public Resistance()
         {
-            Units = new[] { MeasureUnits.Ohm };
-            Unit = MeasureUnits.Ohm;
+            Units = new[] { MeasureUnits.Resistance };
+            Unit = MeasureUnits.Resistance;
         }
 
         public Resistance(decimal value): base(value)
         {
-            Units = new[] { MeasureUnits.Ohm };
-            Unit = MeasureUnits.Ohm;
+            Units = new[] { MeasureUnits.Resistance };
+            Unit = MeasureUnits.Resistance;
         }
 
         public Resistance(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
         {
-            Units = new[] { MeasureUnits.Ohm };
-            Unit = MeasureUnits.Ohm;
+            Units = new[] { MeasureUnits.Resistance };
+            Unit = MeasureUnits.Resistance;
         }
     }
 

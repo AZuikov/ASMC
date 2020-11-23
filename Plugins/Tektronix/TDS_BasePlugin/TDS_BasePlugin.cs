@@ -445,7 +445,7 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
                     }
                 };
-                operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => Task.FromResult(operation.IsGood());//Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
@@ -646,7 +646,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => Task.FromResult(operation.IsGood());//Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone());
@@ -905,7 +905,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => Task.FromResult(operation.IsGood());//Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<object>) operation.Clone());

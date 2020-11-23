@@ -870,7 +870,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
                 {
                     double setVertScale = inScale.GetUnitMultipliersValue().GetDoubleValue() * inScale.GetDoubleValue();
                     _tdsOscilloscope
-                       .WriteLine($"{chanel}:scale {setVertScale.ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
+                       .WriteLine($"{chanel}:scale {setVertScale.ToString().Replace(',', '.')}");
                     return _tdsOscilloscope;
                 }
 
@@ -1058,7 +1058,7 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             public TDS_Oscilloscope SetHorizontalScale(HorizontalSCAle inHorizontalScale)
             {
                 double horizontScale = inHorizontalScale.GetUnitMultipliersValue().GetDoubleValue() * inHorizontalScale.GetDoubleValue();
-                _tdsOscilloscope.WriteLine($"hor:sca {horizontScale.ToString().Replace(',', CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)}");
+                _tdsOscilloscope.WriteLine($"hor:sca {horizontScale.ToString().Replace(',', '.')}");
                 return _tdsOscilloscope;
             }
 

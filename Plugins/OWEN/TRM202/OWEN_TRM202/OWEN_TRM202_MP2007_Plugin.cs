@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Extension;
+using AP.Utils.Data;
+using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
+using ASMC.Core.UI;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -14,6 +19,7 @@ using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.OWEN;
 using ASMC.Devices.Port.IZ_Tech;
 using ASMC.Devices.UInterface.TRM.ViewModel;
+using DevExpress.Mvvm.UI;
 using NLog;
 using NLog.LayoutRenderers.Wrappers;
 
@@ -73,6 +79,7 @@ namespace OWEN_TRM202
             {
                new Oprobovanie2007(this,1), 
                new Oprobovanie2007(this,2), 
+               new Operation8_4(this)
             };
         }
 
@@ -180,14 +187,58 @@ namespace OWEN_TRM202
 
         public class Operation8_4 : ParagraphBase<MeasPoint<Temperature>>
         {
+            private string _coupleType;
+
             public Operation8_4(IUserItemOperation userItemOperation) : base(userItemOperation)
             {
-
+                Name = "Тестирование термопары типа ХЗ";
             }
 
             protected override string GetReportTableName()
             {
                 throw new NotImplementedException();
+            }
+
+            protected override void InitWork(CancellationTokenSource token)
+            {
+                base.InitWork(token);
+                var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
+                var vm = new TermocoupleViewModel();
+
+                var tableFormat1 = new TableViewModel.SettingTableViewModel();
+                tableFormat1.IsHorizontal = true;
+                tableFormat1.CellFormat = MeasureUnits.degC.GetStringValue();
+
+                var tableFormat2 = new TableViewModel.SettingTableViewModel();
+                tableFormat2.IsHorizontal = true;
+                tableFormat2.CellFormat = MeasureUnits.Resistance.GetStringValue();
+
+                var table1= TableViewModel.CreateTable("Диапазон измерения температур",new string[]{"Начало диапазона (0 %)", "Конец диапазона (100 %)", "Сопротивление начала диапазона"}, tableFormat1);
+                var table2= TableViewModel.CreateTable("Диапазон сопротивлений датчика", new string[]{"Начало диапазона (0 %)", "Конец диапазона (100 %)", "Сопротивление начала диапазона"}, tableFormat2);
+
+                vm.Content.Add(table1);
+                vm.Content.Add(table2);
+
+                var window = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+                window.DocumentType = "TermocupleView";
+                window.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                window.ViewModel = vm;
+                window.Show();
+                var returnCellsTable1 = vm.Content[0].Cells;
+                var returnCellsTable2 = vm.Content[1].Cells;
+
+                decimal numericParseValue; 
+                decimal.TryParse((string)returnCellsTable1[0].Value,out numericParseValue);
+                MeasPoint<Temperature> StartRange = new MeasPoint<Temperature>(numericParseValue);
+                decimal.TryParse((string)returnCellsTable1[1].Value, out numericParseValue);
+                MeasPoint<Temperature> EndRange = new MeasPoint<Temperature>(numericParseValue);
+                var pointDegreasArr= EndRange.GetArayMeasPointsInParcent(StartRange, new int[] {5, 25, 50, 75, 95}).ToArray();
+                
+
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
+
             }
         }
     }

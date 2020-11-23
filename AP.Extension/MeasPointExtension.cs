@@ -13,10 +13,10 @@ namespace AP.Extension
         /// <summary>
         /// Формирует последовательность состающую из точек указаных в процентах.
         /// </summary>
-        /// <param name="range"></param>
+        /// <param name="rangeEndValue">Максимальноен значение диапазона.</param>
         /// <param name="pointParcent">одно или несколько знаечние в процентах. Может принимать значение от 0 до 100</param>
         /// <returns></returns>
-        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> range, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
+        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
         {
             var listPoint = new List<MeasPoint<T>>();
             foreach (var countPoint in pointParcent)
@@ -27,11 +27,34 @@ namespace AP.Extension
                 }
 
                 var mp = new MeasPoint<T>();
-                mp.MainPhysicalQuantity.Multiplier = range.MainPhysicalQuantity.Multiplier;
-                mp.MainPhysicalQuantity.Unit = range.MainPhysicalQuantity.Unit;
-                mp.MainPhysicalQuantity.Value =range.MainPhysicalQuantity.Value * (countPoint / 100M);
+                mp.MainPhysicalQuantity.Multiplier = rangeEndValue.MainPhysicalQuantity.Multiplier;
+                mp.MainPhysicalQuantity.Unit = rangeEndValue.MainPhysicalQuantity.Unit;
+                mp.MainPhysicalQuantity.Value =rangeEndValue.MainPhysicalQuantity.Value * (countPoint / 100M);
                 yield return  mp;
             }
+        }
+
+        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue ,  IMeasPoint<T> rangeStartValue, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
+        {
+            if ((MeasPoint<T>)rangeStartValue >= (MeasPoint<T>)rangeEndValue) throw new ArgumentOutOfRangeException("Начало диапазона больше конца диапазона.");
+
+            foreach (var countPoint in pointParcent)
+            {
+                if (countPoint > 100 || countPoint < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(pointParcent), countPoint.ToString());
+                }
+
+                
+                
+                yield return ((MeasPoint<T>) rangeEndValue + (MeasPoint<T>) rangeStartValue.Abs()) * (countPoint / 100M) - (MeasPoint<T>) rangeStartValue.Abs();
+                   
+            }
+        }
+
+        public static IMeasPoint<T> Abs<T>(this IMeasPoint<T> measPoint) where T : class, IPhysicalQuantity<T>, new()
+        {
+            return new MeasPoint<T>(Math.Abs(measPoint.MainPhysicalQuantity.Value),measPoint.MainPhysicalQuantity.Multiplier);
         }
     }
 }

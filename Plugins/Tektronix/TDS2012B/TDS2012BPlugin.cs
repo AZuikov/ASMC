@@ -14,7 +14,7 @@ namespace TDS2012B
     {
         public TDS2012BPlugin(ServicePack servicePack) : base(servicePack)
         {
-            Type = "TDS 2022B";
+            Type = "TDS 2012B";
             Range = "no range";
             Accuracy = "no accuracy";
         }
