@@ -14,7 +14,7 @@ namespace TDS2004B
     {
         public TDS2004BPlugin(ServicePack servicePack) : base(servicePack)
         {
-            Type = "TDS 2002B";
+            Type = "TDS 2004B";
             Range = "no range";
             Accuracy = "no accuracy";
         }
