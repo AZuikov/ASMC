@@ -415,16 +415,28 @@ namespace TDS_BasePlugin
                             var nominalPoint = ChanelVerticalRange.MainPhysicalQuantity.Value *
                                                (decimal) ChanelVerticalRange
                                                         .MainPhysicalQuantity.Multiplier.GetDoubleValue();
-
+                            MeasPoint<Voltage> resultError;
                             if (nominalPoint >= (decimal) 0.01 && nominalPoint <= 5)
-                                return new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
-                                                              currScale.GetUnitMultipliersValue());
+                            {
+                                resultError= new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
+                                                                 currScale.GetUnitMultipliersValue());
 
-                            return new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 4 / 100,
-                                                          currScale.GetUnitMultipliersValue());
+                            }
+                            else
+                            {
+                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 4 / 100,
+                                                                     currScale.GetUnitMultipliersValue());
+                            }
+
+                            resultError.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+                            return resultError;
+
                         };
+
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+                        operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
 
                         operation.IsGood = () =>
                         {
@@ -466,7 +478,7 @@ namespace TDS_BasePlugin
         /// <summary>
         /// тестируемый канал.
         /// </summary>
-        private readonly TDS_Oscilloscope.ChanelSet _testingChanel;
+        private readonly TDS_Oscilloscope.ChanelSet _testingOscillosocopeChanel;
 
         protected Calibr9500B calibr9500B;
 
@@ -486,16 +498,16 @@ namespace TDS_BasePlugin
         #endregion
 
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation)
+            TDS_Oscilloscope.ChanelSet oscillosocopeChanel, string inResourceDir) : base(userItemOperation)
         {
-            _testingChanel = chanel;
-            Name = $"{_testingChanel}: Определение погрешности измерения временных интервалов";
+            _testingOscillosocopeChanel = oscillosocopeChanel;
+            Name = $"{_testingOscillosocopeChanel}: Определение погрешности измерения временных интервалов";
             Sheme = new ShemeImage
             {
                 AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
-                Number = (int) _testingChanel,
-                FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
+                Number = (int) _testingOscillosocopeChanel,
+                FileName = $"9500B_to_TDS_{_testingOscillosocopeChanel}.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
         }
@@ -542,7 +554,7 @@ namespace TDS_BasePlugin
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
-            return $"FillTabBmOper4MeasureTimeIntervalsl{_testingChanel}";
+            return $"FillTabBmOper4MeasureTimeIntervalsl{_testingOscillosocopeChanel}";
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -575,16 +587,16 @@ namespace TDS_BasePlugin
                     try
                     {
                         //1.нужно знать канал
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.ON);
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingOscillosocopeChanel, TDS_Oscilloscope.State.ON);
                         //теперь нужно понять с каким каналом мы будем работать на калибраторе
-                        var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
-                        calibr9500B.Route.Chanel.SetChanel(chnael);
+                        var calibratorHeadChnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
+                        calibr9500B.Route.Chanel.SetChanel(calibratorHeadChnael);
                         calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
                         //2.установить развертку по вертикали
-                        someTdsOscilloscope.Chanel.SetProbe(_testingChanel, TDS_Oscilloscope.Probe.Att_1);
-                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingChanel,
+                        someTdsOscilloscope.Chanel.SetProbe(_testingOscillosocopeChanel, TDS_Oscilloscope.Probe.Att_1);
+                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingOscillosocopeChanel,
                                                                      TDS_Oscilloscope.VerticalScale.Scale_200mV);
-                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, 0);
+                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingOscillosocopeChanel, 0);
 
                         someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
@@ -604,10 +616,10 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
                         someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
                         someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingChanel);
+                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingOscillosocopeChanel);
                         someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
                         someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
-                        someTdsOscilloscope.Measurement.SetMeas(_testingChanel, TDS_Oscilloscope.TypeMeas.PERI,
+                        someTdsOscilloscope.Measurement.SetMeas(_testingOscillosocopeChanel, TDS_Oscilloscope.TypeMeas.PERI,
                                                                 2);
                         Thread.Sleep(1000);
                         var measResult = someTdsOscilloscope.Measurement.MeasureValue(2) /
@@ -619,12 +631,14 @@ namespace TDS_BasePlugin
 
                         operation.ErrorCalculation = (point, measPoint) => ScaleTolDict[currScale];
 
-                        //!!!!!! нужно привести погрешность к размерности измеряемого значениея
+                        
                         operation.Expected =
-                            new MeasPoint<Time>((decimal) currScale.GetDoubleValue(),
+                            new MeasPoint<Time>((decimal) currScale.GetDoubleValue()*2,
                                                 currScale.GetUnitMultipliersValue());
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+                        operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
 
                         operation.IsGood = () =>
                         {
@@ -642,11 +656,11 @@ namespace TDS_BasePlugin
                     finally
                     {
                         calibr9500B.Source.Output(Calibr9500B.State.Off);
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
+                        someTdsOscilloscope.Chanel.SetChanelState(_testingOscillosocopeChanel, TDS_Oscilloscope.State.OFF);
                     }
                 };
 
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());//Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => Task.FromResult(true);//Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone());
@@ -662,7 +676,7 @@ namespace TDS_BasePlugin
     public class TDS20XXBOper4MeasureTimeIntervals : Oper4MeasureTimeIntervals
     {
         public TDS20XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation, chanel, inResourceDir)
+            TDS_Oscilloscope.ChanelSet oscillosocopeChanel, string inResourceDir) : base(userItemOperation, oscillosocopeChanel, inResourceDir)
         {
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec,
                              new MeasPoint<Time>(0.61M, UnitMultiplier.Nano));
@@ -683,7 +697,7 @@ namespace TDS_BasePlugin
     public class TDS10XXBOper4MeasureTimeIntervals : Oper4MeasureTimeIntervals
     {
         public TDS10XXBOper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel, string inResourceDir) : base(userItemOperation, chanel, inResourceDir)
+            TDS_Oscilloscope.ChanelSet oscillosocopeChanel, string inResourceDir) : base(userItemOperation, oscillosocopeChanel, inResourceDir)
         {
             ScaleTolDict.Add(TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec,
                              new MeasPoint<Time>(0.62M, UnitMultiplier.Nano));
@@ -905,7 +919,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());//Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => Task.FromResult(true);//Hepls.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<object>) operation.Clone());

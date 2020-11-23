@@ -75,7 +75,7 @@ namespace TDS2002B
     public class Oper4MeasureTimeIntervals : TDS20XXBOper4MeasureTimeIntervals
     {
         public Oper4MeasureTimeIntervals(IUserItemOperation userItemOperation,
-            TDS_Oscilloscope.ChanelSet chanel, string inResourceDi) : base(userItemOperation, chanel, inResourceDi)
+            TDS_Oscilloscope.ChanelSet oscillosocopeChanel, string inResourceDi) : base(userItemOperation, oscillosocopeChanel, inResourceDi)
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_2022B();
