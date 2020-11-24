@@ -171,12 +171,12 @@ namespace ASMC.Devices.USB_Device.WebCam
         /// </summary>
         public void Stop()
         {
-            if (_videoCaptureDevice.IsRunning)
-            {
+            //if (_videoCaptureDevice.IsRunning)
+            //{
                 _videoCaptureDevice.Stop();
                 _videoCaptureDevice.NewFrame -= VideoCaptureDevice_NewFrame;
                 Logger.Debug($@"Трансляция с камеры остановлена.");
-            }
+            //}
             
         }
 
