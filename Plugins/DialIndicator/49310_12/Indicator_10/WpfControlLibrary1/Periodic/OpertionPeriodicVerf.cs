@@ -52,13 +52,12 @@ namespace mp2192_92.DialIndicator.Periodic
         }
 
         /// <inheritdoc />
-        public override async void RefreshDevice()
+        public override void RefreshDevice()
         {
-            await Task.Factory.StartNew(() =>
-            {
+           
                 AddresDevice = UsbExpressWrapper.FindAllDevice?.Select(q => q.Number.ToString())
                     .Concat(WebCam.GetVideoInputDevice?.Select(q => q.MonikerString) ?? Array.Empty<string>()).ToArray();
-            });
+          
         }
 
         /// <inheritdoc />
