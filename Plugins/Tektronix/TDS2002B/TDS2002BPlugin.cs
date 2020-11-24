@@ -46,8 +46,7 @@ namespace TDS2002B
                                               Assembly.GetExecutingAssembly().GetName().Name),
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH1),
                 new Oper3KoefOtkl(this, TDS_Oscilloscope.ChanelSet.CH2),
-                new Oper4MeasureTimeIntervals(this, TDS_Oscilloscope.ChanelSet.CH2,
-                                              Assembly.GetExecutingAssembly().GetName().Name),
+                
                 new Oper5MeasureRiseTime(this, TDS_Oscilloscope.ChanelSet.CH2)
             };
         }

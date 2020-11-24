@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -19,22 +20,23 @@ using NLog;
 
 namespace TDS_BasePlugin
 {
-    public static class Hepls
+    public static class HelpsTds
     {
         #region Methods
 
-        public static Task<bool> HelpsCompliteWork<T>(IBasicOperationVerefication<T> operation,
-            IUserItemOperation UserItemOperation)
+        public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
+            IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
-            if (!operation.IsGood())
+            if (operation.IsGood != null && !operation.IsGood())
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
-                                     .Show($"Текущая точка {((IMeasPoint<IPhysicalQuantity>) operation.Expected).Description} не проходит по допуску:\n" +
-                                           $"Минимально допустимое значение {((IMeasPoint<IPhysicalQuantity>) operation.LowerTolerance)?.Description}\n" +
-                                           $"Максимально допустимое значение {((IMeasPoint<IPhysicalQuantity>) operation.UpperTolerance).Description}\n" +
-                                           $"Допустимое значение погрешности {((IMeasPoint<IPhysicalQuantity>) operation.Error).Description}\n" +
-                                           $"ИЗМЕРЕННОЕ значение {((IMeasPoint<IPhysicalQuantity>) operation.Getting).Description}\n\n" +
+                                     .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                           $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
+                                           $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
+                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
+                                           $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -43,6 +45,8 @@ namespace TDS_BasePlugin
                 if (answer == MessageResult.No) return Task.FromResult(true);
             }
 
+            if (operation.IsGood == null)
+                return Task.FromResult(true);
             return Task.FromResult(operation.IsGood());
         }
 
@@ -291,18 +295,30 @@ namespace TDS_BasePlugin
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
                 if (dds == null) continue;
-                dataRow[0] = new MeasPoint<Voltage>(dds.Expected.MainPhysicalQuantity.Value / 3,
-                                                    dds.Expected.MainPhysicalQuantity.Multiplier)
-                   .Description + "/Дел";
-                dataRow[1] = dds.Expected?.Description;
-                dataRow[2] = dds.Getting?.Description;
-                dataRow[3] = dds.LowerTolerance?.Description;
-                dataRow[4] = dds.UpperTolerance?.Description;
+               
+                if (dds.Expected != null && dds.Getting != null)
+                {
+                    dataRow["Коэффициент развёртки"] = new MeasPoint<Voltage>(dds.Expected.MainPhysicalQuantity.Value / 6,
+                                                                              dds.Expected.MainPhysicalQuantity.Multiplier)
+                       .Description + "/Дел";
+                    var result = dds.Expected - dds.Getting;
+                    result.MainPhysicalQuantity.ChangeMultiplier(dds.Expected.MainPhysicalQuantity.Multiplier);
+                    result.MainPhysicalQuantity.Value=Math.Round(result.MainPhysicalQuantity.Value, 2);
+                    dataRow["Абсолютная погрешность коэффициента отклонения"] = result.Description;
+                }
+                else
+                {
+                    dataRow["Абсолютная погрешность коэффициента отклонения"] = "нет данных";
+                    dataRow["Коэффициент развёртки"] = "нет данных";
+                }
+                
+                dataRow["Допустимое значение погрешности"] ="± " + dds.Error.Description;
+                
 
                 if (dds.IsGood == null)
-                    dataRow[5] = "не выполнено";
+                    dataRow[3] = "не выполнено";
                 else
-                    dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[3] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -315,10 +331,9 @@ namespace TDS_BasePlugin
             return new[]
             {
                 "Коэффициент развёртки",
-                "Амплитуда подаваемого сигнала",
-                "Измеренное значение амплитуды",
-                "Минимальное допустимое значение",
-                "Максимальное допустимое значение"
+                "Абсолютная погрешность коэффициента отклонения",
+                "Допустимое значение погрешности",
+                
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             ;
         }
@@ -368,7 +383,7 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Chanel.SetProbe(_testingChanel, TDS_Oscilloscope.Probe.Att_1);
                         someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingChanel, currScale);
                         //смещение для номального отображения
-                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, -2);
+                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, -3);
                         //триггер
                         someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
                         someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
@@ -389,7 +404,7 @@ namespace TDS_BasePlugin
                                                    currScale.GetUnitMultipliersValue());
                         // это подаваемая амплитуда
                         operation.Expected =
-                            new MeasPoint<Voltage>(3 * (decimal) currScale.GetDoubleValue(),
+                            new MeasPoint<Voltage>(6 * (decimal) currScale.GetDoubleValue(),
                                                    currScale.GetUnitMultipliersValue());
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.SQU).Source
                                    .SetVoltage(operation.Expected).Source
@@ -442,8 +457,8 @@ namespace TDS_BasePlugin
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            return (operation.Getting < operation.UpperTolerance) &
-                                   (operation.Getting > operation.LowerTolerance);
+                            return (operation.Getting <= operation.UpperTolerance) &
+                                   (operation.Getting >= operation.LowerTolerance);
                         };
                     }
                     catch (Exception e)
@@ -457,7 +472,7 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
                     }
                 };
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());//Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
@@ -644,8 +659,8 @@ namespace TDS_BasePlugin
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            return (operation.Getting < operation.UpperTolerance) &
-                                   (operation.Getting > operation.LowerTolerance);
+                            return (operation.Getting <= operation.UpperTolerance) &
+                                   (operation.Getting >= operation.LowerTolerance);
                         };
                     }
                     catch (Exception e)
@@ -660,7 +675,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.CompliteWork = () => Task.FromResult(true);//Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone());
@@ -903,7 +918,7 @@ namespace TDS_BasePlugin
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null) return false;
-                            return (MeasPoint<Time>) operation.Getting < (MeasPoint<Time>) operation.UpperTolerance;
+                            return (MeasPoint<Time>) operation.Getting <= (MeasPoint<Time>) operation.UpperTolerance;
                         };
                     }
                     catch (Exception e)
@@ -919,7 +934,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.CompliteWork = () => Task.FromResult(true);//Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWork = () => Task.FromResult(true);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<object>) operation.Clone());
