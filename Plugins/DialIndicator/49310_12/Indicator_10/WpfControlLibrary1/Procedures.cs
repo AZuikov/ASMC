@@ -131,7 +131,7 @@ namespace mp2192_92.DialIndicator
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            DataRow.Add(new DialogOperationHelp(this, ""));
+            DataRow.Add(new DialogOperationHelp(this, "Внешний осмотр ГОСТ 577"));
         }
     }
     /// <summary>
@@ -152,7 +152,7 @@ namespace mp2192_92.DialIndicator
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            DataRow.Add(new DialogOperationHelp(this, ""));
+            DataRow.Add(new DialogOperationHelp(this, "Опробывание ГОСТ 577"));
         }
         /// <inheritdoc />
         protected override DataTable FillData()
@@ -616,14 +616,15 @@ namespace mp2192_92.DialIndicator
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
 
-                dataRow[0] = dds.Expected.ToString();
-                for (var i = 0; i < 5; i++) dataRow[i + 1] = dds.Getting[i].ToString();
+                dataRow[0] = dds.Expected.First().Description;
+                for (var i = 0; i < 2; i++) dataRow[i + 1] = dds.Getting[i].Description;
 
-                dataRow[5] = dds.Error;
+                dataRow[3] = dds.Error.First().Description;
+                dataRow[4] = IchBase.Variation.Description;
                 if (dds.IsGood == null)
-                    dataRow[6] = ConstNotUsed;
+                    dataRow[5] = ConstNotUsed;
                 else
-                    dataRow[6] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -671,20 +672,30 @@ namespace mp2192_92.DialIndicator
                 var setting = new TableViewModel.SettingTableViewModel { Breaking = 2, CellFormat = "мкм" };
 
 
-                var rm1 = new WorkInPpiViewModel();
+                var viewModel = new WorkInPpiViewModel();
+
+
                 var webCam = UserItemOperation.ControlDevices.FirstOrDefault(q =>
                     (q.SelectedDevice as IControlPannelDevice)?.Device as WebCam != null);
-                rm1.WebCam.WebCam = (webCam.SelectedDevice as IControlPannelDevice).Device as WebCam;
-                rm1.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
                 var ppi = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as Ppi != null);
-                rm1.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
-                rm1.Content = TableViewModel.CreateTable("Определение вариации показаний",  arrPoints, setting);
+                if (ppi != null)
+                {
+                    viewModel.Ppi.NubmerDevice = int.Parse(ppi?.StringConnect ?? "0");
+                }
+                if (webCam != null)
+                {
+                    viewModel.WebCam.WebCam = (webCam.SelectedDevice as IControlPannelDevice)?.Device as WebCam;
+                    viewModel.WebCam.WebCam.Source = new FilterInfo(webCam?.StringConnect);
+                }
+
+                service.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
+                viewModel.Content = TableViewModel.CreateTable("Определение вариации показаний",  arrPoints, setting);
                 service.Title = Name;
-                service.ViewModel = rm1;
+                service.ViewModel = viewModel;
                 service.DocumentType = "RangeIcdicationView";
                 service.Show();
                 /*Получаем измерения*/
-                arrGetting = rm1.Content.Cells.Select(cell =>
+                arrGetting = viewModel.Content.Cells.Select(cell =>
                         new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
@@ -694,19 +705,19 @@ namespace mp2192_92.DialIndicator
                 for (var i = 0; i < 9; i++)
                 {
                     if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    operation.Expected = (MeasPoint<Length>[])arrPoints[i * 3].Clone();
-                    operation.Getting = arrGetting.Skip(i * 5).Take(5).ToArray();
+                    operation.Expected =  new []{(MeasPoint<Length>)arrPoints[i * 2].Clone()};
+                    operation.Getting = arrGetting.Skip(i * 2).Take(2).ToArray();
                     if (i > 0) DataRow.Add(operation);
                 }
             };
-
+            operation.IsGood = () => operation.Error.First() <= IchBase.Variation;
             operation.ErrorCalculation =
                 (expected, getting) =>
                 {
                     return new[]
                     {
-                        expected.FirstOrDefault() -
-                        getting.Max(q => Math.Abs(q.MainPhysicalQuantity.GetNoramalizeValueToSi()))
+                       new MeasPoint<Length>((expected.FirstOrDefault() -
+                                              getting.Max(q => (MeasPoint<Length>)q.Abs())).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro))  
                     };
                 };
             // ReSharper disable once PossibleNullReferenceException

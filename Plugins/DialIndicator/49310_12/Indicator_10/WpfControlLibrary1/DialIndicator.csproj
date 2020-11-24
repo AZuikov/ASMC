@@ -112,12 +112,14 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Внешний осмотр ГОСТ 577.rtf" />
     <None Include="ИЧ-02 Первичная МП 2192-92.dotx" />
     <None Include="ИЧ-02 Периодическая МП 2192-92.dotx" />
     <None Include="ИЧ-03 Первичная МП 2192-92.dotx" />
     <None Include="ИЧ-03 Периодическая МП 2192-92.dotx" />
     <None Include="ИЧ-10 Первичная МП 2192-92.dotx" />
     <None Include="ИЧ-10 Периодическая МП 2192-92.dotx" />
+    <None Include="Опробывание ГОСТ 577.rtf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\AP.Extension\AP.Extension.csproj">
