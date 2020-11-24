@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Threading;
 using Accord.Video.DirectShow;
 using AP.Extension;
-using AP.Math;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Common.Helps;
@@ -65,19 +64,6 @@ namespace mp2192_92.DialIndicator
         {
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
-        /// <summary>
-        /// Возращает строковое значениеокругленное до значащах единиц погрешности и приведеное к множителю погрешности.
-        /// </summary>
-        /// <param name="measPoint"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        protected string GetValueNormalizeToError<T>(MeasPoint<T> measPoint,
-            MeasPoint<T> error) where T : class, IPhysicalQuantity<T>, new()
-        {
-            return MathStatistics.Round(
-                measPoint.MainPhysicalQuantity.ChangeMultiplier(error.MainPhysicalQuantity.Multiplier).Value,
-                error.GetMainValue().ToString());
-        }
 
         /// <param name="token"></param>
         /// <param name="token1"></param>
@@ -130,7 +116,7 @@ namespace mp2192_92.DialIndicator
             {
                 var dds = DataRow[0] as BasicOperation<bool>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting ? "соответствует требованиям МИ 2192-92" : dds.Comment;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -178,7 +164,7 @@ namespace mp2192_92.DialIndicator
             {
                 var dds = DataRow[0] as BasicOperation<bool>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting ? "соответствует требованиям МИ 2192-92" : dds.Comment;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -210,16 +196,20 @@ namespace mp2192_92.DialIndicator
                 var dds = row as MultiErrorMeasuringOperation<object>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
-                dataRow[0] =((MeasPoint<Length>)dds.Expected)?.GetMainValue();
-                dataRow[1] = ((MeasPoint<Weight>)dds.Getting)?.GetMainValue();
-                dataRow[2] = GetValueNormalizeToError((MeasPoint<Force>)dds.Error[0], IchBase.MeasuringForce.ChangeCourse);
-                dataRow[3] = GetValueNormalizeToError((MeasPoint<Force>)dds.Error[1], IchBase.MeasuringForce.StraightRun);
-                dataRow[4] = GetValueNormalizeToError((MeasPoint<Force>)dds.Error[2], IchBase.MeasuringForce.Oscillatons);
+                dataRow[0] =((MeasPoint<Length>)dds.Expected)?.Description;
+                dataRow[1] = ((MeasPoint<Weight>)dds.Getting)?.Description;
+                dataRow[2] = ((MeasPoint<Force>)dds.Error[0]).Description;
+                dataRow[3] = ((MeasPoint<Force>)dds.Error[1]).Description;
+                dataRow[4] = ((MeasPoint<Force>)dds.Error[2]).Description;
                 //todo Указать погрешность  
-                  dataRow[5] = IchBase.MeasuringForce.ChangeCourse.GetMainValue();
-                dataRow[7] = IchBase.MeasuringForce.StraightRun.GetMainValue();
-                dataRow[6] = IchBase.MeasuringForce.Oscillatons.GetMainValue();
-              
+
+                dataRow[5] = IchBase.MeasuringForce.ChangeCourse.Description;
+                dataRow[7] = IchBase.MeasuringForce.StraightRun.Description;
+                dataRow[6] = IchBase.MeasuringForce.Oscillatons.Description;
+                if (dds.IsGood == null)
+                    dataRow[8] = ConstNotUsed;
+                else
+                    dataRow[8] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -239,9 +229,11 @@ namespace mp2192_92.DialIndicator
                 "Допуск При изменении направления хода изм. стержня",
                 "Допуск Колебание при прямом/ обратном ходе",
                 "Допуск Максимальное при прямом ходе"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {
@@ -309,6 +301,7 @@ namespace mp2192_92.DialIndicator
                     if (i > 0) DataRow.Add(operation);
                 }
             };
+            //todo Указать погрешность  
             operation.ErrorCalculation = new Func<object, object, object>[]
             {
                 (expected, getting) =>
@@ -419,7 +412,7 @@ namespace mp2192_92.DialIndicator
             {
                 "№ Измерения", "Изменение показаний индикатора, делений шкалы",
                 "Допустимые изменения показаний, делений шкалы"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             ;
         }
 
@@ -501,11 +494,15 @@ namespace mp2192_92.DialIndicator
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
 
-                dataRow[0] =dds.Expected[0].GetMainValue();
-                for (var i = 0; i < dds.Getting.Length; i++) dataRow[i+1] = dds.Getting[i].GetMainValue();
+                dataRow[0] =dds.Expected[0].Description;
+                for (var i = 0; i < dds.Getting.Length; i++) dataRow[i+1] = dds.Getting[i].Description;
 
-                dataRow[6] = MathStatistics.Round(dds.Error[0].MainPhysicalQuantity.ChangeMultiplier(IchBase.Arresting.MainPhysicalQuantity.Multiplier).Value, IchBase.Arresting.GetMainValue().ToString());
-                dataRow[7] = IchBase.Arresting.GetMainValue();
+                dataRow[6] = dds.Error[0].Description;
+                dataRow[7] = IchBase.Arresting.Description;
+                if (dds.IsGood == null)
+                    dataRow[8] = ConstNotUsed;
+                else
+                    dataRow[8] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -521,9 +518,11 @@ namespace mp2192_92.DialIndicator
                 "Показания при арретировании2", "Показания при арретировании3",
                 "Показания при арретировании4", "Показания при арретировании5",
                 "Размах показаний", "Допустимый размах"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
+        /// <param name="token"></param>
+        /// <param name="token1"></param>
         /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {
@@ -617,10 +616,15 @@ namespace mp2192_92.DialIndicator
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
 
-                dataRow[0] = dds.Expected.First().GetMainValue();
-                for (var i = 0; i < 2; i++) dataRow[i + 1] = dds.Getting[i].GetMainValue();
-                dataRow[3] = GetValueNormalizeToError(dds.Error.First(), IchBase.Variation);
-                dataRow[4] = IchBase.Variation.GetMainValue();
+                dataRow[0] = dds.Expected.First().Description;
+                for (var i = 0; i < 2; i++) dataRow[i + 1] = dds.Getting[i].Description;
+
+                dataRow[3] = dds.Error.First().Description;
+                dataRow[4] = IchBase.Variation.Description;
+                if (dds.IsGood == null)
+                    dataRow[5] = ConstNotUsed;
+                else
+                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -635,7 +639,7 @@ namespace mp2192_92.DialIndicator
                 "Точка диапазона измерений индикатора", "Прямой ход",
                 "Обратный ход", "Вариация показаний,",
                 "Допустимая вариация"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         /// <param name="token"></param>
@@ -712,8 +716,8 @@ namespace mp2192_92.DialIndicator
                 {
                     return new[]
                     {
-                       new MeasPoint<Length>((Length) (expected.FirstOrDefault() -
-                                                       getting.Max(q => (MeasPoint<Length>)q.Abs())).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro))  
+                       new MeasPoint<Length>((expected.FirstOrDefault() -
+                                              getting.Max(q => (MeasPoint<Length>)q.Abs())).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro))  
                     };
                 };
             // ReSharper disable once PossibleNullReferenceException
@@ -827,7 +831,7 @@ namespace mp2192_92.DialIndicator
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { "Участок индикатора", "0", "20", "40", "60", "80", "100", "На любом участке 1 мм", "На всём диапазоне измерений", " Допуск на любом участке в 1 мм", "Допуск на всём диапазоне измерений" };
+            return new[] { "Участок индикатора", "0", "20", "40", "60", "80", "100", "На любом участке 1 мм", "На всём диапазоне измерений", " Допуск на любом участке в 1 мм", "Допуск на всём диапазоне измерений" }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         /// <inheritdoc />
@@ -841,18 +845,20 @@ namespace mp2192_92.DialIndicator
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
 
-                dataRow[0] = dds.Expected.First().MainPhysicalQuantity.Value + " – " +dds.Expected.Last().GetMainValue();
-                for (var i = 0; i < 6; i++) dataRow[i + 1] = dds.Getting[i].GetMainValue();
+                dataRow[0] = dds.Expected.First().MainPhysicalQuantity.Value + " – " +dds.Expected.Last().Description;
+                for (var i = 0; i < 6; i++) dataRow[i + 1] = dds.Getting[i].Description;
 
-                dataRow[7] =  MathStatistics.Round(DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]).GetMainValue(),0);
-                dataRow[7]= 
-                    dataRow[8] = MathStatistics.Round((DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]) - 
-                                                       DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0])).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).Value,0);
+                dataRow[7] = DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]).Description;
+                    dataRow[8] = (DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]) - 
+                                  DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0])).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).ToString();
                     dataRow[9] =
                         new MeasPoint<Length>((decimal) IchBase.RangesFull.Ranges[0].AccuracyChatacteristic.Resolution).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).ToString();
 
                     dataRow[10] = new MeasPoint<Length>((decimal)IchBase.RangesFull.AccuracyChatacteristic.Resolution).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).ToString();
-             
+                if (dds.IsGood == null)
+                    dataRow[11] = ConstNotUsed;
+                else
+                    dataRow[11] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -935,7 +941,7 @@ namespace mp2192_92.DialIndicator
             {
                 "Измеряемое сечение", "Номинальный размер диаметра", "Присоединительный диаметр",
                 "Отклонение от цилиндричности гильзы", "Допустимое отклонение"
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
 
         }
 
@@ -1079,7 +1085,7 @@ namespace mp2192_92.DialIndicator
             return new[]
             {
                 "Ширина стрелки", "Допустимая ширина",
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             ;
         }
 
@@ -1194,7 +1200,7 @@ namespace mp2192_92.DialIndicator
                 "Ширина штриха",
                 "Разность ширины отдельных штрихов",
                 "Допустимая ширина штрихов", 
-                "Допустимая разность"};
+                "Допустимая разность"}.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         /// <inheritdoc />
@@ -1263,7 +1269,7 @@ namespace mp2192_92.DialIndicator
             return new[]
             {
                 "Ширина стрелки", "Допустимая ширина",
-            };
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             ;
         }
 
@@ -1374,7 +1380,7 @@ namespace mp2192_92.DialIndicator
             return new[]{ "Измерение расстояния между концом стрелки и циферблатом",
                 "Расстояние между концом стрелки и циферблатом",
                 "Наибольшее расстояние между концом стрелки и циферблатом",
-                "Максимальное допустимое расстояние",};
+                "Максимальное допустимое расстояние",}.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
         /// <inheritdoc />
         protected override DataTable FillData()
@@ -1496,7 +1502,7 @@ namespace mp2192_92.DialIndicator
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new []{ "Участок индикатора", "0", "20", "40", "60", "80", "100", "На любом участке 0.1 мм", "На допуск любом участке в 0.1 мм"} 
-                ;
+                .Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         /// <inheritdoc />
