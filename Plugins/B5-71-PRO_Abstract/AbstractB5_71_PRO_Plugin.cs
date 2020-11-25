@@ -1890,7 +1890,7 @@ namespace B5_71_PRO_Abstract
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
                     currPulsV357 = currPulsV357 / measResist;
-                    MathStatistics.Round(ref currPulsV357, Bp.TolleranceCurrentPuls.ToString());
+                    MathStatistics.Round(ref currPulsV357, 3);
 
                     UserItemOperation.ServicePack.MessageBox().Show(
                                                                   "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",

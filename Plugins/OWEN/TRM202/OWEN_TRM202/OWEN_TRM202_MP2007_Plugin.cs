@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Extension;
@@ -21,11 +20,10 @@ using ASMC.Devices.Port.IZ_Tech;
 using ASMC.Devices.UInterface.TRM.ViewModel;
 using DevExpress.Mvvm.UI;
 using NLog;
-using NLog.LayoutRenderers.Wrappers;
 
 namespace OWEN_TRM202
 {
-    class OWEN_TRM202_MP2007_Plugin:Program<Operation2007>
+    internal class OWEN_TRM202_MP2007_Plugin : Program<Operation2007>
     {
         public OWEN_TRM202_MP2007_Plugin(ServicePack service) : base(service)
         {
@@ -46,7 +44,7 @@ namespace OWEN_TRM202
         }
     }
 
-    public class OpertionFirsVerf2007 : ASMC.Core.Model.Operation
+    public class OpertionFirsVerf2007 : Operation
     {
         public OpertionFirsVerf2007(ServicePack servicePack) : base(servicePack)
         {
@@ -73,13 +71,11 @@ namespace OWEN_TRM202
 
             DocumentName = "TRM202_protocol";
 
-            
-
             UserItemOperation = new IUserItemOperationBase[]
             {
-               new Oprobovanie2007(this,1), 
-               new Oprobovanie2007(this,2), 
-               new Operation8_4(this)
+                new Oprobovanie2007(this, 1),
+                new Oprobovanie2007(this, 2),
+                new Operation8_4(this)
             };
         }
 
@@ -112,6 +108,7 @@ namespace OWEN_TRM202
             protected Calib5522A flkCalib5522A { get; set; }
 
             protected TRM202DeviceUI trm202 { get; set; }
+
             #endregion
 
             public Oprobovanie2007(IUserItemOperation userItemOperation, ushort chanelNumb) : base(userItemOperation)
@@ -120,13 +117,9 @@ namespace OWEN_TRM202
                 Name = $"Опробование канала {_chanelNumber}";
                 DataRow = new List<IBasicOperation<bool>>();
                 flkCalib5522A = new Calib5522A();
-                
             }
 
-            protected override string GetReportTableName()
-            {
-                throw new NotImplementedException();
-            }
+            #region Methods
 
             protected override DataTable FillData()
             {
@@ -136,6 +129,11 @@ namespace OWEN_TRM202
             protected override string[] GenerateDataColumnTypeObject()
             {
                 return new[] {"Результат"};
+            }
+
+            protected override string GetReportTableName()
+            {
+                throw new NotImplementedException();
             }
 
             protected override void InitWork(CancellationTokenSource token)
@@ -160,7 +158,8 @@ namespace OWEN_TRM202
 
                                 //1. задаем на каналах нужную характеристику НСХ 50М (W100 = 1,4280)
                                 var typeTermoCouple = BitConverter
-                                                     .GetBytes((int)TRM202Device.in_t.r428).Where(a => a != 0).ToArray();
+                                                     .GetBytes((int) TRM202Device.in_t.r428).Where(a => a != 0)
+                                                     .ToArray();
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
                                 trm202.WriteFloat24Parametr(TRM202Device.Parametr.SH, 0, _chanelNumber);
@@ -180,19 +179,27 @@ namespace OWEN_TRM202
                     operation.CompliteWork = () => { return Task.FromResult(operation.IsGood()); };
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<bool>)operation.Clone());
+                                    : (BasicOperationVerefication<bool>) operation.Clone());
                 }
             }
+
+            #endregion
         }
 
         public class Operation8_4 : ParagraphBase<MeasPoint<Temperature>>
         {
+            #region Fields
+
             private string _coupleType;
+
+            #endregion
 
             public Operation8_4(IUserItemOperation userItemOperation) : base(userItemOperation)
             {
                 Name = "Тестирование термопары типа ХЗ";
             }
+
+            #region Methods
 
             protected override string GetReportTableName()
             {
@@ -213,33 +220,50 @@ namespace OWEN_TRM202
                 tableFormat2.IsHorizontal = true;
                 tableFormat2.CellFormat = MeasureUnits.Resistance.GetStringValue();
 
-                var table1= TableViewModel.CreateTable("Диапазон измерения температур",new string[]{"Начало диапазона (0 %)", "Конец диапазона (100 %)", "Сопротивление начала диапазона"}, tableFormat1);
-                var table2= TableViewModel.CreateTable("Диапазон сопротивлений датчика", new string[]{"Начало диапазона (0 %)", "Конец диапазона (100 %)", "Сопротивление начала диапазона"}, tableFormat2);
+                var table1 = TableViewModel.CreateTable("Диапазон измерения температур",
+                                                        new[]
+                                                        {
+                                                            "Начало диапазона (0 %)", "Конец диапазона (100 %)"
+                                                            
+                                                        }, tableFormat1);
+                var table2 = TableViewModel.CreateTable("Диапазон сопротивлений датчика",
+                                                        new[]
+                                                        {
+                                                            "Начало диапазона (0 %)", "Конец диапазона (100 %)",
+                                                            
+                                                        }, tableFormat2);
 
                 vm.Content.Add(table1);
                 vm.Content.Add(table2);
-
+                
                 var window = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
                 window.DocumentType = "TermocupleView";
                 window.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                 window.ViewModel = vm;
                 window.Show();
+
                 var returnCellsTable1 = vm.Content[0].Cells;
-                var returnCellsTable2 = vm.Content[1].Cells;
-
-                decimal numericParseValue; 
-                decimal.TryParse((string)returnCellsTable1[0].Value,out numericParseValue);
-                MeasPoint<Temperature> StartRange = new MeasPoint<Temperature>(numericParseValue);
-                decimal.TryParse((string)returnCellsTable1[1].Value, out numericParseValue);
-                MeasPoint<Temperature> EndRange = new MeasPoint<Temperature>(numericParseValue);
-                var pointDegreasArr= EndRange.GetArayMeasPointsInParcent(StartRange, new int[] {5, 25, 50, 75, 95}).ToArray();
                 
+                decimal numericParseValue;
+                decimal.TryParse((string) returnCellsTable1[0].Value, out numericParseValue);
+                var StartDegreasRange = new MeasPoint<Temperature>(numericParseValue);
+                decimal.TryParse((string) returnCellsTable1[1].Value, out numericParseValue);
+                var EndDegreasRange = new MeasPoint<Temperature>(numericParseValue);
+                var pointDegreasArr = EndDegreasRange.GetArayMeasPointsInParcent(StartDegreasRange, 5, 25, 50, 75, 95).ToArray();
 
+                var returnCellsTable2 = vm.Content[1].Cells;
+                decimal.TryParse((string)returnCellsTable2[0].Value, out numericParseValue);
+                var StartResistenceRange = new MeasPoint<Temperature>(numericParseValue);
+                decimal.TryParse((string)returnCellsTable2[1].Value, out numericParseValue);
+                var EndResistanceRange = new MeasPoint<Temperature>(numericParseValue);
+                var pointResistanceArr = EndResistanceRange.GetArayMeasPointsInParcent(StartResistenceRange, 5, 25, 50, 75, 95).ToArray();
+                
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
-
+                                : (BasicOperationVerefication<MeasPoint<Temperature>>) operation.Clone());
             }
+
+            #endregion
         }
     }
 }
