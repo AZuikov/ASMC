@@ -16,7 +16,7 @@ namespace ASMC.Devices.OWEN
 
         #region Gost6651
 
-        public RangeStorage<PhysicalRange<Temperature>> GetCu50_426RangeStorage
+        public  RangeStorage<PhysicalRange<Temperature>> GetCu50_426RangeStorage
         {
             get => Cu50_426RangeStorage();
         }

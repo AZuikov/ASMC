@@ -172,7 +172,7 @@ namespace OWEN_TRM202
             Sheme = new ShemeImage
             {
                 Number = 1,
-                FileName = $"TRM202_Oprobovanie7351_chanel{_chanelNumber}.jpg",
+                FileName = $"TRM202_5522A_OprobovanieResistanceTermocouple_chanel{_chanelNumber}.jpg",
                 Description = "Соберите схему, как показано на рисунке."
             };
         }

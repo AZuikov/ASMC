@@ -108,15 +108,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resource\TRM202_Oprobovanie735_chanel1.jpg" />
-    <Content Include="Resource\TRM202_Oprobovanie735_chanel2.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="Resource\TRM_IsolationTest.rtf" />
     <None Include="Resource\TRM_Visual_test.rtf" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resource\TRM202_5522A_OprobovanieResistanceTermocouple_chanel1.jpg" />
+    <Content Include="Resource\TRM202_5522A_OprobovanieResistanceTermocouple_chanel2.jpg" />
+    <Content Include="Resource\TRM202_P4831_OprobovanieResistanceTermocouple_chanel1.jpg" />
+    <Content Include="Resource\TRM202_P4831_OprobovanieResistanceTermocouple_chanel2.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <Page Include="View\TermocupleView.xaml">
       <SubType>Designer</SubType>
