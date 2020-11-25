@@ -1,48 +1,347 @@
-﻿using AP.Utils.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using AP.Utils.Data;
+using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Port.OWEN;
 using NLog;
 using OwenioNet.Types;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace ASMC.Devices.OWEN
 {
     public class TRM202Device : OwenProtocol
     {
-        public int DeviceAddres { get; set; }
+        #region MetrologyCharacteristics
+
+        #region Gost6651
+
+        public RangeStorage<PhysicalRange<Temperature>> GetCu50_426RangeStorage
+        {
+            get => Cu50_426RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Cu50_426RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-50),new MeasPoint<Temperature>(200),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetCu100_426RangeStorage
+        {
+            get => Cu100_426RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Cu100_426RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-50),new MeasPoint<Temperature>(200),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+
+        public RangeStorage<PhysicalRange<Temperature>> GetPt100_385RangeStorage
+        {
+            get => Pt100_385RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Pt100_385RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-190),new MeasPoint<Temperature>(200),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetPt50_385RangeStorage
+        {
+            get => Pt50_385RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Pt50_385RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(750),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetTSP50M_428RangeStorage
+        {
+            get => TSP50M_428RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> TSP50M_428RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-190),new MeasPoint<Temperature>(200),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetTSP100M_428RangeStorage
+        {
+            get => TSP100M_428RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> TSP100M_428RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-190),new MeasPoint<Temperature>(200),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetTSP50P_391RangeStorage
+        {
+            get => TSP50P_391RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> TSP50P_391RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(750),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetTSP100P_391RangeStorage
+        {
+            get => TSP100P_391RangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> TSP100P_391RangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(750),
+                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+            });
+        }
+
+        #endregion Gost6651
+
+        #region Gost8_585
+        public RangeStorage<PhysicalRange<Temperature>> GetType_L_TermocoupleRangeStorage
+        {
+            get => Type_L_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_L_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(800),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_J_TermocoupleRangeStorage
+        {
+            get => Type_J_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_J_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1200),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_N_TermocoupleRangeStorage
+        {
+            get => Type_N_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_N_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1300),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_K_TermocoupleRangeStorage
+        {
+            get => Type_K_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_K_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1300),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_S_TermocoupleRangeStorage
+        {
+            get => Type_S_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_S_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1750),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_R_TermocoupleRangeStorage
+        {
+            get => Type_R_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_R_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1750),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_B_TermocoupleRangeStorage
+        {
+            get => Type_B_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_B_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(200),new MeasPoint<Temperature>(1800),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_A1_TermocoupleRangeStorage
+        {
+            get => Type_A1_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_A1_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(2500),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_A2_TermocoupleRangeStorage
+        {
+            get => Type_A2_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_A2_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(1800),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_A3_TermocoupleRangeStorage
+        {
+            get => Type_A3_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_A3_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(1800),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+        public RangeStorage<PhysicalRange<Temperature>> GetType_T_TermocoupleRangeStorage
+        {
+            get => Type_T_TermocoupleRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Temperature>> Type_T_TermocoupleRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]
+            {
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(400),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+
+        #endregion Gost8_585
+
+        #region Gost26_011
+        public RangeStorage<PhysicalRange<Percent>> GetUnificSignalRangeStorage
+        {
+            get => UnificSignalRangeStorage();
+        }
+
+        protected virtual RangeStorage<PhysicalRange<Percent>> UnificSignalRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Percent>>(new[]
+            {
+                new PhysicalRange<Percent>(new MeasPoint<Percent>(0),new MeasPoint<Percent>(100),
+                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+            });
+        }
+
+
+        #endregion Gost26_011
+
+
+        #endregion MetrologyCharacteristics
+
 
         /// <summary>
         /// Тип входного датчика или сигнала для входа 1 (2)
         /// </summary>
         public enum in_t
         {
-            [StringValue("50П 1.385")]r385 = 1,
-            [StringValue("100П 1.385")]r_385,
-            [StringValue("50П 1.391")]r391,
-            [StringValue("100П 1.391")]r_391,
-            [StringValue("ТСП гр. 21")]r_21,
-            [StringValue("50М 1.426")]r426,
-            [StringValue("100М 1.426")]r_426,
-            [StringValue("ТСМ гр. 23")]r_23,
-            [StringValue("50М 1.428")]r428,
-            [StringValue("100М 1.428")]r_428,
-            [StringValue("ТВР (А-1)")]E_A1,
-            [StringValue("ТВР (А-2)")]E_A2,
-            [StringValue("ТВР (А-3)")]E_A3,
-            [StringValue("ТПР (B)")]E__b,
-            [StringValue("ТЖК(J)")]E__j,
-            [StringValue("ТХА (K)")]E__K,
-            [StringValue("ТХК (L)")]E__L,
-            [StringValue("ТНН (N)")]E__n,
-            [StringValue("ТПП (R)")]E__r,
-            [StringValue("ТПП (S)")]E__S,
-            [StringValue("ТМК (T)")]E__t,
-            [StringValue("0 ... 5 мА")]i0_5,
-            [StringValue("0 ... 20 мА")]i0_20,
-            [StringValue("4 ... 20 мА")]i4_20,
-            [StringValue("-50 мВ ... +50 мВ")]U_50,
-            [StringValue("0 ... 1 В")]U0_1
+            [StringValue("50П 1.385")] r385 = 1,
+            [StringValue("100П 1.385")] r_385,
+            [StringValue("50П 1.391")] r391,
+            [StringValue("100П 1.391")] r_391,
+            [StringValue("ТСП гр. 21")] r_21,
+            [StringValue("50М 1.426")] r426,
+            [StringValue("100М 1.426")] r_426,
+            [StringValue("ТСМ гр. 23")] r_23,
+            [StringValue("50М 1.428")] r428,
+            [StringValue("100М 1.428")] r_428,
+            [StringValue("ТВР (А-1)")] E_A1,
+            [StringValue("ТВР (А-2)")] E_A2,
+            [StringValue("ТВР (А-3)")] E_A3,
+            [StringValue("ТПР (B)")] E__b,
+            [StringValue("ТЖК(J)")] E__j,
+            [StringValue("ТХА (K)")] E__K,
+            [StringValue("ТХК (L)")] E__L,
+            [StringValue("ТНН (N)")] E__n,
+            [StringValue("ТПП (R)")] E__r,
+            [StringValue("ТПП (S)")] E__S,
+            [StringValue("ТМК (T)")] E__t,
+            [StringValue("0 ... 5 мА")] i0_5,
+            [StringValue("0 ... 20 мА")] i0_20,
+            [StringValue("4 ... 20 мА")] i4_20,
+            [StringValue("-50 мВ ... +50 мВ")] U_50,
+            [StringValue("0 ... 1 В")] U0_1
         }
 
         public enum Parametr
@@ -50,7 +349,8 @@ namespace ASMC.Devices.OWEN
             /// <summary>
             /// Тип входного датчика или сигнала для входа 1 (2).
             /// </summary>
-            [ReadOnly(false)] [StringValue("in.t")] InT,
+            [ReadOnly(false)] [StringValue("in.t")]
+            InT,
 
             /// <summary>
             /// Точность вывода температуры на входе 1 (2).
@@ -70,7 +370,8 @@ namespace ASMC.Devices.OWEN
             /// <summary>
             /// Верхняя граница диапазона измерения для входа 1 (2).
             /// </summary>
-            [ReadOnly(false)] [StringValue("in.H")] InH,
+            [ReadOnly(false)] [StringValue("in.H")]
+            InH,
 
             /// <summary>
             /// Вычислитель квадратного корня для аналогового входа 1.
@@ -190,12 +491,14 @@ namespace ASMC.Devices.OWEN
             /// <summary>
             /// Режим индикации.
             /// </summary>
-            [ReadOnly(false)] [StringValue("diSP")] DiSP,
+            [ReadOnly(false)] [StringValue("diSP")]
+            DiSP,
 
             /// <summary>
             /// Время выхода из режима программирования.
             /// </summary>
-            [ReadOnly(false)] [StringValue("rESt")] RESt,
+            [ReadOnly(false)] [StringValue("rESt")]
+            RESt,
 
             /// <summary>
             /// Протокол обмена.
@@ -210,7 +513,8 @@ namespace ASMC.Devices.OWEN
             /// <summary>
             /// Длина сетевого адреса.
             /// </summary>
-            [ReadOnly(true)] [StringValue("A.LEn")] A_LEn,
+            [ReadOnly(true)] [StringValue("A.LEn")]
+            A_LEn,
 
             /// <summary>
             /// Базовый адрес прибора в сети.
@@ -265,7 +569,8 @@ namespace ASMC.Devices.OWEN
             /// <summary>
             /// Код сетевой ошибки при последнем обращении.
             /// </summary>
-            [ReadOnly(true)] [StringValue("N.err")] N_Err,
+            [ReadOnly(true)] [StringValue("N.err")]
+            N_Err,
 
             /// <summary>
             /// Для чтения/записи атрибута «редактирования».
@@ -280,7 +585,8 @@ namespace ASMC.Devices.OWEN
             /// <summary>
             /// Значение выходного сигнала или код ошибки.
             /// </summary>
-            [ReadOnly(true)] [StringValue("r.oUt")] RoUt,
+            [ReadOnly(true)] [StringValue("r.oUt")]
+            RoUt,
 
             // Параметры секретности (группа скрыта под паролем PASS = 100).
 
@@ -352,10 +658,11 @@ namespace ASMC.Devices.OWEN
         #region Property
 
         public AddressLengthType AddressLength { get; set; }
+        public int DeviceAddres { get; set; }
 
         public TrmProtocol Protocol { get; set; }
 
-        #endregion Property
+        #endregion
 
         public TRM202Device()
         {
@@ -369,29 +676,29 @@ namespace ASMC.Devices.OWEN
             switch (err)
             {
                 case TrmError.BitValue:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Descriptor:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Edit:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.FieldValue:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Index:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Input:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.InvalidWriteValue:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Mantissa:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.NoAcpConnect:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Read:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Unecpected:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
                 case TrmError.Value:
-                    throw new TrmException { Code = err };
+                    throw new TrmException {Code = err};
             }
         }
 
@@ -402,7 +709,7 @@ namespace ASMC.Devices.OWEN
         /// <returns></returns>
         public decimal GetLuPvValChanel(ushort chanel)
         {
-            return (decimal)ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength, Parametr.LuPV.GetStringValue(),
+            return (decimal) ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength, Parametr.LuPV.GetStringValue(),
                                             3);
         }
 
@@ -414,14 +721,14 @@ namespace ASMC.Devices.OWEN
         public decimal GetMeasValChanel(ushort chanel)
         {
             // Для второго канала нужно увеличить адрес прибора на 1.
-            return (decimal)ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength, Parametr.PV.GetStringValue(),
+            return (decimal) ReadFloatParam(DeviceAddres + (chanel - 1), AddressLength, Parametr.PV.GetStringValue(),
                                             3);
         }
 
         public decimal GetNumericParam(Parametr parName,
             int size, ushort? Register = null)
         {
-            return (decimal)ReadFloatParam(DeviceAddres, AddressLength, parName.GetStringValue(), size, --Register);
+            return (decimal) ReadFloatParam(DeviceAddres, AddressLength, parName.GetStringValue(), size, --Register);
         }
 
         public int GetShortIntPar(Parametr parName, int size, ushort? Register = null)
@@ -434,42 +741,38 @@ namespace ASMC.Devices.OWEN
             var answerDevice = base.OwenReadParam(ParametrName, addres, --Register);
             //отловим ошибку
             if (answerDevice.Length == 1)
-                if (Enum.IsDefined(typeof(TrmError), (int)answerDevice[0]))
-                    GenericException((TrmError)answerDevice[0]);
+                if (Enum.IsDefined(typeof(TrmError), (int) answerDevice[0]))
+                    GenericException((TrmError) answerDevice[0]);
 
             return answerDevice;
         }
 
-        public void WriteParametrToTRM(Parametr parName, byte[] writeDataBytes, ushort? Register = null)
-        {
-            ushort? localRegister = null;
-            if (Register != null)
-            {
-                localRegister = (ushort?)(Register - 1);//адрес канала начинается с нуля
-            }
-
-            OwenWriteParam(DeviceAddres, AddressLength, parName.GetStringValue(), writeDataBytes, localRegister);
-        }
-
         public void WriteFloat24Parametr(Parametr parName, float writeValue, ushort? Register = null)
         {
-            int maxArrSize = 3;//3 байта максимум для этой модели устройства
-            List<byte> list = new List<byte>(BitConverter.GetBytes(writeValue));
+            var maxArrSize = 3; //3 байта максимум для этой модели устройства
+            var list = new List<byte>(BitConverter.GetBytes(writeValue));
             list.Reverse();
             if (list.Count < maxArrSize)
-            {
                 do
                 {
                     list.Add(0x00);
                 } while (list.Count != maxArrSize);
-            }
+
             if (list.Count > maxArrSize)
                 list.RemoveRange(maxArrSize, list.Count - maxArrSize);
 
             WriteParametrToTRM(parName, list.ToArray(), Register);
         }
 
-        #endregion Methods
+        public void WriteParametrToTRM(Parametr parName, byte[] writeDataBytes, ushort? Register = null)
+        {
+            ushort? localRegister = null;
+            if (Register != null) localRegister = (ushort?) (Register - 1); //адрес канала начинается с нуля
+
+            OwenWriteParam(DeviceAddres, AddressLength, parName.GetStringValue(), writeDataBytes, localRegister);
+        }
+
+        #endregion
 
         /// <summary>
         /// Хранит настройки прибора
