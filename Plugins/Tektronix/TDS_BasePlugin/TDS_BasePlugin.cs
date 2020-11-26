@@ -170,7 +170,7 @@ namespace TDS_BasePlugin
         {
             Name = "Опробование";
         }
-
+        protected  TDS_Oscilloscope someTdsOscilloscope;
         #region Methods
 
         protected override DataTable FillData()
@@ -205,6 +205,9 @@ namespace TDS_BasePlugin
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
+            someTdsOscilloscope = new TDS_Oscilloscope();
+            someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
+            someTdsOscilloscope.ResetDevice();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
