@@ -35,8 +35,7 @@ namespace TDS2024
         {
             public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
             {
-                TestDevices = new IDeviceUi[]
-                    {new Device {Devices = new IDeviceBase[] {new TDS_Oscilloscope(){UserType = "TDS2024B"}}, Description = "Цифровой осциллограф."}};
+                
 
                 UserItemOperation = new IUserItemOperationBase[]
                 {

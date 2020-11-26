@@ -33,8 +33,7 @@ namespace TDS1012B
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
-            TestDevices = new IDeviceUi[]
-                {new Device {Devices = new IDeviceBase[] {new TDS_Oscilloscope(){UserType = "TDS1012B"}}, Description = "Цифровой осциллограф."}};
+            
 
             UserItemOperation = new IUserItemOperationBase[]
             {
@@ -66,8 +65,10 @@ namespace TDS1012B
         {
             calibr9500B = new Calibr9500B();
             someTdsOscilloscope = new TDS_Oscilloscope();
-
             
+
+
+
         }
     }
 

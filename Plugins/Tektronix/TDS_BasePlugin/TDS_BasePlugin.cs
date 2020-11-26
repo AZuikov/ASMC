@@ -78,6 +78,8 @@ namespace TDS_BasePlugin
             {
                 new Device {Devices = new IDeviceBase[] {new Calibr9500B()}, Description = "Калибратор осциллографов"}
             };
+            TestDevices = new IDeviceUi[]
+                {new Device {Devices = new IDeviceBase[] {new TDS_Oscilloscope()}, Description = "Цифровой осциллограф."}};
             Accessories = new[]
             {
                 "Интерфейсный кабель для клибратора (GPIB)"
@@ -205,9 +207,6 @@ namespace TDS_BasePlugin
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            someTdsOscilloscope = new TDS_Oscilloscope();
-            someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
-            someTdsOscilloscope.ResetDevice();
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
