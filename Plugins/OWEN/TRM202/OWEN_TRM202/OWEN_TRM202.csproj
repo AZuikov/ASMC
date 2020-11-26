@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Resource\TRM202_protocolMP2007.dotx" />
     <None Include="Resource\TRM_IsolationTest.rtf" />
     <None Include="Resource\TRM_Visual_test.rtf" />
   </ItemGroup>
