@@ -140,7 +140,7 @@ namespace OWEN_TRM202
 
         public override void FindDevice()
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public override void RefreshDevice()

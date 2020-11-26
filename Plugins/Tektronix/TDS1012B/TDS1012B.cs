@@ -5,7 +5,6 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope;
 using ASMC.Devices.IEEE.Tektronix.Oscilloscope;
-using ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B;
 using TDS_BasePlugin;
 
 namespace TDS1012B
@@ -35,7 +34,7 @@ namespace TDS1012B
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             TestDevices = new IDeviceUi[]
-                {new Device {Devices = new IDeviceBase[] {new TDS_XXXXB(){UserType = "TDS1012B"}}, Description = "Цифровой осциллограф."}};
+                {new Device {Devices = new IDeviceBase[] {new TDS_Oscilloscope(){UserType = "TDS1012B"}}, Description = "Цифровой осциллограф."}};
 
             UserItemOperation = new IUserItemOperationBase[]
             {
@@ -66,7 +65,7 @@ namespace TDS1012B
             base(userItemOperation, inTestingChanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
             calibr9500B = new Calibr9500B();
-            someTdsOscilloscope = new TDS_XXXXB();
+            someTdsOscilloscope = new TDS_Oscilloscope();
 
             
         }
@@ -78,7 +77,7 @@ namespace TDS1012B
             TDS_Oscilloscope.ChanelSet oscillosocopeChanel, string inResourceDi) : base(userItemOperation, oscillosocopeChanel, inResourceDi)
         {
             calibr9500B = new Calibr9500B();
-            someTdsOscilloscope = new TDS_XXXXB();
+            someTdsOscilloscope = new TDS_Oscilloscope();
         }
     }
 
@@ -88,7 +87,7 @@ namespace TDS1012B
             base(userItemOperation, chanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
             calibr9500B = new Calibr9500B();
-            someTdsOscilloscope = new TDS_XXXXB();
+            someTdsOscilloscope = new TDS_Oscilloscope();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_5nSec;
             RiseTimeTol = new MeasPoint<Time>(3.5M, UnitMultiplier.Nano);
         }
