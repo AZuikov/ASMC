@@ -102,10 +102,10 @@ namespace OWEN_TRM202
                 }
             };
 
-            DocumentName = "TRM202_protocol";
+            DocumentName = "TRM202_protocolMP2007";
 
-            var Chanel1Operation = new Operation8_4_ResistanceTermocoupleGost6651(this){Name = "Канал 1"};
-            Chanel1Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this));
+            var Chanel1Operation = new Operation8_4_ResistanceTermocoupleGost6651(this,1){Name = "Канал 1"};
+            Chanel1Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this,1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu100_426_Poverka(this,1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu50_426_Poverka(this,1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Pt100_385_Poverka(this,1));
@@ -115,8 +115,8 @@ namespace OWEN_TRM202
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this,1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this,1));
 
-            var Chanel2Operation = new Operation8_4_ResistanceTermocoupleGost6651(this){Name = "Канал 2"};
-            Chanel2Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this));
+            var Chanel2Operation = new Operation8_4_ResistanceTermocoupleGost6651(this,2){Name = "Канал 2"};
+            Chanel2Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this,2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu100_426_Poverka(this,  2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu50_426_Poverka(this,  2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Pt100_385_Poverka(this,  2));
@@ -128,6 +128,7 @@ namespace OWEN_TRM202
 
             UserItemOperation = new IUserItemOperationBase[]
             {
+                new Oper1VisualTest(this), 
                 //new Oprobovanie2007(this, 1),
                 //new Oprobovanie2007(this, 2),
                 //Chanel1Operation,
@@ -139,7 +140,7 @@ namespace OWEN_TRM202
 
         public override void FindDevice()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override void RefreshDevice()
@@ -148,6 +149,71 @@ namespace OWEN_TRM202
         }
 
         #endregion
+
+        public class Oper1VisualTest : ParagraphBase<bool>
+        {
+            public Oper1VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
+            {
+                Name = "Внешний осмотр";
+                DataRow = new List<IBasicOperation<bool>>();
+            }
+
+            #region Methods
+
+            /// <inheritdoc />
+            protected override DataTable FillData()
+            {
+                var data = base.FillData();
+                var dataRow = data.NewRow();
+                if (DataRow.Count == 1)
+                {
+                    var dds = DataRow[0] as BasicOperation<bool>;
+                    // ReSharper disable once PossibleNullReferenceException
+                    dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                    data.Rows.Add(dataRow);
+                }
+
+                return data;
+            }
+
+            /// <inheritdoc />
+            protected override string[] GenerateDataColumnTypeObject()
+            {
+                return new[] { "Результат внешнего осмотра" };
+            }
+
+            /// <inheritdoc />
+            protected override string GetReportTableName()
+            {
+                return "ITBmVisualTest";
+            }
+
+            protected override void InitWork(CancellationTokenSource token)
+            {
+                base.InitWork(token);
+                var operation = new BasicOperation<bool>();
+                operation.Expected = true;
+                operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+                operation.InitWork = () =>
+                {
+                    var service = UserItemOperation.ServicePack.QuestionText();
+                    service.Title = "Внешний осмотр";
+                    service.Entity = new Tuple<string, Assembly>("TRM_Visual_test", null);
+                    service.Show();
+                    var res = service.Entity as Tuple<string, bool>;
+                    operation.Getting = res.Item2;
+                    operation.Comment = res.Item1;
+                    operation.IsGood = () => operation.Getting;
+
+                    return Task.CompletedTask;
+                };
+
+                operation.CompliteWork = () => { return Task.FromResult(true); };
+                DataRow.Add(operation);
+            }
+
+            #endregion
+        }
 
         public class Oprobovanie2007 : ParagraphBase<bool>
         {
@@ -189,7 +255,7 @@ namespace OWEN_TRM202
 
             protected override string GetReportTableName()
             {
-                throw new NotImplementedException();
+                return null;
             }
 
             protected override void InitWork(CancellationTokenSource token)
@@ -248,7 +314,7 @@ namespace OWEN_TRM202
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
             protected TRM202Device.in_t _coupleType;
-            protected RangeStorage<PhysicalRange<Temperature>> MeasureRange;
+            protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
             protected MeasPoint<Temperature, Resistance>[] measPoints;
 
             protected TRM202DeviceUI trm202;
@@ -257,27 +323,46 @@ namespace OWEN_TRM202
 
             #endregion
 
-            public Operation8_4_ResistanceTermocoupleGost6651(IUserItemOperation userItemOperation) : base(userItemOperation)
+            public Operation8_4_ResistanceTermocoupleGost6651(IUserItemOperation userItemOperation, ushort inChanelNumber) : base(userItemOperation)
             {
+                _chanelNumber = inChanelNumber;
                 Name = "Определение основной приведенной погрешности прибора со специализированным входом";
                 Sheme = new ShemeImage
                 {
-                    Number = 1,
+                    Number = _chanelNumber,
                     FileName = $"TRM202_5522A_OprobovanieResistanceTermocouple_chanel{_chanelNumber}.jpg",
-                    Description = "Соберите схему, как показано на рисунке."
+                    ExtendedDescription = "Соберите схему, как показано на рисунке."
                 };
+               
             }
 
             #region Methods
 
             protected override string GetReportTableName()
             {
-                throw new NotImplementedException();
+                return null;
             }
 
             protected override DataTable FillData()
             {
-                return base.FillData();
+                var dataTable = base.FillData();
+                foreach (var row in DataRow)
+                {
+                    var dataRow = dataTable.NewRow();
+                    var dds = row as BasicOperationVerefication<MeasPoint<Temperature>>;
+                    if (dds == null) continue;
+                    dataRow["Поверяемая точка"] = dds.Expected?.Description;
+                    dataRow["Измеренное значение"] = dds.Getting?.Description;
+                    dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
+                    dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+
+                    if (dds.IsGood == null)
+                        dataRow[4] = "не выполнено";
+                    else
+                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataTable.Rows.Add(dataRow);
+                }
+                return dataTable;
             }
 
             protected override string[] GenerateDataColumnTypeObject()
@@ -335,7 +420,11 @@ namespace OWEN_TRM202
                         try
                         {
                             operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-                            operation.ErrorCalculation = (measPoint, point1) => MeasureRange.GetTolMeasPoint(operation.Expected);
+                            operation.ErrorCalculation = (measPoint, point1) =>
+                            {
+                                //считаем приведенную погрешность
+                                return MeasureRanges.GetReducerTolMeasPoint(measPoint);
+                            };
 
                             operation.UpperTolerance = operation.Expected + operation.Error;
                             operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
@@ -376,11 +465,11 @@ namespace OWEN_TRM202
 
         public class Operation8_4_Cu50_426_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_Cu50_426_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_Cu50_426_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetCu50_426RangeStorage;
+               
+                MeasureRanges = trm202.GetCu50_426RangeStorage;
                 _coupleType = TRM202Device.in_t.r426;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -395,15 +484,20 @@ namespace OWEN_TRM202
                 };
                 
             }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBm8_4_Cu50_426";
+            }
         }
 
         public class Operation8_4_Cu100_426_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_Cu100_426_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_Cu100_426_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation,inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetCu100_426RangeStorage;
+                
+                MeasureRanges = trm202.GetCu100_426RangeStorage;
                 _coupleType = TRM202Device.in_t.r_426;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -417,15 +511,20 @@ namespace OWEN_TRM202
                     new MeasPoint<Temperature, Resistance>(187.5M, 179.905M)
                 };
             }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBm8_4_Cu100_426";
+            }
         }
 
         public class Operation8_4_Pt100_385_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_Pt100_385_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_Pt100_385_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetPt100_385RangeStorage;
+                
+                MeasureRanges = trm202.GetPt100_385RangeStorage;
                 _coupleType = TRM202Device.in_t.r_385;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -439,15 +538,20 @@ namespace OWEN_TRM202
                     new MeasPoint<Temperature, Resistance>(702.5M, 346.055M)
                 };
             }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBm8_4_Pt100_385";
+            }
         }
 
         public class Operation8_4_Pt50_385_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_Pt50_385_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_Pt50_385_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetPt50_385RangeStorage;
+                
+                MeasureRanges = trm202.GetPt50_385RangeStorage;
                 _coupleType = TRM202Device.in_t.r385;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -461,15 +565,20 @@ namespace OWEN_TRM202
                     new MeasPoint<Temperature, Resistance>(702.5M, 173.027M)
                 };
             }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBmOper8_4_Pt50_385";
+            }
         }
 
         public class Operation8_4_TSM50M_428_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_TSM50M_428_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_TSM50M_428_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetTSP50M_428RangeStorage;
+                
+                MeasureRanges = trm202.GetTSP50M_428RangeStorage;
                 _coupleType = TRM202Device.in_t.r428;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -483,15 +592,20 @@ namespace OWEN_TRM202
                     new MeasPoint<Temperature, Resistance>(180.5M, 88.605M), 
                 };
             }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBmOper8_4_TSM50M_428";
+            }
         }
 
         public class Operation8_4_TSM100M_428_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_TSM100M_428_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_TSM100M_428_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetTSP100M_428RangeStorage;
+                
+                MeasureRanges = trm202.GetTSP100M_428RangeStorage;
                 _coupleType = TRM202Device.in_t.r_428;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -505,15 +619,20 @@ namespace OWEN_TRM202
                     new MeasPoint<Temperature, Resistance>(180.5M, 177.210M)
                 };
             }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBmOper8_4_TSM100M_428";
+            }
         }
 
         public class Operation8_4_TSP50P_391_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_TSP50P_391_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_TSP50P_391_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetTSP50P_391RangeStorage;
+                
+                MeasureRanges = trm202.GetTSP50P_391RangeStorage;
                 _coupleType = TRM202Device.in_t.r391;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -527,15 +646,20 @@ namespace OWEN_TRM202
                     new MeasPoint<Temperature, Resistance>(702.5M, 174.955M)
                 };
             }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBmOper8_4_TSP50P_391";
+            }
         }
 
         public class Operation8_4_TSP100P_391_Poverka : Operation8_4_ResistanceTermocoupleGost6651
         {
-            public Operation8_4_TSP100P_391_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation)
+            public Operation8_4_TSP100P_391_Poverka(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
             {
                 trm202 = new TRM202DeviceUI();
-                _chanelNumber = inChanel;
-                MeasureRange = trm202.GetTSP100P_391RangeStorage;
+                
+                MeasureRanges = trm202.GetTSP100P_391RangeStorage;
                 _coupleType = TRM202Device.in_t.r_391;
                 Name = _coupleType.GetStringValue();
                 flkCalib5522A = new Calib5522A();
@@ -548,6 +672,11 @@ namespace OWEN_TRM202
                     new MeasPoint<Temperature, Resistance>(512.5M, 288.110M), 
                     new MeasPoint<Temperature, Resistance>(702.5M, 349.910M)
                 };
+            }
+
+            protected override string GetReportTableName()
+            {
+                return "FillTabBmOper8_4_TSP100P_391";
             }
         }
     }

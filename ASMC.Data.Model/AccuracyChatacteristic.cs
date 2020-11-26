@@ -43,7 +43,7 @@ namespace ASMC.Data.Model
         /// <param name = "val">Значение для которого расчитывается погрешность.</param>
         /// <param name = "upperRange">Значение предела измерения.</param>
         /// <returns></returns>
-        public decimal GetAccuracy(decimal val, decimal upperRange = 0)
+        public decimal GetAccuracy(decimal val, decimal upperRange =0)
         {
             decimal TolOfMeasPoint = 0;
             decimal rangeFloor = 0;

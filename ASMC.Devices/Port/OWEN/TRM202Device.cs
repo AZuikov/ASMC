@@ -26,7 +26,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-50),new MeasPoint<Temperature>(200),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -40,7 +40,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-50),new MeasPoint<Temperature>(200),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -54,8 +54,8 @@ namespace ASMC.Devices.OWEN
         {
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
-                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-190),new MeasPoint<Temperature>(200),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(750),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -69,7 +69,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(750),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -83,7 +83,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-190),new MeasPoint<Temperature>(200),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -97,7 +97,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-190),new MeasPoint<Temperature>(200),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -111,7 +111,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(750),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -125,7 +125,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(750),
-                                               new AccuracyChatacteristic(0.1M,null,0.25M)),
+                                               new AccuracyChatacteristic(0.1M,0.25M,null)),
             });
         }
 
@@ -142,7 +142,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(800),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -156,7 +156,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1200),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -170,7 +170,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1300),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -184,7 +184,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1300),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -198,7 +198,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1750),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -212,7 +212,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1750),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -226,7 +226,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(200),new MeasPoint<Temperature>(1800),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -240,7 +240,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(2500),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -254,7 +254,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(1800),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -268,7 +268,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(1800),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -282,7 +282,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(400),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 
@@ -300,7 +300,7 @@ namespace ASMC.Devices.OWEN
             return new RangeStorage<PhysicalRange<Percent>>(new[]
             {
                 new PhysicalRange<Percent>(new MeasPoint<Percent>(0),new MeasPoint<Percent>(100),
-                                               new AccuracyChatacteristic(0.1M,null,0.5M)),
+                                               new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
 

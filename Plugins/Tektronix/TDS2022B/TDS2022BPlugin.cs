@@ -35,7 +35,7 @@ namespace TDS2022B
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
             TestDevices = new IDeviceUi[]
-                {new Device {Devices = new IDeviceBase[] {new TDS_2022B()}, Description = "Цифровой осциллограф."}};
+                {new Device {Devices = new IDeviceBase[] {new TDS_XXXXB(){UserType = "TDS2022B"}}, Description = "Цифровой осциллограф."}};
 
             UserItemOperation = new IUserItemOperationBase[]
             {
@@ -67,7 +67,7 @@ namespace TDS2022B
             base(userItemOperation, inTestingChanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
             calibr9500B = new Calibr9500B();
-            someTdsOscilloscope = new TDS_2022B();
+            someTdsOscilloscope = new TDS_XXXXB();
         }
     }
 
@@ -77,7 +77,7 @@ namespace TDS2022B
             TDS_Oscilloscope.ChanelSet oscillosocopeChanel, string inResourceDi) : base(userItemOperation, oscillosocopeChanel, inResourceDi)
         {
             calibr9500B = new Calibr9500B();
-            someTdsOscilloscope = new TDS_2022B();
+            someTdsOscilloscope = new TDS_XXXXB();
         }
     }
 
@@ -87,7 +87,7 @@ namespace TDS2022B
             base(userItemOperation, chanel, Assembly.GetExecutingAssembly().GetName().Name)
         {
             calibr9500B = new Calibr9500B();
-            someTdsOscilloscope = new TDS_2022B();
+            someTdsOscilloscope = new TDS_XXXXB();
             horizontalScAleForTest = TDS_Oscilloscope.HorizontalSCAle.Scal_2_5nSec;
             RiseTimeTol = new MeasPoint<Time>(2.1M, UnitMultiplier.Nano);
         }

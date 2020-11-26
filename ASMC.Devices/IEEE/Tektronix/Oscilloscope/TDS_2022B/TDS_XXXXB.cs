@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope.TDS_2022B
 {
-   public class TDS_2022B : TDS_Oscilloscope
+   public class TDS_XXXXB : TDS_Oscilloscope
     {
-        public TDS_2022B()
+        public TDS_XXXXB()
         {
             UserType = "TDS 2022B";
             ChanelCount = 2;

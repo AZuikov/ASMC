@@ -90,7 +90,7 @@ namespace OWEN_TRM202
 
         public override void FindDevice()
         {
-            throw new NotImplementedException();
+            throw null;
         }
 
         public override void RefreshDevice()
@@ -135,7 +135,7 @@ namespace OWEN_TRM202
 
         protected override string GetReportTableName()
         {
-            throw new NotImplementedException();
+            throw null;
         }
 
         #endregion

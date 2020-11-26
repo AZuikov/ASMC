@@ -418,7 +418,7 @@ namespace ASMC.Devices.IEEE
         #endregion Methods
 
         /// <inheritdoc />
-        public string UserType { get; protected set; }
+        public string UserType { get;  set; }
 
         /// <inheritdoc />
         public string StringConnection
