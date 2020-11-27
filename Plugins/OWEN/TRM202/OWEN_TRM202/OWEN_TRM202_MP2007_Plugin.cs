@@ -367,7 +367,9 @@ namespace OWEN_TRM202
 
             protected override string[] GenerateDataColumnTypeObject()
             {
-                return new string[]{"Поверяемая точка", "Измеренное значение", "Минимально допустимое значение","Максимально допустимое значение"};
+                return new string[]{"Поверяемая точка", "Измеренное значение", 
+                    "Минимально допустимое значение",
+                    "Максимально допустимое значение"}.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             }
 
             protected override void InitWork(CancellationTokenSource token)
