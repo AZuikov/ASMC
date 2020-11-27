@@ -197,7 +197,7 @@ namespace ASMC.Devices.OWEN
         {
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
-                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1750),
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(1750),
                                                new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
@@ -211,7 +211,7 @@ namespace ASMC.Devices.OWEN
         {
             return new RangeStorage<PhysicalRange<Temperature>>(new[]
             {
-                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(1750),
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(0),new MeasPoint<Temperature>(1750),
                                                new AccuracyChatacteristic(0.1M,0.5M,null)),
             });
         }
@@ -331,11 +331,11 @@ namespace ASMC.Devices.OWEN
             [StringValue("ТВР (А-3)")] E_A3,
             [StringValue("ТПР (B)")] E__b,
             [StringValue("ТЖК(J)")] E__j,
-            [StringValue("ТХА (K)")] E__K,
+            [StringValue("ТХА (K)")] E__k,
             [StringValue("ТХК (L)")] E__L,
             [StringValue("ТНН (N)")] E__n,
             [StringValue("ТПП (R)")] E__r,
-            [StringValue("ТПП (S)")] E__S,
+            [StringValue("ТПП (S)")] E__s,
             [StringValue("ТМК (T)")] E__t,
             [StringValue("0 ... 5 мА")] i0_5,
             [StringValue("0 ... 20 мА")] i0_20,

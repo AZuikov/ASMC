@@ -116,6 +116,8 @@
   <ItemGroup>
     <Content Include="Resource\TRM202_5522A_OprobovanieResistanceTermocouple_chanel1.jpg" />
     <Content Include="Resource\TRM202_5522A_OprobovanieResistanceTermocouple_chanel2.jpg" />
+    <Content Include="Resource\TRM202_5522A_VoltageTermocouple_chanel1.jpg" />
+    <Content Include="Resource\TRM202_5522A_VoltageTermocouple_chanel2.jpg" />
     <Content Include="Resource\TRM202_P4831_OprobovanieResistanceTermocouple_chanel1.jpg" />
     <Content Include="Resource\TRM202_P4831_OprobovanieResistanceTermocouple_chanel2.jpg" />
   </ItemGroup>
@@ -129,6 +131,7 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
 mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
-xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y</PostBuildEvent>
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y
+xcopy "$(ProjectDir)Resource" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
   </PropertyGroup>
 </Project>
