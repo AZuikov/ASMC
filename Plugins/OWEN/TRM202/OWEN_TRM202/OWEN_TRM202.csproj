@@ -116,6 +116,8 @@
   <ItemGroup>
     <Content Include="Resource\TRM202_5522A_OprobovanieResistanceTermocouple_chanel1.jpg" />
     <Content Include="Resource\TRM202_5522A_OprobovanieResistanceTermocouple_chanel2.jpg" />
+    <Content Include="Resource\TRM202_5522A_TC_out_chanel1.jpg" />
+    <Content Include="Resource\TRM202_5522A_TC_out_chanel2.jpg" />
     <Content Include="Resource\TRM202_5522A_VoltageTermocouple_chanel1.jpg" />
     <Content Include="Resource\TRM202_5522A_VoltageTermocouple_chanel2.jpg" />
     <Content Include="Resource\TRM202_P4831_OprobovanieResistanceTermocouple_chanel1.jpg" />

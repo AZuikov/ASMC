@@ -104,6 +104,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
+    <Compile Include="IEEE\Fluke\Calibrator\ICalibrator.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
     <Compile Include="IEEE\IEEE_Base.cs" />
@@ -158,6 +159,7 @@
     <None Include="packages.config" />
     <None Include="Resources\ACC\5522a_1yr_99CF.acc" />
     <None Include="Resources\ACC\5700_99.1yr" />
+    <None Include="Resources\ACC\9100.acc" />
     <None Include="Resources\ACC\9500.acc" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>

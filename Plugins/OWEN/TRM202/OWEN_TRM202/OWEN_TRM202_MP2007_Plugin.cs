@@ -120,6 +120,18 @@ namespace OWEN_TRM202
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 1));
 
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_L_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_J_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_N_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_K_Poverka(this, 1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_S_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_R_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_B_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_T_Poverka(this,  1));
+            //Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  1));
+            //Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  1));
+            //Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  1));
+
             var Chanel2Operation = new Operation8_4_ResistanceTermocoupleGost6651(this,2){Name = "Канал 2"};
             Chanel2Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this,2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu100_426_Poverka(this,  2));
@@ -135,10 +147,11 @@ namespace OWEN_TRM202
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this,  2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this,  2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this,  2));
+            
             //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_L_Poverka(this,  2));
             //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_J_Poverka(this,  2));
             //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_N_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_K_Poverka(this,  2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_K_Poverka(this,  2));
             //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_S_Poverka(this,  2));
             //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_R_Poverka(this,  2));
             //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_B_Poverka(this,  2));
@@ -722,10 +735,10 @@ namespace OWEN_TRM202
             #region Fields
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-            protected TRM202Device.in_t _coupleType;
+            protected TRM202Device.in_t CoupleTypeTrm;
+            protected CalibrMain.COut.CSet.СTemperature.TypeTermocouple CalibrTypeTermocouple;
             protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
-            protected MeasPoint<Temperature, Voltage>[] measPoints;
-
+            protected MeasPoint<Temperature>[] measPoints;
             protected TRM202DeviceUI trm202;
             protected ushort _chanelNumber { get; set; }
             protected Calib5522A flkCalib5522A;
@@ -739,7 +752,7 @@ namespace OWEN_TRM202
                 Sheme = new ShemeImage
                 {
                     Number = _chanelNumber+10,
-                    FileName = $"TRM202_5522A_VoltageTermocouple_chanel{_chanelNumber}.jpg",
+                    FileName = $"TRM202_5522A_TC_out_chanel{_chanelNumber}.jpg",
                     ExtendedDescription = "Соберите схему, как показано на рисунке."
                 };
 
@@ -808,7 +821,7 @@ namespace OWEN_TRM202
 
                                 //1. задаем на каналах нужную характеристику 
                                 var typeTermoCouple = BitConverter
-                                                     .GetBytes((int)_coupleType).Where(a => a != 0).ToArray(); //выкидываем из массива лишние нули
+                                                     .GetBytes((int)CoupleTypeTrm).Where(a => a != 0).ToArray(); //выкидываем из массива лишние нули
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
                                 trm202.WriteFloat24Parametr(TRM202Device.Parametr.SH, 0, _chanelNumber);
@@ -844,12 +857,29 @@ namespace OWEN_TRM202
                             operation.LowerTolerance = operation.Expected - operation.Error;
                             operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                                 .Multiplier);
-                            MeasPoint<Voltage> setPoint = new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
-                            flkCalib5522A.Out.Set.Voltage.Dc.SetValue(setPoint);
+
+                            MeasPoint<Temperature> nullDegPoint = new MeasPoint<Temperature>(0);
+                            //flkCalib5522A.Out.Set.Temperature.SetExtTempSensor(nullDegPoint);
+                            flkCalib5522A.Out.Set.Temperature.SetIntTempSensor();
+                            flkCalib5522A.Out.Set.Temperature.SetTermoCoupleType(CalibrTypeTermocouple);
+                            flkCalib5522A.Out.Set.Temperature.SetValue(nullDegPoint);
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(900);
-                            var measPoint = trm202.GetMeasValChanel(_chanelNumber);
+                            Thread.Sleep(1900);
+                            // у ТРМ должна быть включена схема компенсации  температурыокр среды
+                            decimal measDelta = trm202.GetMeasValChanel(_chanelNumber);
+                           // MeasPoint<Temperature> delta = new MeasPoint<Temperature>(measDelta);
+                           // flkCalib5522A.Out.Set.Temperature.SetExtTempSensor(delta);
+                            flkCalib5522A.Out.Set.Temperature.SetValue(point);
+                            Thread.Sleep(3000);
+                            decimal measPoint = trm202.GetMeasValChanel(_chanelNumber);
+                            if (CoupleTypeTrm != TRM202Device.in_t.E__b)
+                            {
+                                measPoint = measPoint - measDelta;
+                            }
+                            
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.Out.Set.Temperature.SetIntTempSensor();
+
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
@@ -881,17 +911,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_L_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__L;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__L;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.L;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(-150,-7.831M),
-                    new MeasPoint<Temperature, Voltage>(50M,3.306M),
-                    new MeasPoint<Temperature, Voltage>(300M, 22.843M),
-                    new MeasPoint<Temperature, Voltage>(550M,44.709M),
-                    new MeasPoint<Temperature, Voltage>(750M, 62.197M)
+                    new MeasPoint<Temperature>(-150),
+                    new MeasPoint<Temperature>(50M),
+                    new MeasPoint<Temperature>(300M),
+                    new MeasPoint<Temperature>(550M),
+                    new MeasPoint<Temperature>(750M)
                 };
 
             }
@@ -911,17 +942,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_J_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__j;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__j;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.J;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(-130,-5.801M),
-                    new MeasPoint<Temperature, Voltage>(150M,8.010M),
-                    new MeasPoint<Temperature, Voltage>(500M, 27.393M),
-                    new MeasPoint<Temperature, Voltage>(850M,48.715M),
-                    new MeasPoint<Temperature, Voltage>(1130M, 65.525M)
+                    new MeasPoint<Temperature>(-130),
+                    new MeasPoint<Temperature>(150M),
+                    new MeasPoint<Temperature>(500M),
+                    new MeasPoint<Temperature>(850M),
+                    new MeasPoint<Temperature>(1130M)
                 };
 
             }
@@ -941,17 +973,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_N_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__n;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__n;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.N;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(-125,-2.902M),
-                    new MeasPoint<Temperature, Voltage>(175M,5.098M),
-                    new MeasPoint<Temperature, Voltage>(550M, 18.672M),
-                    new MeasPoint<Temperature, Voltage>(925M,33.346M),
-                    new MeasPoint<Temperature, Voltage>(1225M, 44.773M)
+                    new MeasPoint<Temperature>(-125),
+                    new MeasPoint<Temperature>(175M),
+                    new MeasPoint<Temperature>(550M),
+                    new MeasPoint<Temperature>(925M),
+                    new MeasPoint<Temperature>(1225M)
                 };
 
             }
@@ -971,17 +1004,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_K_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__k;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__k;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                this.CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.K;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(-125,-4.276M),
-                    new MeasPoint<Temperature, Voltage>(175M,7.140M),
-                    new MeasPoint<Temperature, Voltage>(550M, 22.776M),
-                    new MeasPoint<Temperature, Voltage>(925M,38.323M),
-                    new MeasPoint<Temperature, Voltage>(1225M, 49.746M)
+                    new MeasPoint<Temperature>(-125 ),
+                    new MeasPoint<Temperature>(175M ),
+                    new MeasPoint<Temperature>(550M ),
+                    new MeasPoint<Temperature>(925M ),
+                    new MeasPoint<Temperature>(1225M)
                 };
 
             }
@@ -1001,17 +1035,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_S_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__s;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__s;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.S;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(87,0.552M),
-                    new MeasPoint<Temperature, Voltage>(437M,3.616M),
-                    new MeasPoint<Temperature, Voltage>(875M, 8.170M),
-                    new MeasPoint<Temperature, Voltage>(1312M,13.305M),
-                    new MeasPoint<Temperature, Voltage>(1602M, 17.507M)
+                    new MeasPoint<Temperature>(87),
+                    new MeasPoint<Temperature>(437M),
+                    new MeasPoint<Temperature>(875M),
+                    new MeasPoint<Temperature>(1312M),
+                    new MeasPoint<Temperature>(1602M)
                 };
 
             }
@@ -1031,17 +1066,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_R_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__r;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__r;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.R;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(87,0.552M),
-                    new MeasPoint<Temperature, Voltage>(437M,3.795M),
-                    new MeasPoint<Temperature, Voltage>(875M, 8.887M),
-                    new MeasPoint<Temperature, Voltage>(1312M,14.798M),
-                    new MeasPoint<Temperature, Voltage>(1662M, 19.705M)
+                    new MeasPoint<Temperature>(87),
+                    new MeasPoint<Temperature>(437M),
+                    new MeasPoint<Temperature>(875M),
+                    new MeasPoint<Temperature>(1312M),
+                    new MeasPoint<Temperature>(1662M)
                 };
 
             }
@@ -1061,17 +1097,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_B_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__b;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__b;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.B;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(280,0.372M),
-                    new MeasPoint<Temperature, Voltage>(600M,1.792M),
-                    new MeasPoint<Temperature, Voltage>(100M, 4.834M),
-                    new MeasPoint<Temperature, Voltage>(1400M,8.956M),
-                    new MeasPoint<Temperature, Voltage>(1720M, 2.666M)
+                    new MeasPoint<Temperature>(280),
+                    new MeasPoint<Temperature>(600M),
+                    new MeasPoint<Temperature>(1000M),
+                    new MeasPoint<Temperature>(1400M),
+                    new MeasPoint<Temperature>(1720M)
                 };
 
             }
@@ -1091,17 +1128,18 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_T_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E__t;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E__t;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
+                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.T;
 
-                measPoints = new MeasPoint<Temperature, Voltage>[]
+                measPoints = new MeasPoint<Temperature>[]
                 {
-                    new MeasPoint<Temperature, Voltage>(-170,-5.070M),
-                    new MeasPoint<Temperature, Voltage>(-50M,-1.819M),
-                    new MeasPoint<Temperature, Voltage>(100M, 4.279M),
-                    new MeasPoint<Temperature, Voltage>(250M,12.013M),
-                    new MeasPoint<Temperature, Voltage>(370M, 19.030M)
+                    new MeasPoint<Temperature>(-170),
+                    new MeasPoint<Temperature>(-50M),
+                    new MeasPoint<Temperature>(100M),
+                    new MeasPoint<Temperature>(250M),
+                    new MeasPoint<Temperature>(370M)
                 };
 
             }
@@ -1121,8 +1159,8 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_A1_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E_A1;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E_A1;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
 
                 measPoints = new MeasPoint<Temperature, Voltage>[]
@@ -1151,8 +1189,8 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_A2_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E_A2;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E_A2;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
 
                 measPoints = new MeasPoint<Temperature, Voltage>[]
@@ -1181,8 +1219,8 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_A3_TermocoupleRangeStorage;
-                _coupleType = TRM202Device.in_t.E_A3;
-                Name = _coupleType.GetStringValue();
+                CoupleTypeTrm = TRM202Device.in_t.E_A3;
+                Name = CoupleTypeTrm.GetStringValue();
                 flkCalib5522A = new Calib5522A();
 
                 measPoints = new MeasPoint<Temperature, Voltage>[]

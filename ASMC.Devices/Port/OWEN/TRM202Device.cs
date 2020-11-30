@@ -330,7 +330,7 @@ namespace ASMC.Devices.OWEN
             [StringValue("ТВР (А-2)")] E_A2,
             [StringValue("ТВР (А-3)")] E_A3,
             [StringValue("ТПР (B)")] E__b,
-            [StringValue("ТЖК(J)")] E__j,
+            [StringValue("ТЖК (J)")] E__j,
             [StringValue("ТХА (K)")] E__k,
             [StringValue("ТХК (L)")] E__L,
             [StringValue("ТНН (N)")] E__n,
@@ -716,7 +716,7 @@ namespace ASMC.Devices.OWEN
         /// <summary>
         /// Запрос измеренного значения, по протоколу ОВЕН.
         /// </summary>
-        /// <param name = "chanel">Номер канала (регистр, 0 или 1). Номер канала нужно задавать начиная с 1.</param>
+        /// <param name = "chanel">Номер канала. Номер канала нужно задавать начиная с 1.</param>
         /// <returns></returns>
         public decimal GetMeasValChanel(ushort chanel)
         {
@@ -770,6 +770,30 @@ namespace ASMC.Devices.OWEN
             if (Register != null) localRegister = (ushort?) (Register - 1); //адрес канала начинается с нуля
 
             OwenWriteParam(DeviceAddres, AddressLength, parName.GetStringValue(), writeDataBytes, localRegister);
+        }
+
+        /// <summary>
+        /// Выключение схемы компенсации температуры окружающей среды.
+        /// </summary>
+        public void OffCompensation()
+        {
+            byte[] arrToWrite1 = new byte[] {0x23, 0x48, 0x4f, 0x48, 0x49, 0x4e, 0x4b, 0x50, 0x56, 0x4a, 0x56, 0x47, 0x4e, 0x54, 0x52, 0x55, 0x4e, 0x0d};
+            byte[] arrToWrite2 = new byte[]{ 0x23, 0x48, 0x4f, 0x47, 0x48, 0x4a, 0x56, 0x47, 0x4e, 0x47, 0x47, 0x4b, 0x4b, 0x47, 0x56, 0x0d };
+            Write(arrToWrite1,0,arrToWrite1.Length);
+            Write(arrToWrite2,0,arrToWrite2.Length);
+        }
+
+        /// <summary>
+        /// Включение схемы компенсации температуры окружающей среды.
+        /// </summary>
+        public void OnCompensation()
+        {
+            byte[] arrToWrite1 = new byte[] { 0x23, 0x48, 0x4f, 0x48, 0x49, 0x4e, 0x4b, 0x50, 0x56, 0x4a, 0x56, 0x47, 0x4e, 0x54, 0x52, 0x55, 0x4e, 0x0d };
+            byte[] arrToWrite2 = new byte[] { 0x23, 0x48, 0x4f, 0x47, 0x48, 0x4a, 0x56, 0x47, 0x4e, 0x47, 0x48, 0x53, 0x52, 0x4c, 0x4f, 0x0d };
+            
+            Write(arrToWrite1, 0, arrToWrite1.Length);
+            Write(arrToWrite2, 0, arrToWrite2.Length);
+
         }
 
         #endregion
