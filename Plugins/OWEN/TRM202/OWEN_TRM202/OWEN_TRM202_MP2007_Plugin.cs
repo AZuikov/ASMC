@@ -14,7 +14,6 @@ using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.OWEN;
-using ASMC.Devices.Port.IZ_Tech;
 using ASMC.Devices.UInterface.TRM.ViewModel;
 using DevExpress.Mvvm;
 using NLog;
@@ -52,7 +51,7 @@ namespace OWEN_TRM202
             return Task.FromResult(operation.IsGood());
         }
 
-        #endregion
+        #endregion Methods
     }
 
     internal class OWEN_TRM202_MP2007_Plugin : Program<Operation2007>
@@ -85,7 +84,8 @@ namespace OWEN_TRM202
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[] {new Calib5522A(),new Calibr_9100()}, Description = "Многофунциональный калибратор"
+                    Devices = new IDeviceBase[] {new Calib5522A(), new Calibr_9100()},
+                    Description = "Многофунциональный калибратор"
                 }
             };
             TestDevices = new IDeviceUi[]
@@ -114,7 +114,9 @@ namespace OWEN_TRM202
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 1));
-
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  1));
+            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_L_Poverka(this, 1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_J_Poverka(this, 1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_N_Poverka(this, 1));
@@ -123,9 +125,7 @@ namespace OWEN_TRM202
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_R_Poverka(this, 1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_B_Poverka(this, 1));
             Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_T_Poverka(this, 1));
-            //Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  1));
-            //Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  1));
-            //Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  1));
+            
 
             var Chanel2Operation = new Operation8_4_ResistanceTermocoupleGost6651(this, 2) {Name = "Канал 2"};
             Chanel2Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this, 2));
@@ -142,18 +142,18 @@ namespace OWEN_TRM202
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 2));
-
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_L_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_J_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_N_Poverka(this,  2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_L_Poverka(this, 2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_J_Poverka(this, 2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_N_Poverka(this, 2));
             Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_K_Poverka(this, 2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_S_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_R_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_B_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_T_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  2));
-            //Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_S_Poverka(this, 2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_R_Poverka(this, 2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_B_Poverka(this, 2));
+            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_T_Poverka(this, 2));
+            
 
             UserItemOperation = new IUserItemOperationBase[]
             {
@@ -177,7 +177,7 @@ namespace OWEN_TRM202
             AddresDevice = IeeeBase.AllStringConnect;
         }
 
-        #endregion
+        #endregion Methods
 
         public class Oper1VisualTest : ParagraphBase<bool>
         {
@@ -241,7 +241,7 @@ namespace OWEN_TRM202
                 DataRow.Add(operation);
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Oprobovanie2007 : ParagraphBase<bool>
@@ -252,15 +252,13 @@ namespace OWEN_TRM202
 
             private readonly ushort _chanelNumber;
 
-            #endregion
+            #endregion Fields
 
             #region Property
 
-            protected Calib5522A flkCalib5522A { get; set; }
-
             protected TRM202DeviceUI trm202 { get; set; }
 
-            #endregion
+            #endregion Property
 
             public Oprobovanie2007(IUserItemOperation userItemOperation, ushort chanelNumb) : base(userItemOperation)
             {
@@ -342,32 +340,33 @@ namespace OWEN_TRM202
                 }
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_VoltageTermocouple : ParagraphBase<MeasPoint<Temperature>>
+        public class Operation8_4_HCX_TermocoupleGost8_585 : ParagraphBase<MeasPoint<Temperature>>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
             #region Fields
 
+            protected ICalibrator Calibrator;
+
             protected CalibrMain.COut.CSet.СTemperature.TypeTermocouple CalibrTypeTermocouple;
 
             protected TRM202Device.in_t CoupleTypeTrm;
-            protected Calib5522A flkCalib5522A;
             protected MeasPoint<Temperature>[] measPoints;
             protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
             protected TRM202DeviceUI trm202;
 
-            #endregion
+            #endregion Fields
 
             #region Property
 
             protected ushort _chanelNumber { get; set; }
 
-            #endregion
+            #endregion Property
 
-            public Operation8_4_VoltageTermocouple(IUserItemOperation userItemOperation, ushort inChanelNumber) :
+            public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
             {
                 _chanelNumber = inChanelNumber;
@@ -424,11 +423,14 @@ namespace OWEN_TRM202
             {
                 trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
+                Calibrator =
+                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
+                                     .SelectedDevice as ICalibrator;
 
-                if (trm202 == null || flkCalib5522A == null) return;
+                if (trm202 == null || Calibrator == null || measPoints == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
-                flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
+                ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
 
                 base.InitWork(token);
 
@@ -482,23 +484,18 @@ namespace OWEN_TRM202
                                                                                                 .Multiplier);
 
                             var nullDegPoint = new MeasPoint<Temperature>(0);
-                            //flkCalib5522A.Out.Set.Temperature.SetExtTempSensor(nullDegPoint);
-                            flkCalib5522A.Out.Set.Temperature.SetIntTempSensor();
-                            flkCalib5522A.Out.Set.Temperature.SetTermoCoupleType(CalibrTypeTermocouple);
-                            flkCalib5522A.Out.Set.Temperature.SetValue(nullDegPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            Calibrator.SetTemperature(nullDegPoint, CalibrTypeTermocouple, "CEL");
+                            Calibrator.SetOutputOn();
                             Thread.Sleep(1900);
                             // у ТРМ должна быть включена схема компенсации  температурыокр среды
                             var measDelta = trm202.GetMeasValChanel(_chanelNumber);
-                            // MeasPoint<Temperature> delta = new MeasPoint<Temperature>(measDelta);
-                            // flkCalib5522A.Out.Set.Temperature.SetExtTempSensor(delta);
-                            flkCalib5522A.Out.Set.Temperature.SetValue(point);
+                           Calibrator.SetTemperature(point, CalibrTypeTermocouple, "CEL");
+                            Calibrator.SetOutputOn();
                             Thread.Sleep(3000);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             if (CoupleTypeTrm != TRM202Device.in_t.E__b) measPoint = measPoint - measDelta;
 
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
-                            flkCalib5522A.Out.Set.Temperature.SetIntTempSensor();
+                            Calibrator.SetOutputOff();
 
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
@@ -522,10 +519,10 @@ namespace OWEN_TRM202
                 }
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_L_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_L_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_L_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -535,7 +532,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_L_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__L;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.L;
 
                 measPoints = new[]
@@ -555,10 +551,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_L_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_J_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_J_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_J_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -568,7 +564,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_J_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__j;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.J;
 
                 measPoints = new[]
@@ -588,10 +583,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_J_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_N_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_N_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_N_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -601,7 +596,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_N_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__n;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.N;
 
                 measPoints = new[]
@@ -621,10 +615,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_N_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_K_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_K_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_K_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -634,7 +628,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_K_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__k;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.K;
 
                 measPoints = new[]
@@ -654,10 +647,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_K_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_S_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_S_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_S_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -667,7 +660,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_S_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__s;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.S;
 
                 measPoints = new[]
@@ -687,10 +679,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_S_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_R_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_R_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_R_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -700,7 +692,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_R_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__r;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.R;
 
                 measPoints = new[]
@@ -720,10 +711,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_R_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_B_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_B_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_B_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -733,7 +724,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_B_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__b;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.B;
 
                 measPoints = new[]
@@ -753,10 +743,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_B_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_T_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_T_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_T_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -766,7 +756,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_T_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__t;
                 Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.T;
 
                 measPoints = new[]
@@ -786,10 +775,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_T_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_A1_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_A1_Poverka : Operation8_4_A1_A3_TermocouoleGost8_585
         {
             public Operation8_4_Type_A1_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -797,9 +786,8 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_A1_TermocoupleRangeStorage;
-                CoupleTypeTrm = TRM202Device.in_t.E_A1;
-                Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
+                _coupleType = TRM202Device.in_t.E_A1;
+                Name = _coupleType.GetStringValue();
 
                 measPoints = new[]
                 {
@@ -818,10 +806,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_A1_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_A2_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_A2_Poverka : Operation8_4_A1_A3_TermocouoleGost8_585
         {
             public Operation8_4_Type_A2_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -829,9 +817,8 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_A2_TermocoupleRangeStorage;
-                CoupleTypeTrm = TRM202Device.in_t.E_A2;
-                Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
+                _coupleType = TRM202Device.in_t.E_A2;
+                Name = _coupleType.GetStringValue();
 
                 measPoints = new[]
                 {
@@ -850,10 +837,10 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_A2_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
-        public class Operation8_4_Type_A3_Poverka : Operation8_4_VoltageTermocouple
+        public class Operation8_4_Type_A3_Poverka : Operation8_4_A1_A3_TermocouoleGost8_585
         {
             public Operation8_4_Type_A3_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -861,9 +848,8 @@ namespace OWEN_TRM202
                 trm202 = new TRM202DeviceUI();
 
                 MeasureRanges = trm202.GetType_A3_TermocoupleRangeStorage;
-                CoupleTypeTrm = TRM202Device.in_t.E_A3;
-                Name = CoupleTypeTrm.GetStringValue();
-                flkCalib5522A = new Calib5522A();
+                _coupleType = TRM202Device.in_t.E_A3;
+                Name = _coupleType.GetStringValue();
 
                 measPoints = new[]
                 {
@@ -882,7 +868,182 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Type_A3_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
+        }
+
+        public class Operation8_4_A1_A3_TermocouoleGost8_585 : ParagraphBase<MeasPoint<Temperature>>
+        {
+            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+            #region Fields
+
+            protected TRM202Device.in_t _coupleType;
+            protected ICalibrator Calibrator;
+            protected MeasPoint<Temperature, Voltage>[] measPoints;
+            protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
+
+            protected TRM202DeviceUI trm202;
+
+            #endregion Fields
+
+            #region Property
+
+            protected ushort _chanelNumber { get; set; }
+
+            #endregion Property
+
+            public Operation8_4_A1_A3_TermocouoleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) :
+                base(userItemOperation)
+            {
+                _chanelNumber = inChanelNumber;
+                Name = "Определение основной приведенной погрешности прибора со специализированным входом";
+                Sheme = new ShemeImage
+                {
+                    Number = _chanelNumber + 5,
+                    FileName = $"TRM202_5522A_VoltageTermocouple_chanel{_chanelNumber}.jpg",
+                    ExtendedDescription = "Соберите схему, как показано на рисунке."
+                };
+            }
+
+            #region Methods
+
+            protected override DataTable FillData()
+            {
+                var dataTable = base.FillData();
+                foreach (var row in DataRow)
+                {
+                    var dataRow = dataTable.NewRow();
+                    var dds = row as BasicOperationVerefication<MeasPoint<Temperature>>;
+                    if (dds == null) continue;
+                    dataRow["Поверяемая точка"] = dds.Expected?.Description;
+                    dataRow["Измеренное значение"] = dds.Getting?.Description;
+                    dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
+                    dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+
+                    if (dds.IsGood == null)
+                        dataRow[4] = "не выполнено";
+                    else
+                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataTable.Rows.Add(dataRow);
+                }
+
+                return dataTable;
+            }
+
+            protected override string[] GenerateDataColumnTypeObject()
+            {
+                return new[]
+                {
+                    "Поверяемая точка", "Измеренное значение",
+                    "Минимально допустимое значение",
+                    "Максимально допустимое значение"
+                }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+            }
+
+            protected override string GetReportTableName()
+            {
+                return null;
+            }
+
+            protected override void InitWork(CancellationTokenSource token)
+            {
+                trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
+                                           .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
+                Calibrator =
+                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
+                                     .SelectedDevice as ICalibrator;
+
+                if (trm202 == null || Calibrator == null || measPoints == null) return;
+
+                trm202.StringConnection = GetStringConnect(trm202);
+                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
+
+                base.InitWork(token);
+
+                foreach (var point in measPoints)
+                {
+                    var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
+                    operation.InitWork = async () =>
+                    {
+                        try
+                        {
+                            await Task.Run(() =>
+                            {
+                                //делаем предварительные настройка канала прибора
+
+                                //1. задаем на каналах нужную характеристику
+                                var typeTermoCouple = BitConverter
+                                                     .GetBytes((int)_coupleType).Where(a => a != 0)
+                                                     .ToArray(); //выкидываем из массива лишние нули
+                                trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
+                                //2. ставим сдвиги и наклоны характеристик
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.SH, 0, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.KU, 1, _chanelNumber);
+                                //3. ставим полосы фильтров и постоянную времени фильтра
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.Fb, 0, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.InF, 0, _chanelNumber);
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                    };
+                    operation.BodyWorkAsync = () =>
+                    {
+                        try
+                        {
+                            operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
+                            operation.ErrorCalculation = (measPoint, point1) =>
+                            {
+                                //считаем приведенную погрешность
+                                return MeasureRanges.GetReducerTolMeasPoint(measPoint);
+                            };
+
+                            operation.UpperTolerance = operation.Expected + operation.Error;
+                            operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                .Multiplier);
+
+                            operation.LowerTolerance = operation.Expected - operation.Error;
+                            operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                .Multiplier);
+                            MeasPoint<Voltage> nullPoint = new MeasPoint<Voltage>(0);
+                            Calibrator.SetVoltageDc(nullPoint);
+                            Calibrator.SetOutputOn();
+                            Thread.Sleep(1900);
+                            decimal delta = trm202.GetMeasValChanel(_chanelNumber);
+                            MeasPoint<Voltage> setPoint =
+                                new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
+                            Calibrator.SetVoltageDc(setPoint);
+                            Calibrator.SetOutputOn();
+                            Thread.Sleep(1900);
+                            decimal measPoint = trm202.GetMeasValChanel(_chanelNumber);
+                            measPoint = measPoint - delta;
+                            Calibrator.SetOutputOff();
+                            MathStatistics.Round(ref measPoint, 1);
+                            operation.Getting = new MeasPoint<Temperature>(measPoint);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+
+                        operation.IsGood = () =>
+                            operation.Getting >= operation.LowerTolerance &&
+                            operation.Getting <= operation.UpperTolerance;
+                        ;
+                    };
+                    operation.CompliteWork = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
+
+                    DataRow.Add(DataRow.IndexOf(operation) == -1
+                                    ? operation
+                                    : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
+                }
+            }
+
+            #endregion Methods
         }
 
         public class Operation8_4_UnicSignal : ParagraphBase<MeasPoint<Percent>>
@@ -892,19 +1053,19 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected Calib5522A flkCalib5522A;
+            protected ICalibrator Calibrator;
             protected MeasPoint<Percent, Voltage>[] measPoints;
             protected RangeStorage<PhysicalRange<Percent>> MeasureRanges;
 
             protected TRM202DeviceUI trm202;
 
-            #endregion
+            #endregion Fields
 
             #region Property
 
             protected ushort _chanelNumber { get; set; }
 
-            #endregion
+            #endregion Property
 
             public Operation8_4_UnicSignal(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
@@ -963,11 +1124,14 @@ namespace OWEN_TRM202
             {
                 trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
+                Calibrator =
+                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
+                                     .SelectedDevice as ICalibrator;
 
-                if (trm202 == null || flkCalib5522A == null) return;
+                if (trm202 == null || Calibrator == null || measPoints == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
-                flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
+                ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
 
                 base.InitWork(token);
 
@@ -1021,11 +1185,11 @@ namespace OWEN_TRM202
                                                                                                 .Multiplier);
                             var setPoint =
                                 new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
-                            flkCalib5522A.Out.Set.Voltage.Dc.SetValue(setPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(900);
+                            Calibrator.SetVoltageDc(setPoint);
+                            Calibrator.SetOutputOn();
+                            Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            Calibrator.SetOutputOff();
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Percent>(measPoint);
                         }
@@ -1048,7 +1212,7 @@ namespace OWEN_TRM202
                 }
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_UnificSignal_0_1_Poverka : Operation8_4_UnicSignal
@@ -1061,7 +1225,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
                 _coupleType = TRM202Device.in_t.U0_1;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1080,7 +1243,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_UnificSignal_0_1_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_UnificSignal_50_50_Poverka : Operation8_4_UnicSignal
@@ -1093,7 +1256,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
                 _coupleType = TRM202Device.in_t.U_50;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1112,7 +1274,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_UnificSignal_50_50_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_UnificSignal_0_5mA_Poverka : Operation8_4_UnicSignal
@@ -1125,7 +1287,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
                 _coupleType = TRM202Device.in_t.i0_5;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 //в этом пункте прибор работает с сигналом 0-5мА,
                 //но измеренное значние получает с шунта,
@@ -1147,7 +1308,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_UnificSignal_0_50mA_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_UnificSignal_0_20mA_Poverka : Operation8_4_UnicSignal
@@ -1160,7 +1321,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
                 _coupleType = TRM202Device.in_t.i0_20;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 //в этом пункте прибор работает с сигналом 0-20мА,
                 //но измеренное значние получает с шунта,
@@ -1182,7 +1342,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_UnificSignal_0_20mA_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_UnificSignal_4_20mA_Poverka : Operation8_4_UnicSignal
@@ -1195,7 +1355,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
                 _coupleType = TRM202Device.in_t.i4_20;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 //в этом пункте прибор работает с сигналом 4-20мА,
                 //но измеренное значние получает с шунта,
@@ -1217,7 +1376,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_UnificSignal_4_20mA_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         #region Gosr6651
@@ -1229,19 +1388,19 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected Calib5522A flkCalib5522A;
+            protected ICalibrator Calibrator;
             protected MeasPoint<Temperature, Resistance>[] measPoints;
             protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
 
             protected TRM202DeviceUI trm202;
 
-            #endregion
+            #endregion Fields
 
             #region Property
 
             protected ushort _chanelNumber { get; set; }
 
-            #endregion
+            #endregion Property
 
             public Operation8_4_ResistanceTermocoupleGost6651(IUserItemOperation userItemOperation,
                 ushort inChanelNumber) : base(userItemOperation)
@@ -1300,11 +1459,14 @@ namespace OWEN_TRM202
             {
                 trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
+                Calibrator =
+                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
+                                     .SelectedDevice as ICalibrator;
 
-                if (trm202 == null || flkCalib5522A == null) return;
+                if (trm202 == null || Calibrator == null ||measPoints == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
-                flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
+                ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
 
                 base.InitWork(token);
 
@@ -1357,11 +1519,11 @@ namespace OWEN_TRM202
                             operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                                 .Multiplier);
                             var setPoint = new MeasPoint<Resistance>(point.AdditionalPhysicalQuantity);
-                            flkCalib5522A.Out.Set.Resistance.SetValue(setPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
-                            Thread.Sleep(900);
+                            Calibrator.SetResistance2W(setPoint);
+                            Calibrator.SetOutputOn();
+                            Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            Calibrator.SetOutputOff();
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
@@ -1384,7 +1546,7 @@ namespace OWEN_TRM202
                 }
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_Cu50_426_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1397,7 +1559,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetCu50_426RangeStorage;
                 _coupleType = TRM202Device.in_t.r426;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1416,7 +1577,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Cu50_426_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_Cu100_426_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1429,7 +1590,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetCu100_426RangeStorage;
                 _coupleType = TRM202Device.in_t.r_426;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1448,7 +1608,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Cu100_426_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_Pt100_385_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1461,7 +1621,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetPt100_385RangeStorage;
                 _coupleType = TRM202Device.in_t.r_385;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1480,7 +1639,7 @@ namespace OWEN_TRM202
                 return $"FillTabBm8_4_Pt100_385_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_Pt50_385_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1493,7 +1652,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetPt50_385RangeStorage;
                 _coupleType = TRM202Device.in_t.r385;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1512,7 +1670,7 @@ namespace OWEN_TRM202
                 return $"FillTabBmOper8_4_Pt50_385_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_TSM50M_428_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1525,7 +1683,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetTSP50M_428RangeStorage;
                 _coupleType = TRM202Device.in_t.r428;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1544,7 +1701,7 @@ namespace OWEN_TRM202
                 return $"FillTabBmOper8_4_TSM50M_428_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_TSM100M_428_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1557,7 +1714,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetTSP100M_428RangeStorage;
                 _coupleType = TRM202Device.in_t.r_428;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1576,7 +1732,7 @@ namespace OWEN_TRM202
                 return $"FillTabBmOper8_4_TSM100M_428_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_TSP50P_391_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1589,7 +1745,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetTSP50P_391RangeStorage;
                 _coupleType = TRM202Device.in_t.r391;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1608,7 +1763,7 @@ namespace OWEN_TRM202
                 return $"FillTabBmOper8_4_TSP50P_391_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         public class Operation8_4_TSP100P_391_Poverka : Operation8_4_ResistanceTermocoupleGost6651
@@ -1621,7 +1776,6 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetTSP100P_391RangeStorage;
                 _coupleType = TRM202Device.in_t.r_391;
                 Name = _coupleType.GetStringValue();
-                flkCalib5522A = new Calib5522A();
 
                 measPoints = new[]
                 {
@@ -1640,7 +1794,7 @@ namespace OWEN_TRM202
                 return $"FillTabBmOper8_4_TSP100P_391_ch{_chanelNumber}";
             }
 
-            #endregion
+            #endregion Methods
         }
 
         #endregion Gosr6651

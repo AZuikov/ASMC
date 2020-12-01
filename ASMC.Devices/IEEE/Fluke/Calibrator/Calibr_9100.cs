@@ -20,6 +20,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             WriteLine("Source:func DC");
             WriteLine($"Source:VOLT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            
         }
 
         public void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint)
@@ -33,6 +34,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             WriteLine("Source:func DC");
             WriteLine($"Source:RESistance {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            WriteLine("SOUR:RES:UUT_I SUP");
             WriteLine("outp:comp off");
         }
 
@@ -40,6 +42,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             WriteLine("Source:func DC");
             WriteLine($"Source:RESistance {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            WriteLine("SOUR:RES:UUT_I SUPer}");
             WriteLine("outp:comp on");
         }
 
