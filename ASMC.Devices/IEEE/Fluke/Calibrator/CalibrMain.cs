@@ -432,6 +432,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         return _calibrMain;
                     }
 
+                    public CalibrMain SetCompensation(Zcomp compensationMode)
+                    {
+                        _calibrMain.WriteLine($"{compensationMode.GetStringValue()}");
+                        return _calibrMain;
+                    }
+
 
 
                 }
