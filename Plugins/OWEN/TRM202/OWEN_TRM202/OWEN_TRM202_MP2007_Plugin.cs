@@ -51,6 +51,17 @@ namespace OWEN_TRM202
             return Task.FromResult(operation.IsGood());
         }
 
+        public static MeasPoint<Percent> CalculateBasicRedundanceTol<T>(MeasPoint<T> measPoint, MeasPoint<T> StdPoint, PhysicalRange<T> range) where T : class, IPhysicalQuantity<T>, new()
+        {
+            decimal val1 = measPoint.MainPhysicalQuantity.Value - StdPoint.MainPhysicalQuantity.Value;
+            decimal val2 = (val1 / range.GetRangeLeght.MainPhysicalQuantity.Value)*100;
+            val2 = Math.Round(val2, 2);
+            MeasPoint<Percent> resultTol = new MeasPoint<Percent>(val2);
+            return resultTol;
+        }
+
+        
+
         #endregion Methods
     }
 
@@ -84,7 +95,7 @@ namespace OWEN_TRM202
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[] {new Calib5522A(), new Calibr_9100()},
+                    Devices = new IDeviceBase[] { new Calibr_9100(), new Calib5522A() },
                     Description = "Многофунциональный калибратор"
                 }
             };
@@ -374,7 +385,7 @@ namespace OWEN_TRM202
                 Sheme = new ShemeImage
                 {
                     Number = _chanelNumber + 10,
-                    FileName = $"TRM202_5522A_TC_out_chanel{_chanelNumber}.jpg",
+                    FileName = $"TRM202_TC_out_chanel{_chanelNumber}.jpg",
                     ExtendedDescription = "Соберите схему, как показано на рисунке."
                 };
             }
@@ -391,13 +402,21 @@ namespace OWEN_TRM202
                     if (dds == null) continue;
                     dataRow["Поверяемая точка"] = dds.Expected?.Description;
                     dataRow["Измеренное значение"] = dds.Getting?.Description;
-                    dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                    dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                    PhysicalRange<Temperature> range = MeasureRanges.GetRangePointBelong(dds.Expected);
+                    if (dds.Getting != null && dds.Expected != null)
+                    {
+                        //посчитаем основную приведенную погрешность
+                        dataRow["Основная приведенная погрешность"] =
+                            Helps.CalculateBasicRedundanceTol(dds.Getting, dds.Expected, range).Description;
+                    }
+                    var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
+                    MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
+                    dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
 
                     if (dds.IsGood == null)
-                        dataRow[4] = "не выполнено";
+                        dataRow[dataRow.Table.Columns.Count - 1] = "не выполнено";
                     else
-                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood() ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -409,8 +428,8 @@ namespace OWEN_TRM202
                 return new[]
                 {
                     "Поверяемая точка", "Измеренное значение",
-                    "Минимально допустимое значение",
-                    "Максимально допустимое значение"
+                    "Основная приведенная погрешность",
+                    "Допустимое значение приведенной погрешности"
                 }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             }
 
@@ -900,7 +919,7 @@ namespace OWEN_TRM202
                 Sheme = new ShemeImage
                 {
                     Number = _chanelNumber + 5,
-                    FileName = $"TRM202_5522A_VoltageTermocouple_chanel{_chanelNumber}.jpg",
+                    FileName = $"TRM202_VoltageTermocouple_chanel{_chanelNumber}.jpg",
                     ExtendedDescription = "Соберите схему, как показано на рисунке."
                 };
             }
@@ -917,13 +936,21 @@ namespace OWEN_TRM202
                     if (dds == null) continue;
                     dataRow["Поверяемая точка"] = dds.Expected?.Description;
                     dataRow["Измеренное значение"] = dds.Getting?.Description;
-                    dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                    dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                    PhysicalRange<Temperature> range = MeasureRanges.GetRangePointBelong(dds.Expected);
+                    if (dds.Getting != null && dds.Expected != null)
+                    {
+                        //посчитаем основную приведенную погрешность
+                        dataRow["Основная приведенная погрешность"] =
+                            Helps.CalculateBasicRedundanceTol(dds.Getting, dds.Expected, range).Description;
+                    }
+                    var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
+                    MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
+                    dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
 
                     if (dds.IsGood == null)
-                        dataRow[4] = "не выполнено";
+                        dataRow[dataRow.Table.Columns.Count-1] = "не выполнено";
                     else
-                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood() ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -935,8 +962,8 @@ namespace OWEN_TRM202
                 return new[]
                 {
                     "Поверяемая точка", "Измеренное значение",
-                    "Минимально допустимое значение",
-                    "Максимально допустимое значение"
+                    "Основная приведенная погрешность",
+                    "Допустимое значение приведенной погрешности"
                 }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             }
 
@@ -1075,7 +1102,7 @@ namespace OWEN_TRM202
                 Sheme = new ShemeImage
                 {
                     Number = _chanelNumber + 5,
-                    FileName = $"TRM202_5522A_VoltageTermocouple_chanel{_chanelNumber}.jpg",
+                    FileName = $"TRM202_VoltageTermocouple_chanel{_chanelNumber}.jpg",
                     ExtendedDescription = "Соберите схему, как показано на рисунке."
                 };
             }
@@ -1092,13 +1119,21 @@ namespace OWEN_TRM202
                     if (dds == null) continue;
                     dataRow["Поверяемая точка"] = dds.Expected?.Description;
                     dataRow["Измеренное значение"] = dds.Getting?.Description;
-                    dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                    dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                    PhysicalRange<Percent> range = MeasureRanges.GetRangePointBelong(dds.Expected);
+                    if (dds.Getting != null && dds.Expected != null)
+                    {
+                        //посчитаем основную приведенную погрешность
+                        dataRow["Основная приведенная погрешность"] =
+                            Helps.CalculateBasicRedundanceTol(dds.Getting, dds.Expected, range).Description;
+                    }
+                    var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
+                    MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
+                    dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
 
                     if (dds.IsGood == null)
-                        dataRow[4] = "не выполнено";
+                        dataRow[dataRow.Table.Columns.Count - 1] = "не выполнено";
                     else
-                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood() ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -1110,8 +1145,8 @@ namespace OWEN_TRM202
                 return new[]
                 {
                     "Поверяемая точка", "Измеренное значение",
-                    "Минимально допустимое значение",
-                    "Максимально допустимое значение"
+                    "Основная приведенная погрешность",
+                    "Допустимое значение приведенной погрешности"
                 }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             }
 
@@ -1410,7 +1445,7 @@ namespace OWEN_TRM202
                 Sheme = new ShemeImage
                 {
                     Number = _chanelNumber,
-                    FileName = $"TRM202_5522A_OprobovanieResistanceTermocouple_chanel{_chanelNumber}.jpg",
+                    FileName = $"TRM202_ResistanceTermocouple_chanel{_chanelNumber}.jpg",
                     ExtendedDescription = "Соберите схему, как показано на рисунке."
                 };
             }
@@ -1427,13 +1462,21 @@ namespace OWEN_TRM202
                     if (dds == null) continue;
                     dataRow["Поверяемая точка"] = dds.Expected?.Description;
                     dataRow["Измеренное значение"] = dds.Getting?.Description;
-                    dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                    dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                    PhysicalRange<Temperature> range = MeasureRanges.GetRangePointBelong(dds.Expected);
+                    if (dds.Getting != null && dds.Expected != null)
+                    {
+                        //посчитаем основную приведенную погрешность
+                        dataRow["Основная приведенная погрешность"] =
+                            Helps.CalculateBasicRedundanceTol(dds.Getting, dds.Expected, range).Description;
+                    }
+                    var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
+                    MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
+                    dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
 
                     if (dds.IsGood == null)
-                        dataRow[4] = "не выполнено";
+                        dataRow[dataRow.Table.Columns.Count - 1] = "не выполнено";
                     else
-                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood() ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -1445,8 +1488,8 @@ namespace OWEN_TRM202
                 return new[]
                 {
                     "Поверяемая точка", "Измеренное значение",
-                    "Минимально допустимое значение",
-                    "Максимально допустимое значение"
+                    "Основная приведенная погрешность",
+                    "Допустимое значение приведенной погрешности"
                 }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             }
 
