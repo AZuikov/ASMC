@@ -111,60 +111,74 @@ namespace OWEN_TRM202
             DocumentName = "TRM202_protocolMP2007";
 
             var Chanel1Operation = new Operation8_4_ResistanceTermocoupleGost6651(this, 1) {Name = "Канал 1"};
-            Chanel1Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu100_426_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu50_426_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Pt100_385_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Pt50_385_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_TSM50M_428_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_TSM100M_428_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_50_50_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_L_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_J_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_N_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_K_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_S_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_R_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_B_Poverka(this, 1));
-            Chanel1Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_T_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Cu100_426_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Cu50_426_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Pt100_385_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Pt50_385_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_TSM100M_428_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this, 1));
+            //пункт меьтодики 2007 года. 8.5.1.1
+            Chanel1Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka(this, 1));
+            //пункт меьтодики 2007 года. 8.5.1.3
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_50_50_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 1));
+            //пункт меьтодики 2007 года. 8.5.1.2
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_L_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_J_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_N_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka(this, 1));
+            // //пункт меьтодики 2007 года. 8.5.1.4
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_S_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_R_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_B_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_T_Poverka(this, 1));
             
 
             var Chanel2Operation = new Operation8_4_ResistanceTermocoupleGost6651(this, 2) {Name = "Канал 2"};
-            Chanel2Operation.Nodes.Add(new Operation8_4_ResistanceTermocoupleGost6651(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu100_426_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Cu50_426_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Pt100_385_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Pt50_385_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_TSM50M_428_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_TSM100M_428_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_50_50_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_L_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_J_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_N_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_K_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_S_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_R_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_B_Poverka(this, 2));
-            Chanel2Operation.Nodes[0].Nodes.Add(new Operation8_4_Type_T_Poverka(this, 2));
-            
+            Chanel2Operation.Nodes.Add(new Operation8_4_Cu100_426_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Cu50_426_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Pt100_385_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Pt50_385_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_TSM100M_428_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this, 2));
+            //пункт меьтодики 2007 года. 8.5.1.1
+            Chanel2Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka(this, 2));
+            //пункт меьтодики 2007 года. 8.5.1.3
+            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_50_50_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 2));
+            //пункт меьтодики 2007 года. 8.5.1.2
+            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_A1_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_A2_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_A3_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_L_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_J_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_N_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_K_Poverka(this, 2));
+            // //пункт меьтодики 2007 года. 8.5.1.4
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_S_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_R_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_B_Poverka(this, 2));
+            Chanel2Operation.Nodes.Add(new Operation8_4_Type_T_Poverka(this, 2));
+
 
             UserItemOperation = new IUserItemOperationBase[]
             {
@@ -667,6 +681,18 @@ namespace OWEN_TRM202
             }
 
             #endregion Methods
+        }
+
+        public class Operation8_4_Type_K_Poverka_8_5_1_4 : Operation8_4_Type_K_Poverka
+        {
+            public Operation8_4_Type_K_Poverka_8_5_1_4(IUserItemOperation userItemOperation, ushort inChanel) : base(userItemOperation, inChanel)
+            {
+                Name = $"8.5.1.4 {this.CoupleTypeTrm.GetStringValue()}";
+            }
+            protected override string GetReportTableName()
+            {
+                return $"FillTabBm8_4_Type_K_8514ch{_chanelNumber}";
+            }
         }
 
         public class Operation8_4_Type_S_Poverka : Operation8_4_HCX_TermocoupleGost8_585
@@ -1281,6 +1307,34 @@ namespace OWEN_TRM202
             #endregion Methods
         }
 
+        public class Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3 : Operation8_4_UnicSignal
+        {
+            public Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(IUserItemOperation userItemOperation, ushort inChanel) :
+                base(userItemOperation, inChanel)
+            {
+                trm202 = new TRM202DeviceUI();
+
+                MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                _coupleType = TRM202Device.in_t.U0_1;
+                Name = $"8.5.1.3 {_coupleType.GetStringValue()}";
+
+                measPoints = new[]
+                {
+                    
+                    new MeasPoint<Percent, Voltage>(50M, 500M)
+                };
+            }
+
+            #region Methods
+
+            protected override string GetReportTableName()
+            {
+                return $"FillTabBm8_4_UnificSignal_0_1V__8513ch{_chanelNumber}";
+            }
+
+            #endregion Methods
+        }
+
         public class Operation8_4_UnificSignal_50_50_Poverka : Operation8_4_UnicSignal
         {
             public Operation8_4_UnificSignal_50_50_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
@@ -1375,6 +1429,37 @@ namespace OWEN_TRM202
             protected override string GetReportTableName()
             {
                 return $"FillTabBm8_4_UnificSignal_0_20mA_ch{_chanelNumber}";
+            }
+
+            #endregion Methods
+        }
+
+        public class Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2 : Operation8_4_UnicSignal
+        {
+            public Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(IUserItemOperation userItemOperation, ushort inChanel) :
+                base(userItemOperation, inChanel)
+            {
+                trm202 = new TRM202DeviceUI();
+
+                MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                _coupleType = TRM202Device.in_t.i0_20;
+                Name = $"8.5.1.2 {_coupleType.GetStringValue()}" ;
+
+                //в этом пункте прибор работает с сигналом 0-20мА,
+                //но измеренное значние получает с шунта,
+                //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
+                measPoints = new[]
+                {
+                    
+                    new MeasPoint<Percent, Voltage>(50M, 1000M)
+                };
+            }
+
+            #region Methods
+
+            protected override string GetReportTableName()
+            {
+                return $"FillTabBm8_4_UnificSignal_0_20mA_8512ch{_chanelNumber}";
             }
 
             #endregion Methods
@@ -1742,6 +1827,35 @@ namespace OWEN_TRM202
             protected override string GetReportTableName()
             {
                 return $"FillTabBmOper8_4_TSM50M_428_ch{_chanelNumber}";
+            }
+
+            #endregion Methods
+        }
+
+        public class Operation8_4_TSM50M_428_Poverka_8_5_1_1 : Operation8_4_ResistanceTermocoupleGost6651
+        {
+            public Operation8_4_TSM50M_428_Poverka_8_5_1_1(IUserItemOperation userItemOperation, ushort inChanel) :
+                base(userItemOperation, inChanel)
+            {
+                trm202 = new TRM202DeviceUI();
+
+                MeasureRanges = trm202.GetTSP50M_428RangeStorage;
+                _coupleType = TRM202Device.in_t.r428;
+                Name = $"8.5.1.1 {_coupleType.GetStringValue()}";
+
+                measPoints = new[]
+                {
+                    
+                    new MeasPoint<Temperature, Resistance>(5, 51.070M)
+                    
+                };
+            }
+
+            #region Methods
+
+            protected override string GetReportTableName()
+            {
+                return $"FillTabBmOper8_4_TSM50M_428_8_5_1_1_ch{_chanelNumber}";
             }
 
             #endregion Methods
