@@ -183,6 +183,7 @@ namespace OWEN_TRM202
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new Oper1VisualTest(this),
+                new Oper2IsolationTest(this), 
                 new Oprobovanie2007(this, 1),
                 new Oprobovanie2007(this, 2),
                 Chanel1Operation,
@@ -268,6 +269,72 @@ namespace OWEN_TRM202
 
             #endregion Methods
         }
+
+        public class Oper2IsolationTest : ParagraphBase<bool>
+        {
+            public Oper2IsolationTest(IUserItemOperation userItemOperation) : base(userItemOperation)
+            {
+                Name = "Проверка электрического сопротивления изоляции";
+                DataRow = new List<IBasicOperation<bool>>();
+            }
+
+            #region Methods
+
+            /// <inheritdoc />
+            protected override DataTable FillData()
+            {
+                var data = base.FillData();
+                var dataRow = data.NewRow();
+                if (DataRow.Count == 1)
+                {
+                    var dds = DataRow[0] as BasicOperation<bool>;
+                    // ReSharper disable once PossibleNullReferenceException
+                    dataRow[0] = dds.Getting ? "соответствует" : $"не соответствует: {dds.Comment}";
+                    data.Rows.Add(dataRow);
+                }
+
+                return data;
+            }
+
+            /// <inheritdoc />
+            protected override string[] GenerateDataColumnTypeObject()
+            {
+                return new[] { "Результат теста изоляции" };
+            }
+
+            /// <inheritdoc />
+            protected override string GetReportTableName()
+            {
+                return "ITBmIsolationTest";
+            }
+
+            protected override void InitWork(CancellationTokenSource token)
+            {
+                base.InitWork(token);
+                var operation = new BasicOperation<bool>();
+                operation.Expected = true;
+                operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+                operation.InitWork = () =>
+                {
+                    var service = UserItemOperation.ServicePack.QuestionText();
+                    service.Title = "Внешний осмотр";
+                    service.Entity = new Tuple<string, Assembly>("TRM_Visual_test", null);
+                    service.Show();
+                    var res = service.Entity as Tuple<string, bool>;
+                    operation.Getting = res.Item2;
+                    operation.Comment = res.Item1;
+                    operation.IsGood = () => operation.Getting;
+
+                    return Task.CompletedTask;
+                };
+
+                operation.CompliteWork = () => { return Task.FromResult(true); };
+                DataRow.Add(operation);
+            }
+
+            #endregion Methods
+        }
+
 
         public class Oprobovanie2007 : ParagraphBase<bool>
         {
