@@ -17,7 +17,7 @@ using ASMC.Devices.UInterface.TRM.ViewModel;
 using DevExpress.Mvvm;
 using NLog;
 
-
+//Тут должен быть код для методики 2006 года, сделано только опробование
 
 //namespace OWEN_TRM202
 //{
