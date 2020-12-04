@@ -25,6 +25,16 @@ namespace OWEN_TRM202
     {
         #region Methods
 
+        public static void AttentionWindow(IUserItemOperation UserItemOperation)
+        {
+            UserItemOperation.ServicePack.MessageBox().Show("Внимание!!!\n в процессе выполнения программы будут изменены настройки прибора.\n"+
+                                                            "Необходимо зарнее сделать резервную копию настроек прибора с помощью программы \"Конфигуратор ТРМ\".\n"+
+                                                            "С помощью программы конфигуратора: \n 1) подключитесь к прибору\n2)считать все параметры с прибора\n"+
+                                                            "3)сохранить загруженную с прибора конфигурацию в отдельном файле."+
+                                                            "\n\nДля восстановления прежних настроек прибора необходимо: 1)Загрузить в конфигураторе файл с сохраненными ранее настройками\n"+
+                                                            "2)Записать все параметры в прибор");
+        }
+
         public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
@@ -245,6 +255,9 @@ namespace OWEN_TRM202
 
             protected override void InitWork(CancellationTokenSource token)
             {
+                //сообщение о необходимости предварительно сохранить настройки прибора
+                Helps.AttentionWindow(UserItemOperation);
+
                 base.InitWork(token);
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
