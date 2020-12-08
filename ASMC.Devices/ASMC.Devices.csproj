@@ -119,6 +119,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
     <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
+    <Compile Include="IEEE\Keysight\PowerSupplies\E364xA.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
     <Compile Include="Port\OWEN\OwenProtocol.cs" />
     <Compile Include="Port\OWEN\TRM202Device.cs" />
