@@ -28,6 +28,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             [StringValue("HIGH")]HIGH
         }
 
+        public enum TriggerSource
+        {
+            BUS,
+            IMMediate
+        }
+
         #region Property
 
         public CURRent CURR { get; }
@@ -117,6 +123,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             public RangePowerSupply GetRange()
             {
                 string answer = _powerSupply.QueryLine($"{ComandeRange}?");
+                answer = answer.TrimEnd('\n');
                 foreach (RangePowerSupply range in Enum.GetValues(typeof(RangePowerSupply)))
                 {
                     if (range.ToString().Equals(answer))
@@ -182,6 +189,58 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             {
                 _powerSupply = powerSupply;
             }
+
+            public E364xA InitTrigger()
+            {
+                _powerSupply.WriteLine("INITiate");
+                return _powerSupply;
+            }
+
+            public E364xA SetTriggerDelay(int millisecond)
+            {
+                if (millisecond < 0) millisecond = 0;
+                if (millisecond > 3600) millisecond = 3600;
+                {
+                    
+                }
+                _powerSupply.WriteLine($"TRIGger:DELay {millisecond}");
+                return _powerSupply;
+            }
+
+            public decimal GetTriggerDelay()
+            {
+               string answer = _powerSupply.QueryLine("TRIGger:DELay?");
+               answer = answer.TrimEnd('\n');
+               decimal returnNumb = (decimal) StrToDoubleMindMind(answer);
+               return returnNumb;
+            }
+
+            public E364xA SetTriggerSource(TriggerSource inSource)
+            {
+                _powerSupply.WriteLine($"TRIGger:SOURce {inSource}");
+                return _powerSupply;
+            }
+
+            public TriggerSource GetTriggerSource()
+            {
+                string answer = _powerSupply.QueryLine("TRIGger:SOURce?");
+                answer = answer.TrimEnd('\n');
+                foreach (TriggerSource source in Enum.GetValues(typeof(TriggerSource)))
+                {
+                    if (source.ToString().Equals(answer))
+                        return source;
+                }
+                string errorStr = $"Запрос источника триггера! E364xA выдал непредвиденный результат: {answer}";
+                Logger.Error(errorStr);
+                throw new Exception(errorStr);
+            }
+
+            public E364xA TRG()
+            {
+                _powerSupply.WriteLine("*TRG");
+                return _powerSupply;
+            }
+
         }
 
         public class Output
@@ -189,12 +248,32 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             #region Fields
 
             private readonly E364xA _powerSupply;
-
+            string Comand="OUTPut";
             #endregion
 
             public Output(E364xA powerSupply)
             {
                 _powerSupply = powerSupply;
+            }
+
+            public E364xA OutputOn()
+            {
+                _powerSupply.WriteLine($"{Comand} on");
+                return _powerSupply;
+            }
+
+            public E364xA OutputOff()
+            {
+                _powerSupply.WriteLine($"{Comand} off");
+                return _powerSupply;
+            }
+
+            public bool IsOutputOn()
+            {
+                string answer = _powerSupply.QueryLine($"{Comand}?");
+                answer = answer.TrimEnd('\n');
+                if (answer.Equals("1")) return true;
+                return false;
             }
         }
     }
