@@ -8,7 +8,6 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 {
     internal class E364xA : IeeeBase
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public enum Chanel
         {
             OUTP1,
@@ -20,12 +19,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         /// </summary>
         public enum RangePowerSupply
         {
-            [StringValue("P8V")]P8V,
-            [StringValue("P20V")]P20V,
-            [StringValue("P35V")]P35V,
-            [StringValue("P60V")]P60V,
-            [StringValue("LOW")]LOW,
-            [StringValue("HIGH")]HIGH
+            [StringValue("P8V")] P8V,
+            [StringValue("P20V")] P20V,
+            [StringValue("P35V")] P35V,
+            [StringValue("P60V")] P60V,
+            [StringValue("LOW")] LOW,
+            [StringValue("HIGH")] HIGH
         }
 
         public enum TriggerSource
@@ -33,6 +32,8 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             BUS,
             IMMediate
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
 
@@ -52,6 +53,28 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             OUT = new Output(this);
             TRIG = new TRIGger(this);
         }
+
+        #region Methods
+
+        public Chanel GetActiveChanel()
+        {
+            var answer = QueryLine("inst?");
+            foreach (Chanel chanel in Enum.GetValues(typeof(Chanel)))
+                if (chanel.ToString().Equals(answer))
+                    return chanel;
+
+            var errorStr = $"Запрос активного канала E364XA. Прибор ответил: {answer}";
+            Logger.Error(errorStr);
+            throw new Exception(errorStr);
+        }
+
+        public E364xA SetActiveChanel(Chanel inChanel)
+        {
+            WriteLine($"inst {inChanel}");
+            return this;
+        }
+
+        #endregion
 
         public class CURRent
         {
@@ -93,8 +116,8 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             #region Fields
 
             private readonly E364xA _powerSupply;
-            private readonly string ComandtoSetValue = "VOLTage:LEVel:IMMediate:AMPLitude";
             private readonly string ComandeRange = "VOLTage:RANGe";
+            private readonly string ComandtoSetValue = "VOLTage:LEVel:IMMediate:AMPLitude";
 
             #endregion
 
@@ -105,6 +128,20 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
             #region Methods
 
+            public RangePowerSupply GetRange()
+            {
+                var answer = _powerSupply.QueryLine($"{ComandeRange}?");
+                answer = answer.TrimEnd('\n');
+                foreach (RangePowerSupply range in Enum.GetValues(typeof(RangePowerSupply)))
+                    if (range.ToString().Equals(answer))
+                        return range;
+
+                var errorStr = $"Запрос диапазона! E364xA выдал непредвиденный результат: {answer}";
+                Logger.Error(errorStr);
+
+                throw new Exception(errorStr);
+            }
+
             public MeasPoint<Voltage> GetValue()
             {
                 var answer = _powerSupply.QueryLine($"{ComandtoSetValue}?");
@@ -113,32 +150,16 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 return returnPoint;
             }
 
+            public E364xA SetRange(RangePowerSupply inRange)
+            {
+                _powerSupply.WriteLine($"{ComandeRange} {inRange.ToString()}");
+                return _powerSupply;
+            }
+
             public E364xA SetValue(MeasPoint<Voltage> inPoint)
             {
                 _powerSupply
                    .WriteLine($"{ComandtoSetValue} {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-                return _powerSupply;
-            }
-
-            public RangePowerSupply GetRange()
-            {
-                string answer = _powerSupply.QueryLine($"{ComandeRange}?");
-                answer = answer.TrimEnd('\n');
-                foreach (RangePowerSupply range in Enum.GetValues(typeof(RangePowerSupply)))
-                {
-                    if (range.ToString().Equals(answer))
-                        return range;
-                }
-
-                string errorStr = $"Запрос диапазона! E364xA выдал непредвиденный результат: {answer}";
-                Logger.Error(errorStr);
-
-                throw new Exception(errorStr);
-            }
-
-            public E364xA SetRange(RangePowerSupply inRange)
-            {
-                _powerSupply.WriteLine($"{ComandeRange} {inRange.ToString()}");
                 return _powerSupply;
             }
 
@@ -158,23 +179,25 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 _powerSupply = powerSupply;
             }
 
+            #region Methods
+
             public MeasPoint<Current> GetMeasureCurrent()
             {
-                string answer = _powerSupply.QueryLine("MEASure::CURR:DC?");
-                decimal numberAnswer = (decimal)StrToDoubleMindMind(answer.Replace(',', '.'));
-                MeasPoint<Current> answerPoint = new MeasPoint<Current>(numberAnswer);
+                var answer = _powerSupply.QueryLine("MEASure::CURR:DC?");
+                var numberAnswer = (decimal) StrToDoubleMindMind(answer.Replace(',', '.'));
+                var answerPoint = new MeasPoint<Current>(numberAnswer);
                 return answerPoint;
             }
 
             public MeasPoint<Voltage> GetMeasureVoltage()
             {
-                string answer = _powerSupply.QueryLine("MEASure::VOLT:DC?");
-                decimal numberAnswer = (decimal)StrToDoubleMindMind(answer.Replace(',', '.'));
-                MeasPoint<Voltage> answerPoint = new MeasPoint<Voltage>(numberAnswer);
+                var answer = _powerSupply.QueryLine("MEASure::VOLT:DC?");
+                var numberAnswer = (decimal) StrToDoubleMindMind(answer.Replace(',', '.'));
+                var answerPoint = new MeasPoint<Voltage>(numberAnswer);
                 return answerPoint;
             }
 
-            
+            #endregion
         }
 
         public class TRIGger
@@ -190,6 +213,28 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 _powerSupply = powerSupply;
             }
 
+            #region Methods
+
+            public decimal GetTriggerDelay()
+            {
+                var answer = _powerSupply.QueryLine("TRIGger:DELay?");
+                answer = answer.TrimEnd('\n');
+                var returnNumb = (decimal) StrToDoubleMindMind(answer);
+                return returnNumb;
+            }
+
+            public TriggerSource GetTriggerSource()
+            {
+                var answer = _powerSupply.QueryLine("TRIGger:SOURce?");
+                answer = answer.TrimEnd('\n');
+                foreach (TriggerSource source in Enum.GetValues(typeof(TriggerSource)))
+                    if (source.ToString().Equals(answer))
+                        return source;
+                var errorStr = $"Запрос источника триггера! E364xA выдал непредвиденный результат: {answer}";
+                Logger.Error(errorStr);
+                throw new Exception(errorStr);
+            }
+
             public E364xA InitTrigger()
             {
                 _powerSupply.WriteLine("INITiate");
@@ -201,18 +246,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 if (millisecond < 0) millisecond = 0;
                 if (millisecond > 3600) millisecond = 3600;
                 {
-                    
                 }
                 _powerSupply.WriteLine($"TRIGger:DELay {millisecond}");
                 return _powerSupply;
-            }
-
-            public decimal GetTriggerDelay()
-            {
-               string answer = _powerSupply.QueryLine("TRIGger:DELay?");
-               answer = answer.TrimEnd('\n');
-               decimal returnNumb = (decimal) StrToDoubleMindMind(answer);
-               return returnNumb;
             }
 
             public E364xA SetTriggerSource(TriggerSource inSource)
@@ -221,26 +257,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 return _powerSupply;
             }
 
-            public TriggerSource GetTriggerSource()
-            {
-                string answer = _powerSupply.QueryLine("TRIGger:SOURce?");
-                answer = answer.TrimEnd('\n');
-                foreach (TriggerSource source in Enum.GetValues(typeof(TriggerSource)))
-                {
-                    if (source.ToString().Equals(answer))
-                        return source;
-                }
-                string errorStr = $"Запрос источника триггера! E364xA выдал непредвиденный результат: {answer}";
-                Logger.Error(errorStr);
-                throw new Exception(errorStr);
-            }
-
             public E364xA TRG()
             {
                 _powerSupply.WriteLine("*TRG");
                 return _powerSupply;
             }
 
+            #endregion
         }
 
         public class Output
@@ -248,7 +271,8 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             #region Fields
 
             private readonly E364xA _powerSupply;
-            string Comand="OUTPut";
+            private readonly string Comand = "OUTPut";
+
             #endregion
 
             public Output(E364xA powerSupply)
@@ -256,10 +280,14 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 _powerSupply = powerSupply;
             }
 
-            public E364xA OutputOn()
+            #region Methods
+
+            public bool IsOutputOn()
             {
-                _powerSupply.WriteLine($"{Comand} on");
-                return _powerSupply;
+                var answer = _powerSupply.QueryLine($"{Comand}?");
+                answer = answer.TrimEnd('\n');
+                if (answer.Equals("1")) return true;
+                return false;
             }
 
             public E364xA OutputOff()
@@ -268,13 +296,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 return _powerSupply;
             }
 
-            public bool IsOutputOn()
+            public E364xA OutputOn()
             {
-                string answer = _powerSupply.QueryLine($"{Comand}?");
-                answer = answer.TrimEnd('\n');
-                if (answer.Equals("1")) return true;
-                return false;
+                _powerSupply.WriteLine($"{Comand} on");
+                return _powerSupply;
             }
+
+            #endregion
         }
     }
 }
