@@ -25,7 +25,7 @@ namespace E364xAPlugin
     public class Operation : OperationMetrControlBase
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
-        public Operation(ServicePack servicePac)
+        public Operation(ServicePack servicePack)
         {
             //это операция первичной поверки
             UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
@@ -111,7 +111,7 @@ namespace E364xAPlugin
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
-                service.Entity = new Tuple<string, Assembly>("VisualTest", null);
+                service.Entity = new Tuple<string, Assembly>("E364XA_VisualTest", null);
                 service.Show();
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;

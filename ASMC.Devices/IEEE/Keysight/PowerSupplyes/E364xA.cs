@@ -2,11 +2,12 @@
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 {
-    internal class E364xA : IeeeBase
+    internal class E364xA : IeeeBase, E36XX_IPowerSupply
     {
         public enum Chanel
         {
@@ -75,6 +76,46 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         }
 
         #endregion
+
+        public void SetVoltage(MeasPoint<Voltage> inPoint)
+        {
+            VOLT.SetValue(inPoint);
+        }
+
+        public void SetCurrent(MeasPoint<Current> inPoint)
+        {
+            CURR.SetValue(inPoint);
+        }
+
+        public void OutputOn()
+        {
+            OUT.OutputOn();
+        }
+
+        public void OutputOff()
+        {
+            OUT.OutputOff();
+        }
+
+        public void SetHighVoltageRange()
+        {
+            VOLT.SetRange(RangePowerSupply.HIGH);
+        }
+
+        public void SetLowVoltageRange()
+        {
+            VOLT.SetRange(RangePowerSupply.LOW);
+        }
+
+        public MeasPoint<Voltage> GetMeasureVoltage()
+        {
+            return MEAS.GetMeasureVoltage();
+        }
+
+        public MeasPoint<Current> GetMeasureCurrent()
+        {
+            return MEAS.GetMeasureCurrent();
+        }
 
         public class CURRent
         {
