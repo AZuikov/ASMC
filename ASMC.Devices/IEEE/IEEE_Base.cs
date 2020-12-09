@@ -347,7 +347,7 @@ namespace ASMC.Devices.IEEE
         /// Самопроверка
         /// </summary>
         /// <returns> True - успешно, иначе провал</returns>
-        public bool TestSelf()
+        public bool SelfTest()
         {
             return QueryLine(QueryTestSelf).Equals("1");
         }

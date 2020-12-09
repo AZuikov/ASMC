@@ -49,7 +49,13 @@ namespace E364xAPlugin
                     Devices = new IDeviceBase[] {new Mult_34401A() }, Description = "Цифровой мультиметр"
                 }, 
             };
-            DocumentName = "E364xA";
+            DocumentName = "E364xA_protocol";
+
+            UserItemOperation = new IUserItemOperationBase[]
+            {
+                new Oper1VisualTest(this),
+                new Oper2Oprobovanie(this)
+            };
         }
 
         public override void RefreshDevice()
@@ -126,5 +132,38 @@ namespace E364xAPlugin
         }
 
         #endregion
+    }
+
+    public class Oper2Oprobovanie : ParagraphBase<bool>
+    {
+        public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Опробование";
+            DataRow = new List<IBasicOperation<bool>>();
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[] { "Результат опробования" };
+        }
+
+        protected override DataTable FillData()
+        {
+            var data = base.FillData();
+            var dataRow = data.NewRow();
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
+            return data;
+        }
+
+        protected override string GetReportTableName()
+        {
+           return "ITBmOprobovanie";
+        }
     }
 }

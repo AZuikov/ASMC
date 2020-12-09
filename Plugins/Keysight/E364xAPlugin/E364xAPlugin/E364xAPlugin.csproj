@@ -62,6 +62,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resource\E364xA_protocol.dotx" />
     <None Include="Resource\E364XA_VisualTest.rtf" />
   </ItemGroup>
   <ItemGroup>
