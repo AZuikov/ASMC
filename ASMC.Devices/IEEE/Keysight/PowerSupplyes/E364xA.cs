@@ -7,7 +7,7 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 {
-    internal class E364xA : IeeeBase, E36XX_IPowerSupply
+    public class E364xA : IeeeBase, E36XX_IPowerSupply
     {
         public enum Chanel
         {
@@ -48,6 +48,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
         public E364xA()
         {
+            UserType = "E364XA";
             CURR = new CURRent(this);
             VOLT = new VOLTage(this);
             MEAS = new MEASure(this);

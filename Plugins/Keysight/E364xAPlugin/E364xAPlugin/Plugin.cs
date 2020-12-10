@@ -12,14 +12,18 @@ using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
+using ASMC.Devices.IEEE.Keysight.PowerSupplies;
+using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
+using Voltage = ASMC.Data.Model.PhysicalQuantity.Voltage;
 
 namespace E364xAPlugin
 {
-    public class Plugin<T>  : Program<T> where T : OperationMetrControlBase
+    public class Plugin  : Program<Operation> 
     {
         public Plugin(ServicePack service) : base(service)
         {
             Grsi = "26951-04";
+            Type = "E3640A - E3649A";
         }
     }
     public class Operation : OperationMetrControlBase
@@ -48,6 +52,14 @@ namespace E364xAPlugin
                 {
                     Devices = new IDeviceBase[] {new Mult_34401A() }, Description = "Цифровой мультиметр"
                 }, 
+            };
+
+            TestDevices = new IDeviceUi[]
+            {
+                new Device
+                {
+                    Devices = new IDeviceBase[]{new E364xA() }, Description = "Мера напряжения и тока"
+                } 
             };
             DocumentName = "E364xA_protocol";
 
@@ -136,6 +148,8 @@ namespace E364xAPlugin
 
     public class Oper2Oprobovanie : ParagraphBase<bool>
     {
+        protected E36XX_IPowerSupply powerSupply { get; set; }
+
         public Oper2Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
@@ -164,6 +178,28 @@ namespace E364xAPlugin
         protected override string GetReportTableName()
         {
            return "ITBmOprobovanie";
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+           
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
+                                            .SelectedDevice as E36XX_IPowerSupply ;
+            if (powerSupply == null) return;
+            ((IeeeBase)powerSupply).StringConnection = GetStringConnect((IProtocolStringLine)powerSupply);
+            base.InitWork(token);
+
+            var operation = new BasicOperation<bool>();
+            operation.InitWork = async () =>
+            {
+                operation.Expected = true;
+                operation.Getting = ((IeeeBase)powerSupply).SelfTest("+0");
+            };
+            
+            operation.IsGood = () => operation.Getting;
+            operation.CompliteWork = () => { return Task.FromResult(operation.IsGood()); };
+            DataRow.Add(operation);
+
         }
     }
 }

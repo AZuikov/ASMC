@@ -12,7 +12,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
     /// <summary>
     /// Интерфейс источника питания серии E36 Keysight
     /// </summary>
-    interface E36XX_IPowerSupply
+    public interface E36XX_IPowerSupply
     {
         
 

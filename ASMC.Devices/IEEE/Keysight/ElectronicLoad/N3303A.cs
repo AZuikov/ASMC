@@ -8,7 +8,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
     {
         public N3303A() 
         {
-            ModuleModel = "N3303A";
+            UserType = "N3303A";
             
             //Пределы воспроизведения сопротивлений в режиме CR
 
