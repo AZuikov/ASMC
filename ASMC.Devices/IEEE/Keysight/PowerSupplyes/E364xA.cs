@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -11,8 +12,8 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
     {
         public enum Chanel
         {
-            OUTP1,
-            OUTP2
+            [StringValue("OUTP1")]OUTP1,
+            [StringValue("OUTP2")]OUTP2
         }
 
         /// <summary>
@@ -20,10 +21,6 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         /// </summary>
         public enum RangePowerSupply
         {
-            [StringValue("P8V")] P8V,
-            [StringValue("P20V")] P20V,
-            [StringValue("P35V")] P35V,
-            [StringValue("P60V")] P60V,
             [StringValue("LOW")] LOW,
             [StringValue("HIGH")] HIGH
         }
@@ -72,20 +69,44 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
         public E364xA SetActiveChanel(Chanel inChanel)
         {
-            WriteLine($"inst {inChanel}");
+            WriteLine($"inst {inChanel.GetStringValue()}");
             return this;
         }
 
         #endregion
 
-        public void SetVoltage(MeasPoint<Voltage> inPoint)
+        public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
         {
             VOLT.SetValue(inPoint);
         }
 
-        public void SetCurrent(MeasPoint<Current> inPoint)
+        public void SetMaxVoltageLevel()
+        {
+            WriteLine("VOLTage:AMPLitude MAX");
+        }
+
+        public MeasPoint<Voltage> GetVoltageLevel()
+        {
+            string answer = QueryLine("VOLTage:AMPLitude?");
+            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            return new MeasPoint<Voltage>(numb);
+        }
+
+        public void SetCurrentLevel(MeasPoint<Current> inPoint)
         {
             CURR.SetValue(inPoint);
+        }
+
+        public void SetMaxCurrentLevel()
+        {
+            WriteLine("CURRent:AMPLitude MAX");
+        }
+
+        public MeasPoint<Current> GetCurrentLevel()
+        {
+            string answer = QueryLine("CURRent:AMPLitude?");
+            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            return new MeasPoint<Current>(numb);
         }
 
         public void OutputOn()
@@ -106,6 +127,16 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         public void SetLowVoltageRange()
         {
             VOLT.SetRange(RangePowerSupply.LOW);
+        }
+
+        public MeasPoint<Voltage> GetVoltageRange()
+        {
+            string answer = QueryLine("VOLTage:RANGe?");
+            Regex regex  = new Regex("P\\d+V\n",RegexOptions.IgnoreCase);
+            Match match = regex.Match(answer);
+            decimal numb;
+            decimal.TryParse(match.Value,out numb);
+            return new MeasPoint<Voltage>(numb);
         }
 
         public MeasPoint<Voltage> GetMeasureVoltage()
@@ -260,7 +291,6 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             public decimal GetTriggerDelay()
             {
                 var answer = _powerSupply.QueryLine("TRIGger:DELay?");
-                answer = answer.TrimEnd('\n');
                 var returnNumb = (decimal) StrToDoubleMindMind(answer);
                 return returnNumb;
             }

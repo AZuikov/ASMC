@@ -79,6 +79,7 @@ namespace ASMC.Devices
         /// <returns></returns>
         public static double StrToDoubleMindMind(string date, ICommand mult = null)
         {
+            date = date.TrimEnd('\n');
             var dDate = new double[2];
             var value = date.Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
             return double.Parse(value);

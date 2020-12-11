@@ -16,12 +16,21 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
     {
         
 
-        void SetVoltage(MeasPoint<Voltage> inPoint);
-        void SetCurrent(MeasPoint<Current> inPoint);
+        void SetVoltageLevel(MeasPoint<Voltage> inPoint);
+        void SetMaxVoltageLevel();
+        MeasPoint<Voltage> GetVoltageLevel();
+        
+        void SetCurrentLevel(MeasPoint<Current> inPoint);
+        void SetMaxCurrentLevel();
+        MeasPoint<Current> GetCurrentLevel();
+        
         void OutputOn();
         void OutputOff();
-        void SetHighVoltageRange( );
-        void SetLowVoltageRange( );
+        
+        void SetHighVoltageRange();
+        void SetLowVoltageRange();
+        MeasPoint<Voltage> GetVoltageRange();
+        
         MeasPoint<Voltage> GetMeasureVoltage();
         MeasPoint<Current> GetMeasureCurrent();
 
