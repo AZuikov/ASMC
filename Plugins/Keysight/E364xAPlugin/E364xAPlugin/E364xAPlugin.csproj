@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{30551274-9C04-480C-8239-138C487A3C6D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>E364xAPlugin</RootNamespace>
+    <AssemblyName>E364xAPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Mvvm.v17.2">
+      <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Plugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AP.Utils\AP.Utils.csproj">
+      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
+      <Name>AP.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Core\ASMC.Core.csproj">
+      <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
+      <Name>ASMC.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Data.Model\ASMC.Data.Model.csproj">
+      <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
+      <Name>ASMC.Data.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Devices\ASMC.Devices.csproj">
+      <Project>{c606fa94-0b7e-4698-801f-206ca9da0cef}</Project>
+      <Name>ASMC.Devices</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Resource\E364xA_protocol.dotx" />
+    <None Include="Resource\E364XA_VisualTest.rtf" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
+mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y
+xcopy "$(ProjectDir)Resource" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
+  </PropertyGroup>
+</Project>

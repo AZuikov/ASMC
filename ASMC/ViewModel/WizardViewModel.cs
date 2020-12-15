@@ -311,7 +311,7 @@ namespace ASMC.ViewModel
                     }
                 }
 
-                report.FindStringAndReplace("Result", res?"Пригоден к применению":"Не пригоден к применению");
+                report.FindStringAndReplace("Result", res?"Пригодным к применению":"Не пригоденым к применению");
                 path = GetUniqueFileName(".docx");
                 report.SaveAs(path);
                 Logger.Info($@"Протокол сформирован по пути {path}");

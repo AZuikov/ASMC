@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accord, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
@@ -102,11 +104,14 @@
   <ItemGroup>
     <Compile Include="DeviceInfo.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="IEEE\Fluke\Calibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
+    <Compile Include="IEEE\Fluke\Calibrator\ICalibrator.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
     <Compile Include="IEEE\IEEE_Base.cs" />
+    <Compile Include="IEEE\Keysight\ElectronicLoad\IElectronicLoad.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\Main_N3300.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3303A.cs" />
     <Compile Include="IEEE\Keysight\ElectronicLoad\N3306A.cs" />
@@ -117,7 +122,8 @@
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
     <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
-    <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_2022B\TDS_2022B.cs" />
+    <Compile Include="IEEE\Keysight\PowerSupplyes\E364xA.cs" />
+    <Compile Include="IEEE\Keysight\PowerSupplyes\E36XX_IPowerSupply.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
     <Compile Include="Port\OWEN\OwenProtocol.cs" />
     <Compile Include="Port\OWEN\TRM202Device.cs" />
@@ -131,6 +137,8 @@
     <Compile Include="Port\ZipNu4Pribor\Km300P.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rohde_Schwarz\RS_RTM_Oscilloscope.cs" />
+    <Compile Include="Rohde_Schwarz\IOscilloscope.cs" />
     <Compile Include="Sensor.cs" />
     <Compile Include="SimpleScada\IParametrScada.cs" />
     <Compile Include="SimpleScada\IvaSensor.cs" />
@@ -159,6 +167,7 @@
     <None Include="packages.config" />
     <None Include="Resources\ACC\5522a_1yr_99CF.acc" />
     <None Include="Resources\ACC\5700_99.1yr" />
+    <None Include="Resources\ACC\9100.acc" />
     <None Include="Resources\ACC\9500.acc" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>

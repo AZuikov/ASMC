@@ -8,14 +8,15 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
     {
         public N3303A() 
         {
-            ModuleModel = "N3303A";
-            
+            UserType = "N3303A";
+            ModuleModel = UserType;
+
             //Пределы воспроизведения сопротивлений в режиме CR
 
             this.RangeVoltArr = new decimal[2] { 24, 240 };
             this.RangeCurrentArr = new decimal[2] { 1, 10 };
           
-           this.Resistance= new Resistance03(this);
+           this.ResistanceLoad= new Resistance03(this);
 
           
 
@@ -23,7 +24,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         
         
     }
-    public class Resistance03 : Resistance
+    public class Resistance03 : ResistanceLoad
     {
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

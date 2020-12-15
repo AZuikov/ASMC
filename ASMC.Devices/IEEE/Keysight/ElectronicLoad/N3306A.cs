@@ -6,9 +6,10 @@
         
         public N3306A() 
         {
-            ModuleModel = "N3306A";
+            UserType = "N3306A";
+            ModuleModel = UserType;
 
-            this.Resistance.Ranges = new ICommand[]
+            this.ResistanceLoad.Ranges = new ICommand[]
             {
                 new Command("RESistance:RANGe 1", "", 1), new Command("RESistance:RANGe 10", "", 10), new Command("RESistance:RANGe 100", "", 100), new Command("RESistance:RANGe 1000", "", 1000)
             };

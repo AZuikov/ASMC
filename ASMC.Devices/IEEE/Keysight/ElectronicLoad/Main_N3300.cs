@@ -5,11 +5,12 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using AP.Utils.Data;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 {
-    public  class MainN3300 : IeeeBase
+    public  class MainN3300 : IeeeBase, IElectronicLoad
     {
 
        
@@ -65,7 +66,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         /// <returns></returns>
         public int ChanelNumber => _chanNum;
 
-        public Current Current { get; protected set; }
+        public CurrentLoad CurrentLoad { get; protected set; }
 
         public string GetModuleModel => ModuleModel;
         //public Meas Meas { get; protected set; }
@@ -89,7 +90,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             }
         }
 
-        public Resistance Resistance { get; protected internal set; }
+        public ResistanceLoad ResistanceLoad { get; protected internal set; }
 
         public State StateOutput
         {
@@ -99,17 +100,17 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             }
         }
 
-        public Voltage Voltage { get; protected set; }
+        public VoltageLoad VoltageLoad { get; protected set; }
 
         #endregion
 
         protected MainN3300()
         {
           
-            Resistance = new Resistance(this);
+            ResistanceLoad = new ResistanceLoad(this);
             UserType = "N3300A";
-            Current = new Current(this);
-            Voltage = new Voltage(this);
+            CurrentLoad = new CurrentLoad(this);
+            VoltageLoad = new VoltageLoad(this);
         }
 
         #region Methods
@@ -122,14 +123,12 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         private static decimal StrToDecimal(string inStr)
         {
             var val = inStr.TrimEnd('\n').Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator).Split('E');
-
             return decimal.Parse(val[0]) * (decimal) Math.Pow(10, double.Parse(val[1]));
         }
 
         /// <summary>
         /// Проверяет установлен ли в нагрузке такой модуль. Если модуль устновлен, то записывает номер канала в объект и
-        /// возвращает его.
-        /// Если модуль не устнановлен, то прописывает в объект отрицательный номер канала -1 и возвращает его, тогда объект не
+        /// возвращает его.  Если модуль не устнановлен, то прописывает в объект отрицательный номер канала -1 и возвращает его, тогда объект не
         /// рабочий.
         /// </summary>
         /// <returns>true если модуль с такой моделью установлен</returns>
@@ -311,6 +310,8 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             throw new NullReferenceException("Канал не устанавлен");
         }
 
+       
+
         #endregion
 
         public struct ModuleInfo
@@ -325,9 +326,84 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             /// </summary>
             public string Type { get; set; }
         }
+
+        #region InterfaceMethods
+        public void SetThisModuleAsWorking()
+        {
+            FindThisModule();
+            SetWorkingChanel();
+        }
+
+        public void OutputOn()
+        {
+            OutputOn();
+        }
+
+        public void OutputOff()
+        {
+            OutputOff();
+        }
+
+        public void SetResistanceMode()
+        {
+            SetModeWork(ModeWorks.Resistance);
+        }
+
+        public MeasPoint<Resistance> GetResistnceLevel()
+        {
+            return ResistanceLoad.Get();
+        }
+
+        public void SetResistanceLevel(MeasPoint<Resistance> inPoint)
+        {
+            ResistanceLoad.Set(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        public void SetVoltageMode()
+        {
+            SetModeWork(ModeWorks.Voltage);
+        }
+
+        public MeasPoint<Voltage> GetVoltageLevel()
+        {
+            return VoltageLoad.Get();
+        }
+
+        public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
+        {
+            VoltageLoad.Set(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        public void SetCurrentMode()
+        {
+            SetModeWork(ModeWorks.Current);
+        }
+
+        public MeasPoint<Current> GetCurrentLevel()
+        {
+            return CurrentLoad.Get();
+        }
+
+        public void SetCurrentLevel(MeasPoint<Current> inPoint)
+        {
+            CurrentLoad.Set(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        public MeasPoint<Current> GetMeasureCurrent()
+        {
+            return new MeasPoint<Current>(CurrentLoad.MeasureCurrent);
+        }
+
+        public MeasPoint<Voltage> GetMeasureVoltage()
+        {
+            return new MeasPoint<Voltage>(VoltageLoad.MeasureVolt);
+        }
+
+
+        #endregion
     }
 
-    public class Meas : HelpDeviceBase
+    public class MeasLoad : HelpDeviceBase
     {
         #region Fields
 
@@ -351,14 +427,14 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
-        public Meas(MainN3300 mainN3300)
+        public MeasLoad(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = mainN3300.Multipliers;
         }
     }
 
-    public class Resistance : HelpDeviceBase
+    public class ResistanceLoad : HelpDeviceBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -384,7 +460,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
-        public Resistance(MainN3300 mainN3300)
+        public ResistanceLoad(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = _mainN3300.Multipliers;
@@ -405,6 +481,13 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             var val = value * (decimal) mult.GetDoubleValue();
             _mainN3300.WriteLine($@"RESistance {JoinValueMult(val, mult)}");
             return _mainN3300;
+        }
+
+        public MeasPoint<Resistance> Get()
+        {
+            string answer = _mainN3300.QueryLine("RESistance?");
+            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            return new MeasPoint<Resistance>(numb);
         }
 
         /// <summary>
@@ -443,7 +526,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         #endregion
     }
 
-    public class Voltage : HelpDeviceBase
+    public class VoltageLoad : HelpDeviceBase
     {
         #region Fields
 
@@ -457,7 +540,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
-        public Voltage(MainN3300 mainN3300)
+        public VoltageLoad(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = _mainN3300.Multipliers;
@@ -481,10 +564,17 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             return _mainN3300;
         }
 
+        public MeasPoint<Voltage> Get()
+        {
+            string answer = _mainN3300.QueryLine("VOLTage?");
+            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            return new MeasPoint<Voltage>(numb);
+        }
+
         #endregion
     }
 
-    public class Current : HelpDeviceBase
+    public class CurrentLoad : HelpDeviceBase
     {
         #region Fields
 
@@ -498,7 +588,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
-        public Current(MainN3300 mainN3300)
+        public CurrentLoad(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = _mainN3300.Multipliers;
@@ -521,10 +611,19 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
             return _mainN3300;
         }
 
+        public MeasPoint<Current> Get()
+        {
+            string answer = _mainN3300.QueryLine("CURRent?");
+            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            return new MeasPoint<Current>(numb);
+        }
+
+
+
         #endregion
     }
 
-    public class Power : HelpDeviceBase
+    public class PowerLoad : HelpDeviceBase
     {
         #region Fields
 
@@ -538,7 +637,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         #endregion
 
-        public Power(MainN3300 mainN3300)
+        public PowerLoad(MainN3300 mainN3300)
         {
             _mainN3300 = mainN3300;
             Multipliers = _mainN3300.Multipliers;

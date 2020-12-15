@@ -617,7 +617,9 @@ namespace ASMC.Devices.IEEE.Tektronix.Oscilloscope
             Chanel = new CChanel(this);
             Acquire = new CMiscellaneous(this);
             Trigger = new CTrigger(this);
-            
+            UserType = "TDS";
+
+
 
         }
 

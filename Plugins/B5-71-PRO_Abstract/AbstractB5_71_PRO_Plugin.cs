@@ -250,7 +250,7 @@ namespace B5_71_PRO_Abstract
                     Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
                     Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                     var resist = Bp.VoltMax / Bp.CurrMax + 3;
-                    Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                    Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
                     Load.SetOutputState(MainN3300.State.On);
 
                     Bp.InitDevice();
@@ -265,7 +265,7 @@ namespace B5_71_PRO_Abstract
 
                         //измеряем напряжение
 
-                        var measVolt = Math.Abs(Load.Voltage.MeasureVolt);
+                        var measVolt = Math.Abs(Load.VoltageLoad.MeasureVolt);
 
                         operation.IsGood = () => { return Bp.VoltMax / measVolt >=  0.7M; };
 
@@ -277,7 +277,7 @@ namespace B5_71_PRO_Abstract
                     }
 
                     resist = Bp.VoltMax / Bp.CurrMax - 3;
-                    Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                    Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
                     Bp.SetStateVolt(Bp.VoltMax);
                     foreach (var pointMult in MyPoint)
                     {
@@ -287,7 +287,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(500);
                         //измеряем напряжение
 
-                        var measCurr = Math.Abs(Load.Current.MeasureCurrent);
+                        var measCurr = Math.Abs(Load.CurrentLoad.MeasureCurrent);
                         operation.IsGood = () => { return Bp.CurrMax / measCurr >=  0.7M; };
 
                         if (!operation.IsGood())
@@ -327,7 +327,7 @@ namespace B5_71_PRO_Abstract
                 }
 
                 var resist = Bp.VoltMax / Bp.CurrMax + 3;
-                Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
 
                 answer =
                     UserItemOperation.ServicePack.MessageBox()
@@ -864,7 +864,7 @@ namespace B5_71_PRO_Abstract
                     var pointResistance = Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]);
                     MathStatistics.Round(ref pointResistance, 3);
 
-                    Load.Resistance.SetResistanceRange(pointResistance).Resistance.Set(pointResistance)
+                    Load.ResistanceLoad.SetResistanceRange(pointResistance).ResistanceLoad.Set(pointResistance)
                         .SetOutputState(MainN3300.State.On);
 
                     //сюда запишем результаты
@@ -875,7 +875,7 @@ namespace B5_71_PRO_Abstract
                     foreach (var coef in ArrСoefVoltUnstable)
                     {
                         var resistance = Bp.VoltMax / (coef * Bp.CurrMax);
-                        Load.Resistance.SetResistanceRange(resistance).Resistance
+                        Load.ResistanceLoad.SetResistanceRange(resistance).ResistanceLoad
                             .Set(resistance); //ставим сопротивление
 
                         // время выдержки
@@ -1043,8 +1043,8 @@ namespace B5_71_PRO_Abstract
                         var point = Bp.VoltMax / ((decimal) 0.9M * Bp.CurrMax);
                         Load.SetWorkingChanel()
                             .SetModeWork(MainN3300.ModeWorks.Resistance)
-                            .Resistance.SetResistanceRange(point)
-                            .Resistance.Set(point)
+                            .ResistanceLoad.SetResistanceRange(point)
+                            .ResistanceLoad.Set(point)
                             .SetOutputState(MainN3300.State.On);
 
                         Bp.InitDevice();
@@ -1262,7 +1262,7 @@ namespace B5_71_PRO_Abstract
                     {
                         Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                         var resist = Bp.VoltMax / Bp.CurrMax - 3;
-                        Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                        Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
                         Load.SetOutputState(MainN3300.State.On);
 
                         Bp.InitDevice();
@@ -1279,7 +1279,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1000);
                         //измеряем ток
 
-                        var result = Load.Current.MeasureCurrent;
+                        var result = Load.CurrentLoad.MeasureCurrent;
 
                         MathStatistics.Round(ref result, 3);
 
@@ -1447,7 +1447,7 @@ namespace B5_71_PRO_Abstract
                     {
                         Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                         var resist = Bp.VoltMax / Bp.CurrMax - 3;
-                        Load.Resistance.SetResistanceRange(resist).Resistance.Set(resist);
+                        Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
                         Load.SetOutputState(MainN3300.State.On);
 
                         Bp.InitDevice();
@@ -1460,7 +1460,7 @@ namespace B5_71_PRO_Abstract
                         Bp.SetStateCurr(setPoint);
                         Thread.Sleep(1000);
                         //измеряем ток
-                        var resultN3300 = Load.Current.MeasureCurrent;
+                        var resultN3300 = Load.CurrentLoad.MeasureCurrent;
                         MathStatistics.Round(ref resultN3300, 3);
 
                         var resultBpCurr = Bp.GetMeasureCurr();
@@ -1635,7 +1635,7 @@ namespace B5_71_PRO_Abstract
                 {
                     Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                     var point = Bp.VoltMax * MyPoint[2] / Bp.CurrMax;
-                    Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
+                    Load.ResistanceLoad.SetResistanceRange(point).ResistanceLoad.Set(point);
                     Load.SetOutputState(MainN3300.State.On);
 
                     ////инициализация блока питания
@@ -1658,9 +1658,9 @@ namespace B5_71_PRO_Abstract
                     foreach (var coef in MyPoint)
                     {
                         var resistance = coef * Bp.VoltMax / Bp.CurrMax;
-                        Load.Resistance.SetResistanceRange(resistance).Resistance.Set(resistance);
+                        Load.ResistanceLoad.SetResistanceRange(resistance).ResistanceLoad.Set(resistance);
                         Thread.Sleep(3500);
-                        currUnstableList.Add(Load.Current.MeasureCurrent);
+                        currUnstableList.Add(Load.CurrentLoad.MeasureCurrent);
                     }
 
                     Bp.OffOutput();
@@ -1820,7 +1820,7 @@ namespace B5_71_PRO_Abstract
 
                         Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
                         var point = (decimal) 0.9M * Bp.VoltMax / Bp.CurrMax;
-                        Load.Resistance.SetResistanceRange(point).Resistance.Set(point);
+                        Load.ResistanceLoad.SetResistanceRange(point).ResistanceLoad.Set(point);
                         Load.SetOutputState(MainN3300.State.On);
 
                         //инициализация блока питания
@@ -1890,7 +1890,7 @@ namespace B5_71_PRO_Abstract
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
                     currPulsV357 = currPulsV357 / measResist;
-                    MathStatistics.Round(ref currPulsV357, Bp.TolleranceCurrentPuls.ToString());
+                    MathStatistics.Round(ref currPulsV357, 3);
 
                     UserItemOperation.ServicePack.MessageBox().Show(
                                                                   "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",

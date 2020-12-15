@@ -108,15 +108,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resource\TRM202_Oprobovanie735_chanel1.jpg" />
-    <Content Include="Resource\TRM202_Oprobovanie735_chanel2.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
+    <None Include="Resource\TRM202_protocolMP2007.dotx" />
     <None Include="Resource\TRM_IsolationTest.rtf" />
     <None Include="Resource\TRM_Visual_test.rtf" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resource\TRM202_P4831_OprobovanieResistanceTermocouple_chanel1.jpg" />
+    <Content Include="Resource\TRM202_P4831_OprobovanieResistanceTermocouple_chanel2.jpg" />
+    <Content Include="Resource\TRM202_ResistanceTermocouple_chanel1.jpg" />
+    <Content Include="Resource\TRM202_ResistanceTermocouple_chanel2.jpg" />
+    <Content Include="Resource\TRM202_TC_out_chanel1.jpg" />
+    <Content Include="Resource\TRM202_TC_out_chanel2.jpg" />
+    <Content Include="Resource\TRM202_VoltageTermocouple_chanel1.jpg" />
+    <Content Include="Resource\TRM202_VoltageTermocouple_chanel2.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <Page Include="View\TermocupleView.xaml">
       <SubType>Designer</SubType>
@@ -127,6 +133,7 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
 mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
-xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y</PostBuildEvent>
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y
+xcopy "$(ProjectDir)Resource" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

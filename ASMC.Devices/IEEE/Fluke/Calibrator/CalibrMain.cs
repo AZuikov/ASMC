@@ -432,6 +432,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         return _calibrMain;
                     }
 
+                    public CalibrMain SetCompensation(Zcomp compensationMode)
+                    {
+                        _calibrMain.WriteLine($"{compensationMode.GetStringValue()}");
+                        return _calibrMain;
+                    }
+
 
 
                 }
@@ -508,6 +514,39 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         Multipliers = new ICommand[]{new Command("", "", 1)};
                     }
 
+                    [AccRange("Mode: TC B", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_B { get; set; }
+
+                    [AccRange("Mode: TC C", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_C { get; set; }
+
+                    [AccRange("Mode: TC E", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_E { get; set; }
+
+                    [AccRange("Mode: TC J", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TCJ { get; set; }
+
+                    [AccRange("Mode: TC K", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_K { get; set; }
+
+                    [AccRange("Mode: TC L", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_L { get; set; }
+
+                    [AccRange("Mode: TC N", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_N { get; set; }
+
+                    [AccRange("Mode: TC R", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_R { get; set; }
+
+                    [AccRange("Mode: TC S", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_S { get; set; }
+
+                    [AccRange("Mode: TC T", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_T { get; set; }
+
+                    [AccRange("Mode: TC U", typeof(MeasPoint<Temperature>))]
+                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_U { get; set; }
+
                     /// <summary>
                     /// Содержит достумные виды преобразователей
                     /// </summary>
@@ -518,6 +557,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         [StringValue("E")] E,
                         [StringValue("J")] J,
                         [StringValue("K")] K,
+                        [StringValue("L")] L,
                         [StringValue("N")] N,
                         [StringValue("R")] R,
                         [StringValue("S")] S,
@@ -531,7 +571,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// </summary>
                     /// <param name="type">Тип термопары.</param>
                     /// <returns></returns>
-                    public  CalibrMain SetTermoCouple(TypeTermocouple type)
+                    public  CalibrMain SetTermoCoupleType(TypeTermocouple type)
                     {
                         _calibrMain.WriteLine("TC_TYPE " + type.GetStringValue());
                         return _calibrMain;
@@ -549,8 +589,33 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                     public CalibrMain SetValue(MeasPoint<Temperature> inPoint)
                     {
-                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))} CEL";
+                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')} CEL";
                            
+                        _calibrMain.WriteLine(SendCommand);
+                        new COut(_calibrMain).GetErrors(SendCommand);
+                        return _calibrMain;
+                    }
+
+                    /// <summary>
+                    /// Подключает внутренний измеритель температуры калибратора. Нужен для компенсации температуры окрю Среды.
+                    /// </summary>
+                    /// <returns></returns>
+                    public CalibrMain SetIntTempSensor()
+                    {
+                        string SendCommand = "TC_REF int";
+                        _calibrMain.WriteLine(SendCommand);
+                        new COut(_calibrMain).GetErrors(SendCommand);
+                        return _calibrMain;
+                    }
+
+                    /// <summary>
+                    /// Устанавливает внешний измеритель температуры окружающей среды, и дает возможность задать смещений по температуре.
+                    /// </summary>
+                    /// <param name="offsetTemp">Смещение температуры в градусах.</param>
+                    /// <returns></returns>
+                    public CalibrMain SetExtTempSensor(MeasPoint<Temperature> offsetTemp)
+                    {
+                        string SendCommand = $"TC_REF ext, {offsetTemp.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')} CEL";
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
                         return _calibrMain;

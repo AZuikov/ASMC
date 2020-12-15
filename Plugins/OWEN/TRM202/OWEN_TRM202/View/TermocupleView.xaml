@@ -7,9 +7,7 @@
              xmlns:view="clr-namespace:ASMC.Common.View;assembly=ASMC.Common"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Grid.Row="0" Grid.Column="1" DataContext="{Binding Content}">
-        <HeaderedContentControl Header="{Binding Header}" Focusable="False" DockPanel.Dock="Right" >
-            <view:InputTableControl Name="Table" Data="{Binding Cells}" SelectValue="{Binding Selected}" />
-        </HeaderedContentControl>
-    </StackPanel>
+    <GroupBox Header="Заполните значения согласно выбранной характеристике" Margin="20" Focusable="False">
+        <view:MultiGridView/>
+    </GroupBox>
 </UserControl>
