@@ -478,7 +478,7 @@ namespace B5_71_PRO_Abstract
                         //измеряем напряжение
                         Mult.Dc.Voltage.Range.Set((double) setPoint);
                         var result = Mult.GetMeasValue();
-                        MathStatistics.Round(ref result, 3);
+                        MathStatistics.Round(result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
@@ -531,7 +531,7 @@ namespace B5_71_PRO_Abstract
         private decimal ErrorCalculation(decimal inA)
         {
             inA = Bp.TolleranceFormulaVolt(inA);
-            MathStatistics.Round(ref inA, 3);
+            MathStatistics.Round( inA, 3);
 
             return inA;
         }
@@ -673,8 +673,8 @@ namespace B5_71_PRO_Abstract
                         var resultMult = Mult.GetMeasValue();
                         var resultBp = Bp.GetMeasureVolt();
 
-                        MathStatistics.Round(ref resultMult, 3);
-                        MathStatistics.Round(ref resultBp, 3);
+                        MathStatistics.Round( resultMult, 3);
+                        MathStatistics.Round( resultBp, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
@@ -726,7 +726,7 @@ namespace B5_71_PRO_Abstract
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
             inA = Bp.TolleranceFormulaVolt(inA);
-            MathStatistics.Round(ref inA, 3);
+            MathStatistics.Round( inA, 3);
 
             return inA;
         }
@@ -862,7 +862,7 @@ namespace B5_71_PRO_Abstract
                     Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
 
                     var pointResistance = Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]);
-                    MathStatistics.Round(ref pointResistance, 3);
+                    MathStatistics.Round( pointResistance, 3);
 
                     Load.ResistanceLoad.SetResistanceRange(pointResistance).ResistanceLoad.Set(pointResistance)
                         .SetOutputState(MainN3300.State.On);
@@ -889,7 +889,7 @@ namespace B5_71_PRO_Abstract
 
                     //считаем
                     var resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
-                    MathStatistics.Round(ref resultVoltUnstable, 3);
+                    MathStatistics.Round( resultVoltUnstable, 3);
 
                     //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
@@ -1082,7 +1082,7 @@ namespace B5_71_PRO_Abstract
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
                     voltPulsV357 = MathStatistics.Mapping( voltPulsV357, 0, (decimal) 0.99M, 0,
                                                           (decimal)a.MainPhysicalQuantity.Value);
-                    MathStatistics.Round(ref voltPulsV357, 0);
+                    MathStatistics.Round( voltPulsV357, 0);
 
                     UserItemOperation.ServicePack.MessageBox().Show(
                                                                   "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",
@@ -1281,7 +1281,7 @@ namespace B5_71_PRO_Abstract
 
                         var result = Load.CurrentLoad.MeasureCurrent;
 
-                        MathStatistics.Round(ref result, 3);
+                        MathStatistics.Round( result, 3);
 
                         operation.Expected = setPoint;
                         operation.Getting = result;
@@ -1330,7 +1330,7 @@ namespace B5_71_PRO_Abstract
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
             inA = Bp.TolleranceFormulaCurrent(inA);
-            MathStatistics.Round(ref inA, 3);
+            MathStatistics.Round( inA, 3);
 
             return inA;
         }
@@ -1461,10 +1461,10 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1000);
                         //измеряем ток
                         var resultN3300 = Load.CurrentLoad.MeasureCurrent;
-                        MathStatistics.Round(ref resultN3300, 3);
+                        MathStatistics.Round( resultN3300, 3);
 
                         var resultBpCurr = Bp.GetMeasureCurr();
-                        MathStatistics.Round(ref resultBpCurr, 3);
+                        MathStatistics.Round( resultBpCurr, 3);
 
                         operation.Expected = resultN3300;
                         operation.Getting = resultBpCurr;
@@ -1513,7 +1513,7 @@ namespace B5_71_PRO_Abstract
         private decimal ErrorCalculation(decimal inA, decimal inB)
         {
             inA = Bp.TolleranceFormulaCurrent(inA);
-            MathStatistics.Round(ref inA, 3);
+            MathStatistics.Round( inA, 3);
             return inA;
         }
 
@@ -1666,7 +1666,7 @@ namespace B5_71_PRO_Abstract
                     Bp.OffOutput();
 
                     var resultCurrUnstable = (currUnstableList.Max() - currUnstableList.Min()) / 2;
-                    MathStatistics.Round(ref resultCurrUnstable, 3);
+                    MathStatistics.Round( resultCurrUnstable, 3);
 
                     operation.Expected = 0;
                     operation.Getting = resultCurrUnstable;
@@ -1890,7 +1890,7 @@ namespace B5_71_PRO_Abstract
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
                     currPulsV357 = currPulsV357 / measResist;
-                    MathStatistics.Round(ref currPulsV357, 3);
+                    MathStatistics.Round( currPulsV357, 3);
 
                     UserItemOperation.ServicePack.MessageBox().Show(
                                                                   "Установите на В3-57 МАКСИМАЛЬНЫЙ предел измерения напряжения",

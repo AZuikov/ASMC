@@ -21,6 +21,11 @@ namespace ASMC.Data.Model
         /// Позволяет задать или получить основную физическую величину.
         /// </summary>
         TPhysicalQuantity MainPhysicalQuantity { get; set; }
+        /// <summary>
+        /// Позволяет получить численное значение основной физической величины <see cref="IPhysicalQuantity.Value"/>
+        /// </summary>
+        /// <returns></returns>
+        decimal GetMainValue();
 
         #endregion
     }
@@ -42,6 +47,12 @@ namespace ASMC.Data.Model
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         public TPhysicalQuantity MainPhysicalQuantity { get; set; }
+
+        /// <inheritdoc />
+        public decimal GetMainValue()
+        {
+            return MainPhysicalQuantity.Value;
+        }
 
         public virtual string Description => MainPhysicalQuantity.ToString();
 
