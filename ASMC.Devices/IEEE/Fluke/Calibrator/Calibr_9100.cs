@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {

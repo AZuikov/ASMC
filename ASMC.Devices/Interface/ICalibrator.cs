@@ -1,7 +1,8 @@
 ﻿using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.IEEE.Fluke.Calibrator;
 
-namespace ASMC.Devices.IEEE.Fluke.Calibrator
+namespace ASMC.Devices.Interface
 {
     public interface ICalibrator
     {
