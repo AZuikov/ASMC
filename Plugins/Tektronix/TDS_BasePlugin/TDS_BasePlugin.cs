@@ -423,7 +423,7 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
                         var measResult = someTdsOscilloscope.Measurement.MeasureValue() /
                                          (decimal) currScale.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round(ref measResult, 2);
+                        MathStatistics.Round( measResult, 2);
 
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
 
@@ -647,7 +647,7 @@ namespace TDS_BasePlugin
                         Thread.Sleep(1000);
                         var measResult = someTdsOscilloscope.Measurement.MeasureValue(2) /
                                          (decimal) currScale.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round(ref measResult, 2);
+                        MathStatistics.Round( measResult, 2);
 
                         operation.Getting =
                             new MeasPoint<Time>(measResult, currScale.GetUnitMultipliersValue());
@@ -916,7 +916,7 @@ namespace TDS_BasePlugin
                         Thread.Sleep(1000);
                         var measResult = someTdsOscilloscope.Measurement.MeasureValue(3) /
                                          (decimal) horizontalScAleForTest.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round(ref measResult, 2);
+                        MathStatistics.Round( measResult, 2);
 
                         operation.Getting =
                             new MeasPoint<Time>(measResult, horizontalScAleForTest.GetUnitMultipliersValue());

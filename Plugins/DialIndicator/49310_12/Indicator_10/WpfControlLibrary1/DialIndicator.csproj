@@ -126,6 +126,10 @@
       <Project>{7208342f-bf11-4241-b032-30f196ce1a6c}</Project>
       <Name>AP.Extension</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\AP.Math\AP.Math.csproj">
+      <Project>{3B414E92-0CCD-4321-95C6-FE0C71BDA0E6}</Project>
+      <Name>AP.Math</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\AP.Reports\AP.Reports.csproj">
       <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
       <Name>AP.Reports</Name>

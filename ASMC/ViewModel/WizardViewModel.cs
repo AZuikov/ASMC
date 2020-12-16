@@ -319,7 +319,7 @@ namespace ASMC.ViewModel
                     }
                 }
 
-                report.FindStringAndReplace("Result", res?"Пригодным к применению":"Не пригоденым к применению");
+                report.FindStringAndReplace("Result", res?"Пригодным к применению":"Непригоденым к применению");
                 path = GetUniqueFileName(".docx");
                 report.SaveAs(path);
                 Logger.Info($@"Протокол сформирован по пути {path}");
@@ -339,9 +339,19 @@ namespace ASMC.ViewModel
                             else if (regInsTextByReplase.IsMatch(markName))
                                 report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
                             else if (regInTableByMark.IsMatch(markName))
-                                report.InsertNewTableToBookmark(markName, n.Data, a);
+                            {
+                                if (n.Data.Columns.IndexOf(a.NameColumn) != -1)
+                                    report.InsertNewTableToBookmark(markName, n.Data, a);
+                                else
+                                    report.InsertNewTableToBookmark(markName, n.Data);
+                            }
                             else if (regFillTableByMark.IsMatch(markName))
-                                report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
+                            {
+                                if (n.Data.Columns.IndexOf(a.NameColumn) != -1)
+                                    report.FillTableToBookmark(n.Data.TableName, n.Data, true, a);
+                                else
+                                    report.FillTableToBookmark(n.Data.TableName, n.Data, true);
+                            }
                             else
                                 Logger.Error($@"Имя {markName} не распознано");
                         }
