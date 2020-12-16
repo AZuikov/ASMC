@@ -242,9 +242,9 @@ namespace AP.Math
         /// </summary>
         /// <param name="value">Округляемое</param>
         /// <param name="reference">Опорное значение</param>
-        public static string Round(ref decimal value, string reference)
+        public static string Round(decimal value, string reference)
         {
-           return Round(ref value, GetMantissa(reference));
+           return Round( value, GetMantissa(reference));
         }
 
         /// <summary>
@@ -252,9 +252,9 @@ namespace AP.Math
         /// </summary>
         /// <param name="value">Округляемое</param>
         /// <param name="reference">Опорное значение</param>
-        public static string Round(ref double value, string reference)
+        public static string Round(double value, string reference)
         {
-            return Round(ref value, GetMantissa(reference));
+            return Round( value, GetMantissa(reference));
         }
         /// <summary>
         ///     Возврящает количество знаков после запятой
@@ -310,7 +310,7 @@ namespace AP.Math
         /// <param name="value">Округляемое</param>
         /// <param name="number">Число знаков</param>
         /// <param name="reduceZeros">Отбросить незначимые нули</param>
-        public static string Round(ref double value, int number, bool reduceZeros = false)
+        public static string Round(double value, int number, bool reduceZeros = false)
         {
             value = System.Math.Round(value, number, MidpointRounding.AwayFromZero);
             return reduceZeros ? value.ToString(@"G17", CultureInfo.CurrentCulture) : AddInsignificantZeros(value, number);
@@ -322,7 +322,7 @@ namespace AP.Math
         /// <param name="value">Округляемое</param>
         /// <param name="number">Число знаков</param>
         /// <param name="reduceZeros">Отбросить незначимые нули</param>
-        public static string Round(ref decimal value, int number, bool reduceZeros = false)
+        public static string Round( decimal value, int number, bool reduceZeros = false)
         {
             value = System.Math.Round(value, number, MidpointRounding.AwayFromZero);
             return reduceZeros? value.ToString(@"G17", CultureInfo.CurrentCulture) : AddInsignificantZeros(value, number);

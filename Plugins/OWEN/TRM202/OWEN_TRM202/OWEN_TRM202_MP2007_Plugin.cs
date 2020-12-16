@@ -523,7 +523,7 @@ namespace OWEN_TRM202
 
                             Calibrator.SetOutputOff();
 
-                            MathStatistics.Round(ref measPoint, 1);
+                            MathStatistics.Round( measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
                         catch (TrmException e)
@@ -1045,7 +1045,7 @@ namespace OWEN_TRM202
                             decimal measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             measPoint = measPoint - delta;
                             Calibrator.SetOutputOff();
-                            MathStatistics.Round(ref measPoint, 1);
+                            MathStatistics.Round( measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
                         catch (TrmException e)
@@ -1222,7 +1222,7 @@ namespace OWEN_TRM202
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             Calibrator.SetOutputOff();
-                            MathStatistics.Round(ref measPoint, 1);
+                            MathStatistics.Round( measPoint, 1);
                             operation.Getting = new MeasPoint<Percent>(measPoint);
                         }
                         catch (Exception e)
@@ -1616,7 +1616,7 @@ namespace OWEN_TRM202
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             Calibrator.SetOutputOff();
-                            MathStatistics.Round(ref measPoint, 1);
+                            MathStatistics.Round( measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
                         catch (TrmException e)

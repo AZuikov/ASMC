@@ -493,7 +493,7 @@ namespace APPA_107N_109N
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                            MathStatistics.Round( measurePoint, mantisa);
 
                             operation.Getting =
                                 new MeasPoint<Voltage>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
@@ -1047,7 +1047,7 @@ namespace APPA_107N_109N
                             }
                                 
                             //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                            MathStatistics.Round( measurePoint, mantisa);
 
                             operation.Getting =
                                 new MeasPoint<Voltage, Frequency>(measurePoint,
@@ -1694,7 +1694,7 @@ namespace APPA_107N_109N
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                            MathStatistics.Round( measurePoint, mantisa);
 
                             operation.Getting =
                                 new MeasPoint<Current>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
@@ -2233,7 +2233,7 @@ namespace APPA_107N_109N
                                                                  operation.UpperTolerance.MainPhysicalQuantity.Value);
                             }
                             //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                            MathStatistics.Round( measurePoint, mantisa);
 
                             operation.Getting =
                                 new MeasPoint<Current, Frequency>(measurePoint,curr.MainPhysicalQuantity.Multiplier, curr.AdditionalPhysicalQuantity);
@@ -2705,7 +2705,7 @@ namespace APPA_107N_109N
                                        .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) freqPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                     true);
 
-                                MathStatistics.Round(ref result, mantisa);
+                                MathStatistics.Round( result, mantisa);
                                 return new MeasPoint<Frequency>(result, freqPoint.MainPhysicalQuantity.Multiplier);
                             };
 
@@ -3474,7 +3474,7 @@ namespace APPA_107N_109N
                                                 true);
 
                             //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                            MathStatistics.Round( measurePoint, mantisa);
 
                             operation.Getting =
                                 new MeasPoint<Resistance>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
@@ -3698,7 +3698,7 @@ namespace APPA_107N_109N
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                            MathStatistics.Round( measurePoint, mantisa);
 
                             operation.Getting =
                                 new MeasPoint<Capacity>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
@@ -4252,7 +4252,7 @@ namespace APPA_107N_109N
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                            MathStatistics.Round( measurePoint, mantisa);
 
                             operation.Getting =
                                 new MeasPoint<Temperature>(measurePoint);
@@ -4267,7 +4267,7 @@ namespace APPA_107N_109N
                                                currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue()
                                     );
 
-                                MathStatistics.Round(ref result, mantisa);
+                                MathStatistics.Round( result, mantisa);
                                 return new MeasPoint<Temperature>(result, currPoint.MainPhysicalQuantity.Multiplier);
                             };
 

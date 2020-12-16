@@ -205,7 +205,7 @@ namespace ASMC.Devices.Port.Profigrupp
         {
             var inCurrToDevice = inCurr * (decimal) (mult.GetDoubleValue() * 1E4);
 
-            var resultStr = MathStatistics.Round(ref inCurrToDevice, 0, true);
+            var resultStr = MathStatistics.Round( inCurrToDevice, 0, true);
 
             if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
 
@@ -238,7 +238,7 @@ namespace ASMC.Devices.Port.Profigrupp
             //блок питания понимает значения только в милливольтах
             var inVoltToDevice = inVolt * (decimal) (mult.GetDoubleValue() * 1E3);
 
-            var resultStr = MathStatistics.Round(ref inVoltToDevice, 0, true);
+            var resultStr = MathStatistics.Round( inVoltToDevice, 0, true);
 
             if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
 
