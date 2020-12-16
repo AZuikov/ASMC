@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ASMC.Data.Model
 {
@@ -52,13 +53,17 @@ namespace ASMC.Data.Model
         /// </summary>
         void Open();
         /// <summary>
-        /// Предоставлячет возможность проверки состояния соединения
+        /// Предоставлячет возможность проверки состояния соединения.
         /// </summary>
         bool IsOpen { get; }
         /// <summary>
-        /// Предоставляет сведенье об успешности подключения
+        /// Предоставляет сведенье об успешности подключения.
         /// </summary>
         bool IsTestConnect { get; }
+        /// <summary>
+        /// Инициализация прибора.
+        /// </summary>
+        Task InitializeAsync();
     }
 
     public interface IUserType

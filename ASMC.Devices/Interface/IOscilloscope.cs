@@ -1,5 +1,6 @@
 ﻿using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.IEEE;
 
 namespace ASMC.Devices.Interface
 {
@@ -22,7 +23,8 @@ namespace ASMC.Devices.Interface
     /// </summary>
    public interface IChanel
     {
-       public int Number { get;  }
+        public IeeeBase Device { get; }
+        public int Number { get;  }
        public bool IsEnable { get; set; }
        public MeasPoint<Voltage> VerticalOffset { get; set; }
        public MeasPoint<Voltage> Vertical { get; set; }
