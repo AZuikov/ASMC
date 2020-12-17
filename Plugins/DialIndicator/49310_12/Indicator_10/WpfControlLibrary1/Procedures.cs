@@ -309,7 +309,6 @@ namespace mp2192_92.DialIndicator
                     if (i > 0) DataRow.Add(operation);
                 }
             };
-            //todo Указать погрешность  
             operation.ErrorCalculation = new Func<object, object, object>[]
             {
                 (expected, getting) =>
