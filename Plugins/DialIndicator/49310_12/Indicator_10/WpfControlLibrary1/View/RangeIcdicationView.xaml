@@ -29,7 +29,7 @@
                     <view:InputTableControl Name="Table" Data="{Binding Cells}" SelectValue="{Binding Selected}" />
                 </HeaderedContentControl>
             </StackPanel>
-            <Button Grid.Row="1" Grid.Column="0" Content="Установка нуля ППИ" Command="{Binding SetNullCommand}"/>
+            <Button Grid.Row="1" Grid.Column="0" Content="Установка нуля ППИ" TabIndex="0" Command="{Binding SetNullCommand}"/>
         </Grid>
     </DockPanel>
 </UserControl>
