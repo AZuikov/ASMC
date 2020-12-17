@@ -63,15 +63,32 @@ namespace ASMC.Devices.Interface
         GND
    }
 
+   
+
    public interface IOscillMeasure
    {
-       MeasPoint<Frequency> GetFrequency(IOscillChanel inChanel);
-       MeasPoint<Time> GetPeriod(IOscillChanel inChanel);
-       MeasPoint<Time> GetRiseTime(IOscillChanel inChanel);
-       MeasPoint<Time> GetFallTime(IOscillChanel inChanel);
-       MeasPoint<Voltage> GetAmplitude(IOscillChanel inChanel);
-       MeasPoint<Voltage> GetRmsVolt(IOscillChanel inChanel);
-       MeasPoint<Voltage> GetMeanVolt(IOscillChanel inChanel);
+       /// <summary>
+       /// Получение значениея измеренного параметра с канала осциллографа.
+       /// </summary>
+       /// <param name="inChanel">Номер канала осциллографа.</param>
+       /// <param name="inMeasParam">Наименование измереяемого параметра</param>
+       /// <param name="measNum">Номер измерения канала (опционально, может не применятся у конкретного осциллографа).</param>
+       /// <returns></returns>
+       IMeasPoint<IPhysicalQuantity> GetParametr(IOscillChanel inChanel, MeasParam inMeasParam, int? measNum);
+      
+   }
+
+   public class MeasParam : ICommand
+   {
+       public MeasParam(string inStrCommand, string inDescription, double value)
+       {
+           StrCommand = inStrCommand;
+           inDescription = inDescription;
+           Value = value;
+       }
+       public string StrCommand { get; }
+       public string Description { get; }
+       public double Value { get; }
    }
 
 }

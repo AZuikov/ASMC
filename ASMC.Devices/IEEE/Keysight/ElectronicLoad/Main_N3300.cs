@@ -486,7 +486,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public MeasPoint<Resistance> Get()
         {
             string answer = _mainN3300.QueryLine("RESistance?");
-            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            decimal numb = (decimal)StrToDouble(answer);
             return new MeasPoint<Resistance>(numb);
         }
 
@@ -567,7 +567,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public MeasPoint<Voltage> Get()
         {
             string answer = _mainN3300.QueryLine("VOLTage?");
-            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            decimal numb = (decimal)StrToDouble(answer);
             return new MeasPoint<Voltage>(numb);
         }
 
@@ -614,7 +614,7 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
         public MeasPoint<Current> Get()
         {
             string answer = _mainN3300.QueryLine("CURRent?");
-            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            decimal numb = (decimal)StrToDouble(answer);
             return new MeasPoint<Current>(numb);
         }
 
