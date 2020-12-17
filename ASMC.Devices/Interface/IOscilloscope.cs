@@ -9,7 +9,7 @@ namespace ASMC.Devices.Interface
     /// </summary>
     public interface IOscilloscope
     {
-        public  IChanel[] Chanels { get; }
+        public  IOscillChanel[] Chanels { get; }
         /// <summary>
         /// Выбирает канал, с которым дальше работаем
         /// </summary>
@@ -21,7 +21,7 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс канала осциллографа.
     /// </summary>
-   public interface IChanel
+   public interface IOscillChanel:IOscillCoupling
     {
         public IeeeBase Device { get; }
         public int Number { get;  }
@@ -29,6 +29,7 @@ namespace ASMC.Devices.Interface
        public MeasPoint<Voltage> VerticalOffset { get; set; }
        public MeasPoint<Voltage> Vertical { get; set; }
        public MeasPoint<Resistance> Impedance { get; set; }
+       
        public int Probe { get; set; }
        /// <summary>
        /// Получение всех параметров канала с прибора.
@@ -44,12 +45,12 @@ namespace ASMC.Devices.Interface
    /// <summary>
    /// Полоса пропускания.
    /// </summary>
-   public interface IBandWidth
+   public interface IOscillBandWidth
    {
        MeasPoint<Frequency> BandWidth { get; set; }
    }
 
-   public interface ICoupling
+   public interface IOscillCoupling
    {
         public Coupling coupling { get; set; }
    }
@@ -58,23 +59,19 @@ namespace ASMC.Devices.Interface
    {
         AC,
         DC,
-        AC_DC
+        AC_DC,
+        GND
    }
 
-   public interface IMeasure
+   public interface IOscillMeasure
    {
-       public IChanel source { get; set; }
-
-       MeasPoint<Frequency> GetFrequency();
-       MeasPoint<Time> GetPeriod();
-       MeasPoint<Time> GetRiseTime();
-       MeasPoint<Time> GetFallTime();
-       MeasPoint<Voltage> GetAmplitude();
-       MeasPoint<Voltage> GetRmsVolt();
-       MeasPoint<Voltage> GetMeanVolt();
-
-
-
+       MeasPoint<Frequency> GetFrequency(IOscillChanel inChanel);
+       MeasPoint<Time> GetPeriod(IOscillChanel inChanel);
+       MeasPoint<Time> GetRiseTime(IOscillChanel inChanel);
+       MeasPoint<Time> GetFallTime(IOscillChanel inChanel);
+       MeasPoint<Voltage> GetAmplitude(IOscillChanel inChanel);
+       MeasPoint<Voltage> GetRmsVolt(IOscillChanel inChanel);
+       MeasPoint<Voltage> GetMeanVolt(IOscillChanel inChanel);
    }
 
 }

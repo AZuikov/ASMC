@@ -137,7 +137,7 @@
     <Compile Include="Port\ZipNu4Pribor\Km300P.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rohde_Schwarz\RS_RTM_Oscilloscope.cs" />
+    <Compile Include="Rohde_Schwarz\RohdeSchwarz_RTMOscilloscope.cs" />
     <Compile Include="Interface\IOscilloscope.cs" />
     <Compile Include="Sensor.cs" />
     <Compile Include="SimpleScada\IParametrScada.cs" />
