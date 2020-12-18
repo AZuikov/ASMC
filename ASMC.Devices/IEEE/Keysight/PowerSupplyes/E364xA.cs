@@ -88,7 +88,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         public MeasPoint<Voltage> GetVoltageLevel()
         {
             string answer = QueryLine("VOLTage:AMPLitude?");
-            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            decimal numb = (decimal)StrToDouble(answer);
             return new MeasPoint<Voltage>(numb);
         }
 
@@ -105,7 +105,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         public MeasPoint<Current> GetCurrentLevel()
         {
             string answer = QueryLine("CURRent:AMPLitude?");
-            decimal numb = (decimal)StrToDoubleMindMind(answer);
+            decimal numb = (decimal)StrToDouble(answer);
             return new MeasPoint<Current>(numb);
         }
 
@@ -169,7 +169,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             public MeasPoint<Current> GetValue()
             {
                 var answer = _powerSupply.QueryLine($"{Comand}?");
-                var numAnswer = (decimal) StrToDoubleMindMind(answer);
+                var numAnswer = (decimal) StrToDouble(answer);
                 var returnPoint = new MeasPoint<Current>(numAnswer);
                 return returnPoint;
             }
@@ -218,7 +218,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             public MeasPoint<Voltage> GetValue()
             {
                 var answer = _powerSupply.QueryLine($"{ComandtoSetValue}?");
-                var numAnswer = (decimal) StrToDoubleMindMind(answer);
+                var numAnswer = (decimal) StrToDouble(answer);
                 var returnPoint = new MeasPoint<Voltage>(numAnswer);
                 return returnPoint;
             }
@@ -257,7 +257,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             public MeasPoint<Current> GetMeasureCurrent()
             {
                 var answer = _powerSupply.QueryLine("MEASure::CURR:DC?");
-                var numberAnswer = (decimal) StrToDoubleMindMind(answer.Replace(',', '.'));
+                var numberAnswer = (decimal) StrToDouble(answer.Replace(',', '.'));
                 var answerPoint = new MeasPoint<Current>(numberAnswer);
                 return answerPoint;
             }
@@ -265,7 +265,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             public MeasPoint<Voltage> GetMeasureVoltage()
             {
                 var answer = _powerSupply.QueryLine("MEASure::VOLT:DC?");
-                var numberAnswer = (decimal) StrToDoubleMindMind(answer.Replace(',', '.'));
+                var numberAnswer = (decimal) StrToDouble(answer.Replace(',', '.'));
                 var answerPoint = new MeasPoint<Voltage>(numberAnswer);
                 return answerPoint;
             }
@@ -291,7 +291,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             public decimal GetTriggerDelay()
             {
                 var answer = _powerSupply.QueryLine("TRIGger:DELay?");
-                var returnNumb = (decimal) StrToDoubleMindMind(answer);
+                var returnNumb = (decimal) StrToDouble(answer);
                 return returnNumb;
             }
 

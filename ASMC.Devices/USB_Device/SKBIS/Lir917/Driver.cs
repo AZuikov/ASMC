@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Devices.USB_Device.SiliconLabs;
 using NLog;
@@ -174,6 +175,11 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
                     return false;
                 }
             }
+        }
+
+        public async Task InitializeAsync()
+        {
+            throw new NotImplementedException();
         }
 
         protected enum CommandQuery : byte

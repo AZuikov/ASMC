@@ -120,52 +120,55 @@ namespace ASMC.Devices.Rohde_Schwarz
 
         }
 
-        public MeasParam[] measParams = new[]
-        {
-            new MeasParam("FREQuency", "", 1),
-            new MeasParam("PERiod", "", 1),
-            new MeasParam("PEAK", "", 1),
-            new MeasParam("UPEakvalue", "", 1),
-            new MeasParam("LPEakvalue", "", 1),
-            new MeasParam("PPCount", "", 1),
-            new MeasParam("NPCount", "", 1),
-            new MeasParam("RECount", "", 1),
-            new MeasParam("FECount", "", 1),
-            new MeasParam("HIGH", "", 1),
-            new MeasParam("LOW", "", 1),
-            new MeasParam("AMPLitude", "", 1),
-            new MeasParam("MEAN", "", 1),
-            new MeasParam("RMS", "", 1),
-            new MeasParam("RTIMe", "", 1),
-            new MeasParam("FTIMe", "", 1),
-            new MeasParam("PDCYcle", "", 1),
-            new MeasParam("NDCYcle", "", 1),
-            new MeasParam("PPWidth", "", 1),
-            new MeasParam("NPWidth", "", 1),
-            new MeasParam("CYCMean", "", 1),
-            new MeasParam("CYCRms", "", 1),
-            new MeasParam("STDDev", "", 1),
-            new MeasParam("CYCStddev", "", 1),
-            new MeasParam("TFRequency", "", 1),
-            new MeasParam("TPERiode", "", 1),
-            new MeasParam("DELay", "", 1),
-            new MeasParam("PHASe", "", 1),
-            new MeasParam("BWIDth", "", 1),
-            new MeasParam("POVershoot", "", 1),
-            new MeasParam("NOVershoot", "", 1),
-            new MeasParam("TBFRequency", "", 1),
-            new MeasParam("TBPeriod", "", 1)
+        public MeasParam[] measParams = {
+            new MeasParam("FREQuency", "",1,typeof(Frequency)),
+            new MeasParam("PERiod", "", 1,typeof(Time)),
+            new MeasParam("PEAK", "", 1, typeof(Voltage)),
+            new MeasParam("UPEakvalue", "", 1,typeof(Voltage)),
+            new MeasParam("LPEakvalue", "", 1,typeof(Voltage)),
+            new MeasParam("PPCount", "", 1, typeof(Voltage)),
+            new MeasParam("NPCount", "", 1, typeof(Voltage)),
+            new MeasParam("RECount", "", 1, typeof(Voltage)),
+            new MeasParam("FECount", "", 1, typeof(Voltage)),
+            new MeasParam("HIGH", "", 1,typeof(Voltage)),
+            new MeasParam("LOW", "", 1,typeof(Voltage)),
+            new MeasParam("AMPLitude", "", 1,typeof(Voltage)),
+            new MeasParam("MEAN", "", 1,typeof(Voltage)),
+            new MeasParam("RMS", "", 1,typeof(Voltage)),
+            new MeasParam("RTIMe", "", 1,typeof(Time)),
+            new MeasParam("FTIMe", "", 1,typeof(Time)),
+            new MeasParam("PDCYcle", "", 1,typeof(Voltage)),
+            new MeasParam("NDCYcle", "", 1,typeof(Voltage)),
+            new MeasParam("PPWidth", "", 1,typeof(Time)),
+            new MeasParam("NPWidth", "", 1,typeof(Time)),
+            new MeasParam("CYCMean", "", 1,typeof(Voltage)),
+            new MeasParam("CYCRms", "", 1,typeof(Voltage)),
+            new MeasParam("STDDev", "", 1,typeof(Voltage)),
+            new MeasParam("CYCStddev", "", 1,typeof(Voltage)),
+            new MeasParam("TFRequency", "", 1,typeof(Frequency)),
+            new MeasParam("TPERiode", "", 1,typeof(Time)),
+            new MeasParam("DELay", "", 1,typeof(Time)),
+            new MeasParam("PHASe", "", 1,typeof(Voltage)),
+            new MeasParam("BWIDth", "", 1,typeof(Frequency)),
+            new MeasParam("POVershoot", "", 1,typeof(Voltage)),
+            new MeasParam("NOVershoot", "", 1,typeof(Voltage)),
+            new MeasParam("TBFRequency", "", 1,typeof(Frequency)),
+            new MeasParam("TBPeriod", "", 1,typeof(Time))
         };
 
-    public IMeasPoint<IPhysicalQuantity> GetParametr(IOscillChanel inChanel, MeasParam inMeasParam, int? measNum)
-       {
+    public IMeasPoint<T> GetParametr<T>(IOscillChanel inChanel, MeasParam inMeasParam, int? measNum) where T : class, IPhysicalQuantity, new()
+    {
            inChanel.Device.WriteLine($"MEASurement1:SOURce ch{inChanel.Number}");
            inChanel.Device.WriteLine($"MEASurement1:MAIN {inMeasParam}");
            inChanel.Device.WriteLine($"MEASurement1:ENABle on");
            string answer = inChanel.Device.QueryLine($"MEASurement1:RESult:ACTual? {inMeasParam}");
            if (answer.Equals("NAN")) return null;
            decimal answerNumb = (decimal)StrToDouble(answer);
-           return answerNumb;
+           var a = inMeasParam.Type;
+           
+           //var gfgf = new MeasPoint<T>(new T());
+           //MeasPoint<T> resultPoint = new MeasPoint<T>(answerNumb);
+           return null;//(IMeasPoint<T>) gfgf;
         }
     }
 
@@ -195,6 +198,19 @@ namespace ASMC.Devices.Rohde_Schwarz
                      chanel.Getting();
                  }
              });
+        }
+
+        public class TriggerEdge: BaseEdgeTrigger
+        {
+            public override void Getting()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Setting()
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

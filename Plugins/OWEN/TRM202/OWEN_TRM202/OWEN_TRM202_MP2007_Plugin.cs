@@ -13,6 +13,7 @@ using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
+using ASMC.Devices.Interface;
 using ASMC.Devices.OWEN;
 using ASMC.Devices.UInterface.TRM.ViewModel;
 using DevExpress.Mvvm;
