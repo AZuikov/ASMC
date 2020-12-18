@@ -206,15 +206,12 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Создает экземпляр измерительной точки <see cref = "MeasPoint{TPhysicalQuantity}" />
         /// </summary>
-        public MeasPoint(TPhysicalQuantity quantity)
+        public MeasPoint(TPhysicalQuantity quantity) 
         {
             MainPhysicalQuantity = quantity;
         }
 
-        public MeasPoint(IPhysicalQuantity quantity)
-        {
-            MainPhysicalQuantity = (TPhysicalQuantity) quantity;
-        }
+      
 
         /// <summary>
         /// Создает экземпляр измерительной точки <see cref = "MeasPoint{TPhysicalQuantity}" />

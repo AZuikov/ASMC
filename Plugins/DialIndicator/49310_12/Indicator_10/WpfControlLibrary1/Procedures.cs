@@ -810,7 +810,7 @@ namespace mp2192_92.DialIndicator
                 var a = expected.Select((t, index) => t - getting[index]).ToArray();
 
                 var res = (a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
-                return new[] { new MeasPoint<Length>(res) };
+                return new[] { new MeasPoint<Length>((Length) res) };
             };
             operation.IsGood = () =>
             {
@@ -1486,7 +1486,7 @@ namespace mp2192_92.DialIndicator
                 var a = expected.Select((t, index) => t - getting[index]).ToArray();
 
                 var res = (a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
-                return new[] { new MeasPoint<Length>(res) };
+                return new[] { new MeasPoint<Length>((Length) res) };
             };
 
             DataRow.Add(operation);

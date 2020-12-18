@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Ports;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ASMC.Devices.Port
 {
@@ -249,6 +250,11 @@ namespace ASMC.Devices.Port
 
         /// <inheritdoc />
         public virtual bool IsTestConnect => false;
+
+        public async Task InitializeAsync()
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Открывает соединение с Com портом.

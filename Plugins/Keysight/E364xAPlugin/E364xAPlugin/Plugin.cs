@@ -52,7 +52,7 @@ namespace E364xAPlugin
             {
                 new Device
                 {
-                    Devices =   new IDeviceBase[]{new N3303A(), new N3306A()}, Description = "Электронная нагрузка"
+                    Devices =   new IDeviceBase[]{new N3303A()/*, new N3306A()*/}, Description = "Электронная нагрузка"
                 },
                 new Device
                 {
@@ -305,7 +305,10 @@ namespace E364xAPlugin
                     //источник выставит не круглые значения. Округлим их до идеала (если значения выше нормированного порога,
                     //то стабильность характеристик прибора не гарантируется, эти значения не нормируются документацией).
                     MaxVolt = new MeasPoint<Voltage>(Math.Round(MaxVolt.MainPhysicalQuantity.GetNoramalizeValueToSi(), 0));
+                    powerSupply.SetVoltageLevel(MaxVolt);
                     MaxCurr = new MeasPoint<Current>(Math.Round(MaxCurr.MainPhysicalQuantity.GetNoramalizeValueToSi(), 0));
+                    powerSupply.SetCurrentLevel(MaxCurr);
+
                     // расчитаем идеальное значение для электронной нагрузки
                     MeasPoint<Resistance> resistToLoad =
                         new MeasPoint<Resistance>(MaxVolt.MainPhysicalQuantity.GetNoramalizeValueToSi() /
