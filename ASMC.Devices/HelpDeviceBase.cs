@@ -33,7 +33,7 @@ namespace ASMC.Devices
             var value = date.Split(',');
             var a = new double[value.Length];
             for(var i = 0; i < value.Length; i++)
-                a[i] = StrToDoubleMindMind(value[i], GetMultiplier(mult));
+                a[i] = StrToDouble(value[i], GetMultiplier(mult));
             return a.Mean() < 0 ? a.RootMeanSquare() * -1 : a.RootMeanSquare();
         }
 
@@ -75,9 +75,9 @@ namespace ASMC.Devices
         /// Преобразует строкове значение в double. Принимает так же числа в виде "2.345E-5".
         /// </summary>
         /// <param name="date">Число для преобразования в виде строки.</param>
-        /// <param name="mult">Множитель единицы измерения (милли, кило и т.д.).</param>
+        /// <param name="mult">Не задействован. Множитель единицы измерения (милли, кило и т.д.).</param>
         /// <returns></returns>
-        public static double StrToDoubleMindMind(string date, ICommand mult = null)
+        public static double StrToDouble(string date, ICommand mult = null)
         {
             date = date.TrimEnd('\n');
             var dDate = new double[2];

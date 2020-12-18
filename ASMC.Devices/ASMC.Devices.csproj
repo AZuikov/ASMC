@@ -107,7 +107,7 @@
     <Compile Include="IEEE\Fluke\Calibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
-    <Compile Include="IEEE\Fluke\Calibrator\ICalibrator.cs" />
+    <Compile Include="Interface\ICalibrator.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
     <Compile Include="IEEE\IEEE_Base.cs" />
@@ -137,8 +137,8 @@
     <Compile Include="Port\ZipNu4Pribor\Km300P.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rohde_Schwarz\RS_RTM_Oscilloscope.cs" />
-    <Compile Include="Rohde_Schwarz\IOscilloscope.cs" />
+    <Compile Include="Rohde_Schwarz\RohdeSchwarz_RTMOscilloscope.cs" />
+    <Compile Include="Interface\IOscilloscope.cs" />
     <Compile Include="Sensor.cs" />
     <Compile Include="SimpleScada\IParametrScada.cs" />
     <Compile Include="SimpleScada\IvaSensor.cs" />

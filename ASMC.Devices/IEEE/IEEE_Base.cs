@@ -492,9 +492,21 @@ namespace ASMC.Devices.IEEE
             get
             {
                 if (string.IsNullOrWhiteSpace(StringConnection)) return false;
-                return !string.IsNullOrWhiteSpace(QueryLine(QueryIdentificationDevice));
+                var res= !string.IsNullOrWhiteSpace(QueryLine(QueryIdentificationDevice));
+                if (res)
+                {
+                    lock (StringConnection)
+                    {
+#pragma warning disable 4014
+                        InitializeAsync();
+#pragma warning restore 4014
+                    }
+                }
+                return res;
             }
         }
+
+        public virtual async Task InitializeAsync() { }
 
         /// <summary>
         /// Считывает строку

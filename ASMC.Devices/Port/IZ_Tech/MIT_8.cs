@@ -69,7 +69,7 @@ namespace ASMC.Devices.Port.IZ_Tech
                 var match = regexForMeasVal1.Match(str ?? String.Empty).Value;
                 if (!string.IsNullOrWhiteSpace(match))
                 {
-                    return (decimal)StrToDoubleMindMind(match);
+                    return (decimal)StrToDouble(match);
                 }
 
                 // return (decimal)StrToDoubleMindMind(.Value);
