@@ -336,12 +336,13 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         public void OutputOn()
         {
-            OutputOn();
+            SetOutputState(State.On);
         }
 
         public void OutputOff()
         {
-            OutputOff();
+
+            SetOutputState(State.Off);
         }
 
         public void SetResistanceMode()

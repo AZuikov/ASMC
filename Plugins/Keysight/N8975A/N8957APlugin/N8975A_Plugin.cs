@@ -16,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Data.Model.PhysicalQuantity;
 using DevExpress.Mvvm.Native;
 
 namespace N8957APlugin
@@ -108,9 +109,12 @@ namespace N8957APlugin
             return null;
         }
 
-        protected override void InitWork()
+
+
+
+        protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork();
+            base.InitWork(token);
             var operation = new BasicOperationVerefication<bool>();
             operation.InitWork = () =>
            {
@@ -153,14 +157,14 @@ namespace N8957APlugin
         }
     }
 
-    public class Oper8_3_4FreqInSintezatorFrequency : ParagraphBase<MeasPoint>
+    public class Oper8_3_4FreqInSintezatorFrequency : ParagraphBase<MeasPoint<Frequency>>
     {
         private Dictionary<int, int> freqAndTolDictionary;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
 
-        public List<IBasicOperation<MeasPoint>> DataRow { get; set; }
+        
 
         protected E8257D e8257D;
         protected N8975A n8975;
@@ -172,7 +176,7 @@ namespace N8957APlugin
             e8257D = new E8257D();
             n8975 = new N8975A();
             Name = "Определение погрешности установки частоты внутреннего синтезатора";
-            DataRow = new List<IBasicOperation<MeasPoint>>();
+            DataRow = new List<IBasicOperation<MeasPoint<Frequency>>>();
             //Забиваем словарь: частота - погрешность
             freqAndTolDictionary = new Dictionary<int, int>();
             //                точка Мгц кГц погрешность
@@ -215,13 +219,11 @@ namespace N8957APlugin
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint>;
+                var dds = row as BasicOperationVerefication<MeasPoint<Frequency>>;
                 if (dds?.Expected == null || dds?.Getting == null) continue;
                 dataRow[0] = dds?.Expected?.Description;
                 dataRow[1] = dds?.Getting?.Description;
-                var tol = new MeasPoint(dds.Expected.Units, dds.Expected.UnitMultipliersUnit,
-                                        dds.Getting.Value - dds.Expected.Value);
-                dataRow[2] = tol.Description;
+                dataRow[2] = dds.Error.Description;
                 dataRow[3] = dds?.Error.Description;
                 dataTable.Rows.Add(dataRow);
             }
@@ -229,13 +231,15 @@ namespace N8957APlugin
             return dataTable;
         }
 
-        protected override void InitWork()
+       
+
+        protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork();
+            base.InitWork(token);
             if (e8257D == null || n8975 == null) return;
             foreach (int freq in freqAndTolDictionary.Keys)
             {
-                var operation = new BasicOperationVerefication<MeasPoint>();
+                var operation = new BasicOperationVerefication<MeasPoint<Frequency>>();
 
                 operation.InitWork = async () =>
                 {
@@ -268,8 +272,8 @@ namespace N8957APlugin
                             else
                                 n8975.WriteLine($"FREQuency:span 8e6"); //обзор
 
-                            startFreq = HelpDeviceBase.StrToDoubleMindMind(n8975.QueryLine("FREQuency:Start?"));
-                            stopFreq = HelpDeviceBase.StrToDoubleMindMind(n8975.QueryLine("FREQuency:Stop?"));
+                            startFreq = HelpDeviceBase.StrToDouble(n8975.QueryLine("FREQuency:Start?"));
+                            stopFreq = HelpDeviceBase.StrToDouble(n8975.QueryLine("FREQuency:Stop?"));
 
                             double step = (stopFreq - startFreq) / (pointsCount - 1);
                             freqSTDArr[0] = startFreq;
@@ -312,7 +316,7 @@ namespace N8957APlugin
                         string[] answerPHotArr = n8975.QueryLine("FETC:UNC:PHOT? LIN").TrimEnd('\n').TrimEnd('0').TrimEnd('\0').Split(','); ;//считывание коэффициентов PHOT Lin
                         double[] photArrDoubles = new double[answerPHotArr.Length];
                         Parallel.For(0, answerPHotArr.Length,
-                                     q => { photArrDoubles[q] = HelpDeviceBase.StrToDoubleMindMind(answerPHotArr[q]); });
+                                     q => { photArrDoubles[q] = HelpDeviceBase.StrToDouble(answerPHotArr[q]); });
                         
                         //создаем массив для расчета суммы (пункт расчета для EXCEL)
                         //каждая ячейка должна содержать сумму себя и всех предыдущих!!!!!
@@ -355,22 +359,18 @@ namespace N8957APlugin
 
                         //---------------------------------------------------
 
-                        operation.Expected = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega, (decimal)(testFreqqPoint / UnitMultiplier.Mega.GetDoubleValue()));
-                        operation.Getting = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega, (decimal)(freqSTDArr[FreqIndexInArr] / UnitMultiplier.Mega.GetDoubleValue()));
-                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Kilo, freqAndTolDictionary[freq]);
-                        operation.UpperTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega,
-                                                                 (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() +
-                                                                 operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultiplier.Mega.GetDoubleValue());
-                        operation.LowerTolerance = new MeasPoint(MeasureUnits.Herz, UnitMultiplier.Mega,
-                                                                 (operation.Expected.Value * (decimal)operation.Expected.UnitMultipliersUnit.GetDoubleValue() -
-                                                                  operation.Error.Value * (decimal)operation.Error.UnitMultipliersUnit.GetDoubleValue()) / (decimal)UnitMultiplier.Mega.GetDoubleValue());
+                        operation.Expected = new MeasPoint<Frequency>( (decimal)(testFreqqPoint / UnitMultiplier.Mega.GetDoubleValue()), UnitMultiplier.Mega);
+                        operation.Getting = new MeasPoint<Frequency>( (decimal)(freqSTDArr[FreqIndexInArr] / UnitMultiplier.Mega.GetDoubleValue()), UnitMultiplier.Mega);
+                        operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Frequency>( freqAndTolDictionary[freq], UnitMultiplier.Kilo);
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.LowerTolerance = operation.Expected - operation.Error;
 
                         operation.IsGood = () =>
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            return (operation.Getting.Value < operation.UpperTolerance.Value) &
-                                   (operation.Getting.Value > operation.LowerTolerance.Value);
+                            return (operation.Getting < operation.UpperTolerance) &
+                                   (operation.Getting > operation.LowerTolerance);
                         };
                     }
                     catch (Exception e)
@@ -398,7 +398,7 @@ namespace N8957APlugin
 
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<MeasPoint>)operation.Clone());
+                                : (BasicOperationVerefication<MeasPoint<Frequency>>)operation.Clone());
             }
         }
 
@@ -409,8 +409,8 @@ namespace N8957APlugin
     {
         #region Methods
 
-        public static Task<bool> HelpsCompliteWork(BasicOperationVerefication<MeasPoint> operation,
-            IUserItemOperation UserItemOperation)
+        public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
+            IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
             if (!operation.IsGood())
             {
@@ -421,7 +421,7 @@ namespace N8957APlugin
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                            $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected.Value - operation.Getting.Value}\n\n" +
+                                           $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
