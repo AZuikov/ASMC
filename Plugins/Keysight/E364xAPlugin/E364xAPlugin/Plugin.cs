@@ -278,7 +278,7 @@ namespace E364xAPlugin
             ((IeeeBase)powerSupply).StringConnection = GetStringConnect((IProtocolStringLine)powerSupply);
             ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
             
-            foreach (var rangePowerSupply in powerSupply)
+            foreach (var rangePowerSupply in powerSupply.GetRangeS())
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();;
                 operation.InitWork = async () =>
@@ -287,23 +287,14 @@ namespace E364xAPlugin
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
                    
-                    //узнаем максимумы тока и напряжения
-                    MeasPoint<Voltage> MaxVolt = powerSupply.GetMaxVoltageLevel();
-                    MeasPoint<Current> MaxCurr = powerSupply.GetMaxCurrentLevel();
-
-                    //источник выставит не круглые значения. Округлим их до идеала (если значения выше нормированного порога,
-                    //то стабильность характеристик прибора не гарантируется, эти значения не нормируются документацией).
-                    powerSupply.SetVoltageLevel(MaxVolt);
-                    powerSupply.SetCurrentLevel(MaxCurr);
-
+                    powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
+                    powerSupply.SetCurrentLevel(new MeasPoint<Current>(rangePowerSupply.AdditionalPhysicalQuantity));
                     // расчитаем идеальное значение для электронной нагрузки
                     MeasPoint<Resistance> resistToLoad =
-                        new MeasPoint<Resistance>(MaxVolt.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                  MaxCurr.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                        new MeasPoint<Resistance>(rangePowerSupply.MainPhysicalQuantity.Value/rangePowerSupply.AdditionalPhysicalQuantity.Value);
 
                     ElectonicLoad.SetThisModuleAsWorking();
                     ElectonicLoad.SetResistanceMode();
-                    //Thread.Sleep(300);
                     ElectonicLoad.SetResistanceLevel(resistToLoad);
                     
                 };
@@ -455,40 +446,20 @@ namespace E364xAPlugin
             ((IeeeBase)powerSupply).StringConnection = GetStringConnect((IProtocolStringLine)powerSupply);
             ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
 
-            foreach (E364xA.RangePowerSupply rangePowerSupply in Enum.GetValues(typeof(E364xA.RangePowerSupply)))
+            foreach (var rangePowerSupply in powerSupply.GetRangeS())
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>(); ;
                 operation.InitWork = async () =>
                 {
-                    if (rangePowerSupply == E364xA.RangePowerSupply.HIGH)
-                    {
-                        powerSupply.SetHighVoltageRange();
-                    }
-                    else if (rangePowerSupply == E364xA.RangePowerSupply.LOW)
-                    {
-                        powerSupply.SetLowVoltageRange();
-                    }
-                    else
-                    {
-                        string error = $"Источник питания E36xxA не может установить значение предела {rangePowerSupply.GetStringValue()}";
-                        Logger.Debug(error);
-                        throw new ArgumentException(error);
-                    }
+                    powerSupply.SetRange(rangePowerSupply);
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
-                    powerSupply.SetMaxVoltageLevel();
-                    powerSupply.SetMaxCurrentLevel();
-                    //узнаем максимумы тока и напряжения
-                    MeasPoint<Voltage> MaxVolt = powerSupply.GetVoltageLevel();
-                    MeasPoint<Current> MaxCurr = powerSupply.GetCurrentLevel();
-                    //источник выставит не круглые значения. Округлим их до идеала (если значения выше нормированного порога,
-                    //то стабильность характеристик прибора не гарантируется, эти значения не нормируются документацией).
-                    MaxVolt = new MeasPoint<Voltage>(Math.Round(MaxVolt.MainPhysicalQuantity.GetNoramalizeValueToSi(), 0));
-                    MaxCurr = new MeasPoint<Current>(Math.Round(MaxCurr.MainPhysicalQuantity.GetNoramalizeValueToSi(), 0));
+                    powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
+                    powerSupply.SetCurrentLevel(new MeasPoint<Current>(rangePowerSupply.AdditionalPhysicalQuantity));
                     // расчитаем идеальное значение для электронной нагрузки
                     MeasPoint<Resistance> resistToLoad =
-                        new MeasPoint<Resistance>(MaxVolt.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                  MaxCurr.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                        new MeasPoint<Resistance>(rangePowerSupply.MainPhysicalQuantity.Value / rangePowerSupply.AdditionalPhysicalQuantity.Value);
+
 
                     ElectonicLoad.SetThisModuleAsWorking();
                     ElectonicLoad.SetResistanceMode();

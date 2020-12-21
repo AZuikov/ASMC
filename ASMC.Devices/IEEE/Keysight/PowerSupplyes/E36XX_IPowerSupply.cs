@@ -44,7 +44,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         /// Массив возможных пределов для источника питания.
         /// </summary>
         /// <returns>Все возможные предлеы (зависят от модели).</returns>
-        MeasPoint<Voltage, Current> GetRangeS();
+        MeasPoint<Voltage, Current>[] GetRangeS();
 
         void SetVoltageLevel(MeasPoint<Voltage> inPoint);
 

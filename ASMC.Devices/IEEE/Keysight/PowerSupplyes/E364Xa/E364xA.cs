@@ -24,15 +24,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         /// Пределы изменения напряжения и тока (зависят от модели прибора).
         /// </summary>
         public MeasPoint<Voltage,Current>[] Ranges { get; protected set; }
-
-        public MeasPoint<Voltage, Current> Range
-        {
-            get { return range;}
-            set
-            {
-                SetRange(value);
-            }
-        }
+        /// <summary>
+        /// Текущий предел источника.
+        /// </summary>
         private MeasPoint<Voltage, Current> range;
 
 
@@ -123,7 +117,17 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             current.MainPhysicalQuantity = inRange.AdditionalPhysicalQuantity;
             SetCurrentLevel(current);
             
-            Range = inRange;
+            range = inRange;
+        }
+
+        public MeasPoint<Voltage, Current> GetRange()
+        {
+            return range;
+        }
+
+        public MeasPoint<Voltage, Current>[] GetRangeS()
+        {
+            return Ranges;
         }
 
         public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
