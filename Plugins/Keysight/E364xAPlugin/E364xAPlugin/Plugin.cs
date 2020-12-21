@@ -6,10 +6,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Extension;
 using AP.Utils.Data;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
@@ -52,7 +54,7 @@ namespace E364xAPlugin
             {
                 new Device
                 {
-                    Devices =   new IDeviceBase[]{new N3303A()/*, new N3306A()*/}, Description = "Электронная нагрузка"
+                    Devices =   new IDeviceBase[]{new N3303A(), new N3306A()}, Description = "Электронная нагрузка"
                 },
                 new Device
                 {
@@ -64,7 +66,7 @@ namespace E364xAPlugin
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[]{new E364xA() }, Description = "Мера напряжения и тока"
+                    Devices = new IDeviceBase[]{new E3648A() }, Description = "Мера напряжения и тока"
                 } 
             };
             DocumentName = "E364xA_protocol";
@@ -275,38 +277,23 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null) return;
             ((IeeeBase)powerSupply).StringConnection = GetStringConnect((IProtocolStringLine)powerSupply);
             ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
-
-            foreach (E364xA.RangePowerSupply rangePowerSupply in Enum.GetValues(typeof(E364xA.RangePowerSupply)))
+            
+            foreach (var rangePowerSupply in powerSupply)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();;
                 operation.InitWork = async () =>
                 {
-                    if (rangePowerSupply == E364xA.RangePowerSupply.HIGH)
-                    {
-                        powerSupply.SetHighVoltageRange();
-                    }
-                    else if (rangePowerSupply == E364xA.RangePowerSupply.LOW)
-                    {
-                        powerSupply.SetLowVoltageRange();
-                    }
-                    else
-                    {
-                        string error = $"Источник питания E36xxA не может установить значение предела {rangePowerSupply.GetStringValue()}";
-                        Logger.Debug(error);
-                        throw new ArgumentException(error);
-                    }
+                    powerSupply.SetRange(rangePowerSupply);
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
-                    powerSupply.SetMaxVoltageLevel();
-                    powerSupply.SetMaxCurrentLevel();
+                   
                     //узнаем максимумы тока и напряжения
-                    MeasPoint<Voltage> MaxVolt = powerSupply.GetVoltageLevel();
-                    MeasPoint<Current> MaxCurr = powerSupply.GetCurrentLevel();
+                    MeasPoint<Voltage> MaxVolt = powerSupply.GetMaxVoltageLevel();
+                    MeasPoint<Current> MaxCurr = powerSupply.GetMaxCurrentLevel();
+
                     //источник выставит не круглые значения. Округлим их до идеала (если значения выше нормированного порога,
                     //то стабильность характеристик прибора не гарантируется, эти значения не нормируются документацией).
-                    MaxVolt = new MeasPoint<Voltage>(Math.Round(MaxVolt.MainPhysicalQuantity.GetNoramalizeValueToSi(), 0));
                     powerSupply.SetVoltageLevel(MaxVolt);
-                    MaxCurr = new MeasPoint<Current>(Math.Round(MaxCurr.MainPhysicalQuantity.GetNoramalizeValueToSi(), 0));
                     powerSupply.SetCurrentLevel(MaxCurr);
 
                     // расчитаем идеальное значение для электронной нагрузки
@@ -316,6 +303,7 @@ namespace E364xAPlugin
 
                     ElectonicLoad.SetThisModuleAsWorking();
                     ElectonicLoad.SetResistanceMode();
+                    //Thread.Sleep(300);
                     ElectonicLoad.SetResistanceLevel(resistToLoad);
                     
                 };
@@ -337,9 +325,9 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOff();
 
                         operation.Expected = new MeasPoint<Voltage>(0);
-                        decimal measResult = U1.MainPhysicalQuantity.GetNoramalizeValueToSi() - U2.MainPhysicalQuantity.GetNoramalizeValueToSi();
-                        measResult = Math.Round(measResult, 3);
-                        operation.Getting = new MeasPoint<Voltage>(measResult);
+                        var measResult = U1 - U2;
+                        measResult.Round(3);
+                        operation.Getting = measResult;
                         
                         operation.ErrorCalculation = (point, measPoint) =>
                         {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AP.Utils.Data;
-using ASMC.Data.Model;
+﻿using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
@@ -14,25 +8,46 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
     /// </summary>
     public interface E36XX_IPowerSupply
     {
-        
+        #region Methods
 
-        void SetVoltageLevel(MeasPoint<Voltage> inPoint);
-        void SetMaxVoltageLevel();
-        MeasPoint<Voltage> GetVoltageLevel();
-        
-        void SetCurrentLevel(MeasPoint<Current> inPoint);
-        void SetMaxCurrentLevel();
         MeasPoint<Current> GetCurrentLevel();
-        
-        void OutputOn();
-        void OutputOff();
-        
-        void SetHighVoltageRange();
-        void SetLowVoltageRange();
-        MeasPoint<Voltage> GetVoltageRange();
-        
-        MeasPoint<Voltage> GetMeasureVoltage();
+
+        MeasPoint<Current> GetMaxCurrentLevel();
+
+        MeasPoint<Voltage> GetMaxVoltageLevel();
+
         MeasPoint<Current> GetMeasureCurrent();
 
+        MeasPoint<Voltage> GetMeasureVoltage();
+
+        MeasPoint<Voltage> GetVoltageLevel();
+
+        MeasPoint<Voltage> GetVoltageRange();
+
+        void OutputOff();
+
+        void OutputOn();
+
+        void SetCurrentLevel(MeasPoint<Current> inPoint);
+
+        void SetMaxCurrentLevel();
+
+        void SetMaxVoltageLevel();
+
+        void SetRange(MeasPoint<Voltage, Current> inRange);
+        /// <summary>
+        /// Текущий предел источника.
+        /// </summary>
+        /// <returns>Точка, содержащая напряжение и ток.</returns>
+        MeasPoint<Voltage, Current> GetRange();
+        /// <summary>
+        /// Массив возможных пределов для источника питания.
+        /// </summary>
+        /// <returns>Все возможные предлеы (зависят от модели).</returns>
+        MeasPoint<Voltage, Current> GetRangeS();
+
+        void SetVoltageLevel(MeasPoint<Voltage> inPoint);
+
+        #endregion Methods
     }
 }

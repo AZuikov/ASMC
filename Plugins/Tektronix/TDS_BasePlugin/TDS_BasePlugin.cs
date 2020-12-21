@@ -362,6 +362,8 @@ namespace TDS_BasePlugin
                         {
                             calibr9500B.StringConnection = GetStringConnect(calibr9500B);
                             someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
+                            someTdsOscilloscope.ResetDevice();
+                            Thread.Sleep(300);
                         });
                     }
                     catch (Exception e)
@@ -590,6 +592,8 @@ namespace TDS_BasePlugin
                         {
                             calibr9500B.StringConnection = GetStringConnect(calibr9500B);
                             someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
+                            someTdsOscilloscope.ResetDevice();
+                            Thread.Sleep(300);
                         });
                     }
                     catch (Exception e)
@@ -856,6 +860,7 @@ namespace TDS_BasePlugin
                             calibr9500B.StringConnection = GetStringConnect(calibr9500B);
                             someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
                             someTdsOscilloscope.ResetDevice();
+                            Thread.Sleep(300);
                         });
                     }
                     catch (Exception e)

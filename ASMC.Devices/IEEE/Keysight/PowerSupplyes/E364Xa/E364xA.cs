@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using AP.Utils.Data;
 using ASMC.Data.Model;
@@ -8,22 +9,32 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 {
-    public class E364xA : IeeeBase, E36XX_IPowerSupply
+    public abstract class E364xA : IeeeBase, E36XX_IPowerSupply
     {
         public enum Chanel
         {
-            [StringValue("OUTP1")]OUTP1,
-            [StringValue("OUTP2")]OUTP2
+            [StringValue("OUTP1")] OUTP1,
+            [StringValue("OUTP2")] OUTP2
         }
+
+
+       
 
         /// <summary>
         /// Пределы изменения напряжения и тока (зависят от модели прибора).
         /// </summary>
-        public enum RangePowerSupply
+        public MeasPoint<Voltage,Current>[] Ranges { get; protected set; }
+
+        public MeasPoint<Voltage, Current> Range
         {
-            [StringValue("LOW")] LOW,
-            [StringValue("HIGH")] HIGH
+            get { return range;}
+            set
+            {
+                SetRange(value);
+            }
         }
+        private MeasPoint<Voltage, Current> range;
+
 
         public enum TriggerSource
         {
@@ -73,7 +84,47 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             return this;
         }
 
+        private MeasPoint<IPhysicalQuantity>
+            LocalMeasPointRound<IPhysicalQuantity>(MeasPoint<IPhysicalQuantity> inPoint)
+            where IPhysicalQuantity : class, IPhysicalQuantity<IPhysicalQuantity>, new()
+        {
+            var str = inPoint.MainPhysicalQuantity.Value.ToString().Replace(',', '.').Split('.');
+            //сплит по разделителю
+            //берем первый символ
+            //склеиваем всё обратно в число
+            var buf = "";
+            var result = "";
+            if (str.Length > 1)
+            {
+                buf = str[1].Substring(0, 1);
+                result = $"{str[0]}.{buf}";
+            }
+            else
+            {
+                result = str[0];
+            }
+
+            decimal val;
+            decimal.TryParse(result, out val);
+            inPoint.MainPhysicalQuantity.Value = val;
+            return inPoint;
+        }
+
         #endregion
+
+
+        public void SetRange(MeasPoint<Voltage, Current> inRange)
+        {
+            MeasPoint<Voltage> volt = new MeasPoint<Voltage>();
+            volt.MainPhysicalQuantity = inRange.MainPhysicalQuantity;
+            SetVoltageLevel(volt);
+
+            MeasPoint<Current> current = new MeasPoint<Current>();
+            current.MainPhysicalQuantity = inRange.AdditionalPhysicalQuantity;
+            SetCurrentLevel(current);
+            
+            Range = inRange;
+        }
 
         public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
         {
@@ -87,9 +138,18 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
         public MeasPoint<Voltage> GetVoltageLevel()
         {
-            string answer = QueryLine("VOLTage:AMPLitude?");
-            decimal numb = (decimal)StrToDouble(answer);
+            var answer = QueryLine("VOLTage:AMPLitude?");
+            var numb = (decimal) StrToDouble(answer);
             return new MeasPoint<Voltage>(numb);
+        }
+
+        public MeasPoint<Voltage> GetMaxVoltageLevel()
+        {
+            var oldVal = VOLT.GetValue();
+            SetMaxVoltageLevel();
+            var maxVolt = VOLT.GetValue();
+            VOLT.SetValue(oldVal);
+            return LocalMeasPointRound(maxVolt);
         }
 
         public void SetCurrentLevel(MeasPoint<Current> inPoint)
@@ -104,9 +164,18 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
         public MeasPoint<Current> GetCurrentLevel()
         {
-            string answer = QueryLine("CURRent:AMPLitude?");
-            decimal numb = (decimal)StrToDouble(answer);
+            var answer = QueryLine("CURRent:AMPLitude?");
+            var numb = (decimal) StrToDouble(answer);
             return new MeasPoint<Current>(numb);
+        }
+
+        public MeasPoint<Current> GetMaxCurrentLevel()
+        {
+            var oldVal = CURR.GetValue();
+            SetMaxVoltageLevel();
+            var maxCurr = CURR.GetValue();
+            CURR.SetValue(oldVal);
+            return LocalMeasPointRound(maxCurr);
         }
 
         public void OutputOn()
@@ -119,23 +188,15 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             OUT.OutputOff();
         }
 
-        public void SetHighVoltageRange()
-        {
-            VOLT.SetRange(RangePowerSupply.HIGH);
-        }
-
-        public void SetLowVoltageRange()
-        {
-            VOLT.SetRange(RangePowerSupply.LOW);
-        }
+       
 
         public MeasPoint<Voltage> GetVoltageRange()
         {
-            string answer = QueryLine("VOLTage:RANGe?");
-            Regex regex  = new Regex("P\\d+V\n",RegexOptions.IgnoreCase);
-            Match match = regex.Match(answer);
+            var answer = QueryLine("VOLTage:RANGe?");
+            var regex = new Regex(@"\d+", RegexOptions.IgnoreCase);
+            var match = regex.Match(answer);
             decimal numb;
-            decimal.TryParse(match.Value,out numb);
+            decimal.TryParse(match.Value, out numb);
             return new MeasPoint<Voltage>(numb);
         }
 
@@ -201,19 +262,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
             #region Methods
 
-            public RangePowerSupply GetRange()
-            {
-                var answer = _powerSupply.QueryLine($"{ComandeRange}?");
-                answer = answer.TrimEnd('\n');
-                foreach (RangePowerSupply range in Enum.GetValues(typeof(RangePowerSupply)))
-                    if (range.ToString().Equals(answer))
-                        return range;
-
-                var errorStr = $"Запрос диапазона! E364xA выдал непредвиденный результат: {answer}";
-                Logger.Error(errorStr);
-
-                throw new Exception(errorStr);
-            }
+            
 
             public MeasPoint<Voltage> GetValue()
             {
@@ -223,11 +272,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 return returnPoint;
             }
 
-            public E364xA SetRange(RangePowerSupply inRange)
-            {
-                _powerSupply.WriteLine($"{ComandeRange} {inRange.ToString()}");
-                return _powerSupply;
-            }
+           
 
             public E364xA SetValue(MeasPoint<Voltage> inPoint)
             {
@@ -375,6 +420,18 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             }
 
             #endregion
+        }
+    }
+
+    public class E3648A : E364xA
+    {
+        public E3648A()
+        {
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(8, 5),
+                new MeasPoint<Voltage, Current>(20M, 2.5M)
+            };
         }
     }
 }
