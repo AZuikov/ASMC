@@ -712,8 +712,8 @@ namespace mp2192_92.DialIndicator
                 {
                     return new[]
                     {
-                       new MeasPoint<Length>((expected.FirstOrDefault() -
-                                              getting.Max(q => (MeasPoint<Length>)q.Abs())).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro))  
+                       new MeasPoint<Length>((Length) (expected.FirstOrDefault() -
+                                                       getting.Max(q => (MeasPoint<Length>)q.Abs())).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro))  
                     };
                 };
             // ReSharper disable once PossibleNullReferenceException
