@@ -9,16 +9,30 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 {
-    public abstract class E364xA : IeeeBase, E36XX_IPowerSupply
+    public abstract class E364xA : IeeeBase
     {
         public enum Chanel
         {
-            [StringValue("OUTP1")] OUTP1,
-            [StringValue("OUTP2")] OUTP2
+            OUTP1,
+            OUTP2
+        }
+
+        private E364xA.Chanel _chanel;
+
+        public E364xA.Chanel ActiveChanel
+        {
+            get
+            {
+                return _chanel;
+            }
+            set
+            {
+                _chanel = value;
+                WriteLine($"inst {_chanel.ToString()}");
+            }
         }
 
 
-       
 
         /// <summary>
         /// Пределы изменения напряжения и тока (зависят от модели прибора).
@@ -72,11 +86,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             throw new Exception(errorStr);
         }
 
-        public E364xA SetActiveChanel(Chanel inChanel)
-        {
-            WriteLine($"inst {inChanel.GetStringValue()}");
-            return this;
-        }
+       
 
         private MeasPoint<IPhysicalQuantity>
             LocalMeasPointRound<IPhysicalQuantity>(MeasPoint<IPhysicalQuantity> inPoint)
@@ -107,8 +117,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         #endregion
 
 
+       
+
         public void SetRange(MeasPoint<Voltage, Current> inRange)
         {
+            WriteLine($"VOLTage:RANGe P{inRange.MainPhysicalQuantity.Value}V");
+
             MeasPoint<Voltage> volt = new MeasPoint<Voltage>();
             volt.MainPhysicalQuantity = inRange.MainPhysicalQuantity;
             SetVoltageLevel(volt);
@@ -125,7 +139,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             return range;
         }
 
-        public MeasPoint<Voltage, Current>[] GetRangeS()
+        public MeasPoint<Voltage, Current>[] GetAllRanges()
         {
             return Ranges;
         }
@@ -147,15 +161,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             return new MeasPoint<Voltage>(numb);
         }
 
-        public MeasPoint<Voltage> GetMaxVoltageLevel()
-        {
-            var oldVal = VOLT.GetValue();
-            SetMaxVoltageLevel();
-            var maxVolt = VOLT.GetValue();
-            VOLT.SetValue(oldVal);
-            return LocalMeasPointRound(maxVolt);
-        }
-
+        
         public void SetCurrentLevel(MeasPoint<Current> inPoint)
         {
             CURR.SetValue(inPoint);
@@ -173,14 +179,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             return new MeasPoint<Current>(numb);
         }
 
-        public MeasPoint<Current> GetMaxCurrentLevel()
-        {
-            var oldVal = CURR.GetValue();
-            SetMaxVoltageLevel();
-            var maxCurr = CURR.GetValue();
-            CURR.SetValue(oldVal);
-            return LocalMeasPointRound(maxCurr);
-        }
+        
 
         public void OutputOn()
         {
@@ -436,6 +435,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 new MeasPoint<Voltage, Current>(8, 5),
                 new MeasPoint<Voltage, Current>(20M, 2.5M)
             };
+            
         }
     }
 }

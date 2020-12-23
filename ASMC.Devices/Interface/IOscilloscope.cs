@@ -27,7 +27,7 @@ namespace ASMC.Devices.Interface
         public int Number { get;  }
        public bool IsEnable { get; set; }
        public MeasPoint<Voltage> VerticalOffset { get; set; }
-       public MeasPoint<Voltage> Vertical { get; set; }
+       public MeasPoint<Voltage> VerticalScale { get; set; }
        public MeasPoint<Resistance> Impedance { get; set; }
        
        public int Probe { get; set; }
