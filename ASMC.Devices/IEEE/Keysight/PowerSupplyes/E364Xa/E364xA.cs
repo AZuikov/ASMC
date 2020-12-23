@@ -17,9 +17,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
             OUTP2
         }
 
-        private E364xA.Chanel _chanel;
+        private Chanel _chanel;
 
-        public E364xA.Chanel ActiveChanel
+        public Chanel ActiveChanel
         {
             get
             {

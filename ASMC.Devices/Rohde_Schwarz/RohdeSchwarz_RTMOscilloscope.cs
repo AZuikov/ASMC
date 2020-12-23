@@ -181,6 +181,7 @@ namespace ASMC.Devices.Rohde_Schwarz
 
         public RTM2054()
         {
+            UserType = "RTM 2054";
             chanels = new IOscillChanel[]
             {
                 new RohdeSchwarz_RtmOscChanel(1,this),

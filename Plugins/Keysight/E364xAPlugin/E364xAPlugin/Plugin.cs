@@ -15,6 +15,8 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplies;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
+using ASMC.Devices.Interface;
+using ASMC.Devices.Rohde_Schwarz;
 using DevExpress.Mvvm;
 using NLog;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
@@ -55,7 +57,11 @@ namespace E364xAPlugin
                 new Device
                 {
                     Devices = new IDeviceBase[] {new Mult_34401A()}, Description = "Цифровой мультиметр"
-                }
+                },
+                new Device
+                {
+                    Devices = new IDeviceBase[]{ new RTM2054()}, Description = "Цифровой осциллограф"
+                }, 
             };
 
             TestDevices = new IDeviceUi[]
@@ -71,7 +77,12 @@ namespace E364xAPlugin
             {
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
-                new Oper3UnstableVoltageLoadChange(this, E364xA.Chanel.OUTP1)
+                new Oper3UnstableVoltageLoadChange(this, E364xA.Chanel.OUTP1),
+                new Oper4AcVoltChange(this, E364xA.Chanel.OUTP1),
+                new Oper5VoltageTransientDuration(this, E364xA.Chanel.OUTP1),
+                new Oper6UnstableVoltageOnTime(this, E364xA.Chanel.OUTP1), 
+
+
             };
         }
 
@@ -224,7 +235,7 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanelNumber;
+        private readonly E364xA.Chanel _chanel;
 
         #endregion
 
@@ -238,8 +249,8 @@ namespace E364xAPlugin
         public Oper3UnstableVoltageLoadChange(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) :
             base(userItemOperation)
         {
-            _chanelNumber = inChanel;
-            Name = $"Определение нестабильности выходного напряжения \nот изменения нагрузки (канал {_chanelNumber})";
+            _chanel = inChanel;
+            Name = $"Определение нестабильности выходного напряжения \nот изменения нагрузки (канал {_chanel})";
         }
 
         #region Methods
@@ -282,7 +293,7 @@ namespace E364xAPlugin
 
         protected override string GetReportTableName()
         {
-            return $"FillTabBm_Oper3_ch{_chanelNumber}";
+            return $"FillTabBm_Oper3_ch{_chanel}";
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -304,7 +315,7 @@ namespace E364xAPlugin
                 ;
                 operation.InitWork = async () =>
                 {
-                    powerSupply.ActiveChanel = _chanelNumber;
+                    powerSupply.ActiveChanel = _chanel;
                     powerSupply.SetRange(rangePowerSupply);
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
@@ -345,9 +356,11 @@ namespace E364xAPlugin
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
-                            return new MeasPoint<Voltage>(0.0001M * U1
-                                                                   .MainPhysicalQuantity.GetNoramalizeValueToSi() +
-                                                          0.003M);
+                            var resultError = new MeasPoint<Voltage>(0.0001M * U1
+                                                                              .MainPhysicalQuantity.GetNoramalizeValueToSi() +
+                                                                     0.003M);
+                            resultError.Round(4);
+                            return resultError;
                         };
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.LowerTolerance = operation.Expected - operation.Error;
@@ -405,22 +418,22 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanelNumber;
+        private readonly E364xA.Chanel _chanel;
 
         #endregion
 
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
-        protected E36XX_IPowerSupply powerSupply { get; set; }
+        protected E364xA powerSupply { get; set; }
 
         #endregion
 
         public Oper4AcVoltChange(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) : base(userItemOperation)
         {
-            _chanelNumber = inChanel;
+            _chanel = inChanel;
             Name =
-                $"Определение нестабильности выходного напряжения \nот изменения напряжения питания (канал {_chanelNumber})";
+                $"Определение нестабильности выходного напряжения \nот изменения напряжения питания (канал {_chanel})";
         }
 
         #region Methods
@@ -463,7 +476,7 @@ namespace E364xAPlugin
 
         protected override string GetReportTableName()
         {
-            return $"FillTabBm_Oper3_ch{_chanelNumber}";
+            return $"FillTabBm_Oper3_ch{_chanel}";
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -474,7 +487,7 @@ namespace E364xAPlugin
                            .SelectedDevice as IElectronicLoad;
 
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
-                                           .SelectedDevice as E36XX_IPowerSupply;
+                                           .SelectedDevice as E364xA;
             if (powerSupply == null || ElectonicLoad == null) return;
             ((IeeeBase) powerSupply).StringConnection = GetStringConnect((IProtocolStringLine) powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
@@ -485,6 +498,7 @@ namespace E364xAPlugin
                 ;
                 operation.InitWork = async () =>
                 {
+                    powerSupply.ActiveChanel = _chanel;
                     powerSupply.SetRange(rangePowerSupply);
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
@@ -509,22 +523,22 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOn();
                         Thread.Sleep(1000);
                         var U1 = ElectonicLoad.GetMeasureVoltage();
+                        Thread.Sleep(1000);
                         var U2 = ElectonicLoad.GetMeasureVoltage();
 
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
 
                         operation.Expected = new MeasPoint<Voltage>(0);
-                        var measResult = U1.MainPhysicalQuantity.GetNoramalizeValueToSi() -
-                                         U2.MainPhysicalQuantity.GetNoramalizeValueToSi();
-                        measResult = Math.Round(measResult, 3);
-                        operation.Getting = new MeasPoint<Voltage>(measResult);
+                        var measResult = U1 - U2;
+                        measResult.Round(3);
+                        operation.Getting = measResult;
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
-                            return new MeasPoint<Voltage>(0.0001M * U1
-                                                                   .MainPhysicalQuantity.GetNoramalizeValueToSi() +
-                                                          0.003M);
+                            var resultError = new MeasPoint<Voltage>(0.0001M * U1.MainPhysicalQuantity.GetNoramalizeValueToSi() + 0.003M);
+                            resultError.Round(4);
+                            return resultError;
                         };
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.LowerTolerance = operation.Expected - operation.Error;
@@ -582,25 +596,46 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanelNumber;
+        private readonly E364xA.Chanel _chanel;
 
         #endregion
 
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
-        protected E36XX_IPowerSupply powerSupply { get; set; }
+        protected E364xA powerSupply { get; set; }
+        protected IOscilloscope Oscill {get; set;} 
 
         #endregion
         public Oper5VoltageTransientDuration(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) : base(userItemOperation)
         {
-            _chanelNumber = inChanel;
-            Name = $"Определение определение времени переходного\nпроцесса при изменении нагрузки (канал {_chanelNumber})";
+            _chanel = inChanel;
+            Name = $"Определение  времени переходного\nпроцесса при изменении нагрузки (канал {_chanel})";
         }
 
         protected override string GetReportTableName()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            ElectonicLoad = UserItemOperation
+                           .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
+                           .SelectedDevice as IElectronicLoad;
+
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
+                                           .SelectedDevice as E364xA;
+            if (powerSupply == null || ElectonicLoad == null) return;
+            ((IeeeBase)powerSupply).StringConnection = GetStringConnect((IProtocolStringLine)powerSupply);
+            ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
+
+            foreach (var rangePowerSupply in powerSupply.GetAllRanges())
+            {
+
+            }
+
         }
     }
 
@@ -610,22 +645,22 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanelNumber;
+        private readonly E364xA.Chanel _chanel;
 
         #endregion
 
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
-        protected E36XX_IPowerSupply powerSupply { get; set; }
+        protected E364xA powerSupply { get; set; }
 
         #endregion
 
         public Oper6UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) :
             base(userItemOperation)
         {
-            _chanelNumber = inChanel;
-            Name = $"Определение величины дрейфа выходного напряжения (канал {_chanelNumber})";
+            _chanel = inChanel;
+            Name = $"Определение величины дрейфа выходного напряжения (канал {_chanel})";
         }
 
         #region Methods
@@ -668,7 +703,7 @@ namespace E364xAPlugin
 
         protected override string GetReportTableName()
         {
-            return $"FillTabBm_Oper3_ch{_chanelNumber}";
+            return $"FillTabBm_Oper3_ch{_chanel}";
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -679,7 +714,7 @@ namespace E364xAPlugin
                            .SelectedDevice as IElectronicLoad;
 
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
-                                           .SelectedDevice as E36XX_IPowerSupply;
+                                           .SelectedDevice as E364xA;
             if (powerSupply == null || ElectonicLoad == null) return;
             ((IeeeBase) powerSupply).StringConnection = GetStringConnect((IProtocolStringLine) powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
@@ -690,6 +725,7 @@ namespace E364xAPlugin
                 ;
                 operation.InitWork = async () =>
                 {
+                    powerSupply.ActiveChanel = _chanel;
                     powerSupply.SetRange(rangePowerSupply);
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
@@ -716,14 +752,19 @@ namespace E364xAPlugin
                         //массив из 17 измерений
                         var measPoints = new MeasPoint<Voltage>[16];
                         Thread.Sleep(5000);
+                        measPoints[0] = ElectonicLoad.GetMeasureVoltage();
                         var U1 = ElectonicLoad.GetMeasureVoltage();
                         for (var i = 1; i < measPoints.Length; i++)
                         {
-                            Thread.Sleep(15000); //пауза между измерениями
+                            Thread.Sleep(1000); //пауза между измерениями должна быть 15 секунд
                             var Un = ElectonicLoad.GetMeasureVoltage();
                             //сразу посчитаем разности
                             measPoints[i] = measPoints[0] - Un;
+                            measPoints[i].Abs();
+                            measPoints[i].Round(4);
                         }
+
+                        measPoints[0] = new MeasPoint<Voltage>(0);
 
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
@@ -734,9 +775,11 @@ namespace E364xAPlugin
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
-                            return new MeasPoint<Voltage>(0.0002M * U1
-                                                                   .MainPhysicalQuantity.GetNoramalizeValueToSi() +
-                                                          0.003M);
+                            var resultError = new MeasPoint<Voltage>(0.0002M * U1
+                                                                              .MainPhysicalQuantity.GetNoramalizeValueToSi() +
+                                                                     0.003M);
+                            resultError.Round(4);
+                            return resultError;
                         };
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.LowerTolerance = operation.Expected - operation.Error;
