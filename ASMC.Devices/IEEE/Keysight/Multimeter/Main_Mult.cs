@@ -2,20 +2,18 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using AP.Utils.Data;
 using ASMC.Data.Model;
-using MathNet.Numerics.Statistics;
+using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public abstract class MultMain : IeeeBase
+    public abstract class MultMain : IeeeBase, IDigitalMultimetr
     {
-       
         /// <summary>
         /// Запрос о включенных выходах. Ответ FRON - передняя панель,
         /// </summary>
@@ -25,26 +23,19 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// Запрос на получение значения (U, I, R, F), для преобразования использовать ConvertDate
         /// </summary>
         private const string QueryValue = "READ?";
-        /// <summary>
-        /// Запрос на получение значения (U, I, R, F)
-        /// </summary>
-        /// <param name="unitMultiplier">Желаемый множитель.</param>
-        /// <returns>Возвращает значение с желаемым множителем.</returns>
-        public double GetMeasValue(UnitMultiplier unitMultiplier= UnitMultiplier.None)
-        {  
-           WriteLine(QueryValue);
-           
-            var res = DataStrToDoubleMind(ReadString(), unitMultiplier);
-            return res;
-        }
 
         #region Property
 
+        /// <summary>
+        /// Предоставляет доступ к переменноме току.
+        /// </summary>
+        public MAc Ac { get; }
 
         /// <summary>
         /// Передоставляет настройки постоянного тока.
         /// </summary>
         public MDc Dc { get; }
+        
 
         /// <summary>
         /// Предоставляет признак включения входов на передней панели  true - передняя панель, false - задняя
@@ -62,28 +53,116 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         }
 
         /// <summary>
+        /// Предоставляет время последнего измерения.
+        /// </summary>
+        public TimeSpan TimeLastMeas { get; private set; }
+
+        /// <summary>
         /// Содержит пароль снятия защиты.
         /// </summary>
         protected static string SecuredCodeCalibr { get; set; }
 
         #endregion
 
-        /// <summary>
-        /// Предоставляет время последнего измерения.
-        /// </summary>
-        public TimeSpan TimeLastMeas { get; private set; }
-
         protected MultMain()
         {
             Dc = new MDc(this);
             Ac = new MAc(this);
         }
-        /// <summary>
-        /// Предоставляет доступ к переменноме току.
-        /// </summary>
-        public MAc Ac { get; }
 
-  
+        #region Methods
+
+        /// <summary>
+        /// Запрос на получение значения (U, I, R, F)
+        /// </summary>
+        /// <param name = "unitMultiplier">Желаемый множитель.</param>
+        /// <returns>Возвращает значение с желаемым множителем.</returns>
+        public double GetMeasValue(UnitMultiplier unitMultiplier = UnitMultiplier.None)
+        {
+            WriteLine(QueryValue);
+
+            var res = DataStrToDoubleMind(ReadString(), unitMultiplier);
+            return res;
+        }
+
+        #endregion
+
+        public MeasPoint<Voltage> GetMeasureDcVoltage()
+        {
+            var numb = GetMeasValue();
+            return new MeasPoint<Voltage>((decimal) numb);
+        }
+
+        public void SetRangeDcVoltage(MeasPoint<Voltage> pointInRange)
+        {
+            Dc.Voltage.Range.Set((double) pointInRange.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        public MeasPoint<Voltage> GetMeasureAcVoltage()
+        {
+            var numb = GetMeasValue();
+            return new MeasPoint<Voltage>((decimal) numb);
+        }
+
+        public void SetRangeAcVoltage(MeasPoint<Voltage> pointInRange)
+        {
+            Ac.Voltage.Range.Set((double) pointInRange.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        public MeasPoint<Data.Model.PhysicalQuantity.Current> GetMeasureDcCurrent()
+        {
+            var numb = GetMeasValue();
+            return new MeasPoint<Data.Model.PhysicalQuantity.Current>((decimal) numb);
+        }
+
+        public void SetRangeDcCurrent(MeasPoint<Data.Model.PhysicalQuantity.Current> pointInRange)
+        {
+            Dc.Current.Range.Set((double) pointInRange.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+
+        public MeasPoint<Data.Model.PhysicalQuantity.Current> GetMeasureAcCurrent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRangeAcCurrent(MeasPoint<Data.Model.PhysicalQuantity.Current> pointInRange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeasPoint<Data.Model.PhysicalQuantity.Resistance> GetMeasureResistance()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRangeResistance(MeasPoint<Data.Model.PhysicalQuantity.Resistance> pointInRange)
+        {
+        }
+
+        public MeasPoint<Data.Model.PhysicalQuantity.Resistance> GetMeasureResistance4W()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRangeResistance4W(MeasPoint<Data.Model.PhysicalQuantity.Resistance> pointInRange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeasPoint<Data.Model.PhysicalQuantity.Frequency> GetMeasureFrequency()
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeasPoint<Capacity> GetMeasureCapacity()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRangeCapacity(MeasPoint<Capacity> pointInRange)
+        {
+            throw new NotImplementedException();
+        }
 
         public class Calibr
         {
@@ -135,7 +214,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 /// </summary>
                 public static string ChecState = "CAL:SEC:STAT?";
 
-                #region  Fields
+                #region Fields
 
                 /// <summary>
                 /// Автовыбор предела
@@ -192,21 +271,26 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             }
         }
 
-       
-
         public class MAc
         {
+            #region Fields
+
             private MultMain _multMain;
+
+            #endregion
+
+            #region Property
+
+            public MVoltage Voltage { get; }
+            
+
+            #endregion
 
             public MAc(MultMain multMain)
             {
-                this._multMain = multMain;
+                _multMain = multMain;
                 Voltage = new MVoltage(multMain);
             }
-
-            public MVoltage Voltage { get;}
-
-            
         }
 
         /// <summary>
@@ -418,34 +502,37 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             }
         }
     }
+
     /// <summary>
     /// Измерение переменного напряжения
     /// </summary>
     public class MVoltage
     {
+        #region Fields
+
         private MultMain _multMain;
 
-        public MVoltage(MultMain multMain)
-        {
-            this._multMain = multMain;
-            Range = new AcvRange(multMain);
-            Filtr = new AcvFiltr(multMain);
-        }
+        #endregion
+
+        #region Property
+
+        public AcvFiltr Filtr { get; protected internal set; }
+
         /// <summary>
         /// Позволяет настраивать предел измерения.
         /// </summary>
-        public AcvRange Range
-        {
-            get; protected internal set;
-        }
+        public AcvRange Range { get; protected internal set; }
 
-        public AcvFiltr Filtr
-        {
-            get; protected internal set;
-        }
+        #endregion
 
-        
+        public MVoltage(MultMain multMain)
+        {
+            _multMain = multMain;
+            Range = new AcvRange(multMain);
+            Filtr = new AcvFiltr(multMain);
+        }
     }
+
     /// <summary>
     /// Определяет предел
     /// </summary>
@@ -456,69 +543,75 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             /// <summary>
             /// Команда автоматического выбора придела
             /// </summary>
-            [StringValue("CONF:VOLT:AC AUTO")]
-            [DoubleValue(0)]
+            [StringValue("CONF:VOLT:AC AUTO")] [DoubleValue(0)]
             Auto,
 
             /// <summary>
             /// Предел 100 мВ
             /// </summary>
-            [StringValue("CONF:VOLT:AC 100 MV")]
-            [DoubleValue(0.1)]
+            [StringValue("CONF:VOLT:AC 100 MV")] [DoubleValue(0.1)]
             Mv100,
 
             /// <summary>
             /// Предел 1 В
             /// </summary>
-            [StringValue("CONF:VOLT:AC 1")]
-            [DoubleValue(1)]
+            [StringValue("CONF:VOLT:AC 1")] [DoubleValue(1)]
             V1,
 
             /// <summary>
             /// Предел 10 В
             /// </summary>
-            [StringValue("CONF:VOLT:AC 10")]
-            [DoubleValue(10)]
+            [StringValue("CONF:VOLT:AC 10")] [DoubleValue(10)]
             V10,
 
             /// <summary>
             /// Предел 100 В
             /// </summary>
-            [StringValue("CONF:VOLT:AC 100")]
-            [DoubleValue(100)]
+            [StringValue("CONF:VOLT:AC 100")] [DoubleValue(100)]
             V100,
 
             /// <summary>
             /// Предел 1000 В
             /// </summary>
-            [StringValue("CONF:VOLT:AC 750")]
-            [DoubleValue(750)]
+            [StringValue("CONF:VOLT:AC 750")] [DoubleValue(750)]
             V750
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
         private readonly MultMain _multMain;
 
-        public AcvRange(MultMain multMain)
-        {
-            this._multMain = multMain;
-            Filtr = new AcvFiltr(multMain);
-            Ranges = new ICommand[]{
-                            new Command("CONF:VOLT:AC AUTO", "Автоматичсекий выбор предела", 0),
-                            new Command("CONF:VOLT:AC 100 MV", "100 мВ", 100E-3),
-                            new Command("CONF:VOLT:AC 1", "1 В", 1),
-                            new Command("CONF:VOLT:AC 10", "10 В", 10),
-                            new Command("CONF:VOLT:AC 100", "100 В", 100),
-                            new Command("CONF:VOLT:AC 750","750 В", 750)};
-        }
+        #endregion
+
+        #region Property
 
         /// <summary>
         /// Позволяет настраивать фильтр.
         /// </summary>
-        public AcvFiltr Filtr
+        public AcvFiltr Filtr { get; }
+
+        public ICommand[] Ranges { get; protected set; }
+
+        #endregion
+
+        public AcvRange(MultMain multMain)
         {
-            get;
+            _multMain = multMain;
+            Filtr = new AcvFiltr(multMain);
+            Ranges = new ICommand[]
+            {
+                new Command("CONF:VOLT:AC AUTO", "Автоматичсекий выбор предела", 0),
+                new Command("CONF:VOLT:AC 100 MV", "100 мВ", 100E-3),
+                new Command("CONF:VOLT:AC 1", "1 В", 1),
+                new Command("CONF:VOLT:AC 10", "10 В", 10),
+                new Command("CONF:VOLT:AC 100", "100 В", 100),
+                new Command("CONF:VOLT:AC 750", "750 В", 750)
+            };
         }
+
+        #region Methods
 
         /// <summary>
         /// Устанавливает диапазон взависимости от значения.
@@ -532,9 +625,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             val *= unitMultiplier.GetDoubleValue();
             var res = Ranges.FirstOrDefault(q => q.Value <= val);
 
-            if(res == null)
+            if (res == null)
             {
-                Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                Logger.Info(@"Входное знаечние больше допустимого,установлен максимальный предел.");
                 res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
             }
 
@@ -543,19 +636,15 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             return _multMain;
         }
 
-        public ICommand[] Ranges
-        {
-            get; protected set;
-        }
-
         public MultMain Set(ERanges range = ERanges.Auto)
         {
             _multMain.WriteLine(range.GetStringValue());
             return _multMain;
         }
+
+        #endregion
     }
 
-    
     /// <summary>
     /// Содержит команды отвечающие за настройку измерения силы тока
     /// </summary>
@@ -643,81 +732,90 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             public const string Filtr3 = "SENS:CURR:AC:BAND 3";
         }
     }
+
     /// <summary>
     /// Измерение переменного напряжения
     /// </summary>
     public class AcVoltage
     {
+        #region Fields
+
         private MultMain _multMain;
 
-        public AcVoltage(MultMain multMain)
-        {
-            this._multMain = multMain;
-            Range = new AcvRange(multMain);
-            Filtr = new AcvFiltr(multMain);
-        }
+        #endregion
+
+        #region Property
+
+        public AcvFiltr Filtr { get; protected internal set; }
+
         /// <summary>
         /// Позволяет настраивать предел измерения.
         /// </summary>
-        public AcvRange Range
-        {
-            get; protected internal set;
-        }
+        public AcvRange Range { get; protected internal set; }
 
-        public AcvFiltr Filtr
-        {
-            get; protected internal set;
-        }
+        #endregion
 
-      
+        public AcVoltage(MultMain multMain)
+        {
+            _multMain = multMain;
+            Range = new AcvRange(multMain);
+            Filtr = new AcvFiltr(multMain);
+        }
     }
-    
 
     /// <summary>
     /// Фильтр
     /// </summary>
     public class AcvFiltr
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public enum EFiltrs
         {
             /// <summary>
             /// Установить фильтр 3 Гц
             /// </summary>
-            [StringValue("SENS:VOLT:AC:BAND 3")]
-            [DoubleValue(3)]
+            [StringValue("SENS:VOLT:AC:BAND 3")] [DoubleValue(3)]
             F3,
+
             /// <summary>
             /// Установить фильтр 20 Гц, по умолчанию
             /// </summary>
-            [StringValue("SENS:VOLT:AC:BAND 20")]
-            [DoubleValue(20)]
+            [StringValue("SENS:VOLT:AC:BAND 20")] [DoubleValue(20)]
             F20,
+
             /// <summary>
             /// Установить фильтр 200 Гц
             /// </summary>
-            [StringValue("CSENS:VOLT:AC:BAND 200")]
-            [DoubleValue(200)]
-            F200,
+            [StringValue("CSENS:VOLT:AC:BAND 200")] [DoubleValue(200)]
+            F200
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
 
         private readonly MultMain _multMain;
 
+        #endregion
+
+        #region Property
+
+        public ICommand[] Filters { get; protected set; }
+
+        #endregion
+
         public AcvFiltr(MultMain multMain)
         {
-            this._multMain = multMain;
+            _multMain = multMain;
             Filters = new ICommand[]
             {
-                            new Command("SENS:VOLT:AC:BAND 3", "ФВЧ 3 Гц",3),
-                            new Command("SENS:VOLT:AC:BAND 20", "ФВЧ 3 Гц",20),
-                            new Command("SENS:VOLT:AC:BAND 200", "ФВЧ 3 Гц",200),
+                new Command("SENS:VOLT:AC:BAND 3", "ФВЧ 3 Гц", 3),
+                new Command("SENS:VOLT:AC:BAND 20", "ФВЧ 3 Гц", 20),
+                new Command("SENS:VOLT:AC:BAND 200", "ФВЧ 3 Гц", 200)
             };
+        }
 
-        }
-        public ICommand[] Filters
-        {
-            get; protected set;
-        }
+        #region Methods
+
         /// <summary>
         /// Устанавливает диапазон фильтра взависимости от значения.
         /// </summary>
@@ -730,9 +828,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             val *= unitMultiplier.GetDoubleValue();
             var res = Filters.FirstOrDefault(q => q.Value >= val);
 
-            if(res == null)
+            if (res == null)
             {
-                Logger.Info($@"Входное знаечние меньше допустимого,установлен минимальная полоса.");
+                Logger.Info(@"Входное знаечние меньше допустимого,установлен минимальная полоса.");
                 res = Filters.First(q => Equals(q.Value, Filters.Select(p => p.Value).Min()));
             }
 
@@ -741,12 +839,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             return _multMain;
         }
 
-
+        #endregion
     }
+
     public class MDc
     {
-
-        #region  Fields
+        #region Fields
 
         private MultMain _multMain;
 
@@ -754,10 +852,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Property
 
-        public DcVoltage Voltage
-        {
-            get;
-        }
+        public Current Current { get; }
+
+        public DcVoltage Voltage { get; }
 
         #endregion
 
@@ -767,18 +864,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             Current = new Current(multMain);
             Voltage = new DcVoltage(multMain);
         }
-
-   
-        public Current Current
-        {
-            get;
-        }
-      
     }
+
     public class DcVoltage
     {
-
-        #region  Fields
+        #region Fields
 
         private MultMain _multMain;
 
@@ -786,10 +876,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Property
 
-        public DcvRange Range
-        {
-            get;
-        }
+        public DcvRange Range { get; }
 
         #endregion
 
@@ -798,84 +885,82 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             _multMain = multMain;
             Range = new DcvRange(multMain);
         }
-
-
     }
+
     /// <summary>
     /// Определяет предел
     /// </summary>
     public class DcvRange
     {
-        public ICommand[] Ranges
-        {
-            get; protected internal set;
-        }
-
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        #region  Fields
-
-        private readonly MultMain _multMain;
-
-        #endregion
-
-        public DcvRange(MultMain multMain)
-        {
-            Ranges = new ICommand[]{
-                            new Command("CONF:VOLT:DC AUTO", "Автоматичсекий выбор предела", 0),
-                            new Command("CONF:VOLT:DC 100 MV", "100 мВ", 1E-3),
-                            new Command("CONF:VOLT:DC 1 V", "1 В", 1),
-                            new Command("CONF:VOLT:DC 10 V", "10 В", 10),
-                            new Command("CONF:VOLT:DC 100 V", "100 В", 100),
-                            new Command("CONF:VOLT:DC 1000 V", "1000 В", 1000),   };
-            _multMain = multMain;
-        }
-
-        #region Methods
         public enum ERanges
         {
             /// <summary>
             /// Команда автоматического выбора придела
             /// </summary>
-            [StringValue("CONF:VOLT:DC AUTO")]
-            [DoubleValue(0)]
+            [StringValue("CONF:VOLT:DC AUTO")] [DoubleValue(0)]
             Auto,
 
             /// <summary>
             /// Предел 100 мВ
             /// </summary>
-            [StringValue("CONF:VOLT:DC 100 MV")]
-            [DoubleValue(0.1)]
+            [StringValue("CONF:VOLT:DC 100 MV")] [DoubleValue(0.1)]
             Mv100,
 
             /// <summary>
             /// Предел 1 В
             /// </summary>
-            [StringValue("CONF:VOLT:DC 1")]
-            [DoubleValue(1)]
+            [StringValue("CONF:VOLT:DC 1")] [DoubleValue(1)]
             V1,
 
             /// <summary>
             /// Предел 10 В
             /// </summary>
-            [StringValue("CONF:VOLT:DC 10")]
-            [DoubleValue(10)]
+            [StringValue("CONF:VOLT:DC 10")] [DoubleValue(10)]
             V10,
 
             /// <summary>
             /// Предел 100 В
             /// </summary>
-            [StringValue("CONF:VOLT:DC 100")]
-            [DoubleValue(100)]
+            [StringValue("CONF:VOLT:DC 100")] [DoubleValue(100)]
             V100,
 
             /// <summary>
             /// Предел 1000 В
             /// </summary>
-            [StringValue("CONF:VOLT:DC 1000")]
-            [DoubleValue(1000)]
+            [StringValue("CONF:VOLT:DC 1000")] [DoubleValue(1000)]
             V1000
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
+        private readonly MultMain _multMain;
+
+        #endregion
+
+        #region Property
+
+        public ICommand[] Ranges { get; protected internal set; }
+
+        #endregion
+
+        public DcvRange(MultMain multMain)
+        {
+            Ranges = new ICommand[]
+            {
+                new Command("CONF:VOLT:DC AUTO", "Автоматичсекий выбор предела", 0),
+                new Command("CONF:VOLT:DC 100 MV", "100 мВ", 1E-3),
+                new Command("CONF:VOLT:DC 1 V", "1 В", 1),
+                new Command("CONF:VOLT:DC 10 V", "10 В", 10),
+                new Command("CONF:VOLT:DC 100 V", "100 В", 100),
+                new Command("CONF:VOLT:DC 1000 V", "1000 В", 1000)
+            };
+            _multMain = multMain;
+        }
+
+        #region Methods
+
         /// <summary>
         /// Устанавливает диапазон взависимости от значения.
         /// </summary>
@@ -885,12 +970,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public MultMain Set(double value, UnitMultiplier unitMultiplier = UnitMultiplier.None)
         {
             var val = Math.Abs(value);
-             val *= unitMultiplier.GetDoubleValue();
-            var res = Ranges.OrderBy(o=>o.Value).FirstOrDefault(q => q.Value <= val);
+            val *= unitMultiplier.GetDoubleValue();
+            var res = Ranges.OrderBy(o => o.Value).FirstOrDefault(q => q.Value <= val);
 
-            if(res == null)
+            if (res == null)
             {
-                Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                Logger.Info(@"Входное знаечние больше допустимого,установлен максимальный предел.");
                 res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
             }
 
@@ -907,9 +992,10 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #endregion
     }
+
     public class Current
     {
-        #region  Fields
+        #region Fields
 
         private MultMain _multMain;
 
@@ -917,10 +1003,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Property
 
-        public DcaRange Range
-        {
-            get; protected internal set;
-        }
+        public DcaRange Range { get; protected internal set; }
 
         #endregion
 
@@ -929,15 +1012,42 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             _multMain = multMain;
             Range = new DcaRange(multMain);
         }
-        
     }
+
     /// <summary>
-        /// Определяет предел
-        /// </summary>
-        public class DcaRange
+    /// Определяет предел
+    /// </summary>
+    public class DcaRange
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
         private readonly MultMain _multMain;
+
+        #endregion
+
+        #region Property
+
+        public ICommand[] Ranges { get; protected set; }
+
+        #endregion
+
+        public DcaRange(MultMain multMain)
+        {
+            _multMain = multMain;
+            Ranges = new ICommand[]
+            {
+                new Command("CONF:CURR:DC:RANG AUTO ON", "Автоматичсекий выбор предела", 0),
+                new Command("CONF:CURR:DC 10 UA", "10 мкА", 10E-6),
+                new Command("CONF:CURR:DC 100 MA", "100 мА", 100E-3),
+                new Command("CONF:CURR:DC 10 MA", "10 мА", 10E-3),
+                new Command("CONF:CURR:DC 1 MA", "1 мА", 1E-3),
+                new Command("CONF:CURR:DC 1 A", "1 А", 1),
+                new Command("CONF:CURR:DC 3 A", "3 А", 3)
+            };
+            _multMain = multMain;
+        }
 
         #region Methods
 
@@ -953,9 +1063,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             val *= unitMultiplier.GetDoubleValue();
             var res = Ranges.FirstOrDefault(q => q.Value <= val);
 
-            if(res == null)
+            if (res == null)
             {
-                Logger.Info($@"Входное знаечние больше допустимого,установлен максимальный предел.");
+                Logger.Info(@"Входное знаечние больше допустимого,установлен максимальный предел.");
                 res = Ranges.First(q => Equals(q.Value, Ranges.Select(p => p.Value).Max()));
             }
 
@@ -964,26 +1074,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             return _multMain;
         }
 
-
-
         #endregion
-        public DcaRange(MultMain multMain)
-        {
-            this._multMain = multMain;
-            Ranges = new ICommand[]{
-                            new Command("CONF:CURR:DC:RANG AUTO ON", "Автоматичсекий выбор предела", 0),
-                            new Command("CONF:CURR:DC 10 UA", "10 мкА", 10E-6),
-                            new Command("CONF:CURR:DC 100 MA", "100 мА", 100E-3),
-                            new Command("CONF:CURR:DC 10 MA", "10 мА", 10E-3),
-                            new Command("CONF:CURR:DC 1 MA", "1 мА", 1E-3),
-                            new Command("CONF:CURR:DC 1 A","1 А", 1),
-                            new Command("CONF:CURR:DC 3 A","3 А", 3)  };
-            _multMain = multMain;
-        }
-
-        public ICommand[] Ranges
-        {
-            get; protected set;
-        }
     }
 }
