@@ -1,49 +1,25 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 {
+    public enum E364xChanels
+    {
+        OUTP1,
+        OUTP2
+    }
+
+    public enum E364xRanges
+    {
+        LOW,
+        HIGH
+    }
+
     public abstract class E364xA : IeeeBase
     {
-        public enum Chanel
-        {
-            OUTP1,
-            OUTP2
-        }
-
-        private Chanel _chanel;
-
-        public Chanel ActiveChanel
-        {
-            get
-            {
-                return _chanel;
-            }
-            set
-            {
-                _chanel = value;
-                WriteLine($"inst {_chanel.ToString()}");
-            }
-        }
-
-
-
-        /// <summary>
-        /// Пределы изменения напряжения и тока (зависят от модели прибора).
-        /// </summary>
-        public MeasPoint<Voltage,Current>[] Ranges { get; protected set; }
-        /// <summary>
-        /// Текущий предел источника.
-        /// </summary>
-        private MeasPoint<Voltage, Current> range;
-
-
         public enum TriggerSource
         {
             BUS,
@@ -52,11 +28,43 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        #region Fields
+
+        private E364xChanels _e364XChanels;
+
+        /// <summary>
+        /// Текущий предел источника.
+        /// </summary>
+        private MeasPoint<Voltage, Current> range;
+
+        #endregion
+
         #region Property
+
+        public E364xChanels ActiveE364XChanels
+        {
+            get => _e364XChanels;
+            set
+            {
+                if (!Enum.IsDefined(typeof(E364xChanels), value))
+                {
+                    _e364XChanels = E364xChanels.OUTP1;
+                }
+                _e364XChanels = value;
+                WriteLine($"inst {_e364XChanels.ToString()}");
+            }
+        }
 
         public CURRent CURR { get; }
         public MEASure MEAS { get; }
         public Output OUT { get; }
+        public E364xChanels[] outputs { get; protected set; }
+
+        /// <summary>
+        /// Пределы изменения напряжения и тока (зависят от модели прибора).
+        /// </summary>
+        public  MeasPoint<Voltage, Current>[] Ranges { get; protected set; }
+
         public TRIGger TRIG { get; }
         public VOLTage VOLT { get; }
 
@@ -74,10 +82,10 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
         #region Methods
 
-        public Chanel GetActiveChanel()
+        public E364xChanels GetActiveChanel()
         {
             var answer = QueryLine("inst?");
-            foreach (Chanel chanel in Enum.GetValues(typeof(Chanel)))
+            foreach (E364xChanels chanel in Enum.GetValues(typeof(E364xChanels)))
                 if (chanel.ToString().Equals(answer))
                     return chanel;
 
@@ -87,6 +95,81 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         }
 
        
+
+        public MeasPoint<Current> GetCurrentLevel()
+        {
+            var answer = QueryLine("CURRent:AMPLitude?");
+            var numb = (decimal) StrToDouble(answer);
+            return new MeasPoint<Current>(numb);
+        }
+
+        public MeasPoint<Current> GetMeasureCurrent()
+        {
+            return MEAS.GetMeasureCurrent();
+        }
+
+        public MeasPoint<Voltage> GetMeasureVoltage()
+        {
+            return MEAS.GetMeasureVoltage();
+        }
+
+        public MeasPoint<Voltage, Current> GetRange()
+        {
+            return range;
+        }
+
+        public MeasPoint<Voltage> GetVoltageLevel()
+        {
+            var answer = QueryLine("VOLTage:AMPLitude?");
+            var numb = (decimal) StrToDouble(answer);
+            return new MeasPoint<Voltage>(numb);
+        }
+
+        public MeasPoint<Voltage> GetVoltageRange()
+        {
+            var answer = QueryLine("VOLTage:RANGe?");
+            var regex = new Regex(@"\d+", RegexOptions.IgnoreCase);
+            var match = regex.Match(answer);
+            decimal numb;
+            decimal.TryParse(match.Value, out numb);
+            return new MeasPoint<Voltage>(numb);
+        }
+
+        public void OutputOff()
+        {
+            OUT.OutputOff();
+        }
+
+        public void OutputOn()
+        {
+            OUT.OutputOn();
+        }
+
+        public void SetCurrentLevel(MeasPoint<Current> inPoint)
+        {
+            CURR.SetValue(inPoint);
+        }
+
+        public void SetMaxCurrentLevel()
+        {
+            WriteLine("CURRent:AMPLitude MAX");
+        }
+
+        public void SetMaxVoltageLevel()
+        {
+            WriteLine("VOLTage:AMPLitude MAX");
+        }
+
+        public void SetRange(E364xRanges inRange)
+        {
+            WriteLine($"VOLTage:RANGe {inRange}");
+            range = inRange== E364xRanges.LOW? Ranges[0]: Ranges[1];
+        }
+
+        public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
+        {
+            VOLT.SetValue(inPoint);
+        }
 
         private MeasPoint<IPhysicalQuantity>
             LocalMeasPointRound<IPhysicalQuantity>(MeasPoint<IPhysicalQuantity> inPoint)
@@ -115,103 +198,6 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         }
 
         #endregion
-
-
-       
-
-        public void SetRange(MeasPoint<Voltage, Current> inRange)
-        {
-            WriteLine($"VOLTage:RANGe P{inRange.MainPhysicalQuantity.Value}V");
-
-            MeasPoint<Voltage> volt = new MeasPoint<Voltage>();
-            volt.MainPhysicalQuantity = inRange.MainPhysicalQuantity;
-            SetVoltageLevel(volt);
-
-            MeasPoint<Current> current = new MeasPoint<Current>();
-            current.MainPhysicalQuantity = inRange.AdditionalPhysicalQuantity;
-            SetCurrentLevel(current);
-            
-            range = inRange;
-        }
-
-        public MeasPoint<Voltage, Current> GetRange()
-        {
-            return range;
-        }
-
-        public MeasPoint<Voltage, Current>[] GetAllRanges()
-        {
-            return Ranges;
-        }
-
-        public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
-        {
-            VOLT.SetValue(inPoint);
-        }
-
-        public void SetMaxVoltageLevel()
-        {
-            WriteLine("VOLTage:AMPLitude MAX");
-        }
-
-        public MeasPoint<Voltage> GetVoltageLevel()
-        {
-            var answer = QueryLine("VOLTage:AMPLitude?");
-            var numb = (decimal) StrToDouble(answer);
-            return new MeasPoint<Voltage>(numb);
-        }
-
-        
-        public void SetCurrentLevel(MeasPoint<Current> inPoint)
-        {
-            CURR.SetValue(inPoint);
-        }
-
-        public void SetMaxCurrentLevel()
-        {
-            WriteLine("CURRent:AMPLitude MAX");
-        }
-
-        public MeasPoint<Current> GetCurrentLevel()
-        {
-            var answer = QueryLine("CURRent:AMPLitude?");
-            var numb = (decimal) StrToDouble(answer);
-            return new MeasPoint<Current>(numb);
-        }
-
-        
-
-        public void OutputOn()
-        {
-            OUT.OutputOn();
-        }
-
-        public void OutputOff()
-        {
-            OUT.OutputOff();
-        }
-
-       
-
-        public MeasPoint<Voltage> GetVoltageRange()
-        {
-            var answer = QueryLine("VOLTage:RANGe?");
-            var regex = new Regex(@"\d+", RegexOptions.IgnoreCase);
-            var match = regex.Match(answer);
-            decimal numb;
-            decimal.TryParse(match.Value, out numb);
-            return new MeasPoint<Voltage>(numb);
-        }
-
-        public MeasPoint<Voltage> GetMeasureVoltage()
-        {
-            return MEAS.GetMeasureVoltage();
-        }
-
-        public MeasPoint<Current> GetMeasureCurrent()
-        {
-            return MEAS.GetMeasureCurrent();
-        }
 
         public class CURRent
         {
@@ -265,8 +251,6 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
 
             #region Methods
 
-            
-
             public MeasPoint<Voltage> GetValue()
             {
                 var answer = _powerSupply.QueryLine($"{ComandtoSetValue}?");
@@ -274,8 +258,6 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
                 var returnPoint = new MeasPoint<Voltage>(numAnswer);
                 return returnPoint;
             }
-
-           
 
             public E364xA SetValue(MeasPoint<Voltage> inPoint)
             {
@@ -426,16 +408,143 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
         }
     }
 
-    public class E3648A : E364xA
+    public class E3640A : E364xA
     {
-        public E3648A()
+        public E3640A()
         {
+            UserType = "E3640A";
+            outputs = new[] {E364xChanels.OUTP1};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(8, 3),
+                new MeasPoint<Voltage, Current>(20M, 1.5M)
+            };
+        }
+    }
+
+    public class E3641A : E364xA
+    {
+        public E3641A()
+        {
+            UserType = "E3641A";
+            outputs = new[] {E364xChanels.OUTP1};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(35, 0.8M),
+                new MeasPoint<Voltage, Current>(60M, 0.5M)
+            };
+        }
+    }
+
+    public class E3642A : E364xA
+    {
+        public E3642A()
+        {
+            UserType = "E3642A";
+            outputs = new[] {E364xChanels.OUTP1};
             Ranges = new[]
             {
                 new MeasPoint<Voltage, Current>(8, 5),
                 new MeasPoint<Voltage, Current>(20M, 2.5M)
             };
-            
+        }
+    }
+
+    public class E3643A : E364xA
+    {
+        public E3643A()
+        {
+            UserType = "E3643A";
+            outputs = new[] {E364xChanels.OUTP1};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(35, 1.4M),
+                new MeasPoint<Voltage, Current>(60M, 0.8M)
+            };
+        }
+    }
+
+    public class E3644A : E364xA
+    {
+        public E3644A()
+        {
+            UserType = "E3644A";
+            outputs = new[] {E364xChanels.OUTP1};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(8, 8),
+                new MeasPoint<Voltage, Current>(20M, 4M)
+            };
+        }
+    }
+
+    public class E3645A : E364xA
+    {
+        public E3645A()
+        {
+            UserType = "E3645A";
+            outputs = new[] {E364xChanels.OUTP1};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(35, 2.2M),
+                new MeasPoint<Voltage, Current>(60M, 1.3M)
+            };
+        }
+    }
+
+    public class E3646A : E364xA
+    {
+        public E3646A()
+        {
+            UserType = "E3646A";
+            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(8, 3),
+                new MeasPoint<Voltage, Current>(20M, 1.5M)
+            };
+        }
+    }
+
+    public class E3647A : E364xA
+    {
+        public E3647A()
+        {
+            UserType = "E3647A";
+            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(35, 0.8M),
+                new MeasPoint<Voltage, Current>(60M, 0.5M)
+            };
+        }
+    }
+
+    public class E3648A : E364xA
+    {
+        public E3648A()
+        {
+            UserType = "E3648A";
+            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(8, 5),
+                new MeasPoint<Voltage, Current>(20M, 2.5M)
+            };
+        }
+    }
+
+    public class E3649A : E364xA
+    {
+        public E3649A()
+        {
+            UserType = this.GetType().ToString();
+            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
+            Ranges = new[]
+            {
+                new MeasPoint<Voltage, Current>(35, 1.4M),
+                new MeasPoint<Voltage, Current>(60M, 0.8M)
+            };
         }
     }
 }

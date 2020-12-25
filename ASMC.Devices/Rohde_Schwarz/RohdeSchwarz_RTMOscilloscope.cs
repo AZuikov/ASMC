@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ASMC.Devices.Rohde_Schwarz
 {
-    public abstract class RohdeSchwarz_RTMOscilloscope : IeeeBase, IOscilloscope, IOscillMeasure
+    public abstract class RohdeSchwarz_RTMOscilloscope : IeeeBase, IOscilloscope, IOscillBaseMeasure
     {
         public IOscillChanel[] Chanels
         {
@@ -121,7 +121,7 @@ namespace ASMC.Devices.Rohde_Schwarz
         }
 
         public MeasParam[] measParams = {
-            new MeasParam("FREQuency", "",1,typeof(Frequency)),
+            new MeasParam("FREQuency", "Измерение частоты",1,typeof(Frequency)),
             new MeasParam("PERiod", "", 1,typeof(Time)),
             new MeasParam("PEAK", "", 1, typeof(Voltage)),
             new MeasParam("UPEakvalue", "", 1,typeof(Voltage)),
@@ -164,10 +164,12 @@ namespace ASMC.Devices.Rohde_Schwarz
            string answer = inChanel.Device.QueryLine($"MEASurement1:RESult:ACTual? {inMeasParam}");
            if (answer.Equals("NAN")) return null;
            decimal answerNumb = (decimal)StrToDouble(answer);
-           var a = inMeasParam.Type;
+           
            
            return null;
         }
+
+   
     }
 
     public class RTM2054 : RohdeSchwarz_RTMOscilloscope

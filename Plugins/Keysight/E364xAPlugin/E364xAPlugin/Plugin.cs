@@ -60,15 +60,20 @@ namespace E364xAPlugin
                 },
                 new Device
                 {
-                    Devices = new IDeviceBase[]{ new RTM2054()}, Description = "Цифровой осциллограф"
-                }, 
+                    Devices = new IDeviceBase[] {new RTM2054()}, Description = "Цифровой осциллограф"
+                }
             };
 
             TestDevices = new IDeviceUi[]
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[] {new E3648A()}, Description = "Мера напряжения и тока"
+                    Devices = new IDeviceBase[]
+                    {
+                        new E3640A(), new E3641A(), new E3642A(), new E3643A(), new E3644A(), new E3645A(),
+                        new E3646A(), new E3647A(), new E3648A(), new E3649A()
+                    },
+                    Description = "Мера напряжения и тока"
                 }
             };
             DocumentName = "E364xA_protocol";
@@ -77,12 +82,14 @@ namespace E364xAPlugin
             {
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
-                new Oper3UnstableVoltageLoadChange(this, E364xA.Chanel.OUTP1),
-                new Oper4AcVoltChange(this, E364xA.Chanel.OUTP1),
-                new Oper5VoltageTransientDuration(this, E364xA.Chanel.OUTP1),
-                new Oper6UnstableVoltageOnTime(this, E364xA.Chanel.OUTP1), 
-
-
+                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.HIGH)
             };
         }
 
@@ -235,7 +242,9 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanel;
+        private readonly E364xChanels _chanel;
+        private  MeasPoint<Voltage, Current> _voltRange;
+        private readonly E364xRanges _voltRangeMode;
 
         #endregion
 
@@ -246,11 +255,16 @@ namespace E364xAPlugin
 
         #endregion
 
-        public Oper3UnstableVoltageLoadChange(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) :
+        public Oper3UnstableVoltageLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel,
+            E364xRanges inVoltRange) :
             base(userItemOperation)
         {
             _chanel = inChanel;
-            Name = $"Определение нестабильности выходного напряжения \nот изменения нагрузки (канал {_chanel})";
+            
+            _voltRangeMode = inVoltRange;
+            
+            Name =
+                $"Определение нестабильности выходного напряжения от изменения нагрузки {_voltRangeMode} (канал {_chanel})";
         }
 
         #region Methods
@@ -306,17 +320,28 @@ namespace E364xAPlugin
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
             if (powerSupply == null || ElectonicLoad == null) return;
-            ((IeeeBase) powerSupply).StringConnection = GetStringConnect((IProtocolStringLine) powerSupply);
+            powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
-            foreach (var rangePowerSupply in powerSupply.GetAllRanges())
+            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+
+            foreach (var rangePowerSupply in powerSupply.Ranges)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                ;
+
                 operation.InitWork = async () =>
                 {
-                    powerSupply.ActiveChanel = _chanel;
-                    powerSupply.SetRange(rangePowerSupply);
+                    try
+                    {
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+
+                    powerSupply.ActiveE364XChanels = _chanel;
+                    powerSupply.SetRange(_voltRangeMode);
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
 
@@ -357,7 +382,8 @@ namespace E364xAPlugin
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
                             var resultError = new MeasPoint<Voltage>(0.0001M * U1
-                                                                              .MainPhysicalQuantity.GetNoramalizeValueToSi() +
+                                                                              .MainPhysicalQuantity
+                                                                              .GetNoramalizeValueToSi() +
                                                                      0.003M);
                             resultError.Round(4);
                             return resultError;
@@ -418,7 +444,9 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanel;
+        private readonly E364xChanels _chanel;
+        private  MeasPoint<Voltage, Current> _voltRange;
+        private readonly E364xRanges _voltRangeMode;
 
         #endregion
 
@@ -429,11 +457,14 @@ namespace E364xAPlugin
 
         #endregion
 
-        public Oper4AcVoltChange(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) : base(userItemOperation)
+        public Oper4AcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel, E364xRanges inVoltRange) :
+            base(userItemOperation)
         {
             _chanel = inChanel;
+           
+            _voltRangeMode = inVoltRange;
             Name =
-                $"Определение нестабильности выходного напряжения \nот изменения напряжения питания (канал {_chanel})";
+                $"Определение нестабильности выходного напряжения от изменения напряжения питания {_voltRangeMode} (канал {_chanel})";
         }
 
         #region Methods
@@ -489,30 +520,41 @@ namespace E364xAPlugin
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
             if (powerSupply == null || ElectonicLoad == null) return;
-            ((IeeeBase) powerSupply).StringConnection = GetStringConnect((IProtocolStringLine) powerSupply);
+            powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
-            foreach (var rangePowerSupply in powerSupply.GetAllRanges())
+            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            foreach (var rangePowerSupply in powerSupply.Ranges)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 ;
                 operation.InitWork = async () =>
                 {
-                    powerSupply.ActiveChanel = _chanel;
-                    powerSupply.SetRange(rangePowerSupply);
+                    try
+                    {
+                        powerSupply.ActiveE364XChanels = _chanel;
+                        powerSupply.SetRange(_voltRangeMode);
 
-                    operation.Comment = powerSupply.GetVoltageRange().Description;
-                    powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
-                    powerSupply.SetCurrentLevel(new MeasPoint<Current>(rangePowerSupply.AdditionalPhysicalQuantity));
-                    // расчитаем идеальное значение для электронной нагрузки
-                    var resistToLoad =
-                        new MeasPoint<Resistance>(rangePowerSupply.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                  rangePowerSupply.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                    resistToLoad.Round(3);
+                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
+                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(rangePowerSupply
+                                                                              .AdditionalPhysicalQuantity));
+                        // расчитаем идеальное значение для электронной нагрузки
+                        var resistToLoad =
+                            new MeasPoint<Resistance>(rangePowerSupply.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                      rangePowerSupply
+                                                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                        resistToLoad.Round(3);
 
-                    ElectonicLoad.SetThisModuleAsWorking();
-                    ElectonicLoad.SetResistanceMode();
-                    ElectonicLoad.SetResistanceLevel(resistToLoad);
+                        ElectonicLoad.SetThisModuleAsWorking();
+                        ElectonicLoad.SetResistanceMode();
+                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
                 };
                 operation.BodyWorkAsync = () =>
                 {
@@ -536,7 +578,9 @@ namespace E364xAPlugin
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
-                            var resultError = new MeasPoint<Voltage>(0.0001M * U1.MainPhysicalQuantity.GetNoramalizeValueToSi() + 0.003M);
+                            var resultError =
+                                new MeasPoint<Voltage>(0.0001M * U1.MainPhysicalQuantity.GetNoramalizeValueToSi() +
+                                                       0.003M);
                             resultError.Round(4);
                             return resultError;
                         };
@@ -596,22 +640,32 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanel;
+        private readonly E364xChanels _chanel;
+        private  MeasPoint<Voltage, Current> _voltRange;
+        private readonly E364xRanges _voltRangeMode;
 
         #endregion
 
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
+        protected IOscilloscope Oscill { get; set; }
         protected E364xA powerSupply { get; set; }
-        protected IOscilloscope Oscill {get; set;} 
 
         #endregion
-        public Oper5VoltageTransientDuration(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) : base(userItemOperation)
+
+        public Oper5VoltageTransientDuration(IUserItemOperation userItemOperation, E364xChanels inChanel,
+            E364xRanges inVoltRange) :
+            base(userItemOperation)
         {
             _chanel = inChanel;
-            Name = $"Определение  времени переходного\nпроцесса при изменении нагрузки (канал {_chanel})";
+            
+            _voltRangeMode = inVoltRange;
+            Name =
+                $"Определение  времени переходного процесса при изменении нагрузки {_voltRangeMode} (канал {_chanel})";
         }
+
+        #region Methods
 
         protected override string GetReportTableName()
         {
@@ -628,15 +682,31 @@ namespace E364xAPlugin
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
             if (powerSupply == null || ElectonicLoad == null) return;
-            ((IeeeBase)powerSupply).StringConnection = GetStringConnect((IProtocolStringLine)powerSupply);
-            ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
+            powerSupply.StringConnection = GetStringConnect(powerSupply);
+            ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
-            foreach (var rangePowerSupply in powerSupply.GetAllRanges())
-            {
+            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            foreach (var rangePowerSupply in powerSupply.Ranges)
+                try
+                {
+                    powerSupply.ActiveE364XChanels = _chanel;
+                    powerSupply.SetRange(_voltRangeMode);
 
-            }
-
+                    var ResistToLoad =
+                        new MeasPoint<Resistance>(2 * (rangePowerSupply.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                       rangePowerSupply
+                                                          .AdditionalPhysicalQuantity.GetNoramalizeValueToSi()));
+                    ElectonicLoad.SetResistanceMode();
+                    ElectonicLoad.SetResistanceLevel(ResistToLoad);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                    throw;
+                }
         }
+
+        #endregion
     }
 
     public class Oper6UnstableVoltageOnTime : ParagraphBase<MeasPoint<Voltage>>
@@ -645,7 +715,9 @@ namespace E364xAPlugin
 
         #region Fields
 
-        private readonly E364xA.Chanel _chanel;
+        private readonly E364xChanels _chanel;
+        private  MeasPoint<Voltage, Current> _voltRange;
+        private readonly E364xRanges _voltRangeMode;
 
         #endregion
 
@@ -656,11 +728,14 @@ namespace E364xAPlugin
 
         #endregion
 
-        public Oper6UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xA.Chanel inChanel) :
+        public Oper6UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
+            E364xRanges inVoltRange) :
             base(userItemOperation)
         {
             _chanel = inChanel;
-            Name = $"Определение величины дрейфа выходного напряжения (канал {_chanel})";
+            
+            _voltRangeMode = inVoltRange;
+            Name = $"Определение величины дрейфа выходного напряжения {_voltRangeMode} (канал {_chanel})";
         }
 
         #region Methods
@@ -716,17 +791,18 @@ namespace E364xAPlugin
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
             if (powerSupply == null || ElectonicLoad == null) return;
-            ((IeeeBase) powerSupply).StringConnection = GetStringConnect((IProtocolStringLine) powerSupply);
+            powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
-            foreach (var rangePowerSupply in powerSupply.GetAllRanges())
+            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            foreach (var rangePowerSupply in powerSupply.Ranges)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                ;
+
                 operation.InitWork = async () =>
                 {
-                    powerSupply.ActiveChanel = _chanel;
-                    powerSupply.SetRange(rangePowerSupply);
+                    powerSupply.ActiveE364XChanels = _chanel;
+                    powerSupply.SetRange(_voltRangeMode);
 
                     operation.Comment = powerSupply.GetVoltageRange().Description;
                     powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
@@ -776,13 +852,190 @@ namespace E364xAPlugin
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
                             var resultError = new MeasPoint<Voltage>(0.0002M * U1
-                                                                              .MainPhysicalQuantity.GetNoramalizeValueToSi() +
+                                                                              .MainPhysicalQuantity
+                                                                              .GetNoramalizeValueToSi() +
                                                                      0.003M);
                             resultError.Round(4);
                             return resultError;
                         };
                         operation.UpperTolerance = operation.Expected + operation.Error;
                         operation.LowerTolerance = operation.Expected - operation.Error;
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting < operation.UpperTolerance) &
+                                   (operation.Getting > operation.LowerTolerance);
+                        };
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+                operation.CompliteWork = () =>
+                {
+                    if (operation.IsGood != null && !operation.IsGood())
+                    {
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox()
+                                             .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                                   $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
+                                                   $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
+                                                   $"Допустимое значение погрешности {operation.Error.Description}\n" +
+                                                   $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                                   $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
+                                                   "Повторить измерение этой точки?",
+                                                   "Информация по текущему измерению",
+                                                   MessageButton.YesNo, MessageIcon.Question,
+                                                   MessageResult.Yes);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    if (operation.IsGood == null)
+                        return Task.FromResult(true);
+                    return Task.FromResult(operation.IsGood());
+                };
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
+            }
+        }
+
+        #endregion
+    }
+
+    public class Oper7OutputVoltageSetting : ParagraphBase<MeasPoint<Voltage>>
+    {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
+        private readonly E364xChanels _chanel;
+        private  MeasPoint<Voltage, Current> _voltRange;
+        private readonly E364xRanges _voltRangeMode;
+
+        #endregion
+
+        #region Property
+
+        protected IElectronicLoad ElectonicLoad { get; set; }
+        protected E364xA powerSupply { get; set; }
+        protected MultMain digitalMult { get; set; }
+
+        #endregion
+
+        public Oper7OutputVoltageSetting(IUserItemOperation userItemOperation, E364xChanels inChanel,
+            E364xRanges inVoltRange) :
+            base(userItemOperation)
+        {
+            _chanel = inChanel;
+           _voltRangeMode = inVoltRange;
+            Name =
+                $"Определение погрешности установки выходного напряжения в режиме постоянного напряжения {_voltRangeMode} (канал {_chanel})";
+        }
+
+        #region Methods
+
+        protected override string GetReportTableName()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            ElectonicLoad = UserItemOperation
+                           .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
+                           .SelectedDevice as IElectronicLoad;
+
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
+                                           .SelectedDevice as E364xA;
+
+            digitalMult = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as MultMain != null)
+                                           .SelectedDevice as MultMain;
+
+            if (powerSupply == null || ElectonicLoad == null) return;
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
+
+            //шаг в 20% от номинала напряжения
+            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            
+            var VoltSteps =
+                _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
+            
+            foreach (MeasPoint<Voltage> setPoint in VoltSteps)
+            {
+                digitalMult.StringConnection = GetStringConnect((IProtocolStringLine)digitalMult);
+                powerSupply.StringConnection = GetStringConnect(powerSupply);
+                ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
+                 
+
+                var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+                operation.Expected = setPoint;
+                operation.InitWork = async () =>
+                {
+                    try
+                    {
+                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                        powerSupply.ActiveE364XChanels = _chanel;
+                        
+
+                        operation.ErrorCalculation = (point, measPoint) =>
+                        {
+                            MeasPoint<Voltage> error;
+                            if (_chanel == E364xChanels.OUTP2)
+                                error = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 0.001M +
+                                                               0.025M);
+                            else
+                                error =
+                                    new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 0.005M +
+                                                           0.010M);
+
+                            error.Round(4);
+                            return error;
+                        };
+
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+
+                        powerSupply.SetRange(_voltRangeMode);
+
+                        powerSupply.SetVoltageLevel(setPoint);
+                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
+
+                        var resistToLoad =
+                            new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                      _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                        resistToLoad.Round(3);
+
+                        ElectonicLoad.SetThisModuleAsWorking();
+                        ElectonicLoad.SetResistanceMode();
+                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    try
+                    {
+                        powerSupply.OutputOn();
+                        ElectonicLoad.OutputOn();
+                        Thread.Sleep(1000);
+                        //todo Сделать интерфейс для мультиметров
+                        var MeasVolts = digitalMult.GetMeasureDcVoltage();
+                        
+                        MeasVolts.Round(4);
+                        operation.Getting = MeasVolts;
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
 
                         operation.IsGood = () =>
                         {
