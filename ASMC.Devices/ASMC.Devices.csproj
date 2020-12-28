@@ -107,6 +107,7 @@
     <Compile Include="IEEE\Fluke\Calibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
+    <Compile Include="IEEE\Keysight\Multimeter\BaseDigitalMultimetr.cs" />
     <Compile Include="Interface\ICalibrator.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
@@ -125,7 +126,7 @@
     <Compile Include="IEEE\Keysight\PowerSupplyes\E364Xa\E364xA.cs" />
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XX_IPowerSupply.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
-    <Compile Include="Interface\IDmmAcMeasure.cs" />
+    <Compile Include="Interface\IDmmMeasure.cs" />
     <Compile Include="Port\OWEN\OwenProtocol.cs" />
     <Compile Include="Port\OWEN\TRM202Device.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />

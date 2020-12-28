@@ -57,11 +57,11 @@ namespace E364xAPlugin
                 new Device
                 {
                     Devices = new IDeviceBase[] {new Mult_34401A()}, Description = "Цифровой мультиметр"
-                },
-                new Device
-                {
-                    Devices = new IDeviceBase[] {new RTM2054()}, Description = "Цифровой осциллограф"
-                }
+                }//,
+                //new Device
+                //{
+                //    Devices = new IDeviceBase[] {new RTM2054()}, Description = "Цифровой осциллограф"
+                //}
             };
 
             TestDevices = new IDeviceUi[]
@@ -924,7 +924,7 @@ namespace E364xAPlugin
 
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
-        protected MultMain digitalMult { get; set; }
+        protected IDigitalMultimetrGroupMode digitalMult { get; set; }
 
         #endregion
 
@@ -955,10 +955,10 @@ namespace E364xAPlugin
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
 
-            digitalMult = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as MultMain != null)
-                                           .SelectedDevice as MultMain;
+            digitalMult = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as IDigitalMultimetrGroupMode != null)
+                                           .SelectedDevice as IDigitalMultimetrGroupMode;
 
-            if (powerSupply == null || ElectonicLoad == null) return;
+            if (powerSupply == null || ElectonicLoad == null|| digitalMult == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
             //шаг в 20% от номинала напряжения
@@ -969,7 +969,7 @@ namespace E364xAPlugin
             
             foreach (MeasPoint<Voltage> setPoint in VoltSteps)
             {
-                digitalMult.StringConnection = GetStringConnect((IProtocolStringLine)digitalMult);
+                ((IeeeBase)digitalMult).StringConnection = GetStringConnect((IProtocolStringLine)digitalMult);
                 powerSupply.StringConnection = GetStringConnect(powerSupply);
                 ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
                  
@@ -1030,8 +1030,12 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOn();
                         Thread.Sleep(1000);
                         //todo Сделать интерфейс для мультиметров
-                        var MeasVolts = digitalMult.GetMeasureDcVoltage();
                         
+                        var dcMode =  (IDigitalMultimetrModeDcVoltage)digitalMult.mode.FirstOrDefault(q => q.GetType() == typeof(IDigitalMultimetrModeDcVoltage));
+                        dcMode.DcVoltage.Range = operation.Expected;
+                        var MeasVolts = dcMode.DcVoltage.GetMeasureValue();
+                        
+
                         MeasVolts.Round(4);
                         operation.Getting = MeasVolts;
                         powerSupply.OutputOff();

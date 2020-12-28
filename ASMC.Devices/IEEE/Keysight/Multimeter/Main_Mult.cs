@@ -12,7 +12,8 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public abstract class MultMain : IeeeBase
+    
+    [Obsolete("Устарел. ")]public abstract class MultMain : IeeeBase
     {
         /// <summary>
         /// Запрос о включенных выходах. Ответ FRON - передняя панель,

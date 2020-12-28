@@ -77,7 +77,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
         private MeasureUnits _unit;
 
-        protected PhysicalQuantity()
+        public PhysicalQuantity()
         {
 
         }
