@@ -12,7 +12,7 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public abstract class MultMain : IeeeBase, IDigitalMultimetr
+    public abstract class MultMain : IeeeBase
     {
         /// <summary>
         /// Запрос о включенных выходах. Ответ FRON - передняя панель,
@@ -27,12 +27,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         #region Property
 
         /// <summary>
-        /// Предоставляет доступ к переменноме току.
+        /// Предоставляет доступ к измерению переменного тока, напряжения и частоты.
         /// </summary>
         public MAc Ac { get; }
 
         /// <summary>
-        /// Передоставляет настройки постоянного тока.
+        /// Передоставляет настройки постоянного тока, напряжения, споротивления, ёмкости.
         /// </summary>
         public MDc Dc { get; }
         
@@ -86,90 +86,14 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         }
 
         #endregion
-
-        public MeasPoint<Voltage> GetMeasureDcVoltage()
-        {
-            var numb = GetMeasValue();
-            return new MeasPoint<Voltage>((decimal) numb);
-        }
-
-        public void SetRangeDcVoltage(MeasPoint<Voltage> pointInRange)
-        {
-            Dc.Voltage.Range.Set((double) pointInRange.MainPhysicalQuantity.GetNoramalizeValueToSi());
-        }
-
-        public MeasPoint<Voltage> GetMeasureAcVoltage()
-        {
-            var numb = GetMeasValue();
-            return new MeasPoint<Voltage>((decimal) numb);
-        }
-
-        public void SetRangeAcVoltage(MeasPoint<Voltage> pointInRange)
-        {
-            Ac.Voltage.Range.Set((double) pointInRange.MainPhysicalQuantity.GetNoramalizeValueToSi());
-        }
-
-        public MeasPoint<Data.Model.PhysicalQuantity.Current> GetMeasureDcCurrent()
-        {
-            var numb = GetMeasValue();
-            return new MeasPoint<Data.Model.PhysicalQuantity.Current>((decimal) numb);
-        }
-
-        public void SetRangeDcCurrent(MeasPoint<Data.Model.PhysicalQuantity.Current> pointInRange)
-        {
-            Dc.Current.Range.Set((double) pointInRange.MainPhysicalQuantity.GetNoramalizeValueToSi());
-        }
-
-        public MeasPoint<Data.Model.PhysicalQuantity.Current> GetMeasureAcCurrent()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetRangeAcCurrent(MeasPoint<Data.Model.PhysicalQuantity.Current> pointInRange)
-        {
-            throw new NotImplementedException();
-        }
-
-        public MeasPoint<Data.Model.PhysicalQuantity.Resistance> GetMeasureResistance()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetRangeResistance(MeasPoint<Data.Model.PhysicalQuantity.Resistance> pointInRange)
-        {
-        }
-
-        public MeasPoint<Data.Model.PhysicalQuantity.Resistance> GetMeasureResistance4W()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetRangeResistance4W(MeasPoint<Data.Model.PhysicalQuantity.Resistance> pointInRange)
-        {
-            throw new NotImplementedException();
-        }
-
-        public MeasPoint<Data.Model.PhysicalQuantity.Frequency> GetMeasureFrequency()
-        {
-            throw new NotImplementedException();
-        }
-
-        public MeasPoint<Capacity> GetMeasureCapacity()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetRangeCapacity(MeasPoint<Capacity> pointInRange)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public class Calibr
         {
             #region Methods
 
             /// <summary>
-            /// Установить калибровочное зачение
+            /// Установить калибровочное значение
             /// </summary>
             /// <param name = "value">значение</param>
             /// <param name = "typeCalValue">Тип калибровки</param>
@@ -210,7 +134,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 }
 
                 /// <summary>
-                /// Запросить статус безапасности
+                /// Запросить статус безопасности
                 /// </summary>
                 public static string ChecState = "CAL:SEC:STAT?";
 
@@ -842,7 +766,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         #endregion
     }
 
-    public class MDc
+    public class MDc : IDmmBaseMeasure
     {
         #region Fields
 
