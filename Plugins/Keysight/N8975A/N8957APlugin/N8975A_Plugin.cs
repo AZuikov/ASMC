@@ -53,9 +53,9 @@ namespace N8957APlugin
             DocumentName = "N8975A_8_3_4";
 
             ControlDevices = new IDeviceUi[]
-                {new Device {Devices = new IDeviceBase[] {new E8257D()}, Description = "Генератор сигналов"}};
+                {new Device {Devices = new IDeviceRemote[] {new E8257D()}, Description = "Генератор сигналов"}};
             TestDevices = new IDeviceUi[]
-                {new Device {Devices = new IDeviceBase[] {new N8975A()}, Description = "Анализатор шума"}};
+                {new Device {Devices = new IDeviceRemote[] {new N8975A()}, Description = "Анализатор шума"}};
 
             //Необходимые аксесуары
             Accessories = new[]

@@ -1,4 +1,5 @@
-﻿using AP.Reports.Utils;
+﻿using System;
+using AP.Reports.Utils;
 using AP.Utils.Data;
 
 namespace ASMC.Devices
@@ -43,7 +44,7 @@ namespace ASMC.Devices
     /// <summary>
     /// Описывает комманду для отправки в устройство.
     /// </summary>
-    public class Command : ICommand
+    public class Command : ICommand, IComparable<ICommand>
     {
         public Command(string strCommand, string description, double value)
         {
@@ -60,6 +61,12 @@ namespace ASMC.Devices
 
         /// <inheritdoc />
         public double Value { get; }
+
+        
+        public int CompareTo(ICommand other)
+        {
+            return Value.CompareTo(other.Value);
+        }
     }
     public interface ICommand
     {

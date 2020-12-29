@@ -51,7 +51,7 @@ namespace Plugins.Test
         {
             ControlDevices = new IDeviceUi[]
             {
-                new DeviceInterface {Devices = new IDeviceBase[] {new Ppi()}, Description = "Прибор ППИ"}
+                new DeviceInterface {Devices = new IDeviceRemote[] {new Ppi()}, Description = "Прибор ППИ"}
             };
             var a = new Operation1(this);
             a.Nodes.Add(new Operation2(this));

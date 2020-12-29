@@ -106,7 +106,7 @@ namespace OWEN_TRM202
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[] { new Calibr_9100(), new Calib5522A() },
+                    Devices = new IDeviceRemote[] { new Calibr_9100(), new Calib5522A() },
                     Description = "Многофунциональный калибратор"
                 }
             };
@@ -114,7 +114,7 @@ namespace OWEN_TRM202
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[] {new TRM202DeviceUI()},
+                    Devices = new IDeviceRemote[] {new TRM202DeviceUI()},
                     Description = "измеритель температуры прецизионный"
                 }
             };

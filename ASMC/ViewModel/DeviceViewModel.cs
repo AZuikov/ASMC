@@ -72,7 +72,7 @@ namespace ASMC.ViewModel
             get => _stringConnect;
             set => SetProperty(ref _stringConnect, value, nameof(StringConnect), () =>
             {
-                var device = SelectedDevice as IDeviceBase;
+                var device = SelectedDevice as IDeviceRemote;
                 if (device == null) return;
                 IsConnect = device.IsTestConnect;
             });

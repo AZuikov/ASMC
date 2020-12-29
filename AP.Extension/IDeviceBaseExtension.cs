@@ -17,7 +17,7 @@ namespace AP.Extension
         /// </summary>
         /// <param name="Devise">Устройство, реализующее интерфейс IDeviceBase.</param>
         /// <param name="path">Полный путь к файлу с характеристиками, включая имя и разрешение.</param>
-        public static void FillRangesDevice(this IDeviceBase Devise, string path)
+        public static void FillRangesDevice(this IDeviceRemote Devise, string path)
         {
             GetMember(Devise, Devise.GetType());
 
