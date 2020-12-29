@@ -6,39 +6,59 @@ using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
+using DevExpress.Mvvm.Native;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-   public class BaseDigitalMultimetr: IeeeBase, IDigitalMultimetrGroupMode
+   public class BaseDigitalMultimetr344xx: IeeeBase, IDigitalMultimetr344xx
     {
-        public object[] mode { get; set; }
+        
 
-        public BaseDigitalMultimetr()
+        public BaseDigitalMultimetr344xx()
         {
-            mode = new object[]
-            {
-                new AcMeasureGroup(this),
-                new DcMeasureGroup(this), 
-                new ResistanceGroup(this), 
-            };
+            Resistance = new w4();
         }
 
-        
+
+        public IDigitalMultimetrModeResistance Resistance { get; set; }
+        public IDigitalMultimetrMeasureMode<MeasPoint<Voltage, Frequency>> AcVoltage { get; set; }
     }
 
+   public interface  IDigitalMultimetr344xx : , IProtocolStringLine
+   {
+
+   }
+
+   public class w4: IDigitalMultimetrModeResistance4W, IDigitalMultimetrModeResistance
+    {
+        public IDigitalMultimetrMeasureMode<MeasPoint<Resistance>> Resistance4W { get; set; }
+        public IDigitalMultimetrMeasureMode<MeasPoint<Resistance>> Resistance2W { get; set; }
+    }
     public abstract class MeasureFunction
     {
         protected IeeeBase _device;
 
         public MeasureFunction(IeeeBase inDevice)
         {
+            IDigitalMultimetr344xx dasd;
+            dasd.Resistance;
+                 if(dasd.Resistance is IDigitalMultimetrModeResistance4W s)
+                 {
+                     s.Resistance4W.GetMeasureValue();
+                     
+                 }
+                 else
+                 {
+                     dasd.Resistance.Resistance2W.GetMeasureValue();
+                 }
             _device = inDevice;
         }
 
         public decimal GetActiveMeasuredValue()
         {
             _device.WriteLine("SYST:REM;*CLS;*RST;:TRIG:SOUR BUS");
-            _device.WriteLine("INIT;*TRG");
+            _device.WriteLine("INIT");
+            _device.WriteLine("*TRG");
             string answer = _device.QueryLine("FETCH?");
             decimal numb = (decimal)(HelpDeviceBase.StrToDouble(answer));
             return numb;
@@ -51,6 +71,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public AcMeasureGroup(IeeeBase inDevice)
         {
+            
+            
             AcVoltage = new AcVoltMeas(inDevice);
             AcCurrent = new AcCurrentMeas(inDevice);
         }

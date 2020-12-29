@@ -107,7 +107,7 @@
     <Compile Include="IEEE\Fluke\Calibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
-    <Compile Include="IEEE\Keysight\Multimeter\BaseDigitalMultimetr.cs" />
+    <Compile Include="IEEE\Keysight\Multimeter\BaseDigitalMultimetr344xx.cs" />
     <Compile Include="Interface\ICalibrator.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />

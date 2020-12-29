@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 
-namespace ASMC.Devices.Interface
+namespace ASMC.Devices.Interface.Multimetr.Mode
 {
    
 
-    public interface IDigitalMultimetrMeasureMode<T> 
+    public interface IMeasureMode<T> 
     {
         T Range { get; set; }
 
@@ -27,35 +27,68 @@ namespace ASMC.Devices.Interface
         T GetMeasureValue();
     }
 
-    public interface IDigitalMultimetrGroupMode
+    
+
+    public interface IDc
     {
-        object[] mode { get; set; }
+        IMeasureMode<MeasPoint<Voltage>> DcVoltage { get; set; }
+    }
+    public interface IDcCurrent
+    {
+        IMeasureMode<MeasPoint<Current>> DcCurrent { get; set; }
     }
 
-    public interface IDigitalMultimetrModeDc
-    {
-        IDigitalMultimetrMeasureMode<MeasPoint<Voltage>> DcVoltage { get; set; }
 
-        IDigitalMultimetrMeasureMode<MeasPoint<Current>> DcCurrent { get; set; }
+    public interface IAcVoltage
+    {
+        IMeasureMode<MeasPoint<Voltage, Frequency>> AcVoltage { get; set; }
     }
-
-   
-    public interface IDigitalMultimetrModeAc
+    public interface IAcCurrent
     {
-        IDigitalMultimetrMeasureMode<MeasPoint<Voltage, Frequency>> AcVoltage { get; set; }
-        IDigitalMultimetrMeasureMode<MeasPoint<Current, Frequency>> AcCurrent { get; set; }
+        IMeasureMode<MeasPoint<Current, Frequency>> AcCurrent { get; set; }
 
     }
 
-   
-
-    public interface IDigitalMultimetrModeResistance
+    
+    public interface IResistance: IResistance2W
     {
-        IDigitalMultimetrMeasureMode<MeasPoint<Resistance>> Resistance2W { get; set; }
-        IDigitalMultimetrMeasureMode<MeasPoint<Resistance>> Resistance4W { get; set; }
+
+    }
+    
+    
+    public interface IGroupResistance
+    {
+        IResistance Resistance { get; set; }
+    }
+    public interface IResistance2W
+    {
+        IMeasureMode<MeasPoint<Resistance>> Resistance2W { get; set; }
+    }
+    public interface IResistance4W
+    {
+        IMeasureMode<MeasPoint<Resistance>> Resistance4W { get; set; }
     }
 
-   
+    public interface ICapacity
+    {
+        IMeasureMode<MeasPoint<Capacity>> Capacity { get; set; }
+    }
+
+    public interface IFrequency
+    {
+        IMeasureMode<MeasPoint<Frequency>> Frequency { get; set; }
+    }
+
+    public interface ITime
+    {
+        IMeasureMode<MeasPoint<Time>> Time { get; set; }
+    }
+
+    public interface ITemperature
+    {
+        IMeasureMode<MeasPoint<Temperature>> Temperature { get; set; }
+    }
+
 
 
 }
