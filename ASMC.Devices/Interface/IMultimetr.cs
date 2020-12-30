@@ -19,9 +19,9 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
         /// Получить измеренное значение физической величины с прибора.
         /// </summary>
         /// <returns>Значение измеренной физ. величины.</returns>
-        T Value();
+        T Value { get; }
 
-        
+
 
         #endregion
     }
@@ -49,7 +49,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Voltage, Frequency>> AcVoltage { get; set; }
+        IMeasureMode<MeasPoint<Voltage>> AcVoltage { get; set; }
 
         #endregion
     }
@@ -79,7 +79,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Current, Frequency>> AcCurrent { get; set; }
+        IMeasureMode<MeasPoint<Current>> AcCurrent { get; set; }
 
         #endregion
     }

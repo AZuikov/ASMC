@@ -52,11 +52,11 @@ namespace E364xAPlugin
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[] {new N3303A(), new N3306A()}, Description = "Электронная нагрузка"
+                    Devices = new IDeviceRemote[] {new N3303A(), new N3306A()}, Description = "Электронная нагрузка"
                 },
                 new Device
                 {
-                    Devices = new IDeviceBase[] {new Mult_34401A()}, Description = "Цифровой мультиметр"
+                    Devices = new IDeviceRemote[] {new Mult_34401A()}, Description = "Цифровой мультиметр"
                 }//,
                 //new Device
                 //{
@@ -68,7 +68,7 @@ namespace E364xAPlugin
             {
                 new Device
                 {
-                    Devices = new IDeviceBase[]
+                    Devices = new IDeviceRemote[]
                     {
                         new E3640A(), new E3641A(), new E3642A(), new E3643A(), new E3644A(), new E3645A(),
                         new E3646A(), new E3647A(), new E3648A(), new E3649A()
@@ -924,7 +924,7 @@ namespace E364xAPlugin
 
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
-        protected IDigitalMultimetrGroupMode digitalMult { get; set; }
+        protected IDigitalMultimetr344xx digitalMult { get; set; }
 
         #endregion
 
@@ -955,8 +955,8 @@ namespace E364xAPlugin
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
 
-            digitalMult = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as IDigitalMultimetrGroupMode != null)
-                                           .SelectedDevice as IDigitalMultimetrGroupMode;
+            digitalMult = UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as IDigitalMultimetr344xx != null)
+                                           .SelectedDevice as IDigitalMultimetr344xx;
 
             if (powerSupply == null || ElectonicLoad == null|| digitalMult == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
@@ -1029,15 +1029,12 @@ namespace E364xAPlugin
                         powerSupply.OutputOn();
                         ElectonicLoad.OutputOn();
                         Thread.Sleep(1000);
-                        //todo Сделать интерфейс для мультиметров
-                        
-                        var dcMode =  (IDigitalMultimetrModeDcVoltage)digitalMult.mode.FirstOrDefault(q => q.GetType() == typeof(IDigitalMultimetrModeDcVoltage));
-                        dcMode.DcVoltage.Range = operation.Expected;
-                        var MeasVolts = dcMode.DcVoltage.GetMeasureValue();
-                        
 
+                        digitalMult.DcVoltage.Range = operation.Expected;
+                        MeasPoint<Voltage> MeasVolts = digitalMult.DcVoltage.Value;
                         MeasVolts.Round(4);
                         operation.Getting = MeasVolts;
+                        
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
 
