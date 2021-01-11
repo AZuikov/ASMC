@@ -76,10 +76,10 @@ namespace TDS_BasePlugin
         {
             ControlDevices = new IDeviceUi[]
             {
-                new Device {Devices = new IDeviceBase[] {new Calibr9500B()}, Description = "Калибратор осциллографов"}
+                new Device {Devices = new IDeviceRemote[] {new Calibr9500B()}, Description = "Калибратор осциллографов"}
             };
             TestDevices = new IDeviceUi[]
-                {new Device {Devices = new IDeviceBase[] {new TDS_Oscilloscope()}, Description = "Цифровой осциллограф."}};
+                {new Device {Devices = new IDeviceRemote[] {new TDS_Oscilloscope()}, Description = "Цифровой осциллограф."}};
             Accessories = new[]
             {
                 "Интерфейсный кабель для клибратора (GPIB)"
@@ -362,6 +362,8 @@ namespace TDS_BasePlugin
                         {
                             calibr9500B.StringConnection = GetStringConnect(calibr9500B);
                             someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
+                            someTdsOscilloscope.ResetDevice();
+                            Thread.Sleep(300);
                         });
                     }
                     catch (Exception e)
@@ -590,6 +592,8 @@ namespace TDS_BasePlugin
                         {
                             calibr9500B.StringConnection = GetStringConnect(calibr9500B);
                             someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
+                            someTdsOscilloscope.ResetDevice();
+                            Thread.Sleep(300);
                         });
                     }
                     catch (Exception e)
@@ -856,6 +860,7 @@ namespace TDS_BasePlugin
                             calibr9500B.StringConnection = GetStringConnect(calibr9500B);
                             someTdsOscilloscope.StringConnection = GetStringConnect(someTdsOscilloscope);
                             someTdsOscilloscope.ResetDevice();
+                            Thread.Sleep(300);
                         });
                     }
                     catch (Exception e)

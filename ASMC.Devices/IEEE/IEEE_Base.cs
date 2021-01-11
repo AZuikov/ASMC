@@ -99,7 +99,7 @@ namespace ASMC.Devices.IEEE
                     var MyReEx = @"(com|lpt)\d+";
                     Match portNameMatch;
 
-                    var MyUsbRegEx = @"USB\d+::0x\d+::0x\d+::\w+::INSTR";
+                    var MyUsbRegEx = @"USB\d+::0x\w+::0x\w+::\w+::INSTR";
                     Match usbDeviceMatch;
 
                     var MyGpibRegEx = @"GPIB\d+::\d+::INSTR";

@@ -357,6 +357,11 @@ namespace ASMC.Devices.IEEE.Keysight.ElectronicLoad
 
         public void SetResistanceLevel(MeasPoint<Resistance> inPoint)
         {
+            //todo Установить предел на нагрузке!!!!!!
+            var range =
+                ResistanceLoad.Ranges.FirstOrDefault(q => (decimal)(q.Value) >=
+                                                          inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
+            ResistanceLoad.SetResistanceRange((decimal)(range.Value));
             ResistanceLoad.Set(inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi());
         }
 

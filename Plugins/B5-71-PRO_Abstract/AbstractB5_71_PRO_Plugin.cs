@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using AP.Math;
-using ASMC.Core;
+﻿using AP.Math;
 using ASMC.Core.Model;
-using ASMC.Core.UI;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Devices.IEEE;
@@ -18,7 +9,13 @@ using ASMC.Devices.Port.Profigrupp;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 using NLog;
-using WindowService = ASMC.Core.UI.WindowService;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace B5_71_PRO_Abstract
 {
@@ -26,13 +23,13 @@ namespace B5_71_PRO_Abstract
     /// В этом пространчтве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели
     /// устройства
     /// </summary>
-    public abstract class AbstractB571ProPlugin<T> : Program<T> where T: OperationMetrControlBase
+    public abstract class AbstractB571ProPlugin<T> : Program<T> where T : OperationMetrControlBase
     {
         #region Property
 
         public OperationMetrControlBase AbstraktOperation { get; protected set; }
 
-        #endregion
+        #endregion Property
 
         protected AbstractB571ProPlugin(ServicePack service) : base(service)
         {
@@ -83,7 +80,7 @@ namespace B5_71_PRO_Abstract
             AddresDevice = IeeeBase.AllStringConnect;
         }
 
-        #endregion
+        #endregion Methods
     }
 
     /// <summary>
@@ -99,7 +96,7 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
-/// <inheritdoc />
+        /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[] { "Результат внешнего осмотра" };
@@ -152,8 +149,7 @@ namespace B5_71_PRO_Abstract
             DataRow.Add(operation);
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
     /// <summary>
@@ -162,7 +158,7 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper1Oprobovanie : ParagraphBase<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly decimal[] MyPoint = {0.1M, 0.5M, 1M};
+        private static readonly decimal[] MyPoint = { 0.1M, 0.5M, 1M };
 
         #region Property
 
@@ -170,7 +166,7 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion
+        #endregion Property
 
         protected Oper1Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -181,12 +177,12 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
-      
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[] { "Результат опробования" };
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -234,8 +230,6 @@ namespace B5_71_PRO_Abstract
                             throw new
                                 ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                     });
-
-                    
                 }
                 catch (Exception e)
                 {
@@ -267,7 +261,7 @@ namespace B5_71_PRO_Abstract
 
                         var measVolt = Math.Abs(Load.VoltageLoad.MeasureVolt);
 
-                        operation.IsGood = () => { return Bp.VoltMax / measVolt >=  0.7M; };
+                        operation.IsGood = () => { return Bp.VoltMax / measVolt >= 0.7M; };
 
                         if (!operation.IsGood())
                         {
@@ -288,7 +282,7 @@ namespace B5_71_PRO_Abstract
                         //измеряем напряжение
 
                         var measCurr = Math.Abs(Load.CurrentLoad.MeasureCurrent);
-                        operation.IsGood = () => { return Bp.CurrMax / measCurr >=  0.7M; };
+                        operation.IsGood = () => { return Bp.CurrMax / measCurr >= 0.7M; };
 
                         if (!operation.IsGood())
                         {
@@ -350,8 +344,7 @@ namespace B5_71_PRO_Abstract
             DataRow.Add(operation);
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
     /// <summary>
@@ -362,7 +355,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        private static readonly decimal[] MyPoint = { 0.1M,  0.5M, 1M};
+        private static readonly decimal[] MyPoint = { 0.1M, 0.5M, 1M };
 
         #region Property
 
@@ -370,18 +363,17 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion
+        #endregion Property
 
         protected Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного напряжения";
-           
+
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
-        
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -391,8 +383,9 @@ namespace B5_71_PRO_Abstract
                 "Измеренное значение, В",
                 "Минимальное допустимое значение, В",
                 "Максимальное допустимое значение, В"
-            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -436,7 +429,7 @@ namespace B5_71_PRO_Abstract
                         await Task.Run(() =>
                         {
                             Mult.StringConnection = GetStringConnect(Mult);
-                            
+
                             Load.StringConnection = GetStringConnect(Load);
                             Bp.StringConnection = GetStringConnect(Bp);
 
@@ -476,14 +469,14 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        Mult.Dc.Voltage.Range.Set((double) setPoint);
+                        Mult.Dc.Voltage.Range.Set((double)setPoint);
                         var result = Mult.GetMeasValue();
                         MathStatistics.Round(result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
                         operation.Expected = setPoint;
-                        operation.Getting = (decimal) result;
+                        operation.Getting = (decimal)result;
                         //operation.Error = Bp.tolleranceFormulaVolt(setPoint);
                         operation.ErrorCalculation = (c, b) => ErrorCalculation(setPoint);
                         operation.LowerTolerance = operation.Expected - operation.Error;
@@ -524,7 +517,7 @@ namespace B5_71_PRO_Abstract
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<decimal>) operation.Clone());
+                                : (BasicOperationVerefication<decimal>)operation.Clone());
             }
         }
 
@@ -536,8 +529,7 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
     /// <summary>
@@ -548,7 +540,7 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = { 0.1M, 0.5m, 1};
+        public static readonly decimal[] MyPoint = { 0.1M, 0.5m, 1 };
 
         #region Property
 
@@ -558,39 +550,37 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion
+        #endregion Property
 
         protected Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного напряжения";
-           
+
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
-   
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-
             return new[] { "Измеренное эталонным мультиметром значение, В",
             "Измеренное источником питания значение, В",
             "Минимальное допустимое значение, В",
             "Максимальное допустимое значение, В"
         }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
             return "FillTabBmDcvMeasure";
         }
+
         /// <inheritdoc />
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
-            
-            
 
             foreach (var row in DataRow)
             {
@@ -669,7 +659,7 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        Mult.Dc.Voltage.Range.Set((double) setPoint);
+                        Mult.Dc.Voltage.Range.Set((double)setPoint);
                         var resultMult = Mult.GetMeasValue();
                         var resultBp = Bp.GetMeasureVolt();
 
@@ -678,7 +668,7 @@ namespace B5_71_PRO_Abstract
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
-                        operation.Expected = (decimal) resultMult;
+                        operation.Expected = (decimal)resultMult;
                         operation.Getting = resultBp;
                         operation.ErrorCalculation = ErrorCalculation;
                         operation.LowerTolerance = operation.Expected - operation.Error;
@@ -719,7 +709,7 @@ namespace B5_71_PRO_Abstract
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<decimal>) operation.Clone());
+                                : (BasicOperationVerefication<decimal>)operation.Clone());
             }
         }
 
@@ -731,9 +721,7 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion
-
-        
+        #endregion Methods
     }
 
     /// <summary>
@@ -742,7 +730,7 @@ namespace B5_71_PRO_Abstract
     public class Oper4VoltUnstable : ParagraphBase<decimal>
     {
         //это точки для нагрузки в Омах
-        public static readonly decimal[] ArrСoefVoltUnstable = { 0.1M,  0.5m, 0.9m};
+        public static readonly decimal[] ArrСoefVoltUnstable = { 0.1M, 0.5m, 0.9m };
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -752,25 +740,25 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion
+        #endregion Property
 
         protected Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного напряжения";
-           
+
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
-       
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return  new[] { "Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В",
+            return new[] { "Рассчитанное значение нестабильности (U_МАКС - U_МИН)/2, В",
                 "Допустимое значение, В"
-            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -881,7 +869,7 @@ namespace B5_71_PRO_Abstract
                         // время выдержки
                         Thread.Sleep(1000);
                         // записываем результаты
-                        Mult.Dc.Voltage.Range.Set((double) Bp.VoltMax);
+                        Mult.Dc.Voltage.Range.Set((double)Bp.VoltMax);
                         voltUnstableList.Add((decimal)Mult.GetMeasValue());
                     }
 
@@ -932,7 +920,7 @@ namespace B5_71_PRO_Abstract
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                             ? operation
-                            : (BasicOperationVerefication<decimal>) operation.Clone());
+                            : (BasicOperationVerefication<decimal>)operation.Clone());
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -940,9 +928,7 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceVoltageUnstability;
         }
 
-        #endregion
-
-        
+        #endregion Methods
     }
 
     /// <summary>
@@ -951,20 +937,19 @@ namespace B5_71_PRO_Abstract
     public abstract class Oper5VoltPulsation : ParagraphBase<decimal>
     {
         //это точки для нагрузки в Омах
-        public static readonly decimal[] ArrResistanceVoltUnstable = {(decimal) 20.27M, (decimal) 37.5M, (decimal) 187.5M};
+        public static readonly decimal[] ArrResistanceVoltUnstable = { (decimal)20.27M, (decimal)37.5M, (decimal)187.5M };
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected Oper5VoltPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение уровня пульсаций по напряжению";
-           
+
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
-      
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -972,8 +957,9 @@ namespace B5_71_PRO_Abstract
             {
                 "Измеренное значение пульсаций, мВ",
                 "Допустимое значение пульсаций, мВ"
-            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1040,7 +1026,7 @@ namespace B5_71_PRO_Abstract
                             throw new
                                 ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
-                        var point = Bp.VoltMax / ((decimal) 0.9M * Bp.CurrMax);
+                        var point = Bp.VoltMax / ((decimal)0.9M * Bp.CurrMax);
                         Load.SetWorkingChanel()
                             .SetModeWork(MainN3300.ModeWorks.Resistance)
                             .ResistanceLoad.SetResistanceRange(point)
@@ -1067,7 +1053,7 @@ namespace B5_71_PRO_Abstract
                                            "Указание оператору", MessageButton.OK, MessageIcon.Information,
                                            MessageResult.OK);
 
-                    var windows =  UserItemOperation.ServicePack.FreeWindow();
+                    var windows = UserItemOperation.ServicePack.FreeWindow();
                     var vm = new SelectRangeViewModel();
                     windows.ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
                     windows.Title = "Выбор предела измерения В3-57";
@@ -1078,9 +1064,9 @@ namespace B5_71_PRO_Abstract
                     var a = vm.SelectRange;
 
                     Mult.Dc.Voltage.Range.Set(100);
-                    var voltPulsV357 = (decimal) Mult.GetMeasValue();
+                    var voltPulsV357 = (decimal)Mult.GetMeasValue();
                     voltPulsV357 = voltPulsV357 < 0 ? 0 : voltPulsV357;
-                    voltPulsV357 = MathStatistics.Mapping( voltPulsV357, 0, (decimal) 0.99M, 0,
+                    voltPulsV357 = MathStatistics.Mapping(voltPulsV357, 0, (decimal)0.99M, 0,
                                                           (decimal)a.MainPhysicalQuantity.Value);
                     MathStatistics.Round( voltPulsV357, 0);
 
@@ -1119,19 +1105,15 @@ namespace B5_71_PRO_Abstract
                 if (operation.IsGood == null) return Task.FromResult(false);
                 if (!operation.IsGood())
                 {
-                    
-                        var answer =
-                            UserItemOperation.ServicePack.MessageBox().Show(operation +
-                                                                          $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                          "Повторить измерение этой точки?",
-                                                                          "Информация по текущему измерению",
-                                                                          MessageButton.YesNo, MessageIcon.Question,
-                                                                          MessageResult.Yes);
+                    var answer =
+                        UserItemOperation.ServicePack.MessageBox().Show(operation +
+                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                      "Повторить измерение этой точки?",
+                                                                      "Информация по текущему измерению",
+                                                                      MessageButton.YesNo, MessageIcon.Question,
+                                                                      MessageResult.Yes);
 
-                        if (answer == MessageResult.No) return Task.FromResult(true);
-                    
-
-                   
+                    if (answer == MessageResult.No) return Task.FromResult(true);
                 }
 
                 return Task.FromResult(operation.IsGood());
@@ -1144,14 +1126,13 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceVoltPuls;
         }
 
-        #endregion
+        #endregion Methods
 
         #region Fileds
 
         protected B571Pro Bp { get; set; }
         protected Mult_34401A Mult { get; set; }
         protected MainN3300 Load { get; set; }
-        
 
         #endregion Fileds
     }
@@ -1164,29 +1145,28 @@ namespace B5_71_PRO_Abstract
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = {(decimal) 0.1M, (decimal) 0.5M, 1};
+        public static readonly decimal[] MyPoint = { (decimal)0.1M, (decimal)0.5M, 1 };
 
         #region Property
 
         protected B571Pro Bp { get; set; }
         protected MainN3300 Load { get; set; }
 
-        #endregion
+        #endregion Property
 
         protected Oper6DciOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности установки выходного тока";
-           
+
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
-     
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return  new[]
+            return new[]
             {
                 "Установленное значение тока, А",
                 "Измеренное значение, А",
@@ -1194,6 +1174,7 @@ namespace B5_71_PRO_Abstract
                 "Максимальное допустимое значение, А"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1203,7 +1184,6 @@ namespace B5_71_PRO_Abstract
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
-         
 
             foreach (var row in DataRow)
             {
@@ -1268,7 +1248,7 @@ namespace B5_71_PRO_Abstract
                         Bp.InitDevice();
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.OnOutput();
-                        
+
                         var setPoint = coef * Bp.CurrMax;
                         //ставим значение тока
                         //плавно подходим, что бы не было перегрузки.
@@ -1323,7 +1303,7 @@ namespace B5_71_PRO_Abstract
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<decimal>) operation.Clone());
+                                : (BasicOperationVerefication<decimal>)operation.Clone());
             }
         }
 
@@ -1335,51 +1315,50 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public abstract  class Oper7DciMeasure : ParagraphBase<decimal>
+    public abstract class Oper7DciMeasure : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = {(decimal) 0.1M, (decimal) 0.5M, 1};
+        public static readonly decimal[] MyPoint = { (decimal)0.1M, (decimal)0.5M, 1 };
 
         #region Fields
 
         protected B571Pro Bp;
 
-        #endregion
+        #endregion Fields
 
         #region Property
 
         protected MainN3300 Load { get; set; }
 
-        #endregion
+        #endregion Property
 
         protected Oper7DciMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения выходного тока";
-           
+
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
-      
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return  new[] { "Измеренное эталонным авмперметром значение тока, А",
+            return new[] { "Измеренное эталонным авмперметром значение тока, А",
                 "Измеренное блоком питания значение тока, А",
                 "Минимальное допустимое значение, А",
                 "Максимальное допустимое значение, А"
-            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1451,9 +1430,8 @@ namespace B5_71_PRO_Abstract
                         Load.SetOutputState(MainN3300.State.On);
 
                         Bp.InitDevice();
-                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax*(decimal)0.7M);
+                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax * (decimal)0.7M);
                         Bp.OnOutput();
-                       
 
                         var setPoint = coef * Bp.CurrMax;
                         //ставим точку напряжения
@@ -1506,7 +1484,7 @@ namespace B5_71_PRO_Abstract
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<decimal>) operation.Clone());
+                                : (BasicOperationVerefication<decimal>)operation.Clone());
             }
         }
 
@@ -1517,47 +1495,45 @@ namespace B5_71_PRO_Abstract
             return inA;
         }
 
-        #endregion
-
-        
+        #endregion Methods
     }
 
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public  class Oper8DciUnstable : ParagraphBase<decimal>
+    public class Oper8DciUnstable : ParagraphBase<decimal>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //список точек поверки (процент от максимальных значений блока питания  )
-        public static readonly decimal[] MyPoint = {(decimal) 0.1M, (decimal) 0.5M, (decimal) 0.9M};
+        public static readonly decimal[] MyPoint = { (decimal)0.1M, (decimal)0.5M, (decimal)0.9M };
 
         #region Fields
 
         protected B571Pro Bp;
         protected MainN3300 Load;
 
-        #endregion
+        #endregion Fields
 
         protected Oper8DciUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение нестабильности выходного тока";
-           
+
             Sheme = ShemeTemplate.TemplateSheme;
         }
 
         #region Methods
 
-   
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return  new[]
+            return new[]
             {
                 "Рассчитанное значение нестабильности (I_МАКС - I_МИН)/2, А",
                 "Допустимое значение, А"
-            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1567,7 +1543,6 @@ namespace B5_71_PRO_Abstract
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
-            
 
             if (DataRow.Count == 1)
             {
@@ -1640,18 +1615,17 @@ namespace B5_71_PRO_Abstract
 
                     ////инициализация блока питания
                     Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax*(decimal)0.7M);
+                    Bp.SetStateCurr(Bp.CurrMax * (decimal)0.7M);
                     Bp.SetStateVolt(Bp.VoltMax);
                     Bp.OnOutput();
 
-                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8M);
-                    Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9M);
-                    Bp.SetStateCurr(Bp.CurrMax );
+                    Bp.SetStateCurr(Bp.CurrMax * (decimal)0.8M);
+                    Bp.SetStateCurr(Bp.CurrMax * (decimal)0.9M);
+                    Bp.SetStateCurr(Bp.CurrMax);
 
                     //это нужно для нормальной работы источника
                     Bp.OffOutput();
                     Bp.OnOutput();
-                    
 
                     var currUnstableList = new List<decimal>();
 
@@ -1706,7 +1680,7 @@ namespace B5_71_PRO_Abstract
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                             ? operation
-                            : (BasicOperationVerefication<decimal>) operation.Clone());
+                            : (BasicOperationVerefication<decimal>)operation.Clone());
         }
 
         private decimal ErrorCalculation(decimal inA, decimal inB)
@@ -1714,8 +1688,7 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceCurrentUnstability;
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
     /// <summary>
@@ -1731,7 +1704,7 @@ namespace B5_71_PRO_Abstract
         protected MainN3300 Load { get; set; }
         protected Mult_34401A Mult { get; set; }
 
-        #endregion
+        #endregion Property
 
         protected Oper9DciPulsation(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -1742,16 +1715,16 @@ namespace B5_71_PRO_Abstract
 
         #region Methods
 
-    
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return  new[]
+            return new[]
             {
                 "Измеренное значение пульсаций, мА",
                 "Допустимое значение пульсаций, мА"
-            }.Concat(base.GenerateDataColumnTypeObject()).ToArray(); 
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -1819,18 +1792,18 @@ namespace B5_71_PRO_Abstract
                                                   $"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
 
                         Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                        var point = (decimal) 0.9M * Bp.VoltMax / Bp.CurrMax;
+                        var point = (decimal)0.9M * Bp.VoltMax / Bp.CurrMax;
                         Load.ResistanceLoad.SetResistanceRange(point).ResistanceLoad.Set(point);
                         Load.SetOutputState(MainN3300.State.On);
 
                         //инициализация блока питания
                         Bp.InitDevice();
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.7M);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.7M);
                         Bp.SetStateVolt(Bp.VoltMax);
                         Bp.OnOutput();
 
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.8M);
-                        Bp.SetStateCurr(Bp.CurrMax * (decimal) 0.9M);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.8M);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.9M);
                         Bp.SetStateCurr(Bp.CurrMax);
                     });
 
@@ -1864,7 +1837,7 @@ namespace B5_71_PRO_Abstract
                     decimal currPuls34401 = -1;
                     while (currPuls34401 <= 0)
                     {
-                        currPuls34401 = (decimal) Mult.GetMeasValue();
+                        currPuls34401 = (decimal)Mult.GetMeasValue();
                         if (currPuls34401 > 0) break;
 
                         var answer = UserItemOperation.ServicePack.MessageBox().Show(
@@ -1885,7 +1858,7 @@ namespace B5_71_PRO_Abstract
                         }
                     }
 
-                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal) 0.99M, 0, (decimal)a.MainPhysicalQuantity.Value);
+                    var currPulsV357 = MathStatistics.Mapping(currPuls34401, 0, (decimal)0.99M, 0, (decimal)a.MainPhysicalQuantity.Value);
                     //по закону ома считаем сопротивление
                     var measResist = Bp.GetMeasureVolt() / Bp.GetMeasureCurr();
                     // считаем пульсации
@@ -1922,7 +1895,6 @@ namespace B5_71_PRO_Abstract
 
             operation.CompliteWork = () =>
             {
-               
                 if (!operation.IsGood())
                 {
                     var answer =
@@ -1946,8 +1918,7 @@ namespace B5_71_PRO_Abstract
             return Bp.TolleranceCurrentPuls;
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
     internal static class ShemeTemplate

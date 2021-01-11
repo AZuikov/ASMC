@@ -7,7 +7,7 @@ using NLog;
 
 namespace ASMC.Devices.USB_Device.SKBIS.Lir917
 {
-    public class Driver : IDeviceBase
+    public class Driver : IDeviceRemote
     {
        
         public delegate void AnchorRefereceFlag(int anchorRefereceValue);

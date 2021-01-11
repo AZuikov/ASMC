@@ -27,7 +27,7 @@ namespace ASMC.Devices.Interface
         public int Number { get;  }
        public bool IsEnable { get; set; }
        public MeasPoint<Voltage> VerticalOffset { get; set; }
-       public MeasPoint<Voltage> Vertical { get; set; }
+       public MeasPoint<Voltage> VerticalScale { get; set; }
        public MeasPoint<Resistance> Impedance { get; set; }
        
        public int Probe { get; set; }
@@ -57,9 +57,12 @@ namespace ASMC.Devices.Interface
         GND
    }
 
-   
+   public interface IOscillCursorMeasure
+   {
+        public IOscillChanel _chanelSource { get; set; }
+   }
 
-   public interface IOscillMeasure
+   public interface IOscillBaseMeasure
    {
        
 
@@ -73,6 +76,27 @@ namespace ASMC.Devices.Interface
        IMeasPoint<T> GetParametr<T>(IOscillChanel inChanel, MeasParam inMeasParam, int? measNum) where T : class, IPhysicalQuantity, new();
       
    }
+
+   public enum CursorFunctionType
+   {
+       HORizontal,
+       VERTical,
+       PAIRed,
+       HRATio,
+       VRATio, 
+       PPCount,
+       NPCount,
+       RECount, 
+       FECount, 
+       MEAN, 
+       RMS, 
+       RTIMe, 
+       FTIMe,
+       PEAK, 
+       UPEakvalue, 
+       LPEakvalue, 
+       BWIDth
+    }
 
    public class MeasParam : ICommand
    {
@@ -114,7 +138,7 @@ namespace ASMC.Devices.Interface
        public enum EdgeType
        {
            /// <summary>
-           /// Спадю
+           /// Спад.
            /// </summary>
            Fall,
            /// <summary>

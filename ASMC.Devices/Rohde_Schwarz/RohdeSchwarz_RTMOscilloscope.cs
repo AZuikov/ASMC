@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ASMC.Devices.Rohde_Schwarz
 {
-    public abstract class RohdeSchwarz_RTMOscilloscope : IeeeBase, IOscilloscope, IOscillMeasure
+    public abstract class RohdeSchwarz_RTMOscilloscope : IeeeBase, IOscilloscope, IOscillBaseMeasure
     {
         public IOscillChanel[] Chanels
         {
@@ -20,23 +20,19 @@ namespace ASMC.Devices.Rohde_Schwarz
 
         public void ChanelOn(int ChanelNumber)
         {
-            ChanelNumber--;
-
-            if (Chanels.Length >= ChanelNumber)
+            if (Chanels.Length <= (ChanelNumber-1))
                 throw new
                     ArgumentException($"Осциллограф имеет {Chanels.Length} каналов. Нельзя получить доступ к несуществующему каналу {ChanelNumber}.");
-
+            WriteLine($"CHANnel{ChanelNumber}:STATe on");
             Chanels[ChanelNumber].IsEnable = true;
         }
 
         public void ChanelOff(int ChanelNumber)
         {
-            ChanelNumber--;
-
-            if (Chanels.Length >= ChanelNumber)
+            if (Chanels.Length <= (ChanelNumber-1))
                 throw new
                     ArgumentException($"Осциллограф имеет {Chanels.Length} каналов. Нельзя получить доступ к несуществующему каналу {ChanelNumber}.");
-
+            WriteLine($"CHANnel{ChanelNumber}:STATe off");
             Chanels[ChanelNumber].IsEnable = false;
         }
 
@@ -60,8 +56,9 @@ namespace ASMC.Devices.Rohde_Schwarz
             public IeeeBase Device { get; }
             public int Number { get; }
             public bool IsEnable { get; set; }
+
             public MeasPoint<Voltage> VerticalOffset { get; set; }
-            public MeasPoint<Voltage> Vertical { get; set; }
+            public MeasPoint<Voltage> VerticalScale { get; set; }
             public MeasPoint<Resistance> Impedance { get; set; }
             public MeasPoint<Frequency> BandWidth { get; set; }
             public Coupling coupling { get; set; }
@@ -79,7 +76,7 @@ namespace ASMC.Devices.Rohde_Schwarz
                 digitsValue = 0;
                 answer = Device.QueryLine($"CHANnel{Number}:scale?");
                 digitsValue = (decimal) StrToDouble(answer);
-                Vertical = new MeasPoint<Voltage>(digitsValue);
+                VerticalScale = new MeasPoint<Voltage>(digitsValue);
 
                 answer = Device.QueryLine($"CHANnel{Number}:COUPling?");
                 Impedance = answer.IndexOf('L') != -1
@@ -88,8 +85,11 @@ namespace ASMC.Devices.Rohde_Schwarz
 
                 foreach (Coupling coupl in couplings)
                 {
-                    if (answer.IndexOf(coupl.ToString()) != -1) coupling = coupl;
-                    //наверное больше ничего прибор в этом случае ответить не сможет...
+                    if (answer.IndexOf(coupl.ToString()) != -1)
+                    {
+                        coupling = coupl;
+                        break;
+                    }
                 }
 
 
@@ -103,7 +103,7 @@ namespace ASMC.Devices.Rohde_Schwarz
                 Device.WriteLine($"CHANnel{Number}:STATe {ChanStat}");
 
                 string valueToWrite =
-                    Vertical.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.');
+                    VerticalScale.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.');
                 Device.WriteLine($"CHANnel{Number}:scale {valueToWrite}");
 
                 valueToWrite = VerticalOffset
@@ -121,7 +121,7 @@ namespace ASMC.Devices.Rohde_Schwarz
         }
 
         public MeasParam[] measParams = {
-            new MeasParam("FREQuency", "",1,typeof(Frequency)),
+            new MeasParam("FREQuency", "Измерение частоты",1,typeof(Frequency)),
             new MeasParam("PERiod", "", 1,typeof(Time)),
             new MeasParam("PEAK", "", 1, typeof(Voltage)),
             new MeasParam("UPEakvalue", "", 1,typeof(Voltage)),
@@ -164,19 +164,27 @@ namespace ASMC.Devices.Rohde_Schwarz
            string answer = inChanel.Device.QueryLine($"MEASurement1:RESult:ACTual? {inMeasParam}");
            if (answer.Equals("NAN")) return null;
            decimal answerNumb = (decimal)StrToDouble(answer);
-           var a = inMeasParam.Type;
            
-           //var gfgf = new MeasPoint<T>(new T());
-           //MeasPoint<T> resultPoint = new MeasPoint<T>(answerNumb);
-           return null;//(IMeasPoint<T>) gfgf;
+           
+           return null;
         }
+
+   
     }
 
     public class RTM2054 : RohdeSchwarz_RTMOscilloscope
     {
         protected override IOscillChanel[] GetChanels()
         {
-            return new IOscillChanel[]
+            return chanels;
+        }
+
+        private IOscillChanel[] chanels ;
+
+        public RTM2054()
+        {
+            UserType = "RTM 2054";
+            chanels = new IOscillChanel[]
             {
                 new RohdeSchwarz_RtmOscChanel(1,this),
                 new RohdeSchwarz_RtmOscChanel(2,this),
@@ -184,6 +192,9 @@ namespace ASMC.Devices.Rohde_Schwarz
                 new RohdeSchwarz_RtmOscChanel(4,this)
             };
         }
+
+
+
 
         /// <summary>
         /// Считываем настройки каналов осциллографа.

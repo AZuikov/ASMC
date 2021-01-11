@@ -107,6 +107,8 @@
     <Compile Include="IEEE\Fluke\Calibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
+    <Compile Include="IEEE\Keysight\Multimeter\BaseDigitalMultimetr344xx.cs" />
+    <Compile Include="Interface\IDevice.cs" />
     <Compile Include="Interface\ICalibrator.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
@@ -122,9 +124,10 @@
     <Compile Include="IEEE\Keysight\Multimeter\Mult_34465_70A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
     <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
-    <Compile Include="IEEE\Keysight\PowerSupplyes\E364xA.cs" />
+    <Compile Include="IEEE\Keysight\PowerSupplyes\E364Xa\E364xA.cs" />
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XX_IPowerSupply.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
+    <Compile Include="Interface\IMultimetr.cs" />
     <Compile Include="Port\OWEN\OwenProtocol.cs" />
     <Compile Include="Port\OWEN\TRM202Device.cs" />
     <Compile Include="Port\APPA\Mult_107_109N.cs" />
@@ -162,6 +165,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
     <None Include="Port\OWEN\ki_parametry_trm202_105_a3.pdf" />
     <None Include="Port\OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />

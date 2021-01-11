@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace ASMC.Data.Model
 {
-    public interface IProtocolStringLine : IDeviceBase
+    public interface IProtocolStringLine : IDeviceRemote
     {
         #region Property
 
@@ -40,7 +40,7 @@ namespace ASMC.Data.Model
         #endregion
     }
 
-    public interface IDeviceBase :IUserType, IDisposable
+    public interface IDeviceRemote :IUserType, IDisposable
     {
       
         /// <summary>

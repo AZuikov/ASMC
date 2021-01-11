@@ -51,10 +51,27 @@ namespace AP.Extension
                    
             }
         }
-
+        /// <summary>
+        /// Отбрасывает знак у значения точки (берет модуль).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="measPoint"></param>
+        /// <returns></returns>
         public static IMeasPoint<T> Abs<T>(this IMeasPoint<T> measPoint) where T : class, IPhysicalQuantity<T>, new()
         {
             return new MeasPoint<T>(Math.Abs(measPoint.MainPhysicalQuantity.Value),measPoint.MainPhysicalQuantity.Multiplier);
+        }
+        /// <summary>
+        /// Округляет значение до нужного числа знаков.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="measPoint">Измерительная точка.</param>
+        /// <param name="digitsCount">Число знаков после запятой.</param>
+        /// <returns></returns>
+        public static IMeasPoint<T> Round<T>(this IMeasPoint<T> measPoint,int digitsCount) where T : class, IPhysicalQuantity<T>, new()
+        {
+            measPoint.MainPhysicalQuantity.Value = Math.Round(measPoint.MainPhysicalQuantity.Value, digitsCount);
+            return measPoint;
         }
     }
 }
