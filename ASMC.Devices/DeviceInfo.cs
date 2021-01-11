@@ -1,6 +1,5 @@
 ﻿using System;
-using AP.Reports.Utils;
-using AP.Utils.Data;
+
 
 namespace ASMC.Devices
 {

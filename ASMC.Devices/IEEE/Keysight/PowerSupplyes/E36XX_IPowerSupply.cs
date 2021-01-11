@@ -1,6 +1,6 @@
 ﻿using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.IEEE.Keysight.PowerSupplies;
+using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 {

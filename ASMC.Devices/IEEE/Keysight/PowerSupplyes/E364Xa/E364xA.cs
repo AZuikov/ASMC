@@ -4,7 +4,7 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 
-namespace ASMC.Devices.IEEE.Keysight.PowerSupplies
+namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 {
     public enum E364xChanels
     {

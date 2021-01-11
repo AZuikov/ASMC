@@ -13,7 +13,6 @@ using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
-using ASMC.Devices.IEEE.Keysight.PowerSupplies;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Rohde_Schwarz;
@@ -1030,7 +1029,10 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOn();
                         Thread.Sleep(1000);
 
+                        digitalMult.Getting();
                         digitalMult.DcVoltage.Range = operation.Expected;
+                        digitalMult.Setting();
+                        digitalMult.Getting();
                         MeasPoint<Voltage> MeasVolts = digitalMult.DcVoltage.Value;
                         MeasVolts.Round(4);
                         operation.Getting = MeasVolts;

@@ -79,7 +79,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
        
         public decimal GetActiveMeasuredValue()
         {
-            _device.WriteLine("SYST:REM;*CLS;*RST;:TRIG:SOUR BUS");
             _device.WriteLine("INIT");
             _device.WriteLine("*TRG");
             var answer = _device.QueryLine("FETCH?");
@@ -125,6 +124,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
+            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -206,6 +206,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
+            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -263,6 +264,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
+            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -320,6 +322,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
+            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -378,6 +381,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
+            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -435,6 +439,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
+            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);

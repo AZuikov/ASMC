@@ -183,10 +183,6 @@
       <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
       <Name>AP.Math</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
-      <Project>{630eedde-fe14-4ba9-a2da-7976f9bee39a}</Project>
-      <Name>AP.Reports</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
       <Name>AP.Utils</Name>
