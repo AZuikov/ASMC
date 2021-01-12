@@ -538,7 +538,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
     {
         public E3649A()
         {
-            UserType = this.GetType().ToString();
+            UserType = "E3649A";
             outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
             Ranges = new[]
             {

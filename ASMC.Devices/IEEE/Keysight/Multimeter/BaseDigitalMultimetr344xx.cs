@@ -2,7 +2,6 @@
 using System.Linq;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.Interface.Multimetr;
 using ASMC.Devices.Interface.Multimetr.Mode;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
@@ -11,6 +10,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     {
         public BaseDigitalMultimetr344xx()
         {
+
             AcVoltage = new AcVoltMeas(this);
             DcVoltage = new DcVoltMeas(this);
             DcCurrent = new DcCurrentMeas(this);
@@ -47,10 +47,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         }
     }
 
-    public interface IDigitalMultimetr344xx : IMultimetr, IProtocolStringLine
-    {
-    }
-
     public abstract class MeasureFunction344xxBase<T> where T : class, IPhysicalQuantity<T>, new()
     {
         #region Fields
@@ -62,6 +58,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         protected MeasPoint<T> _value;
         protected MeasPoint<T> _range;
+        protected bool _autoRange = true;
 
         #endregion
 
@@ -79,6 +76,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
        
         public decimal GetActiveMeasuredValue()
         {
+            _device.WriteLine("TRIG:SOUR BUS");
             _device.WriteLine("INIT");
             _device.WriteLine("*TRG");
             var answer = _device.QueryLine("FETCH?");
@@ -124,7 +122,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
-            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
+           
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -146,14 +144,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
                 return _range;
             }
             set
             {
                 _range = value;
-                Setting();
-
+                
             }
         }
 
@@ -161,7 +157,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
                 return _value;
             }
         }
@@ -206,7 +201,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
-            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -228,13 +222,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
+                
                 return _range;
             }
             set
             {
                 _range = value;
-                Setting();
+                
             }
         }
 
@@ -243,7 +237,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
+                
                 return _value;
             }
         }
@@ -264,12 +258,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
-            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
+            
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
             _range = new MeasPoint<Voltage>(numb);
-
             var val = GetActiveMeasuredValue();
             _value = new MeasPoint<Voltage>(val);
         }
@@ -287,21 +280,19 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
+                
                 return _range;
             }
             set
             {
                 _range = value;
-                Setting();
-            }
+                }
         }
 
         MeasPoint<Voltage> IMeasureMode<MeasPoint<Voltage>>.Value
         {
             get
             {
-                Getting();
                 return _value;
             }
         }
@@ -322,7 +313,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
-            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
+            
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -345,13 +336,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
+                
                 return _range;
             }
             set
             {
                 _range = value;
-                Setting();
+                
             }
         }
 
@@ -360,7 +351,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
                 return _value;
             }
         }
@@ -381,7 +371,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
-            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
+            
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -404,13 +394,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
                 return _range;
             }
             set
             {
                 _range = value;
-                Setting();
             }
         }
 
@@ -418,7 +406,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
+                
                 return _value;
             }
         }
@@ -439,7 +427,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public void Getting()
         {
-            _device.WriteLine("SYST:REM;*CLS;*rst;:TRIG:SOUR BUS");
+            
             _device.WriteLine($"{ActivateThisModeCommand}");
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
@@ -462,13 +450,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
                 return _range;
             }
             set
             {
                 _range = value;
-                Setting();
             }
         }
 
@@ -476,7 +462,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             get
             {
-                Getting();
                 return _value;
             }
         }

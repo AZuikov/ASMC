@@ -82,12 +82,14 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Resources\N8975A_8_3_4.doc" />
+    <None Include="Resources\N8975A_8_3_4.dotx" />
+    <None Include="Resources\N8975_PreSetup.rtf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
 mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
-xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y</PostBuildEvent>
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y
+xcopy "$(ProjectDir)Resources" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

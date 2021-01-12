@@ -223,7 +223,13 @@ namespace N8957APlugin
                 if (dds?.Expected == null || dds?.Getting == null) continue;
                 dataRow[0] = dds?.Expected?.Description;
                 dataRow[1] = dds?.Getting?.Description;
-                dataRow[2] = dds.Error.Description;
+                if (dds?.Getting != null)
+                {
+                    MeasPoint < Frequency > point = dds?.Expected - dds?.Getting;
+                    point.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Kilo);
+                    dataRow[2] = point.Description;
+                }
+                
                 dataRow[3] = dds?.Error.Description;
                 dataTable.Rows.Add(dataRow);
             }
@@ -258,10 +264,11 @@ namespace N8957APlugin
 
                             //подготовка генератора
                             e8257D.WriteLine(":OUTPut:MODulation 0"); //выключаем модуляцию
-                            e8257D.WriteLine(":pow -20"); //ставим амплитуду -20 дБм
+                            e8257D.WriteLine(":pow -70"); //ставим амплитуду -20 дБм
+                            e8257D.WriteLine(":POW:NOIS ON"); 
                             e8257D.WriteLine($"FREQuency {testFreqqPoint.ToString().Replace(',', '.')}"); //частоту
-                            // e8257D.WriteLine("FREQuency:MODE "); //ставим режим воспроизведения частоты
-                            //какие параметры сигнала еще должны быть?
+                            e8257D.WriteLine(":SOURce:LBFilter ON"); //ставим режим воспроизведения частоты
+                            
 
                             n8975.WriteLine($"INITiate:CONTinuous 0");
                             n8975.WriteLine("CONFigure:MODE:DUT AMPLifier");
