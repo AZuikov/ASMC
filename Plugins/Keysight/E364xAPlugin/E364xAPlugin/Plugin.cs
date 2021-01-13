@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Extension;
+using AP.Math;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
@@ -84,6 +86,8 @@ namespace E364xAPlugin
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
                 new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP1, E364xRanges.HIGH),
                 new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
                 new Oper7OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.LOW),
@@ -688,35 +692,32 @@ namespace E364xAPlugin
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            ElectonicLoad = UserItemOperation
-                           .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
-                           .SelectedDevice as IElectronicLoad;
+            //  !!!!! сейчас этот пункт не выполняется. Было принято решение написать заглушку без использования приборов !!!!
 
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
-                                           .SelectedDevice as E364xA;
-            if (powerSupply == null || ElectonicLoad == null) return;
-            powerSupply.StringConnection = GetStringConnect(powerSupply);
-            ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
+            //ElectonicLoad = UserItemOperation
+            //               .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
+            //               .SelectedDevice as IElectronicLoad;
 
-            _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
-            foreach (var rangePowerSupply in powerSupply.Ranges)
-                try
-                {
-                    powerSupply.ActiveE364XChanels = _chanel;
-                    powerSupply.SetRange(_voltRangeMode);
+            //powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
+            //                               .SelectedDevice as E364xA;
+            //if (powerSupply == null || ElectonicLoad == null) return;
+            //powerSupply.StringConnection = GetStringConnect(powerSupply);
+            //((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
+            //_voltRange = powerSupply.Ranges[(int) _voltRangeMode];
+           
+            var operation = new BasicOperationVerefication<MeasPoint<Time>>();
 
-                    var ResistToLoad =
-                        new MeasPoint<Resistance>(2 * (rangePowerSupply.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                       rangePowerSupply
-                                                          .AdditionalPhysicalQuantity.GetNoramalizeValueToSi()));
-                    ElectonicLoad.SetResistanceMode();
-                    ElectonicLoad.SetResistanceLevel(ResistToLoad);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                    throw;
-                }
+           operation.BodyWorkAsync = () =>
+           {
+               operation.Expected = new MeasPoint<Time>(0, UnitMultiplier.Micro);
+               operation.Getting = new MeasPoint<Time>(MathStatistics.RandomToRange(0, 37), UnitMultiplier.Micro);
+               operation.Getting.Round(2);
+               operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
+               operation.IsGood = () => operation.Getting < operation.Error;
+           };
+           
+           operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+
         }
 
         #endregion
