@@ -10,6 +10,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
 
         bool IsEnable { get;  }
         T Range { get; set; }
+        public bool AutoRange { get; set; }
 
         #endregion
 

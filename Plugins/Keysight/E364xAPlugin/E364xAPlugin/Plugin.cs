@@ -248,9 +248,10 @@ namespace E364xAPlugin
 
         #region Property
 
+        protected IDigitalMultimetr344xx digitalMult { get; set; }
+
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
-        protected IDigitalMultimetr344xx digitalMult { get; set; }
 
         #endregion
 
@@ -327,124 +328,117 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
-            ((IeeeBase) digitalMult).StringConnection = GetStringConnect((IProtocolStringLine) digitalMult);
+            ((IeeeBase) digitalMult).StringConnection = GetStringConnect(digitalMult);
 
             _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
 
-            foreach (var rangePowerSupply in powerSupply.Ranges)
+            var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+
+            operation.InitWork = async () =>
             {
-                var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-
-                operation.InitWork = async () =>
+                try
                 {
-                    try
-                    {
-                        powerSupply.ActiveE364XChanels = _chanel;
-                        powerSupply.SetRange(_voltRangeMode);
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                    powerSupply.ActiveE364XChanels = _chanel;
+                    powerSupply.SetRange(_voltRangeMode);
+                    operation.Comment = powerSupply.GetVoltageRange().Description;
 
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(rangePowerSupply
-                                                                              .AdditionalPhysicalQuantity));
-                        // расчитаем идеальное значение для электронной нагрузки
-                        var resistToLoad =
-                            new MeasPoint<Resistance>(rangePowerSupply.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      rangePowerSupply
-                                                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(3);
+                    powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
+                    powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange
+                                                                          .AdditionalPhysicalQuantity));
+                    // расчитаем идеальное значение для электронной нагрузки
+                    var resistToLoad =
+                        new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                  _voltRange
+                                                     .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                    resistToLoad.Round(3);
 
-                        ElectonicLoad.SetThisModuleAsWorking();
-                        ElectonicLoad.SetResistanceMode();
-                        ElectonicLoad.SetResistanceLevel(resistToLoad);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                };
-                operation.BodyWorkAsync = () =>
+                    ElectonicLoad.SetThisModuleAsWorking();
+                    ElectonicLoad.SetResistanceMode();
+                    ElectonicLoad.SetResistanceLevel(resistToLoad);
+                }
+                catch (Exception e)
                 {
-                    try
-                    {
-                        powerSupply.OutputOn();
-
-                        ElectonicLoad.OutputOn();
-                        Thread.Sleep(3000);
-                        digitalMult.DcVoltage.Getting();
-                        digitalMult.DcVoltage.Range = rangePowerSupply;
-                        digitalMult.DcVoltage.Setting();
-                        digitalMult.DcVoltage.Getting();
-                        var U1 = digitalMult.DcVoltage.Value;
-                        //разрываем цепь
-                        ElectonicLoad.OutputOff();
-                        Thread.Sleep(3000);
-                        digitalMult.DcVoltage.Getting();
-                        var U2 = digitalMult.DcVoltage.Value;
-
-
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
-
-                        operation.Expected = new MeasPoint<Voltage>(0);
-                        var measResult = U1 - U2;
-                        measResult.Round(3);
-                        operation.Getting = measResult;
-
-                        operation.ErrorCalculation = (point, measPoint) =>
-                        {
-                            var resultError = new MeasPoint<Voltage>(0.0001M * U1
-                                                                              .MainPhysicalQuantity
-                                                                              .GetNoramalizeValueToSi() +
-                                                                     0.003M);
-                            resultError.Round(4);
-                            return resultError;
-                        };
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-
-                        operation.IsGood = () =>
-                        {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            return (operation.Getting < operation.UpperTolerance) &
-                                   (operation.Getting > operation.LowerTolerance);
-                        };
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                };
-                operation.CompliteWork = () =>
+                    Logger.Error(e);
+                    throw;
+                }
+            };
+            operation.BodyWorkAsync = () =>
+            {
+                try
                 {
-                    if (operation.IsGood != null && !operation.IsGood())
+                    powerSupply.OutputOn();
+
+                    ElectonicLoad.OutputOn();
+                    Thread.Sleep(3000);
+                    digitalMult.DcVoltage.Getting();
+                    var U1 = digitalMult.DcVoltage.Value;
+                    //разрываем цепь
+                    ElectonicLoad.OutputOff();
+                    Thread.Sleep(3000);
+                    digitalMult.DcVoltage.Getting();
+                    var U2 = digitalMult.DcVoltage.Value;
+
+                    powerSupply.OutputOff();
+                    ElectonicLoad.OutputOff();
+
+                    operation.Expected = new MeasPoint<Voltage>(0);
+                    var measResult = U1 - U2;
+                    measResult.Round(3);
+                    operation.Getting = measResult;
+
+                    operation.ErrorCalculation = (point, measPoint) =>
                     {
-                        var answer =
-                            UserItemOperation.ServicePack.MessageBox()
-                                             .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
-                                                   $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
-                                                   $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                                   $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                                   $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                                   $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
-                                                   "Повторить измерение этой точки?",
-                                                   "Информация по текущему измерению",
-                                                   MessageButton.YesNo, MessageIcon.Question,
-                                                   MessageResult.Yes);
+                        var resultError = new MeasPoint<Voltage>(0.0001M * U1
+                                                                          .MainPhysicalQuantity
+                                                                          .GetNoramalizeValueToSi() +
+                                                                 0.003M);
+                        resultError.Round(4);
+                        return resultError;
+                    };
+                    operation.UpperTolerance = operation.Expected + operation.Error;
+                    operation.LowerTolerance = operation.Expected - operation.Error;
 
-                        if (answer == MessageResult.No) return Task.FromResult(true);
-                    }
+                    operation.IsGood = () =>
+                    {
+                        if (operation.Getting == null || operation.Expected == null ||
+                            operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                        return (operation.Getting < operation.UpperTolerance) &
+                               (operation.Getting > operation.LowerTolerance);
+                    };
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                    throw;
+                }
+            };
+            operation.CompliteWork = () =>
+            {
+                if (operation.IsGood != null && !operation.IsGood())
+                {
+                    var answer =
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show($"Текущая точка {operation.Comment} не проходит по допуску:\n" +
+                                               $"U1 - U2 = {operation.Getting.Description}\n" +
+                                               $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
+                                               $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
+                                               $"Допустимое значение погрешности {operation.Error.Description}\n" +
+                                               $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
+                                               "Повторить измерение этой точки?",
+                                               "Информация по текущему измерению",
+                                               MessageButton.YesNo, MessageIcon.Question,
+                                               MessageResult.Yes);
 
-                    if (operation.IsGood == null)
-                        return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood());
-                };
-                DataRow.Add(DataRow.IndexOf(operation) == -1
-                                ? operation
-                                : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
-            }
+                    if (answer == MessageResult.No) return Task.FromResult(true);
+                }
+
+                if (operation.IsGood == null)
+                    return Task.FromResult(true);
+                return Task.FromResult(operation.IsGood());
+            };
+            DataRow.Add(DataRow.IndexOf(operation) == -1
+                            ? operation
+                            : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
         }
 
         #endregion
@@ -464,9 +458,10 @@ namespace E364xAPlugin
 
         #region Property
 
+        protected IDigitalMultimetr344xx digitalMult { get; set; }
+
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
-        protected IDigitalMultimetr344xx digitalMult { get; set; }
 
         #endregion
 
@@ -539,10 +534,10 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
+            ((IeeeBase)digitalMult).StringConnection = GetStringConnect((IProtocolStringLine)digitalMult);
 
             _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
-            foreach (var rangePowerSupply in powerSupply.Ranges)
-            {
+           
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 ;
                 operation.InitWork = async () =>
@@ -553,13 +548,12 @@ namespace E364xAPlugin
                         powerSupply.SetRange(_voltRangeMode);
                         operation.Comment = powerSupply.GetVoltageRange().Description;
 
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(rangePowerSupply
-                                                                              .AdditionalPhysicalQuantity));
+                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
+                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
                         // расчитаем идеальное значение для электронной нагрузки
                         var resistToLoad =
-                            new MeasPoint<Resistance>(rangePowerSupply.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      rangePowerSupply
+                            new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                      _voltRange
                                                          .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
                         resistToLoad.Round(3);
 
@@ -581,9 +575,6 @@ namespace E364xAPlugin
 
                         ElectonicLoad.OutputOn();
                         Thread.Sleep(1000);
-                        digitalMult.DcVoltage.Getting();
-                        digitalMult.DcVoltage.Range = rangePowerSupply;
-                        digitalMult.Setting();
                         digitalMult.DcVoltage.Getting();
                         var U1 = digitalMult.DcVoltage.Value;
                         Thread.Sleep(1000);
@@ -629,11 +620,11 @@ namespace E364xAPlugin
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
-                                             .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                             .Show($"Текущая точка {operation.Comment} не проходит по допуску:\n" +
+                                                   $"U1 - U2 = {operation.Getting.Description}\n" +
                                                    $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                                    $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                                    $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                                   $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
                                                    $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
                                                    "Повторить измерение этой точки?",
                                                    "Информация по текущему измерению",
@@ -650,7 +641,7 @@ namespace E364xAPlugin
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
-            }
+            
         }
 
         #endregion
@@ -745,9 +736,10 @@ namespace E364xAPlugin
 
         #region Property
 
+        protected IDigitalMultimetr344xx digitalMult { get; set; }
+
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
-        protected IDigitalMultimetr344xx digitalMult { get; set; }
 
         #endregion
 
@@ -993,7 +985,7 @@ namespace E364xAPlugin
 
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
-            
+
             if (powerSupply == null || ElectonicLoad == null || digitalMult == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
