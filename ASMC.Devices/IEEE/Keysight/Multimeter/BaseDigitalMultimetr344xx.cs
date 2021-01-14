@@ -70,7 +70,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Methods
 
-        public decimal? GetActiveMeasuredValue()
+        protected decimal? GetMeasuredValue()
         {
             _device.WriteLine("TRIG:SOUR BUS");
             _device.WriteLine("INIT");
@@ -83,7 +83,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #endregion
 
-        //public bool _autoRange { get; set; }
+        
     }
 
     public class AcVoltMeas : MeasureFunction344xxBase<Voltage>, IMeasureMode<MeasPoint<Voltage>>, IAcFilter
@@ -107,6 +107,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public AcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:AC")
         {
+            _range = new MeasPoint<Voltage>(1);
         }
 
         public void SetFilter(MeasPoint<Frequency> filterFreq)
@@ -123,7 +124,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
             _range = new MeasPoint<Voltage>(numb);
-            var val = GetActiveMeasuredValue();
+            var val = GetMeasuredValue();
             if (val != null)
                 _value = new MeasPoint<Voltage>((decimal) val);
             else
@@ -161,6 +162,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public bool AutoRange { get; set; }
 
         MeasPoint<Voltage> IMeasureMode<MeasPoint<Voltage>>.Value => _value;
+        public MeasPoint<Voltage> GetActiveMeasuredValue()
+        {
+            var val = GetMeasuredValue();
+            _value = val != null ? new MeasPoint<Voltage>((decimal)val) : null;
+            return _value;
+        }
     }
 
     public class AcCurrentMeas : MeasureFunction344xxBase<Data.Model.PhysicalQuantity.Current>,
@@ -188,6 +195,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public AcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:AC")
         {
+            _range = new MeasPoint<Data.Model.PhysicalQuantity.Current>(1);
         }
 
         public void SetFilter(MeasPoint<Frequency> filterFreq)
@@ -205,7 +213,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
             Range = new MeasPoint<Data.Model.PhysicalQuantity.Current>(numb);
-            var val = GetActiveMeasuredValue();
+            var val = GetMeasuredValue();
             if (val != null)
                 _value = new MeasPoint<Data.Model.PhysicalQuantity.Current>((decimal) val);
             else
@@ -245,6 +253,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         MeasPoint<Data.Model.PhysicalQuantity.Current> IMeasureMode<MeasPoint<Data.Model.PhysicalQuantity.Current>>.
             Value =>
             _value;
+
+        public MeasPoint<Data.Model.PhysicalQuantity.Current> GetActiveMeasuredValue()
+        {
+            var val = GetMeasuredValue();
+            _value = val != null ? new MeasPoint<Data.Model.PhysicalQuantity.Current>((decimal)val) : null;
+            return _value;
+        }
     }
 
     public class DcVoltMeas : MeasureFunction344xxBase<Voltage>, IMeasureMode<MeasPoint<Voltage>>
@@ -258,6 +273,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public DcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:DC")
         {
+            _range = new MeasPoint<Voltage>(1);
         }
 
         public void Getting()
@@ -266,11 +282,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             var answer = _device.QueryLine($"{RangeCommand}?");
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
             _range = new MeasPoint<Voltage>(numb);
-            var val = GetActiveMeasuredValue();
-            if (val != null)
-                _value = new MeasPoint<Voltage>((decimal) val);
-            else
-                _value = null;
+            
         }
 
         public void Setting()
@@ -288,6 +300,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             }
 
             _device.WriteLine($"{functionName}:NPLC 100");
+        }
+
+        public MeasPoint<Voltage> GetActiveMeasuredValue()
+        {
+            var val = GetMeasuredValue();
+            _value = val != null ? new MeasPoint<Voltage>((decimal)val) : null;
+            return _value;
         }
 
         public bool IsEnable { get; set; }
@@ -318,6 +337,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public DcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:DC")
         {
+            _range = new MeasPoint<Data.Model.PhysicalQuantity.Current>(1);
         }
 
         public void Getting()
@@ -327,7 +347,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
             Range = new MeasPoint<Data.Model.PhysicalQuantity.Current>(numb);
 
-            var val = GetActiveMeasuredValue();
+            var val = GetMeasuredValue();
             if (val != null)
                 _value = new MeasPoint<Data.Model.PhysicalQuantity.Current>((decimal) val);
             else
@@ -367,6 +387,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         MeasPoint<Data.Model.PhysicalQuantity.Current> IMeasureMode<MeasPoint<Data.Model.PhysicalQuantity.Current>>.
             Value =>
             _value;
+
+        public MeasPoint<Data.Model.PhysicalQuantity.Current> GetActiveMeasuredValue()
+        {
+            var val = GetMeasuredValue();
+            _value = val != null ? new MeasPoint<Data.Model.PhysicalQuantity.Current>((decimal)val) : null;
+            return _value;
+        }
     }
 
     public class Resistance2W : MeasureFunction344xxBase<Resistance>, IMeasureMode<MeasPoint<Resistance>>
@@ -379,6 +406,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public Resistance2W(IeeeBase inDevice) : base(inDevice, "RES")
         {
+            _range = new MeasPoint<Resistance>(1);
         }
 
         public void Getting()
@@ -388,7 +416,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
             Range = new MeasPoint<Resistance>(numb);
 
-            var val = GetActiveMeasuredValue();
+            var val = GetMeasuredValue();
             if (val != null)
                 _value = new MeasPoint<Resistance>((decimal) val);
             else
@@ -426,6 +454,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public bool AutoRange { get; set; }
 
         MeasPoint<Resistance> IMeasureMode<MeasPoint<Resistance>>.Value => _value;
+        public MeasPoint<Resistance> GetActiveMeasuredValue()
+        {
+            var val = GetMeasuredValue();
+            _value = val != null ? new MeasPoint<Resistance>((decimal)val) : null;
+            return _value;
+        }
     }
 
     public class Resistance4W : MeasureFunction344xxBase<Resistance>, IMeasureMode<MeasPoint<Resistance>>
@@ -438,6 +472,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public Resistance4W(IeeeBase inDevice) : base(inDevice, "FRES")
         {
+            _range = new MeasPoint<Resistance>(1);
         }
 
         public void Getting()
@@ -447,7 +482,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             var numb = (decimal) HelpDeviceBase.StrToDouble(answer);
             Range = new MeasPoint<Resistance>(numb);
 
-            var val = GetActiveMeasuredValue();
+            var val = GetMeasuredValue();
             if (val != null)
                 _value = new MeasPoint<Resistance>((decimal) val);
             else
@@ -485,5 +520,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public bool AutoRange { get; set; }
 
         MeasPoint<Resistance> IMeasureMode<MeasPoint<Resistance>>.Value => _value;
+        public MeasPoint<Resistance> GetActiveMeasuredValue()
+        {
+            var val = GetMeasuredValue();
+            _value = val != null ? new MeasPoint<Resistance>((decimal)val) : null;
+            return _value;
+        }
     }
 }

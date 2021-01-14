@@ -17,10 +17,16 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
         #region Methods
 
         /// <summary>
-        /// Получить измеренное значение физической величины с прибора.
+        /// Получить измеренное значение физической величины.
         /// </summary>
         /// <returns>Значение измеренной физ. величины.</returns>
         T Value { get; }
+
+        /// <summary>
+        /// Получить измеренное значение физической величины с прибора.
+        /// </summary>
+        /// <returns></returns>
+        public T GetActiveMeasuredValue();
 
 
 

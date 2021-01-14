@@ -374,13 +374,15 @@ namespace E364xAPlugin
 
                     ElectonicLoad.OutputOn();
                     Thread.Sleep(3000);
-                    digitalMult.DcVoltage.Getting();
-                    var U1 = digitalMult.DcVoltage.Value;
+                    digitalMult.DcVoltage.AutoRange = true;
+                    digitalMult.DcVoltage.Setting();
+                    var U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
                     //разрываем цепь
                     ElectonicLoad.OutputOff();
                     Thread.Sleep(3000);
-                    digitalMult.DcVoltage.Getting();
-                    var U2 = digitalMult.DcVoltage.Value;
+                    digitalMult.DcVoltage.AutoRange = true;
+                    digitalMult.DcVoltage.Setting();
+                    var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
 
                     powerSupply.OutputOff();
                     ElectonicLoad.OutputOff();
@@ -579,11 +581,13 @@ namespace E364xAPlugin
 
                         ElectonicLoad.OutputOn();
                         Thread.Sleep(1000);
-                        digitalMult.DcVoltage.Getting();
-                        var U1 = digitalMult.DcVoltage.Value;
+                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.Setting();
+                        var U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
                         Thread.Sleep(1000);
-                        digitalMult.DcVoltage.Getting();
-                        var U2 = digitalMult.DcVoltage.Value;
+                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.Setting();
+                        var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
 
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
@@ -814,10 +818,10 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
+            ((IeeeBase)digitalMult).StringConnection = GetStringConnect((IProtocolStringLine)digitalMult);
 
             _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
-            foreach (var rangePowerSupply in powerSupply.Ranges)
-            {
+            
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
 
                 operation.InitWork = async () =>
@@ -826,13 +830,13 @@ namespace E364xAPlugin
                     powerSupply.SetRange(_voltRangeMode);
                     operation.Comment = powerSupply.GetVoltageRange().Description;
 
-                    powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(rangePowerSupply.MainPhysicalQuantity));
-                    powerSupply.SetCurrentLevel(new MeasPoint<Current>(rangePowerSupply.AdditionalPhysicalQuantity));
+                    powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
+                    powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
 
                     // расчитаем идеальное значение для электронной нагрузки
                     var resistToLoad =
-                        new MeasPoint<Resistance>(rangePowerSupply.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                  rangePowerSupply.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                        new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                  _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
                     resistToLoad.Round(3);
 
                     ElectonicLoad.SetThisModuleAsWorking();
@@ -847,20 +851,19 @@ namespace E364xAPlugin
 
                         ElectonicLoad.OutputOn();
 
-                        digitalMult.DcVoltage.Getting();
-                        digitalMult.DcVoltage.Range = rangePowerSupply;
-                        digitalMult.DcVoltage.Setting();
                         //массив из 17 измерений
                         var measPoints = new MeasPoint<Voltage>[16];
-                        Thread.Sleep(5000);
-                        digitalMult.DcVoltage.Getting();
-                        measPoints[0] = digitalMult.DcVoltage.Value;
+                        Thread.Sleep(3000);
+                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.Setting();
+                        measPoints[0] = digitalMult.DcVoltage.GetActiveMeasuredValue();
                         var U1 = digitalMult.DcVoltage.Value;
                         for (var i = 1; i < measPoints.Length; i++)
                         {
                             Thread.Sleep(1000); //пауза между измерениями должна быть 15 секунд
-                            digitalMult.DcVoltage.Getting();
-                            var Un = digitalMult.DcVoltage.Value;
+                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                            var Un = digitalMult.DcVoltage.GetActiveMeasuredValue();
                             //сразу посчитаем разности
                             measPoints[i] = measPoints[0] - Un;
                             measPoints[i].Abs();
@@ -929,7 +932,7 @@ namespace E364xAPlugin
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
-            }
+            
         }
 
         #endregion
@@ -1041,6 +1044,21 @@ namespace E364xAPlugin
                         ElectonicLoad.SetThisModuleAsWorking();
                         ElectonicLoad.SetResistanceMode();
                         ElectonicLoad.SetResistanceLevel(resistToLoad);
+
+
+
+                        powerSupply.OutputOn();
+                        ElectonicLoad.OutputOn();
+                        Thread.Sleep(1000);
+
+                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.Setting();
+                        var MeasVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        operation.Getting = MeasVolts;
+
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
+
                     }
                     catch (Exception e)
                     {
@@ -1052,19 +1070,7 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                        powerSupply.OutputOn();
-                        ElectonicLoad.OutputOn();
-                        Thread.Sleep(1000);
-
-                        digitalMult.DcVoltage.Range = operation.Expected;
-                        digitalMult.DcVoltage.Setting();
-                        digitalMult.DcVoltage.Getting();
-
-                        var MeasVolts = digitalMult.DcVoltage.Value;
-                        operation.Getting = MeasVolts;
-
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
+                        
 
                         operation.IsGood = () =>
                         {
