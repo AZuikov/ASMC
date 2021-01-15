@@ -286,7 +286,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 
             public MeasPoint<Current> GetMeasureCurrent()
             {
-                var answer = _powerSupply.QueryLine("MEASure::CURR:DC?");
+                var answer = _powerSupply.QueryLine("MEASure:CURR:DC?");
                 var numberAnswer = (decimal) StrToDouble(answer.Replace(',', '.'));
                 var answerPoint = new MeasPoint<Current>(numberAnswer);
                 return answerPoint;
@@ -294,7 +294,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 
             public MeasPoint<Voltage> GetMeasureVoltage()
             {
-                var answer = _powerSupply.QueryLine("MEASure::VOLT:DC?");
+                var answer = _powerSupply.QueryLine("MEASure:VOLT:DC?");
                 var numberAnswer = (decimal) StrToDouble(answer.Replace(',', '.'));
                 var answerPoint = new MeasPoint<Voltage>(numberAnswer);
                 return answerPoint;
