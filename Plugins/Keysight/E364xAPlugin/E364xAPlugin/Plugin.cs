@@ -79,10 +79,15 @@ namespace E364xAPlugin
 
             UserItemOperation = new IUserItemOperationBase[]
             {
+               
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
+
+                 #region outp1
+
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+
                 new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
@@ -95,17 +100,64 @@ namespace E364xAPlugin
                 new Oper7OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper7OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW), 
-                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH), 
+                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW), 
+                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP1, E364xRanges.LOW), 
+                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW), 
-                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH), 
+                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+
+                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+
+                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+
+                #endregion outp1
+
+                #region outp2
+                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper4AcVoltChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper4AcVoltChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+
+                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                
+
+                #endregion outp2
+
+
             };
         }
 
@@ -1916,7 +1968,178 @@ namespace E364xAPlugin
     }
 
 
-    public class OperXXXOutputVoltageMeasure : ParagraphBase<MeasPoint<Voltage>>
+    public class Oper12OutputcurrentMeasure : ParagraphBase<MeasPoint<Current>>
+    {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Fields
+
+        private readonly E364xChanels _chanel;
+        private readonly E364xRanges _voltRangeMode;
+        private MeasPoint<Voltage, Current> _voltRange;
+
+        #endregion
+
+        #region Property
+
+        
+
+        protected IElectronicLoad ElectonicLoad { get; set; }
+        protected E364xA powerSupply { get; set; }
+
+        #endregion
+
+        public Oper12OutputcurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
+            E364xRanges inVoltRange) :
+            base(userItemOperation)
+        {
+            _chanel = inChanel;
+            _voltRangeMode = inVoltRange;
+            Name =
+                $"Определение погрешности установки тока в режиме постоянного тока {_voltRangeMode} (канал {_chanel})";
+        }
+
+        #region Methods
+
+        protected override string GetReportTableName()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            ElectonicLoad = UserItemOperation
+                           .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
+                           .SelectedDevice as IElectronicLoad;
+            
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
+                                           .SelectedDevice as E364xA;
+
+            if (powerSupply == null || ElectonicLoad == null ) return;
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
+
+            //шаг в 20% от номинала напряжения
+            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            var CurrentLimit = new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity);
+            var CurrSteps =
+                CurrentLimit.GetArayMeasPointsInParcent(new MeasPoint<Current>(0), 0, 20, 40, 60, 80, 100);
+
+            foreach (var measPoint1 in CurrSteps)
+            {
+                var setPoint = (MeasPoint<Current>) measPoint1;
+                powerSupply.StringConnection = GetStringConnect(powerSupply);
+                ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
+
+                var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+                operation.Expected = setPoint;
+                operation.InitWork = async () =>
+                {
+                    try
+                    {
+                        powerSupply.ActiveE364XChanels = _chanel;
+                        powerSupply.SetRange(_voltRangeMode);
+                        operation.Comment = powerSupply.GetVoltageRange().Description;
+
+                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
+                        powerSupply.SetCurrentLevel(setPoint);
+                        operation.Expected = setPoint;
+
+                        decimal numb = 0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                       _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi();
+                        var resistToLoad =
+                            new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                      _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                        resistToLoad.Round(3);
+
+                        ElectonicLoad.SetThisModuleAsWorking();
+                        ElectonicLoad.SetResistanceMode();
+                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+
+                       
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    try
+                    {
+                        powerSupply.OutputOn();
+                        ElectonicLoad.OutputOn();
+                        Thread.Sleep(1000);
+                        var MeasStdCurr = ElectonicLoad.GetMeasureCurrent();
+                        operation.Getting = MeasStdCurr;
+
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
+
+                        operation.ErrorCalculation = (point, measPoint) =>
+                        {
+                            MeasPoint<Current> error =
+                                    new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value * 0.002M +
+                                                           0.010M);
+
+                            error.Round(4);
+                            return error;
+                        };
+
+                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.LowerTolerance.Round(4);
+                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.UpperTolerance.Round(4);
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            return (operation.Getting < operation.UpperTolerance) &
+                                   (operation.Getting > operation.LowerTolerance);
+                        };
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+                operation.CompliteWork = () =>
+                {
+                    if (operation.IsGood != null && !operation.IsGood())
+                    {
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox()
+                                             .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                                   $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
+                                                   $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
+                                                   $"Допустимое значение погрешности {operation.Error.Description}\n" +
+                                                   $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                                   $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
+                                                   "Повторить измерение этой точки?",
+                                                   "Информация по текущему измерению",
+                                                   MessageButton.YesNo, MessageIcon.Question,
+                                                   MessageResult.Yes);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    if (operation.IsGood == null)
+                        return Task.FromResult(true);
+                    return Task.FromResult(operation.IsGood());
+                };
+                DataRow.Add(DataRow.IndexOf(operation) == -1
+                                ? operation
+                                : (BasicOperationVerefication<MeasPoint<Current>>)operation.Clone());
+            }
+        }
+
+        #endregion
+    }
+
+    public class Oper13OutputVoltageMeasure : ParagraphBase<MeasPoint<Voltage>>
     {
         /*
          *Здесь производится измерение напряжения в режиме стабилизации ТОКА
@@ -1941,7 +2164,7 @@ namespace E364xAPlugin
 
         #endregion
 
-        public OperXXXOutputVoltageMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public Oper13OutputVoltageMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation)
         {
