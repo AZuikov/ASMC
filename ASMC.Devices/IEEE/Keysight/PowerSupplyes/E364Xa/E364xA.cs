@@ -18,7 +18,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         HIGH
     }
 
-    public abstract class E364xA : IeeeBase
+    public class E364xA : IeeeBase
     {
         public enum TriggerSource
         {

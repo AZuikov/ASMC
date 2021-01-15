@@ -22,30 +22,21 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
 {
-    public class Plugin : Program<Operation>
-    {
-        public Plugin(ServicePack service) : base(service)
-        {
-            Grsi = "26951-04";
-            Type = "E3640A - E3649A";
-        }
-    }
 
-    public class Operation : OperationMetrControlBase
+    public class Operation<T> : OperationMetrControlBase where T : E364xA
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation(ServicePack servicePack)
         {
             //это операция первичной поверки
-            UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack);
+            UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
         }
     }
-
     public class OpertionFirsVerf : ASMC.Core.Model.Operation
     {
-        public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
+        public OpertionFirsVerf(ServicePack servicePack, E364xA inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -56,11 +47,7 @@ namespace E364xAPlugin
                 new Device
                 {
                     Devices = new IDeviceRemote[] {new Keysight34401A_Mult()}, Description = "Цифровой мультиметр"
-                } //,
-                //new Device
-                //{
-                //    Devices = new IDeviceBase[] {new RTM2054()}, Description = "Цифровой осциллограф"
-                //}
+                }
             };
 
             TestDevices = new IDeviceUi[]
@@ -69,8 +56,7 @@ namespace E364xAPlugin
                 {
                     Devices = new IDeviceRemote[]
                     {
-                        new E3640A(), new E3641A(), new E3642A(), new E3643A(), new E3644A(), new E3645A(),
-                        new E3646A(), new E3647A(), new E3648A(), new E3649A()
+                        inPower
                     },
                     Description = "Мера напряжения и тока"
                 }
@@ -79,11 +65,10 @@ namespace E364xAPlugin
 
             UserItemOperation = new IUserItemOperationBase[]
             {
-               
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
 
-                 #region outp1
+                #region outp1
 
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
@@ -106,8 +91,8 @@ namespace E364xAPlugin
                 new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
                 new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
@@ -121,6 +106,7 @@ namespace E364xAPlugin
                 #endregion outp1
 
                 #region outp2
+
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
@@ -142,8 +128,8 @@ namespace E364xAPlugin
                 new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
                 new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper10UnstableAcVoltChange (this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
                 new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.LOW),
                 new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.HIGH),
@@ -153,11 +139,8 @@ namespace E364xAPlugin
 
                 new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
                 new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
-                
 
                 #endregion outp2
-
-
             };
         }
 
@@ -216,6 +199,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+           
+
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
@@ -382,6 +367,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
 
             ElectonicLoad = UserItemOperation
@@ -483,6 +470,11 @@ namespace E364xAPlugin
                     Logger.Error(e);
                     throw;
                 }
+                finally
+                {
+                    powerSupply.OutputOff();
+                    ElectonicLoad.OutputOff();
+                }
             };
             operation.CompliteWork = () =>
             {
@@ -541,6 +533,7 @@ namespace E364xAPlugin
             base(userItemOperation)
         {
             _chanel = inChanel;
+            
 
             _voltRangeMode = inVoltRange;
             Name =
@@ -592,6 +585,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
@@ -687,6 +682,11 @@ namespace E364xAPlugin
                     Logger.Error(e);
                     throw;
                 }
+                finally
+                {
+                    powerSupply.OutputOff();
+                    ElectonicLoad.OutputOff();
+                }
             };
             operation.CompliteWork = () =>
             {
@@ -760,6 +760,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
             //  !!!!! сейчас этот пункт не выполняется. Было принято решение написать заглушку без использования приборов !!!!
 
@@ -867,6 +869,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
@@ -968,6 +972,11 @@ namespace E364xAPlugin
                     Logger.Error(e);
                     throw;
                 }
+                finally
+                {
+                    powerSupply.OutputOff();
+                    ElectonicLoad.OutputOff();
+                }
             };
             operation.CompliteWork = () =>
             {
@@ -1041,6 +1050,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
@@ -1143,6 +1154,11 @@ namespace E364xAPlugin
                         Logger.Error(e);
                         throw;
                     }
+                    finally
+                    {
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
+                    }
                 };
                 operation.CompliteWork = () =>
                 {
@@ -1215,6 +1231,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
@@ -1311,6 +1329,11 @@ namespace E364xAPlugin
                         Logger.Error(e);
                         throw;
                     }
+                    finally
+                    {
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
+                    }
                 };
                 operation.CompliteWork = () =>
                 {
@@ -1358,8 +1381,6 @@ namespace E364xAPlugin
         #endregion
 
         #region Property
-
-        
 
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
@@ -1423,23 +1444,22 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
 
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
                            .SelectedDevice as IElectronicLoad;
 
-            
-
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
 
             if (powerSupply == null || ElectonicLoad == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
-            ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
-            
+            ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
-            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
 
             var operation = new BasicOperationVerefication<MeasPoint<Current>>();
 
@@ -1456,7 +1476,7 @@ namespace E364xAPlugin
                                                                           .AdditionalPhysicalQuantity));
                     // расчитаем идеальное значение для электронной нагрузки
                     var resistToLoad =
-                        new MeasPoint<Resistance>(0.95M*_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                        new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                   _voltRange
                                                      .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
                     resistToLoad.Round(3);
@@ -1482,8 +1502,8 @@ namespace E364xAPlugin
 
                     var i1 = ElectonicLoad.GetMeasureCurrent();
                     //подключаем второе сопротивление т.е. уменьшаем текущее в 2 раза
-                    var resistance =ElectonicLoad.GetResistnceLevel();
-                    ElectonicLoad.SetResistanceLevel(resistance/2);
+                    var resistance = ElectonicLoad.GetResistnceLevel();
+                    ElectonicLoad.SetResistanceLevel(resistance / 2);
                     Thread.Sleep(1000);
                     var i2 = ElectonicLoad.GetMeasureCurrent();
 
@@ -1501,7 +1521,7 @@ namespace E364xAPlugin
                                                                           .MainPhysicalQuantity
                                                                           .GetNoramalizeValueToSi() +
                                                                  0.000250M);
-                        
+
                         return resultError;
                     };
                     operation.UpperTolerance = operation.Expected + operation.Error;
@@ -1519,6 +1539,11 @@ namespace E364xAPlugin
                 {
                     Logger.Error(e);
                     throw;
+                }
+                finally
+                {
+                    powerSupply.OutputOff();
+                    ElectonicLoad.OutputOff();
                 }
             };
             operation.CompliteWork = () =>
@@ -1547,13 +1572,11 @@ namespace E364xAPlugin
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                             ? operation
-                            : (BasicOperationVerefication<MeasPoint<Current>>)operation.Clone());
+                            : (BasicOperationVerefication<MeasPoint<Current>>) operation.Clone());
         }
 
         #endregion
     }
-
-
 
     public class Oper10UnstableAcVoltChange : ParagraphBase<MeasPoint<Current>>
     {
@@ -1568,8 +1591,6 @@ namespace E364xAPlugin
         #endregion
 
         #region Property
-
-        
 
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
@@ -1633,22 +1654,22 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
 
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
                            .SelectedDevice as IElectronicLoad;
 
-           
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
 
             if (powerSupply == null || ElectonicLoad == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
-            ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
-           
+            ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
-            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
 
             var operation = new BasicOperationVerefication<MeasPoint<Current>>();
 
@@ -1692,13 +1713,13 @@ namespace E364xAPlugin
                     var i1 = ElectonicLoad.GetMeasureCurrent();
                     operation.Expected = i1;
                     i1.Round(3);
-                    
+
                     Thread.Sleep(1000);
                     var i2 = ElectonicLoad.GetMeasureCurrent();
 
                     powerSupply.OutputOff();
                     ElectonicLoad.OutputOff();
-                    
+
                     i2.Round(3);
                     operation.Getting = i2;
 
@@ -1729,6 +1750,11 @@ namespace E364xAPlugin
                     Logger.Error(e);
                     throw;
                 }
+                finally
+                {
+                    powerSupply.OutputOff();
+                    ElectonicLoad.OutputOff();
+                }
             };
             operation.CompliteWork = () =>
             {
@@ -1756,7 +1782,7 @@ namespace E364xAPlugin
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                             ? operation
-                            : (BasicOperationVerefication<MeasPoint<Current>>)operation.Clone());
+                            : (BasicOperationVerefication<MeasPoint<Current>>) operation.Clone());
         }
 
         #endregion
@@ -1775,8 +1801,6 @@ namespace E364xAPlugin
         #endregion
 
         #region Property
-
-        
 
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
@@ -1838,7 +1862,9 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork(token);
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
+                base.InitWork(token);
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
                            .SelectedDevice as IElectronicLoad;
@@ -1848,9 +1874,9 @@ namespace E364xAPlugin
 
             if (powerSupply == null || ElectonicLoad == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
-            ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
-            
-            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
+
+            _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
 
             var operation = new BasicOperationVerefication<MeasPoint<Current>>();
 
@@ -1890,7 +1916,7 @@ namespace E364xAPlugin
                     for (var i = 1; i < measPoints.Length; i++)
                     {
                         Thread.Sleep(1000); //пауза между измерениями должна быть 15 секунд
-                        
+
                         var In = ElectonicLoad.GetMeasureCurrent();
                         //сразу посчитаем разности
                         measPoints[i] = measPoints[0] - In;
@@ -1910,8 +1936,8 @@ namespace E364xAPlugin
                     operation.ErrorCalculation = (point, measPoint) =>
                     {
                         var resultError = new MeasPoint<Current>(0.001M * I1
-                                                                          .MainPhysicalQuantity
-                                                                          .GetNoramalizeValueToSi() +
+                                                                         .MainPhysicalQuantity
+                                                                         .GetNoramalizeValueToSi() +
                                                                  0.001M);
                         resultError.Round(3);
                         return resultError;
@@ -1933,6 +1959,11 @@ namespace E364xAPlugin
                 {
                     Logger.Error(e);
                     throw;
+                }
+                finally
+                {
+                    powerSupply.OutputOff();
+                    ElectonicLoad.OutputOff();
                 }
             };
             operation.CompliteWork = () =>
@@ -1961,12 +1992,11 @@ namespace E364xAPlugin
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                             ? operation
-                            : (BasicOperationVerefication<MeasPoint<Current>>)operation.Clone());
+                            : (BasicOperationVerefication<MeasPoint<Current>>) operation.Clone());
         }
 
         #endregion
     }
-
 
     public class Oper12OutputcurrentMeasure : ParagraphBase<MeasPoint<Current>>
     {
@@ -1981,8 +2011,6 @@ namespace E364xAPlugin
         #endregion
 
         #region Property
-
-        
 
         protected IElectronicLoad ElectonicLoad { get; set; }
         protected E364xA powerSupply { get; set; }
@@ -2008,19 +2036,21 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
                            .SelectedDevice as IElectronicLoad;
-            
+
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
                                            .SelectedDevice as E364xA;
 
-            if (powerSupply == null || ElectonicLoad == null ) return;
+            if (powerSupply == null || ElectonicLoad == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
             //шаг в 20% от номинала напряжения
-            _voltRange = powerSupply.Ranges[(int)_voltRangeMode];
+            _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
             var CurrentLimit = new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity);
             var CurrSteps =
                 CurrentLimit.GetArayMeasPointsInParcent(new MeasPoint<Current>(0), 0, 20, 40, 60, 80, 100);
@@ -2029,7 +2059,7 @@ namespace E364xAPlugin
             {
                 var setPoint = (MeasPoint<Current>) measPoint1;
                 powerSupply.StringConnection = GetStringConnect(powerSupply);
-                ((IeeeBase)ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine)ElectonicLoad);
+                ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
                 operation.Expected = setPoint;
@@ -2045,8 +2075,8 @@ namespace E364xAPlugin
                         powerSupply.SetCurrentLevel(setPoint);
                         operation.Expected = setPoint;
 
-                        decimal numb = 0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                       _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi();
+                        var numb = 0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                   _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi();
                         var resistToLoad =
                             new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                       _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
@@ -2055,8 +2085,6 @@ namespace E364xAPlugin
                         ElectonicLoad.SetThisModuleAsWorking();
                         ElectonicLoad.SetResistanceMode();
                         ElectonicLoad.SetResistanceLevel(resistToLoad);
-
-                       
                     }
                     catch (Exception e)
                     {
@@ -2079,9 +2107,9 @@ namespace E364xAPlugin
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
-                            MeasPoint<Current> error =
-                                    new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value * 0.002M +
-                                                           0.010M);
+                            var error =
+                                new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value * 0.002M +
+                                                       0.010M);
 
                             error.Round(4);
                             return error;
@@ -2104,6 +2132,11 @@ namespace E364xAPlugin
                     {
                         Logger.Error(e);
                         throw;
+                    }
+                    finally
+                    {
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
                     }
                 };
                 operation.CompliteWork = () =>
@@ -2132,7 +2165,7 @@ namespace E364xAPlugin
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<MeasPoint<Current>>)operation.Clone());
+                                : (BasicOperationVerefication<MeasPoint<Current>>) operation.Clone());
             }
         }
 
@@ -2183,6 +2216,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+
             base.InitWork(token);
             ElectonicLoad = UserItemOperation
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
@@ -2266,6 +2301,11 @@ namespace E364xAPlugin
                     {
                         Logger.Error(e);
                         throw;
+                    }
+                    finally
+                    {
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
                     }
                 };
                 operation.BodyWorkAsync = () =>
