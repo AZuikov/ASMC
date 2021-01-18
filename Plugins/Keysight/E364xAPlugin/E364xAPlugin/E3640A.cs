@@ -9,14 +9,14 @@ using E364xAPlugin;
 
 namespace E364xAPlugin
 {
-    public class E3640A_Plugin : Program<Operation<E3640A>>
+    public class E3640A : Program<Operation<ASMC.Devices.IEEE.Keysight.PowerSupplyes.E3640A>>
     {
-        public E3640A_Plugin(ServicePack service) : base(service)
+        public E3640A(ServicePack service) : base(service)
         {
             Grsi = "26951-04";
             Type = "E3640A";
 
-            var testPowerSupply = new E3640A();
+            var testPowerSupply = new ASMC.Devices.IEEE.Keysight.PowerSupplyes.E3640A();
             var ranges = testPowerSupply.Ranges;
             foreach (var range in ranges)
                 Range = Range + $"{range.Description}; ";
