@@ -69,7 +69,7 @@ namespace E364xAPlugin
                 new Oper2Oprobovanie(this),
 
                 #region outp1
-
+                
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
                 new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
@@ -142,6 +142,8 @@ namespace E364xAPlugin
 
                 #endregion outp2
             };
+
+            
         }
 
         #region Methods

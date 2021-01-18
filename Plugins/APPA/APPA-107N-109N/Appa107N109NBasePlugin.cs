@@ -564,6 +564,10 @@ namespace APPA_107N_109N
                             Logger.Error(e);
                             throw;
                         }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        }
                     };
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -1135,6 +1139,10 @@ namespace APPA_107N_109N
                         {
                             Logger.Error(e);
                             throw;
+                        }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -1842,6 +1850,10 @@ namespace APPA_107N_109N
                             Logger.Error(e);
                             throw;
                         }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        }
                     };
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -2395,6 +2407,10 @@ namespace APPA_107N_109N
                             Logger.Error(e);
                             throw;
                         }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        }
                     };
 
                     operation.CompliteWork = () =>
@@ -2901,6 +2917,10 @@ namespace APPA_107N_109N
                         {
                             Logger.Error(e);
                             throw;
+                        }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -3721,6 +3741,10 @@ namespace APPA_107N_109N
                             Logger.Error(e);
                             throw;
                         }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                        }
                     };
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -3979,6 +4003,10 @@ namespace APPA_107N_109N
                         {
                             Logger.Error(e);
                             throw;
+                        }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
                     operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -4563,6 +4591,10 @@ namespace APPA_107N_109N
                         {
                             Logger.Error(e);
                             throw;
+                        }
+                        finally
+                        {
+                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
 
