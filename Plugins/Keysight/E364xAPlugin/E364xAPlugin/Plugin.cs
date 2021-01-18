@@ -20,7 +20,7 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
 {
-    public class Operation<T> : OperationMetrControlBase where T : E364xA
+    public class Operation<T> : OperationMetrControlBase where T : E364xADevice
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation(ServicePack servicePack)
@@ -34,7 +34,7 @@ namespace E364xAPlugin
 
     public class OpertionFirsVerf : Operation
     {
-        public OpertionFirsVerf(ServicePack servicePack, E364xA inPower) : base(servicePack)
+        public OpertionFirsVerf(ServicePack servicePack, E364xADevice inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -68,75 +68,75 @@ namespace E364xAPlugin
 
                 #region outp1
 
-                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new UnstableVoltToLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new UnstableVoltToLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper4AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new AcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new VoltageTransientDuration(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new VoltageTransientDuration(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new UnstableVoltageOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new OutputVoltageSetting(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new OutputCurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new UnstableCurrentLoadChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new UnstableAcVoltChange(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new UnstableAcVoltChange(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new UnstableCurrentOnTime(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new OutputcurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new OutputcurrentMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
-                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
-                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
+                new OutputVoltageMeasure(this, E364xChanels.OUTP1, E364xRanges.LOW),
+                new OutputVoltageMeasure(this, E364xChanels.OUTP1, E364xRanges.HIGH),
 
                 #endregion outp1
 
                 #region outp2
 
-                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper3UnstableVoltageLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new UnstableVoltToLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new UnstableVoltToLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper4AcVoltChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper4AcVoltChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new AcVoltChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new AcVoltChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper5VoltageTransientDuration(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new VoltageTransientDuration(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new VoltageTransientDuration(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper6UnstableVoltageOnTime(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new UnstableVoltageOnTime(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new UnstableVoltageOnTime(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper7OutputVoltageSetting(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new OutputVoltageSetting(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new OutputVoltageSetting(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper8OutputCurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new OutputCurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new OutputCurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper9UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new UnstableCurrentLoadChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper10UnstableAcVoltChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new UnstableAcVoltChange(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new UnstableAcVoltChange(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper11UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new UnstableCurrentOnTime(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper12OutputcurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new OutputcurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new OutputcurrentMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
-                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
-                new Oper13OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
+                new OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.LOW),
+                new OutputVoltageMeasure(this, E364xChanels.OUTP2, E364xRanges.HIGH),
 
                 #endregion outp2
             };
@@ -264,7 +264,7 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xADevice != null)
                                            .SelectedDevice as E36XX_IPowerSupply;
             if (powerSupply == null) return;
             ((IeeeBase) powerSupply).StringConnection = GetStringConnect((IProtocolStringLine) powerSupply);
@@ -285,9 +285,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper3UnstableVoltageLoadChange : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class UnstableVoltToLoadChange : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
     {
-        public Oper3UnstableVoltageLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -458,9 +458,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper4AcVoltChange : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class AcVoltChange : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
     {
-        public Oper4AcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel, E364xRanges inVoltRange) :
+        public AcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel, E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
             Name =
@@ -626,9 +626,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper5VoltageTransientDuration : BasePowerSupplyProcedure<MeasPoint<Time>>
+    public class VoltageTransientDuration : BasePowerSupplyProcedure<MeasPoint<Time>>
     {
-        public Oper5VoltageTransientDuration(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public VoltageTransientDuration(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -650,6 +650,7 @@ namespace E364xAPlugin
             operation.BodyWorkAsync = () =>
             {
                 operation.Expected = new MeasPoint<Time>(0, UnitMultiplier.Micro);
+                //todo сдедлать для ускоренной поверки автоматическую подстановку числа с длительностью, а для обычной поверки диалоговое окно с вводом чисал
                 operation.Getting = new MeasPoint<Time>(MathStatistics.RandomToRange(0, 37), UnitMultiplier.Micro);
                 operation.Getting.Round(2);
                 operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
@@ -662,9 +663,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper6UnstableVoltageOnTime : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class UnstableVoltageOnTime : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
     {
-        public Oper6UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -835,9 +836,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper7OutputVoltageSetting : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class OutputVoltageSetting : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
     {
-        public Oper7OutputVoltageSetting(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public OutputVoltageSetting(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -974,9 +975,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper8OutputCurrentMeasure : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class OutputCurrentMeasure : BasePowerSupplyProcedure<MeasPoint<Current>>
     {
-        public Oper8OutputCurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public OutputCurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -1112,9 +1113,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper9UnstableCurrentLoadChange : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class UnstableCurrentLoadChange : BasePowerSupplyProcedure<MeasPoint<Current>>
     {
-        public Oper9UnstableCurrentLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public UnstableCurrentLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -1284,9 +1285,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper10UnstableAcVoltChange : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class UnstableAcVoltChange : BasePowerSupplyProcedure<MeasPoint<Current>>
     {
-        public Oper10UnstableAcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public UnstableAcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -1456,9 +1457,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper11UnstableCurrentOnTime : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class UnstableCurrentOnTime : BasePowerSupplyProcedure<MeasPoint<Current>>
     {
-        public Oper11UnstableCurrentOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public UnstableCurrentOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -1630,9 +1631,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper12OutputcurrentMeasure : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class OutputcurrentMeasure : BasePowerSupplyProcedure<MeasPoint<Current>>
     {
-        public Oper12OutputcurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public OutputcurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {
@@ -1769,14 +1770,14 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class Oper13OutputVoltageMeasure : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class OutputVoltageMeasure : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
     {
         /*
          *Здесь производится измерение напряжения в режиме стабилизации ТОКА
          *изменяется уставка по току, а контролируется напряжения внешним вольтметром и всттроенным вольтметром источника питания
          */
 
-        public Oper13OutputVoltageMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public OutputVoltageMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel,
             E364xRanges inVoltRange) :
             base(userItemOperation, inChanel, inVoltRange)
         {

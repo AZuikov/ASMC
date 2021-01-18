@@ -55,7 +55,7 @@ namespace E364xAPlugin
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
-        protected E364xA powerSupply { get; set; }
+        protected E364xADevice powerSupply { get; set; }
 
         #endregion
 
@@ -79,8 +79,8 @@ namespace E364xAPlugin
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
                            .SelectedDevice as IElectronicLoad;
 
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xA != null)
-                                           .SelectedDevice as E364xA;
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xADevice != null)
+                                           .SelectedDevice as E364xADevice;
 
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
