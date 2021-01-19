@@ -287,7 +287,8 @@ namespace ASMC.ViewModel
             if (document == null) throw new NullReferenceException($"Шаблон {filename} не найден!");
             var a = new Document.ConditionalFormatting
             {
-                Color = Color.IndianRed,
+                Default = Color.White,
+                Select = Color.IndianRed,
                 Condition = Document.ConditionalFormatting.Conditions.Equal,
                 Region = Document.ConditionalFormatting.RegionAction.Row,
                 Value = "Брак",

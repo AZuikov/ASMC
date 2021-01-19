@@ -442,12 +442,15 @@ namespace AP.Reports.AutoDocumets
                 {
                     if (!DoesItNeedToSetCondition(_document.GetText(row?.Cells[formatingColumn]?.ContentRange), cf))
                     {
+                        if (cf.Default != null)
+                            CellsPainting(cf.Default);
+                        
                         continue;
                     }
 
                     if (cf.Region == ConditionalFormatting.RegionAction.Cell)
                     {
-                        row[formatingColumn].BackgroundColor = cf.Color;
+                        row[formatingColumn].BackgroundColor = cf.Select;
                     }
 
                     if (cf.Region != ConditionalFormatting.RegionAction.Row)
@@ -455,19 +458,25 @@ namespace AP.Reports.AutoDocumets
                         continue;
                     }
 
-                    foreach (var cell in row.Cells)
-                    {
-                        cell.BackgroundColor = cf.Color;
-                    }
+                    CellsPainting(cf.Select);
                 }
                 catch (Exception e)
                 {
 
                 }
-               
+
+                void CellsPainting(Color inColor)
+                {
+                    foreach (var cell in row.Cells)
+                    {
+                        cell.BackgroundColor = inColor;
+                    }
+                }
                
             }
         }
+
+        
 
         /// <summary>
         /// Определяет, соответствует ли ячейка таблицы условию из набора правил ConditionalFormatting

@@ -93,9 +93,15 @@ namespace AP.Reports.AutoDocumets
             public string Value { get; set; }
 
             /// <summary>
-            /// Цвет заливки
+            /// Цвет заливки для выделения.
             /// </summary>
-            public Color Color { get; set; }
+            public Color Select { get; set; }
+            /// <summary>
+            /// Цвет заливки по умолчанию.
+            /// </summary>
+            public Color Default { get; set; }
+            
+
 
             /// <summary>
             /// Область заливки

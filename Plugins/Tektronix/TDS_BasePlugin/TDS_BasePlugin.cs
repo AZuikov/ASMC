@@ -82,7 +82,7 @@ namespace TDS_BasePlugin
                 {new Device {Devices = new IDeviceRemote[] {new TDS_Oscilloscope()}, Description = "Цифровой осциллограф."}};
             Accessories = new[]
             {
-                "Интерфейсный кабель для клибратора (GPIB)"
+                "Интерфейсный кабель для калибратора (GPIB)"
             };
 
             DocumentName = "32618-06 TDS";

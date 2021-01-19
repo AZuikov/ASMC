@@ -21,8 +21,7 @@ namespace E364xAPlugin
 
         #endregion
 
-        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation, E364xChanels inChanel,
-            E364xRanges inVoltRange) : base(userItemOperation, inChanel, inVoltRange)
+        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation, E364xChanels inChanel) : base(userItemOperation, inChanel)
         {
         }
 
@@ -47,8 +46,10 @@ namespace E364xAPlugin
         #region Fields
 
         protected readonly E364xChanels _chanel;
-        protected readonly E364xRanges _voltRangeMode;
-        protected MeasPoint<Voltage, Current> _voltRange;
+        
+        protected const string ConstGood = "Годен";
+        protected const string ConstBad = "Брак";
+        protected const string ConstNotUsed = "Не выполнено";
 
         #endregion
 
@@ -59,13 +60,10 @@ namespace E364xAPlugin
 
         #endregion
 
-        protected BasePowerSupplyProcedure(IUserItemOperation userItemOperation, E364xChanels inChanel,
-            E364xRanges inVoltRange) :
+        protected BasePowerSupplyProcedure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation)
         {
             _chanel = inChanel;
-
-            _voltRangeMode = inVoltRange;
         }
 
         #region Methods
@@ -85,7 +83,7 @@ namespace E364xAPlugin
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
 
-            _voltRange = powerSupply.Ranges[(int) _voltRangeMode];
+            
         }
 
         protected override string GetReportTableName()

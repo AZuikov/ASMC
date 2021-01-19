@@ -531,7 +531,8 @@ namespace AP.Reports.AutoDocumets
                     ? range.Range(row, formatingColumn, row, formatingColumn)
                     : range.Range(row, 1, row, range.ColumnCount());
 
-            rangeToFormating.Style.Fill.BackgroundColor = XLColor.FromColor(conditional.Color);
+            rangeToFormating.Style.Fill.BackgroundColor = XLColor.FromColor(conditional.Select);
+            
         }
 
         /// <summary>
