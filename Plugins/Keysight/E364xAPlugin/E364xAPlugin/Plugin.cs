@@ -685,15 +685,15 @@ namespace E364xAPlugin
                 var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
-                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Измеренное значение дрейфа"] = dds.Getting?.Description;
+                dataRow["Предел напряжения канала"] = dds?.Comment;
+                dataRow["Абсолютное отклонение напряжения"] = dds.Getting?.Description;
                 dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
                 dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count] = "не выполнено";
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
                 else
-                    dataRow[dataTable.Columns.Count] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -704,8 +704,8 @@ namespace E364xAPlugin
         {
             return new[]
             {
-                "Предел воспроизведения напряжения",
-                "Измеренное значение дрейфа",
+                "Предел напряжения канала",
+                "Абсолютное отклонение напряжения",
                 "Минимальное допустимое значение",
                 "Максимальное допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
@@ -852,6 +852,44 @@ namespace E364xAPlugin
 
         #region Methods
 
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow["Предел напряжения канала"] = dds?.Comment;
+                dataRow["Поверяемая точка"] = dds.Expected?.Description;
+                dataRow["Измеренное значение"] = dds.Getting?.Description;
+                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
+                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+
+                if (dds.IsGood == null)
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
+                else
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел напряжения канала",
+                "Поверяемая точка",
+                "Измеренное значение",
+                "Минимальное допустимое значение",
+                "Максимальное допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
         protected override void InitWork(CancellationTokenSource token)
         {
             
@@ -997,6 +1035,44 @@ namespace E364xAPlugin
         }
 
         #region Methods
+
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow["Предел напряжения канала"] = dds?.Comment;
+                dataRow["Поверяемая точка"] = dds.Expected?.Description;
+                dataRow["Измеренное значение"] = dds.Getting?.Description;
+                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
+                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+
+                if (dds.IsGood == null)
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
+                else
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел напряжения канала",
+                "Поверяемая точка",
+                "Измеренное значение",
+                "Минимальное допустимое значение",
+                "Максимальное допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
 
         protected override void InitWork(CancellationTokenSource token)
         {

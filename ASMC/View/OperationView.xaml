@@ -43,7 +43,7 @@
                                             <DataTrigger Binding="{Binding Path= IsWork}"  Value="true">
                                                 <Setter Property="Foreground" Value="Blue"/>
                                             </DataTrigger>
-                                        </Style.Triggers>
+                                            </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
