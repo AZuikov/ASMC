@@ -133,7 +133,7 @@ namespace E364xAPlugin
             {
                 var dds = DataRow[0] as BasicOperation<bool>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds?.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -202,7 +202,7 @@ namespace E364xAPlugin
             if (DataRow.Count == 1)
             {
                 var dds = DataRow[0] as BasicOperation<bool>;
-                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds?.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -264,8 +264,7 @@ namespace E364xAPlugin
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow["Предел канала"] = dds?.Comment;
-
-                dataRow["Разность U1 - U2"] = dds?.Getting?.Description;
+                dataRow["Разность U1 - U2"] = dds.Getting?.Description;
                 dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
                 dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
@@ -444,7 +443,7 @@ namespace E364xAPlugin
                 if (dds == null) continue;
                 dataRow["Предел канала"] = dds?.Comment;
 
-                dataRow["Разность U1 - U2"] = dds?.Getting?.Description;
+                dataRow["Разность U1 - U2"] = dds.Getting?.Description;
                 dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
                 dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
@@ -616,7 +615,7 @@ namespace E364xAPlugin
                 var dds = row as BasicOperationVerefication<MeasPoint<Time>>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
-                dataRow["Среднее значение времени переходного процесса"] = dds?.Getting?.Description;
+                dataRow["Среднее значение времени переходного процесса"] = dds.Getting?.Description;
                 dataRow["Максимально допустимое значение"] = dds?.Error?.Description;
 
                 if (dds.IsGood == null)
@@ -687,8 +686,8 @@ namespace E364xAPlugin
                 if (dds == null) continue;
                 dataRow["Предел напряжения канала"] = dds?.Comment;
                 dataRow["Абсолютное отклонение напряжения"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -863,10 +862,10 @@ namespace E364xAPlugin
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow["Предел напряжения канала"] = dds?.Comment;
-                dataRow["Поверяемая точка"] = dds.Expected?.Description;
+                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
                 dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -967,6 +966,7 @@ namespace E364xAPlugin
                             digitalMult.DcVoltage.Setting();
                             var MeasVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
                             operation.Getting = MeasVolts;
+                            operation.Getting.Round(4);
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -1047,10 +1047,10 @@ namespace E364xAPlugin
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow["Предел напряжения канала"] = dds?.Comment;
-                dataRow["Поверяемая точка"] = dds.Expected?.Description;
+                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
                 dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -1131,8 +1131,10 @@ namespace E364xAPlugin
 
                             var StdCurr = ElectonicLoad.GetMeasureCurrent();
                             operation.Expected = StdCurr;
+                            operation.Expected.Round(4);
                             var MeasPowerSupplyCurr = powerSupply.MEAS.GetMeasureCurrent();
                             operation.Getting = MeasPowerSupplyCurr;
+                            operation.Getting.Round(4);
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -1230,8 +1232,8 @@ namespace E364xAPlugin
                 if (dds == null) continue;
                 dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
                 dataRow["Измеренное значение нестабильности"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -1325,6 +1327,7 @@ namespace E364xAPlugin
                                                                               .MainPhysicalQuantity
                                                                               .GetNoramalizeValueToSi() +
                                                                      0.000250M);
+                            resultError.Round(4);
 
                             return resultError;
                         };
@@ -1405,7 +1408,7 @@ namespace E364xAPlugin
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Измеренное значение нестабильности"] = dds?.Getting?.Description;
+                dataRow["Измеренное значение нестабильности"] = dds.Getting?.Description;
                 dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
                 dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
@@ -1582,8 +1585,8 @@ namespace E364xAPlugin
                 if (dds == null) continue;
                 dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
                 dataRow["Измеренное значение дрейфа"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -1748,6 +1751,44 @@ namespace E364xAPlugin
 
         #region Methods
 
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
+                dataRow["Измеренное значение"] = dds.Getting?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+
+                if (dds.IsGood == null)
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
+                else
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел воспроизведения напряжения",
+                "Поверяемая точка",
+                "Измеренное значение",
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
         protected override void InitWork(CancellationTokenSource token)
         {
             
@@ -1771,7 +1812,7 @@ namespace E364xAPlugin
                     var setPoint = (MeasPoint<Current>)measPoint1;
 
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                    operation.Expected = setPoint;
+                    
                     operation.InitWork = async () =>
                     {
                         try
@@ -1810,6 +1851,7 @@ namespace E364xAPlugin
                             Thread.Sleep(1000);
                             var MeasStdCurr = ElectonicLoad.GetMeasureCurrent();
                             operation.Getting = MeasStdCurr;
+                            operation.Getting.Round(4);
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -1898,6 +1940,44 @@ namespace E364xAPlugin
 
         #region Methods
 
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
+                dataRow["Измеренное значение"] = dds.Getting?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+
+                if (dds.IsGood == null)
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
+                else
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел воспроизведения напряжения",
+                "Поверяемая точка",
+                "Измеренное значение",
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
         protected override void InitWork(CancellationTokenSource token)
         {
             
@@ -1957,17 +2037,7 @@ namespace E364xAPlugin
                             ElectonicLoad.SetResistanceMode();
                             ElectonicLoad.SetResistanceLevel(resistToLoad);
 
-                            powerSupply.OutputOn();
-                            ElectonicLoad.OutputOn();
-                            Thread.Sleep(1000);
-
-                            digitalMult.DcVoltage.AutoRange = true;
-                            digitalMult.DcVoltage.Setting();
-                            var MeasVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
-                            operation.Getting = MeasVolts;
-
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
+                            
                         }
                         catch (Exception e)
                         {
@@ -1984,6 +2054,19 @@ namespace E364xAPlugin
                     {
                         try
                         {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+                            Thread.Sleep(1000);
+
+                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                            var MeasVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                            operation.Getting = MeasVolts;
+                            operation.Getting.Round(4);
+
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
+
                             operation.IsGood = () =>
                             {
                                 if (operation.Getting == null || operation.Expected == null ||
