@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data;
+using System.Linq;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Core.Model;
@@ -13,7 +14,7 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
 {
-    public abstract class BasePowerSupplyWithDigitMult<T> : BasePowerSupplyProcedure<T>
+    public abstract class BasePowerSupplyWithDigitMult<T> : BasePowerSupplyProcedure<T> where T : PhysicalQuantity<T>, new()
     {
         #region Property
 
@@ -36,10 +37,12 @@ namespace E364xAPlugin
             ((IeeeBase) digitalMult).StringConnection = GetStringConnect(digitalMult);
         }
 
+       
+
         #endregion
     }
 
-    public abstract class BasePowerSupplyProcedure<T> : ParagraphBase<T>
+    public abstract class BasePowerSupplyProcedure<T> : ParagraphBase<MeasPoint<T>> where T : PhysicalQuantity<T>, new()
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -89,6 +92,31 @@ namespace E364xAPlugin
         protected override string GetReportTableName()
         {
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name + _chanel;
+        }
+
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint<T>>;
+                // ReSharper disable once PossibleNullReferenceException
+                if (dds == null) continue;
+                dataRow[0] = dds?.Comment;
+                dataRow[1] = dds.Getting?.Description;
+                dataRow[2] = dds?.LowerTolerance?.Description;
+                dataRow[3] = dds?.UpperTolerance?.Description;
+
+                if (dds.IsGood == null)
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
+                else
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
         }
 
         #endregion

@@ -242,7 +242,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class UnstableVoltToLoadChange : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class UnstableVoltToLoadChange : BasePowerSupplyWithDigitMult<Voltage>
     {
         public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -253,30 +253,30 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
-        {
-            var dataTable = base.FillData();
+        //protected override DataTable FillData()
+        //{
+        //    var dataTable = base.FillData();
 
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел канала"] = dds?.Comment;
-                dataRow["Разность U1 - U2"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        //    foreach (var row in DataRow)
+        //    {
+        //        var dataRow = dataTable.NewRow();
+        //        var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
+        //        // ReSharper disable once PossibleNullReferenceException
+        //        if (dds == null) continue;
+        //        dataRow["Предел канала"] = dds?.Comment;
+        //        dataRow["Разность U1 - U2"] = dds.Getting?.Description;
+        //        dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+        //        dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
+        //        if (dds.IsGood == null)
+        //            dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
+        //        else
+        //            dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
+        //        dataTable.Rows.Add(dataRow);
+        //    }
 
-            return dataTable;
-        }
+        //    return dataTable;
+        //}
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -420,7 +420,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class AcVoltChange : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class AcVoltChange : BasePowerSupplyWithDigitMult<Voltage>
     {
         public AcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -594,7 +594,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class VoltageTransientDuration : BasePowerSupplyProcedure<MeasPoint<Time>>
+    public class VoltageTransientDuration : BasePowerSupplyProcedure<Time>
     {
         public VoltageTransientDuration(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -664,7 +664,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class UnstableVoltageOnTime : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class UnstableVoltageOnTime : BasePowerSupplyWithDigitMult<Voltage>
     {
         public UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -840,7 +840,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class OutputVoltageSetting : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class OutputVoltageSetting : BasePowerSupplyWithDigitMult<Voltage>
     {
         public OutputVoltageSetting(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -1025,7 +1025,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class OutputCurrentMeasure : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class OutputCurrentMeasure : BasePowerSupplyProcedure<Current>
     {
         public OutputCurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -1209,7 +1209,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class UnstableCurrentLoadChange : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class UnstableCurrentLoadChange : BasePowerSupplyProcedure<Current>
     {
         public UnstableCurrentLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -1386,7 +1386,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class UnstableCurrentToAcChange : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class UnstableCurrentToAcChange : BasePowerSupplyProcedure<Current>
     {
         public UnstableCurrentToAcChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -1563,7 +1563,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class UnstableCurrentOnTime : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class UnstableCurrentOnTime : BasePowerSupplyProcedure<Current>
     {
         public UnstableCurrentOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -1740,7 +1740,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class OutputCurrentSetup : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class OutputCurrentSetup : BasePowerSupplyProcedure<Current>
     {
         public OutputCurrentSetup(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
@@ -1924,7 +1924,7 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class OutputVoltageMeasure : BasePowerSupplyWithDigitMult<MeasPoint<Voltage>>
+    public class OutputVoltageMeasure : BasePowerSupplyWithDigitMult<Voltage>
     {
         /*
          *Здесь производится измерение напряжения в режиме стабилизации ТОКА
