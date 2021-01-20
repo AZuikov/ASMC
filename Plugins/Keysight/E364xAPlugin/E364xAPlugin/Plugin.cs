@@ -79,11 +79,11 @@ namespace E364xAPlugin
                 new UnstableCurrentOnTime(this, E364xChanels.OUTP1),
                 new OutputCurrentSetup(this, E364xChanels.OUTP1),
                 new OutputVoltageMeasure(this, E364xChanels.OUTP1),
-                
 
                 #endregion outp1
 
                 #region outp2
+
                 new UnstableVoltToLoadChange(this, E364xChanels.OUTP2),
                 new AcVoltChange(this, E364xChanels.OUTP2),
                 new VoltageTransientDuration(this, E364xChanels.OUTP2),
@@ -95,6 +95,7 @@ namespace E364xAPlugin
                 new UnstableCurrentOnTime(this, E364xChanels.OUTP2),
                 new OutputCurrentSetup(this, E364xChanels.OUTP2),
                 new OutputVoltageMeasure(this, E364xChanels.OUTP2),
+
                 #endregion outp2
             };
         }
@@ -253,8 +254,6 @@ namespace E364xAPlugin
 
         #region Methods
 
-        
-
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -274,7 +273,6 @@ namespace E364xAPlugin
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null) return;
-            
 
             foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
             {
@@ -390,8 +388,6 @@ namespace E364xAPlugin
                 };
                 DataRow.Add(operation);
             }
-
-           
         }
 
         #endregion
@@ -408,8 +404,6 @@ namespace E364xAPlugin
 
         #region Methods
 
-        
-
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -424,8 +418,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -441,7 +433,7 @@ namespace E364xAPlugin
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
                         operation.Comment = powerSupply.GetVoltageRange().Description;
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
                         powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
                         // расчитаем идеальное значение для электронной нагрузки
@@ -541,7 +533,6 @@ namespace E364xAPlugin
                 };
                 DataRow.Add(operation);
             }
-            
         }
 
         #endregion
@@ -558,42 +549,23 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Time>> dds)
         {
-            var dataTable = CreateTable();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Time>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Среднее значение времени переходного процесса"] = dds.Getting?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.Error?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
+            dataRow["Среднее значение времени переходного процесса"] = dds.Getting?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.Error?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
-               "Среднее значение времени переходного процесса",
+                "Среднее значение времени переходного процесса",
                 "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         protected override void InitWork(CancellationTokenSource token)
         {
-           
-
             base.InitWork(token);
             //  !!!!! сейчас этот пункт не выполняется. Было принято решение написать заглушку без использования приборов !!!!
 
@@ -627,8 +599,6 @@ namespace E364xAPlugin
 
         #region Methods
 
-        
-
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -642,8 +612,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -657,7 +625,7 @@ namespace E364xAPlugin
                     powerSupply.ActiveE364XChanels = _chanel;
                     powerSupply.SetRange(rangePowerSupply);
                     operation.Comment = powerSupply.GetVoltageRange().Description;
-                    var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                    var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                     powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
                     powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
 
@@ -764,7 +732,6 @@ namespace E364xAPlugin
                 };
                 DataRow.Add(operation);
             }
-            
         }
 
         #endregion
@@ -781,30 +748,13 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
-            var dataTable = CreateTable();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел напряжения канала"] = dds?.Comment;
-                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
-                dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
+            dataRow["Предел напряжения канала"] = dds?.Comment;
+            dataRow["Поверяемая точка"] = dds?.Expected?.Description;
+            dataRow["Измеренное значение"] = dds.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -821,8 +771,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -832,9 +780,9 @@ namespace E364xAPlugin
 
             foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
-                _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
+                    _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
 
                 foreach (MeasPoint<Voltage> setPoint in VoltSteps)
                 {
@@ -852,7 +800,8 @@ namespace E364xAPlugin
                             {
                                 MeasPoint<Voltage> error;
                                 if (_chanel == E364xChanels.OUTP2)
-                                    error = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 0.001M +
+                                    error = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value *
+                                                                   0.001M +
                                                                    0.025M);
                                 else
                                     error =
@@ -871,7 +820,8 @@ namespace E364xAPlugin
 
                             var resistToLoad =
                                 new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                                                          _voltRange.AdditionalPhysicalQuantity
+                                                                    .GetNoramalizeValueToSi());
                             resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
@@ -947,9 +897,6 @@ namespace E364xAPlugin
                     DataRow.Add(operation);
                 }
             }
-
-
-                
         }
 
         #endregion
@@ -966,30 +913,13 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
-            var dataTable = CreateTable();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел напряжения канала"] = dds?.Comment;
-                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
-                dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
+            dataRow["Предел напряжения канала"] = dds?.Comment;
+            dataRow["Поверяемая точка"] = dds?.Expected?.Description;
+            dataRow["Измеренное значение"] = dds.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1006,8 +936,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-           
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -1017,9 +945,9 @@ namespace E364xAPlugin
 
             foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
-                _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 100, 80, 60, 40, 20, 0);
+                    _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 100, 80, 60, 40, 20, 0);
 
                 foreach (MeasPoint<Voltage> setPoint in VoltSteps)
                 {
@@ -1038,7 +966,8 @@ namespace E364xAPlugin
 
                             var resistToLoad =
                                 new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                                                          _voltRange.AdditionalPhysicalQuantity
+                                                                    .GetNoramalizeValueToSi());
                             resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
@@ -1073,7 +1002,8 @@ namespace E364xAPlugin
                             {
                                 MeasPoint<Current> error;
                                 if (_chanel == E364xChanels.OUTP2)
-                                    error = new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value * 0.0015M +
+                                    error = new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value *
+                                                                   0.0015M +
                                                                    0.010M);
                                 else
                                     error =
@@ -1132,8 +1062,6 @@ namespace E364xAPlugin
                     DataRow.Add(operation);
                 }
             }
-
-                
         }
 
         #endregion
@@ -1150,8 +1078,6 @@ namespace E364xAPlugin
 
         #region Methods
 
-        
-
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -1165,7 +1091,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-         
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -1181,7 +1106,7 @@ namespace E364xAPlugin
                     {
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         operation.Comment = _voltRange.Description;
 
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
@@ -1286,8 +1211,6 @@ namespace E364xAPlugin
                 };
                 DataRow.Add(operation);
             }
-
-            
         }
 
         #endregion
@@ -1304,8 +1227,6 @@ namespace E364xAPlugin
 
         #region Methods
 
-        
-
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -1319,8 +1240,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -1336,7 +1255,7 @@ namespace E364xAPlugin
                     {
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         operation.Comment = _voltRange.Description;
 
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
@@ -1441,7 +1360,6 @@ namespace E364xAPlugin
                 };
                 DataRow.Add(operation);
             }
-                
         }
 
         #endregion
@@ -1457,8 +1375,6 @@ namespace E364xAPlugin
 
         #region Methods
 
-       
-
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -1472,8 +1388,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -1488,7 +1402,7 @@ namespace E364xAPlugin
                     powerSupply.ActiveE364XChanels = _chanel;
                     powerSupply.SetRange(rangePowerSupply);
                     operation.Comment = powerSupply.GetVoltageRange().Description;
-                    var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                    var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                     powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
                     powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
 
@@ -1595,7 +1509,6 @@ namespace E364xAPlugin
                 };
                 DataRow.Add(operation);
             }
-            
         }
 
         #endregion
@@ -1612,30 +1525,13 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
-            var dataTable = CreateTable();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
-                dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
+            dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+            dataRow["Поверяемая точка"] = dds?.Expected?.Description;
+            dataRow["Измеренное значение"] = dds.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1652,8 +1548,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -1663,17 +1557,17 @@ namespace E364xAPlugin
 
             foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var CurrentLimit = new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity);
                 var CurrSteps =
                     CurrentLimit.GetArayMeasPointsInParcent(new MeasPoint<Current>(0), 0, 20, 40, 60, 80, 100);
 
                 foreach (var measPoint1 in CurrSteps)
                 {
-                    var setPoint = (MeasPoint<Current>)measPoint1;
+                    var setPoint = (MeasPoint<Current>) measPoint1;
 
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                    
+
                     operation.InitWork = async () =>
                     {
                         try
@@ -1689,8 +1583,10 @@ namespace E364xAPlugin
                             var numb = 0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                        _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi();
                             var resistToLoad =
-                                new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                                new MeasPoint<Resistance>(0.95M *
+                                                          _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                          _voltRange.AdditionalPhysicalQuantity
+                                                                    .GetNoramalizeValueToSi());
                             resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
@@ -1778,8 +1674,6 @@ namespace E364xAPlugin
                     DataRow.Add(operation);
                 }
             }
-
-              
         }
 
         #endregion
@@ -1801,30 +1695,13 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
-            var dataTable = CreateTable();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Поверяемая точка"] = dds?.Expected?.Description;
-                dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
+            dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+            dataRow["Поверяемая точка"] = dds?.Expected?.Description;
+            dataRow["Измеренное значение"] = dds.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1841,8 +1718,6 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -1852,9 +1727,9 @@ namespace E364xAPlugin
 
             foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
-               _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
+                    _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
 
                 foreach (MeasPoint<Voltage> setPoint in VoltSteps)
                 {
@@ -1872,7 +1747,8 @@ namespace E364xAPlugin
                             {
                                 MeasPoint<Voltage> error;
                                 if (_chanel == E364xChanels.OUTP2)
-                                    error = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 0.001M +
+                                    error = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value *
+                                                                   0.001M +
                                                                    0.025M);
                                 else
                                     error =
@@ -1891,14 +1767,13 @@ namespace E364xAPlugin
 
                             var resistToLoad =
                                 new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                                                          _voltRange.AdditionalPhysicalQuantity
+                                                                    .GetNoramalizeValueToSi());
                             resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
                             ElectonicLoad.SetResistanceMode();
                             ElectonicLoad.SetResistanceLevel(resistToLoad);
-
-                            
                         }
                         catch (Exception e)
                         {
@@ -1969,8 +1844,6 @@ namespace E364xAPlugin
                     DataRow.Add(operation);
                 }
             }
-
-               
         }
 
         #endregion

@@ -10,11 +10,11 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using NLog;
-using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
 {
-    public abstract class BasePowerSupplyWithDigitMult<T> : BasePowerSupplyProcedure<T> where T : PhysicalQuantity<T>, new()
+    public abstract class BasePowerSupplyWithDigitMult<T> : BasePowerSupplyProcedure<T>
+        where T : PhysicalQuantity<T>, new()
     {
         #region Property
 
@@ -22,7 +22,8 @@ namespace E364xAPlugin
 
         #endregion
 
-        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation, E364xChanels inChanel) : base(userItemOperation, inChanel)
+        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+            base(userItemOperation, inChanel)
         {
         }
 
@@ -37,22 +38,20 @@ namespace E364xAPlugin
             ((IeeeBase) digitalMult).StringConnection = GetStringConnect(digitalMult);
         }
 
-       
-
         #endregion
     }
 
     public abstract class BasePowerSupplyProcedure<T> : ParagraphBase<MeasPoint<T>> where T : PhysicalQuantity<T>, new()
     {
+        protected const string ConstBad = "Брак";
+
+        protected const string ConstGood = "Годен";
+        protected const string ConstNotUsed = "Не выполнено";
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Fields
 
         protected readonly E364xChanels _chanel;
-        
-        protected const string ConstGood = "Годен";
-        protected const string ConstBad = "Брак";
-        protected const string ConstNotUsed = "Не выполнено";
 
         #endregion
 
@@ -72,6 +71,19 @@ namespace E364xAPlugin
         #region Methods
 
         /// <summary>
+        /// Метод заполняет строку таблицы в соответствии с её структуров.
+        /// </summary>
+        /// <param name = "dataRow"></param>
+        /// <param name = "dds"></param>
+        public virtual void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<T>> dds)
+        {
+            dataRow[0] = dds?.Comment;
+            dataRow[1] = dds.Getting?.Description;
+            dataRow[2] = dds?.LowerTolerance?.Description;
+            dataRow[3] = dds?.UpperTolerance?.Description;
+        }
+
+        /// <summary>
         /// Подключение выбранных приборов для дальнейшей работы с устройствами.
         /// </summary>
         protected virtual void ConnectionToDevice()
@@ -85,35 +97,18 @@ namespace E364xAPlugin
 
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
-
-            
-        }
-
-        protected override string GetReportTableName()
-        {
-            return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name + _chanel;
-        }
-
-        protected DataTable CreateTable()
-        {
-            return base.FillData();
         }
 
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
-
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<MeasPoint<T>>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
-                dataRow[0] = dds?.Comment;
-                dataRow[1] = dds.Getting?.Description;
-                dataRow[2] = dds?.LowerTolerance?.Description;
-                dataRow[3] = dds?.UpperTolerance?.Description;
-
+                DefaultFillingRowTable(dataRow, dds);
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
                 else
@@ -122,6 +117,11 @@ namespace E364xAPlugin
             }
 
             return dataTable;
+        }
+
+        protected override string GetReportTableName()
+        {
+            return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name + _chanel;
         }
 
         #endregion
