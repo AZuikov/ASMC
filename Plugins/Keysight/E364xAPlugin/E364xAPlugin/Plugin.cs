@@ -253,30 +253,7 @@ namespace E364xAPlugin
 
         #region Methods
 
-        //protected override DataTable FillData()
-        //{
-        //    var dataTable = base.FillData();
-
-        //    foreach (var row in DataRow)
-        //    {
-        //        var dataRow = dataTable.NewRow();
-        //        var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
-        //        // ReSharper disable once PossibleNullReferenceException
-        //        if (dds == null) continue;
-        //        dataRow["Предел канала"] = dds?.Comment;
-        //        dataRow["Разность U1 - U2"] = dds.Getting?.Description;
-        //        dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-        //        dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-        //        if (dds.IsGood == null)
-        //            dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-        //        else
-        //            dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-        //        dataTable.Rows.Add(dataRow);
-        //    }
-
-        //    return dataTable;
-        //}
+        
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -431,31 +408,7 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
-        {
-            var dataTable = base.FillData();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел канала"] = dds?.Comment;
-
-                dataRow["Разность U1 - U2"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
-        }
+        
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -600,14 +553,14 @@ namespace E364xAPlugin
             base(userItemOperation, inChanel)
         {
             Name =
-                $"Определение  времени переходного процесса при изменении нагрузки (канал {_chanel})";
+                $"Определение времени переходного процесса при изменении нагрузки (канал {_chanel})";
         }
 
         #region Methods
 
         protected override DataTable FillData()
         {
-            var dataTable = base.FillData();
+            var dataTable = CreateTable();
 
             foreach (var row in DataRow)
             {
@@ -674,30 +627,7 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
-        {
-            var dataTable = base.FillData();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел напряжения канала"] = dds?.Comment;
-                dataRow["Абсолютное отклонение напряжения"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
-        }
+        
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -853,7 +783,7 @@ namespace E364xAPlugin
 
         protected override DataTable FillData()
         {
-            var dataTable = base.FillData();
+            var dataTable = CreateTable();
 
             foreach (var row in DataRow)
             {
@@ -1038,7 +968,7 @@ namespace E364xAPlugin
 
         protected override DataTable FillData()
         {
-            var dataTable = base.FillData();
+            var dataTable = CreateTable();
 
             foreach (var row in DataRow)
             {
@@ -1220,30 +1150,7 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
-        {
-            var dataTable = base.FillData();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Измеренное значение нестабильности"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
-        }
+        
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -1397,30 +1304,7 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
-        {
-            var dataTable = base.FillData();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Измеренное значение нестабильности"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
-        }
+        
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -1573,30 +1457,7 @@ namespace E364xAPlugin
 
         #region Methods
 
-        protected override DataTable FillData()
-        {
-            var dataTable = base.FillData();
-
-            foreach (var row in DataRow)
-            {
-                var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
-                // ReSharper disable once PossibleNullReferenceException
-                if (dds == null) continue;
-                dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Измеренное значение дрейфа"] = dds.Getting?.Description;
-                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
-                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
-
-                if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
-                else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
-                dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
-        }
+       
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -1753,7 +1614,7 @@ namespace E364xAPlugin
 
         protected override DataTable FillData()
         {
-            var dataTable = base.FillData();
+            var dataTable = CreateTable();
 
             foreach (var row in DataRow)
             {
@@ -1942,7 +1803,7 @@ namespace E364xAPlugin
 
         protected override DataTable FillData()
         {
-            var dataTable = base.FillData();
+            var dataTable = CreateTable();
 
             foreach (var row in DataRow)
             {

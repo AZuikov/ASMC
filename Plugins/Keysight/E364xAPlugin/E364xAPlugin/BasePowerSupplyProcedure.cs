@@ -94,6 +94,11 @@ namespace E364xAPlugin
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name + _chanel;
         }
 
+        protected DataTable CreateTable()
+        {
+            return base.FillData();
+        }
+
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
