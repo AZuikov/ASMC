@@ -75,7 +75,7 @@ namespace E364xAPlugin
                 new OutputVoltageSetting(this, E364xChanels.OUTP1),
                 new OutputCurrentMeasure(this, E364xChanels.OUTP1),
                 new UnstableCurrentLoadChange(this, E364xChanels.OUTP1),
-                new UnstableAcVoltChange(this, E364xChanels.OUTP1),
+                new UnstableCurrentToAcChange(this, E364xChanels.OUTP1),
                 new UnstableCurrentOnTime(this, E364xChanels.OUTP1),
                 new OutputCurrentSetup(this, E364xChanels.OUTP1),
                 new OutputVoltageMeasure(this, E364xChanels.OUTP1),
@@ -91,7 +91,7 @@ namespace E364xAPlugin
                 new OutputVoltageSetting(this, E364xChanels.OUTP2),
                 new OutputCurrentMeasure(this, E364xChanels.OUTP2),
                 new UnstableCurrentLoadChange(this, E364xChanels.OUTP2),
-                new UnstableAcVoltChange(this, E364xChanels.OUTP2),
+                new UnstableCurrentToAcChange(this, E364xChanels.OUTP2),
                 new UnstableCurrentOnTime(this, E364xChanels.OUTP2),
                 new OutputCurrentSetup(this, E364xChanels.OUTP2),
                 new OutputVoltageMeasure(this, E364xChanels.OUTP2),
@@ -319,7 +319,7 @@ namespace E364xAPlugin
                             new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                       _voltRange
                                                          .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(3);
+                        resistToLoad.Round(4);
 
                         ElectonicLoad.SetThisModuleAsWorking();
                         ElectonicLoad.SetResistanceMode();
@@ -354,7 +354,7 @@ namespace E364xAPlugin
 
                         operation.Expected = new MeasPoint<Voltage>(0);
                         var measResult = U1 - U2;
-                        measResult.Round(3);
+                        measResult.Round(4);
                         operation.Getting = measResult;
 
                         operation.ErrorCalculation = (point, measPoint) =>
@@ -497,7 +497,7 @@ namespace E364xAPlugin
                             new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                       _voltRange
                                                          .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(3);
+                        resistToLoad.Round(4);
 
                         ElectonicLoad.SetThisModuleAsWorking();
                         ElectonicLoad.SetResistanceMode();
@@ -530,7 +530,7 @@ namespace E364xAPlugin
 
                         operation.Expected = new MeasPoint<Voltage>(0);
                         var measResult = U1 - U2;
-                        measResult.Round(3);
+                        measResult.Round(4);
                         operation.Getting = measResult;
 
                         operation.ErrorCalculation = (point, measPoint) =>
@@ -687,8 +687,8 @@ namespace E364xAPlugin
                 if (dds == null) continue;
                 dataRow["Предел напряжения канала"] = dds?.Comment;
                 dataRow["Абсолютное отклонение напряжения"] = dds.Getting?.Description;
-                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -706,8 +706,8 @@ namespace E364xAPlugin
             {
                 "Предел напряжения канала",
                 "Абсолютное отклонение напряжения",
-                "Минимальное допустимое значение",
-                "Максимальное допустимое значение"
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
@@ -736,7 +736,7 @@ namespace E364xAPlugin
                     var resistToLoad =
                         new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                   _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                    resistToLoad.Round(3);
+                    resistToLoad.Round(4);
 
                     ElectonicLoad.SetThisModuleAsWorking();
                     ElectonicLoad.SetResistanceMode();
@@ -776,7 +776,7 @@ namespace E364xAPlugin
 
                         operation.Expected = new MeasPoint<Voltage>(0);
 
-                        operation.Getting = measPoints.Max(); //верно ли он ищет максимум?
+                        operation.Getting = measPoints.Max();
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
@@ -865,8 +865,8 @@ namespace E364xAPlugin
                 dataRow["Предел напряжения канала"] = dds?.Comment;
                 dataRow["Поверяемая точка"] = dds.Expected?.Description;
                 dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -885,8 +885,8 @@ namespace E364xAPlugin
                 "Предел напряжения канала",
                 "Поверяемая точка",
                 "Измеренное значение",
-                "Минимальное допустимое значение",
-                "Максимальное допустимое значение"
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
@@ -943,7 +943,7 @@ namespace E364xAPlugin
                             var resistToLoad =
                                 new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                           _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                            resistToLoad.Round(3);
+                            resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
                             ElectonicLoad.SetResistanceMode();
@@ -1049,8 +1049,8 @@ namespace E364xAPlugin
                 dataRow["Предел напряжения канала"] = dds?.Comment;
                 dataRow["Поверяемая точка"] = dds.Expected?.Description;
                 dataRow["Измеренное значение"] = dds.Getting?.Description;
-                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
@@ -1069,8 +1069,8 @@ namespace E364xAPlugin
                 "Предел напряжения канала",
                 "Поверяемая точка",
                 "Измеренное значение",
-                "Минимальное допустимое значение",
-                "Максимальное допустимое значение"
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
@@ -1109,7 +1109,7 @@ namespace E364xAPlugin
                             var resistToLoad =
                                 new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                           _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                            resistToLoad.Round(3);
+                            resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
                             ElectonicLoad.SetResistanceMode();
@@ -1225,18 +1225,18 @@ namespace E364xAPlugin
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
+                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
                 dataRow["Измеренное значение нестабильности"] = dds.Getting?.Description;
-                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count] = "не выполнено";
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
                 else
-                    dataRow[dataTable.Columns.Count] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1249,15 +1249,14 @@ namespace E364xAPlugin
             {
                 "Предел воспроизведения напряжения",
                 "Измеренное значение нестабильности",
-                "Минимальное допустимое значение",
-                "Максимальное допустимое значение"
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            
-
+         
             base.InitWork(token);
             ConnectionToDevice();
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
@@ -1284,7 +1283,7 @@ namespace E364xAPlugin
                             new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                       _voltRange
                                                          .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(3);
+                        resistToLoad.Round(4);
 
                         ElectonicLoad.SetThisModuleAsWorking();
                         ElectonicLoad.SetResistanceMode();
@@ -1317,7 +1316,7 @@ namespace E364xAPlugin
 
                         operation.Expected = new MeasPoint<Current>(0);
                         var measResult = i1 - i2;
-                        measResult.Round(3);
+                        measResult.Round(4);
                         operation.Getting = measResult;
 
                         operation.ErrorCalculation = (point, measPoint) =>
@@ -1384,9 +1383,9 @@ namespace E364xAPlugin
         #endregion
     }
 
-    public class UnstableAcVoltChange : BasePowerSupplyProcedure<MeasPoint<Current>>
+    public class UnstableCurrentToAcChange : BasePowerSupplyProcedure<MeasPoint<Current>>
     {
-        public UnstableAcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public UnstableCurrentToAcChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -1402,18 +1401,18 @@ namespace E364xAPlugin
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
+                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-                dataRow["Измеренное значение нестабильности"] = dds.Getting?.Description;
-                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Измеренное значение нестабильности"] = dds?.Getting?.Description;
+                dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count] = "не выполнено";
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
                 else
-                    dataRow[dataTable.Columns.Count] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1426,8 +1425,8 @@ namespace E364xAPlugin
             {
                 "Предел воспроизведения напряжения",
                 "Измеренное значение нестабильности",
-                "Минимальное допустимое значение",
-                "Максимальное допустимое значение"
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
@@ -1456,12 +1455,12 @@ namespace E364xAPlugin
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
                         powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange
                                                                               .AdditionalPhysicalQuantity));
-                        // расчитаем идеальное значение для электронной нагрузки
+                        // расчитаем значение для электронной нагрузки
                         var resistToLoad =
                             new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                       _voltRange
                                                          .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(3);
+                        resistToLoad.Round(4);
 
                         ElectonicLoad.SetThisModuleAsWorking();
                         ElectonicLoad.SetResistanceMode();
@@ -1483,8 +1482,8 @@ namespace E364xAPlugin
                         Thread.Sleep(3000);
 
                         var i1 = ElectonicLoad.GetMeasureCurrent();
-                        operation.Expected = i1;
-                        i1.Round(3);
+                        operation.Expected = new MeasPoint<Current>(0);
+                        i1.Round(4);
 
                         Thread.Sleep(1000);
                         var i2 = ElectonicLoad.GetMeasureCurrent();
@@ -1492,8 +1491,9 @@ namespace E364xAPlugin
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
 
-                        i2.Round(3);
-                        operation.Getting = i2;
+                        i2.Round(4);
+                        operation.Getting = i1 - i2;
+                        operation.Getting.Round(4);
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
@@ -1505,9 +1505,9 @@ namespace E364xAPlugin
                             return resultError;
                         };
                         operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.UpperTolerance.Round(3);
+                        operation.UpperTolerance.Round(4);
                         operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.LowerTolerance.Round(3);
+                        operation.LowerTolerance.Round(4);
 
                         operation.IsGood = () =>
                         {
@@ -1577,18 +1577,18 @@ namespace E364xAPlugin
             foreach (var row in DataRow)
             {
                 var dataRow = dataTable.NewRow();
-                var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
+                var dds = row as BasicOperationVerefication<MeasPoint<Current>>;
                 // ReSharper disable once PossibleNullReferenceException
                 if (dds == null) continue;
                 dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
                 dataRow["Измеренное значение дрейфа"] = dds.Getting?.Description;
-                dataRow["Минимальное допустимое значение"] = dds.LowerTolerance?.Description;
-                dataRow["Максимальное допустимое значение"] = dds.UpperTolerance?.Description;
+                dataRow["Минимально допустимое значение"] = dds.LowerTolerance?.Description;
+                dataRow["Максимально допустимое значение"] = dds.UpperTolerance?.Description;
 
                 if (dds.IsGood == null)
-                    dataRow[dataTable.Columns.Count] = "не выполнено";
+                    dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
                 else
-                    dataRow[dataTable.Columns.Count] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1601,8 +1601,8 @@ namespace E364xAPlugin
             {
                 "Предел воспроизведения напряжения",
                 "Измеренное значение дрейфа",
-                "Минимальное допустимое значение",
-                "Максимальное допустимое значение"
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
@@ -1632,7 +1632,7 @@ namespace E364xAPlugin
                     var resistToLoad =
                         new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                   _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                    resistToLoad.Round(3);
+                    resistToLoad.Round(4);
 
                     ElectonicLoad.SetThisModuleAsWorking();
                     ElectonicLoad.SetResistanceMode();
@@ -1670,7 +1670,7 @@ namespace E364xAPlugin
 
                         operation.Expected = new MeasPoint<Current>(0);
 
-                        operation.Getting = measPoints.Max(); //верно ли он ищет максимум?
+                        operation.Getting = measPoints.Max();
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
@@ -1678,13 +1678,13 @@ namespace E364xAPlugin
                                                                              .MainPhysicalQuantity
                                                                              .GetNoramalizeValueToSi() +
                                                                      0.001M);
-                            resultError.Round(3);
+                            resultError.Round(4);
                             return resultError;
                         };
                         operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.UpperTolerance.Round(3);
+                        operation.UpperTolerance.Round(4);
                         operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.LowerTolerance.Round(3);
+                        operation.LowerTolerance.Round(4);
 
                         operation.IsGood = () =>
                         {
@@ -1789,7 +1789,7 @@ namespace E364xAPlugin
                             var resistToLoad =
                                 new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                           _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                            resistToLoad.Round(3);
+                            resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
                             ElectonicLoad.SetResistanceMode();
@@ -1951,7 +1951,7 @@ namespace E364xAPlugin
                             var resistToLoad =
                                 new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                                           _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                            resistToLoad.Round(3);
+                            resistToLoad.Round(4);
 
                             ElectonicLoad.SetThisModuleAsWorking();
                             ElectonicLoad.SetResistanceMode();
