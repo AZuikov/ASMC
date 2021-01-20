@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Linq;
+using System.Reflection;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Core.Model;
@@ -66,6 +67,16 @@ namespace E364xAPlugin
             base(userItemOperation)
         {
             _chanel = inChanel;
+            Sheme = new ShemeImage
+            {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема",
+                Number = (int)_chanel,
+                FileName = $"E364xA_{_chanel}_N3300A_34401A.jpg",
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+                
+            };
+            
         }
 
         #region Methods
