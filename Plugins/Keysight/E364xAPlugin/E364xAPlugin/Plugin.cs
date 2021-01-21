@@ -254,12 +254,24 @@ namespace E364xAPlugin
 
         #region Methods
 
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
+        {
+            dataRow[0] = dds?.Comment;
+            dataRow[1] = dds?.Expected?.Description;
+            dataRow[2] = dds?.Getting?.Description;
+            var mp = dds?.Expected - dds?.Getting;
+            dataRow[3] = mp.Description;
+            dataRow[4] = dds?.LowerTolerance?.Description;
+            dataRow[5] = dds?.UpperTolerance?.Description;
+        }
+
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
             {
                 "Предел канала",
-
+                "Измеренное напряжение U1",
+                "Измеренное напряжение U2",
                 "Разность U1 - U2",
                 "Минимально допустимое значение",
                 "Максимально допустимое значение"
@@ -316,6 +328,8 @@ namespace E364xAPlugin
                         digitalMult.DcVoltage.AutoRange = true;
                         digitalMult.DcVoltage.Setting();
                         var U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        operation.Expected = U1;
+                        operation.Expected.Round(4);
                         //разрываем цепь
                         ElectonicLoad.OutputOff();
                         Thread.Sleep(3000);
@@ -326,10 +340,8 @@ namespace E364xAPlugin
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
 
-                        operation.Expected = new MeasPoint<Voltage>(0);
-                        var measResult = U1 - U2;
-                        measResult.Round(4);
-                        operation.Getting = measResult;
+                        operation.Getting = U2;
+                        operation.Getting.Round(4);
 
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
@@ -340,15 +352,19 @@ namespace E364xAPlugin
                             resultError.Round(4);
                             return resultError;
                         };
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperTolerance = operation.Error;
+                        operation.LowerTolerance = operation.Error*(-1);
 
                         operation.IsGood = () =>
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            return (operation.Getting < operation.UpperTolerance) &
-                                   (operation.Getting > operation.LowerTolerance);
+
+                            var mp = operation.Getting - operation.Expected;
+                            mp.Abs();
+                            return mp<operation.Error;
+                            //(operation.Getting < operation.UpperTolerance) &
+                            //   (operation.Getting > operation.LowerTolerance);
                         };
                     }
                     catch (Exception e)
@@ -368,12 +384,10 @@ namespace E364xAPlugin
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
-                                             .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
-                                                   $"U1 - U2 = {operation.Getting.Description}\n" +
-                                                   $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
-                                                   $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                                   $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                                   $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
+                                             .Show($"Нестабильность напряжени не проходит по допуску на пределе {operation.Comment}:\n" +
+                                                   $"{operation.Expected.Description} - {operation.Getting.Description} = {(operation.Getting-operation.Expected).Description}\n" +
+                                                   $"Допустимое значение дрейфа: {operation.Error.Description}\n\n" +
+                                                   
                                                    "Повторить измерение этой точки?",
                                                    "Информация по текущему измерению",
                                                    MessageButton.YesNo, MessageIcon.Question,
