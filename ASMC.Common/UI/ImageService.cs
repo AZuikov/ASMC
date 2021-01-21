@@ -14,7 +14,9 @@ namespace ASMC.Common.UI
             Title = "Схема";
             ViewLocator = new ViewLocator(Assembly.GetExecutingAssembly());
             DocumentType = "ShemView";
+            this.SizeToContent = SizeToContent.WidthAndHeight;
             MaxSize= new Size(1024,768);
+
         }
         protected override INotifyPropertyChanged CreateViewModel()
         {

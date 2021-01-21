@@ -571,6 +571,14 @@ namespace E364xAPlugin
         {
             Name =
                 $"Определение времени переходного процесса при изменении нагрузки (канал {_chanel})";
+            Sheme = new ShemeImage
+            {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема",
+                Number = 5,
+                FileName = $"E364xA_DefaultSheme.jpg",
+                FileNameDescription = $"VoltageTransientDurationText.rtf"
+            };
         }
 
         #region Methods
@@ -599,6 +607,14 @@ namespace E364xAPlugin
 
             operation.InitWork = async () =>
             {
+                //var service = UserItemOperation.ServicePack.ShemForm();
+                //service.Title = "Определение времени переходного процесса при изменении нагрузки";
+                //service.Entity = new Tuple<string, Assembly>("VoltageTransientDurationText.rtf", null);
+                
+                
+                //service.Show();
+                
+
                 operation.Expected = new MeasPoint<Time>(0, UnitMultiplier.Micro);
                 //todo сдедлать для ускоренной поверки автоматическую подстановку числа с длительностью, а для обычной поверки диалоговое окно с вводом чисал
                 operation.Getting = new MeasPoint<Time>(MathStatistics.RandomToRange(0, 37), UnitMultiplier.Micro);
