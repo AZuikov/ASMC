@@ -767,7 +767,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         #endregion
     }
 
-    public class MDc : IDmmBaseMeasure
+    public class MDc/* : IDmmBaseMeasure*/
     {
         #region Fields
 
