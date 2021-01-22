@@ -20,7 +20,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" TextAlignment="Center"
-                       Visibility="{Binding Text, Converter={StaticResource ObjectToVisibilityConverter}}"
+                       Visibility="{Binding Shema.Description, Converter={StaticResource StringToVisibilityConverter}}"
                        Text="{Binding Shema.Description}" FontWeight="Bold" FontSize="14" />
             <Image Grid.Row="1" Source="{Binding PathImage}" Stretch='Uniform'
                    Height="{DXBinding Expr='@e(StackPanelDescription).ActualHeight-@e(gridDescription).ActualHeight-20'}" />

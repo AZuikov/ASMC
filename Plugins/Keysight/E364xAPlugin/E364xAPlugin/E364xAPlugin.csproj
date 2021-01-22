@@ -34,9 +34,15 @@
     <Reference Include="DevExpress.Mvvm.v17.2">
       <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
+    <Reference Include="DevExpress.Xpf.Core.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Xpf.Core.v17.2.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\NLog.4.7.3\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -50,6 +56,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePowerSupplyProcedure.cs" />
@@ -73,6 +80,10 @@
     <ProjectReference Include="..\..\..\..\AP.Utils\AP.Utils.csproj">
       <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ASMC.Common\ASMC.Common.csproj">
+      <Project>{7FE244D8-06C9-4B0E-B2E5-7E92AC14E48D}</Project>
+      <Name>ASMC.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\ASMC.Core\ASMC.Core.csproj">
       <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>

@@ -7,7 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AP.Extension;
 using AP.Math;
+using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
+using ASMC.Core.UI;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -16,6 +18,7 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.UI;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
@@ -566,6 +569,11 @@ namespace E364xAPlugin
 
     public class VoltageTransientDuration : BasePowerSupplyProcedure<Time>
     {
+        /// <summary>
+        /// Предоставляет сервис окна ввода данных.
+        /// </summary>
+        private SelectionService Service { get;  set; }
+
         public VoltageTransientDuration(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -583,9 +591,12 @@ namespace E364xAPlugin
 
         #region Methods
 
+       
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Time>> dds)
         {
-            dataRow["Среднее значение времени переходного процесса"] = dds.Getting?.Description;
+            dataRow["Номер измерения канала"] = dds?.Comment;
+            dataRow["Значение длительности переходного процесса"] = dds.Getting?.Description;
+            dataRow["Среднее значение времени переходного процесса"] = dds.Expected?.Description;
             dataRow["Максимально допустимое значение"] = dds?.Error?.Description;
         }
 
@@ -593,39 +604,94 @@ namespace E364xAPlugin
         {
             return new[]
             {
+                "Номер измерения канала",
+                "Значение длительности переходного процесса",
                 "Среднее значение времени переходного процесса",
                 "Максимально допустимое значение"
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
         }
 
+        /// <summary>
+        ///     Приобразует строку в децимал.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        protected decimal ObjectToDecimal(object obj)
+        {
+            if (string.IsNullOrEmpty(obj.ToString())) return 0;
+
+            return decimal.Parse(obj.ToString().Trim()
+                                    .Replace(".",
+                                             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
+        }
+
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            //  !!!!! сейчас этот пункт не выполняется. Было принято решение написать заглушку без использования приборов !!!!
 
-            var operation = new BasicOperationVerefication<MeasPoint<Time>>();
-
-            operation.InitWork = async () =>
+           
+            try
             {
-                //var service = UserItemOperation.ServicePack.ShemForm();
-                //service.Title = "Определение времени переходного процесса при изменении нагрузки";
-                //service.Entity = new Tuple<string, Assembly>("VoltageTransientDurationText.rtf", null);
+                /*Получаем измерения*/
                 
-                
-                //service.Show();
+                    var operation = new BasicOperationVerefication<MeasPoint<Time>>();
+                    var arrPoints = new[] { "1", "2", "3", "4", "5" };
+                    MeasPoint<Time>[] arrGetting = null;
+                operation.InitWork = async () =>
+                    {
+                        var setting = new TableViewModel.SettingTableViewModel { Breaking = 1, CellFormat = "мкс" };
+                        var vm = new OneTableViewModel();
+                        
+                        vm.Data = TableViewModel.CreateTable("Значения длительности переходного процесса", arrPoints, setting);
+                        Service = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+                        Service.Title = Name;
+                        Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
+                        Service.ViewModel = vm;
+                        Service.DocumentType = "OneTableView";
+                        Service.Show();
+
+                        arrGetting = vm.Data.Cells.Select(cell => new MeasPoint<Time>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
+                        
+                    };
+                    operation.BodyWorkAsync = () =>
+                    {
+                        MeasPoint<Time> averTime = new MeasPoint<Time>(0);
+                        foreach (var point in arrGetting)
+                        {
+                            averTime = averTime + point;
+                            averTime.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity.Multiplier);
+                        }
+
+                        averTime = averTime / arrGetting.Length;
+                        averTime.Round(2);
+
+                        for (var i = 0; i < arrPoints.Length; i++)
+                        {
+                            if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>)operation.Clone();
+                            operation.Comment = arrPoints[i];
+                            operation.Expected = averTime;
+                            operation.Getting = arrGetting[i];
+                            
+                            if (i > 0) DataRow.Add(operation);
+                        }
+                    };
+                    operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
+                    operation.IsGood = () => operation.Expected < operation.Error;
+
+                    operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+
+                    DataRow.Add(operation);
                 
 
-                operation.Expected = new MeasPoint<Time>(0, UnitMultiplier.Micro);
-                //todo сдедлать для ускоренной поверки автоматическую подстановку числа с длительностью, а для обычной поверки диалоговое окно с вводом чисал
-                operation.Getting = new MeasPoint<Time>(MathStatistics.RandomToRange(0, 37), UnitMultiplier.Micro);
-                operation.Getting.Round(2);
-                operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
-                operation.IsGood = () => operation.Getting < operation.Error;
-            };
+               
+            }
+            catch
+            {
+                token.Cancel();
+            }
 
-            operation.CompliteWork = () => Task.FromResult(operation.IsGood());
 
-            DataRow.Add(operation);
+           
         }
 
         #endregion
