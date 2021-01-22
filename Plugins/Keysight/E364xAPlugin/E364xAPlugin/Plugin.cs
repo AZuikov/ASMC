@@ -704,10 +704,10 @@ namespace E364xAPlugin
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
             dataRow["Предел напряжения канала"] = dds?.Comment;
-            dataRow["Измеренное значение напряжения"] = dds?.Expected.Description;
-            dataRow["Абсолютное отклонение напряжения"] = dds?.Getting.Description;
-            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance.Description;
-            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance.Description;
+            dataRow["Измеренное значение напряжения"] = dds?.Expected?.Description;
+            dataRow["Абсолютное отклонение напряжения"] = dds?.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1206,12 +1206,12 @@ namespace E364xAPlugin
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
             dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-            dataRow["Измеренный ток I1"] = dds?.Expected.Description;
-            dataRow["Измеренный ток I2"] = dds?.Getting.Description;
+            dataRow["Измеренный ток I1"] = dds?.Expected?.Description;
+            dataRow["Измеренный ток I2"] = dds?.Getting?.Description;
             var point = dds?.Expected - dds?.Getting;
             dataRow["Разность I1 - I2 (отклонение)"] = point.Description;
-            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance.Description;
-            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1367,12 +1367,12 @@ namespace E364xAPlugin
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
             dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
-            dataRow["Измеренный ток I1"] = dds?.Expected.Description;
-            dataRow["Измеренный ток I2"] = dds?.Getting.Description;
+            dataRow["Измеренный ток I1"] = dds?.Expected?.Description;
+            dataRow["Измеренный ток I2"] = dds?.Getting?.Description;
             var point = dds?.Expected - dds?.Getting;
             dataRow["Разность I1 - I2 (отклонение)"] = point.Description;
-            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance.Description;
-            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1526,10 +1526,10 @@ namespace E364xAPlugin
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
             dataRow["Предел напряжения канала"] = dds?.Comment;
-            dataRow["Измеренное значение тока"] = dds?.Expected.Description;
-            dataRow["Абсолютное отклонение тока"] = dds?.Getting.Description;
-            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance.Description;
-            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance.Description;
+            dataRow["Измеренное значение тока"] = dds?.Expected?.Description;
+            dataRow["Абсолютное отклонение тока"] = dds?.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
 
         }
         
