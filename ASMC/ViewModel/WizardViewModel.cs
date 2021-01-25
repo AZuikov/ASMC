@@ -92,10 +92,17 @@ namespace ASMC.ViewModel
         private StateWork _stateWorkFlag;
         private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
+        private bool _enableSpeedCheckBox;
 
         #endregion
 
         #region Property
+
+        public bool  EnableSpeedCheckBox
+        {
+            get => _enableSpeedCheckBox;
+            set => SetProperty(ref _enableSpeedCheckBox, value, nameof(EnableSpeedCheckBox));
+        }
 
         public string[] AccessoriesList
         {
@@ -124,7 +131,7 @@ namespace ASMC.ViewModel
         }
 
         /// <summary>
-        /// Режим проверки(Ускроренные операции)
+        /// Режим проверки(Ускроренные операции).
         /// </summary>
         public bool IsCheckWork
         {
@@ -474,7 +481,7 @@ namespace ASMC.ViewModel
         private void OnIsSpeedWorkCallback()
         {
             SelectProgram.Operation.IsSpeedWork = IsCheckWork;
-            Logger.Info($@"Активировани режим ПРОВЕРКИ {IsCheckWork}");
+            Logger.Info($@"Активирован режим ПРОВЕРКИ {IsCheckWork}");
             OnSelectProgramCallback();
         }
 
@@ -510,6 +517,7 @@ namespace ASMC.ViewModel
             if (SelectProgram == null) return;
             Logger.Info($@"Выбранная операция {SelectProgram}");
             EnableOpeation = SelectProgram.Operation.EnabledOperation;
+            EnableSpeedCheckBox =  SelectProgram.Operation.IsSpeed;
             foreach (Enum en in Enum.GetValues(typeof(OperationMetrControlBase.TypeOpeation)))
                 if (EnableOpeation != null && ((Enum) EnableOpeation).HasFlag(en))
                 {

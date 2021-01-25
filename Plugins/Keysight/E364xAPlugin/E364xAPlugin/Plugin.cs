@@ -31,7 +31,7 @@ namespace E364xAPlugin
             UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
-            SpeedUserItemOperationPrimaryVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
+            SpeedUserItemOperationPrimaryVerf= new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             SpeedUserItemOperationPeriodicVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
         }
     }

@@ -30,6 +30,10 @@ namespace ASMC.Core.Model
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
+        /// <summary>
+        /// Признак, ускоренной операции.
+        /// </summary>
+        public bool IsSpeed { get; private set; } = false;
 
         /// <summary>
         /// Предоставляет доступные операции.
@@ -40,17 +44,26 @@ namespace ASMC.Core.Model
             {
                 TypeOpeation? res = null;
                 if (UserItemOperationPrimaryVerf != null || SpeedUserItemOperationPrimaryVerf != null)
+                {
                     res = TypeOpeation.PrimaryVerf;
+                    if (SpeedUserItemOperationPrimaryVerf != null) IsSpeed = true;
+                }
                 if (UserItemOperationPeriodicVerf != null || SpeedUserItemOperationPeriodicVerf != null)
-                    if (res != null)
+                {  if (res != null)
                         res = res | TypeOpeation.PeriodicVerf;
                     else
                         res = TypeOpeation.PeriodicVerf;
+                    if (SpeedUserItemOperationPeriodicVerf != null) IsSpeed = true;
+                }
+
                 if (UserItemOperationCalibration != null || SpeedUserItemOperationCalibration != null)
+                {
                     if (res != null)
                         res |= TypeOpeation.Calibration;
                     else
                         res = TypeOpeation.Calibration;
+                    if (SpeedUserItemOperationCalibration != null) IsSpeed = true;
+                }
                 if (UserItemOperationAdjustment != null)
                     if (res != null)
                         res |= TypeOpeation.Adjustment;
@@ -70,6 +83,8 @@ namespace ASMC.Core.Model
         /// Позволяет задать или получить признак определяющий ускоренную работу(ПРОВЕРКА).
         /// </summary>
         public bool IsSpeedWork { get; set; }
+
+        
 
         /// <summary>
         /// Позволяет получить выбранную операцию.

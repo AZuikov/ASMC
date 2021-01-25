@@ -178,7 +178,7 @@
                     <TabItem Header="Вид МО" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ChoiceTypeMc}"
                    IsEnabled="{DXBinding 'SelectProgram != null'}">
                         <StackPanel>
-                            <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsCheckWork}" />
+                            <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsEnabled="{Binding EnableSpeedCheckBox}" IsChecked="{Binding IsCheckWork}" />
                             <GroupBox Header="Выберете вид МО:" Padding="10,0,10,10" VerticalAlignment="Top">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -196,7 +196,7 @@
                                     <RadioButton IsEnabled="{Binding EnableOpeation, Converter={StaticResource EnumFlagToBoolConverter}, ConverterParameter=Calibration}"
                              IsChecked="{Binding TypeOpertion, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Calibration}" Grid.Row="0" Grid.Column="2">Калибровка</RadioButton>
                                     <RadioButton IsEnabled="{Binding EnableOpeation, Converter={StaticResource EnumFlagToBoolConverter}, ConverterParameter=PeriodicVerf}"
-                             IsChecked="{Binding TypeOpertion, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PeriodicVerf}" Grid.Row="1" Grid.Column="0">Переодическая поверка</RadioButton>
+                             IsChecked="{Binding TypeOpertion, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PeriodicVerf}" Grid.Row="1" Grid.Column="0">Периодическая поверка</RadioButton>
                                     <RadioButton IsEnabled="{Binding EnableOpeation, Converter={StaticResource EnumFlagToBoolConverter}, ConverterParameter=Adjustment}"
                              IsChecked="{Binding TypeOpertion, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Adjustment}" Grid.Row="1" Grid.Column="2">Регулировка(Юстировка)</RadioButton>
                                 </Grid>
