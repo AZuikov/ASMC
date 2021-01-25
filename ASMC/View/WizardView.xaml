@@ -178,7 +178,7 @@
                     <TabItem Header="Вид МО" IsSelected="{Binding SelectedTabItem, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ChoiceTypeMc}"
                    IsEnabled="{DXBinding 'SelectProgram != null'}">
                         <StackPanel>
-                            <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsCheckWork}" IsEnabled="False" />
+                            <CheckBox Margin="15" Content="Режим ПРОВЕРКИ" IsChecked="{Binding IsCheckWork}" />
                             <GroupBox Header="Выберете вид МО:" Padding="10,0,10,10" VerticalAlignment="Top">
                                 <Grid>
                                     <Grid.RowDefinitions>

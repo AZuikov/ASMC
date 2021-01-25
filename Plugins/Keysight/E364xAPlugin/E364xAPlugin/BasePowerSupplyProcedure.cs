@@ -49,6 +49,7 @@ namespace E364xAPlugin
         protected const string ConstGood = "Годен";
         protected const string ConstNotUsed = "Не выполнено";
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        protected bool isSpeedOperation = false;
 
         #region Fields
 
