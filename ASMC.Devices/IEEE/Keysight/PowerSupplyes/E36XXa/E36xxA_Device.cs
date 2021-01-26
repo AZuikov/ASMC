@@ -12,13 +12,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         OUTP2
     }
 
-    public enum E364xRanges
+    public enum E36xxA_Ranges
     {
         LOW,
         HIGH
     }
 
-    public class E364xADevice : IeeeBase
+    public class E36xxA_Device : IeeeBase
     {
         public enum TriggerSource
         {
@@ -70,7 +70,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 
         #endregion
 
-        public E364xADevice()
+        public E36xxA_Device()
         {
             UserType = "E364XA";
             CURR = new CURRent(this);
@@ -160,10 +160,10 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
             WriteLine("VOLTage:AMPLitude MAX");
         }
 
-        public void SetRange(E364xRanges inRange)
+        public void SetRange(E36xxA_Ranges inRange)
         {
             WriteLine($"VOLTage:RANGe {inRange}");
-            range = inRange== E364xRanges.LOW? Ranges[0]: Ranges[1];
+            range = inRange== E36xxA_Ranges.LOW? Ranges[0]: Ranges[1];
         }
 
         public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
@@ -203,13 +203,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E364xADevice _powerSupply;
+            private readonly E36xxA_Device _powerSupply;
 
             private readonly string Comand = "CURRent:LEVel:IMMediate:AMPLitude";
 
             #endregion
 
-            public CURRent(E364xADevice powerSupply)
+            public CURRent(E36xxA_Device powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -224,7 +224,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return returnPoint;
             }
 
-            public E364xADevice SetValue(MeasPoint<Current> inPoint)
+            public E36xxA_Device SetValue(MeasPoint<Current> inPoint)
             {
                 _powerSupply
                    .WriteLine($"{Comand} {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
@@ -238,13 +238,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E364xADevice _powerSupply;
+            private readonly E36xxA_Device _powerSupply;
             private readonly string ComandeRange = "VOLTage:RANGe";
             private readonly string ComandtoSetValue = "VOLTage:LEVel:IMMediate:AMPLitude";
 
             #endregion
 
-            public VOLTage(E364xADevice powerSupply)
+            public VOLTage(E36xxA_Device powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -259,7 +259,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return returnPoint;
             }
 
-            public E364xADevice SetValue(MeasPoint<Voltage> inPoint)
+            public E36xxA_Device SetValue(MeasPoint<Voltage> inPoint)
             {
                 _powerSupply
                    .WriteLine($"{ComandtoSetValue} {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
@@ -273,11 +273,11 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E364xADevice _powerSupply;
+            private readonly E36xxA_Device _powerSupply;
 
             #endregion
 
-            public MEASure(E364xADevice powerSupply)
+            public MEASure(E36xxA_Device powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -307,11 +307,11 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E364xADevice _powerSupply;
+            private readonly E36xxA_Device _powerSupply;
 
             #endregion
 
-            public TRIGger(E364xADevice powerSupply)
+            public TRIGger(E36xxA_Device powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -337,13 +337,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 throw new Exception(errorStr);
             }
 
-            public E364xADevice InitTrigger()
+            public E36xxA_Device InitTrigger()
             {
                 _powerSupply.WriteLine("INITiate");
                 return _powerSupply;
             }
 
-            public E364xADevice SetTriggerDelay(int millisecond)
+            public E36xxA_Device SetTriggerDelay(int millisecond)
             {
                 if (millisecond < 0) millisecond = 0;
                 if (millisecond > 3600) millisecond = 3600;
@@ -353,13 +353,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return _powerSupply;
             }
 
-            public E364xADevice SetTriggerSource(TriggerSource inSource)
+            public E36xxA_Device SetTriggerSource(TriggerSource inSource)
             {
                 _powerSupply.WriteLine($"TRIGger:SOURce {inSource}");
                 return _powerSupply;
             }
 
-            public E364xADevice TRG()
+            public E36xxA_Device TRG()
             {
                 _powerSupply.WriteLine("*TRG");
                 return _powerSupply;
@@ -372,12 +372,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E364xADevice _powerSupply;
+            private readonly E36xxA_Device _powerSupply;
             private readonly string Comand = "OUTPut";
 
             #endregion
 
-            public Output(E364xADevice powerSupply)
+            public Output(E36xxA_Device powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -392,13 +392,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return false;
             }
 
-            public E364xADevice OutputOff()
+            public E36xxA_Device OutputOff()
             {
                 _powerSupply.WriteLine($"{Comand} off");
                 return _powerSupply;
             }
 
-            public E364xADevice OutputOn()
+            public E36xxA_Device OutputOn()
             {
                 _powerSupply.WriteLine($"{Comand} on");
                 return _powerSupply;
@@ -408,143 +408,5 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         }
     }
 
-    public class E3640ADevice : E364xADevice
-    {
-        public E3640ADevice()
-        {
-            UserType = "E3640A";
-            outputs = new[] {E364xChanels.OUTP1};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(8, 3),
-                new MeasPoint<Voltage, Current>(20M, 1.5M)
-            };
-        }
-    }
-
-    public class E3641ADevice : E364xADevice
-    {
-        public E3641ADevice()
-        {
-            UserType = "E3641A";
-            outputs = new[] {E364xChanels.OUTP1};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(35, 0.8M),
-                new MeasPoint<Voltage, Current>(60M, 0.5M)
-            };
-        }
-    }
-
-    public class E3642ADevice : E364xADevice
-    {
-        public E3642ADevice()
-        {
-            UserType = "E3642A";
-            outputs = new[] {E364xChanels.OUTP1};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(8, 5),
-                new MeasPoint<Voltage, Current>(20M, 2.5M)
-            };
-        }
-    }
-
-    public class E3643ADevice : E364xADevice
-    {
-        public E3643ADevice()
-        {
-            UserType = "E3643A";
-            outputs = new[] {E364xChanels.OUTP1};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(35, 1.4M),
-                new MeasPoint<Voltage, Current>(60M, 0.8M)
-            };
-        }
-    }
-
-    public class E3644ADevice : E364xADevice
-    {
-        public E3644ADevice()
-        {
-            UserType = "E3644A";
-            outputs = new[] {E364xChanels.OUTP1};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(8, 8),
-                new MeasPoint<Voltage, Current>(20M, 4M)
-            };
-        }
-    }
-
-    public class E3645ADevice : E364xADevice
-    {
-        public E3645ADevice()
-        {
-            UserType = "E3645A";
-            outputs = new[] {E364xChanels.OUTP1};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(35, 2.2M),
-                new MeasPoint<Voltage, Current>(60M, 1.3M)
-            };
-        }
-    }
-
-    public class E3646ADevice : E364xADevice
-    {
-        public E3646ADevice()
-        {
-            UserType = "E3646A";
-            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(8, 3),
-                new MeasPoint<Voltage, Current>(20M, 1.5M)
-            };
-        }
-    }
-
-    public class E3647ADevice : E364xADevice
-    {
-        public E3647ADevice()
-        {
-            UserType = "E3647A";
-            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(35, 0.8M),
-                new MeasPoint<Voltage, Current>(60M, 0.5M)
-            };
-        }
-    }
-
-    public class E3648ADevice : E364xADevice
-    {
-        public E3648ADevice()
-        {
-            UserType = "E3648A";
-            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(8, 5),
-                new MeasPoint<Voltage, Current>(20M, 2.5M)
-            };
-        }
-    }
-
-    public class E3649ADevice : E364xADevice
-    {
-        public E3649ADevice()
-        {
-            UserType = "E3649A";
-            outputs = new[] {E364xChanels.OUTP1, E364xChanels.OUTP2};
-            Ranges = new[]
-            {
-                new MeasPoint<Voltage, Current>(35, 1.4M),
-                new MeasPoint<Voltage, Current>(60M, 0.8M)
-            };
-        }
-    }
+   
 }

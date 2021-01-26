@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASMC.Core.Model;
-using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
-using E364xAPlugin;
+﻿using ASMC.Core.Model;
+
+using ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa;
+
 
 namespace E364xAPlugin
 {
-    public class E3640A : Program<Operation<ASMC.Devices.IEEE.Keysight.PowerSupplyes.E3640ADevice>>
+    public class E3640A : Program<Operation<E3640ADevice>>
     {
         public E3640A(ServicePack service) : base(service)
         {
             Grsi = "26951-04";
             Type = "E3640A";
 
-            var testPowerSupply = new ASMC.Devices.IEEE.Keysight.PowerSupplyes.E3640ADevice();
+            var testPowerSupply = new E3640ADevice();
             var ranges = testPowerSupply.Ranges;
             foreach (var range in ranges)
                 Range = Range + $"{range.Description}; ";

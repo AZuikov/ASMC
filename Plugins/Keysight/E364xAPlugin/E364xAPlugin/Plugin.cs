@@ -22,7 +22,7 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
 {
-    public class Operation<T> : OperationMetrControlBase where T : E364xADevice
+    public class Operation<T> : OperationMetrControlBase where T : E36xxA_Device
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation(ServicePack servicePack)
@@ -38,7 +38,7 @@ namespace E364xAPlugin
 
     public class OpertionFirsVerf : Operation
     {
-        public OpertionFirsVerf(ServicePack servicePack, E364xADevice inPower) : base(servicePack)
+        public OpertionFirsVerf(ServicePack servicePack, E36xxA_Device inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -121,7 +121,7 @@ namespace E364xAPlugin
 
     public class SpeedOpertionFirsVerf : Operation
     {
-        public SpeedOpertionFirsVerf(ServicePack servicePack, E364xADevice inPower) : base(servicePack)
+        public SpeedOpertionFirsVerf(ServicePack servicePack, E36xxA_Device inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -271,7 +271,7 @@ namespace E364xAPlugin
     {
         #region Property
 
-        protected E364xADevice powerSupply { get; set; }
+        protected E36xxA_Device powerSupply { get; set; }
 
         #endregion
 
@@ -309,8 +309,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E364xADevice != null)
-                                           .SelectedDevice as E364xADevice;
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_Device != null)
+                                           .SelectedDevice as E36xxA_Device;
             if (powerSupply == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             base.InitWork(token);
@@ -373,7 +373,7 @@ namespace E364xAPlugin
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 operation.InitWork = async () =>
@@ -533,7 +533,7 @@ namespace E364xAPlugin
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
             if (powerSupply == null || ElectonicLoad == null) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 operation.InitWork = async () =>
@@ -816,7 +816,7 @@ namespace E364xAPlugin
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
             if (powerSupply == null || ElectonicLoad == null) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 MeasPoint<Voltage> U1 = null;
                 //нужно произвести 17 измерений, 1-е измерение опорное, относительно него
@@ -990,7 +990,7 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null || digitalMult == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
@@ -1155,7 +1155,7 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
@@ -1322,7 +1322,7 @@ namespace E364xAPlugin
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
                 operation.InitWork = async () =>
@@ -1482,7 +1482,7 @@ namespace E364xAPlugin
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
                 operation.InitWork = async () =>
@@ -1639,7 +1639,7 @@ namespace E364xAPlugin
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
             if (powerSupply == null || ElectonicLoad == null) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 MeasPoint<Current> I1 = null;
                 for (var i = 0; i < 17; i++)
@@ -1800,7 +1800,7 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var CurrentLimit = new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity);
@@ -1970,7 +1970,7 @@ namespace E364xAPlugin
             if (powerSupply == null || ElectonicLoad == null || digitalMult == null) return;
             if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
-            foreach (E364xRanges rangePowerSupply in Enum.GetValues(typeof(E364xRanges)))
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =

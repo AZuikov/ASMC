@@ -73,7 +73,7 @@ namespace E364xAPlugin
                 AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
                 Number = (int)_chanel,
-                FileName = $"E364xA_{_chanel}_N3300A_34401A.jpg",
+                FileName = $"E363xA_{_chanel}_N3300A_34401A.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 
             };

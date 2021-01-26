@@ -176,6 +176,14 @@ namespace ASMC.Data.Model
         /// </summary>
         public T LowerTolerance { get; set; }
 
+        public Func<T, T> LowerCalculation
+        {
+            set; protected get;
+        }
+        public Func<T, T> UpperCalculation
+        {
+            set; protected get;
+        }
         /// <summary>
         /// Позволяет получить или задать верхнюю допустимую границу.
         /// </summary>

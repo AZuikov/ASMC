@@ -65,6 +65,9 @@ namespace ASMC.Core.Model
             }
             return list.ToArray();
         }
+
+        
+
         /// <summary>
         /// предоставляет перечень имен столбцов таблицы для стобцов типа Object.
         /// </summary>
