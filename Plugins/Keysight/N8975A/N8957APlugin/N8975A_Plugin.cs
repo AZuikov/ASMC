@@ -141,8 +141,18 @@ namespace N8957APlugin
                operation.Comment = res.Item1;
                operation.IsGood = () => operation.Getting;
 
-               n8975.WriteLine("CALibration:AUTO:state 1");
-               n8975.WriteLine("CALibration:YTF");
+               try
+               {
+                   n8975.WriteLine("CALibration:AUTO:state 1");
+                   n8975.WriteLine("CALibration:YTF");
+               }
+               catch (Exception e)
+
+               {
+                   Logger.Error(e);
+                   throw;
+               }
+               
 
                UserItemOperation.ServicePack.MessageBox()
                                 .Show("Дождитесь окончания настройки N8975, затем нажмите ОК!",
@@ -369,8 +379,11 @@ namespace N8957APlugin
                         operation.Expected = new MeasPoint<Frequency>( (decimal)(testFreqqPoint / UnitMultiplier.Mega.GetDoubleValue()), UnitMultiplier.Mega);
                         operation.Getting = new MeasPoint<Frequency>( (decimal)(freqSTDArr[FreqIndexInArr] / UnitMultiplier.Mega.GetDoubleValue()), UnitMultiplier.Mega);
                         operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Frequency>( freqAndTolDictionary[freq], UnitMultiplier.Kilo);
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
+
+
+
+                        operation.UpperCalculation = (expected)=> operation.Expected + operation.Error;
+                        operation.LowerCalculation = (expected) => operation.Expected - operation.Error;
 
                         operation.IsGood = () =>
                         {
@@ -390,17 +403,7 @@ namespace N8957APlugin
                         e8257D.WriteLine(":OUTP 0");
                     }
                 };
-                operation.BodyWorkAsync = () =>
-                {
-                    try
-                    {
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                };
+               
                 operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
 
                 DataRow.Add(DataRow.IndexOf(operation) == -1

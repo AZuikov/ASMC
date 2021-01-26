@@ -23,60 +23,7 @@ using NLog;
 namespace OWEN_TRM202
 
 {
-    public static class Helps
-    {
-        #region Methods
-
-        public static void AttentionWindow(IUserItemOperation UserItemOperation)
-        {
-            UserItemOperation.ServicePack.MessageBox().Show("Внимание!!!\n в процессе выполнения программы будут изменены настройки прибора.\n"+
-                                                            "Необходимо зарнее сделать резервную копию настроек прибора с помощью программы \"Конфигуратор ТРМ\".\n"+
-                                                            "С помощью программы конфигуратора: \n 1) подключитесь к прибору\n2)считать все параметры с прибора\n"+
-                                                            "3)сохранить загруженную с прибора конфигурацию в отдельном файле."+
-                                                            "\n\nДля восстановления прежних настроек прибора необходимо: 1)Загрузить в конфигураторе файл с сохраненными ранее настройками\n"+
-                                                            "2)Записать все параметры в прибор");
-        }
-
-        public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
-            IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
-        {
-            if (operation.IsGood != null && !operation.IsGood())
-            {
-                var answer =
-                    UserItemOperation.ServicePack.MessageBox()
-                                     .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
-                                           $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
-                                           $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                           $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
-                                           "Повторить измерение этой точки?",
-                                           "Информация по текущему измерению",
-                                           MessageButton.YesNo, MessageIcon.Question,
-                                           MessageResult.Yes);
-
-                if (answer == MessageResult.No) return Task.FromResult(true);
-            }
-
-            if (operation.IsGood == null)
-                return Task.FromResult(true);
-            return Task.FromResult(operation.IsGood());
-        }
-
-        public static MeasPoint<Percent> CalculateBasicRedundanceTol<T>(MeasPoint<T> measPoint, MeasPoint<T> StdPoint, PhysicalRange<T> range) where T : class, IPhysicalQuantity<T>, new()
-        {
-            decimal val1 = measPoint.MainPhysicalQuantity.Value - StdPoint.MainPhysicalQuantity.Value;
-            decimal val2 = (val1 / range.GetRangeLeght.MainPhysicalQuantity.Value)*100;
-            val2 = Math.Round(val2, 2);
-            MeasPoint<Percent> resultTol = new MeasPoint<Percent>(val2);
-            return resultTol;
-        }
-
-        
-
-        #endregion Methods
-    }
-
+   
     internal class OWEN_TRM202_MP2007_Plugin : Program<Operation2007>
     {
         public OWEN_TRM202_MP2007_Plugin(ServicePack service) : base(service)
@@ -462,28 +409,11 @@ namespace OWEN_TRM202
             #endregion Methods
         }
 
-        public class Operation8_4_HCX_TermocoupleGost8_585 : ParagraphBase<MeasPoint<Temperature>>
+        public class Operation8_4_HCX_TermocoupleGost8_585 : BaseMeasureOperation<Temperature>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-            #region Fields
-
-            protected ICalibrator Calibrator;
-
-            protected CalibrMain.COut.CSet.СTemperature.TypeTermocouple CalibrTypeTermocouple;
-
-            protected TRM202Device.in_t CoupleTypeTrm;
-            protected MeasPoint<Temperature>[] measPoints;
-            protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
-            protected TRM202DeviceUI trm202;
-
-            #endregion Fields
-
-            #region Property
-
-            protected ushort _chanelNumber { get; set; }
-
-            #endregion Property
+            
 
             public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
@@ -500,37 +430,7 @@ namespace OWEN_TRM202
 
             #region Methods
 
-            protected override DataTable FillData()
-            {
-                var dataTable = base.FillData();
-                foreach (var row in DataRow)
-                {
-                    var dataRow = dataTable.NewRow();
-                    var dds = row as BasicOperationVerefication<MeasPoint<Temperature>>;
-                    if (dds == null) continue;
-                    dataRow["Поверяемая точка"] = dds?.Expected?.Description;
-                    dataRow["Измеренное значение"] = dds?.Getting?.Description;
-                    
-                    if (dds?.Getting != null && dds?.Expected != null)
-                    {
-                        PhysicalRange<Temperature> range = MeasureRanges.GetRangePointBelong(dds?.Expected);
-                        //посчитаем основную приведенную погрешность
-                        dataRow["Основная приведенная погрешность"] =
-                            Helps.CalculateBasicRedundanceTol(dds?.Getting, dds?.Expected, range).Description;
-                        var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
-                        MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
-                        dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
-
-                    }
-                    if (dds?.IsGood == null)
-                        dataRow[dataRow.Table.Columns.Count - 1] = "не выполнено";
-                    else
-                        dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood() ? "Годен" : "Брак";
-                    dataTable.Rows.Add(dataRow);
-                }
-
-                return dataTable;
-            }
+           
 
             protected override string[] GenerateDataColumnTypeObject()
             {
@@ -1209,7 +1109,7 @@ namespace OWEN_TRM202
             #endregion Methods
         }
 
-        public class Operation8_4_UnicSignal : ParagraphBase<MeasPoint<Percent>>
+        public class Operation8_4_UnicSignal : BaseMeasureOperation<Percent>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1217,18 +1117,14 @@ namespace OWEN_TRM202
 
             protected TRM202Device.in_t _coupleType;
             protected ICalibrator Calibrator;
-            protected MeasPoint<Percent, Voltage>[] measPoints;
+            protected MeasPoint<Percent, Voltage>[] measPointsPercentVolt;
             protected RangeStorage<PhysicalRange<Percent>> MeasureRanges;
 
             protected TRM202DeviceUI trm202;
 
             #endregion Fields
 
-            #region Property
-
-            protected ushort _chanelNumber { get; set; }
-
-            #endregion Property
+           
 
             public Operation8_4_UnicSignal(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
@@ -1299,14 +1195,14 @@ namespace OWEN_TRM202
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
                                      .SelectedDevice as ICalibrator;
 
-                if (trm202 == null || Calibrator == null || measPoints == null) return;
+                if (trm202 == null || Calibrator == null || measPointsPercentVolt == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
                 ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
 
                 base.InitWork(token);
 
-                foreach (var point in measPoints)
+                foreach (var point in measPointsPercentVolt)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Percent>>();
                     operation.InitWork = async () =>
@@ -1395,7 +1291,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.U0_1;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsPercentVolt = new[]
                 {
                     new MeasPoint<Percent, Voltage>(5, 50M),
                     new MeasPoint<Percent, Voltage>(25M, 250M),
@@ -1426,7 +1322,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.U0_1;
                 Name = $"8.5.1.3 {_coupleType.GetStringValue()}";
 
-                measPoints = new[]
+                measPointsPercentVolt = new[]
                 {
                     
                     new MeasPoint<Percent, Voltage>(50M, 500M)
@@ -1454,7 +1350,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.U_50;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsPercentVolt = new[]
                 {
                     new MeasPoint<Percent, Voltage>(5, -45M),
                     new MeasPoint<Percent, Voltage>(25M, -25M),
@@ -1488,7 +1384,7 @@ namespace OWEN_TRM202
                 //в этом пункте прибор работает с сигналом 0-5мА,
                 //но измеренное значние получает с шунта,
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
-                measPoints = new[]
+                measPointsPercentVolt = new[]
                 {
                     new MeasPoint<Percent, Voltage>(5, 25),
                     new MeasPoint<Percent, Voltage>(25M, 125M),
@@ -1522,7 +1418,7 @@ namespace OWEN_TRM202
                 //в этом пункте прибор работает с сигналом 0-20мА,
                 //но измеренное значние получает с шунта,
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
-                measPoints = new[]
+                measPointsPercentVolt = new[]
                 {
                     new MeasPoint<Percent, Voltage>(5, 100),
                     new MeasPoint<Percent, Voltage>(25M, 500M),
@@ -1556,7 +1452,7 @@ namespace OWEN_TRM202
                 //в этом пункте прибор работает с сигналом 0-20мА,
                 //но измеренное значние получает с шунта,
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
-                measPoints = new[]
+                measPointsPercentVolt = new[]
                 {
                     
                     new MeasPoint<Percent, Voltage>(50M, 1000M)
@@ -1587,7 +1483,7 @@ namespace OWEN_TRM202
                 //в этом пункте прибор работает с сигналом 4-20мА,
                 //но измеренное значние получает с шунта,
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
-                measPoints = new[]
+                measPointsPercentVolt = new[]
                 {
                     new MeasPoint<Percent, Voltage>(5, 480),
                     new MeasPoint<Percent, Voltage>(25M, 800M),
@@ -1609,27 +1505,18 @@ namespace OWEN_TRM202
 
         #region Gosr6651
 
-        public class Operation8_4_ResistanceTermocoupleGost6651 : ParagraphBase<MeasPoint<Temperature>>
+        public class Operation8_4_ResistanceTermocoupleGost6651 : BaseMeasureOperation<Temperature>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected ICalibrator Calibrator;
-            protected MeasPoint<Temperature, Resistance>[] measPoints;
-            protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
-
-            protected TRM202DeviceUI trm202;
-
+           
+            protected MeasPoint<Temperature, Resistance>[] measPointsTempRes;
+           
             #endregion Fields
-
-            #region Property
-
-            protected ushort _chanelNumber { get; set; }
-
-            #endregion Property
-
+            
             public Operation8_4_ResistanceTermocoupleGost6651(IUserItemOperation userItemOperation,
                 ushort inChanelNumber) : base(userItemOperation)
             {
@@ -1699,14 +1586,14 @@ namespace OWEN_TRM202
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
                                      .SelectedDevice as ICalibrator;
 
-                if (trm202 == null || Calibrator == null ||measPoints == null) return;
+                if (trm202 == null || Calibrator == null ||measPointsTempRes == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
                 ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
 
                 base.InitWork(token);
 
-                foreach (var point in measPoints)
+                foreach (var point in measPointsTempRes)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
                     operation.InitWork = async () =>
@@ -1804,7 +1691,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r426;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-37, 42.120M),
                     new MeasPoint<Temperature, Resistance>(12.5M, 52.662M),
@@ -1835,7 +1722,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r_426;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-37, 84.230M),
                     new MeasPoint<Temperature, Resistance>(12.5M, 105.325M),
@@ -1866,7 +1753,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r_385;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-152, 38.890M),
                     new MeasPoint<Temperature, Resistance>(37.5M, 114.575M),
@@ -1897,7 +1784,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r385;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-152, 19.445M),
                     new MeasPoint<Temperature, Resistance>(37.5M, 57.288M),
@@ -1928,7 +1815,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r428;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-170, 12.570M),
                     new MeasPoint<Temperature, Resistance>(-92.5M, 29.960M),
@@ -1959,7 +1846,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r428;
                 Name = $"8.5.1.1 {_coupleType.GetStringValue()}";
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     
                     new MeasPoint<Temperature, Resistance>(5, 51.070M)
@@ -1988,7 +1875,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r_428;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-170, 25.140M),
                     new MeasPoint<Temperature, Resistance>(-92.5M, 59.920M),
@@ -2019,7 +1906,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r391;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-152, 18.970M),
                     new MeasPoint<Temperature, Resistance>(37.5M, 57.403M),
@@ -2050,7 +1937,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.r_391;
                 Name = _coupleType.GetStringValue();
 
-                measPoints = new[]
+                measPointsTempRes = new[]
                 {
                     new MeasPoint<Temperature, Resistance>(-152, 37.940M),
                     new MeasPoint<Temperature, Resistance>(37.5M, 114.805M),

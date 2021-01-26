@@ -65,6 +65,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseMeasureOperation.cs" />
     <Compile Include="OWEN_TRM202_MP2007_Plugin.cs" />
     <Compile Include="OWEN_TRM202_MP2006_Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
