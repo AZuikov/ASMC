@@ -21,10 +21,10 @@ using NLog;
 
 namespace APPA_107N_109N
 {
-    public class appa10XN109NBasePlugin<T> : Program<T> where T : OperationMetrControlBase
+    public class Appa107N109NBasePlugin<T> : Program<T> where T : OperationMetrControlBase
 
     {
-        public appa10XN109NBasePlugin(ServicePack service) : base(service)
+        public Appa107N109NBasePlugin(ServicePack service) : base(service)
         {
             Grsi = "20085-11";
         }
@@ -355,6 +355,8 @@ namespace APPA_107N_109N
                 DataRow = new List<IBasicOperation<MeasPoint<Voltage>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
+
+               
             }
 
             #region Methods
@@ -863,6 +865,8 @@ namespace APPA_107N_109N
 
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
+
+                
             }
 
             #region Methods
@@ -3316,6 +3320,8 @@ namespace APPA_107N_109N
                 DataRow = new List<IBasicOperation<MeasPoint<Resistance>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
+
+               
             }
 
             #region Methods
@@ -3564,6 +3570,8 @@ namespace APPA_107N_109N
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
                 CountOfRanges = 8;
+
+                
             }
 
             #region Methods
