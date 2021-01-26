@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -350,7 +351,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Воспроизведение постоянного напряжения
     /// </summary>
-    public abstract class Oper2DcvOutput : ParagraphBase<decimal>
+    public abstract class Oper2DcvOutput : BaseOparationWithMultimeter
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -359,9 +360,7 @@ namespace B5_71_PRO_Abstract
 
         #region Property
 
-        protected B571Pro Bp { get; set; }
-        protected MainN3300 Load { get; set; }
-        protected Mult_34401A Mult { get; set; }
+        
 
         #endregion Property
 
@@ -477,12 +476,8 @@ namespace B5_71_PRO_Abstract
 
                         operation.Expected = setPoint;
                         operation.Getting = (decimal)result;
-                        //operation.Error = Bp.tolleranceFormulaVolt(setPoint);
-                        operation.ErrorCalculation = (c, b) => ErrorCalculation(setPoint);
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                 (operation.Getting > operation.LowerTolerance);
+                        
+                        SetLowAndUppToleranceAndIsGood(operation);
 
                         Bp.OffOutput();
                         Load.SetOutputState(MainN3300.State.Off);
@@ -521,13 +516,7 @@ namespace B5_71_PRO_Abstract
             }
         }
 
-        private decimal ErrorCalculation(decimal inA)
-        {
-            inA = Bp.TolleranceFormulaVolt(inA);
-            MathStatistics.Round(ref inA, 3);
-
-            return inA;
-        }
+        
 
         #endregion Methods
     }
@@ -535,7 +524,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Измерение постоянного напряжения
     /// </summary>
-    public abstract class Oper3DcvMeasure : ParagraphBase<decimal>
+    public abstract class Oper3DcvMeasure : BaseOparationWithMultimeter
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -545,10 +534,7 @@ namespace B5_71_PRO_Abstract
         #region Property
 
         //порт нужно спрашивать у интерфейса
-        protected B571Pro Bp { get; set; }
-
-        protected MainN3300 Load { get; set; }
-        protected Mult_34401A Mult { get; set; }
+        
 
         #endregion Property
 
@@ -670,11 +656,10 @@ namespace B5_71_PRO_Abstract
 
                         operation.Expected = (decimal)resultMult;
                         operation.Getting = resultBp;
-                        operation.ErrorCalculation = ErrorCalculation;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                 (operation.Getting > operation.LowerTolerance);
+
+                        SetLowAndUppToleranceAndIsGood(operation);
+                        
+                        
 
                         Bp.OffOutput();
                     }
@@ -713,13 +698,7 @@ namespace B5_71_PRO_Abstract
             }
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            inA = Bp.TolleranceFormulaVolt(inA);
-            MathStatistics.Round(ref inA, 3);
-
-            return inA;
-        }
+        
 
         #endregion Methods
     }
@@ -727,7 +706,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного напряжения
     /// </summary>
-    public class Oper4VoltUnstable : ParagraphBase<decimal>
+    public class Oper4VoltUnstable : BaseOparationWithMultimeter
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrСoefVoltUnstable = { 0.1M, 0.5m, 0.9m };
@@ -736,9 +715,9 @@ namespace B5_71_PRO_Abstract
 
         #region Property
 
-        protected B571Pro Bp { get; set; }
-        protected MainN3300 Load { get; set; }
-        protected Mult_34401A Mult { get; set; }
+        
+        
+       
 
         #endregion Property
 
@@ -883,11 +862,9 @@ namespace B5_71_PRO_Abstract
 
                     operation.Expected = 0;
                     operation.Getting = resultVoltUnstable;
-                    operation.ErrorCalculation = ErrorCalculation;
-                    operation.LowerTolerance = 0;
-                    operation.UpperTolerance = operation.Expected + operation.Error;
-                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                             (operation.Getting >= operation.LowerTolerance);
+                    
+                    SetLowAndUppToleranceAndIsGood(operation);
+
                     Load.SetOutputState(MainN3300.State.Off);
                 }
                 catch (Exception e)
@@ -923,10 +900,7 @@ namespace B5_71_PRO_Abstract
                             : (BasicOperationVerefication<decimal>)operation.Clone());
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.TolleranceVoltageUnstability;
-        }
+        
 
         #endregion Methods
     }
@@ -934,7 +908,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Опрделение уровня пульсаций
     /// </summary>
-    public abstract class Oper5VoltPulsation : ParagraphBase<decimal>
+    public abstract class Oper5VoltPulsation : BaseOperationPowerSupplyAndElectronicLoad
     {
         //это точки для нагрузки в Омах
         public static readonly decimal[] ArrResistanceVoltUnstable = { (decimal)20.27M, (decimal)37.5M, (decimal)187.5M };
@@ -1080,12 +1054,10 @@ namespace B5_71_PRO_Abstract
 
                     operation.Expected = 0;
                     operation.Getting = voltPulsV357;
-                    operation.ErrorCalculation = ErrorCalculation;
-                    operation.LowerTolerance = 0;
-                    operation.UpperTolerance = operation.Expected + operation.Error;
-                    operation.IsGood = () =>
-                        (operation.Getting >= operation.LowerTolerance) &
-                        (operation.Getting <= operation.UpperTolerance);
+
+                    SetLowAndUppToleranceAndIsGood(operation);
+
+
                 }
                 catch (Exception e)
                 {
@@ -1121,18 +1093,15 @@ namespace B5_71_PRO_Abstract
             DataRow.Add(operation);
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.TolleranceVoltPuls;
-        }
+        
 
         #endregion Methods
 
         #region Fileds
 
-        protected B571Pro Bp { get; set; }
+       
         protected Mult_34401A Mult { get; set; }
-        protected MainN3300 Load { get; set; }
+       
 
         #endregion Fileds
     }
@@ -1140,7 +1109,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности установки выходного тока
     /// </summary>
-    public abstract class Oper6DciOutput : ParagraphBase<decimal>
+    public abstract class Oper6DciOutput : BaseOperationPowerSupplyAndElectronicLoad
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1149,8 +1118,7 @@ namespace B5_71_PRO_Abstract
 
         #region Property
 
-        protected B571Pro Bp { get; set; }
-        protected MainN3300 Load { get; set; }
+       
 
         #endregion Property
 
@@ -1265,11 +1233,8 @@ namespace B5_71_PRO_Abstract
 
                         operation.Expected = setPoint;
                         operation.Getting = result;
-                        operation.ErrorCalculation = ErrorCalculation;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                 (operation.Getting > operation.LowerTolerance);
+
+                       SetLowAndUppToleranceAndIsGood(operation);
 
                         Bp.OffOutput();
                     }
@@ -1307,13 +1272,7 @@ namespace B5_71_PRO_Abstract
             }
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            inA = Bp.TolleranceFormulaCurrent(inA);
-            MathStatistics.Round(ref inA, 3);
-
-            return inA;
-        }
+       
 
         #endregion Methods
     }
@@ -1321,7 +1280,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение погрешности измерения выходного тока
     /// </summary>
-    public abstract class Oper7DciMeasure : ParagraphBase<decimal>
+    public abstract class Oper7DciMeasure :BaseOperationPowerSupplyAndElectronicLoad
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1330,13 +1289,13 @@ namespace B5_71_PRO_Abstract
 
         #region Fields
 
-        protected B571Pro Bp;
+        
 
         #endregion Fields
 
         #region Property
 
-        protected MainN3300 Load { get; set; }
+        
 
         #endregion Property
 
@@ -1446,11 +1405,8 @@ namespace B5_71_PRO_Abstract
 
                         operation.Expected = resultN3300;
                         operation.Getting = resultBpCurr;
-                        operation.ErrorCalculation = ErrorCalculation;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                                 (operation.Getting > operation.LowerTolerance);
+                        
+                        SetLowAndUppToleranceAndIsGood(operation);
 
                         Bp.OffOutput();
                     }
@@ -1488,12 +1444,7 @@ namespace B5_71_PRO_Abstract
             }
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            inA = Bp.TolleranceFormulaCurrent(inA);
-            MathStatistics.Round(ref inA, 3);
-            return inA;
-        }
+        
 
         #endregion Methods
     }
@@ -1501,7 +1452,7 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение нестабильности выходного тока
     /// </summary>
-    public class Oper8DciUnstable : ParagraphBase<decimal>
+    public class Oper8DciUnstable : BaseOperationPowerSupplyAndElectronicLoad
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -1510,8 +1461,7 @@ namespace B5_71_PRO_Abstract
 
         #region Fields
 
-        protected B571Pro Bp;
-        protected MainN3300 Load;
+       
 
         #endregion Fields
 
@@ -1643,12 +1593,7 @@ namespace B5_71_PRO_Abstract
                     MathStatistics.Round(ref resultCurrUnstable, 3);
 
                     operation.Expected = 0;
-                    operation.Getting = resultCurrUnstable;
-                    operation.ErrorCalculation = ErrorCalculation;
-                    operation.LowerTolerance = 0;
-                    operation.UpperTolerance = operation.Expected + operation.Error;
-                    operation.IsGood = () => (operation.Getting < operation.UpperTolerance) &
-                                             (operation.Getting >= operation.LowerTolerance);
+                    SetLowAndUppToleranceAndIsGood(operation);
                 }
                 catch (Exception e)
                 {
@@ -1683,10 +1628,7 @@ namespace B5_71_PRO_Abstract
                             : (BasicOperationVerefication<decimal>)operation.Clone());
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.TolleranceCurrentUnstability;
-        }
+       
 
         #endregion Methods
     }
@@ -1694,15 +1636,13 @@ namespace B5_71_PRO_Abstract
     /// <summary>
     /// Определение уровня пульсаций постоянного тока
     /// </summary>
-    public abstract class Oper9DciPulsation : ParagraphBase<decimal>
+    public abstract class Oper9DciPulsation : BaseOparationWithMultimeter
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
 
-        protected B571Pro Bp { get; set; }
-        protected MainN3300 Load { get; set; }
-        protected Mult_34401A Mult { get; set; }
+        
 
         #endregion Property
 
@@ -1875,9 +1815,8 @@ namespace B5_71_PRO_Abstract
 
                     operation.Expected = 0;
                     operation.Getting = currPulsV357;
-                    operation.ErrorCalculation = ErrorCalculation;
-                    operation.LowerTolerance = 0;
-                    operation.UpperTolerance = operation.Expected + operation.Error;
+                    
+                    
                     operation.IsGood = () => (operation.Getting <= operation.UpperTolerance) &
                                              (operation.Getting >= operation.LowerTolerance);
                 }
@@ -1913,10 +1852,7 @@ namespace B5_71_PRO_Abstract
             DataRow.Add(operation);
         }
 
-        private decimal ErrorCalculation(decimal inA, decimal inB)
-        {
-            return Bp.TolleranceCurrentPuls;
-        }
+        
 
         #endregion Methods
     }

@@ -170,11 +170,11 @@ namespace ASMC.Data.Model
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BasicOperationVerefication<T> : MeasuringOperation<T>, IBasicOperationVerefication<T>
-    {     
+    {
         /// <summary>
-        /// Позволяет получить или задать нижнюю допустимую границу.
+        /// Позволяет получить нижнюю допустимую границу.
         /// </summary>
-        public T LowerTolerance { get; set; }
+        public T LowerTolerance => LowerCalculation(Expected);
 
         public Func<T, T> LowerCalculation
         {
@@ -184,14 +184,15 @@ namespace ASMC.Data.Model
         {
             set; protected get;
         }
+
         /// <summary>
-        /// Позволяет получить или задать верхнюю допустимую границу.
+        /// Позволяет получить верхнюю допустимую границу.
         /// </summary>
-        public T UpperTolerance { get; set; }
+        public T UpperTolerance => UpperCalculation(Expected);
         public override object Clone()
         {
             var @base = (MeasuringOperation<T>)base.Clone();
-            return new BasicOperationVerefication<T> { LowerTolerance = LowerTolerance, UpperTolerance = UpperTolerance, ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
+            return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWork = @base.CompliteWork, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWork = @base.InitWork, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
 
         public override string ToString()

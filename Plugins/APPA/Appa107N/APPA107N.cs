@@ -39,7 +39,7 @@ namespace Appa107N
         {
             TestDevices = new IDeviceUi[]
                 {new Device { Devices = new IDeviceRemote[] { new MultAPPA107N()}, Description = "Цифровой портативный мультиметр"}};
-            var DcvMode = new Oper3DcvMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
+            var DcvMode = new Oper3DcvMeasureBaseMeasureAppa(this, Assembly.GetExecutingAssembly().GetName().Name);
             DcvMode.Nodes.Add(new DC_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
             DcvMode.Nodes.Add(new DC_200mV_Measure(Mult107_109N.RangeNominal.Range200mV, this));
             DcvMode.Nodes.Add(new DC_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
@@ -47,7 +47,7 @@ namespace Appa107N
             DcvMode.Nodes.Add(new DC_200V_Measure(Mult107_109N.RangeNominal.Range200V, this));
             DcvMode.Nodes.Add(new DC_1000V_Measure(Mult107_109N.RangeNominal.Range1000V, this));
 
-            var AcvMode = new Oper4AcvMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
+            var AcvMode = new Oper4AcvMeasureBaseMeasureAppaAc(this, Assembly.GetExecutingAssembly().GetName().Name);
             AcvMode.Nodes.Add(new AcV_20mV_Measure(Mult107_109N.RangeNominal.Range20mV, this));
             AcvMode.Nodes.Add(new AcV_200mV_Measure(Mult107_109N.RangeNominal.Range200mV, this));
             AcvMode.Nodes.Add(new AcV_2V_Measure(Mult107_109N.RangeNominal.Range2V, this));
@@ -75,27 +75,27 @@ namespace Appa107N
             OhmMode.Nodes.Add(new Resistance_200MOhm_Measure(Mult107_109N.RangeNominal.Range200Mohm, this));
             OhmMode.Nodes.Add(new Resistance_2GOhm_Measure(Mult107_109N.RangeNominal.Range2Gohm, this));
 
-            var DciMode = new Oper5DciMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
+            var DciMode = new Oper5DciMeasureBaseMeasureAppa(this, Assembly.GetExecutingAssembly().GetName().Name);
             DciMode.Nodes.Add(new Dci_20mA_Measure(Mult107_109N.RangeNominal.Range20mA, this));
             DciMode.Nodes.Add(new Dci_200mA_Measure(Mult107_109N.RangeNominal.Range200mA, this));
             DciMode.Nodes.Add(new Dci_2A_Measure(Mult107_109N.RangeNominal.Range2A, this));
             DciMode.Nodes.Add(new Dci_10A_Measure(Mult107_109N.RangeNominal.Range10A, this));
             DciMode.Nodes.Add(new Dci_10A_Measure2(Mult107_109N.RangeNominal.Range10A, this));
 
-            var AciMode = new Oper6AciMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
+            var AciMode = new Oper6AciMeasureBaseMeasureAppaAc(this, Assembly.GetExecutingAssembly().GetName().Name);
             AciMode.Nodes.Add(new Aci_20mA_Measure(Mult107_109N.RangeNominal.Range20mA, this));
             AciMode.Nodes.Add(new Aci_200mA_Measure(Mult107_109N.RangeNominal.Range200mA, this));
             AciMode.Nodes.Add(new Aci_2A_Measure(Mult107_109N.RangeNominal.Range2A, this));
             AciMode.Nodes.Add(new Aci_10A_Measure(Mult107_109N.RangeNominal.Range10A,this));
             AciMode.Nodes.Add(new Aci_10A_Measure2(Mult107_109N.RangeNominal.Range10A,this));
 
-            var FreqMode = new Oper7FreqMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
-            FreqMode.Nodes.Add(new Freq20HzMeasureBase(Mult107_109N.RangeNominal.Range20Hz,this));
-            FreqMode.Nodes.Add(new Freq200HzMeasureBase(Mult107_109N.RangeNominal.Range200Hz,this));
-            FreqMode.Nodes.Add(new Freq2kHzMeasureBase(Mult107_109N.RangeNominal.Range2kHz,this));
-            FreqMode.Nodes.Add(new Freq20kHzMeasureBase(Mult107_109N.RangeNominal.Range20kHz,this));
-            FreqMode.Nodes.Add(new Freq200kHzMeasureBase(Mult107_109N.RangeNominal.Range200kHz,this));
-            FreqMode.Nodes.Add(new Freq1MHzMeasureBase(Mult107_109N.RangeNominal.Range1MHz,this));
+            var FreqMode = new Oper7FreqMeasureBaseMeasureAppa(this, Assembly.GetExecutingAssembly().GetName().Name);
+            FreqMode.Nodes.Add(new Freq20HzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal.Range20Hz,this));
+            FreqMode.Nodes.Add(new Freq200HzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal.Range200Hz,this));
+            FreqMode.Nodes.Add(new Freq2KHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal.Range2kHz,this));
+            FreqMode.Nodes.Add(new Freq20KHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal.Range20kHz,this));
+            FreqMode.Nodes.Add(new Freq200KHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal.Range200kHz,this));
+            FreqMode.Nodes.Add(new Freq1MHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal.Range1MHz,this));
 
             var TempMode = new Oper10TemperatureMeasureBase(this, Assembly.GetExecutingAssembly().GetName().Name);
             TempMode.Nodes.Add(new Temperature_Minus200_Minus100_Measure(Mult107_109N.RangeNominal.Range400degC,this));
@@ -593,9 +593,9 @@ namespace Appa107N
 
     #region Freq
 
-    public class Freq20HzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq20HzMeasureBase
+    public class Freq20HzMeasureBaseMeasureAppa : APPA_107N_109N.OpertionFirsVerf.Oper71Freq20HzMeasureBaseMeasureAppa
     {
-        public Freq20HzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+        public Freq20HzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA107N();
@@ -605,9 +605,9 @@ namespace Appa107N
 
     }
 
-    public class Freq200HzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq200HzMeasureBase
+    public class Freq200HzMeasureBaseMeasureAppa : APPA_107N_109N.OpertionFirsVerf.Oper71Freq200HzMeasureBaseMeasureAppa
     {
-        public Freq200HzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+        public Freq200HzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA107N();
@@ -617,9 +617,9 @@ namespace Appa107N
 
     }
 
-    public class Freq2kHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq2kHzMeasureBase
+    public class Freq2KHzMeasureBaseMeasureAppa : APPA_107N_109N.OpertionFirsVerf.Oper71Freq2KHzMeasureBaseMeasureAppa
     {
-        public Freq2kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+        public Freq2KHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA107N();
@@ -629,9 +629,9 @@ namespace Appa107N
 
     }
 
-    public class Freq20kHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq20kHzMeasureBase
+    public class Freq20KHzMeasureBaseMeasureAppa : APPA_107N_109N.OpertionFirsVerf.Oper71Freq20KHzMeasureBaseMeasureAppa
     {
-        public Freq20kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+        public Freq20KHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA107N();
@@ -641,9 +641,9 @@ namespace Appa107N
 
     }
 
-    public class Freq200kHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq200kHzMeasureBase
+    public class Freq200KHzMeasureBaseMeasureAppa : APPA_107N_109N.OpertionFirsVerf.Oper71Freq200KHzMeasureBaseMeasureAppa
     {
-        public Freq200kHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+        public Freq200KHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA107N();
@@ -653,9 +653,9 @@ namespace Appa107N
 
     }
 
-    public class Freq1MHzMeasureBase : APPA_107N_109N.OpertionFirsVerf.Oper71Freq1MHzMeasureBase
+    public class Freq1MHzMeasureBaseMeasureAppa : APPA_107N_109N.OpertionFirsVerf.Oper71Freq1MHzMeasureBaseMeasureAppa
     {
-        public Freq1MHzMeasureBase(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
+        public Freq1MHzMeasureBaseMeasureAppa(Mult107_109N.RangeNominal inRangeNominal, IUserItemOperation userItemOperation) :
             base(inRangeNominal, userItemOperation, Assembly.GetExecutingAssembly().GetName().Name)
         {
             appa107N = new MultAPPA107N();

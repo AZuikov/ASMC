@@ -66,6 +66,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractB5_71_PRO_Plugin.cs" />
+    <Compile Include="B5_71_1_PRO.cs" />
+    <Compile Include="B5_71_2_PRO.cs" />
+    <Compile Include="B5_71_4_PRO.cs" />
+    <Compile Include="BaseOperationPowerSupplyAndElectronicLoad.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelectRangeView.xaml.cs">
       <DependentUpon>SelectRangeView.xaml</DependentUpon>
@@ -120,7 +124,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
+mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y
+xcopy "$(ProjectDir)Resources" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -595,17 +595,13 @@ namespace OWEN_TRM202
                     operation.BodyWorkAsync = () =>
                     {
                         operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-                        operation.ErrorCalculation = (measPoint, point1) =>
-                        {
-                            //считаем приведенную погрешность
-                            return MeasureRanges.GetReducerTolMeasPoint(measPoint);
-                        };
+                        
 
-                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.UpperCalculation = (expected) => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
 
-                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.LowerCalculation= (expected) => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
 
@@ -1153,17 +1149,13 @@ namespace OWEN_TRM202
                     operation.BodyWorkAsync = () =>
                     {
                         operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-                        operation.ErrorCalculation = (measPoint, point1) =>
-                        {
-                            //считаем приведенную погрешность
-                            return MeasureRanges.GetReducerTolMeasPoint(measPoint);
-                        };
+                        
 
-                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.UpperCalculation =(expected)=> expected + MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
 
-                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.LowerCalculation = (expected) => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
                         MeasPoint<Voltage> nullPoint = new MeasPoint<Voltage>(0);
@@ -1349,17 +1341,11 @@ namespace OWEN_TRM202
                         try
                         {
                             operation.Expected = new MeasPoint<Percent>(point.MainPhysicalQuantity);
-                            operation.ErrorCalculation = (measPoint, point1) =>
-                            {
-                                //считаем приведенную погрешность
-                                return MeasureRanges.GetReducerTolMeasPoint(measPoint);
-                            };
-
-                            operation.UpperTolerance = operation.Expected + operation.Error;
+                            operation.UpperCalculation = (expected) => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
                             operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                                 .Multiplier);
 
-                            operation.LowerTolerance = operation.Expected - operation.Error;
+                            operation.LowerCalculation = (expected) => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
                             operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                                 .Multiplier);
                             var setPoint =
@@ -1754,19 +1740,15 @@ namespace OWEN_TRM202
                     {
 
                         operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-                        operation.ErrorCalculation = (measPoint, point1) =>
-                        {
-                            //считаем приведенную погрешность
-                            return MeasureRanges.GetReducerTolMeasPoint(measPoint);
-                        };
 
-                        operation.UpperTolerance = operation.Expected + operation.Error;
+                        operation.UpperCalculation = (expected) => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
 
-                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.LowerCalculation = (expected) => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
+
                         var setPoint = new MeasPoint<Resistance>(point.AdditionalPhysicalQuantity);
                         try
                         {
