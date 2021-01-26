@@ -1071,7 +1071,7 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWorkAsync = () => { };
+            
             operation.CompliteWork = () =>
             {
                 if (operation.IsGood == null) return Task.FromResult(false);
