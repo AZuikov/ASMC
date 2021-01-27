@@ -6,7 +6,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Extension;
+using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
+using ASMC.Core.UI;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -15,6 +17,7 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.UI;
 using NLog;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
@@ -70,6 +73,7 @@ namespace E363xAPlugin
                 new Oper2Oprobovanie(this),
                 new UnstableVoltToLoadChange(this),
                 new AcVoltChange(this), 
+                new VoltageTransientDuration(this), 
 
 
 
@@ -580,4 +584,138 @@ namespace E363xAPlugin
 
         #endregion
     }
+
+    public class VoltageTransientDuration : BasePowerSupplyProcedure<Time>
+    {
+        #region Property
+
+        /// <summary>
+        /// Предоставляет сервис окна ввода данных.
+        /// </summary>
+        private SelectionService Service { get; set; }
+
+        #endregion
+
+        public VoltageTransientDuration(IUserItemOperation userItemOperation) :
+            base(userItemOperation)
+        {
+            Name =
+                $"Определение времени переходного процесса при изменении нагрузки";
+            Sheme = new ShemeImage
+            {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема",
+                Number = 5,
+                FileName = "E364xA_DefaultSheme.jpg",
+                FileNameDescription = "VoltageTransientDurationText.rtf"
+            };
+        }
+
+        #region Methods
+
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Time>> dds)
+        {
+            dataRow["Номер измерения канала"] = dds?.Comment;
+            dataRow["Значение длительности переходного процесса"] = dds.Getting?.Description;
+            dataRow["Среднее значение времени переходного процесса"] = dds.Expected?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.Error?.Description;
+        }
+
+        protected override MeasPoint<Time> ErrorCalc(MeasPoint<Time> inVal)
+        {
+            return new MeasPoint<Time>(50,UnitMultiplier.Micro);
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Номер измерения канала",
+                "Значение длительности переходного процесса",
+                "Среднее значение времени переходного процесса",
+                "Максимально допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+
+            try
+            {
+                /*Получаем измерения*/
+
+                var operation = new BasicOperationVerefication<MeasPoint<Time>>();
+                var arrPoints = new[] { "1", "2", "3", "4", "5" };
+                MeasPoint<Time>[] arrGetting = null;
+                operation.InitWork = async () =>
+                {
+                    var setting = new TableViewModel.SettingTableViewModel { Breaking = 1, CellFormat = "мкс" };
+                    var vm = new OneTableViewModel();
+
+                    vm.Data = TableViewModel.CreateTable("Значения длительности переходного процесса", arrPoints,
+                                                         setting);
+                    Service = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
+                    Service.Title = Name;
+                    Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
+                    Service.ViewModel = vm;
+                    Service.DocumentType = "OneTableView";
+                    Service.Show();
+
+                    arrGetting =
+                        vm.Data.Cells.Select(cell => new MeasPoint<Time>(ObjectToDecimal(cell.Value),
+                                                                         UnitMultiplier.Micro)).ToArray();
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    var averTime = new MeasPoint<Time>(0);
+                    foreach (var point in arrGetting)
+                    {
+                        averTime = averTime + point;
+                        averTime.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity.Multiplier);
+                    }
+
+                    averTime = averTime / arrGetting.Length;
+                    averTime.Round(2);
+
+                    for (var i = 0; i < arrPoints.Length; i++)
+                    {
+                        if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>)operation.Clone();
+                        operation.Comment = arrPoints[i];
+                        operation.Expected = averTime;
+                        operation.Getting = arrGetting[i];
+
+                        if (i > 0) DataRow.Add(operation);
+                    }
+                };
+                operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
+                operation.IsGood = () => operation.Expected < operation.Error;
+
+                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+
+                DataRow.Add(operation);
+            }
+            catch
+            {
+                token.Cancel();
+            }
+        }
+
+        /// <summary>
+        /// Приобразует строку в децимал.
+        /// </summary>
+        /// <param name = "obj"></param>
+        /// <returns></returns>
+        protected decimal ObjectToDecimal(object obj)
+        {
+            if (string.IsNullOrEmpty(obj.ToString())) return 0;
+
+            return decimal.Parse(obj.ToString().Trim()
+                                    .Replace(".",
+                                             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
+        }
+
+        #endregion
+    }
+
 }
