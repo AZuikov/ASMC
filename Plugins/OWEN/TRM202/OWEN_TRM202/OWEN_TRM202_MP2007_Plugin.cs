@@ -955,36 +955,7 @@ namespace OWEN_TRM202
 
             #region Methods
 
-            protected override DataTable FillData()
-            {
-                var dataTable = base.FillData();
-                foreach (var row in DataRow)
-                {
-                    var dataRow = dataTable.NewRow();
-                    var dds = row as BasicOperationVerefication<MeasPoint<Temperature>>;
-                    if (dds == null) continue;
-                    dataRow["Поверяемая точка"] = dds?.Expected?.Description;
-                    dataRow["Измеренное значение"] = dds?.Getting?.Description;
-                    PhysicalRange<Temperature> range = MeasureRanges.GetRangePointBelong(dds?.Expected);
-                    if (dds?.Getting != null && dds?.Expected != null)
-                    {
-                        //посчитаем основную приведенную погрешность
-                        dataRow["Основная приведенная погрешность"] =
-                            Helps.CalculateBasicRedundanceTol(dds?.Getting, dds?.Expected, range).Description;
-                    }
-                    var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
-                    MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
-                    dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
-
-                    if (dds?.IsGood == null)
-                        dataRow[dataRow.Table.Columns.Count-1] = "не выполнено";
-                    else
-                        dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood() ? "Годен" : "Брак";
-                    dataTable.Rows.Add(dataRow);
-                }
-
-                return dataTable;
-            }
+            
 
             protected override string[] GenerateDataColumnTypeObject()
             {

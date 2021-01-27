@@ -15,7 +15,7 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using DevExpress.Mvvm;
-using E364xAPlugin;
+using NLog;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 
@@ -271,6 +271,9 @@ namespace E363xAPlugin
 
     public class UnstableVoltToLoadChange : BasePowerSupplyWithDigitMult<Voltage>
     {
+
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -369,17 +372,9 @@ namespace E363xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-                        operation.ErrorCalculation = (point, measPoint) =>
-                        {
-                            var resultError = new MeasPoint<Voltage>(0.0001M * U1
-                                                                              .MainPhysicalQuantity
-                                                                              .GetNoramalizeValueToSi() +
-                                                                     0.003M);
-                            resultError.Round(4);
-                            return resultError;
-                        };
-                        operation.UpperTolerance = operation.Error;
-                        operation.LowerTolerance = operation.Error * -1;
+                        
+                        operation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
+                        operation.LowerCalculation = (expected) => ErrorCalc(expected) *-1;
 
                         operation.IsGood = () =>
                         {
@@ -425,6 +420,16 @@ namespace E363xAPlugin
                 };
                 DataRow.Add(operation);
             }
+        }
+
+        private MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVol)
+        {
+            var resultError = new MeasPoint<Voltage>(0.0001M * inVol
+                                                              .MainPhysicalQuantity
+                                                              .GetNoramalizeValueToSi() +
+                                                     0.003M);
+            resultError.Round(4);
+            return resultError;
         }
 
         #endregion

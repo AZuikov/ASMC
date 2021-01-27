@@ -18,6 +18,7 @@ using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
+using NLog;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
@@ -332,6 +333,7 @@ namespace E364xAPlugin
 
     public class UnstableVoltToLoadChange : BasePowerSupplyWithDigitMult<Voltage>
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -493,6 +495,7 @@ namespace E364xAPlugin
 
     public class AcVoltChange : BasePowerSupplyWithDigitMult<Voltage>
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public AcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -778,6 +781,8 @@ namespace E364xAPlugin
 
     public class UnstableVoltageOnTime : BasePowerSupplyWithDigitMult<Voltage>
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
             bool isSpeedOperation = false) :
             base(userItemOperation, inChanel)
@@ -951,6 +956,7 @@ namespace E364xAPlugin
 
     public class OutputVoltageSetting : BasePowerSupplyWithDigitMult<Voltage>
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public OutputVoltageSetting(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -1116,6 +1122,8 @@ namespace E364xAPlugin
 
     public class OutputCurrentMeasure : BasePowerSupplyProcedure<Current>
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public OutputCurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -1281,6 +1289,8 @@ namespace E364xAPlugin
 
     public class UnstableCurrentLoadChange : BasePowerSupplyProcedure<Current>
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public UnstableCurrentLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -1441,6 +1451,8 @@ namespace E364xAPlugin
 
     public class UnstableCurrentToAcChange : BasePowerSupplyProcedure<Current>
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public UnstableCurrentToAcChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -1601,6 +1613,9 @@ namespace E364xAPlugin
 
     public class UnstableCurrentOnTime : BasePowerSupplyProcedure<Current>
     {
+
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public UnstableCurrentOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
             bool isSpeedOperation = false) :
             base(userItemOperation, inChanel)
@@ -1761,6 +1776,9 @@ namespace E364xAPlugin
 
     public class OutputCurrentSetup : BasePowerSupplyProcedure<Current>
     {
+
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public OutputCurrentSetup(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -1930,6 +1948,8 @@ namespace E364xAPlugin
          *Здесь производится измерение напряжения в режиме стабилизации ТОКА
          *изменяется уставка по току, а контролируется напряжения внешним вольтметром и всттроенным вольтметром источника питания
          */
+
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public OutputVoltageMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)

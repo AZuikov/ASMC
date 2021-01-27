@@ -452,8 +452,8 @@ namespace TDS_BasePlugin
 
                         };
 
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperCalculation = (expected) => { return expected + operation.Error; };
+                        operation.LowerCalculation = (expected) => { return expected - operation.Error; };
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
 
@@ -482,6 +482,8 @@ namespace TDS_BasePlugin
                                 : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
             }
         }
+
+       
 
         #endregion
     }
@@ -656,8 +658,8 @@ namespace TDS_BasePlugin
                         operation.Expected =
                             new MeasPoint<Time>((decimal) currScale.GetDoubleValue()*2,
                                                 currScale.GetUnitMultipliersValue());
-                        operation.UpperTolerance = operation.Expected + operation.Error;
-                        operation.LowerTolerance = operation.Expected - operation.Error;
+                        operation.UpperCalculation = (expected) => { return expected + operation.Error; };
+                        operation.LowerCalculation = (expected) => { return expected - operation.Error; };
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
 
@@ -808,7 +810,7 @@ namespace TDS_BasePlugin
                                                     ((MeasPoint<Voltage>) dds.Expected).MainPhysicalQuantity.Multiplier)
                    .Description + "/Дел";
                 dataRow[2] = ((MeasPoint<Time>) dds?.Getting).Description;
-                dataRow[3] = ((MeasPoint<Time>) dds?.UpperTolerance).Description;
+                dataRow[3] = ((MeasPoint<Time>) dds?.Error).Description;
 
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
@@ -919,7 +921,7 @@ namespace TDS_BasePlugin
                         operation.Getting =
                             new MeasPoint<Time>(measResult, horizontalScAleForTest.GetUnitMultipliersValue());
                         operation.ErrorCalculation = (point, measPoint) => RiseTimeTol;
-                        operation.UpperTolerance = RiseTimeTol;
+                        
 
                         operation.IsGood = () =>
                         {

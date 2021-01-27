@@ -12,7 +12,7 @@ using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using NLog;
 
-namespace E364xAPlugin
+namespace E363xAPlugin
 {
     public abstract class BasePowerSupplyWithDigitMult<T> : BasePowerSupplyProcedure<T>
         where T : PhysicalQuantity<T>, new()
@@ -48,7 +48,7 @@ namespace E364xAPlugin
 
         protected const string ConstGood = "Годен";
         protected const string ConstNotUsed = "Не выполнено";
-        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        
         protected bool isSpeedOperation = false;
 
         #region Fields

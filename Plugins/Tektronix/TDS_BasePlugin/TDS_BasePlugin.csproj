@@ -48,6 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TDS1012B.cs" />
+    <Compile Include="TDS2002BPlugin.cs" />
+    <Compile Include="TDS2004BPlugin.cs" />
+    <Compile Include="TDS2012BPlugin.cs" />
+    <Compile Include="TDS2014BPlugin.cs" />
+    <Compile Include="TDS2022BPlugin.cs" />
+    <Compile Include="TDS2024Plugin.cs" />
     <Compile Include="TDS_BasePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
