@@ -43,7 +43,7 @@ namespace E363xAPlugin
             {
                 new Device
                 {
-                    Devices = new IDeviceRemote[] {new N3303A(), new N3306A()}, Description = "Электронная нагрузка"
+                    Devices = new IDeviceRemote[] {new N3306A(), new N3303A()}, Description = "Электронная нагрузка"
                 },
                 new Device
                 {
@@ -68,8 +68,11 @@ namespace E363xAPlugin
             {
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
+                new UnstableVoltToLoadChange(this),
+                new AcVoltChange(this), 
 
-                
+
+
             };
         }
 
@@ -274,8 +277,8 @@ namespace E363xAPlugin
 
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
-            base(userItemOperation, inChanel)
+        public UnstableVoltToLoadChange(IUserItemOperation userItemOperation) :
+            base(userItemOperation)
         {
             Name =
                 $"Определение нестабильности выходного напряжения от изменения нагрузки";
@@ -294,6 +297,9 @@ namespace E363xAPlugin
             dataRow[5] = dds?.UpperTolerance?.Description;
         }
 
+        
+        
+
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -311,7 +317,7 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
@@ -322,7 +328,7 @@ namespace E363xAPlugin
                 {
                     try
                     {
-                        powerSupply.ActiveE364XChanels = _chanel;
+                        
                         powerSupply.SetRange(rangePowerSupply);
                         operation.Comment = powerSupply.GetVoltageRange().Description;
                         var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
@@ -372,19 +378,8 @@ namespace E363xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-                        
-                        operation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
-                        operation.LowerCalculation = (expected) => ErrorCalc(expected) *-1;
-
-                        operation.IsGood = () =>
-                        {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-
-                            var mp = operation.Getting - operation.Expected;
-                            mp.Abs();
-                            return mp < operation.Error;
-                        };
+                        operation.ErrorCalculation = (point, measPoint) => point - measPoint;
+                        SetUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -422,15 +417,166 @@ namespace E363xAPlugin
             }
         }
 
-        private MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVol)
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
         {
-            var resultError = new MeasPoint<Voltage>(0.0001M * inVol
+            var resultError = new MeasPoint<Voltage>(0.0001M * inVal
                                                               .MainPhysicalQuantity
                                                               .GetNoramalizeValueToSi() +
-                                                     0.003M);
+                                                     0.002M);
             resultError.Round(4);
             return resultError;
         }
+
+        #endregion
+    }
+
+    public class AcVoltChange : BasePowerSupplyWithDigitMult<Voltage>
+    {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public AcVoltChange(IUserItemOperation userItemOperation) :
+            base(userItemOperation)
+        {
+            Name =
+                $"Определение нестабильности выходного напряжения от изменения напряжения питания";
+        }
+
+        #region Methods
+
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
+        {
+            dataRow[0] = dds?.Comment;
+            dataRow[1] = dds?.Expected?.Description;
+            dataRow[2] = dds?.Getting?.Description;
+            var mp = dds?.Expected - dds?.Getting;
+            dataRow[3] = mp.Description;
+            dataRow[4] = dds?.LowerTolerance?.Description;
+            dataRow[5] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
+        {
+            var resultError =
+                new MeasPoint<Voltage>(0.0001M * inVal.MainPhysicalQuantity.GetNoramalizeValueToSi() +
+                                       0.002M);
+            resultError.Round(4);
+            return resultError;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел канала",
+                "Измеренное напряжение U1",
+                "Измеренное напряжение U2",
+                "Разность U1 - U2",
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            ConnectionToDevice();
+            
+            if (powerSupply == null || ElectonicLoad == null) return;
+
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
+            {
+                var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+                operation.InitWork = async () =>
+                {
+                    try
+                    {
+                        powerSupply.SetRange(rangePowerSupply);
+                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
+                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
+                        // расчитаем идеальное значение для электронной нагрузки
+                        var resistToLoad =
+                            new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                      _voltRange
+                                                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                        resistToLoad.Round(4);
+
+                        ElectonicLoad.SetThisModuleAsWorking();
+                        ElectonicLoad.SetResistanceMode();
+                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    try
+                    {
+                        powerSupply.OutputOn();
+
+                        ElectonicLoad.OutputOn();
+                        Thread.Sleep(1000);
+                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.Setting();
+                        var U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        Thread.Sleep(1000);
+                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.Setting();
+                        var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
+
+                        operation.Expected = U1;
+                        operation.Expected.Round(4);
+
+                        operation.Getting = U2;
+                        operation.Getting.Round(4);
+
+                        operation.ErrorCalculation = (point, measPoint) => point - measPoint;
+
+                       SetUpperLowerCalcAndIsGood(operation);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                    finally
+                    {
+                        powerSupply.OutputOff();
+                        ElectonicLoad.OutputOff();
+                    }
+                };
+                operation.CompliteWork = () =>
+                {
+                    if (operation.IsGood != null && !operation.IsGood())
+                    {
+                        var answer =
+                            UserItemOperation.ServicePack.MessageBox()
+                                             .Show($"Нестабильность выходного напряжения не проходит по допускуна пределе {operation.Comment}:\n" +
+                                                   $"{operation.Expected.Description} - {operation.Getting.Description} = {(operation.Getting - operation.Expected).Description}\n" +
+                                                   $"Допустимое значение нестабильности: {operation.Error.Description}\n\n" +
+                                                   "Повторить измерение этой точки?",
+                                                   "Информация по текущему измерению",
+                                                   MessageButton.YesNo, MessageIcon.Question,
+                                                   MessageResult.Yes);
+
+                        if (answer == MessageResult.No) return Task.FromResult(true);
+                    }
+
+                    if (operation.IsGood == null)
+                        return Task.FromResult(true);
+                    return Task.FromResult(operation.IsGood());
+                };
+                DataRow.Add(operation);
+            }
+        }
+
+        
 
         #endregion
     }

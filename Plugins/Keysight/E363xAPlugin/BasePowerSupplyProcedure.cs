@@ -23,8 +23,8 @@ namespace E363xAPlugin
 
         #endregion
 
-        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation, E364xChanels inChanel) :
-            base(userItemOperation, inChanel)
+        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation) :
+            base(userItemOperation)
         {
         }
 
@@ -51,11 +51,7 @@ namespace E363xAPlugin
         
         protected bool isSpeedOperation = false;
 
-        #region Fields
-
-        protected readonly E364xChanels _chanel;
-
-        #endregion
+        
 
         #region Property
 
@@ -64,16 +60,16 @@ namespace E363xAPlugin
 
         #endregion
 
-        protected BasePowerSupplyProcedure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        protected BasePowerSupplyProcedure(IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
-            _chanel = inChanel;
+            
             Sheme = new ShemeImage
             {
                 AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
-                Number = (int)_chanel,
-                FileName = $"E363xA_{_chanel}_N3300A_34401A.jpg",
+                Number = 0,
+                FileName = $"E363xA_N3300A_34401A.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 
             };
@@ -131,9 +127,36 @@ namespace E363xAPlugin
             return dataTable;
         }
 
+        /// <summary>
+        /// Метод, который определяем формулу расчета погрешности.
+        /// </summary>
+        /// <param name="inVal"></param>
+        /// <returns></returns>
+        protected abstract MeasPoint<T> ErrorCalc(MeasPoint<T> inVal);
+
+        /// <summary>
+        /// Типовая реализация расчета границ допуска, логики принятия решения о годности или браке для данной МП.
+        /// </summary>
+        /// <param name="inOperation"></param>
+        protected void SetUpperLowerCalcAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
+        {
+            inOperation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
+            inOperation.LowerCalculation = (expected) => ErrorCalc(expected) * -1;
+
+            inOperation.IsGood = () =>
+            {
+                if (inOperation.Getting == null || inOperation.Expected == null ||
+                    inOperation.UpperTolerance == null || inOperation.LowerTolerance == null) return false;
+
+                return inOperation.Error < inOperation.UpperTolerance &&
+                       inOperation.Error > inOperation.LowerTolerance;
+            };
+        }
+
+
         protected override string GetReportTableName()
         {
-            return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name + _chanel;
+            return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
 
         #endregion
