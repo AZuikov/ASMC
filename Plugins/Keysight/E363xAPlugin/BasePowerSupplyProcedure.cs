@@ -140,7 +140,7 @@ namespace E363xAPlugin
         /// Типовая реализация расчета границ допуска, логики принятия решения о годности или браке для данной МП.
         /// </summary>
         /// <param name="inOperation"></param>
-        protected void SetUpperLowerCalcAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
+        protected void SetErrorCalculationUpperLowerCalcAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
         {
             inOperation.ErrorCalculation = (point, measPoint) =>
             {
@@ -162,7 +162,7 @@ namespace E363xAPlugin
         }
 
 
-        protected void SetUpperLowerCalcAndIsGoodDefault(BasicOperationVerefication<MeasPoint<T>> inOperation)
+        protected void SetDefaultErrorCalculationUpperLowerCalcAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
         {
             inOperation.ErrorCalculation = (point, measPoint) =>
             {
@@ -222,7 +222,7 @@ namespace E363xAPlugin
                                                                   .AdditionalPhysicalQuantity));
             // расчитаем значение для электронной нагрузки
             var resistToLoad =
-                new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                new MeasPoint<Resistance>(0.85M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
                                           _voltRange
                                              .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
             resistToLoad.Round(4);

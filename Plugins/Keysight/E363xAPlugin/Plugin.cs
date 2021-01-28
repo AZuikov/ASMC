@@ -79,6 +79,7 @@ namespace E363xAPlugin
                 new OutputCurrentMeasure(this), 
                 new UnstableCurrentLoadChange(this), 
                 new UnstableCurrentToAcChange(this), 
+                new UnstableCurrentOnTime( this),
 
 
 
@@ -137,6 +138,11 @@ namespace E363xAPlugin
                 new AcVoltChange(this),
                 new VoltageTransientDuration(this),
                 new UnstableVoltageOnTime(this,true),
+                new OutputVoltageSetting(this),
+                new OutputCurrentMeasure(this),
+                new UnstableCurrentLoadChange(this),
+                new UnstableCurrentToAcChange(this),
+                new UnstableCurrentOnTime( this, true),
 
 
             };
@@ -378,7 +384,7 @@ namespace E363xAPlugin
                         operation.Getting.Round(4);
 
                         
-                        SetUpperLowerCalcAndIsGood(operation);
+                        SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -525,7 +531,7 @@ namespace E363xAPlugin
 
                        
 
-                       SetUpperLowerCalcAndIsGood(operation);
+                       SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -969,7 +975,7 @@ namespace E363xAPlugin
                             ElectonicLoad.OutputOff();
                         }
 
-                        SetUpperLowerCalcAndIsGoodDefault(operation);
+                        SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                     };
                     operation.CompliteWork = () =>
                     {
@@ -1112,7 +1118,7 @@ namespace E363xAPlugin
                         }
                     };
 
-                    SetUpperLowerCalcAndIsGoodDefault(operation);
+                    SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
 
                     operation.CompliteWork = () =>
                     {
@@ -1253,7 +1259,7 @@ namespace E363xAPlugin
                         ElectonicLoad.OutputOff();
                     }
 
-                    SetUpperLowerCalcAndIsGoodDefault(operation);
+                    SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                 };
                 operation.CompliteWork = () =>
                 {
@@ -1387,7 +1393,7 @@ namespace E363xAPlugin
                         ElectonicLoad.OutputOff();
                     }
 
-                    SetUpperLowerCalcAndIsGood(operation);
+                    SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                 };
                 operation.CompliteWork = () =>
                 {
@@ -1412,6 +1418,165 @@ namespace E363xAPlugin
                     return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(operation);
+            }
+        }
+
+        #endregion
+    }
+
+    public class UnstableCurrentOnTime : BasePowerSupplyProcedure<Current>
+    {
+
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        public UnstableCurrentOnTime(IUserItemOperation userItemOperation, 
+            bool isSpeedOperation = false) :
+            base(userItemOperation)
+        {
+            this.isSpeedOperation = isSpeedOperation;
+            Name = $"Определение величины дрейфа выходного тока";
+        }
+
+        #region Methods
+
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
+        {
+            dataRow["Предел напряжения канала"] = dds?.Comment;
+            dataRow["Измеренное значение тока"] = dds?.Expected?.Description;
+            dataRow["Абсолютное отклонение тока"] = dds?.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
+        {
+            var resultError = new MeasPoint<Current>(0.001M * inVal
+                                                             .MainPhysicalQuantity
+                                                             .GetNoramalizeValueToSi() +
+                                                     0.001M);
+            resultError.Round(4);
+            return resultError;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел напряжения канала",
+                "Измеренное значение тока",
+                "Абсолютное отклонение тока",
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            ConnectionToDevice();
+            
+            if (powerSupply == null || ElectonicLoad == null) return;
+
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
+            {
+                MeasPoint<Current> I1 = null;
+                for (var i = 0; i < 17; i++)
+                {
+                    var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+                    operation.InitWork = async () =>
+                    {
+                        try
+                        {
+                            SetDevicesForCurrentMode(operation, rangePowerSupply);
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+
+                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                    };
+                    operation.BodyWorkAsync = () =>
+                    {
+                        try
+                        {
+                            if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
+                                Thread.Sleep(15000);
+                            else
+                                Thread.Sleep(108000);// нормальная поверка по МП, между измерениями 30 минут
+
+                            if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
+                            {
+                                I1 = ElectonicLoad.GetMeasureCurrent();
+                                operation.Expected = I1;
+                                operation.Expected.Round(4);
+                                operation.Getting = I1 - I1;
+                            }
+                            else
+                            {
+                                var In = ElectonicLoad.GetMeasureCurrent();
+                                operation.Expected = In;
+                                operation.Expected.Round(4);
+
+                                operation.Getting = I1 - In;
+                                operation.Getting.Round(4);
+                            }
+
+                            operation.ErrorCalculation = (point, measPoint) => point - measPoint;
+                            operation.UpperCalculation = (expected) => ErrorCalc(expected);
+                            operation.LowerCalculation = (expected) => operation.UpperTolerance * -1;
+
+
+                            operation.IsGood = () =>
+                            {
+                                if (operation.Getting == null || operation.Expected == null ||
+                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                                // в Expected записан измеренный ток,а погрешность посчитана для первого тока
+                                // и края посчитаны тоже для первого тока.
+                                // Фактически первый измеренный ток определяет границы допуска.
+                                // В Getting записана разность первого тока и текущего измеренного.
+                                //поэтому ниже сравнивается Getting с краями допуска
+                                return (operation.Getting < operation.UpperTolerance) &
+                                       (operation.Getting > operation.LowerTolerance);
+                            };
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
+                        }
+                    };
+                    operation.CompliteWork = () =>
+                    {
+                        if (operation.IsGood != null && !operation.IsGood())
+                        {
+                            var answer =
+                                UserItemOperation.ServicePack.MessageBox()
+                                                 .Show("Величины дрейфа выходного тока не проходит по допуску:\n" +
+                                                       $"Допустимое значение погрешности {operation.UpperTolerance.Description}\n" +
+                                                       $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                                       "Повторить измерение этой точки?",
+                                                       "Информация по текущему измерению",
+                                                       MessageButton.YesNo, MessageIcon.Question,
+                                                       MessageResult.Yes);
+
+                            if (answer == MessageResult.No) return Task.FromResult(true);
+                        }
+
+                        if (operation.IsGood == null)
+                            return Task.FromResult(true);
+                        return Task.FromResult(operation.IsGood());
+                    };
+                    DataRow.Add(operation);
+                }
             }
         }
 
