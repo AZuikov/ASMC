@@ -92,11 +92,22 @@
       <Name>ASMC.Devices</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\E363xA_protocol.dotx" />
+    <None Include="Resources\E364XA_VisualTest.rtf" />
+    <None Include="Resources\VoltageTransientDurationText.rtf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\E364xA_DefaultSheme.jpg" />
+    <Content Include="Resources\E364xA_OUTP1_N3300A_34401A.jpg" />
+    <Content Include="Resources\E364xA_OUTP2_N3300A_34401A.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
 mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
 xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y
-xcopy "$(ProjectDir)Resource" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
+xcopy "$(ProjectDir)Resources" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
   </PropertyGroup>
 </Project>
