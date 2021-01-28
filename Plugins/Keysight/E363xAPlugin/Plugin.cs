@@ -80,6 +80,7 @@ namespace E363xAPlugin
                 new UnstableCurrentLoadChange(this), 
                 new UnstableCurrentToAcChange(this), 
                 new UnstableCurrentOnTime( this),
+                new OutputCurrentSetup(this), 
 
 
 
@@ -143,6 +144,7 @@ namespace E363xAPlugin
                 new UnstableCurrentLoadChange(this),
                 new UnstableCurrentToAcChange(this),
                 new UnstableCurrentOnTime( this, true),
+                new OutputCurrentSetup(this),
 
 
             };
@@ -1525,7 +1527,7 @@ namespace E363xAPlugin
                                 operation.Getting.Round(4);
                             }
 
-                            operation.ErrorCalculation = (point, measPoint) => point - measPoint;
+                            
                             operation.UpperCalculation = (expected) => ErrorCalc(expected);
                             operation.LowerCalculation = (expected) => operation.UpperTolerance * -1;
 
@@ -1563,6 +1565,147 @@ namespace E363xAPlugin
                                                  .Show("Величины дрейфа выходного тока не проходит по допуску:\n" +
                                                        $"Допустимое значение погрешности {operation.UpperTolerance.Description}\n" +
                                                        $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                                       "Повторить измерение этой точки?",
+                                                       "Информация по текущему измерению",
+                                                       MessageButton.YesNo, MessageIcon.Question,
+                                                       MessageResult.Yes);
+
+                            if (answer == MessageResult.No) return Task.FromResult(true);
+                        }
+
+                        if (operation.IsGood == null)
+                            return Task.FromResult(true);
+                        return Task.FromResult(operation.IsGood());
+                    };
+                    DataRow.Add(operation);
+                }
+            }
+        }
+
+        #endregion
+    }
+
+    public class OutputCurrentSetup : BasePowerSupplyProcedure<Current>
+    {
+
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        public OutputCurrentSetup(IUserItemOperation userItemOperation) :
+            base(userItemOperation)
+        {
+            Name =
+                $"Определение погрешности установки тока в режиме постоянного тока";
+        }
+
+        #region Methods
+
+        public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
+        {
+            dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+            dataRow["Поверяемая точка"] = dds?.Expected?.Description;
+            dataRow["Измеренное значение"] = dds.Getting?.Description;
+            dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
+            dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
+        {
+            var error =
+                new MeasPoint<Current>(inVal.MainPhysicalQuantity.Value * 0.002M +
+                                       0.010M);
+
+            error.Round(4);
+            return error;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел воспроизведения напряжения",
+                "Поверяемая точка",
+                "Измеренное значение",
+                "Минимально допустимое значение",
+                "Максимально допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            ConnectionToDevice();
+            
+
+            if (powerSupply == null || ElectonicLoad == null) return;
+            
+
+            foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
+            {
+                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var CurrentLimit = new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity);
+                var CurrSteps =
+                    CurrentLimit.GetArayMeasPointsInParcent(new MeasPoint<Current>(0), 0, 20, 40, 60, 80, 100);
+
+                foreach (var measPoint1 in CurrSteps)
+                {
+                    var setPoint = (MeasPoint<Current>)measPoint1;
+
+                    var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+
+                    operation.InitWork = async () =>
+                    {
+                        try
+                        {
+                           
+                            SetDevicesForCurrentMode(operation, rangePowerSupply);
+                            powerSupply.SetCurrentLevel((MeasPoint<Current>)measPoint1);
+                            operation.Expected = (MeasPoint<Current>) measPoint1;
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                    };
+                    operation.BodyWorkAsync = () =>
+                    {
+                        try
+                        {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+                            Thread.Sleep(1000);
+                            var MeasStdCurr = ElectonicLoad.GetMeasureCurrent();
+                            operation.Getting = MeasStdCurr;
+                            operation.Getting.Round(4);
+
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
+
+                            SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
+                        }
+                    };
+                    operation.CompliteWork = () =>
+                    {
+                        if (operation.IsGood != null && !operation.IsGood())
+                        {
+                            var answer =
+                                UserItemOperation.ServicePack.MessageBox()
+                                                 .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                                       $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
+                                                       $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
+                                                       $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
+                                                       $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
                                                        "Повторить измерение этой точки?",
                                                        "Информация по текущему измерению",
                                                        MessageButton.YesNo, MessageIcon.Question,
