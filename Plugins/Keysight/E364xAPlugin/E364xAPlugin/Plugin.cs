@@ -32,7 +32,7 @@ namespace E364xAPlugin
             UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
-            SpeedUserItemOperationPrimaryVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
+            SpeedUserItemOperationPrimaryVerf= new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             SpeedUserItemOperationPeriodicVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
         }
     }
@@ -232,7 +232,7 @@ namespace E364xAPlugin
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { "Результат внешнего осмотра" };
+            return new[] {"Результат внешнего осмотра"};
         }
 
         /// <inheritdoc />
@@ -300,7 +300,7 @@ namespace E364xAPlugin
 
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { "Результат опробования" };
+            return new[] {"Результат опробования"};
         }
 
         protected override string GetReportTableName()
@@ -392,29 +392,15 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                        powerSupply.ActiveE364XChanels = _chanel;
-                        powerSupply.SetRange(rangePowerSupply);
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange
-                                                                              .AdditionalPhysicalQuantity));
-                        // расчитаем идеальное значение для электронной нагрузки
-                        var resistToLoad =
-                            new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      _voltRange
-                                                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(4);
-
-                        ElectonicLoad.SetThisModuleAsWorking();
-                        ElectonicLoad.SetResistanceMode();
-                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+                        SetDevicesForVoltageMode(operation, rangePowerSupply);
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                         throw;
                     }
+
+                    operation.Comment = powerSupply.GetVoltageRange().Description;
                 };
                 operation.BodyWorkAsync = () =>
                 {
@@ -546,7 +532,7 @@ namespace E364xAPlugin
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
                         operation.Comment = powerSupply.GetVoltageRange().Description;
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
                         powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
                         // расчитаем идеальное значение для электронной нагрузки
@@ -694,11 +680,11 @@ namespace E364xAPlugin
                 /*Получаем измерения*/
 
                 var operation = new BasicOperationVerefication<MeasPoint<Time>>();
-                var arrPoints = new[] { "1", "2", "3", "4", "5" };
+                var arrPoints = new[] {"1", "2", "3", "4", "5"};
                 MeasPoint<Time>[] arrGetting = null;
                 operation.InitWork = async () =>
                 {
-                    var setting = new TableViewModel.SettingTableViewModel { Breaking = 1, CellFormat = "мкс" };
+                    var setting = new TableViewModel.SettingTableViewModel {Breaking = 1, CellFormat = "мкс"};
                     var vm = new OneTableViewModel();
 
                     vm.Data = TableViewModel.CreateTable("Значения длительности переходного процесса", arrPoints,
@@ -728,7 +714,7 @@ namespace E364xAPlugin
 
                     for (var i = 0; i < arrPoints.Length; i++)
                     {
-                        if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>)operation.Clone();
+                        if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone();
                         operation.Comment = arrPoints[i];
                         operation.Expected = averTime;
                         operation.Getting = arrGetting[i];
@@ -831,7 +817,7 @@ namespace E364xAPlugin
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
 
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
                         powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
 
@@ -1006,7 +992,7 @@ namespace E364xAPlugin
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
                     _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
 
@@ -1168,7 +1154,7 @@ namespace E364xAPlugin
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
                     _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 100, 80, 60, 40, 20, 0);
 
@@ -1332,7 +1318,7 @@ namespace E364xAPlugin
                     {
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         operation.Comment = _voltRange.Description;
 
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
@@ -1485,7 +1471,7 @@ namespace E364xAPlugin
                     {
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         operation.Comment = _voltRange.Description;
 
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
@@ -1637,7 +1623,7 @@ namespace E364xAPlugin
                         powerSupply.ActiveE364XChanels = _chanel;
                         powerSupply.SetRange(rangePowerSupply);
                         operation.Comment = powerSupply.GetVoltageRange().Description;
-                        var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                         powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
                         powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
 
@@ -1800,14 +1786,14 @@ namespace E364xAPlugin
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var CurrentLimit = new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity);
                 var CurrSteps =
                     CurrentLimit.GetArayMeasPointsInParcent(new MeasPoint<Current>(0), 0, 20, 40, 60, 80, 100);
 
                 foreach (var measPoint1 in CurrSteps)
                 {
-                    var setPoint = (MeasPoint<Current>)measPoint1;
+                    var setPoint = (MeasPoint<Current>) measPoint1;
 
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
 
@@ -1967,7 +1953,7 @@ namespace E364xAPlugin
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
                     _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
 

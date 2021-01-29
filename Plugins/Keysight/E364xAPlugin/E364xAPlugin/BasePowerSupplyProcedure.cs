@@ -199,6 +199,7 @@ namespace E364xAPlugin
         protected void SetDevicesForVoltageMode(BasicOperationVerefication<MeasPoint<T>> inOperation,
             E36xxA_Ranges rangePowerSupply)
         {
+            powerSupply.ActiveE364XChanels = _chanel;
             var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
             powerSupply.SetRange(rangePowerSupply);
             powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
@@ -217,6 +218,7 @@ namespace E364xAPlugin
 
         protected void SetDevicesForCurrentMode(BasicOperationVerefication<MeasPoint<T>> inOperation, E36xxA_Ranges rangePowerSupply)
         {
+            powerSupply.ActiveE364XChanels = _chanel;
             powerSupply.SetRange(rangePowerSupply);
             var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
             inOperation.Comment = _voltRange.Description;
