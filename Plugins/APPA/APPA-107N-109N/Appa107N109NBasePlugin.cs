@@ -21,7 +21,7 @@ using NLog;
 
 namespace APPA_107N_109N
 {
-    public class Appa107N109NBasePlugin<T> : Program<T> where T : OperationMetrControlBase
+    public abstract class Appa107N109NBasePlugin<T> : Program<T> where T : OperationMetrControlBase
 
     {
         public Appa107N109NBasePlugin(ServicePack service) : base(service)
@@ -30,17 +30,6 @@ namespace APPA_107N_109N
         }
     }
 
-    public class Operation : OperationMetrControlBase
-    {
-        //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
-        public Operation()
-        {
-            //это операция первичной поверки
-            //UserItemOperationPrimaryVerf = new OpertionFirsVerf();
-            //здесь периодическая поверка, но набор операций такой же
-            UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
-        }
-    }
 
     /// <summary>
     /// Класс для вспомогательных функций

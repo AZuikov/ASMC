@@ -53,7 +53,7 @@ namespace TDS_BasePlugin
         #endregion
     }
 
-    public class TDS_BasePlugin<T> : Program<T> where T : OperationMetrControlBase
+    public abstract class TDS_BasePlugin<T> : Program<T> where T : OperationMetrControlBase
 
     {
         public TDS_BasePlugin(ServicePack service) : base(service)

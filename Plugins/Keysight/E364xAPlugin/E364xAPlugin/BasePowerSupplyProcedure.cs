@@ -196,8 +196,7 @@ namespace E364xAPlugin
             };
         }
 
-        protected void SetDevicesForVoltageMode(BasicOperationVerefication<MeasPoint<T>> inOperation,
-            E36xxA_Ranges rangePowerSupply)
+        protected void SetDevicesForVoltageMode(E36xxA_Ranges rangePowerSupply)
         {
             powerSupply.ActiveE364XChanels = _chanel;
             var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
