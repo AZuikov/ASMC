@@ -162,7 +162,7 @@ namespace ASMC.Core.Model
                     if (userItemOperationBase.IsCheked || !IsManual)
                     {
                         ShowShem(userItemOperationBase.Sheme, source);
-                        await userItemOperationBase.StartWork(source);
+                        userItemOperationBase.StartWork(source);
                     }
                 }
                 catch (Exception e)
@@ -173,7 +173,8 @@ namespace ASMC.Core.Model
                 }
 
                 var tree = (ITreeNode) userItemOperationBase;
-                foreach (var node in tree.Nodes) ClrNode((IUserItemOperationBase) node);
+                foreach (var node in tree.Nodes) 
+                    ClrNode((IUserItemOperationBase) node);
             }
         }
 

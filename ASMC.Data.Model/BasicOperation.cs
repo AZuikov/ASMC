@@ -61,7 +61,7 @@ namespace ASMC.Data.Model
         }
 
         /// <inheritdoc />
-        public async Task WorkAsync(CancellationTokenSource token )
+        public async void WorkAsync(CancellationTokenSource token )
         {
             Task<bool> taskColmplit = null;
             do

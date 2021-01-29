@@ -10,5 +10,10 @@ namespace ASMC.ViewModel
 {
     public class OperationViewModel : ViewModelBase
     {
+        public string Name { get; set; }
+        /// <summary>
+        /// предоставляет количество операций в пункте
+        /// </summary>
+        int Count { get; }
     }
 }
