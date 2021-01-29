@@ -99,9 +99,8 @@
     <None Include="Resources\VoltageTransientDurationText.rtf" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\E363xA_N3300A_34401A.jpg" />
     <Content Include="Resources\E364xA_DefaultSheme.jpg" />
-    <Content Include="Resources\E364xA_OUTP1_N3300A_34401A.jpg" />
-    <Content Include="Resources\E364xA_OUTP2_N3300A_34401A.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
