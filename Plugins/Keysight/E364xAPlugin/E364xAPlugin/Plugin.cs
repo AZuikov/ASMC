@@ -1726,10 +1726,11 @@ namespace E364xAPlugin
                             {
                                 if (operation.Getting == null || operation.Expected == null ||
                                     operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                // в Expected записано измеренное напряжение,а погрешность посчитана для первого тока
+                                // в Expected записан измеренный ток,а погрешность посчитана для первого тока
                                 // и края посчитаны тоже для первого тока.
-                                // Фактически первое измеренный ток определяет границы допуска.
-                                //поэтому ниже сравнивается Expected с краями допуска
+                                // Фактически первый измеренный ток определяет границы допуска.
+                                // В Getting записана разность первого тока и текущего измеренного.
+                                //поэтому ниже сравнивается Getting с краями допуска
                                 return (operation.Getting < operation.UpperTolerance) &
                                        (operation.Getting > operation.LowerTolerance);
                             };
