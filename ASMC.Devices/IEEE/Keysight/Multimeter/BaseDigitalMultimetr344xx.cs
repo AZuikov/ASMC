@@ -183,7 +183,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             new Command("Det:Band 200", "", 200)
         };
 
-        private MeasPoint<Data.Model.PhysicalQuantity.Current> _value;
 
         #endregion
 
@@ -266,8 +265,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     {
         #region Fields
 
-        private MeasPoint<Voltage> _range;
-        private MeasPoint<Voltage> _value;
 
         #endregion
 
@@ -329,12 +326,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     public class DcCurrentMeas : MeasureFunction344xxBase<Data.Model.PhysicalQuantity.Current>,
                                  IMeasureMode<MeasPoint<Data.Model.PhysicalQuantity.Current>>
     {
-        #region Fields
-
-        private MeasPoint<Data.Model.PhysicalQuantity.Current> _value;
-
-        #endregion
-
+        
         public DcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:DC")
         {
             _range = new MeasPoint<Data.Model.PhysicalQuantity.Current>(1);
@@ -398,12 +390,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
     public class Resistance2W : MeasureFunction344xxBase<Resistance>, IMeasureMode<MeasPoint<Resistance>>
     {
-        #region Fields
-
-        private MeasPoint<Resistance> _value;
-
-        #endregion
-
         public Resistance2W(IeeeBase inDevice) : base(inDevice, "RES")
         {
             _range = new MeasPoint<Resistance>(1);
@@ -464,12 +450,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
     public class Resistance4W : MeasureFunction344xxBase<Resistance>, IMeasureMode<MeasPoint<Resistance>>
     {
-        #region Fields
-
-        private MeasPoint<Resistance> _value;
-
-        #endregion
-
         public Resistance4W(IeeeBase inDevice) : base(inDevice, "FRES")
         {
             _range = new MeasPoint<Resistance>(1);

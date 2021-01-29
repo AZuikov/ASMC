@@ -104,12 +104,12 @@ namespace AP.Math
                         };
 
                     return _grubbsValuesFor5Persent[n - 3];
-            }   
+            }
             return 0;
         }
 
 
-    
+
 
 
         /// <summary>
@@ -123,8 +123,8 @@ namespace AP.Math
                 return 0; //Избегаем деления на 0
             decimal sum = 0;
             var arithmeticalMean = GetArithmeticalMean(values);
-            
-            foreach (var value in values)  sum += (value - arithmeticalMean) * (value - arithmeticalMean) / values.Length;
+
+            foreach (var value in values) sum += (value - arithmeticalMean) * (value - arithmeticalMean) / values.Length;
 
             return (decimal)System.Math.Sqrt((double)sum);
         }
@@ -152,7 +152,7 @@ namespace AP.Math
                 //Grubbs for max value
                 var grubbs1 = System.Math.Abs(valueList.Max() - GetArithmeticalMean(valueList.ToArray())) /
                               stdDeviation;
-                if (grubbs1 > (decimal) GetCriticalGrubbsValue(valueList.Count, grubbsLevel))
+                if (grubbs1 > (decimal)GetCriticalGrubbsValue(valueList.Count, grubbsLevel))
                 {
                     inProcess = true;
                     valueList.Remove(valueList.Max());
@@ -162,7 +162,7 @@ namespace AP.Math
                 //Grubbs for min value
                 var grubbs2 = System.Math.Abs(valueList.Min() - GetArithmeticalMean(valueList.ToArray())) /
                               stdDeviation;
-                if (grubbs2 <= (decimal) GetCriticalGrubbsValue(valueList.Count + (inProcess ? 1 : 0), grubbsLevel))
+                if (grubbs2 <= (decimal)GetCriticalGrubbsValue(valueList.Count + (inProcess ? 1 : 0), grubbsLevel))
                     continue;
                 inProcess = true;
                 valueList.Remove(valueList.Min());
@@ -170,7 +170,7 @@ namespace AP.Math
             }
 
             //values = valueList.Count < 3 ? null : valueList.ToArray();
-            values =  valueList.ToArray();
+            values = valueList.ToArray();
             return numberOfDeleted > 0;
         }
 
@@ -242,9 +242,9 @@ namespace AP.Math
         /// </summary>
         /// <param name="value">Округляемое</param>
         /// <param name="reference">Опорное значение</param>
-        public static string Round(decimal value, string reference)
+        public static string Round(ref decimal value, string reference)
         {
-           return Round( value, GetMantissa(reference));
+            return Round(ref value, GetMantissa(reference));
         }
 
         /// <summary>
@@ -252,9 +252,9 @@ namespace AP.Math
         /// </summary>
         /// <param name="value">Округляемое</param>
         /// <param name="reference">Опорное значение</param>
-        public static string Round(double value, string reference)
+        public static string Round(ref double value, string reference)
         {
-            return Round( value, GetMantissa(reference));
+            return Round(ref value, GetMantissa(reference));
         }
         /// <summary>
         ///     Возврящает количество знаков после запятой
@@ -299,7 +299,7 @@ namespace AP.Math
             int i;
             for (i = splitted[1].Length - 1; i >= 0; i--)
                 if (splitted[1][i] != '0')
-                    break; 
+                    break;
             return i + 1;
         }
 
@@ -310,7 +310,7 @@ namespace AP.Math
         /// <param name="value">Округляемое</param>
         /// <param name="number">Число знаков</param>
         /// <param name="reduceZeros">Отбросить незначимые нули</param>
-        public static string Round(double value, int number, bool reduceZeros = false)
+        public static string Round(ref double value, int number, bool reduceZeros = false)
         {
             value = System.Math.Round(value, number, MidpointRounding.AwayFromZero);
             return reduceZeros ? value.ToString(@"G17", CultureInfo.CurrentCulture) : AddInsignificantZeros(value, number);
@@ -322,10 +322,10 @@ namespace AP.Math
         /// <param name="value">Округляемое</param>
         /// <param name="number">Число знаков</param>
         /// <param name="reduceZeros">Отбросить незначимые нули</param>
-        public static string Round( decimal value, int number, bool reduceZeros = false)
+        public static string Round(ref decimal value, int number, bool reduceZeros = false)
         {
             value = System.Math.Round(value, number, MidpointRounding.AwayFromZero);
-            return reduceZeros? value.ToString(@"G17", CultureInfo.CurrentCulture) : AddInsignificantZeros(value, number);
+            return reduceZeros ? value.ToString(@"G17", CultureInfo.CurrentCulture) : AddInsignificantZeros(value, number);
         }
         /// <summary>
         /// Добавляет незначищие нули
@@ -338,9 +338,9 @@ namespace AP.Math
             var val = Convert.ToDecimal(value);
             var mantissa = GetMantissa(val, CultureInfo.InvariantCulture);
             var result = new StringBuilder(val.ToString(@"G17", CultureInfo.CurrentCulture));
-            while(mantissa < number)
+            while (mantissa < number)
             {
-                if(mantissa == 0)
+                if (mantissa == 0)
                 {
                     result.Append(NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator);
                 }
@@ -358,11 +358,11 @@ namespace AP.Math
         /// <param name="minOutput">Минимальное значение выходного диапазона</param>
         /// <param name="maxOutput">Максимальное знаечние выходного диапазона</param>
         /// <returns>Возвращет смасштабирование значение в указаном выходном диапазоне</returns>
-        public static decimal Mapping(decimal input,decimal minInput, decimal maxInput, decimal minOutput, decimal maxOutput)
+        public static decimal Mapping(decimal input, decimal minInput, decimal maxInput, decimal minOutput, decimal maxOutput)
         {
-            if (minOutput >= maxOutput || minInput >= maxInput || (input < minInput || input > maxInput))  throw new ArgumentOutOfRangeException();
-                return ((maxOutput - minOutput) / (maxInput - minInput)) * input +
-                       (minOutput * maxInput - maxOutput * minInput) / (maxInput - minInput);
+            if (minOutput >= maxOutput || minInput >= maxInput || (input < minInput || input > maxInput)) throw new ArgumentOutOfRangeException();
+            return ((maxOutput - minOutput) / (maxInput - minInput)) * input +
+                   (minOutput * maxInput - maxOutput * minInput) / (maxInput - minInput);
         }
         /// <summary>
         /// Производит масштабирование значения

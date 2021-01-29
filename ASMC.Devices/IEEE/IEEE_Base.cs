@@ -421,7 +421,7 @@ namespace ASMC.Devices.IEEE
         #endregion Methods
 
         /// <inheritdoc />
-        public string UserType { get;  set; }
+        public string UserType { get; set; }
 
         /// <inheritdoc />
         public string StringConnection
@@ -492,7 +492,7 @@ namespace ASMC.Devices.IEEE
             get
             {
                 if (string.IsNullOrWhiteSpace(StringConnection)) return false;
-                var res= !string.IsNullOrWhiteSpace(QueryLine(QueryIdentificationDevice));
+                var res = !string.IsNullOrWhiteSpace(QueryLine(QueryIdentificationDevice));
                 if (res)
                 {
                     lock (StringConnection)

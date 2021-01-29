@@ -4,10 +4,6 @@ using System.Threading;
 using AP.Math;
 using AP.Utils.Data;
 using ASMC.Data.Model;
-using NLog;
-
-//using System.Globalization;
-//using System.Text.RegularExpressions;
 
 namespace ASMC.Devices.Port.Profigrupp
 {
@@ -62,7 +58,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// </summary>
         public decimal TolleranceCurrentPuls { get; protected set; } = 5;
 
-        public decimal TolleranceCurrentUnstability => TollUnstable(CurrMax,  0.05M);
+        public decimal TolleranceCurrentUnstability => TollUnstable(CurrMax, 0.05M);
         public decimal TolleranceVoltageUnstability => TollUnstable(VoltMax, 0.02m);
 
         /// <summary>
@@ -203,9 +199,9 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns>Если установка величины прошла успешно возвращает true. В противном случае false.</returns>
         public B571Pro SetStateCurr(decimal inCurr, UnitMultiplier mult = UnitMultiplier.None)
         {
-            var inCurrToDevice = inCurr * (decimal) (mult.GetDoubleValue() * 1E4);
+            var inCurrToDevice = inCurr * (decimal)(mult.GetDoubleValue() * 1E4);
 
-            var resultStr = MathStatistics.Round( inCurrToDevice, 0, true);
+            var resultStr = MathStatistics.Round(ref inCurrToDevice, 0, true);
 
             if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
 
@@ -236,26 +232,23 @@ namespace ASMC.Devices.Port.Profigrupp
         public B571Pro SetStateVolt(decimal inVolt, UnitMultiplier mult = UnitMultiplier.None)
         {
             //блок питания понимает значения только в милливольтах
-            var inVoltToDevice = inVolt * (decimal) (mult.GetDoubleValue() * 1E3);
+            var inVoltToDevice = inVolt * (decimal)(mult.GetDoubleValue() * 1E3);
 
-            var resultStr = MathStatistics.Round( inVoltToDevice, 0, true);
+            var resultStr = MathStatistics.Round(ref inVoltToDevice, 0, true);
 
             if (resultStr.Length > 6) throw new ArgumentOutOfRangeException();
 
             for (; resultStr.Length < 6;)
                 resultStr = resultStr.Insert(0, "0");
 
-            var answer = "";
             for (var i = 0; i != 5; i++)
             {
-                answer = QueryLine("U" + resultStr);
-                if (string.Equals(answer, "U"))
-                {
-                    Thread.Sleep(2000);
-                    return this;
-                }
+                var answer = QueryLine("U" + resultStr);
+                if (!string.Equals(answer, "U")) continue;
+                Thread.Sleep(2000);
+                return this;
             }
-            
+
 
             throw new ArgumentException($"Неверное значение уставки по напряжению: {inVolt} => {inVoltToDevice}");
         }
@@ -266,7 +259,7 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns>Погрешность в амперах</returns>
         public decimal TolleranceFormulaCurrent(decimal value, UnitMultiplier mult = UnitMultiplier.None)
         {
-            value *= (decimal) mult.GetDoubleValue();
+            value *= (decimal)mult.GetDoubleValue();
             return 0.01M * value + 0.05M;
         }
 
@@ -278,8 +271,8 @@ namespace ASMC.Devices.Port.Profigrupp
         /// <returns>Погрешность в вольтах.</returns>
         public decimal TolleranceFormulaVolt(decimal value, UnitMultiplier mult = UnitMultiplier.None)
         {
-            value *= (decimal) mult.GetDoubleValue();
-            return  0.002M * value + 0.1m;
+            value *= (decimal)mult.GetDoubleValue();
+            return 0.002M * value + 0.1m;
         }
 
         /// <summary>

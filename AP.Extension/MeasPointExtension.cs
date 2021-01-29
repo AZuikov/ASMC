@@ -21,20 +21,20 @@ namespace AP.Extension
             var listPoint = new List<MeasPoint<T>>();
             foreach (var countPoint in pointParcent)
             {
-                if (countPoint>100 || countPoint<0)
+                if (countPoint > 100 || countPoint < 0)
                 {
-                    throw  new ArgumentOutOfRangeException(nameof(pointParcent),countPoint.ToString());
+                    throw new ArgumentOutOfRangeException(nameof(pointParcent), countPoint.ToString());
                 }
 
                 var mp = new MeasPoint<T>();
                 mp.MainPhysicalQuantity.Multiplier = rangeEndValue.MainPhysicalQuantity.Multiplier;
                 mp.MainPhysicalQuantity.Unit = rangeEndValue.MainPhysicalQuantity.Unit;
-                mp.MainPhysicalQuantity.Value =rangeEndValue.MainPhysicalQuantity.Value * (countPoint / 100M);
-                yield return  mp;
+                mp.MainPhysicalQuantity.Value = rangeEndValue.MainPhysicalQuantity.Value * (countPoint / 100M);
+                yield return mp;
             }
         }
 
-        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue ,  IMeasPoint<T> rangeStartValue, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
+        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue, IMeasPoint<T> rangeStartValue, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
         {
             if ((MeasPoint<T>)rangeStartValue >= (MeasPoint<T>)rangeEndValue) throw new ArgumentOutOfRangeException("Начало диапазона больше конца диапазона.");
 
@@ -45,10 +45,10 @@ namespace AP.Extension
                     throw new ArgumentOutOfRangeException(nameof(pointParcent), countPoint.ToString());
                 }
 
-                
-                
-                yield return ((MeasPoint<T>) rangeEndValue + (MeasPoint<T>) rangeStartValue.Abs()) * (countPoint / 100M) - (MeasPoint<T>) rangeStartValue.Abs();
-                   
+
+
+                yield return ((MeasPoint<T>)rangeEndValue + (MeasPoint<T>)rangeStartValue.Abs()) * (countPoint / 100M) - (MeasPoint<T>)rangeStartValue.Abs();
+
             }
         }
         /// <summary>
@@ -69,7 +69,7 @@ namespace AP.Extension
         /// <param name="measPoint">Измерительная точка.</param>
         /// <param name="digitsCount">Число знаков после запятой.</param>
         /// <returns></returns>
-        public static IMeasPoint<T> Round<T>(this IMeasPoint<T> measPoint,int digitsCount) where T : class, IPhysicalQuantity<T>, new()
+        public static IMeasPoint<T> Round<T>(this IMeasPoint<T> measPoint, int digitsCount) where T : class, IPhysicalQuantity<T>, new()
         {
             measPoint.MainPhysicalQuantity.Value = Math.Round(measPoint.MainPhysicalQuantity.Value, digitsCount);
             return measPoint;

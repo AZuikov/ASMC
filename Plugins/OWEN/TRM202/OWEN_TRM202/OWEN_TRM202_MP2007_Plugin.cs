@@ -23,7 +23,7 @@ using NLog;
 namespace OWEN_TRM202
 
 {
-   
+
     internal class OWEN_TRM202_MP2007_Plugin : Program<Operation2007>
     {
         public OWEN_TRM202_MP2007_Plugin(ServicePack service) : base(service)
@@ -69,7 +69,7 @@ namespace OWEN_TRM202
 
             DocumentName = "TRM202_protocolMP2007";
 
-            var Chanel1Operation = new Operation8_4_ResistanceTermocoupleGost6651(this, 1) {Name = "Канал 1"};
+            var Chanel1Operation = new Operation8_4_ResistanceTermocoupleGost6651(this, 1) { Name = "Канал 1" };
             Chanel1Operation.Nodes.Add(new Operation8_4_Cu100_426_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Cu50_426_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Pt100_385_Poverka(this, 1));
@@ -79,32 +79,32 @@ namespace OWEN_TRM202
             Chanel1Operation.Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this, 1));
             //пункт меьтодики 2007 года. 8.5.1.1
-            Chanel1Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka(this, 1));
             //пункт меьтодики 2007 года. 8.5.1.3
-            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_50_50_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 1));
             //пункт меьтодики 2007 года. 8.5.1.2
-            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 1));
-            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A1_Poverka(this,  1));
-            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A2_Poverka(this,  1));
-            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A3_Poverka(this,  1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A1_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A2_Poverka(this, 1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_A3_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_L_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_J_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_N_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka(this, 1));
             // //пункт меьтодики 2007 года. 8.5.1.4
-            Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this,1));
+            Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_S_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_R_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_B_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_T_Poverka(this, 1));
-            
 
-            var Chanel2Operation = new Operation8_4_ResistanceTermocoupleGost6651(this, 2) {Name = "Канал 2"};
+
+            var Chanel2Operation = new Operation8_4_ResistanceTermocoupleGost6651(this, 2) { Name = "Канал 2" };
             Chanel2Operation.Nodes.Add(new Operation8_4_Cu100_426_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Cu50_426_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Pt100_385_Poverka(this, 2));
@@ -142,7 +142,7 @@ namespace OWEN_TRM202
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new Oper1VisualTest(this),
-                new Oper2IsolationTest(this), 
+                new Oper2IsolationTest(this),
                 new Oprobovanie2007(this, 1),
                 new Oprobovanie2007(this, 2),
                 Chanel1Operation,
@@ -188,7 +188,7 @@ namespace OWEN_TRM202
                         dataRow[0] = dds.Getting ? "Соответствует" : dds?.Comment;
                         data.Rows.Add(dataRow);
                     }
-                    
+
                 }
 
                 return data;
@@ -197,7 +197,7 @@ namespace OWEN_TRM202
             /// <inheritdoc />
             protected override string[] GenerateDataColumnTypeObject()
             {
-                return new[] {"Результат внешнего осмотра"};
+                return new[] { "Результат внешнего осмотра" };
             }
 
             /// <inheritdoc />
@@ -260,7 +260,7 @@ namespace OWEN_TRM202
                         dataRow[0] = dds.Getting ? "соответствует" : $"не соответствует: {dds?.Comment}";
                         data.Rows.Add(dataRow);
                     }
-                    
+
                 }
 
                 return data;
@@ -343,7 +343,7 @@ namespace OWEN_TRM202
                         dataRow[0] = dds.Getting ? "проведено успешно." : dds?.Comment;
                         data.Rows.Add(dataRow);
                     }
-                    
+
                 }
 
                 return data;
@@ -351,7 +351,7 @@ namespace OWEN_TRM202
 
             protected override string[] GenerateDataColumnTypeObject()
             {
-                return new[] {"Результат"};
+                return new[] { "Результат" };
             }
 
             protected override string GetReportTableName()
@@ -381,7 +381,7 @@ namespace OWEN_TRM202
 
                                 //1. задаем на каналах нужную характеристику НСХ 50М (W100 = 1,4280)
                                 var typeTermoCouple = BitConverter
-                                                     .GetBytes((int) TRM202Device.in_t.r428).Where(a => a != 0)
+                                                     .GetBytes((int)TRM202Device.in_t.r428).Where(a => a != 0)
                                                      .ToArray();
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
@@ -402,7 +402,7 @@ namespace OWEN_TRM202
                     operation.CompliteWork = () => { return Task.FromResult(operation.IsGood()); };
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<bool>) operation.Clone());
+                                    : (BasicOperationVerefication<bool>)operation.Clone());
                 }
             }
 
@@ -413,7 +413,7 @@ namespace OWEN_TRM202
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-            
+
 
             public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
@@ -430,7 +430,7 @@ namespace OWEN_TRM202
 
             #region Methods
 
-           
+
 
             protected override string[] GenerateDataColumnTypeObject()
             {
@@ -458,7 +458,7 @@ namespace OWEN_TRM202
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
-                ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
+                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
 
                 base.InitWork(token);
 
@@ -475,7 +475,7 @@ namespace OWEN_TRM202
 
                                 //1. задаем на каналах нужную характеристику
                                 var typeTermoCouple = BitConverter
-                                                     .GetBytes((int) CoupleTypeTrm).Where(a => a != 0)
+                                                     .GetBytes((int)CoupleTypeTrm).Where(a => a != 0)
                                                      .ToArray(); //выкидываем из массива лишние нули
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
@@ -495,13 +495,13 @@ namespace OWEN_TRM202
                     operation.BodyWorkAsync = () =>
                     {
                         operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-                        
+
 
                         operation.UpperCalculation = (expected) => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
 
-                        operation.LowerCalculation= (expected) => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
+                        operation.LowerCalculation = (expected) => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
 
@@ -509,7 +509,7 @@ namespace OWEN_TRM202
 
                         try
                         {
-                            
+
                             Calibrator.SetTemperature(nullDegPoint, CalibrTypeTermocouple, "CEL");
                             Calibrator.SetOutputOn();
                             Thread.Sleep(1900);
@@ -523,7 +523,7 @@ namespace OWEN_TRM202
 
                             Calibrator.SetOutputOff();
 
-                            MathStatistics.Round( measPoint, 1);
+                            MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
                         catch (TrmException e)
@@ -551,7 +551,7 @@ namespace OWEN_TRM202
 
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Temperature>>) operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
                 }
             }
 
@@ -955,7 +955,7 @@ namespace OWEN_TRM202
 
             #region Methods
 
-            
+
 
             protected override string[] GenerateDataColumnTypeObject()
             {
@@ -1020,9 +1020,9 @@ namespace OWEN_TRM202
                     operation.BodyWorkAsync = () =>
                     {
                         operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-                        
 
-                        operation.UpperCalculation =(expected)=> expected + MeasureRanges.GetReducerTolMeasPoint(expected);
+
+                        operation.UpperCalculation = (expected) => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
                                                                                             .Multiplier);
 
@@ -1045,7 +1045,7 @@ namespace OWEN_TRM202
                             decimal measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             measPoint = measPoint - delta;
                             Calibrator.SetOutputOff();
-                            MathStatistics.Round( measPoint, 1);
+                            MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
                         catch (TrmException e)
@@ -1095,7 +1095,7 @@ namespace OWEN_TRM202
 
             #endregion Fields
 
-           
+
 
             public Operation8_4_UnicSignal(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
@@ -1169,7 +1169,7 @@ namespace OWEN_TRM202
                 if (trm202 == null || Calibrator == null || measPointsPercentVolt == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
-                ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
+                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
 
                 base.InitWork(token);
 
@@ -1186,7 +1186,7 @@ namespace OWEN_TRM202
 
                                 //1. задаем на каналах нужную характеристику
                                 var typeTermoCouple = BitConverter
-                                                     .GetBytes((int) _coupleType).Where(a => a != 0)
+                                                     .GetBytes((int)_coupleType).Where(a => a != 0)
                                                      .ToArray(); //выкидываем из массива лишние нули
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
@@ -1222,7 +1222,7 @@ namespace OWEN_TRM202
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             Calibrator.SetOutputOff();
-                            MathStatistics.Round( measPoint, 1);
+                            MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Percent>(measPoint);
                         }
                         catch (Exception e)
@@ -1244,7 +1244,7 @@ namespace OWEN_TRM202
 
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Percent>>) operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Percent>>)operation.Clone());
                 }
             }
 
@@ -1295,7 +1295,7 @@ namespace OWEN_TRM202
 
                 measPointsPercentVolt = new[]
                 {
-                    
+
                     new MeasPoint<Percent, Voltage>(50M, 500M)
                 };
             }
@@ -1418,14 +1418,14 @@ namespace OWEN_TRM202
 
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
                 _coupleType = TRM202Device.in_t.i0_20;
-                Name = $"8.5.1.2 {_coupleType.GetStringValue()}" ;
+                Name = $"8.5.1.2 {_coupleType.GetStringValue()}";
 
                 //в этом пункте прибор работает с сигналом 0-20мА,
                 //но измеренное значние получает с шунта,
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
                 measPointsPercentVolt = new[]
                 {
-                    
+
                     new MeasPoint<Percent, Voltage>(50M, 1000M)
                 };
             }
@@ -1483,11 +1483,11 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-           
+
             protected MeasPoint<Temperature, Resistance>[] measPointsTempRes;
-           
+
             #endregion Fields
-            
+
             public Operation8_4_ResistanceTermocoupleGost6651(IUserItemOperation userItemOperation,
                 ushort inChanelNumber) : base(userItemOperation)
             {
@@ -1557,10 +1557,10 @@ namespace OWEN_TRM202
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
                                      .SelectedDevice as ICalibrator;
 
-                if (trm202 == null || Calibrator == null ||measPointsTempRes == null) return;
+                if (trm202 == null || Calibrator == null || measPointsTempRes == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
-                ((IeeeBase) Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine) Calibrator);
+                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
 
                 base.InitWork(token);
 
@@ -1577,7 +1577,7 @@ namespace OWEN_TRM202
 
                                 //1. задаем на каналах нужную характеристику
                                 var typeTermoCouple = BitConverter
-                                                     .GetBytes((int) _coupleType).Where(a => a != 0)
+                                                     .GetBytes((int)_coupleType).Where(a => a != 0)
                                                      .ToArray(); //выкидываем из массива лишние нули
                                 trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
                                 //2. ставим сдвиги и наклоны характеристик
@@ -1610,13 +1610,13 @@ namespace OWEN_TRM202
                         var setPoint = new MeasPoint<Resistance>(point.AdditionalPhysicalQuantity);
                         try
                         {
-                            
+
                             Calibrator.SetResistance2W(setPoint);
                             Calibrator.SetOutputOn();
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             Calibrator.SetOutputOff();
-                            MathStatistics.Round( measPoint, 1);
+                            MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
                         catch (TrmException e)
@@ -1644,7 +1644,7 @@ namespace OWEN_TRM202
 
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Temperature>>) operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
                 }
             }
 
@@ -1819,9 +1819,9 @@ namespace OWEN_TRM202
 
                 measPointsTempRes = new[]
                 {
-                    
+
                     new MeasPoint<Temperature, Resistance>(5, 51.070M)
-                    
+
                 };
             }
 

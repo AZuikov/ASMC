@@ -251,7 +251,7 @@ namespace ASMC.Devices.Port
         /// <inheritdoc />
         public virtual bool IsTestConnect => false;
 
-        public async Task InitializeAsync()
+        public Task InitializeAsync()
         {
             throw new NotImplementedException();
         }

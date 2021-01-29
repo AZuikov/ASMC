@@ -274,7 +274,7 @@ using NLog;
 //                        var measPoint = trm202.GetMeasValChanel(_chanelNumber);
 //                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 //                        var mantisa = MathStatistics.GetMantissa(operation.Error.MainPhysicalQuantity.Value);
-//                        MathStatistics.Round( measPoint, mantisa);
+//                        MathStatistics.Round(ref measPoint, mantisa);
 //                        operation.Getting = new MeasPoint<Temperature>(measPoint);
 //                    }
 //                    catch (Exception e)
@@ -439,7 +439,7 @@ using NLog;
 //                        var measPoint = trm202.GetMeasValChanel(_chanelNumber);
 //                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 //                        var mantisa = MathStatistics.GetMantissa(operation.Error.MainPhysicalQuantity.Value);
-//                        MathStatistics.Round( measPoint, mantisa);
+//                        MathStatistics.Round(ref measPoint, mantisa);
 //                        operation.Getting = new MeasPoint<Percent>(measPoint);
 //                    }
 //                    catch (Exception e)
@@ -603,7 +603,7 @@ using NLog;
 //                        var measPoint = trm202.GetMeasValChanel(_chanelNumber);
 //                        flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
 //                        var mantisa = MathStatistics.GetMantissa(operation.Error.MainPhysicalQuantity.Value);
-//                        MathStatistics.Round( measPoint, mantisa);
+//                        MathStatistics.Round(ref measPoint, mantisa);
 //                        operation.Getting = new MeasPoint<Percent>(measPoint);
 //                    }
 //                    catch (Exception e)

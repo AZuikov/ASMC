@@ -125,7 +125,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         /// </summary>
         public  void GetMeasureValue()
         {
-            throw new Exception("Метод не реализован");
+            throw new NotImplementedException("Метод не реализован");
             Sincronization(TestConnectByte); // спамим тест-обмен
             SendQuery(new byte[] { 0x03, 0x44, 0x03, 0x21 });//получаем измеренное значение
         }
@@ -199,7 +199,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         /// </summary>
         public void SetVoltInput(MeasureInputVolt input)
         {
-            throw new Exception("Метод не реализован");
+            throw new NotImplementedException("Метод не реализован");
             byte[] resultByteArr = { 0x04, 0x44, 0x03, 0x24 };
             if (input == MeasureInputVolt.InputU1)
                 resultByteArr = resultByteArr.Concat(new byte[] { 0x20 }).ToArray();

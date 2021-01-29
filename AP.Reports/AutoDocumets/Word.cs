@@ -10,7 +10,6 @@ using AP.Reports.Helps;
 using AP.Reports.Utils;
 using DevExpress.XtraRichEdit;
 using DevExpress.XtraRichEdit.API.Native;
-//using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
 using AP.Utils.Data;
 

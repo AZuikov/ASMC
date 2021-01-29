@@ -65,7 +65,7 @@ namespace ASMC.Devices.Port.IZ_Tech
                 //Regex regexForMeasVal = new Regex(pattern: @"(?<=\d:)(\S+)(?=\w)"); //регулярка для получения измеренного значения
                 Regex regexForMeasVal1 = new Regex(pattern: $@"(?<={inChanel}:)(\S+)(?=\w)"); //регулярка для получения измеренного значения
                 string str = ReadLine();
-                
+
                 var match = regexForMeasVal1.Match(str ?? String.Empty).Value;
                 if (!string.IsNullOrWhiteSpace(match))
                 {

@@ -172,7 +172,7 @@ namespace TDS_BasePlugin
         {
             Name = "Опробование";
         }
-        protected  TDS_Oscilloscope someTdsOscilloscope;
+        protected TDS_Oscilloscope someTdsOscilloscope;
         #region Methods
 
         protected override DataTable FillData()
@@ -268,7 +268,7 @@ namespace TDS_BasePlugin
             {
                 AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
-                Number = (int) _testingChanel,
+                Number = (int)_testingChanel,
                 FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
@@ -297,7 +297,7 @@ namespace TDS_BasePlugin
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
                 if (dds == null) continue;
-               
+
                 if (dds.Expected != null && dds.Getting != null)
                 {
                     dataRow["Коэффициент развёртки"] = new MeasPoint<Voltage>(dds.Expected.MainPhysicalQuantity.Value / 6,
@@ -305,7 +305,7 @@ namespace TDS_BasePlugin
                        .Description + "/Дел";
                     var result = dds.Expected - dds.Getting;
                     result.MainPhysicalQuantity.ChangeMultiplier(dds.Expected.MainPhysicalQuantity.Multiplier);
-                    result.MainPhysicalQuantity.Value=Math.Round(result.MainPhysicalQuantity.Value, 2);
+                    result.MainPhysicalQuantity.Value = Math.Round(result.MainPhysicalQuantity.Value, 2);
                     dataRow["Абсолютная погрешность коэффициента отклонения"] = result.Description;
                 }
                 else
@@ -313,9 +313,9 @@ namespace TDS_BasePlugin
                     dataRow["Абсолютная погрешность коэффициента отклонения"] = "нет данных";
                     dataRow["Коэффициент развёртки"] = "нет данных";
                 }
-                
-                dataRow["Допустимое значение погрешности"] ="± " + dds.Error.Description;
-                
+
+                dataRow["Допустимое значение погрешности"] = "± " + dds.Error.Description;
+
 
                 if (dds.IsGood == null)
                     dataRow[3] = "не выполнено";
@@ -335,7 +335,7 @@ namespace TDS_BasePlugin
                 "Коэффициент развёртки",
                 "Абсолютная погрешность коэффициента отклонения",
                 "Допустимое значение погрешности",
-                
+
             }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
             ;
         }
@@ -348,7 +348,7 @@ namespace TDS_BasePlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork( token);
+            base.InitWork(token);
             if (calibr9500B == null || someTdsOscilloscope == null) return;
 
             foreach (var currScale in verticalScalesList)
@@ -404,11 +404,11 @@ namespace TDS_BasePlugin
                         //5.подать сигнал: меандр 1 кГц
                         //это разверктка
                         ChanelVerticalRange =
-                            new MeasPoint<Voltage>((decimal) currScale.GetDoubleValue(),
+                            new MeasPoint<Voltage>((decimal)currScale.GetDoubleValue(),
                                                    currScale.GetUnitMultipliersValue());
                         // это подаваемая амплитуда
                         operation.Expected =
-                            new MeasPoint<Voltage>(6 * (decimal) currScale.GetDoubleValue(),
+                            new MeasPoint<Voltage>(6 * (decimal)currScale.GetDoubleValue(),
                                                    currScale.GetUnitMultipliersValue());
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.SQU).Source
                                    .SetVoltage(operation.Expected).Source
@@ -422,8 +422,8 @@ namespace TDS_BasePlugin
                         Thread.Sleep(2500);
                         someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
                         var measResult = someTdsOscilloscope.Measurement.MeasureValue() /
-                                         (decimal) currScale.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round( measResult, 2);
+                                         (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
+                        MathStatistics.Round(ref measResult, 2);
 
                         someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
 
@@ -432,12 +432,12 @@ namespace TDS_BasePlugin
                         operation.ErrorCalculation = (point, measPoint) =>
                         {
                             var nominalPoint = ChanelVerticalRange.MainPhysicalQuantity.Value *
-                                               (decimal) ChanelVerticalRange
+                                               (decimal)ChanelVerticalRange
                                                         .MainPhysicalQuantity.Multiplier.GetDoubleValue();
                             MeasPoint<Voltage> resultError;
-                            if (nominalPoint >= (decimal) 0.01 && nominalPoint <= 5)
+                            if (nominalPoint >= (decimal)0.01 && nominalPoint <= 5)
                             {
-                                resultError= new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
+                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
                                                                  currScale.GetUnitMultipliersValue());
 
                             }
@@ -479,11 +479,11 @@ namespace TDS_BasePlugin
                 operation.CompliteWork = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
+                                : (BasicOperationVerefication<MeasPoint<Voltage>>)operation.Clone());
             }
         }
 
-       
+
 
         #endregion
     }
@@ -527,7 +527,7 @@ namespace TDS_BasePlugin
             {
                 AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
-                Number = (int) _testingOscillosocopeChanel,
+                Number = (int)_testingOscillosocopeChanel,
                 FileName = $"9500B_to_TDS_{_testingOscillosocopeChanel}.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
@@ -626,9 +626,9 @@ namespace TDS_BasePlugin
                         calibr9500B.Source.Parametr.MARKER.SetWaveForm(Calibr9500B.MarkerWaveForm.SQU);
                         calibr9500B.Source.Parametr.MARKER.SetAmplitude(Calibr9500B.MarkerAmplitude.ampl1V);
                         ChanelHorizontalRange =
-                            new MeasPoint<Time>((decimal) currScale.GetDoubleValue(),
+                            new MeasPoint<Time>((decimal)currScale.GetDoubleValue(),
                                                 currScale.GetUnitMultipliersValue());
-                        var ExpectedPoin = new MeasPoint<Time>((decimal) (currScale.GetDoubleValue() * 2),
+                        var ExpectedPoin = new MeasPoint<Time>((decimal)(currScale.GetDoubleValue() * 2),
                                                                currScale.GetUnitMultipliersValue());
                         calibr9500B.Source.Parametr.MARKER.SetPeriod(ExpectedPoin);
                         operation.Expected = ExpectedPoin;
@@ -646,17 +646,17 @@ namespace TDS_BasePlugin
                                                                 2);
                         Thread.Sleep(1000);
                         var measResult = someTdsOscilloscope.Measurement.MeasureValue(2) /
-                                         (decimal) currScale.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round( measResult, 2);
+                                         (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
+                        MathStatistics.Round(ref measResult, 2);
 
                         operation.Getting =
                             new MeasPoint<Time>(measResult, currScale.GetUnitMultipliersValue());
 
                         operation.ErrorCalculation = (point, measPoint) => ScaleTolDict[currScale];
 
-                        
+
                         operation.Expected =
-                            new MeasPoint<Time>((decimal) currScale.GetDoubleValue()*2,
+                            new MeasPoint<Time>((decimal)currScale.GetDoubleValue() * 2,
                                                 currScale.GetUnitMultipliersValue());
                         operation.UpperCalculation = (expected) => { return expected + operation.Error; };
                         operation.LowerCalculation = (expected) => { return expected - operation.Error; };
@@ -686,7 +686,7 @@ namespace TDS_BasePlugin
                 operation.CompliteWork = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone());
+                                : (BasicOperationVerefication<MeasPoint<Time>>)operation.Clone());
             }
         }
 
@@ -787,7 +787,7 @@ namespace TDS_BasePlugin
             {
                 AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
-                Number = (int) _testingChanel,
+                Number = (int)_testingChanel,
                 FileName = $"9500B_to_TDS_{_testingChanel}.jpg",
                 ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
             };
@@ -806,11 +806,11 @@ namespace TDS_BasePlugin
                 if (dds == null) continue;
 
                 dataRow[0] = new MeasPoint<Time>(2.5M, UnitMultiplier.Nano).Description + "/Дел";
-                dataRow[1] = new MeasPoint<Voltage>(((MeasPoint<Voltage>) dds.Expected).MainPhysicalQuantity.Value / 3,
-                                                    ((MeasPoint<Voltage>) dds.Expected).MainPhysicalQuantity.Multiplier)
+                dataRow[1] = new MeasPoint<Voltage>(((MeasPoint<Voltage>)dds.Expected).MainPhysicalQuantity.Value / 3,
+                                                    ((MeasPoint<Voltage>)dds.Expected).MainPhysicalQuantity.Multiplier)
                    .Description + "/Дел";
-                dataRow[2] = ((MeasPoint<Time>) dds?.Getting).Description;
-                dataRow[3] = ((MeasPoint<Time>) dds?.Error).Description;
+                dataRow[2] = ((MeasPoint<Time>)dds?.Getting).Description;
+                dataRow[3] = ((MeasPoint<Time>)dds?.Error).Description;
 
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
@@ -891,9 +891,9 @@ namespace TDS_BasePlugin
                         calibr9500B.Source.SetFunc(Calibr9500B.Shap.EDG);
                         calibr9500B.Source.Parametr.EDGE.SetEdgeDirection(Calibr9500B.Direction.RIS);
                         calibr9500B.Source.Parametr.EDGE.SetEdgeSpeed(Calibr9500B.SpeedEdge.Mid_500p);
-                        operation.Expected = new MeasPoint<Voltage>((decimal) (3 * verticalScale.GetDoubleValue()),
+                        operation.Expected = new MeasPoint<Voltage>((decimal)(3 * verticalScale.GetDoubleValue()),
                                                                     verticalScale.GetUnitMultipliersValue());
-                        calibr9500B.Source.SetVoltage((MeasPoint<Voltage>) operation.Expected);
+                        calibr9500B.Source.SetVoltage((MeasPoint<Voltage>)operation.Expected);
 
                         calibr9500B.Source.Output(Calibr9500B.State.On);
 
@@ -915,19 +915,19 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Measurement.SetMeas(_testingChanel, TDS_Oscilloscope.TypeMeas.RIS, 3);
                         Thread.Sleep(1000);
                         var measResult = someTdsOscilloscope.Measurement.MeasureValue(3) /
-                                         (decimal) horizontalScAleForTest.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round( measResult, 2);
+                                         (decimal)horizontalScAleForTest.GetUnitMultipliersValue().GetDoubleValue();
+                        MathStatistics.Round(ref measResult, 2);
 
                         operation.Getting =
                             new MeasPoint<Time>(measResult, horizontalScAleForTest.GetUnitMultipliersValue());
                         operation.ErrorCalculation = (point, measPoint) => RiseTimeTol;
-                        
+
 
                         operation.IsGood = () =>
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null) return false;
-                            return (MeasPoint<Time>) operation.Getting <= (MeasPoint<Time>) operation.UpperTolerance;
+                            return (MeasPoint<Time>)operation.Getting <= (MeasPoint<Time>)operation.UpperTolerance;
                         };
                     }
                     catch (Exception e)
@@ -946,7 +946,7 @@ namespace TDS_BasePlugin
                 operation.CompliteWork = () => Task.FromResult(true);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
-                                : (BasicOperationVerefication<object>) operation.Clone());
+                                : (BasicOperationVerefication<object>)operation.Clone());
             }
         }
 

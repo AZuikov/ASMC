@@ -60,6 +60,13 @@ namespace mp2192_92.DialIndicator
 
         #region Methods
 
+        protected decimal RoundNoSigns(decimal value)
+        {
+            var val = value;
+            MathStatistics.Round(ref val, 0);
+            return val;
+        }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {
@@ -74,9 +81,9 @@ namespace mp2192_92.DialIndicator
         protected string GetValueNormalizeToError<T>(MeasPoint<T> measPoint,
             MeasPoint<T> error) where T : class, IPhysicalQuantity<T>, new()
         {
-            return MathStatistics.Round(
-                measPoint.MainPhysicalQuantity.ChangeMultiplier(error.MainPhysicalQuantity.Multiplier).Value,
-                error.GetMainValue().ToString());
+            var value = measPoint.MainPhysicalQuantity.ChangeMultiplier(error.MainPhysicalQuantity.Multiplier)
+                .Value;
+            return MathStatistics.Round(ref value, error.GetMainValue().ToString());
         }
 
         /// <param name="token"></param>
@@ -503,8 +510,9 @@ namespace mp2192_92.DialIndicator
 
                 dataRow[0] =dds.Expected[0].GetMainValue();
                 for (var i = 0; i < dds.Getting.Length; i++) dataRow[i+1] = dds.Getting[i].GetMainValue();
-
-                dataRow[6] = MathStatistics.Round(dds.Error[0].MainPhysicalQuantity.ChangeMultiplier(IchBase.Arresting.MainPhysicalQuantity.Multiplier).Value, IchBase.Arresting.GetMainValue().ToString());
+                var a = dds.Error[0].MainPhysicalQuantity
+                    .ChangeMultiplier(IchBase.Arresting.MainPhysicalQuantity.Multiplier).Value;
+                dataRow[6] = MathStatistics.Round(ref a, IchBase.Arresting.GetMainValue().ToString());
                 dataRow[7] = IchBase.Arresting.GetMainValue();
                 dataTable.Rows.Add(dataRow);
             }
@@ -844,10 +852,10 @@ namespace mp2192_92.DialIndicator
                 dataRow[0] = dds.Expected.First().MainPhysicalQuantity.Value + " – " +dds.Expected.Last().GetMainValue();
                 for (var i = 0; i < 6; i++) dataRow[i + 1] = dds.Getting[i].GetMainValue();
 
-                dataRow[7] =  MathStatistics.Round(DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]).GetMainValue(),0);
-                dataRow[7]= 
-                    dataRow[8] = MathStatistics.Round((DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]) - 
-                                                       DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0])).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).Value,0);
+                dataRow[7] = RoundNoSigns(DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]).GetMainValue());
+                var a = DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]).MainPhysicalQuantity.Value;
+                var b = DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).Value;
+                    dataRow[8] = RoundNoSigns(a - b);
                     dataRow[9] =
                         new MeasPoint<Length>((decimal) IchBase.RangesFull.Ranges[0].AccuracyChatacteristic.Resolution).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro).ToString();
 

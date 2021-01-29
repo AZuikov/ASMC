@@ -146,23 +146,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rohde_Schwarz\RohdeSchwarz_RTMOscilloscope.cs" />
     <Compile Include="Interface\IOscilloscope.cs" />
-    <Compile Include="Sensor.cs" />
-    <Compile Include="SimpleScada\IParametrScada.cs" />
-    <Compile Include="SimpleScada\IvaSensor.cs" />
-    <Compile Include="SimpleScada\Parametr\ChangePerDayScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ChangePerHourScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ConverterScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ScadaParametr.cs" />
-    <Compile Include="SimpleScada\Parametr\ScadaParametrDecorator.cs" />
-    <Compile Include="SimpleScada\Dv2TsSensor.cs" />
     <Compile Include="Port\OWEN\TrmException.cs" />
     <Compile Include="USB_Device\SKBIS\Lir917\Driver.cs" />
     <Compile Include="USB_Device\SiliconLabs\UsbExpressWrapper.cs" />
     <Compile Include="USB_Device\SiliconLabs\Exception.cs" />
     <Compile Include="USB_Device\SKBIS\Lir917\Ppi.cs" />
     <Compile Include="USB_Device\WebCam\WebCam.cs" />
-    <Compile Include="VirtMeasInst\NetworkVoltQualityMeter.cs" />
-    <Compile Include="VirtMeasInst\VirtualSensor.cs" />
     <Compile Include="WithoutInterface\HourIndicator\IchBase.cs" />
     <Compile Include="WithoutInterface\Voltmetr\B3_57.cs" />
   </ItemGroup>

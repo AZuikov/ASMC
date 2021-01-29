@@ -702,13 +702,6 @@ namespace ASMC.Devices.IEEE.Fluke.CalibtatorOscilloscope
                 /// <returns></returns>
                 public Calibr9500B SetChanel(Chanel ch)
                 {
-                    if (ch == null)
-                    {
-                        string errorStr = $"Невозможно установить канал на калибраторе. Значение параметра: {ch}";
-                        Logger.Error(errorStr);
-                        throw new ArgumentException(errorStr);
-                    }
-
                     _calibMain.WriteLine("ROUT:SIGN " + ch);
                     return _calibMain;
                 }

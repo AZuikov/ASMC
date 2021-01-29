@@ -36,23 +36,23 @@
       <HintPath>..\packages\ClosedXML.0.94.2\lib\net40\ClosedXML.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Data.v17.2">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Data.v17.2.dll</HintPath>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Data.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v17.2">
       <HintPath>\\zrto.int\OGMetr\AutoMeas\DLL\DevExpress.Mvvm.v17.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Office.v17.2.Core">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Office.v17.2.Core.dll</HintPath>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Office.v17.2.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Pdf.v17.2.Core">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Pdf.v17.2.Core.dll</HintPath>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Pdf.v17.2.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Printing.v17.2.Core">
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.Printing.v17.2.Core.dll</HintPath>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.Printing.v17.2.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.RichEdit.v17.2.Core, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DevExpress.v17.2\DevExpress.RichEdit.v17.2.Core.dll</HintPath>
+      <HintPath>\\zrto.int\ogmetr\AutoMeas\DLL\DevExpress.RichEdit.v17.2.Core.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.11.3.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.11.3\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
