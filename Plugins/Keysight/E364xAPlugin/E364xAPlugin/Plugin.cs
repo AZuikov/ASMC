@@ -32,7 +32,7 @@ namespace E364xAPlugin
             UserItemOperationPrimaryVerf = new OpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             //здесь периодическая поверка, но набор операций такой же
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
-            SpeedUserItemOperationPrimaryVerf= new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
+            SpeedUserItemOperationPrimaryVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             SpeedUserItemOperationPeriodicVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
         }
     }
@@ -334,6 +334,7 @@ namespace E364xAPlugin
     public class UnstableVoltToLoadChange : BasePowerSupplyWithDigitMult<Voltage>
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -428,7 +429,6 @@ namespace E364xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-
                         SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
@@ -473,6 +473,7 @@ namespace E364xAPlugin
     public class AcVoltChange : BasePowerSupplyWithDigitMult<Voltage>
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public AcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -529,13 +530,14 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                       SetDevicesForVoltageMode(rangePowerSupply);
+                        SetDevicesForVoltageMode(rangePowerSupply);
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                         throw;
                     }
+
                     operation.Comment = powerSupply.GetVoltageRange().Description;
                 };
                 operation.BodyWorkAsync = () =>
@@ -563,7 +565,6 @@ namespace E364xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-                      
                         SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
@@ -803,15 +804,12 @@ namespace E364xAPlugin
                         try
                         {
                             SetDevicesForVoltageMode(rangePowerSupply);
-
-                           
                         }
                         catch (Exception e)
                         {
                             Logger.Error(e);
                             throw;
                         }
-                        
 
                         if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17) Thread.Sleep(3000);
 
@@ -852,12 +850,12 @@ namespace E364xAPlugin
 
                             operation.ErrorCalculation = (point, measPoint) =>
                             {
-                                MeasPoint<Voltage> result = point - measPoint;
+                                var result = point - measPoint;
                                 result.Round(4);
                                 return result;
                             };
-                            operation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
-                            operation.LowerCalculation = (expected) => ErrorCalc(expected) * -1;
+                            operation.UpperCalculation = expected => { return ErrorCalc(expected); };
+                            operation.LowerCalculation = expected => ErrorCalc(expected) * -1;
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -917,6 +915,7 @@ namespace E364xAPlugin
     public class OutputVoltageSetting : BasePowerSupplyWithDigitMult<Voltage>
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public OutputVoltageSetting(IUserItemOperation userItemOperation, E364xChanels inChanel) :
             base(userItemOperation, inChanel)
         {
@@ -993,6 +992,7 @@ namespace E364xAPlugin
                             Logger.Error(e);
                             throw;
                         }
+
                         operation.Comment = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
@@ -1136,6 +1136,7 @@ namespace E364xAPlugin
                             Logger.Error(e);
                             throw;
                         }
+
                         operation.Comment =
                             $"Предел {powerSupply.GetVoltageRange().Description}, напряжение выхода {setPoint.Description}";
                     };
@@ -1157,8 +1158,7 @@ namespace E364xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
 
-                           
-                           SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
+                            SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                         }
                         catch (Exception e)
                         {
@@ -1273,7 +1273,8 @@ namespace E364xAPlugin
                         Logger.Error(e);
                         throw;
                     }
-                    operation.Comment = powerSupply.Ranges[(int)rangePowerSupply].Description;
+
+                    operation.Comment = powerSupply.Ranges[(int) rangePowerSupply].Description;
                 };
                 operation.BodyWorkAsync = () =>
                 {
@@ -1298,7 +1299,7 @@ namespace E364xAPlugin
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
 
-                       SetErrorCalculationUpperLowerCalcAndIsGood(operation);
+                        SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -1403,7 +1404,7 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                        SetDevicesForCurrentMode(operation,rangePowerSupply);
+                        SetDevicesForCurrentMode(operation, rangePowerSupply);
                     }
                     catch (Exception e)
                     {
@@ -1478,7 +1479,6 @@ namespace E364xAPlugin
 
     public class UnstableCurrentOnTime : BasePowerSupplyProcedure<Current>
     {
-
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public UnstableCurrentOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
@@ -1546,7 +1546,6 @@ namespace E364xAPlugin
                             Logger.Error(e);
                             throw;
                         }
-                        
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1555,7 +1554,7 @@ namespace E364xAPlugin
                             if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
                                 Thread.Sleep(15000);
                             else
-                                Thread.Sleep(108000);// нормальная поверка по МП, между измерениями 30 минут
+                                Thread.Sleep(108000); // нормальная поверка по МП, между измерениями 30 минут
 
                             if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
                             {
@@ -1576,11 +1575,10 @@ namespace E364xAPlugin
 
                             operation.ErrorCalculation = (point, measPoint) =>
                             {
-                                MeasPoint<Current> result = point - measPoint;
+                                var result = point - measPoint;
                                 result.Round(4);
                                 return result;
                             };
-                            
                         }
                         catch (Exception e)
                         {
@@ -1593,8 +1591,8 @@ namespace E364xAPlugin
                             ElectonicLoad.OutputOff();
                         }
 
-                        operation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
-                        operation.LowerCalculation = (expected) => ErrorCalc(expected) * -1;
+                        operation.UpperCalculation = expected => { return ErrorCalc(expected); };
+                        operation.LowerCalculation = expected => ErrorCalc(expected) * -1;
 
                         operation.IsGood = () =>
                         {
@@ -1640,7 +1638,6 @@ namespace E364xAPlugin
 
     public class OutputCurrentSetup : BasePowerSupplyProcedure<Current>
     {
-
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public OutputCurrentSetup(IUserItemOperation userItemOperation, E364xChanels inChanel) :
@@ -1731,7 +1728,7 @@ namespace E364xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
 
-                           SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
+                            SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                         }
                         catch (Exception e)
                         {

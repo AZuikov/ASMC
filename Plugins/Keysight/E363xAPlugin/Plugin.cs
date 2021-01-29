@@ -21,7 +21,6 @@ using DevExpress.Mvvm.UI;
 using NLog;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
-
 namespace E363xAPlugin
 {
     public class Operation<T> : OperationMetrControlBase where T : E36xxA_Device
@@ -72,18 +71,16 @@ namespace E363xAPlugin
                 new Oper1VisualTest(this),
                 new Oper2Oprobovanie(this),
                 new UnstableVoltToLoadChange(this),
-                new AcVoltChange(this), 
-                new VoltageTransientDuration(this), 
+                new AcVoltChange(this),
+                new VoltageTransientDuration(this),
                 new UnstableVoltageOnTime(this),
-                new OutputVoltageSetting(this), 
-                new OutputCurrentMeasure(this), 
-                new UnstableCurrentLoadChange(this), 
-                new UnstableCurrentToAcChange(this), 
-                new UnstableCurrentOnTime( this),
+                new OutputVoltageSetting(this),
+                new OutputCurrentMeasure(this),
+                new UnstableCurrentLoadChange(this),
+                new UnstableCurrentToAcChange(this),
+                new UnstableCurrentOnTime(this),
                 new OutputCurrentSetup(this),
                 new OutputVoltageMeasure(this)
-
-
             };
         }
 
@@ -138,16 +135,14 @@ namespace E363xAPlugin
                 new UnstableVoltToLoadChange(this),
                 new AcVoltChange(this),
                 new VoltageTransientDuration(this),
-                new UnstableVoltageOnTime(this,true),
+                new UnstableVoltageOnTime(this, true),
                 new OutputVoltageSetting(this),
                 new OutputCurrentMeasure(this),
                 new UnstableCurrentLoadChange(this),
                 new UnstableCurrentToAcChange(this),
-                new UnstableCurrentOnTime( this, true),
+                new UnstableCurrentOnTime(this, true),
                 new OutputCurrentSetup(this),
                 new OutputVoltageMeasure(this)
-
-
             };
         }
 
@@ -195,7 +190,7 @@ namespace E363xAPlugin
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { "Результат внешнего осмотра" };
+            return new[] {"Результат внешнего осмотра"};
         }
 
         /// <inheritdoc />
@@ -263,7 +258,7 @@ namespace E363xAPlugin
 
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] { "Результат опробования" };
+            return new[] {"Результат опробования"};
         }
 
         protected override string GetReportTableName()
@@ -296,14 +291,13 @@ namespace E363xAPlugin
 
     public class UnstableVoltToLoadChange : BasePowerSupplyWithDigitMult<Voltage>
     {
-
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public UnstableVoltToLoadChange(IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
             Name =
-                $"Определение нестабильности выходного напряжения от изменения нагрузки";
+                "Определение нестабильности выходного напряжения от изменения нагрузки";
         }
 
         #region Methods
@@ -319,8 +313,15 @@ namespace E363xAPlugin
             dataRow[5] = dds?.UpperTolerance?.Description;
         }
 
-        
-        
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
+        {
+            var resultError = new MeasPoint<Voltage>(0.0001M * inVal
+                                                              .MainPhysicalQuantity
+                                                              .GetNoramalizeValueToSi() +
+                                                     0.002M);
+            resultError.Round(4);
+            return resultError;
+        }
 
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -339,7 +340,6 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
@@ -350,14 +350,14 @@ namespace E363xAPlugin
                 {
                     try
                     {
-                        
-                       SetDevicesForVoltageMode(operation, rangePowerSupply);
+                        SetDevicesForVoltageMode(operation, rangePowerSupply);
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                         throw;
                     }
+
                     operation.Comment = powerSupply.GetVoltageRange().Description;
                 };
                 operation.BodyWorkAsync = () =>
@@ -386,7 +386,6 @@ namespace E363xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-                        
                         SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
@@ -425,27 +424,18 @@ namespace E363xAPlugin
             }
         }
 
-        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
-        {
-            var resultError = new MeasPoint<Voltage>(0.0001M * inVal
-                                                              .MainPhysicalQuantity
-                                                              .GetNoramalizeValueToSi() +
-                                                     0.002M);
-            resultError.Round(4);
-            return resultError;
-        }
-
         #endregion
     }
 
     public class AcVoltChange : BasePowerSupplyWithDigitMult<Voltage>
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public AcVoltChange(IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
             Name =
-                $"Определение нестабильности выходного напряжения от изменения напряжения питания";
+                "Определение нестабильности выходного напряжения от изменения напряжения питания";
         }
 
         #region Methods
@@ -487,7 +477,7 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
+
             if (powerSupply == null || ElectonicLoad == null) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
@@ -532,9 +522,7 @@ namespace E363xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-                       
-
-                       SetErrorCalculationUpperLowerCalcAndIsGood(operation);
+                        SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -572,8 +560,6 @@ namespace E363xAPlugin
             }
         }
 
-        
-
         #endregion
     }
 
@@ -592,7 +578,7 @@ namespace E363xAPlugin
             base(userItemOperation)
         {
             Name =
-                $"Определение времени переходного процесса при изменении нагрузки";
+                "Определение времени переходного процесса при изменении нагрузки";
             Sheme = new ShemeImage
             {
                 AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
@@ -615,7 +601,7 @@ namespace E363xAPlugin
 
         protected override MeasPoint<Time> ErrorCalc(MeasPoint<Time> inVal)
         {
-             return new MeasPoint<Time>(50,UnitMultiplier.Micro);
+            return new MeasPoint<Time>(50, UnitMultiplier.Micro);
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -638,11 +624,11 @@ namespace E363xAPlugin
                 /*Получаем измерения*/
 
                 var operation = new BasicOperationVerefication<MeasPoint<Time>>();
-                var arrPoints = new[] { "1", "2", "3", "4", "5" };
+                var arrPoints = new[] {"1", "2", "3", "4", "5"};
                 MeasPoint<Time>[] arrGetting = null;
                 operation.InitWork = async () =>
                 {
-                    var setting = new TableViewModel.SettingTableViewModel { Breaking = 1, CellFormat = "мкс" };
+                    var setting = new TableViewModel.SettingTableViewModel {Breaking = 1, CellFormat = "мкс"};
                     var vm = new OneTableViewModel();
 
                     vm.Data = TableViewModel.CreateTable("Значения длительности переходного процесса", arrPoints,
@@ -672,7 +658,7 @@ namespace E363xAPlugin
 
                     for (var i = 0; i < arrPoints.Length; i++)
                     {
-                        if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>)operation.Clone();
+                        if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone();
                         operation.Comment = arrPoints[i];
                         operation.Expected = averTime;
                         operation.Getting = arrGetting[i];
@@ -714,12 +700,12 @@ namespace E363xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableVoltageOnTime(IUserItemOperation userItemOperation, 
+        public UnstableVoltageOnTime(IUserItemOperation userItemOperation,
             bool isSpeedOperation = false) :
             base(userItemOperation)
         {
             this.isSpeedOperation = isSpeedOperation;
-            Name = $"Определение величины дрейфа выходного напряжения";
+            Name = "Определение величины дрейфа выходного напряжения";
         }
 
         #region Methods
@@ -759,7 +745,7 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
+
             if (powerSupply == null || ElectonicLoad == null) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
@@ -772,7 +758,6 @@ namespace E363xAPlugin
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                     operation.InitWork = async () =>
                     {
-                        
                         SetDevicesForVoltageMode(operation, rangePowerSupply);
 
                         powerSupply.OutputOn();
@@ -812,9 +797,6 @@ namespace E363xAPlugin
                                 operation.Getting.Round(4);
                             }
 
-                           
-                            
-
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
                         }
@@ -828,19 +810,15 @@ namespace E363xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
                         }
-
-                       
-
-
                     };
                     operation.ErrorCalculation = (point, measPoint) =>
                     {
-                        MeasPoint<Voltage> result = point - measPoint;
+                        var result = point - measPoint;
                         result.Round(4);
                         return result;
                     };
-                    operation.UpperCalculation = (expected) => ErrorCalc(operation.Expected);
-                    operation.LowerCalculation = (expected) => operation.UpperTolerance * -1;
+                    operation.UpperCalculation = expected => ErrorCalc(operation.Expected);
+                    operation.LowerCalculation = expected => operation.UpperTolerance * -1;
                     operation.IsGood = () =>
                     {
                         if (operation.Getting == null || operation.Expected == null ||
@@ -885,11 +863,12 @@ namespace E363xAPlugin
     public class OutputVoltageSetting : BasePowerSupplyWithDigitMult<Voltage>
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public OutputVoltageSetting(IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
             Name =
-                $"Определение погрешности установки выходного напряжения в режиме постоянного напряжения";
+                "Определение погрешности установки выходного напряжения в режиме постоянного напряжения";
         }
 
         #region Methods
@@ -905,7 +884,7 @@ namespace E363xAPlugin
 
         protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
         {
-            MeasPoint<Voltage>result = new MeasPoint<Voltage>(0.0005M*inVal.MainPhysicalQuantity.GetNoramalizeValueToSi()+0.010M);
+            var result = new MeasPoint<Voltage>(0.0005M * inVal.MainPhysicalQuantity.GetNoramalizeValueToSi() + 0.010M);
             result.Round(4);
             return result;
         }
@@ -926,13 +905,12 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
 
             if (powerSupply == null || ElectonicLoad == null || digitalMult == null) return;
-            
+
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
                     _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
 
@@ -970,8 +948,6 @@ namespace E363xAPlugin
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
-
-                            
                         }
                         catch (Exception e)
                         {
@@ -1026,7 +1002,7 @@ namespace E363xAPlugin
             base(userItemOperation)
         {
             Name =
-                $"Определение погрешности измерения выходного тока";
+                "Определение погрешности измерения выходного тока";
         }
 
         #region Methods
@@ -1042,7 +1018,7 @@ namespace E363xAPlugin
 
         protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
         {
-            MeasPoint<Current>result = new MeasPoint<Current>(0.0015M*inVal.MainPhysicalQuantity.GetNoramalizeValueToSi()+0.005M);
+            var result = new MeasPoint<Current>(0.0015M * inVal.MainPhysicalQuantity.GetNoramalizeValueToSi() + 0.005M);
             result.Round(4);
             return result;
         }
@@ -1063,14 +1039,12 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
 
             if (powerSupply == null || ElectonicLoad == null) return;
-            
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
                     _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 100, 80, 60, 40, 20, 0);
 
@@ -1081,9 +1055,8 @@ namespace E363xAPlugin
                     {
                         try
                         {
-                           SetDevicesForVoltageMode(operation, rangePowerSupply);
+                            SetDevicesForVoltageMode(operation, rangePowerSupply);
 
-                            
                             powerSupply.SetVoltageLevel(setPoint);
                         }
                         catch (Exception e)
@@ -1112,8 +1085,6 @@ namespace E363xAPlugin
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
-
-                            
                         }
                         catch (Exception e)
                         {
@@ -1169,7 +1140,7 @@ namespace E363xAPlugin
             base(userItemOperation)
         {
             Name =
-                $"Определение нестабильности выходного тока от изменения нагрузки";
+                "Определение нестабильности выходного тока от изменения нагрузки";
         }
 
         #region Methods
@@ -1213,7 +1184,6 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
@@ -1254,8 +1224,6 @@ namespace E363xAPlugin
 
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
-
-                        
                     }
                     catch (Exception e)
                     {
@@ -1307,7 +1275,7 @@ namespace E363xAPlugin
             base(userItemOperation)
         {
             Name =
-                $"Определение нестабильности выходного тока от изменения напряжения питания";
+                "Определение нестабильности выходного тока от изменения напряжения питания";
         }
 
         #region Methods
@@ -1325,7 +1293,8 @@ namespace E363xAPlugin
 
         protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
         {
-            MeasPoint<Current> result = new MeasPoint<Current>(0.0001M * inVal.MainPhysicalQuantity.GetNoramalizeValueToSi()+0.00025M);
+            var result =
+                new MeasPoint<Current>(0.0001M * inVal.MainPhysicalQuantity.GetNoramalizeValueToSi() + 0.00025M);
             result.Round(4);
             return result;
         }
@@ -1347,7 +1316,6 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
@@ -1388,8 +1356,6 @@ namespace E363xAPlugin
                         i2.Round(4);
                         operation.Getting = i2;
                         operation.Getting.Round(4);
-
-                       
                     }
                     catch (Exception e)
                     {
@@ -1435,15 +1401,14 @@ namespace E363xAPlugin
 
     public class UnstableCurrentOnTime : BasePowerSupplyProcedure<Current>
     {
-
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableCurrentOnTime(IUserItemOperation userItemOperation, 
+        public UnstableCurrentOnTime(IUserItemOperation userItemOperation,
             bool isSpeedOperation = false) :
             base(userItemOperation)
         {
             this.isSpeedOperation = isSpeedOperation;
-            Name = $"Определение величины дрейфа выходного тока";
+            Name = "Определение величины дрейфа выходного тока";
         }
 
         #region Methods
@@ -1483,7 +1448,7 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
+
             if (powerSupply == null || ElectonicLoad == null) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
@@ -1515,7 +1480,7 @@ namespace E363xAPlugin
                             if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
                                 Thread.Sleep(15000);
                             else
-                                Thread.Sleep(108000);// нормальная поверка по МП, между измерениями 30 минут
+                                Thread.Sleep(108000); // нормальная поверка по МП, между измерениями 30 минут
 
                             if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
                             {
@@ -1534,10 +1499,8 @@ namespace E363xAPlugin
                                 operation.Getting.Round(4);
                             }
 
-                            
-                            operation.UpperCalculation = (expected) => ErrorCalc(expected);
-                            operation.LowerCalculation = (expected) => operation.UpperTolerance * -1;
-
+                            operation.UpperCalculation = expected => ErrorCalc(expected);
+                            operation.LowerCalculation = expected => operation.UpperTolerance * -1;
 
                             operation.IsGood = () =>
                             {
@@ -1594,14 +1557,13 @@ namespace E363xAPlugin
 
     public class OutputCurrentSetup : BasePowerSupplyProcedure<Current>
     {
-
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public OutputCurrentSetup(IUserItemOperation userItemOperation) :
             base(userItemOperation)
         {
             Name =
-                $"Определение погрешности установки тока в режиме постоянного тока";
+                "Определение погрешности установки тока в режиме постоянного тока";
         }
 
         #region Methods
@@ -1641,30 +1603,26 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
 
             if (powerSupply == null || ElectonicLoad == null) return;
-            
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var CurrentLimit = new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity);
                 var CurrSteps =
                     CurrentLimit.GetArayMeasPointsInParcent(new MeasPoint<Current>(0), 0, 20, 40, 60, 80, 100);
 
                 foreach (var measPoint1 in CurrSteps)
                 {
-                    
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
 
                     operation.InitWork = async () =>
                     {
                         try
                         {
-                           
                             SetDevicesForCurrentMode(operation, rangePowerSupply);
-                            powerSupply.SetCurrentLevel((MeasPoint<Current>)measPoint1);
+                            powerSupply.SetCurrentLevel((MeasPoint<Current>) measPoint1);
                             operation.Expected = (MeasPoint<Current>) measPoint1;
                         }
                         catch (Exception e)
@@ -1672,6 +1630,7 @@ namespace E363xAPlugin
                             Logger.Error(e);
                             throw;
                         }
+
                         operation.Comment = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
@@ -1745,7 +1704,7 @@ namespace E363xAPlugin
             base(userItemOperation)
         {
             Name =
-                $"Определение погрешности измерения выходного напряжения";
+                "Определение погрешности измерения выходного напряжения";
         }
 
         #region Methods
@@ -1761,7 +1720,7 @@ namespace E363xAPlugin
 
         protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
         {
-            MeasPoint<Voltage> error =
+            var error =
                 new MeasPoint<Voltage>(inVal.MainPhysicalQuantity.Value * 0.0005M +
                                        0.005M);
 
@@ -1785,13 +1744,12 @@ namespace E363xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            
 
             if (powerSupply == null || ElectonicLoad == null || digitalMult == null) return;
-            
+
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
-                var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+                var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
                 var VoltSteps =
                     _voltRange.GetArayMeasPointsInParcent(new MeasPoint<Voltage>(0), 0, 20, 40, 60, 80, 100);
 
@@ -1816,6 +1774,7 @@ namespace E363xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
                         }
+
                         operation.Comment = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
@@ -1824,9 +1783,12 @@ namespace E363xAPlugin
                         {
                             powerSupply.OutputOn();
                             ElectonicLoad.OutputOn();
-                            var volt = powerSupply.Ranges[(int)rangePowerSupply];
-                            var current = powerSupply.Ranges[(int)rangePowerSupply].AdditionalPhysicalQuantity;
-                            var resistance = new MeasPoint<Resistance>(0.50M * setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()/current.GetNoramalizeValueToSi());
+                            var volt = powerSupply.Ranges[(int) rangePowerSupply];
+                            var current = powerSupply.Ranges[(int) rangePowerSupply].AdditionalPhysicalQuantity;
+                            var resistance =
+                                new MeasPoint<Resistance>(0.50M *
+                                                          setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                          current.GetNoramalizeValueToSi());
                             resistance.Round(4);
                             ElectonicLoad.SetResistanceLevel(resistance);
                             Thread.Sleep(1000);
@@ -1882,5 +1844,4 @@ namespace E363xAPlugin
 
         #endregion
     }
-
 }

@@ -22,4 +22,34 @@ namespace E363xAPlugin
             Range = Range + $"Число каналов: {testPowerSupply.outputs.Length}";
         }
     }
+
+    public class E3632A : Program<Operation<E3633ADevice>>
+    {
+        public E3632A(ServicePack servicePack) : base(servicePack)
+        {
+            Grsi = "26951-04";
+            Type = "E3632A";
+
+            var testPowerSupply = new E3632ADevice();
+            var ranges = testPowerSupply.Ranges;
+            foreach (var range in ranges)
+                Range = Range + $"{range.Description}; ";
+            Range = Range + $"Число каналов: {testPowerSupply.outputs.Length}";
+        }
+    }
+
+    public class E3634A : Program<Operation<E3633ADevice>>
+    {
+        public E3634A(ServicePack servicePack) : base(servicePack)
+        {
+            Grsi = "26951-04";
+            Type = "E3634A";
+
+            var testPowerSupply = new E3634ADevice();
+            var ranges = testPowerSupply.Ranges;
+            foreach (var range in ranges)
+                Range = Range + $"{range.Description}; ";
+            Range = Range + $"Число каналов: {testPowerSupply.outputs.Length}";
+        }
+    }
 }
