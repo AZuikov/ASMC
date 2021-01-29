@@ -392,7 +392,7 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                        SetDevicesForVoltageMode(operation, rangePowerSupply);
+                        SetDevicesForVoltageMode(rangePowerSupply);
                     }
                     catch (Exception e)
                     {
@@ -529,28 +529,14 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                        powerSupply.ActiveE364XChanels = _chanel;
-                        powerSupply.SetRange(rangePowerSupply);
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
-                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
-                        // расчитаем идеальное значение для электронной нагрузки
-                        var resistToLoad =
-                            new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      _voltRange
-                                                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(4);
-
-                        ElectonicLoad.SetThisModuleAsWorking();
-                        ElectonicLoad.SetResistanceMode();
-                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+                       SetDevicesForVoltageMode(rangePowerSupply);
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                         throw;
                     }
+                    operation.Comment = powerSupply.GetVoltageRange().Description;
                 };
                 operation.BodyWorkAsync = () =>
                 {
@@ -814,28 +800,18 @@ namespace E364xAPlugin
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                     operation.InitWork = async () =>
                     {
-                        powerSupply.ActiveE364XChanels = _chanel;
-                        powerSupply.SetRange(rangePowerSupply);
+                        try
+                        {
+                            SetDevicesForVoltageMode(rangePowerSupply);
 
-                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
-
-                        // расчитаем идеальное значение для электронной нагрузки
-                        var resistToLoad =
-                            new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(4);
-
-                        ElectonicLoad.SetThisModuleAsWorking();
-                        ElectonicLoad.SetResistanceMode();
-                        ElectonicLoad.SetResistanceLevel(resistToLoad);
-
-                        powerSupply.OutputOn();
-                        ElectonicLoad.OutputOn();
-
-                        digitalMult.DcVoltage.AutoRange = true;
-                        digitalMult.DcVoltage.Setting();
+                           
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        
 
                         if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17) Thread.Sleep(3000);
 
@@ -845,6 +821,12 @@ namespace E364xAPlugin
                     {
                         try
                         {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+
+                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+
                             if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
                             {
                                 U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
@@ -1004,32 +986,14 @@ namespace E364xAPlugin
                     {
                         try
                         {
-                            powerSupply.ActiveE364XChanels = _chanel;
-                            powerSupply.SetRange(rangePowerSupply);
-                            operation.Comment = powerSupply.GetVoltageRange().Description;
-
-                            
-
-                           
-
-                            powerSupply.SetVoltageLevel(setPoint);
-                            powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
-
-                            var resistToLoad =
-                                new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity
-                                                                    .GetNoramalizeValueToSi());
-                            resistToLoad.Round(4);
-
-                            ElectonicLoad.SetThisModuleAsWorking();
-                            ElectonicLoad.SetResistanceMode();
-                            ElectonicLoad.SetResistanceLevel(resistToLoad);
+                            SetDevicesForVoltageMode(rangePowerSupply);
                         }
                         catch (Exception e)
                         {
                             Logger.Error(e);
                             throw;
                         }
+                        operation.Comment = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1165,29 +1129,15 @@ namespace E364xAPlugin
                     {
                         try
                         {
-                            powerSupply.ActiveE364XChanels = _chanel;
-                            powerSupply.SetRange(rangePowerSupply);
-                            operation.Comment =
-                                $"Предел {powerSupply.GetVoltageRange().Description}, напряжение выхода {setPoint.Description}";
-
-                            powerSupply.SetVoltageLevel(setPoint);
-                            powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
-
-                            var resistToLoad =
-                                new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity
-                                                                    .GetNoramalizeValueToSi());
-                            resistToLoad.Round(4);
-
-                            ElectonicLoad.SetThisModuleAsWorking();
-                            ElectonicLoad.SetResistanceMode();
-                            ElectonicLoad.SetResistanceLevel(resistToLoad);
+                            SetDevicesForVoltageMode(rangePowerSupply);
                         }
                         catch (Exception e)
                         {
                             Logger.Error(e);
                             throw;
                         }
+                        operation.Comment =
+                            $"Предел {powerSupply.GetVoltageRange().Description}, напряжение выхода {setPoint.Description}";
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1316,30 +1266,14 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                        powerSupply.ActiveE364XChanels = _chanel;
-                        powerSupply.SetRange(rangePowerSupply);
-                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
-                        operation.Comment = _voltRange.Description;
-
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange
-                                                                              .AdditionalPhysicalQuantity));
-                        // расчитаем идеальное значение для электронной нагрузки
-                        var resistToLoad =
-                            new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      _voltRange
-                                                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(4);
-
-                        ElectonicLoad.SetThisModuleAsWorking();
-                        ElectonicLoad.SetResistanceMode();
-                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+                        SetDevicesForCurrentMode(operation, rangePowerSupply);
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                         throw;
                     }
+                    operation.Comment = powerSupply.Ranges[(int)rangePowerSupply].Description;
                 };
                 operation.BodyWorkAsync = () =>
                 {
@@ -1469,24 +1403,7 @@ namespace E364xAPlugin
                 {
                     try
                     {
-                        powerSupply.ActiveE364XChanels = _chanel;
-                        powerSupply.SetRange(rangePowerSupply);
-                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
-                        operation.Comment = _voltRange.Description;
-
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange
-                                                                              .AdditionalPhysicalQuantity));
-                        // расчитаем значение для электронной нагрузки
-                        var resistToLoad =
-                            new MeasPoint<Resistance>(0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      _voltRange
-                                                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(4);
-
-                        ElectonicLoad.SetThisModuleAsWorking();
-                        ElectonicLoad.SetResistanceMode();
-                        ElectonicLoad.SetResistanceLevel(resistToLoad);
+                        SetDevicesForCurrentMode(operation,rangePowerSupply);
                     }
                     catch (Exception e)
                     {
@@ -1620,25 +1537,16 @@ namespace E364xAPlugin
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
                     operation.InitWork = async () =>
                     {
-                        powerSupply.ActiveE364XChanels = _chanel;
-                        powerSupply.SetRange(rangePowerSupply);
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
-                        var _voltRange = powerSupply.Ranges[(int) rangePowerSupply];
-                        powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
-                        powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
-
-                        // расчитаем идеальное значение для электронной нагрузки
-                        var resistToLoad =
-                            new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                      _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                        resistToLoad.Round(4);
-
-                        ElectonicLoad.SetThisModuleAsWorking();
-                        ElectonicLoad.SetResistanceMode();
-                        ElectonicLoad.SetResistanceLevel(resistToLoad);
-
-                        powerSupply.OutputOn();
-                        ElectonicLoad.OutputOn();
+                        try
+                        {
+                            SetDevicesForCurrentMode(operation, rangePowerSupply);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1801,26 +1709,7 @@ namespace E364xAPlugin
                     {
                         try
                         {
-                            powerSupply.ActiveE364XChanels = _chanel;
-                            powerSupply.SetRange(rangePowerSupply);
-                            operation.Comment = powerSupply.GetVoltageRange().Description;
-
-                            powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
-                            powerSupply.SetCurrentLevel(setPoint);
-                            operation.Expected = setPoint;
-
-                            var numb = 0.95M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                       _voltRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi();
-                            var resistToLoad =
-                                new MeasPoint<Resistance>(0.95M *
-                                                          _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity
-                                                                    .GetNoramalizeValueToSi());
-                            resistToLoad.Round(4);
-
-                            ElectonicLoad.SetThisModuleAsWorking();
-                            ElectonicLoad.SetResistanceMode();
-                            ElectonicLoad.SetResistanceLevel(resistToLoad);
+                            SetDevicesForCurrentMode(operation, rangePowerSupply);
                         }
                         catch (Exception e)
                         {
@@ -1965,24 +1854,7 @@ namespace E364xAPlugin
                     {
                         try
                         {
-                            powerSupply.ActiveE364XChanels = _chanel;
-                            powerSupply.SetRange(rangePowerSupply);
-                            operation.Comment = powerSupply.GetVoltageRange().Description;
-
-                            
-
-                            powerSupply.SetVoltageLevel(setPoint);
-                            powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
-
-                            var resistToLoad =
-                                new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          _voltRange.AdditionalPhysicalQuantity
-                                                                    .GetNoramalizeValueToSi());
-                            resistToLoad.Round(4);
-
-                            ElectonicLoad.SetThisModuleAsWorking();
-                            ElectonicLoad.SetResistanceMode();
-                            ElectonicLoad.SetResistanceLevel(resistToLoad);
+                            SetDevicesForCurrentMode(operation, rangePowerSupply);
                         }
                         catch (Exception e)
                         {
