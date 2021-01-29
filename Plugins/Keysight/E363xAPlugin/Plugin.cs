@@ -829,12 +829,18 @@ namespace E363xAPlugin
                             ElectonicLoad.OutputOff();
                         }
 
-                        operation.ErrorCalculation = (point, measPoint) =>point - measPoint;
-                        operation.UpperCalculation = (expected) => ErrorCalc(operation.Expected);
-                        operation.LowerCalculation = (expected) => operation.UpperTolerance* -1;
+                       
 
 
                     };
+                    operation.ErrorCalculation = (point, measPoint) =>
+                    {
+                        MeasPoint<Voltage> result = point - measPoint;
+                        result.Round(4);
+                        return result;
+                    };
+                    operation.UpperCalculation = (expected) => ErrorCalc(operation.Expected);
+                    operation.LowerCalculation = (expected) => operation.UpperTolerance * -1;
                     operation.IsGood = () =>
                     {
                         if (operation.Getting == null || operation.Expected == null ||

@@ -354,6 +354,16 @@ namespace E364xAPlugin
             dataRow[5] = dds?.UpperTolerance?.Description;
         }
 
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
+        {
+            var resultError = new MeasPoint<Voltage>(0.0001M * inVal
+                                                              .MainPhysicalQuantity
+                                                              .GetNoramalizeValueToSi() +
+                                                     0.003M);
+            resultError.Round(4);
+            return resultError;
+        }
+
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -432,27 +442,8 @@ namespace E364xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-                        operation.ErrorCalculation = (point, measPoint) =>
-                        {
-                            var resultError = new MeasPoint<Voltage>(0.0001M * U1
-                                                                              .MainPhysicalQuantity
-                                                                              .GetNoramalizeValueToSi() +
-                                                                     0.003M);
-                            resultError.Round(4);
-                            return resultError;
-                        };
-                        operation.UpperTolerance = operation.Error;
-                        operation.LowerTolerance = operation.Error * -1;
 
-                        operation.IsGood = () =>
-                        {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-
-                            var mp = operation.Getting - operation.Expected;
-                            mp.Abs();
-                            return mp < operation.Error;
-                        };
+                        SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -514,6 +505,15 @@ namespace E364xAPlugin
             dataRow[3] = mp.Description;
             dataRow[4] = dds?.LowerTolerance?.Description;
             dataRow[5] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
+        {
+            var resultError =
+                new MeasPoint<Voltage>(0.0001M * inVal.MainPhysicalQuantity.GetNoramalizeValueToSi() +
+                                       0.003M);
+            resultError.Round(4);
+            return resultError;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -591,26 +591,8 @@ namespace E364xAPlugin
                         operation.Getting = U2;
                         operation.Getting.Round(4);
 
-                        operation.ErrorCalculation = (point, measPoint) =>
-                        {
-                            var resultError =
-                                new MeasPoint<Voltage>(0.0001M * U1.MainPhysicalQuantity.GetNoramalizeValueToSi() +
-                                                       0.003M);
-                            resultError.Round(4);
-                            return resultError;
-                        };
-                        operation.UpperTolerance = operation.Error;
-                        operation.LowerTolerance = operation.Error * -1;
-
-                        operation.IsGood = () =>
-                        {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-
-                            var mp = operation.Expected - operation.Getting;
-                            mp.Abs();
-                            return mp < operation.Error;
-                        };
+                      
+                        SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -685,6 +667,11 @@ namespace E364xAPlugin
             dataRow["Значение длительности переходного процесса"] = dds.Getting?.Description;
             dataRow["Среднее значение времени переходного процесса"] = dds.Expected?.Description;
             dataRow["Максимально допустимое значение"] = dds?.Error?.Description;
+        }
+
+        protected override MeasPoint<Time> ErrorCalc(MeasPoint<Time> inVal)
+        {
+            throw new NotImplementedException();
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -802,6 +789,16 @@ namespace E364xAPlugin
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
+        {
+            var resultError = new MeasPoint<Voltage>(0.0002M * inVal
+                                                              .MainPhysicalQuantity
+                                                              .GetNoramalizeValueToSi() +
+                                                     0.003M);
+            resultError.Round(4);
+            return resultError;
+        }
+
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -887,17 +884,12 @@ namespace E364xAPlugin
 
                             operation.ErrorCalculation = (point, measPoint) =>
                             {
-                                var resultError = new MeasPoint<Voltage>(0.0002M * U1
-                                                                                  .MainPhysicalQuantity
-                                                                                  .GetNoramalizeValueToSi() +
-                                                                         0.003M);
-                                resultError.Round(4);
-                                return resultError;
+                                MeasPoint<Voltage> result = point - measPoint;
+                                result.Round(4);
+                                return result;
                             };
-                            operation.UpperTolerance = operation.Error;
-                            operation.UpperTolerance.Round(4);
-                            operation.LowerTolerance = operation.Error * -1;
-                            operation.LowerTolerance.Round(4);
+                            operation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
+                            operation.LowerCalculation = (expected) => ErrorCalc(expected) * -1;
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -975,6 +967,22 @@ namespace E364xAPlugin
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
+        {
+            MeasPoint<Voltage> error;
+            if (_chanel == E364xChanels.OUTP2)
+                error = new MeasPoint<Voltage>(inVal.MainPhysicalQuantity.Value *
+                                               0.001M +
+                                               0.025M);
+            else
+                error =
+                    new MeasPoint<Voltage>(inVal.MainPhysicalQuantity.Value * 0.005M +
+                                           0.010M);
+
+            error.Round(4);
+            return error;
+        }
+
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -1014,24 +1022,9 @@ namespace E364xAPlugin
                             powerSupply.SetRange(rangePowerSupply);
                             operation.Comment = powerSupply.GetVoltageRange().Description;
 
-                            operation.ErrorCalculation = (point, measPoint) =>
-                            {
-                                MeasPoint<Voltage> error;
-                                if (_chanel == E364xChanels.OUTP2)
-                                    error = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value *
-                                                                   0.001M +
-                                                                   0.025M);
-                                else
-                                    error =
-                                        new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 0.005M +
-                                                               0.010M);
+                            
 
-                                error.Round(4);
-                                return error;
-                            };
-
-                            operation.LowerTolerance = operation.Expected - operation.Error;
-                            operation.UpperTolerance = operation.Expected + operation.Error;
+                           
 
                             powerSupply.SetVoltageLevel(setPoint);
                             powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
@@ -1069,13 +1062,7 @@ namespace E364xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
 
-                            operation.IsGood = () =>
-                            {
-                                if (operation.Getting == null || operation.Expected == null ||
-                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                return (operation.Getting < operation.UpperTolerance) &
-                                       (operation.Getting > operation.LowerTolerance);
-                            };
+                            SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                         }
                         catch (Exception e)
                         {
@@ -1140,6 +1127,22 @@ namespace E364xAPlugin
             dataRow["Измеренное значение"] = dds.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
+        {
+            MeasPoint<Current> error;
+            if (_chanel == E364xChanels.OUTP2)
+                error = new MeasPoint<Current>(inVal.MainPhysicalQuantity.Value *
+                                               0.0015M +
+                                               0.010M);
+            else
+                error =
+                    new MeasPoint<Current>(inVal.MainPhysicalQuantity.Value * 0.005M +
+                                           0.005M);
+
+            error.Round(4);
+            return error;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1218,31 +1221,8 @@ namespace E364xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
 
-                            operation.ErrorCalculation = (point, measPoint) =>
-                            {
-                                MeasPoint<Current> error;
-                                if (_chanel == E364xChanels.OUTP2)
-                                    error = new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value *
-                                                                   0.0015M +
-                                                                   0.010M);
-                                else
-                                    error =
-                                        new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value * 0.005M +
-                                                               0.005M);
-
-                                error.Round(4);
-                                return error;
-                            };
-                            operation.LowerTolerance = operation.Expected - operation.Error;
-                            operation.UpperTolerance = operation.Expected + operation.Error;
-
-                            operation.IsGood = () =>
-                            {
-                                if (operation.Getting == null || operation.Expected == null ||
-                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                return (operation.Getting < operation.UpperTolerance) &
-                                       (operation.Getting > operation.LowerTolerance);
-                            };
+                           
+                           SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                         }
                         catch (Exception e)
                         {
@@ -1309,6 +1289,17 @@ namespace E364xAPlugin
             dataRow["Разность I1 - I2 (отклонение)"] = point.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
+        {
+            var resultError = new MeasPoint<Current>(0.0001M * inVal
+                                                              .MainPhysicalQuantity
+                                                              .GetNoramalizeValueToSi() +
+                                                     0.000250M);
+            resultError.Round(4);
+
+            return resultError;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1387,27 +1378,7 @@ namespace E364xAPlugin
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
 
-                        operation.ErrorCalculation = (point, measPoint) =>
-                        {
-                            var resultError = new MeasPoint<Current>(0.0001M * operation.Expected
-                                                                                        .MainPhysicalQuantity
-                                                                                        .GetNoramalizeValueToSi() +
-                                                                     0.000250M);
-                            resultError.Round(4);
-
-                            return resultError;
-                        };
-                        operation.UpperTolerance = operation.Error;
-                        operation.LowerTolerance = operation.Error * -1;
-
-                        operation.IsGood = () =>
-                        {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            var point = operation.Expected - operation.Getting;
-                            return (point < operation.UpperTolerance) &
-                                   (point > operation.LowerTolerance);
-                        };
+                       SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -1471,6 +1442,17 @@ namespace E364xAPlugin
             dataRow["Разность I1 - I2 (отклонение)"] = point.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
+        {
+            var resultError = new MeasPoint<Current>(0.0001M * inVal
+                                                              .MainPhysicalQuantity
+                                                              .GetNoramalizeValueToSi() +
+                                                     0.000250M);
+            resultError.Round(4);
+
+            return resultError;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1549,27 +1531,7 @@ namespace E364xAPlugin
                         operation.Getting = i2;
                         operation.Getting.Round(4);
 
-                        operation.ErrorCalculation = (point, measPoint) =>
-                        {
-                            var resultError = new MeasPoint<Current>(0.0001M * operation.Expected
-                                                                                        .MainPhysicalQuantity
-                                                                                        .GetNoramalizeValueToSi() +
-                                                                     0.000250M);
-                            resultError.Round(4);
-
-                            return resultError;
-                        };
-                        operation.UpperTolerance = operation.Error;
-                        operation.LowerTolerance = operation.Error * -1;
-
-                        operation.IsGood = () =>
-                        {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            var point = operation.Expected - operation.Getting;
-                            return (point < operation.UpperTolerance) &
-                                   (point > operation.LowerTolerance);
-                        };
+                        SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
                     {
@@ -1633,6 +1595,16 @@ namespace E364xAPlugin
             dataRow["Абсолютное отклонение тока"] = dds?.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
+        {
+            var resultError = new MeasPoint<Current>(0.001M * inVal
+                                                             .MainPhysicalQuantity
+                                                             .GetNoramalizeValueToSi() +
+                                                     0.001M);
+            resultError.Round(4);
+            return resultError;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1710,30 +1682,11 @@ namespace E364xAPlugin
 
                             operation.ErrorCalculation = (point, measPoint) =>
                             {
-                                var resultError = new MeasPoint<Current>(0.001M * I1
-                                                                                 .MainPhysicalQuantity
-                                                                                 .GetNoramalizeValueToSi() +
-                                                                         0.001M);
-                                resultError.Round(4);
-                                return resultError;
+                                MeasPoint<Current> result = point - measPoint;
+                                result.Round(4);
+                                return result;
                             };
-                            operation.UpperTolerance = operation.Error;
-                            operation.UpperTolerance.Round(4);
-                            operation.LowerTolerance = operation.Error * -1;
-                            operation.LowerTolerance.Round(4);
-
-                            operation.IsGood = () =>
-                            {
-                                if (operation.Getting == null || operation.Expected == null ||
-                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                // в Expected записан измеренный ток,а погрешность посчитана для первого тока
-                                // и края посчитаны тоже для первого тока.
-                                // Фактически первый измеренный ток определяет границы допуска.
-                                // В Getting записана разность первого тока и текущего измеренного.
-                                //поэтому ниже сравнивается Getting с краями допуска
-                                return (operation.Getting < operation.UpperTolerance) &
-                                       (operation.Getting > operation.LowerTolerance);
-                            };
+                            
                         }
                         catch (Exception e)
                         {
@@ -1745,6 +1698,22 @@ namespace E364xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
                         }
+
+                        operation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
+                        operation.LowerCalculation = (expected) => ErrorCalc(expected) * -1;
+
+                        operation.IsGood = () =>
+                        {
+                            if (operation.Getting == null || operation.Expected == null ||
+                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                            // в Expected записан измеренный ток,а погрешность посчитана для первого тока
+                            // и края посчитаны тоже для первого тока.
+                            // Фактически первый измеренный ток определяет границы допуска.
+                            // В Getting записана разность первого тока и текущего измеренного.
+                            //поэтому ниже сравнивается Getting с краями допуска
+                            return (operation.Getting < operation.UpperTolerance) &
+                                   (operation.Getting > operation.LowerTolerance);
+                        };
                     };
                     operation.CompliteWork = () =>
                     {
@@ -1796,6 +1765,16 @@ namespace E364xAPlugin
             dataRow["Измеренное значение"] = dds.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
+        }
+
+        protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
+        {
+            var error =
+                new MeasPoint<Current>(inVal.MainPhysicalQuantity.Value * 0.002M +
+                                       0.010M);
+
+            error.Round(4);
+            return error;
         }
 
         protected override string[] GenerateDataColumnTypeObject()
@@ -1877,28 +1856,7 @@ namespace E364xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
 
-                            operation.ErrorCalculation = (point, measPoint) =>
-                            {
-                                var error =
-                                    new MeasPoint<Current>(operation.Expected.MainPhysicalQuantity.Value * 0.002M +
-                                                           0.010M);
-
-                                error.Round(4);
-                                return error;
-                            };
-
-                            operation.LowerTolerance = operation.Expected - operation.Error;
-                            operation.LowerTolerance.Round(4);
-                            operation.UpperTolerance = operation.Expected + operation.Error;
-                            operation.UpperTolerance.Round(4);
-
-                            operation.IsGood = () =>
-                            {
-                                if (operation.Getting == null || operation.Expected == null ||
-                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                return (operation.Getting < operation.UpperTolerance) &
-                                       (operation.Getting > operation.LowerTolerance);
-                            };
+                           SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                         }
                         catch (Exception e)
                         {
@@ -1970,6 +1928,22 @@ namespace E364xAPlugin
             dataRow["Максимально допустимое значение"] = dds?.UpperTolerance?.Description;
         }
 
+        protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
+        {
+            MeasPoint<Voltage> error;
+            if (_chanel == E364xChanels.OUTP2)
+                error = new MeasPoint<Voltage>(inVal.MainPhysicalQuantity.Value *
+                                               0.001M +
+                                               0.025M);
+            else
+                error =
+                    new MeasPoint<Voltage>(inVal.MainPhysicalQuantity.Value * 0.005M +
+                                           0.010M);
+
+            error.Round(4);
+            return error;
+        }
+
         protected override string[] GenerateDataColumnTypeObject()
         {
             return new[]
@@ -2009,24 +1983,7 @@ namespace E364xAPlugin
                             powerSupply.SetRange(rangePowerSupply);
                             operation.Comment = powerSupply.GetVoltageRange().Description;
 
-                            operation.ErrorCalculation = (point, measPoint) =>
-                            {
-                                MeasPoint<Voltage> error;
-                                if (_chanel == E364xChanels.OUTP2)
-                                    error = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value *
-                                                                   0.001M +
-                                                                   0.025M);
-                                else
-                                    error =
-                                        new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 0.005M +
-                                                               0.010M);
-
-                                error.Round(4);
-                                return error;
-                            };
-
-                            operation.LowerTolerance = operation.Expected - operation.Error;
-                            operation.UpperTolerance = operation.Expected + operation.Error;
+                            
 
                             powerSupply.SetVoltageLevel(setPoint);
                             powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
@@ -2069,13 +2026,7 @@ namespace E364xAPlugin
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
 
-                            operation.IsGood = () =>
-                            {
-                                if (operation.Getting == null || operation.Expected == null ||
-                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                return (operation.Getting < operation.UpperTolerance) &
-                                       (operation.Getting > operation.LowerTolerance);
-                            };
+                            SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                         }
                         catch (Exception e)
                         {

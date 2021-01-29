@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Linq;
 using System.Reflection;
+using AP.Extension;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Core.Model;
@@ -11,6 +12,7 @@ using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
 using NLog;
+using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
 {
@@ -130,6 +132,110 @@ namespace E364xAPlugin
 
             return dataTable;
         }
+
+        /// <summary>
+        /// Метод, который определяем формулу расчета погрешности.
+        /// </summary>
+        /// <param name="inVal"></param>
+        /// <returns></returns>
+        protected abstract MeasPoint<T> ErrorCalc(MeasPoint<T> inVal);
+
+        /// <summary>
+        /// Типовая реализация расчета границ допуска, логики принятия решения о годности или браке для данной МП.
+        /// </summary>
+        /// <param name="inOperation"></param>
+        protected void SetErrorCalculationUpperLowerCalcAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
+        {
+            inOperation.ErrorCalculation = (point, measPoint) =>
+            {
+                MeasPoint<T> result = point - measPoint;
+                result.Round(4);
+                return result;
+            };
+            inOperation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
+            inOperation.LowerCalculation = (expected) => ErrorCalc(expected) * -1;
+
+            inOperation.IsGood = () =>
+            {
+                if (inOperation.Getting == null || inOperation.Expected == null ||
+                    inOperation.UpperTolerance == null || inOperation.LowerTolerance == null) return false;
+
+                return inOperation.Error < inOperation.UpperTolerance &&
+                       inOperation.Error > inOperation.LowerTolerance;
+            };
+        }
+
+
+        protected void SetDefaultErrorCalculationUpperLowerCalcAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
+        {
+            inOperation.ErrorCalculation = (point, measPoint) =>
+            {
+                MeasPoint<T> result = point - measPoint;
+                result.Round(4);
+                return result;
+            };
+            inOperation.LowerCalculation = (expected) =>
+            {
+                MeasPoint<T> result = expected - ErrorCalc(expected);
+                result.Round(4);
+                return result;
+            };
+            inOperation.UpperCalculation = (expected) =>
+            {
+                MeasPoint<T> result = expected + ErrorCalc(expected);
+                result.Round(4);
+                return result;
+            };
+
+            inOperation.IsGood = () =>
+            {
+                if (inOperation.Getting == null || inOperation.Expected == null ||
+                    inOperation.UpperTolerance == null || inOperation.LowerTolerance == null) return false;
+                return (inOperation.Getting < inOperation.UpperTolerance) &
+                       (inOperation.Getting > inOperation.LowerTolerance);
+            };
+        }
+
+        protected void SetDevicesForVoltageMode(BasicOperationVerefication<MeasPoint<T>> inOperation,
+            E36xxA_Ranges rangePowerSupply)
+        {
+            var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+            powerSupply.SetRange(rangePowerSupply);
+            powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
+            powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange.AdditionalPhysicalQuantity));
+
+            var resistToLoad =
+                new MeasPoint<Resistance>(_voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                          _voltRange.AdditionalPhysicalQuantity
+                                                    .GetNoramalizeValueToSi());
+            resistToLoad.Round(4);
+
+            ElectonicLoad.SetThisModuleAsWorking();
+            ElectonicLoad.SetResistanceMode();
+            ElectonicLoad.SetResistanceLevel(resistToLoad);
+        }
+
+        protected void SetDevicesForCurrentMode(BasicOperationVerefication<MeasPoint<T>> inOperation, E36xxA_Ranges rangePowerSupply)
+        {
+            powerSupply.SetRange(rangePowerSupply);
+            var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
+            inOperation.Comment = _voltRange.Description;
+
+            powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
+            powerSupply.SetCurrentLevel(new MeasPoint<Current>(_voltRange
+                                                                  .AdditionalPhysicalQuantity));
+            // расчитаем значение для электронной нагрузки
+            var resistToLoad =
+                new MeasPoint<Resistance>(0.85M * _voltRange.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                          _voltRange
+                                             .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+            resistToLoad.Round(4);
+
+            ElectonicLoad.SetThisModuleAsWorking();
+            ElectonicLoad.SetResistanceMode();
+            ElectonicLoad.SetResistanceLevel(resistToLoad);
+        }
+
 
         protected override string GetReportTableName()
         {
