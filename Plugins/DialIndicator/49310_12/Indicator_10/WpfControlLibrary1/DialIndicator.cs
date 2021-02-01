@@ -1,6 +1,7 @@
 ﻿using ASMC.Core.Model;
 using ASMC.Devices.UInterface.AnalogDevice.ViewModel;
 using ASMC.Devices.WithoutInterface.HourIndicator;
+using ASMC.Devices.WithoutInterface.HourIndicator.IchGost577;
 using mp2192_92.DialIndicator.First;
 using mp2192_92.DialIndicator.Periodic;
 

@@ -241,7 +241,7 @@ namespace ASMC.Core.Model
                     Logger.Debug($@"Выполняется строка №{Array.IndexOf(array, row)}");
 
                     var metod = row.GetType().GetMethod(nameof(IBasicOperation<object>.WorkAsync));
-                    if (metod != null) await (Task) metod.Invoke(row, new object[] {token});
+                    if (metod != null) await (Task)metod.Invoke(row, new object[] { token });
                     checkResult.Add((Func<bool>) row.GetType().GetProperty(nameof(IBasicOperation<object>.IsGood))
                                                     .GetValue(row));
                 }

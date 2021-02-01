@@ -10,10 +10,11 @@ using ASMC.Core.ViewModel;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.WithoutInterface.HourIndicator;
+using ASMC.Devices.WithoutInterface.HourIndicator.IchGost577;
 
 namespace ASMC.Devices.UInterface.AnalogDevice.ViewModel
 {
-    public class IchGost577SettingUi<T> : IControlPannelDevice where T : IchGost577, IUserType,new()
+    public class IchGost577SettingUi<T> : IControlPannelDevice where T : IchGost577,new()
     {
         public IUserType Device { get; set; }
 

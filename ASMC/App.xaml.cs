@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using DevExpress.Mvvm;
 using System.Windows;
 using AP.Utils.Data;
-using ASMC.Core;
-using ASMC.Data.Model;
-using ASMC.Data.Model.Interface;
-using ASMC.Properties;
 using ASMC.ViewModel;
-using DevExpress.Mvvm.Native;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
 using DevExpress.Xpf.Core;
 using NLog;
@@ -23,26 +13,19 @@ using NLog;
 namespace ASMC
 {
     /// <summary>
-    /// Логика взаимодействия для App.xaml
+    ///     Логика взаимодействия для App.xaml
     /// </summary>
     public partial class App : Application
     {
-        #region Fields
-
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        #endregion
+        #region Property
 
         #region Properties
 
-      
+        public static IDataProvider DataProvider { get; private set; }
 
-        public static IDataProvider DataProvider
-        {
-            get; private set;
-        }
-
-     
+        #endregion
 
         #endregion
 
@@ -51,30 +34,30 @@ namespace ASMC
             // Prevents loading assembly DevExpress.Xpf.Themes.Office2016White.v17.2
             // by DevExpress.Xpf.Core.v17.2
             ApplicationThemeHelper.ApplicationThemeName = "None";
-            CultureInfo.CurrentCulture= new CultureInfo("ru-Ru");
+            CultureInfo.CurrentCulture = new CultureInfo("ru-Ru");
             ViewLocator.Default = new ViewLocator(Assembly.GetExecutingAssembly());
         }
+
         private void LoadPlugins()
         {
             var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
-            if(!Directory.Exists(path))
+            if (!Directory.Exists(path))
                 return;
 
             var files = Directory.GetFiles(path, "*.dll", SearchOption.AllDirectories);
             try
             {
-                foreach(var file in files)
-                        Assembly.LoadFile(Path.GetFullPath(file));
+                foreach (var file in files)
+                    Assembly.LoadFile(Path.GetFullPath(file));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.Error(e);
             }
-
-           
-
         }
+
         #region Methods
+
         protected override async void OnStartup(StartupEventArgs e)
         {
             var splashScreen = new SplashScreen("Resources/ce91c577bcf0a799e275968ebe599d0e.png");
@@ -86,13 +69,9 @@ namespace ASMC
                 InitializeSettings();
                 InitializeLocalization();
                 LoadPlugins();
-                if(!LaunchWindow("DefaultWindowService"))
-                {
-                    Shutdown();
-                }
-
+                if (!LaunchWindow("DefaultWindowService")) Shutdown();
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 Logger.Fatal(error);
                 ShowMessage(error.Message, MessageBoxImage.Error, MessageBoxButton.OK);
@@ -109,7 +88,7 @@ namespace ASMC
                 //    Settings.Save();
                 //}
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 Logger.Error(error);
                 ShowMessage(error.Message, MessageBoxImage.Error, MessageBoxButton.OK);
@@ -126,7 +105,7 @@ namespace ASMC
             //        "Palsys.Metr.IDA.Resources",
             //        Assembly.GetEntryAssembly()));
 
-         
+
             //if(!string.IsNullOrEmpty(lang))
             //{
             //    LocalizationManager.Default.CurrentCulture = CultureInfo.GetCultureInfo(lang);
@@ -136,14 +115,12 @@ namespace ASMC
         private void InitializeSettings()
         {
             //Settings = new SettingsManager<AssemblySettings>(new JsonSettingsProvider());
-        }   
-     
-
+        }
 
 
         private bool LaunchWindow(string serviceKey)
         {
-            if(!(TryFindResource(serviceKey) is IWindowService windowService))
+            if (!(TryFindResource(serviceKey) is IWindowService windowService))
                 return false;
             windowService.Show("WizardView", CreateViewModel());
             return true;
@@ -158,7 +135,7 @@ namespace ASMC
 
         private MessageBoxResult ShowMessage(string message, MessageBoxImage icon, MessageBoxButton button)
         {
-            if(!(TryFindResource("MessageBoxService") is IMessageBoxService service))
+            if (!(TryFindResource("MessageBoxService") is IMessageBoxService service))
                 return MessageBoxResult.None;
 
             return service.Show(message, null, button, icon);
@@ -166,7 +143,4 @@ namespace ASMC
 
         #endregion
     }
- 
-
 }
-
