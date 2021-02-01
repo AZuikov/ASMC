@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using AP.Extension;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
@@ -528,43 +529,50 @@ namespace E364xAPlugin
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 operation.InitWork = async () =>
                 {
+                    MeasPoint<Voltage> U1 = new MeasPoint<Voltage>();
                     try
                     {
+                       
                         SetDevicesForVoltageMode(rangePowerSupply);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
+                        await Task.Run(() =>
+                        {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+                        });
 
-                    operation.Comment = powerSupply.GetVoltageRange().Description;
-                };
-                operation.BodyWorkAsync = () =>
-                {
-                    try
-                    {
-                        powerSupply.OutputOn();
-
-                        ElectonicLoad.OutputOn();
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В + 10 % (242 В).", "Внимание!", MessageBoxButton.OK);
                         Thread.Sleep(1000);
-                        digitalMult.DcVoltage.AutoRange = true;
-                        digitalMult.DcVoltage.Setting();
-                        var U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        await Task.Run(() =>
+                        {
+                            
+                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                             U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        });
+                        
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В - 10 % (198 В).", "Внимание!", MessageBoxButton.OK);
                         Thread.Sleep(1000);
-                        digitalMult.DcVoltage.AutoRange = true;
-                        digitalMult.DcVoltage.Setting();
-                        var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        await Task.Run(() =>
+                        {
+                            
+                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                            var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
 
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
 
-                        operation.Expected = U1;
-                        operation.Expected.Round(4);
+                            operation.Expected = U1;
+                            operation.Expected.Round(4);
 
-                        operation.Getting = U2;
-                        operation.Getting.Round(4);
+                            operation.Getting = U2;
+                            operation.Getting.Round(4);
 
+                            
+
+                        });
                         SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
@@ -577,7 +585,10 @@ namespace E364xAPlugin
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
                     }
+
+                    operation.Comment = powerSupply.GetVoltageRange().Description;
                 };
+                
                 operation.CompliteWork = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
@@ -1403,39 +1414,42 @@ namespace E364xAPlugin
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
                 operation.InitWork = async () =>
                 {
+                    MeasPoint<Current> i1 = new MeasPoint<Current>();
                     try
                     {
                         SetDevicesForCurrentMode(operation, rangePowerSupply);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                };
-                operation.BodyWorkAsync = () =>
-                {
-                    try
-                    {
-                        powerSupply.OutputOn();
-
-                        ElectonicLoad.OutputOn();
+                        await Task.Run(() =>
+                        {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+                            });
                         Thread.Sleep(3000);
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В + 10 % (242 В).", "Внимание!", MessageBoxButton.OK);
 
-                        var i1 = ElectonicLoad.GetMeasureCurrent();
-                        operation.Expected = i1;
-                        operation.Expected.Round(4);
+                        await Task.Run(() =>
+                        {
+                            i1 = ElectonicLoad.GetMeasureCurrent();
+                            operation.Expected = i1;
+                            operation.Expected.Round(4);
+                        });
 
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В - 10 % (198 В).", "Внимание!", MessageBoxButton.OK);
                         Thread.Sleep(1000);
-                        var i2 = ElectonicLoad.GetMeasureCurrent();
 
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
+                        await Task.Run(() =>
+                        {
+                            var i2 = ElectonicLoad.GetMeasureCurrent();
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
 
-                        i2.Round(4);
-                        operation.Getting = i2;
-                        operation.Getting.Round(4);
+                            i2.Round(4);
+                            operation.Getting = i2;
+                            operation.Getting.Round(4);
 
+                            
+                        });
                         SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
@@ -1449,6 +1463,7 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOff();
                     }
                 };
+                
                 operation.CompliteWork = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
