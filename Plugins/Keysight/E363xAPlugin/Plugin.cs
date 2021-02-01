@@ -23,7 +23,7 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E363xAPlugin
 {
-    public class Operation<T> : OperationMetrControlBase where T : E36xxA_Device
+    public class Operation<T> : OperationMetrControlBase where T : E36xxA_DeviceBasicFunction
     {
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation(ServicePack servicePack)
@@ -39,7 +39,7 @@ namespace E363xAPlugin
 
     public class OpertionFirsVerf : Operation
     {
-        public OpertionFirsVerf(ServicePack servicePack, E36xxA_Device inPower) : base(servicePack)
+        public OpertionFirsVerf(ServicePack servicePack, E36xxA_DeviceBasicFunction inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -101,7 +101,7 @@ namespace E363xAPlugin
 
     public class SpeedOpertionFirsVerf : Operation
     {
-        public SpeedOpertionFirsVerf(ServicePack servicePack, E36xxA_Device inPower) : base(servicePack)
+        public SpeedOpertionFirsVerf(ServicePack servicePack, E36xxA_DeviceBasicFunction inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -230,7 +230,7 @@ namespace E363xAPlugin
     {
         #region Property
 
-        protected E36xxA_Device powerSupply { get; set; }
+        protected E36xxA_DeviceBasicFunction powerSupply { get; set; }
 
         #endregion
 
@@ -268,8 +268,8 @@ namespace E363xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_Device != null)
-                                           .SelectedDevice as E36xxA_Device;
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_DeviceBasicFunction != null)
+                                           .SelectedDevice as E36xxA_DeviceBasicFunction;
             if (powerSupply == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             base.InitWork(token);

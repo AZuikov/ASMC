@@ -128,7 +128,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\oldMult\Mult_34465_70A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
     <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
-    <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E36xxA_Device.cs" />
+    <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E36xxA_DeviceBasicFunction.cs" />
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XX_IPowerSupply.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
     <Compile Include="Interface\IMultimetr.cs" />
