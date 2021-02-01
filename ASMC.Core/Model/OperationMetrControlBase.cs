@@ -162,7 +162,7 @@ namespace ASMC.Core.Model
                     if (userItemOperationBase.IsCheked || !IsManual)
                     {
                         ShowShem(userItemOperationBase.Sheme, source);
-                        userItemOperationBase.StartWork(source);
+                        await userItemOperationBase.StartWork(source);
                     }
                 }
                 catch (Exception e)

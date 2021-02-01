@@ -14,6 +14,12 @@ namespace ASMC.Common.Helps
     public sealed class DialogOperationHelp : BasicOperation<bool>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="operation">Операция</param>
+        /// <param name="nameFile">Имя файла </param>
+        /// <param name="findProjectFile">Проект в котором следует искать файл</param>
         public DialogOperationHelp(IUserItemOperationBase operation, string nameFile, Assembly findProjectFile=null)
         {
             Logger.Debug($@"Указан файл для загрузки {nameFile} и будет поиск в папке сборке {findProjectFile?? Assembly.GetExecutingAssembly()}");
@@ -40,7 +46,13 @@ namespace ASMC.Common.Helps
             };
             this.CompliteWork = () => Task.FromResult(true);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <param name="initWork">Функция результат которой будет учитыватся в значении Getting</param>
+        /// <param name="nameFile">Имя файла </param>
+        /// <param name="findProjectFile">Проект в котором следует искать файл</param>
         public DialogOperationHelp(IUserItemOperationBase operation, Func<Task<bool>> initWork, string nameFile,
             Assembly findProjectFile = null)
         {
