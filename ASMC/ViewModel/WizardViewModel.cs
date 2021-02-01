@@ -12,9 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AP.Reports.AutoDocumets;
-using AP.Reports.Utils;
-using ASMC.Common;
-using ASMC.Common.ViewModel;
 using ASMC.Core;
 using ASMC.Core.Model;
 using ASMC.Core.ViewModel;
@@ -27,8 +24,10 @@ namespace ASMC.ViewModel
 {
     public class WizardViewModel : BaseViewModel
     {
+        #region StateWork enum
+
         /// <summary>
-        /// Состояние программы.
+        ///     Состояние программы.
         /// </summary>
         public enum StateWork
         {
@@ -37,68 +36,53 @@ namespace ASMC.ViewModel
             Pause
         }
 
+        #endregion
+
+        #region TabItemControl enum
+
         /// <summary>
-        /// Перечень вкладок.
+        ///     Перечень вкладок.
         /// </summary>
         public enum TabItemControl
         {
             /// <summary>
-            /// Выбор программы МК.
+            ///     Выбор программы МК.
             /// </summary>
             ChoiceSi,
 
             /// <summary>
-            /// Выбор вида МК.
+            ///     Выбор вида МК.
             /// </summary>
             ChoiceTypeMc,
 
             /// <summary>
-            /// Подготовка рабочего места.
+            ///     Подготовка рабочего места.
             /// </summary>
             Workplace,
 
             /// <summary>
-            /// Настройка приборов.
+            ///     Настройка приборов.
             /// </summary>
             Settings,
 
             /// <summary>
-            /// Операции МК.
+            ///     Операции МК.
             /// </summary>
             Operations,
 
             /// <summary>
-            /// Операции МК.
+            ///     Операции МК.
             /// </summary>
             Documents
         }
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        #region Fields
-
-        private string[] _accessoriesList;
-        private IUserItemOperationBase _curentItemOperation;
-        private DataView _dataOperation;
-        private OperationMetrControlBase.TypeOpeation? _enableOpeation;
-        private bool _isCheckWork;
-        private bool _isManual;
-
-        private CancellationTokenSource _isWorkToken = new CancellationTokenSource();
-        private TabItemControl _selectedTabItem;
-        private IUserItemOperationBase _selectionItemOperation;
-        private IProgram _selectProgram;
-        private SettingViewModel _settingViewModel = new SettingViewModel();
-        private StateWork _stateWorkFlag;
-        private OperationMetrControlBase.TypeOpeation _typeOpertion;
-        private IUserItemOperationBase[] _userItemOperation;
-        private bool _enableSpeedCheckBox;
-
         #endregion
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Property
 
-        public bool  EnableSpeedCheckBox
+        public bool EnableSpeedCheckBox
         {
             get => _enableSpeedCheckBox;
             set => SetProperty(ref _enableSpeedCheckBox, value, nameof(EnableSpeedCheckBox));
@@ -131,7 +115,7 @@ namespace ASMC.ViewModel
         }
 
         /// <summary>
-        /// Режим проверки(Ускроренные операции).
+        ///     Режим проверки(Ускроренные операции).
         /// </summary>
         public bool IsCheckWork
         {
@@ -143,28 +127,30 @@ namespace ASMC.ViewModel
         {
             get => _isManual;
             set => SetProperty(ref _isManual, value, nameof(IsManual),
-                               () =>
-                               {
-                                   if (SelectProgram == null) return;
-                                   SelectProgram.Operation.IsManual = IsManual;
-                               });
+                () =>
+                {
+                    if (SelectProgram == null) return;
+                    SelectProgram.Operation.IsManual = IsManual;
+                });
         }
 
         // ReSharper disable once UnusedMember.Global
         public bool[] ModeWork { get; set; } = {true, false};
+
         /// <summary>
-        /// Предоставляет команжу смены режима работы <see cref="IsManual"/>
+        ///     Предоставляет команжу смены режима работы <see cref="IsManual" />
         /// </summary>
         public ICommand ChangeModeKeyCommand { get; }
+
         public ICommand PauseCommand { get; }
 
         /// <summary>
-        /// Позволяет получать коллекцию программ
+        ///     Позволяет получать коллекцию программ
         /// </summary>
         public ObservableCollection<IProgram> Prog { get; } = new ObservableCollection<IProgram>();
 
         /// <summary>
-        /// Позволяет получить или задать выбранную вкладку.
+        ///     Позволяет получить или задать выбранную вкладку.
         /// </summary>
         public TabItemControl SelectedTabItem
         {
@@ -173,7 +159,7 @@ namespace ASMC.ViewModel
         }
 
         /// <summary>
-        /// Позволяет задать или получить
+        ///     Позволяет задать или получить
         /// </summary>
         public IUserItemOperationBase SelectionItemOperation
         {
@@ -182,7 +168,7 @@ namespace ASMC.ViewModel
         }
 
         /// <summary>
-        /// Позволяет получать или задавать программу МК.
+        ///     Позволяет получать или задавать программу МК.
         /// </summary>
         public IProgram SelectProgram
         {
@@ -206,7 +192,7 @@ namespace ASMC.ViewModel
         }
 
         /// <summary>
-        /// Позволяет получать или задавать тип выбранной операции МК.
+        ///     Позволяет получать или задавать тип выбранной операции МК.
         /// </summary>
         public OperationMetrControlBase.TypeOpeation TypeOpertion
         {
@@ -219,7 +205,7 @@ namespace ASMC.ViewModel
         }
 
         /// <summary>
-        /// Позволяет получать или задавать перечень операций МК.
+        ///     Позволяет получать или задавать перечень операций МК.
         /// </summary>
         public IUserItemOperationBase[] UserItemOperation
         {
@@ -229,25 +215,46 @@ namespace ASMC.ViewModel
 
         #endregion
 
+        #region Field
+
+        private string[] _accessoriesList;
+        private IUserItemOperationBase _curentItemOperation;
+        private DataView _dataOperation;
+        private OperationMetrControlBase.TypeOpeation? _enableOpeation;
+        private bool _enableSpeedCheckBox;
+        private bool _isCheckWork;
+        private bool _isManual;
+
+        private CancellationTokenSource _isWorkToken = new CancellationTokenSource();
+        private TabItemControl _selectedTabItem;
+        private IUserItemOperationBase _selectionItemOperation;
+        private IProgram _selectProgram;
+        private SettingViewModel _settingViewModel = new SettingViewModel();
+        private StateWork _stateWorkFlag;
+        private OperationMetrControlBase.TypeOpeation _typeOpertion;
+        private IUserItemOperationBase[] _userItemOperation;
+
+        #endregion
+
         public WizardViewModel()
         {
             StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
             NextCommand =
                 new DelegateCommand(OnNextCommand,
-                                    () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
-                                          SelectProgram != null);
+                    () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
+                          SelectProgram != null);
             BackCommand =
                 new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
             StopCommand = new DelegateCommand(OnStopCommand,
-                                              () => !_isWorkToken.IsCancellationRequested &&
-                                                    StateWorkFlag != StateWork.Stop);
+                () => !_isWorkToken.IsCancellationRequested &&
+                      StateWorkFlag != StateWork.Stop);
             RefreshCommand =
                 new DelegateCommand(OnRefreshCommand);
             CreatDocumetCommandCommand =
                 new DelegateCommand(OnCreatDocumetCommand);
             PauseCommand = new DelegateCommand(OnPauseCommand);
 
-            ChangeModeKeyCommand =new DelegateCommand(OnChangeModeKeyCommand);
+            ChangeModeKeyCommand = new DelegateCommand(OnChangeModeKeyCommand);
         }
 
         private void OnChangeModeKeyCommand()
@@ -290,7 +297,7 @@ namespace ASMC.ViewModel
             var path = $@"{Directory.GetCurrentDirectory()}\Plugins";
             if (!Directory.Exists(path))
                 return;
-           var document = Directory.GetFiles(path, filename, SearchOption.AllDirectories).FirstOrDefault();
+            var document = Directory.GetFiles(path, filename, SearchOption.AllDirectories).FirstOrDefault();
             if (document == null) throw new NullReferenceException($"Шаблон {filename} не найден!");
             var a = new Document.ConditionalFormatting
             {
@@ -304,7 +311,7 @@ namespace ASMC.ViewModel
             using (var report = new Word())
             {
                 report.OpenDocument(document);
-                bool res = true;
+                var res = true;
                 var regInsTextByMark = new Regex(@"(^ITBm\w.+)");
                 var regInsTextByReplase = new Regex(@"(^RepT\w.+)");
                 var regInTableByMark = new Regex(@"(^ITabBm\w.+)");
@@ -313,20 +320,17 @@ namespace ASMC.ViewModel
                 {
                     var tree = uio as ITreeNode;
                     if (tree == null) continue;
-                    if (!FillDoc(tree))
-                    {
-                        res = false;
-                    }
+                    if (!FillDoc(tree)) res = false;
                 }
 
-                report.FindStringAndReplace("Result", res?"Пригодным к применению":"Непригоденым к применению");
+                report.FindStringAndReplace("Result", res ? "Пригодным к применению" : "Непригоденым к применению");
                 path = GetUniqueFileName(".docx");
                 report.SaveAs(path);
                 Logger.Info($@"Протокол сформирован по пути {path}");
 
                 bool FillDoc(ITreeNode userItem)
                 {
-                    bool result = true;
+                    var result = true;
                     var n = userItem as IUserItemOperationBase;
                     if (n?.Data != null)
                     {
@@ -335,9 +339,13 @@ namespace ASMC.ViewModel
                         if (!string.IsNullOrWhiteSpace(markName))
                         {
                             if (regInsTextByMark.IsMatch(markName))
+                            {
                                 report.InsertTextToBookmark(markName, TableToStringConvert(n.Data));
+                            }
                             else if (regInsTextByReplase.IsMatch(markName))
+                            {
                                 report.FindStringAndReplace(markName, TableToStringConvert(n.Data));
+                            }
                             else if (regInTableByMark.IsMatch(markName))
                             {
                                 if (n.Data.Columns.IndexOf(a.NameColumn) != -1)
@@ -353,25 +361,19 @@ namespace ASMC.ViewModel
                                     report.FillTableToBookmark(n.Data.TableName, n.Data, true);
                             }
                             else
+                            {
                                 Logger.Error($@"Имя {markName} не распознано");
+                            }
                         }
                     }
 
-                    if (n.IsGood==false)
-                    {
-                        result = false;
-                    }
+                    if (n.IsGood == false) result = false;
                     foreach (var node in userItem.Nodes)
-                    {
                         if (n.IsGood == FillDoc(node))
-                        {
                             result = false;
-                        }
-                    }
 
                     return result;
                 }
-
             }
 
             Process.Start(path);
@@ -428,19 +430,14 @@ namespace ASMC.ViewModel
             try
             {
                 types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(p => p.GetTypes())
-                                 .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+                    .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             }
             catch (Exception e)
             {
                 if (e is ReflectionTypeLoadException)
-                {
-                   (e as ReflectionTypeLoadException).LoaderExceptions.ForEach(q => Logger.Warn(q));
-                }
+                    (e as ReflectionTypeLoadException).LoaderExceptions.ForEach(q => Logger.Warn(q));
                 else
-                {
                     Logger.Warn(e);
-                }
-             
             }
 
             var servicePack = new ServicePack
@@ -448,7 +445,7 @@ namespace ASMC.ViewModel
                 MessageBox = () => GetService<IMessageBoxService>(ServiceSearchMode.PreferLocal),
                 ShemForm = () => GetService<ISelectionService>("ImageService"),
                 QuestionText = () => GetService<ISelectionService>("QuestionTextService"),
-                FreeWindow = ()=> GetService<ISelectionService>("SelectionService")
+                FreeWindow = () => GetService<ISelectionService>("SelectionService")
             };
             if (types == null) return;
             foreach (var type in types)
@@ -527,7 +524,7 @@ namespace ASMC.ViewModel
             if (SelectProgram == null) return;
             Logger.Info($@"Выбранная операция {SelectProgram}");
             EnableOpeation = SelectProgram.Operation.EnabledOperation;
-            EnableSpeedCheckBox =  SelectProgram.Operation.IsSpeed;
+            EnableSpeedCheckBox = SelectProgram.Operation.IsSpeed;
             foreach (Enum en in Enum.GetValues(typeof(OperationMetrControlBase.TypeOpeation)))
                 if (EnableOpeation != null && ((Enum) EnableOpeation).HasFlag(en))
                 {
@@ -538,7 +535,7 @@ namespace ASMC.ViewModel
             ChangeProgram();
         }
 
-        private async void OnStartCommand()
+        private void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
             if (_isWorkToken.Token.IsCancellationRequested) _isWorkToken = new CancellationTokenSource();
@@ -547,7 +544,7 @@ namespace ASMC.ViewModel
                 Logger.Info("Программа МК запущена");
                 try
                 {
-                    await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
+                    SelectProgram.Operation.StartWork(_isWorkToken);
                 }
                 catch (Exception e)
                 {
@@ -587,7 +584,7 @@ namespace ASMC.ViewModel
         public ICommand BackCommand { get; }
 
         /// <summary>
-        /// Комманда запуска режима МК.
+        ///     Комманда запуска режима МК.
         /// </summary>
         public ICommand StartCommand { get; }
 

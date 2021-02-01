@@ -62,7 +62,7 @@ namespace ASMC.Data.Model.Interface
         /// <summary>
         ///     Предоставляет метод который при вызове заполняет <see cref="IBasicOperation{T}" />.
         /// </summary>
-        Task WorkAsync(CancellationTokenSource token);
+        void WorkAsync(CancellationTokenSource token);
     }
 
 

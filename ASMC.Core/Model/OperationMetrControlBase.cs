@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -124,15 +125,12 @@ namespace ASMC.Core.Model
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public async Task StartWorkAsync(CancellationTokenSource source)
+        public  void StartWork(CancellationTokenSource source)
         {
-            var count = 0;
-            //LastShem = null;
-            foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
-                count+=CountNode(userItemOperationBase);
+            var count = SelectedOperation.UserItemOperation.Sum(CountNode);
 
             foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
-                await ClrNode(userItemOperationBase);
+                 ClrNode(userItemOperationBase);
 
             int CountNode(IUserItemOperationBase userItemOperationBase)
             {
@@ -157,14 +155,14 @@ namespace ASMC.Core.Model
                 return cou;
             }
 
-            async Task ClrNode(IUserItemOperationBase userItemOperationBase)
+            async void ClrNode(IUserItemOperationBase userItemOperationBase)
             {
                 try
                 {
                     if (userItemOperationBase.IsCheked || !IsManual)
                     {
                         ShowShem(userItemOperationBase.Sheme, source);
-                        await userItemOperationBase.StartWork(source);
+                        userItemOperationBase.StartWork(source);
                     }
                 }
                 catch (Exception e)
@@ -175,7 +173,8 @@ namespace ASMC.Core.Model
                 }
 
                 var tree = (ITreeNode) userItemOperationBase;
-                foreach (var node in tree.Nodes) await ClrNode((IUserItemOperationBase) node);
+                foreach (var node in tree.Nodes) 
+                    ClrNode((IUserItemOperationBase) node);
             }
         }
 
