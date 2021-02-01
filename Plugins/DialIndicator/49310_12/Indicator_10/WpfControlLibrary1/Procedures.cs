@@ -19,6 +19,7 @@ using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.USB_Device.SKBIS.Lir917;
 using ASMC.Devices.USB_Device.WebCam;
 using ASMC.Devices.WithoutInterface.HourIndicator;
+using ASMC.Devices.WithoutInterface.HourIndicator.IchGost577;
 using DevExpress.Mvvm.UI;
 using mp2192_92.DialIndicator.ViewModel;
 using NLog;
@@ -27,7 +28,7 @@ namespace mp2192_92.DialIndicator
 {
     /// <summary>
     ///     Придоставляет базувую реализацию для пунктов поверки индикаторов частового типа
-    ///     <see cref="ASMC.Devices.WithoutInterface.HourIndicator.IchBase" />
+    ///     <see cref="ASMC.Devices.WithoutInterface.HourIndicator.IchGost577" />
     /// </summary>
     /// <typeparam name="TOperation"></typeparam>
     public abstract class MainIchProcedur<TOperation> : ParagraphBase<TOperation>
@@ -37,7 +38,7 @@ namespace mp2192_92.DialIndicator
         /// <summary>
         ///     Предоставляет индикатор частового типа
         /// </summary>
-        protected IchBase IchBase { get; private set; }
+        protected IchGost577 IchBase { get; private set; }
 
         /// <summary>
         /// Предоставляет сервис окна ввода данных.
@@ -91,7 +92,7 @@ namespace mp2192_92.DialIndicator
         /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {
-            IchBase = ((IControlPannelDevice) UserItemOperation.TestDevices.First().SelectedDevice).Device as IchBase;
+            IchBase = ((IControlPannelDevice) UserItemOperation.TestDevices.First().SelectedDevice).Device as IchGost577;
             EndRange = (MeasPoint<Length>) IchBase.RangesFull.Ranges.Max().End;
             Service = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
             base.InitWork(token);

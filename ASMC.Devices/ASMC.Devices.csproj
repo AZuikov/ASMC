@@ -153,6 +153,12 @@
     <Compile Include="USB_Device\SKBIS\Lir917\Ppi.cs" />
     <Compile Include="USB_Device\WebCam\WebCam.cs" />
     <Compile Include="WithoutInterface\HourIndicator\IchBase.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\IchGost577\IchGost577.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\IchGost577\Ich_02.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\IchGost577\Ich_03.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\IchGost577\Ich_10.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\IchGost577\Ich_10_03_02.cs" />
+    <Compile Include="WithoutInterface\HourIndicator\MC52415_13\MC52415_13.cs" />
     <Compile Include="WithoutInterface\Voltmetr\B3_57.cs" />
   </ItemGroup>
   <ItemGroup>

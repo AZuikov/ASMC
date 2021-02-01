@@ -24,7 +24,6 @@ namespace LTI
         {
             //UserItemOperationPrimaryVerf = new OpertionFirsVerf<IchGost577SettingUi<Ich_10>>("ИЧ-10 Первичная МП 2192-92", servicePac);
             //UserItemOperationPeriodicVerf = new OpertionPeriodicVerf<IchGost577SettingUi<Ich_10>>("ИЧ-10 Периодическая МП 2192-92", servicePac);
-
         }
 
     }
