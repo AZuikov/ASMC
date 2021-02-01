@@ -11,6 +11,7 @@ using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
+using ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa;
 using NLog;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
@@ -62,7 +63,7 @@ namespace E364xAPlugin
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
-        protected E36xxA_DeviceBasicFunction powerSupply { get; set; }
+        protected E364XADevice powerSupply { get; set; }
 
         #endregion
 
@@ -107,7 +108,7 @@ namespace E364xAPlugin
                            .SelectedDevice as IElectronicLoad;
 
             powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_DeviceBasicFunction != null)
-                                           .SelectedDevice as E36xxA_DeviceBasicFunction;
+                                           .SelectedDevice as E364XADevice;
 
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);

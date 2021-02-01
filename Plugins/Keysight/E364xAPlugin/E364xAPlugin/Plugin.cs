@@ -986,6 +986,7 @@ namespace E364xAPlugin
                         try
                         {
                             SetDevicesForVoltageMode(rangePowerSupply);
+                            powerSupply.VOLT.SetValue(setPoint);
                         }
                         catch (Exception e)
                         {
@@ -1551,6 +1552,9 @@ namespace E364xAPlugin
                     {
                         try
                         {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+
                             if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
                                 Thread.Sleep(15000);
                             else
@@ -1707,6 +1711,7 @@ namespace E364xAPlugin
                         try
                         {
                             SetDevicesForCurrentMode(operation, rangePowerSupply);
+                            powerSupply.CURR.SetValue((MeasPoint<Current>)measPoint1);
                         }
                         catch (Exception e)
                         {
@@ -1718,6 +1723,7 @@ namespace E364xAPlugin
                     {
                         try
                         {
+                            operation.Expected = (MeasPoint<Current>)measPoint1;
                             powerSupply.OutputOn();
                             ElectonicLoad.OutputOn();
                             Thread.Sleep(1000);
@@ -1747,12 +1753,10 @@ namespace E364xAPlugin
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
-                                                 .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                                 .Show($"Текущая точка {operation.Getting.Description} не проходит по допуску:\n" +
                                                        $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                                        $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                                       $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                                       $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                                       $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
+                                                       
                                                        "Повторить измерение этой точки?",
                                                        "Информация по текущему измерению",
                                                        MessageButton.YesNo, MessageIcon.Question,
@@ -1852,17 +1856,19 @@ namespace E364xAPlugin
                         try
                         {
                             SetDevicesForCurrentMode(operation, rangePowerSupply);
+                            powerSupply.VOLT.SetValue(setPoint);
+                            var current = powerSupply.CURR.GetValue();
+                            var resist = new MeasPoint<Resistance>(0.85M* setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()/
+                                                                   current.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                            ElectonicLoad.SetResistanceLevel(resist);
+                            
                         }
                         catch (Exception e)
                         {
                             Logger.Error(e);
                             throw;
                         }
-                        finally
-                        {
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
+                        
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1870,13 +1876,18 @@ namespace E364xAPlugin
                         {
                             powerSupply.OutputOn();
                             ElectonicLoad.OutputOn();
-                            Thread.Sleep(1000);
+                            Thread.Sleep(2000);
 
                             digitalMult.DcVoltage.AutoRange = true;
                             digitalMult.DcVoltage.Setting();
-                            var MeasVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
-                            operation.Getting = MeasVolts;
+                            var stdVolt = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                            operation.Expected = stdVolt;
+                            operation.Expected.Round(4);
+
+                            var measVolt = powerSupply.MEAS.GetMeasureVoltage();
+                            operation.Getting = measVolt;
                             operation.Getting.Round(4);
+
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -1887,6 +1898,11 @@ namespace E364xAPlugin
                         {
                             Logger.Error(e);
                             throw;
+                        }
+                        finally
+                        {
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
                         }
                     };
                     operation.CompliteWork = () =>
