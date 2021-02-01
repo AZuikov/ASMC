@@ -125,12 +125,12 @@ namespace ASMC.Core.Model
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public  void StartWork(CancellationTokenSource source)
+        public async Task StartWork(CancellationTokenSource source)
         {
             var count = SelectedOperation.UserItemOperation.Sum(CountNode);
 
             foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
-                 ClrNode(userItemOperationBase);
+                 await ClrNode(userItemOperationBase);
 
             int CountNode(IUserItemOperationBase userItemOperationBase)
             {
@@ -155,7 +155,7 @@ namespace ASMC.Core.Model
                 return cou;
             }
 
-            async void ClrNode(IUserItemOperationBase userItemOperationBase)
+            async Task ClrNode(IUserItemOperationBase userItemOperationBase)
             {
                 try
                 {
@@ -174,7 +174,7 @@ namespace ASMC.Core.Model
 
                 var tree = (ITreeNode) userItemOperationBase;
                 foreach (var node in tree.Nodes) 
-                    ClrNode((IUserItemOperationBase) node);
+                   await  ClrNode((IUserItemOperationBase) node);
             }
         }
 

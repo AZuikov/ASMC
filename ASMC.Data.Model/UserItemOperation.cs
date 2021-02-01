@@ -161,7 +161,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Запускает выполнение всех операций.
         /// </summary>
-        void StartWork(CancellationTokenSource token);
+        Task StartWork(CancellationTokenSource token);
 
         #endregion
     }
