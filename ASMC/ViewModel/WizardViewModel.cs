@@ -535,7 +535,7 @@ namespace ASMC.ViewModel
             ChangeProgram();
         }
 
-        private void OnStartCommand()
+        private async void OnStartCommand()
         {
             StateWorkFlag = StateWork.Start;
             if (_isWorkToken.Token.IsCancellationRequested) _isWorkToken = new CancellationTokenSource();
@@ -544,7 +544,7 @@ namespace ASMC.ViewModel
                 Logger.Info("Программа МК запущена");
                 try
                 {
-                    SelectProgram.Operation.StartWork(_isWorkToken);
+                    await SelectProgram.Operation.StartWork(_isWorkToken);
                 }
                 catch (Exception e)
                 {
