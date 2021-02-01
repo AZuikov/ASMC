@@ -20,11 +20,15 @@ namespace DialIndicatorSeries801
                 new Device {Devices = new IUserType[] {new Ppi()}},
                 new Device {Devices = new IUserType[] {new WebCam()}}
             };
-            TestDevices = new Device
+            TestDevices = new IDeviceUi[]
+            {
+                new Device
                 {
                     Devices = new IUserType[] {new TTestDevices()}, IsCanStringConnect = false,
                     Description = $@"{new TTestDevices().UserType}"
-                };
+                }
+
+            };
             UserItemOperation = new IUserItemOperationBase[]
             {
                 new VisualInspection(this),
