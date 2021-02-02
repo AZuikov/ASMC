@@ -3,9 +3,9 @@ using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
 {
-    public class E3633ADeviceBasicFunction : E36xxA_DeviceBasicFunction
+    public class E3633ADevice : E36xxA_DeviceBasicFunction
     {
-        public E3633ADeviceBasicFunction()
+        public E3633ADevice()
         {
             UserType = "E3633A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -17,9 +17,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3632ADeviceBasicFunction : E36xxA_DeviceBasicFunction
+    public class E3632ADevice : E36xxA_DeviceBasicFunction
     {
-        public E3632ADeviceBasicFunction()
+        public E3632ADevice()
         {
             UserType = "E3632A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -31,9 +31,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3634ADeviceBasicFunction : E36xxA_DeviceBasicFunction
+    public class E3634ADevice : E36xxA_DeviceBasicFunction
     {
-        public E3634ADeviceBasicFunction()
+        public E3634ADevice()
         {
             UserType = "E3634A";
             outputs = new[] { E36xxChanels.OUTP1 };

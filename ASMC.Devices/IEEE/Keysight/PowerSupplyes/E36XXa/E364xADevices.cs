@@ -9,9 +9,9 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
 {
-    public class E3640ADeviceBasicFunction : E364XADevice
+    public class E3640ADevice : E364XADevice
     {
-        public E3640ADeviceBasicFunction()
+        public E3640ADevice()
         {
             UserType = "E3640A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -23,9 +23,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3641ADeviceBasicFunction : E364XADevice
+    public class E3641ADevice : E364XADevice
     {
-        public E3641ADeviceBasicFunction()
+        public E3641ADevice()
         {
             UserType = "E3641A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -37,9 +37,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3642ADeviceBasicFunction : E364XADevice
+    public class E3642ADevice : E364XADevice
     {
-        public E3642ADeviceBasicFunction()
+        public E3642ADevice()
         {
             UserType = "E3642A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -51,9 +51,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3643ADeviceBasicFunction : E364XADevice
+    public class E3643ADevice : E364XADevice
     {
-        public E3643ADeviceBasicFunction()
+        public E3643ADevice()
         {
             UserType = "E3643A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -65,9 +65,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3644ADeviceBasicFunction : E364XADevice
+    public class E3644ADevice : E364XADevice
     {
-        public E3644ADeviceBasicFunction()
+        public E3644ADevice()
         {
             UserType = "E3644A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -79,9 +79,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3645ADeviceBasicFunction : E364XADevice
+    public class E3645ADevice : E364XADevice
     {
-        public E3645ADeviceBasicFunction()
+        public E3645ADevice()
         {
             UserType = "E3645A";
             outputs = new[] { E36xxChanels.OUTP1 };
@@ -93,9 +93,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3646ADeviceBasicFunction : E364XADevice
+    public class E3646ADevice : E364XADevice
     {
-        public E3646ADeviceBasicFunction()
+        public E3646ADevice()
         {
             UserType = "E3646A";
             outputs = new[] { E36xxChanels.OUTP1, E36xxChanels.OUTP2 };
@@ -107,9 +107,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3647ADeviceBasicFunction : E364XADevice
+    public class E3647ADevice : E364XADevice
     {
-        public E3647ADeviceBasicFunction()
+        public E3647ADevice()
         {
             UserType = "E3647A";
             outputs = new[] { E36xxChanels.OUTP1, E36xxChanels.OUTP2 };
@@ -121,9 +121,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3648ADeviceBasicFunction : E364XADevice
+    public class E3648ADevice : E364XADevice
     {
-        public E3648ADeviceBasicFunction()
+        public E3648ADevice()
         {
             UserType = "E3648A";
             outputs = new[] { E36xxChanels.OUTP1, E36xxChanels.OUTP2 };
@@ -135,9 +135,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3649ADeviceBasicFunction : E364XADevice
+    public class E3649ADevice : E364XADevice
     {
-        public E3649ADeviceBasicFunction()
+        public E3649ADevice()
         {
             UserType = "E3649A";
             outputs = new[] { E36xxChanels.OUTP1, E36xxChanels.OUTP2 };

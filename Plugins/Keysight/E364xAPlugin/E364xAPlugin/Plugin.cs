@@ -26,6 +26,8 @@ namespace E364xAPlugin
 {
     public class Operation<T> : OperationMetrControlBase where T : E36xxA_DeviceBasicFunction
     {
+
+        
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation(ServicePack servicePack)
         {
@@ -35,6 +37,11 @@ namespace E364xAPlugin
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
             SpeedUserItemOperationPrimaryVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             SpeedUserItemOperationPeriodicVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
+            
+
+           
+            
+            
         }
     }
 

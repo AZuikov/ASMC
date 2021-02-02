@@ -68,11 +68,16 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
             TRIG = new TRIGger(this);
         }
 
+        public static explicit operator E36xxA_DeviceBasicFunction(Type v)
+        {
+            throw new NotImplementedException();
+        }
+
         #region Methods
 
-       
 
-       
+
+
 
         public MeasPoint<Current> GetCurrentLevel()
         {
