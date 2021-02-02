@@ -13,7 +13,7 @@ namespace E363xAPlugin
     {
         public E363XBaseProcedure(ServicePack service) : base(service)
         {
-            //E3640ADevice
+            
             Grsi = "26950-04";
             var device = Activator.CreateInstance<T>();
             Type = device.UserType;
