@@ -4,7 +4,7 @@ using ASMC.Devices.IEEE.Fluke.Calibrator;
 
 namespace ASMC.Devices.Interface
 {
-    public interface ICalibrator: IDevice
+    public interface ICalibrator
     {
     void SetVoltageDc(MeasPoint<Voltage> setPoint);
 
