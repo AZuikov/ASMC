@@ -11,6 +11,7 @@ using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Keysight.ElectronicLoad;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.IEEE.Keysight.PowerSupplyes;
+using ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa;
 using NLog;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
@@ -25,7 +26,7 @@ namespace E364xAPlugin
 
         #endregion
 
-        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        protected BasePowerSupplyWithDigitMult(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
         }
@@ -55,18 +56,18 @@ namespace E364xAPlugin
 
         #region Fields
 
-        protected readonly E364xChanels _chanel;
+        protected readonly E36xxChanels _chanel;
 
         #endregion
 
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
-        protected E36xxA_Device powerSupply { get; set; }
+        protected E364XADevice powerSupply { get; set; }
 
         #endregion
 
-        protected BasePowerSupplyProcedure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        protected BasePowerSupplyProcedure(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation)
         {
             _chanel = inChanel;
@@ -106,8 +107,8 @@ namespace E364xAPlugin
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
                            .SelectedDevice as IElectronicLoad;
 
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_Device != null)
-                                           .SelectedDevice as E36xxA_Device;
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_DeviceBasicFunction != null)
+                                           .SelectedDevice as E364XADevice;
 
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
@@ -198,7 +199,7 @@ namespace E364xAPlugin
 
         protected void SetDevicesForVoltageMode(E36xxA_Ranges rangePowerSupply)
         {
-            powerSupply.ActiveE364XChanels = _chanel;
+            powerSupply.ActiveE36XxChanels = _chanel;
             var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
             powerSupply.SetRange(rangePowerSupply);
             powerSupply.SetVoltageLevel(new MeasPoint<Voltage>(_voltRange.MainPhysicalQuantity));
@@ -217,7 +218,7 @@ namespace E364xAPlugin
 
         protected void SetDevicesForCurrentMode(BasicOperationVerefication<MeasPoint<T>> inOperation, E36xxA_Ranges rangePowerSupply)
         {
-            powerSupply.ActiveE364XChanels = _chanel;
+            powerSupply.ActiveE36XxChanels = _chanel;
             powerSupply.SetRange(rangePowerSupply);
             var _voltRange = powerSupply.Ranges[(int)rangePowerSupply];
             inOperation.Comment = _voltRange.Description;

@@ -3,12 +3,12 @@ using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
 {
-    public class E3633ADevice : E36xxA_Device
+    public class E3633ADevice : E36xxA_DeviceBasicFunction
     {
         public E3633ADevice()
         {
             UserType = "E3633A";
-            outputs = new[] { E364xChanels.OUTP1 };
+            outputs = new[] { E36xxChanels.OUTP1 };
             Ranges = new[]
             {
                 new MeasPoint<Voltage, Current>(8, 20),
@@ -17,12 +17,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3632ADevice : E36xxA_Device
+    public class E3632ADevice : E36xxA_DeviceBasicFunction
     {
         public E3632ADevice()
         {
             UserType = "E3632A";
-            outputs = new[] { E364xChanels.OUTP1 };
+            outputs = new[] { E36xxChanels.OUTP1 };
             Ranges = new[]
             {
                 new MeasPoint<Voltage, Current>(15, 7),
@@ -31,12 +31,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes.E36XXa
         }
     }
 
-    public class E3634ADevice : E36xxA_Device
+    public class E3634ADevice : E36xxA_DeviceBasicFunction
     {
         public E3634ADevice()
         {
             UserType = "E3634A";
-            outputs = new[] { E364xChanels.OUTP1 };
+            outputs = new[] { E36xxChanels.OUTP1 };
             Ranges = new[]
             {
                 new MeasPoint<Voltage, Current>(25, 7),

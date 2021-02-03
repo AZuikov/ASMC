@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using AP.Extension;
 using ASMC.Common.ViewModel;
 using ASMC.Core.Model;
@@ -23,8 +24,10 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace E364xAPlugin
 {
-    public class Operation<T> : OperationMetrControlBase where T : E36xxA_Device
+    public class Operation<T> : OperationMetrControlBase where T : E36xxA_DeviceBasicFunction
     {
+
+        
         //определяет какие типы проверок доступны для СИ: поверка первичная/переодическая, калибровка, adjustment.
         public Operation(ServicePack servicePack)
         {
@@ -34,12 +37,17 @@ namespace E364xAPlugin
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
             SpeedUserItemOperationPrimaryVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             SpeedUserItemOperationPeriodicVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
+            
+
+           
+            
+            
         }
     }
 
     public class OpertionFirsVerf : Operation
     {
-        public OpertionFirsVerf(ServicePack servicePack, E36xxA_Device inPower) : base(servicePack)
+        public OpertionFirsVerf(ServicePack servicePack, E36xxA_DeviceBasicFunction inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -73,33 +81,33 @@ namespace E364xAPlugin
 
                 #region outp1
 
-                new UnstableVoltToLoadChange(this, E364xChanels.OUTP1),
-                new AcVoltChange(this, E364xChanels.OUTP1),
-                new UnstableVoltageOnTime(this, E364xChanels.OUTP1),
-                new OutputVoltageSetting(this, E364xChanels.OUTP1),
-                new OutputCurrentMeasure(this, E364xChanels.OUTP1),
-                new UnstableCurrentLoadChange(this, E364xChanels.OUTP1),
-                new UnstableCurrentToAcChange(this, E364xChanels.OUTP1),
-                new UnstableCurrentOnTime(this, E364xChanels.OUTP1),
-                new OutputCurrentSetup(this, E364xChanels.OUTP1),
-                new OutputVoltageMeasure(this, E364xChanels.OUTP1),
-                new VoltageTransientDuration(this, E364xChanels.OUTP1),
+                new UnstableVoltToLoadChange(this, E36xxChanels.OUTP1),
+                new AcVoltChange(this, E36xxChanels.OUTP1),
+                new UnstableVoltageOnTime(this, E36xxChanels.OUTP1),
+                new OutputVoltageSetting(this, E36xxChanels.OUTP1),
+                new OutputCurrentMeasure(this, E36xxChanels.OUTP1),
+                new UnstableCurrentLoadChange(this, E36xxChanels.OUTP1),
+                new UnstableCurrentToAcChange(this, E36xxChanels.OUTP1),
+                new UnstableCurrentOnTime(this, E36xxChanels.OUTP1),
+                new OutputCurrentSetup(this, E36xxChanels.OUTP1),
+                new OutputVoltageMeasure(this, E36xxChanels.OUTP1),
+                new VoltageTransientDuration(this, E36xxChanels.OUTP1),
 
                 #endregion outp1
 
                 #region outp2
 
-                new UnstableVoltToLoadChange(this, E364xChanels.OUTP2),
-                new AcVoltChange(this, E364xChanels.OUTP2),
-                new UnstableVoltageOnTime(this, E364xChanels.OUTP2),
-                new OutputVoltageSetting(this, E364xChanels.OUTP2),
-                new OutputCurrentMeasure(this, E364xChanels.OUTP2),
-                new UnstableCurrentLoadChange(this, E364xChanels.OUTP2),
-                new UnstableCurrentToAcChange(this, E364xChanels.OUTP2),
-                new UnstableCurrentOnTime(this, E364xChanels.OUTP2),
-                new OutputCurrentSetup(this, E364xChanels.OUTP2),
-                new OutputVoltageMeasure(this, E364xChanels.OUTP2),
-                new VoltageTransientDuration(this, E364xChanels.OUTP2),
+                new UnstableVoltToLoadChange(this, E36xxChanels.OUTP2),
+                new AcVoltChange(this, E36xxChanels.OUTP2),
+                new UnstableVoltageOnTime(this, E36xxChanels.OUTP2),
+                new OutputVoltageSetting(this, E36xxChanels.OUTP2),
+                new OutputCurrentMeasure(this, E36xxChanels.OUTP2),
+                new UnstableCurrentLoadChange(this, E36xxChanels.OUTP2),
+                new UnstableCurrentToAcChange(this, E36xxChanels.OUTP2),
+                new UnstableCurrentOnTime(this, E36xxChanels.OUTP2),
+                new OutputCurrentSetup(this, E36xxChanels.OUTP2),
+                new OutputVoltageMeasure(this, E36xxChanels.OUTP2),
+                new VoltageTransientDuration(this, E36xxChanels.OUTP2),
 
                 #endregion outp2
             };
@@ -122,7 +130,7 @@ namespace E364xAPlugin
 
     public class SpeedOpertionFirsVerf : Operation
     {
-        public SpeedOpertionFirsVerf(ServicePack servicePack, E36xxA_Device inPower) : base(servicePack)
+        public SpeedOpertionFirsVerf(ServicePack servicePack, E36xxA_DeviceBasicFunction inPower) : base(servicePack)
         {
             ControlDevices = new IDeviceUi[]
             {
@@ -156,33 +164,33 @@ namespace E364xAPlugin
 
                 #region outp1
 
-                new UnstableVoltToLoadChange(this, E364xChanels.OUTP1),
-                new AcVoltChange(this, E364xChanels.OUTP1),
-                new UnstableVoltageOnTime(this, E364xChanels.OUTP1, true),
-                new OutputVoltageSetting(this, E364xChanels.OUTP1),
-                new OutputCurrentMeasure(this, E364xChanels.OUTP1),
-                new UnstableCurrentLoadChange(this, E364xChanels.OUTP1),
-                new UnstableCurrentToAcChange(this, E364xChanels.OUTP1),
-                new UnstableCurrentOnTime(this, E364xChanels.OUTP1, true),
-                new OutputCurrentSetup(this, E364xChanels.OUTP1),
-                new OutputVoltageMeasure(this, E364xChanels.OUTP1),
-                new VoltageTransientDuration(this, E364xChanels.OUTP1),
+                new UnstableVoltToLoadChange(this, E36xxChanels.OUTP1),
+                new AcVoltChange(this, E36xxChanels.OUTP1),
+                new UnstableVoltageOnTime(this, E36xxChanels.OUTP1, true),
+                new OutputVoltageSetting(this, E36xxChanels.OUTP1),
+                new OutputCurrentMeasure(this, E36xxChanels.OUTP1),
+                new UnstableCurrentLoadChange(this, E36xxChanels.OUTP1),
+                new UnstableCurrentToAcChange(this, E36xxChanels.OUTP1),
+                new UnstableCurrentOnTime(this, E36xxChanels.OUTP1, true),
+                new OutputCurrentSetup(this, E36xxChanels.OUTP1),
+                new OutputVoltageMeasure(this, E36xxChanels.OUTP1),
+                new VoltageTransientDuration(this, E36xxChanels.OUTP1),
 
                 #endregion outp1
 
                 #region outp2
 
-                new UnstableVoltToLoadChange(this, E364xChanels.OUTP2),
-                new AcVoltChange(this, E364xChanels.OUTP2),
-                new UnstableVoltageOnTime(this, E364xChanels.OUTP2, true),
-                new OutputVoltageSetting(this, E364xChanels.OUTP2),
-                new OutputCurrentMeasure(this, E364xChanels.OUTP2),
-                new UnstableCurrentLoadChange(this, E364xChanels.OUTP2),
-                new UnstableCurrentToAcChange(this, E364xChanels.OUTP2),
-                new UnstableCurrentOnTime(this, E364xChanels.OUTP2, true),
-                new OutputCurrentSetup(this, E364xChanels.OUTP2),
-                new OutputVoltageMeasure(this, E364xChanels.OUTP2),
-                new VoltageTransientDuration(this, E364xChanels.OUTP2),
+                new UnstableVoltToLoadChange(this, E36xxChanels.OUTP2),
+                new AcVoltChange(this, E36xxChanels.OUTP2),
+                new UnstableVoltageOnTime(this, E36xxChanels.OUTP2, true),
+                new OutputVoltageSetting(this, E36xxChanels.OUTP2),
+                new OutputCurrentMeasure(this, E36xxChanels.OUTP2),
+                new UnstableCurrentLoadChange(this, E36xxChanels.OUTP2),
+                new UnstableCurrentToAcChange(this, E36xxChanels.OUTP2),
+                new UnstableCurrentOnTime(this, E36xxChanels.OUTP2, true),
+                new OutputCurrentSetup(this, E36xxChanels.OUTP2),
+                new OutputVoltageMeasure(this, E36xxChanels.OUTP2),
+                new VoltageTransientDuration(this, E36xxChanels.OUTP2),
 
                 #endregion outp2
             };
@@ -272,7 +280,7 @@ namespace E364xAPlugin
     {
         #region Property
 
-        protected E36xxA_Device powerSupply { get; set; }
+        protected E36xxA_DeviceBasicFunction powerSupply { get; set; }
 
         #endregion
 
@@ -310,8 +318,8 @@ namespace E364xAPlugin
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_Device != null)
-                                           .SelectedDevice as E36xxA_Device;
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_DeviceBasicFunction != null)
+                                           .SelectedDevice as E36xxA_DeviceBasicFunction;
             if (powerSupply == null) return;
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             base.InitWork(token);
@@ -335,7 +343,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public UnstableVoltToLoadChange(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -382,7 +390,7 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
@@ -474,7 +482,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public AcVoltChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public AcVoltChange(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -520,7 +528,7 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
             if (powerSupply == null || ElectonicLoad == null) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
@@ -528,43 +536,50 @@ namespace E364xAPlugin
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 operation.InitWork = async () =>
                 {
+                    MeasPoint<Voltage> U1 = new MeasPoint<Voltage>();
                     try
                     {
+                       
                         SetDevicesForVoltageMode(rangePowerSupply);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
+                        await Task.Run(() =>
+                        {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+                        });
 
-                    operation.Comment = powerSupply.GetVoltageRange().Description;
-                };
-                operation.BodyWorkAsync = () =>
-                {
-                    try
-                    {
-                        powerSupply.OutputOn();
-
-                        ElectonicLoad.OutputOn();
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В + 10 % (242 В).", "Внимание!", MessageBoxButton.OK);
                         Thread.Sleep(1000);
-                        digitalMult.DcVoltage.AutoRange = true;
-                        digitalMult.DcVoltage.Setting();
-                        var U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        await Task.Run(() =>
+                        {
+                            
+                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                             U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        });
+                        
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В - 10 % (198 В).", "Внимание!", MessageBoxButton.OK);
                         Thread.Sleep(1000);
-                        digitalMult.DcVoltage.AutoRange = true;
-                        digitalMult.DcVoltage.Setting();
-                        var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        await Task.Run(() =>
+                        {
+                            
+                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                            var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
 
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
 
-                        operation.Expected = U1;
-                        operation.Expected.Round(4);
+                            operation.Expected = U1;
+                            operation.Expected.Round(4);
 
-                        operation.Getting = U2;
-                        operation.Getting.Round(4);
+                            operation.Getting = U2;
+                            operation.Getting.Round(4);
 
+                            
+
+                        });
                         SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
@@ -577,7 +592,10 @@ namespace E364xAPlugin
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
                     }
+
+                    operation.Comment = powerSupply.GetVoltageRange().Description;
                 };
+                
                 operation.CompliteWork = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
@@ -617,7 +635,7 @@ namespace E364xAPlugin
 
         #endregion
 
-        public VoltageTransientDuration(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public VoltageTransientDuration(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -743,7 +761,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableVoltageOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public UnstableVoltageOnTime(IUserItemOperation userItemOperation, E36xxChanels inChanel,
             bool isSpeedOperation = false) :
             base(userItemOperation, inChanel)
         {
@@ -788,7 +806,7 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
             if (powerSupply == null || ElectonicLoad == null) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
@@ -916,7 +934,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public OutputVoltageSetting(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public OutputVoltageSetting(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -937,7 +955,7 @@ namespace E364xAPlugin
         protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
         {
             MeasPoint<Voltage> error;
-            if (_chanel == E364xChanels.OUTP2)
+            if (_chanel == E36xxChanels.OUTP2)
                 error = new MeasPoint<Voltage>(inVal.MainPhysicalQuantity.Value *
                                                0.001M +
                                                0.025M);
@@ -966,10 +984,10 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null || digitalMult == null) return;
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
@@ -986,6 +1004,7 @@ namespace E364xAPlugin
                         try
                         {
                             SetDevicesForVoltageMode(rangePowerSupply);
+                            powerSupply.VOLT.SetValue(setPoint);
                         }
                         catch (Exception e)
                         {
@@ -1061,7 +1080,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public OutputCurrentMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public OutputCurrentMeasure(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -1082,7 +1101,7 @@ namespace E364xAPlugin
         protected override MeasPoint<Current> ErrorCalc(MeasPoint<Current> inVal)
         {
             MeasPoint<Current> error;
-            if (_chanel == E364xChanels.OUTP2)
+            if (_chanel == E36xxChanels.OUTP2)
                 error = new MeasPoint<Current>(inVal.MainPhysicalQuantity.Value *
                                                0.0015M +
                                                0.010M);
@@ -1111,10 +1130,10 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null) return;
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
@@ -1207,7 +1226,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableCurrentLoadChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public UnstableCurrentLoadChange(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -1255,7 +1274,7 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
@@ -1345,7 +1364,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableCurrentToAcChange(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public UnstableCurrentToAcChange(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -1393,7 +1412,7 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
@@ -1402,39 +1421,42 @@ namespace E364xAPlugin
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
                 operation.InitWork = async () =>
                 {
+                    MeasPoint<Current> i1 = new MeasPoint<Current>();
                     try
                     {
                         SetDevicesForCurrentMode(operation, rangePowerSupply);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                };
-                operation.BodyWorkAsync = () =>
-                {
-                    try
-                    {
-                        powerSupply.OutputOn();
-
-                        ElectonicLoad.OutputOn();
+                        await Task.Run(() =>
+                        {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+                            });
                         Thread.Sleep(3000);
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В + 10 % (242 В).", "Внимание!", MessageBoxButton.OK);
 
-                        var i1 = ElectonicLoad.GetMeasureCurrent();
-                        operation.Expected = i1;
-                        operation.Expected.Round(4);
+                        await Task.Run(() =>
+                        {
+                            i1 = ElectonicLoad.GetMeasureCurrent();
+                            operation.Expected = i1;
+                            operation.Expected.Round(4);
+                        });
 
+                        UserItemOperation.ServicePack.MessageBox()
+                                         .Show("Установите напряжение питающей сети 220 В - 10 % (198 В).", "Внимание!", MessageBoxButton.OK);
                         Thread.Sleep(1000);
-                        var i2 = ElectonicLoad.GetMeasureCurrent();
 
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
+                        await Task.Run(() =>
+                        {
+                            var i2 = ElectonicLoad.GetMeasureCurrent();
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
 
-                        i2.Round(4);
-                        operation.Getting = i2;
-                        operation.Getting.Round(4);
+                            i2.Round(4);
+                            operation.Getting = i2;
+                            operation.Getting.Round(4);
 
+                            
+                        });
                         SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                     }
                     catch (Exception e)
@@ -1448,6 +1470,7 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOff();
                     }
                 };
+                
                 operation.CompliteWork = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
@@ -1481,7 +1504,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UnstableCurrentOnTime(IUserItemOperation userItemOperation, E364xChanels inChanel,
+        public UnstableCurrentOnTime(IUserItemOperation userItemOperation, E36xxChanels inChanel,
             bool isSpeedOperation = false) :
             base(userItemOperation, inChanel)
         {
@@ -1526,7 +1549,7 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
             if (powerSupply == null || ElectonicLoad == null) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
@@ -1551,6 +1574,9 @@ namespace E364xAPlugin
                     {
                         try
                         {
+                            powerSupply.OutputOn();
+                            ElectonicLoad.OutputOn();
+
                             if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
                                 Thread.Sleep(15000);
                             else
@@ -1640,7 +1666,7 @@ namespace E364xAPlugin
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public OutputCurrentSetup(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public OutputCurrentSetup(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -1684,10 +1710,10 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null) return;
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
@@ -1707,6 +1733,7 @@ namespace E364xAPlugin
                         try
                         {
                             SetDevicesForCurrentMode(operation, rangePowerSupply);
+                            powerSupply.CURR.SetValue((MeasPoint<Current>)measPoint1);
                         }
                         catch (Exception e)
                         {
@@ -1718,6 +1745,7 @@ namespace E364xAPlugin
                     {
                         try
                         {
+                            operation.Expected = (MeasPoint<Current>)measPoint1;
                             powerSupply.OutputOn();
                             ElectonicLoad.OutputOn();
                             Thread.Sleep(1000);
@@ -1747,12 +1775,10 @@ namespace E364xAPlugin
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
-                                                 .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                                 .Show($"Текущая точка {operation.Getting.Description} не проходит по допуску:\n" +
                                                        $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                                        $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                                       $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                                       $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                                       $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
+                                                       
                                                        "Повторить измерение этой точки?",
                                                        "Информация по текущему измерению",
                                                        MessageButton.YesNo, MessageIcon.Question,
@@ -1782,7 +1808,7 @@ namespace E364xAPlugin
 
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public OutputVoltageMeasure(IUserItemOperation userItemOperation, E364xChanels inChanel) :
+        public OutputVoltageMeasure(IUserItemOperation userItemOperation, E36xxChanels inChanel) :
             base(userItemOperation, inChanel)
         {
             Name =
@@ -1803,7 +1829,7 @@ namespace E364xAPlugin
         protected override MeasPoint<Voltage> ErrorCalc(MeasPoint<Voltage> inVal)
         {
             MeasPoint<Voltage> error;
-            if (_chanel == E364xChanels.OUTP2)
+            if (_chanel == E36xxChanels.OUTP2)
                 error = new MeasPoint<Voltage>(inVal.MainPhysicalQuantity.Value *
                                                0.001M +
                                                0.025M);
@@ -1832,10 +1858,10 @@ namespace E364xAPlugin
         {
             base.InitWork(token);
             ConnectionToDevice();
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length < 2) return;
 
             if (powerSupply == null || ElectonicLoad == null || digitalMult == null) return;
-            if (_chanel == E364xChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
+            if (_chanel == E36xxChanels.OUTP2 && powerSupply.outputs.Length == 1) return;
 
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
@@ -1852,17 +1878,19 @@ namespace E364xAPlugin
                         try
                         {
                             SetDevicesForCurrentMode(operation, rangePowerSupply);
+                            powerSupply.VOLT.SetValue(setPoint);
+                            var current = powerSupply.CURR.GetValue();
+                            var resist = new MeasPoint<Resistance>(0.85M* setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()/
+                                                                   current.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                            ElectonicLoad.SetResistanceLevel(resist);
+                            
                         }
                         catch (Exception e)
                         {
                             Logger.Error(e);
                             throw;
                         }
-                        finally
-                        {
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
+                        
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1870,13 +1898,18 @@ namespace E364xAPlugin
                         {
                             powerSupply.OutputOn();
                             ElectonicLoad.OutputOn();
-                            Thread.Sleep(1000);
+                            Thread.Sleep(2000);
 
                             digitalMult.DcVoltage.AutoRange = true;
                             digitalMult.DcVoltage.Setting();
-                            var MeasVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
-                            operation.Getting = MeasVolts;
+                            var stdVolt = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                            operation.Expected = stdVolt;
+                            operation.Expected.Round(4);
+
+                            var measVolt = powerSupply.MEAS.GetMeasureVoltage();
+                            operation.Getting = measVolt;
                             operation.Getting.Round(4);
+
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -1887,6 +1920,11 @@ namespace E364xAPlugin
                         {
                             Logger.Error(e);
                             throw;
+                        }
+                        finally
+                        {
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
                         }
                     };
                     operation.CompliteWork = () =>

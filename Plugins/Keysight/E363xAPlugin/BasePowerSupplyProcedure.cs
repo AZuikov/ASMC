@@ -58,7 +58,7 @@ namespace E363xAPlugin
         #region Property
 
         protected IElectronicLoad ElectonicLoad { get; set; }
-        protected E36xxA_Device powerSupply { get; set; }
+        protected E36xxA_DeviceBasicFunction powerSupply { get; set; }
 
         #endregion
 
@@ -102,8 +102,8 @@ namespace E363xAPlugin
                            .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IElectronicLoad != null)
                            .SelectedDevice as IElectronicLoad;
 
-            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_Device != null)
-                                           .SelectedDevice as E36xxA_Device;
+            powerSupply = UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as E36xxA_DeviceBasicFunction != null)
+                                           .SelectedDevice as E36xxA_DeviceBasicFunction;
 
             powerSupply.StringConnection = GetStringConnect(powerSupply);
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);

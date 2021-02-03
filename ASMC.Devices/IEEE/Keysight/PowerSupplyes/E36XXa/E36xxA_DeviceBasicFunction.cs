@@ -6,7 +6,7 @@ using NLog;
 
 namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 {
-    public enum E364xChanels
+    public enum E36xxChanels
     {
         OUTP1,
         OUTP2
@@ -18,7 +18,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         HIGH
     }
 
-    public class E36xxA_Device : IeeeBase
+    public class E36xxA_DeviceBasicFunction : IeeeBase
     {
         public enum TriggerSource
         {
@@ -30,7 +30,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 
         #region Fields
 
-        private E364xChanels _e364XChanels;
+        protected E36xxChanels _e36XxChanels;
 
         /// <summary>
         /// Текущий предел источника.
@@ -41,24 +41,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 
         #region Property
 
-        public E364xChanels ActiveE364XChanels
-        {
-            get => _e364XChanels;
-            set
-            {
-                if (!Enum.IsDefined(typeof(E364xChanels), value))
-                {
-                    _e364XChanels = E364xChanels.OUTP1;
-                }
-                _e364XChanels = value;
-                WriteLine($"inst {_e364XChanels.ToString()}");
-            }
-        }
+       
 
         public CURRent CURR { get; }
         public MEASure MEAS { get; }
         public Output OUT { get; }
-        public E364xChanels[] outputs { get; protected set; }
+        public E36xxChanels[] outputs { get; protected set; }
 
         /// <summary>
         /// Пределы изменения напряжения и тока (зависят от модели прибора).
@@ -70,9 +58,9 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 
         #endregion
 
-        public E36xxA_Device()
+        public E36xxA_DeviceBasicFunction()
         {
-            UserType = "E364XA";
+            UserType = "E36XXA";
             CURR = new CURRent(this);
             VOLT = new VOLTage(this);
             MEAS = new MEASure(this);
@@ -80,21 +68,16 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
             TRIG = new TRIGger(this);
         }
 
-        #region Methods
-
-        public E364xChanels GetActiveChanel()
+        public static explicit operator E36xxA_DeviceBasicFunction(Type v)
         {
-            var answer = QueryLine("inst?");
-            foreach (E364xChanels chanel in Enum.GetValues(typeof(E364xChanels)))
-                if (chanel.ToString().Equals(answer))
-                    return chanel;
-
-            var errorStr = $"Запрос активного канала E364XA. Прибор ответил: {answer}";
-            Logger.Error(errorStr);
-            throw new Exception(errorStr);
+            throw new NotImplementedException();
         }
 
-       
+        #region Methods
+
+
+
+
 
         public MeasPoint<Current> GetCurrentLevel()
         {
@@ -164,6 +147,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             WriteLine($"VOLTage:RANGe {inRange}");
             range = inRange== E36xxA_Ranges.LOW? Ranges[0]: Ranges[1];
+            //todo пределы могут быть установлены командой с указанием номинала напряжения... это тоже нужно реализовать
         }
 
         public void SetVoltageLevel(MeasPoint<Voltage> inPoint)
@@ -203,13 +187,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E36xxA_Device _powerSupply;
+            private readonly E36xxA_DeviceBasicFunction _powerSupply;
 
             private readonly string Comand = "CURRent:LEVel:IMMediate:AMPLitude";
 
             #endregion
 
-            public CURRent(E36xxA_Device powerSupply)
+            public CURRent(E36xxA_DeviceBasicFunction powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -224,7 +208,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return returnPoint;
             }
 
-            public E36xxA_Device SetValue(MeasPoint<Current> inPoint)
+            public E36xxA_DeviceBasicFunction SetValue(MeasPoint<Current> inPoint)
             {
                 _powerSupply
                    .WriteLine($"{Comand} {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
@@ -238,13 +222,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E36xxA_Device _powerSupply;
+            private readonly E36xxA_DeviceBasicFunction _powerSupply;
             private readonly string ComandeRange = "VOLTage:RANGe";
             private readonly string ComandtoSetValue = "VOLTage:LEVel:IMMediate:AMPLitude";
 
             #endregion
 
-            public VOLTage(E36xxA_Device powerSupply)
+            public VOLTage(E36xxA_DeviceBasicFunction powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -259,7 +243,7 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return returnPoint;
             }
 
-            public E36xxA_Device SetValue(MeasPoint<Voltage> inPoint)
+            public E36xxA_DeviceBasicFunction SetValue(MeasPoint<Voltage> inPoint)
             {
                 _powerSupply
                    .WriteLine($"{ComandtoSetValue} {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
@@ -273,11 +257,11 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E36xxA_Device _powerSupply;
+            private readonly E36xxA_DeviceBasicFunction _powerSupply;
 
             #endregion
 
-            public MEASure(E36xxA_Device powerSupply)
+            public MEASure(E36xxA_DeviceBasicFunction powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -307,11 +291,11 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E36xxA_Device _powerSupply;
+            private readonly E36xxA_DeviceBasicFunction _powerSupply;
 
             #endregion
 
-            public TRIGger(E36xxA_Device powerSupply)
+            public TRIGger(E36xxA_DeviceBasicFunction powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -337,13 +321,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 throw new Exception(errorStr);
             }
 
-            public E36xxA_Device InitTrigger()
+            public E36xxA_DeviceBasicFunction InitTrigger()
             {
                 _powerSupply.WriteLine("INITiate");
                 return _powerSupply;
             }
 
-            public E36xxA_Device SetTriggerDelay(int millisecond)
+            public E36xxA_DeviceBasicFunction SetTriggerDelay(int millisecond)
             {
                 if (millisecond < 0) millisecond = 0;
                 if (millisecond > 3600) millisecond = 3600;
@@ -353,13 +337,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return _powerSupply;
             }
 
-            public E36xxA_Device SetTriggerSource(TriggerSource inSource)
+            public E36xxA_DeviceBasicFunction SetTriggerSource(TriggerSource inSource)
             {
                 _powerSupply.WriteLine($"TRIGger:SOURce {inSource}");
                 return _powerSupply;
             }
 
-            public E36xxA_Device TRG()
+            public E36xxA_DeviceBasicFunction TRG()
             {
                 _powerSupply.WriteLine("*TRG");
                 return _powerSupply;
@@ -372,12 +356,12 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
         {
             #region Fields
 
-            private readonly E36xxA_Device _powerSupply;
+            private readonly E36xxA_DeviceBasicFunction _powerSupply;
             private readonly string Comand = "OUTPut";
 
             #endregion
 
-            public Output(E36xxA_Device powerSupply)
+            public Output(E36xxA_DeviceBasicFunction powerSupply)
             {
                 _powerSupply = powerSupply;
             }
@@ -392,13 +376,13 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
                 return false;
             }
 
-            public E36xxA_Device OutputOff()
+            public E36xxA_DeviceBasicFunction OutputOff()
             {
                 _powerSupply.WriteLine($"{Comand} off");
                 return _powerSupply;
             }
 
-            public E36xxA_Device OutputOn()
+            public E36xxA_DeviceBasicFunction OutputOn()
             {
                 _powerSupply.WriteLine($"{Comand} on");
                 return _powerSupply;

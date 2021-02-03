@@ -128,7 +128,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\oldMult\Mult_34465_70A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\CalibrMain.cs" />
     <Compile Include="IEEE\Keysight\NoiseFigureAnalyzer\N8975A.cs" />
-    <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E36xxA_Device.cs" />
+    <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E36xxA_DeviceBasicFunction.cs" />
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XX_IPowerSupply.cs" />
     <Compile Include="IEEE\Tektronix\Oscilloscope\TDS_Oscilloscope.cs" />
     <Compile Include="Interface\IMultimetr.cs" />
@@ -189,10 +189,6 @@
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
       <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
       <Name>AP.Utils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
-      <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
-      <Name>ASMC.Data.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
