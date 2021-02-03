@@ -66,7 +66,7 @@ namespace E363xAPlugin
             base(userItemOperation)
         {
             
-            Sheme = new ShemeImage
+            Sheme = new SchemeImage
             {
                 AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",

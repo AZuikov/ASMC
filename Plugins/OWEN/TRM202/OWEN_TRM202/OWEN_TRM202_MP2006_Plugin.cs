@@ -171,7 +171,7 @@ using NLog;
 //            _chanelNumber = chanelNumb;
 //            Name = $"Опробование: 7.3.5.1 проверка исправности измерительных входов канала {_chanelNumber}";
 //            DataRow = new List<IBasicOperation<MeasPoint<Temperature>>>();
-//            Sheme = new ShemeImage
+//            Sheme = new SchemeImage
 //            {
 //                Number = 1,
 //                FileName = $"TRM202_5522A_OprobovanieResistanceTermocouple_chanel{_chanelNumber}.jpg",
@@ -355,7 +355,7 @@ using NLog;
 //            Name =
 //                $"Опробование: 7.3.5.2 Проверка исправности входов, работающих с унифицированным сигналом постоянного тока (канал {_chanelNumber})";
 //            DataRow = new List<IBasicOperation<MeasPoint<Percent>>>();
-//            Sheme = new ShemeImage
+//            Sheme = new SchemeImage
 //            {
 //                Number = 2,
 //                FileName = $"TRM202_Oprobovanie7353_chanel{_chanelNumber}.jpg",
@@ -522,7 +522,7 @@ using NLog;
 //            Name =
 //                $"Опробование: 7.3.5.3 Проверка исправности входов, работающих с унифицированным сигналом постоянного напряжения и термопарами (канал {_chanelNumber})";
 //            DataRow = new List<IBasicOperation<MeasPoint<Percent>>>();
-//            Sheme = new ShemeImage
+//            Sheme = new SchemeImage
 //            {
 //                Number = 2,
 //                FileName = $"TRM202_Oprobovanie7353_chanel{_chanelNumber}.jpg",

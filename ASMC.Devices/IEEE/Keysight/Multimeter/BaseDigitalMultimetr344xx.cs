@@ -3,11 +3,21 @@ using System.Linq;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface.Multimetr.Mode;
+using MathNet.Numerics;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
     public class BaseDigitalMultimetr344xx : IeeeBase, IDigitalMultimetr344xx
     {
+
+        /// <summary>
+        /// Вызов самотестирования.
+        /// </summary>
+        /// <returns></returns>
+        public bool SelfTest()
+        {
+            return this.SelfTest("1");
+        }
         public BaseDigitalMultimetr344xx()
         {
             AcVoltage = new AcVoltMeas(this);

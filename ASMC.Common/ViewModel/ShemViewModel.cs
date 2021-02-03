@@ -10,7 +10,7 @@ namespace ASMC.Common.ViewModel
     public class ShemViewModel : SelectionViewModel
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private ShemeImage _shema;
+        private SchemeImage _shema;
         private string _pathImage;
         private string _text;
 
@@ -19,14 +19,14 @@ namespace ASMC.Common.ViewModel
         {
             if (Shema==null)
             {
-                Shema = Entity as ShemeImage;
+                Shema = Entity as SchemeImage;
             }
         }
 
         /// <summary>
         /// ПОзволяет получать или задавать  отображенную схему.
         /// </summary>
-        public ShemeImage Shema
+        public SchemeImage Shema
         {
             get => _shema;
             set => SetProperty(ref _shema, value, nameof(Shema), ChangedCallback);

@@ -344,15 +344,15 @@ namespace ASMC.Devices.IEEE
         }
 
         /// <summary>
-        /// Вызов тсандартного запроса самотестирования устройства.
+        /// Вызов стандартного запроса самотестирования устройства.
         /// </summary>
-        /// <param name="ValueOfTrue">Значение, которое прибор должен вернуть в случае успешного прохождения тестирования (без символа новой строки).</param>
+        /// <param name="SuccessValue">Значение, которое прибор должен вернуть в случае успешного прохождения тестирования (без символа новой строки).</param>
         /// <returns></returns>
-        public bool SelfTest(string ValueOfTrue)
+        protected bool SelfTest(string SuccessValue)
         {
             string answer = QueryLine(QueryTestSelf);
             answer = answer.TrimEnd('\n');
-            return answer.Equals(ValueOfTrue);
+            return answer.Equals(SuccessValue);
         }
 
         /// <summary>

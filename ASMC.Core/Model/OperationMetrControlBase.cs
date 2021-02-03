@@ -115,7 +115,7 @@ namespace ASMC.Core.Model
         /// <summary>
         /// Позволяет получить или задать последунюю отображенную схему.
         /// </summary>
-        protected ShemeImage LastShem { get; set; }
+        protected SchemeImage LastShem { get; set; }
 
         #endregion
 
@@ -178,7 +178,7 @@ namespace ASMC.Core.Model
             }
         }
 
-        private async void ShowShem(ShemeImage sheme, CancellationTokenSource source)
+        private async void ShowShem(SchemeImage sheme, CancellationTokenSource source)
         {
             if (sheme == null || LastShem?.Number == sheme.Number) return;
             LastShem = sheme;

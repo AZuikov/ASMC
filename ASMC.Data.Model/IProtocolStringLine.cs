@@ -10,7 +10,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Строка подключения (адрес последовательного порта или шины GPIB и т.д.)
         /// </summary>
-        string StringConnection { get; }
+        string StringConnection { get; set; }
 
        
 

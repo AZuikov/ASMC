@@ -264,7 +264,7 @@ namespace TDS_BasePlugin
             _testingChanel = inTestingChanel;
             Name = $"{_testingChanel}: Определение погрешности коэффициентов отклонения";
 
-            Sheme = new ShemeImage
+            Sheme = new SchemeImage
             {
                 AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
@@ -523,7 +523,7 @@ namespace TDS_BasePlugin
         {
             _testingOscillosocopeChanel = oscillosocopeChanel;
             Name = $"{_testingOscillosocopeChanel}: Определение погрешности измерения временных интервалов";
-            Sheme = new ShemeImage
+            Sheme = new SchemeImage
             {
                 AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",
@@ -783,7 +783,7 @@ namespace TDS_BasePlugin
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_2V);
             verticalScalesList.Add(TDS_Oscilloscope.VerticalScale.Scale_5V);
 
-            Sheme = new ShemeImage
+            Sheme = new SchemeImage
             {
                 AssemblyLocalName = inResourceDir,
                 Description = "Измерительная схема",

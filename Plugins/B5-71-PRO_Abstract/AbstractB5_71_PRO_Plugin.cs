@@ -1859,11 +1859,11 @@ namespace B5_71_PRO_Abstract
 
     internal static class ShemeTemplate
     {
-        public static readonly ShemeImage TemplateSheme;
+        public static readonly SchemeImage TemplateSheme;
 
         static ShemeTemplate()
         {
-            TemplateSheme = new ShemeImage
+            TemplateSheme = new SchemeImage
             {
                 Description = "Измерительная схема",
                 Number = 1,

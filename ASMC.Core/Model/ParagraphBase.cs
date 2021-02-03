@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using ASMC.Data.Model;
 using ASMC.Data.Model.Interface;
 using DevExpress.Mvvm;
@@ -95,7 +96,13 @@ namespace ASMC.Core.Model
 
             return dt;
         }
-
+        /// <summary>
+        /// Выполняет инициализацию устройств.
+        /// </summary>
+        protected virtual void ConnectionToDevice()
+        {
+           
+        }
         /// <summary>
         /// Связывает строку подключения из интрефеса пользователя с выбранным прибором. Работает для контрольных и контролируемых
         /// приборов.
@@ -128,6 +135,18 @@ namespace ASMC.Core.Model
             return connect;
         }
 
+        /// <summary>
+        /// ПОзволяет получить устройство.
+        /// </summary>
+        /// <typeparam name="TDevice"></typeparam>
+        /// <returns></returns>
+        protected object GetSelectedDevice<TDevice>()
+        {
+            var device =  UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice is TDevice) ??
+                          UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice is TDevice);
+
+            return device?.SelectedDevice;
+        }
  
 
         private object[] GetProperty()
@@ -144,7 +163,7 @@ namespace ASMC.Core.Model
         public Guid Guid { get; } = Guid.NewGuid();
 
         /// <inheritdoc />
-        public ShemeImage Sheme { get; set; }
+        public SchemeImage Sheme { get; set; }
 
         /// <inheritdoc />
         public int Count
@@ -271,7 +290,10 @@ namespace ASMC.Core.Model
         protected virtual void InitWork(CancellationTokenSource token)
         {
             DataRow?.Clear();
+            ConnectionToDevice();
         }
+       
+
         /// <inheritdoc />
         public bool IsCheked { get; set; }
 
