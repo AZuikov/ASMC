@@ -4,25 +4,27 @@ using ASMC.Devices.IEEE.Fluke.Calibrator;
 
 namespace ASMC.Devices.Interface
 {
-    public interface ICalibrator
+    public interface ICalibrator: IDevice
     {
-        void SetVoltageDc(MeasPoint<Voltage> setPoint);
+    void SetVoltageDc(MeasPoint<Voltage> setPoint);
 
-        void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint);
+    void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint);
 
-        void SetResistance2W(MeasPoint<Resistance> setPoint);
-        void SetResistance4W(MeasPoint<Resistance> setPoint);
+    void SetResistance2W(MeasPoint<Resistance> setPoint);
+    void SetResistance4W(MeasPoint<Resistance> setPoint);
 
-        void SetCurrentDc(MeasPoint<Current> setPoint);
+    void SetCurrentDc(MeasPoint<Current> setPoint);
 
-        void SetCurrentAc(MeasPoint<Current, Frequency> setPoint);
+    void SetCurrentAc(MeasPoint<Current, Frequency> setPoint);
 
-        void SetTemperature(MeasPoint<Temperature> setPoint, CalibrMain.COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unitDegreas);
+    void SetTemperature(MeasPoint<Temperature> setPoint,
+        CalibrMain.COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unitDegreas);
 
-        void SetOutputOn();
+    void SetOutputOn();
 
-        void SetOutputOff();
+    void SetOutputOff();
 
-        void Reset();
+    void Reset();
+    bool IsEnableOutput { get; set; }
     }
 }

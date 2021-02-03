@@ -797,11 +797,11 @@ namespace APPA_107N_109N
 
         internal static class ShemeTemplateDefault
         {
-            public static readonly ShemeImage TemplateSheme;
+            public static readonly SchemeImage TemplateSheme;
 
             static ShemeTemplateDefault()
             {
-                TemplateSheme = new ShemeImage
+                TemplateSheme = new SchemeImage
                 {
                     AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                     Description = "Измерительная схема",
@@ -909,7 +909,7 @@ namespace APPA_107N_109N
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa10XN == null) return;
 
-                IDeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory() + "\\acc\\5522a_1yr_99CF.acc");
+                DeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory() + "\\acc\\5522a_1yr_99CF.acc");
 
                 foreach (var currPoint in VoltPoint)
                 {
@@ -1539,7 +1539,7 @@ namespace APPA_107N_109N
                 OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
                 DataRow = new List<IBasicOperation<MeasPoint<Current>>>();
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -1755,7 +1755,7 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
 
                 Name = OperationRangeNominal.GetStringValue();
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -1805,7 +1805,7 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
 
                 Name = OperationRangeNominal.GetStringValue();
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -1855,7 +1855,7 @@ namespace APPA_107N_109N
                 OperationRangeNominal = inRangeNominal;
 
                 Name = OperationRangeNominal.GetStringValue();
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -1877,7 +1877,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Current>(-18 * BaseMultiplier)
                 };
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -1924,7 +1924,7 @@ namespace APPA_107N_109N
 
                 Name = OperationRangeNominal.GetStringValue() + $" точка {CurrentDciPoint[0].Description}";
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -1972,7 +1972,7 @@ namespace APPA_107N_109N
                 CurrentDciPoint[1] = new MeasPoint<Current>(9);
                 CurrentDciPoint[2] = new MeasPoint<Current>(-9);
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -2034,7 +2034,7 @@ namespace APPA_107N_109N
                 OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
                 DataRow = new List<IBasicOperation<MeasPoint<Current, Frequency>>>();
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -2094,7 +2094,7 @@ namespace APPA_107N_109N
             {
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa10XN == null) return;
-                IDeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory() + "\\acc\\5522a_1yr_99CF.acc");
+                DeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory() + "\\acc\\5522a_1yr_99CF.acc");
 
                 foreach (var curr in AciPoint)
 
@@ -2408,7 +2408,7 @@ namespace APPA_107N_109N
                                                       new Frequency {Value = 3, Multiplier = UnitMultiplier.Kilo})
                 };
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -2456,7 +2456,7 @@ namespace APPA_107N_109N
                 Name = OperationRangeNominal.GetStringValue() +
                        $" точка {AciPoint[0].Description}";
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -2506,7 +2506,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Current, Frequency>(9, new Frequency {Value = 3, Multiplier = UnitMultiplier.Kilo})
                 };
 
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inResourceDir,
                     Description = "Измерительная схема",
@@ -4096,7 +4096,7 @@ namespace APPA_107N_109N
                 OperationRangeNominal = Mult107_109N.RangeNominal.RangeNone;
 
                 DataRow = new List<IBasicOperation<MeasPoint<Temperature>>>();
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     AssemblyLocalName = inDirectory,
                     Description = "Измерительная схема",

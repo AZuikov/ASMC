@@ -143,7 +143,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Предоставляет инструкцию для подключения.
         /// </summary>
-        ShemeImage Sheme { get; }
+        SchemeImage Sheme { get; }
         /// <summary>
         /// предоставляет количество операций в пункте
         /// </summary>
@@ -169,7 +169,7 @@ namespace ASMC.Data.Model
     /// <summary>
     /// предоставляет реализицию отборажаемые схемы.
     /// </summary>
-    public class ShemeImage
+    public class SchemeImage
     {
         #region Fields
 

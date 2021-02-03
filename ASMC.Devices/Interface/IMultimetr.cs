@@ -8,7 +8,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        bool IsEnable { get;  }
+        bool IsEnable { get; set; }
         T Range { get; set; }
         public bool AutoRange { get; set; }
 

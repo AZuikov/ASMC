@@ -50,7 +50,7 @@ namespace E363xAPlugin
                 },
                 new Device
                 {
-                    Devices = new IDeviceRemote[] {new Keysight34401A_Mult()}, Description = "Цифровой мультиметр"
+                    Devices = new IDeviceRemote[] {new Keysight34401A()}, Description = "Цифровой мультиметр"
                 }
             };
 
@@ -112,7 +112,7 @@ namespace E363xAPlugin
                 },
                 new Device
                 {
-                    Devices = new IDeviceRemote[] {new Keysight34401A_Mult()}, Description = "Цифровой мультиметр"
+                    Devices = new IDeviceRemote[] {new Keysight34401A()}, Description = "Цифровой мультиметр"
                 }
             };
 
@@ -587,7 +587,7 @@ namespace E363xAPlugin
         {
             Name =
                 "Определение времени переходного процесса при изменении нагрузки";
-            Sheme = new ShemeImage
+            Sheme = new SchemeImage
             {
                 AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",

@@ -10,7 +10,7 @@ using System.Threading;
 namespace AP.Extension
 {
     
-    public static class IDeviceBaseExtension
+    public static class DeviceBaseExtension
     {
         /// <summary>
         /// Заполняет характеристики метрологические характеристикик устройства, которые загружаются из внешнего файла точности.

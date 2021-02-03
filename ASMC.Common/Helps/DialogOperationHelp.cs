@@ -74,7 +74,7 @@ namespace ASMC.Common.Helps
                 var res = service.Entity as Tuple<string, bool>;
 
              
-                var resinit = initWork().Result;
+                var resinit = await initWork();
                 Logger.Debug($@"{this} {res?.Item2} {res?.Item1} Функция вернула результат {resinit}");
                 Getting = res.Item2 && resinit;
                 Comment = res.Item1;

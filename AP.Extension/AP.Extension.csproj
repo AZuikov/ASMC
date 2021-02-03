@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="MeasPointExtension.cs" />
     <Compile Include="IDeviceBaseExtension.cs" />
+    <Compile Include="ObjectExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -420,7 +420,7 @@ namespace OWEN_TRM202
             {
                 _chanelNumber = inChanelNumber;
                 Name = "Определение основной приведенной погрешности прибора со специализированным входом";
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     Number = _chanelNumber + 10,
                     FileName = $"TRM202_TC_out_chanel{_chanelNumber}.jpg",
@@ -945,7 +945,7 @@ namespace OWEN_TRM202
             {
                 _chanelNumber = inChanelNumber;
                 Name = "Определение основной приведенной погрешности прибора со специализированным входом";
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     Number = _chanelNumber + 5,
                     FileName = $"TRM202_VoltageTermocouple_chanel{_chanelNumber}.jpg",
@@ -1102,7 +1102,7 @@ namespace OWEN_TRM202
             {
                 _chanelNumber = inChanelNumber;
                 Name = "Определение основной приведенной погрешности прибора со специализированным входом";
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     Number = _chanelNumber + 5,
                     FileName = $"TRM202_VoltageTermocouple_chanel{_chanelNumber}.jpg",
@@ -1493,7 +1493,7 @@ namespace OWEN_TRM202
             {
                 _chanelNumber = inChanelNumber;
                 Name = "Определение основной приведенной погрешности прибора со специализированным входом";
-                Sheme = new ShemeImage
+                Sheme = new SchemeImage
                 {
                     Number = _chanelNumber,
                     FileName = $"TRM202_ResistanceTermocouple_chanel{_chanelNumber}.jpg",

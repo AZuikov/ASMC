@@ -748,7 +748,6 @@ namespace mp2192_92.DialIndicator
         }
 
         /// <param name="token"></param>
-        /// <param name="token1"></param>
         /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {

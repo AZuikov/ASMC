@@ -71,7 +71,7 @@ namespace E364xAPlugin
             base(userItemOperation)
         {
             _chanel = inChanel;
-            Sheme = new ShemeImage
+            Sheme = new SchemeImage
             {
                 AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
                 Description = "Измерительная схема",
