@@ -190,10 +190,6 @@
       <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
       <Name>AP.Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">
-      <Project>{f76e5dbb-5041-44c1-9194-6e92af51b314}</Project>
-      <Name>ASMC.Data.Model</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\SiUSBXp.dll">
