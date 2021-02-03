@@ -220,9 +220,9 @@ namespace Multimetr34401A
                         Multimetr.DcVoltage.Setting();
 
                         Multimetr.DcVoltage.Getting();
-                        Multimetr.DcVoltage.Value
+                        //Multimetr.DcVoltage.Value
 
-                        Clalibrator.Setting();
+                        //Clalibrator.Setting();
                     }
                     catch (Exception e)
                     {
@@ -265,7 +265,7 @@ namespace Multimetr34401A
                 
 
           
-            DataRow.Add();
+            //DataRow.Add();
         }
     }
 
