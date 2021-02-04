@@ -107,6 +107,7 @@
     <Compile Include="IEEE\Fluke\Calibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
+    <Compile Include="IEEE\Fluke\Calibrator\ICalibratorFluke.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\BaseDigitalMultimetr344xx.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\IDigitalMultimetr344xx.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\KeysightMultimeters.cs" />
@@ -114,7 +115,7 @@
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E364xADevices.cs" />
     <Compile Include="Interface\ICalibratorMultimeterFlukeBase.cs" />
     <Compile Include="Interface\IDevice.cs" />
-    <Compile Include="Interface\ICalibrator.cs" />
+    <Compile Include="Interface\ICalibratorOld.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
     <Compile Include="IEEE\IEEE_Base.cs" />

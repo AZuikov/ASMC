@@ -8,7 +8,7 @@ using ASMC.Devices.Interface;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib5522A : CalibrMain, ICalibrator
+    public class Calib5522A : CalibrMain, ICalibratorOld
     {
         #region Property
 

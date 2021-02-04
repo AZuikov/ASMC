@@ -10,7 +10,7 @@ using ASMC.Devices.Interface;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calibr_9100: CalibrMain, ICalibrator
+    public class Calibr_9100: CalibrMain, ICalibratorOld
     {
         public Calibr_9100()
         {
@@ -82,5 +82,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             WriteLine(IeeeBase.Reset);
         }
+
     }
 }

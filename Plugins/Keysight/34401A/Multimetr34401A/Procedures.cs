@@ -23,7 +23,7 @@ namespace Multimetr34401A
     /// <typeparam name="TOperation"></typeparam>
     public abstract class OperationBase<TOperation> : ParagraphBase<TOperation>
     {
-        protected ICalibrator Clalibrator { get; set; }
+        protected ICalibratorOld Clalibrator { get; set; }
 
         protected Keysight34401A Multimetr { get; set; }
         /// <inheritdoc />
@@ -62,7 +62,7 @@ namespace Multimetr34401A
 
         protected override void ConnectionToDevice()
         {
-            Clalibrator = (ICalibrator) GetSelectedDevice<ICalibrator>();
+            Clalibrator = (ICalibratorOld) GetSelectedDevice<ICalibratorOld>();
             //Clalibrator.StringConnection = GetStringConnect(Clalibrator);
             Multimetr= (Keysight34401A) GetSelectedDevice<Keysight34401A>();
             Multimetr.StringConnection = GetStringConnect(Multimetr);
@@ -203,6 +203,7 @@ namespace Multimetr34401A
                         Multimetr.DcVoltage.Range = setPoint;
                         Multimetr.DcVoltage.AutoRange = false;
                         Multimetr.DcVoltage.IsEnable = true;
+                        Multimetr.DcVoltage.
                         Clalibrator.SetVoltageDc(setPoint);
                         Clalibrator.IsEnableOutput=true;
                     }

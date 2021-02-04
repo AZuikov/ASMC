@@ -453,7 +453,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibrator;
+                                     .SelectedDevice as ICalibratorOld;
 
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
 
@@ -926,7 +926,7 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected ICalibrator Calibrator;
+            protected ICalibratorOld Calibrator;
             protected MeasPoint<Temperature, Voltage>[] measPoints;
             protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
 
@@ -978,7 +978,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibrator;
+                                     .SelectedDevice as ICalibratorOld;
 
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
 
@@ -1087,7 +1087,7 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected ICalibrator Calibrator;
+            protected ICalibratorOld Calibrator;
             protected MeasPoint<Percent, Voltage>[] measPointsPercentVolt;
             protected RangeStorage<PhysicalRange<Percent>> MeasureRanges;
 
@@ -1164,7 +1164,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibrator;
+                                     .SelectedDevice as ICalibratorOld;
 
                 if (trm202 == null || Calibrator == null || measPointsPercentVolt == null) return;
 
@@ -1555,7 +1555,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibrator;
+                                     .SelectedDevice as ICalibratorOld;
 
                 if (trm202 == null || Calibrator == null || measPointsTempRes == null) return;
 

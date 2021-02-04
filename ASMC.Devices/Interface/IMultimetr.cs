@@ -4,34 +4,7 @@ using ASMC.Devices.Interface.Multimetr.Mode;
 
 namespace ASMC.Devices.Interface.Multimetr.Mode
 {
-    public interface IMeasureMode<T>:IDevice
-    {
-        #region Property
-
-        bool IsEnable { get; set; }
-        T Range { get; set; }
-        public bool AutoRange { get; set; }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Получить измеренное значение физической величины.
-        /// </summary>
-        /// <returns>Значение измеренной физ. величины.</returns>
-        T Value { get; }
-
-        /// <summary>
-        /// Получить измеренное значение физической величины с прибора.
-        /// </summary>
-        /// <returns></returns>
-        public T GetActiveMeasuredValue();
-
-
-
-        #endregion
-    }
+   
 
     public interface IVoltageGroup: IDcVoltage, IAcVoltage
     {
@@ -47,7 +20,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Voltage>> DcVoltage { get; set; }
+        IMeterPhysicalQuantity<Voltage> DcVoltage { get; set; }
 
         #endregion
     }
@@ -56,7 +29,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Voltage>> AcVoltage { get; set; }
+        IMeterPhysicalQuantity<Voltage> AcVoltage { get; set; }
 
         #endregion
     }
@@ -77,7 +50,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Current>> DcCurrent { get; set; }
+        IMeterPhysicalQuantity<Current> DcCurrent { get; set; }
 
         #endregion
     }
@@ -86,7 +59,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Current>> AcCurrent { get; set; }
+        IMeterPhysicalQuantity<Current> AcCurrent { get; set; }
 
         #endregion
     }
@@ -102,7 +75,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Resistance>> Resistance2W { get; set; }
+        IMeterPhysicalQuantity<Resistance> Resistance2W { get; set; }
 
         #endregion
     }
@@ -111,7 +84,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Resistance>> Resistance4W { get; set; }
+        IMeterPhysicalQuantity<Resistance> Resistance4W { get; set; }
 
         #endregion
     }
@@ -120,7 +93,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Capacity>> Capacity { get; set; }
+        IMeterPhysicalQuantity<Capacity> Capacity { get; set; }
 
         #endregion
     }
@@ -129,7 +102,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Frequency>> Frequency { get; set; }
+        IMeterPhysicalQuantity<Frequency> Frequency { get; set; }
 
         #endregion
     }
@@ -138,7 +111,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Time>> Time { get; set; }
+        IMeterPhysicalQuantity<Time> Time { get; set; }
 
         #endregion
     }
@@ -147,7 +120,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeasureMode<MeasPoint<Temperature>> Temperature { get; set; }
+        IMeterPhysicalQuantity<Temperature> Temperature { get; set; }
 
         #endregion
     }
