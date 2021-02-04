@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASMC.Data.Model.PhysicalQuantity;
+﻿using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface;
+using ASMC.Devices.Interface.SourceAndMeter;
 
-namespace ASMC.Devices.Interface.ICalibrator
+namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
     public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistanceGroupForCalibrator, ITemperature
     {

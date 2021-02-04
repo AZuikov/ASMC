@@ -1,6 +1,7 @@
 ﻿using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface.Multimetr.Mode;
+using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.Interface.Multimetr.Mode
 {

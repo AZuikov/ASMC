@@ -4,6 +4,8 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.Multimetr.Mode;
+using ASMC.Devices.Interface.SourceAndMeter;
+using ASMC.Devices.Model;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
@@ -82,7 +84,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public AcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:AC")
             {
-                RangeStorage = new Range();
+                RangeStorage = new RangeDevice();
             }
 
             #region IAcFilter Members
@@ -106,9 +108,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Nested type: Range
 
-            public class Range : RangeBaseDevice<Data.Model.PhysicalQuantity.Current>
+            public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current>
             {
-                public Range()
+                public RangeDevice()
                 {
                     Ranges.Ranges = new[]
                     {
@@ -147,7 +149,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public AcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:AC")
             {
-                RangeStorage = new Range();
+                RangeStorage = new RangeDevice();
             }
 
             #region IAcFilter Members
@@ -170,9 +172,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Nested type: Range
 
-            public class Range : RangeBaseDevice<Voltage>
+            public class RangeDevice : RangeDeviceBase<Voltage>
             {
-                public Range()
+                public RangeDevice()
                 {
                     Ranges.Ranges = new[]
                     {
@@ -193,7 +195,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             public DcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:DC")
             {
-                RangeStorage = new Range();
+                RangeStorage = new RangeDevice();
             }
 
             public override void Setting()
@@ -204,9 +206,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Nested type: Range
 
-            public class Range : RangeBaseDevice<Data.Model.PhysicalQuantity.Current>
+            public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current>
             {
-                public Range()
+                public RangeDevice()
                 {
                     Ranges.Ranges = new[]
                     {
@@ -228,7 +230,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             public DcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:DC")
             {
-                RangeStorage = new Range();
+                RangeStorage = new RangeDevice();
             }
 
             public override void Setting()
@@ -239,9 +241,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Nested type: Range
 
-            public class Range : RangeBaseDevice<Voltage>
+            public class RangeDevice : RangeDeviceBase<Voltage>
             {
-                public Range()
+                public RangeDevice()
                 {
                     Ranges.Ranges = new[]
                     {
@@ -343,7 +345,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             public Resist2W(IeeeBase inDevice) : base(inDevice, "RES")
             {
-                RangeStorage = new Range();
+                RangeStorage = new RangeDevice();
             }
 
             public override void Setting()
@@ -354,9 +356,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Nested type: Range
 
-            public class Range : RangeBaseDevice<Resistance>
+            public class RangeDevice : RangeDeviceBase<Resistance>
             {
-                public Range()
+                public RangeDevice()
                 {
                     Ranges.Ranges = new[]
                     {
@@ -377,7 +379,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             public Resist4W(IeeeBase inDevice) : base(inDevice, "FRES")
             {
-                RangeStorage = new Range();
+                RangeStorage = new RangeDevice();
             }
 
             public override void Setting()
@@ -388,9 +390,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Nested type: Range
 
-            public class Range : RangeBaseDevice<Resistance>
+            public class RangeDevice : RangeDeviceBase<Resistance>
             {
-                public Range()
+                public RangeDevice()
                 {
                     Ranges.Ranges = new[]
                     {

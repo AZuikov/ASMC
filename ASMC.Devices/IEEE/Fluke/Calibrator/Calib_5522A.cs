@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
-using ASMC.Devices.Interface.ICalibrator;
+using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
