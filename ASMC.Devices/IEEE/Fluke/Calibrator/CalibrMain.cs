@@ -9,18 +9,116 @@ using System.Windows.Forms;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface.SourceAndMeter;
 using NLog;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public abstract class CalibrMain: IeeeBase
+    public abstract class CalibrMain: IeeeBase, ICalibratorMultimeterFlukeBase
     {
         protected CalibrMain()
         {
-            Out = new COut(this);
+           DcVoltage = new DcVolt();
+           AcVoltage = new AcVolt();
+           DcCurrent = new DcCurr();
+           AcCurrent = new AcCurr();
+           Resistance2W = new Resist2W();
+
         }
 
-        
+        public ISourcePhysicalQuantity<Voltage> DcVoltage { get; protected set; }
+        public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; protected set; }
+        public ISourcePhysicalQuantity<Current> DcCurrent { get; protected set; }
+        public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; protected set; }
+        public ISourcePhysicalQuantity<Resistance> Resistance2W { get; protected set; }
+
+        public class DcVolt : SimplyPhysicalQuantity<Voltage>
+        {
+            public DcVolt()
+            {
+                
+                
+            }
+        }
+
+        public class AcVolt : ComplexPhysicalQuantity<Voltage, Frequency>
+        {
+
+        }
+
+        public class DcCurr : SimplyPhysicalQuantity<Current>
+        {
+
+        }
+
+        public class AcCurr: ComplexPhysicalQuantity<Current,Frequency>
+        {
+            
+        }
+        public class Resist2W: SimplyPhysicalQuantity<Resistance>
+        {
+            
+        }
+
+        public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> :OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        {
+            public virtual void Getting()
+            {
+                throw new NotImplementedException();
+            }
+
+            public virtual void Setting()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetValue(MeasPoint<TPhysicalQuantity> value)
+            {
+                throw new NotImplementedException();
+            }
+
+
+            public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
+        }
+
+        public abstract class ComplexPhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+        {
+            public virtual void Getting()
+            {
+                throw new NotImplementedException();
+            }
+
+            public virtual void Setting()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetValue(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
+            {
+                throw new NotImplementedException();
+            }
+
+
+            public IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
+        }
+
+        public class OutputControl
+        {
+            public bool IsEnableOutput { get; }
+            public void OutputOn()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OutputOff()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+
+
+        #region RemoveCode
 
         public COut Out { get; }
 
@@ -30,17 +128,17 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public class COut
         {
             public ICommand[] HerzRanges { get; protected internal set; }
-           
+
             private readonly CalibrMain _calibrMain;
 
             public COut(CalibrMain calibrMain)
             {
                 _calibrMain = calibrMain;
                 Set = new CSet(calibrMain);
-               
+
             }
 
-            public  void GetErrors(string SendComand)
+            public void GetErrors(string SendComand)
             {
                 string[] answer = _calibrMain.QueryLine("err?").TrimEnd('\n').Split(',');
                 int errCode;
@@ -65,7 +163,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 _calibrMain.Sinchronization();
                 return _calibrMain;
             }
-            public CSet Set { get;  }
+            public CSet Set { get; }
 
             /// <summary>
             /// Метод очищает регистры памяти калибратора.
@@ -87,13 +185,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     this._calibrMain = calibrMain;
                     Capacitance = new CCapacitance(calibrMain);
                     Resistance = new CResistance(calibrMain);
-                    Voltage= new CVoltage(calibrMain);
+                    Voltage = new CVoltage(calibrMain);
                     Current = new CCurrent(calibrMain);
                     Temperature = new СTemperature(calibrMain);
 
                 }
 
-               
+
 
                 public CVoltage Voltage { get; }
 
@@ -102,7 +200,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// </summary>
                 public class CVoltage
                 {
-                   
+
                     private CalibrMain _calibrMain;
 
                     public CVoltage(CalibrMain calibrMain)
@@ -117,7 +215,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <summary>
                     /// Содержит команды позволяющие устанавливть на выходе переменное напряжение
                     /// </summary>
-                    public class CDc :HelpDeviceBase
+                    public class CDc : HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
                         // todo диапазоны должны грузиться из файла точности
@@ -133,7 +231,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                             };
 
-                            
+
                             _calibrMain = calibrMain;
                             Ranges = new RangeStorage<PhysicalRange<Voltage>>();
                         }
@@ -152,7 +250,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                         public CalibrMain SetValue(MeasPoint<Voltage> inPoint)
                         {
-                            
+
                             string sendLine =
                                 $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}V, 0{JoinValueMult((double)0, UnitMultiplier.None)}HZ";
                             _calibrMain.WriteLine(sendLine);
@@ -190,10 +288,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                                 new Command("U", "мк", 1E-6),
                                 new Command("m", "м", 1E-3),
                                 new Command("", "", 1),
-                                new Command("K", "к", 1E3), 
+                                new Command("K", "к", 1E3),
                                 new Command("M", "М", 1E6)};
 
-                           
+
                         }
 
                         /// <summary>
@@ -206,13 +304,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
 
                         //todo: множитель для частоты нужно уточнить в документации и сделать перечисление
-                        public CalibrMain SetValue(decimal valueVolt,decimal valueHertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
+                        public CalibrMain SetValue(decimal valueVolt, decimal valueHertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
                         {
-                            MeasPoint < Voltage,Frequency > setPoint = new MeasPoint<Voltage, Frequency>(valueVolt, voltMult, new Frequency(){Value = valueHertz, Multiplier = herzMult});
+                            MeasPoint<Voltage, Frequency> setPoint = new MeasPoint<Voltage, Frequency>(valueVolt, voltMult, new Frequency() { Value = valueHertz, Multiplier = herzMult });
                             return SetValue(setPoint);
                         }
 
-                        public CalibrMain SetValue(MeasPoint<Voltage,Frequency> setPoint)
+                        public CalibrMain SetValue(MeasPoint<Voltage, Frequency> setPoint)
                         {
                             string SendComand = $@"OUT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}V, {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}HZ";
                             _calibrMain.WriteLine(SendComand);
@@ -226,8 +324,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <summary>
                         /// Задает измерительные диапазоны.
                         /// </summary>
-                        [AccRange("Mode: Volts SI", typeof(MeasPoint<Voltage,Frequency>))]
-                        public RangeStorage<PhysicalRange<Voltage,Frequency>> Ranges { get; set; }
+                        [AccRange("Mode: Volts SI", typeof(MeasPoint<Voltage, Frequency>))]
+                        public RangeStorage<PhysicalRange<Voltage, Frequency>> Ranges { get; set; }
 
 
                         /// <summary>
@@ -238,13 +336,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                             /// <summary>
                             /// Команда генерации меандра
                             /// </summary>
-                            [StringValue("WAVE SQUARE")] Square ,
+                            [StringValue("WAVE SQUARE")] Square,
                             /// <summary>
                             /// Команда генерации синусойды
                             /// </summary>
                             [StringValue("WAVE SINE")] Sine,
                             [StringValue("WAVE TRI")] Tri,
-                            [StringValue("WAVE TRUNCS")] Truncs 
+                            [StringValue("WAVE TRUNCS")] Truncs
                         }
                     }
 
@@ -276,7 +374,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     {
                         private readonly CalibrMain _calibrMain;
 
-                        
+
 
                         public CDc(CalibrMain calibrMain)
                         {
@@ -291,14 +389,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <summary>
                         /// Задает измерительные диапазоны.
                         /// </summary>
-                        
+
                         public RangeStorage<PhysicalRange<Current>> Ranges { get; set; }
                         /// <summary>
                         /// Генерирует команду установки постоянного тока указной величины
                         /// </summary> 
-                        public CalibrMain SetValue(decimal value, UnitMultiplier mult= UnitMultiplier.None)
+                        public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
                         {
-                            MeasPoint<Current> setPoint = new MeasPoint<Current>(value,mult);
+                            MeasPoint<Current> setPoint = new MeasPoint<Current>(value, mult);
                             return SetValue(setPoint);
                         }
 
@@ -316,10 +414,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <summary>
                     /// Содержит набор команд по установке переменного тока
                     /// </summary>
-                    public class CAc:HelpDeviceBase
+                    public class CAc : HelpDeviceBase
                     {
                         private readonly CalibrMain _calibrMain;
-                                                                                                                                          
+
                         public CAc(CalibrMain calibrMain)
                         {
                             this._calibrMain = calibrMain;
@@ -355,8 +453,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         /// <returns>Сформированую команду</returns>
                         public CalibrMain SetValue(decimal value, decimal hertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
                         {
-                            MeasPoint<Current, Frequency> setPoint = new MeasPoint<Current, Frequency>(value,voltMult, 
-                                                                                                       new Frequency(){Value = hertz, Multiplier = herzMult});
+                            MeasPoint<Current, Frequency> setPoint = new MeasPoint<Current, Frequency>(value, voltMult,
+                                                                                                       new Frequency() { Value = hertz, Multiplier = herzMult });
                             return SetValue(setPoint);
                         }
 
@@ -378,7 +476,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// <summary>
                 /// Содержит набор команд по установке сопротивления
                 /// </summary>
-                public class CResistance :HelpDeviceBase
+                public class CResistance : HelpDeviceBase
                 {
                     private readonly CalibrMain _calibrMain;
 
@@ -443,7 +541,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// <summary>
                 /// Активирует или дезактивирует компенсацию импеданса при 2-проводном или 4-проводном подключении. Компенсация в режиме воспроизведения сопротивления доступна для сопротивлений величиной менее 110 кΩ. Компенсация в режиме воспроизведения емкости доступна для емкостей величиной не менее 110 нФ. 
                 /// </summary>
-                
+
                 public CCapacitance Capacitance { get; }
                 /// <summary>
                 /// Содержит набор команд по установке емкости
@@ -481,7 +579,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <returns></returns>
                     public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
                     {
-                        MeasPoint<Capacity> setPoint = new MeasPoint<Capacity>(value,mult);
+                        MeasPoint<Capacity> setPoint = new MeasPoint<Capacity>(value, mult);
                         return SetValue(setPoint);
                     }
 
@@ -494,23 +592,23 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         return _calibrMain;
                     }
                 }
-                
-                
-                
+
+
+
                 public СTemperature Temperature { get; }
 
 
                 /// <summary>
                 /// Содержит набор команд по установке температуры
                 /// </summary>
-                public class СTemperature:HelpDeviceBase
+                public class СTemperature : HelpDeviceBase
                 {
                     private readonly CalibrMain _calibrMain;
 
                     public СTemperature(CalibrMain calibrMain)
                     {
                         _calibrMain = calibrMain;
-                        Multipliers = new ICommand[]{new Command("", "", 1)};
+                        Multipliers = new ICommand[] { new Command("", "", 1) };
                     }
 
                     [AccRange("Mode: TC B", typeof(MeasPoint<Temperature>))]
@@ -563,14 +661,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                         [StringValue("T")] T,
                         [StringValue("X")] LinOut10mV,
                         [StringValue("Y")] Himidity,
-                        [StringValue("Z")] LinOut1mV 
+                        [StringValue("Z")] LinOut1mV
                     }
                     /// <summary>
                     /// Установка выбранноего типа термо-преобразователя.
                     /// </summary>
                     /// <param name="type">Тип термопары.</param>
                     /// <returns></returns>
-                    public  CalibrMain SetTermoCoupleType(TypeTermocouple type)
+                    public CalibrMain SetTermoCoupleType(TypeTermocouple type)
                     {
                         _calibrMain.WriteLine("TC_TYPE " + type.GetStringValue());
                         return _calibrMain;
@@ -580,7 +678,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// </summary>
                     /// <param name="value">Значение</param>
                     /// <returns></returns>
-                    public  CalibrMain SetValue(decimal value)
+                    public CalibrMain SetValue(decimal value)
                     {
                         MeasPoint<Temperature> setPoint = new MeasPoint<Temperature>(value, UnitMultiplier.None);
                         return SetValue(setPoint);
@@ -588,8 +686,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                     public CalibrMain SetValue(MeasPoint<Temperature> inPoint)
                     {
-                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')} CEL";
-                           
+                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')} CEL";
+
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
                         return _calibrMain;
@@ -614,7 +712,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     /// <returns></returns>
                     public CalibrMain SetExtTempSensor(MeasPoint<Temperature> offsetTemp)
                     {
-                        string SendCommand = $"TC_REF ext, {offsetTemp.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')} CEL";
+                        string SendCommand = $"TC_REF ext, {offsetTemp.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')} CEL";
                         _calibrMain.WriteLine(SendCommand);
                         new COut(_calibrMain).GetErrors(SendCommand);
                         return _calibrMain;
@@ -644,19 +742,19 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             /// Замыкает или размыкает внутренний контакт между защитным заземлением и заземлением корпуса (шасси). 
             /// </summary>
             public enum Earth
-             {  /// <summary>
-                /// подключить клемму передней панели LO к заземлению шасси
-                /// </summary>
+            {  /// <summary>
+               /// подключить клемму передней панели LO к заземлению шасси
+               /// </summary>
                 [StringValue("EARTH TIED")] On,
                 /// <summary>
                 /// отсоединить клемму передней панели LO от заземления шасси
                 /// </summary>
-                [StringValue("EARTH OPEN")]Off
+                [StringValue("EARTH OPEN")] Off
 
-             }
+            }
 
         }
-        
+
         public class RangeCalibr : Command
         {
             /// <summary>
@@ -664,14 +762,17 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             /// </summary>
             public string Postfix { get; }
 
-            public RangeCalibr(string command, string description, double value, string postfix) : base(command+postfix, description, value)
+            public RangeCalibr(string command, string description, double value, string postfix) : base(command + postfix, description, value)
             {
                 Postfix = postfix;
             }
 
         }
 
-        
+        #endregion
+
+
+       
     }
 
     /// <summary>

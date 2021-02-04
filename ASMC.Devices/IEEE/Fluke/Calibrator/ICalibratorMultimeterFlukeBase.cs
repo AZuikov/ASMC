@@ -4,7 +4,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistanceGroupForCalibrator, ITemperature
+    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W
     {
 
     }
@@ -26,22 +26,22 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
     public interface IDcVoltage
     {
-        ISourcePhysicalQuantity<Voltage> DcVoltage { get; set; }
+        ISourcePhysicalQuantity<Voltage> DcVoltage { get;  }
     }
 
     public interface IAcVoltage
     {
-        ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; set; }
+        ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get;  }
     }
 
     public interface IDcCurrent
     {
-        ISourcePhysicalQuantity<Current> DcCurrent { get; set; }
+        ISourcePhysicalQuantity<Current> DcCurrent { get;  }
     }
 
     public interface IAcCurrent
     {
-        ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; set; }
+        ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get;  }
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     /// </summary>
     public interface IResistance2W
     {
-        ISourcePhysicalQuantity<Resistance> Resistance2W { get; set; }
+        ISourcePhysicalQuantity<Resistance> Resistance2W { get;  }
     }
 
     /// <summary>
@@ -57,11 +57,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     /// </summary>
     public interface IResistance4W
     {
-        ISourcePhysicalQuantity<Resistance> Resistance4W { get; set; }
+        ISourcePhysicalQuantity<Resistance> Resistance4W { get;  }
     }
 
     public interface ITemperature
     {
-        ISourcePhysicalQuantity<Temperature> Temperature { get; set; }
+        ISourcePhysicalQuantity<Temperature> Temperature { get; }
     }
 }

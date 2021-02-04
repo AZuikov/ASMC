@@ -9,7 +9,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib5522A : CalibrMain , ICalibratorMultimeterFlukeBase
+    public class Calib5522A : CalibrMain 
     {
         #region Property
 
@@ -117,44 +117,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         }
 
 
-        public ISourcePhysicalQuantity<Voltage> DcVoltage { get; set; }
-        public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; set; }
-        public ISourcePhysicalQuantity<Current> DcCurrent { get; set; }
-        public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; set; }
-        public ISourcePhysicalQuantity<Resistance> Resistance2W { get; set; }
-        public ISourcePhysicalQuantity<Resistance> Resistance4W { get; set; }
-        public ISourcePhysicalQuantity<Temperature> Temperature { get; set; }
-
-        public class NewDcVoltage : ISourcePhysicalQuantity<Voltage>
-        {
-            public void Getting()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void Setting()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void SetValue(MeasPoint<Voltage> value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public bool IsEnableOutput { get; }
-            public void OutputOn()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void OutputOff()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public IRangePhysicalQuantity<Voltage> RangeStorage { get; set; }
-        }
+        
     }
 
 
