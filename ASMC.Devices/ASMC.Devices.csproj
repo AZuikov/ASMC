@@ -113,6 +113,7 @@
     <Compile Include="IEEE\Keysight\Multimeter\KeysightMultimeters.cs" />
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E363xADevices.cs" />
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E364xADevices.cs" />
+    <Compile Include="Interface\ICalibratorMultimeterFlukeBase.cs" />
     <Compile Include="Interface\IDevice.cs" />
     <Compile Include="Interface\ICalibratorOld.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />

@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
+using ASMC.Devices.Interface.ICalibrator;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib5522A : CalibrMain, ICalibratorOld
+    public class Calib5522A : CalibrMain , ICalibratorMultimeterFlukeBase
     {
         #region Property
 
@@ -62,6 +63,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public void SetVoltageDc(MeasPoint<Voltage> setPoint)
         {
             Out.Set.Voltage.Dc.SetValue(setPoint);
+            
         }
 
         public void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint)
@@ -111,6 +113,49 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public void Reset()
         {
             WriteLine(IeeeBase.Reset);
+            
+        }
+
+
+        public ISourcePhysicalQuantity<Voltage> DcVoltage { get; set; }
+        public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; set; }
+        public ISourcePhysicalQuantity<Current> DcCurrent { get; set; }
+        public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; set; }
+        public ISourcePhysicalQuantity<Resistance> Resistance2W { get; set; }
+        public ISourcePhysicalQuantity<Resistance> Resistance4W { get; set; }
+        public ISourcePhysicalQuantity<Temperature> Temperature { get; set; }
+
+        public class NewDcVoltage : ISourcePhysicalQuantity<Voltage>
+        {
+            public void Getting()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void Setting()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void SetValue(MeasPoint<Voltage> value)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public bool IsEnableOutput { get; }
+            public void OutputOn()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void OutputOff()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public IRangePhysicalQuantity<Voltage> RangeStorage { get; set; }
         }
     }
+
+
 }
