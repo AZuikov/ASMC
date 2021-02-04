@@ -59,13 +59,17 @@ namespace ASMC.Devices.Interface
          /// <summary>
          /// Автоматический выбор предела.
          /// </summary>
-         bool AutoRange { get; set; }
+         bool IsAutoRange { get; set; }
     }
 
     public abstract class RangeBaseDevice<TPhysicalQuantity> : IRangePhysicalQuantity<TPhysicalQuantity> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
+        protected RangeBaseDevice()
+        {
+            Ranges = new RangeStorage<PhysicalRange<TPhysicalQuantity>>();
+        }
         /// <inheritdoc />
-        public RangeStorage<PhysicalRange<TPhysicalQuantity>> Ranges { get; protected set; }
+        public RangeStorage<PhysicalRange<TPhysicalQuantity>> Ranges { get;  set; }
 
         /// <inheritdoc />
         public PhysicalRange<TPhysicalQuantity> SelectRange { get; private set; }
@@ -83,7 +87,7 @@ namespace ASMC.Devices.Interface
         }
 
         /// <inheritdoc />
-        public bool AutoRange { get; set; }
+        public bool IsAutoRange { get; set; }
     }
 
     public interface IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
