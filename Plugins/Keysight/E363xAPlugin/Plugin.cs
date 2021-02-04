@@ -279,7 +279,7 @@ namespace E363xAPlugin
             operation.InitWork = async () =>
             {
                 operation.Expected = true;
-                operation.Getting = powerSupply.SelfTest("+0");
+                operation.Getting = powerSupply.SelfTest();
             };
 
             operation.IsGood = () => operation.Getting;
@@ -369,17 +369,17 @@ namespace E363xAPlugin
 
                         ElectonicLoad.OutputOn();
                         Thread.Sleep(3000);
-                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                         digitalMult.DcVoltage.Setting();
-                        var U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        var U1 = digitalMult.DcVoltage.GetValue();
                         operation.Expected = U1;
                         operation.Expected.Round(4);
                         //разрываем цепь
                         ElectonicLoad.OutputOff();
                         Thread.Sleep(3000);
-                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                         digitalMult.DcVoltage.Setting();
-                        var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                        var U2 = digitalMult.DcVoltage.GetValue();
 
                         powerSupply.OutputOff();
                         ElectonicLoad.OutputOff();
@@ -503,9 +503,9 @@ namespace E363xAPlugin
 
                         await Task.Run(() =>
                         {
-                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                             digitalMult.DcVoltage.Setting();
-                             U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                             U1 = digitalMult.DcVoltage.GetValue();
                         });
 
                         UserItemOperation.ServicePack.MessageBox()
@@ -514,9 +514,9 @@ namespace E363xAPlugin
 
                         await Task.Run(() =>
                         {
-                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                             digitalMult.DcVoltage.Setting();
-                            var U2 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                            var U2 = digitalMult.DcVoltage.GetValue();
 
                             powerSupply.OutputOff();
                             ElectonicLoad.OutputOff();
@@ -771,7 +771,7 @@ namespace E363xAPlugin
                         powerSupply.OutputOn();
                         ElectonicLoad.OutputOn();
 
-                        digitalMult.DcVoltage.AutoRange = true;
+                        digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                         digitalMult.DcVoltage.Setting();
 
                         if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17) Thread.Sleep(3000);
@@ -784,7 +784,7 @@ namespace E363xAPlugin
                         {
                             if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
                             {
-                                U1 = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                                U1 = digitalMult.DcVoltage.GetValue();
                                 operation.Expected = U1;
                                 operation.Expected.Round(4);
                                 operation.Getting = U1 - U1;
@@ -795,9 +795,9 @@ namespace E363xAPlugin
                                     Thread.Sleep(15000);
                                 else
                                     Thread.Sleep(108000); //30 минут в нормальном режиме поверки
-                                digitalMult.DcVoltage.AutoRange = true;
+                                digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                                 digitalMult.DcVoltage.Setting();
-                                var Un = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                                var Un = digitalMult.DcVoltage.GetValue();
                                 operation.Expected = Un;
                                 operation.Expected.Round(4);
 
@@ -948,9 +948,9 @@ namespace E363xAPlugin
                             ElectonicLoad.OutputOn();
                             Thread.Sleep(1000);
 
-                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                             digitalMult.DcVoltage.Setting();
-                            var MeasVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                            var MeasVolts = digitalMult.DcVoltage.GetValue();
                             operation.Getting = MeasVolts;
                             operation.Getting.Round(4);
 
@@ -1807,9 +1807,9 @@ namespace E363xAPlugin
                             ElectonicLoad.SetResistanceLevel(resistance);
                             Thread.Sleep(1000);
 
-                            digitalMult.DcVoltage.AutoRange = true;
+                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
                             digitalMult.DcVoltage.Setting();
-                            var StdVolts = digitalMult.DcVoltage.GetActiveMeasuredValue();
+                            var StdVolts = digitalMult.DcVoltage.GetValue();
                             operation.Expected = StdVolts;
                             operation.Expected.Round(4);
 

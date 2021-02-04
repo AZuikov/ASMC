@@ -15,8 +15,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             DcVoltage = new DcVoltMeas(this);
             DcCurrent = new DcCurrentMeas(this);
             AcCurrent = new AcCurrentMeas(this);
-            Resistance4W = new Resistance4W(this);
-            Resistance2W = new Resistance2W(this);
+            Resistance4W = new Resist4W(this);
+            Resistance2W = new Resist2W(this);
         }
 
         #region IDigitalMultimetr344xx Members
@@ -58,325 +58,349 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         {
             return SelfTest("1");
         }
-    }
 
-    public abstract class MeasureFunction344XxBase<T> : IMeterPhysicalQuantity<T>
-        where T : class, IPhysicalQuantity<T>, new()
-    {
-        #region Field
+        #region Nested type: AcCurrentMeas
 
-        protected IeeeBase _device;
-        protected string ActivateThisModeCommand;
-        protected string FunctionName;
-        protected string RangeCommand;
-
-        #endregion
-
-        protected MeasureFunction344XxBase(IeeeBase inDevice, string inFunctionName)
+        public class AcCurrentMeas : MeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>, IAcFilter
         {
-            _device = inDevice;
-            FunctionName = inFunctionName;
-            ActivateThisModeCommand = $"FUNC \"{FunctionName}\"";
-            RangeCommand = $"{FunctionName}:RANG";
-        }
+            #region Property
 
-        #region IMeterPhysicalQuantity<T> Members
+            public Command FilterSet { get; protected set; }
 
-        /// <inheritdoc />
-        public virtual void Getting()
-        {
-            _device.WriteLine($"{ActivateThisModeCommand}");
-            var answer = _device.QueryLine($"{RangeCommand}?");
-            RangeStorage.SetRange(ConvertStringToMeasPoint(answer));
-            GetValue();
-        }
+            #endregion
 
-        /// <inheritdoc />
-        public virtual void Setting()
-        {
-            _device.WriteLine($"{ActivateThisModeCommand}");
-            if (RangeStorage.IsAutoRange)
+            #region Field
+
+            private readonly Command[] _filters =
             {
-                _device.WriteLine($"{RangeCommand}:auto on");
+                new Command("Det:Band 3", "", 3),
+                new Command("Det:Band 20", "", 20),
+                new Command("Det:Band 200", "", 200)
+            };
+
+            #endregion
+
+            public AcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:AC")
+            {
+                RangeStorage = new Range();
             }
-            else
+
+            #region IAcFilter Members
+
+            public void SetFilter(MeasPoint<Frequency> filterFreq)
             {
-                _device.WriteLine($"{RangeCommand}:auto off");
-                _device.WriteLine(
-                    $"{RangeCommand} {RangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+                Array.Sort(_filters);
+                Array.Reverse(_filters);
+
+                FilterSet = _filters.FirstOrDefault(q => q.Value < (double) filterFreq
+                    .MainPhysicalQuantity.GetNoramalizeValueToSi());
             }
-        }
 
-        /// <inheritdoc />
-        public IRangePhysicalQuantity<T> RangeStorage { get; set; }
+            #endregion
 
-        /// <inheritdoc />
-        public MeasPoint<T> GetValue()
-        {
-            _device.WriteLine("TRIG:SOUR BUS");
-            _device.WriteLine("INIT");
-            _device.WriteLine("*TRG");
-            var answer = _device.QueryLine("FETCH?");
-            Value = ConvertStringToMeasPoint(answer);
-            return Value;
-        }
-
-        /// <inheritdoc />
-        public MeasPoint<T> Value { get; private set; }
-
-        #endregion
-
-        #region Methods
-
-        protected MeasPoint<T> ConvertStringToMeasPoint(string value)
-        {
-            var numb = (decimal) HelpDeviceBase.StrToDouble(value);
-            return new MeasPoint<T>();
-        }
-
-        #endregion Methods
-    }
-
-    public class AcVoltMeas : MeasureFunction344XxBase<Voltage>, IAcFilter
-    {
-        #region Property
-
-        public Command FilterSet { get; protected set; }
-
-        #endregion
-
-        #region Field
-
-        private readonly Command[] _filters =
-        {
-            new Command("Det:Band 3", "", 3),
-            new Command("Det:Band 20", "", 20),
-            new Command("Det:Band 200", "", 200)
-        };
-
-        #endregion
-
-        public AcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:AC")
-        {
-            RangeStorage = new Range();
-        }
-
-        #region IAcFilter Members
-
-        public void SetFilter(MeasPoint<Frequency> filterFreq)
-        {
-            Array.Sort(_filters);
-            Array.Reverse(_filters);
-            FilterSet = _filters.FirstOrDefault(q => q.Value < (double) filterFreq
-                .MainPhysicalQuantity.GetNoramalizeValueToSi());
-        }
-
-        #endregion
-
-        public override void Setting()
-        {
-            base.Setting();
-            _device.WriteLine(FilterSet.StrCommand);
-        }
-
-        #region Nested type: Range
-
-        public class Range : RangeBaseDevice<Voltage>
-        {
-            public Range()
+            public override void Setting()
             {
-                Ranges.Ranges = new[]
+                base.Setting();
+                _device.WriteLine(FilterSet.StrCommand);
+            }
+
+            #region Nested type: Range
+
+            public class Range : RangeBaseDevice<Data.Model.PhysicalQuantity.Current>
+            {
+                public Range()
                 {
-                    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),
-                        new MeasPoint<Voltage>(100, UnitMultiplier.Mili))
-                };
+                    Ranges.Ranges = new[]
+                    {
+                        new PhysicalRange<Data.Model.PhysicalQuantity.Current>(
+                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(0),
+                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(100, UnitMultiplier.Mili))
+                    };
+                }
             }
-        }
 
-        #endregion
-    }
-
-    public class AcCurrentMeas : MeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>, IAcFilter
-    {
-        #region Property
-
-        public Command FilterSet { get; protected set; }
-
-        #endregion
-
-        #region Field
-
-        private readonly Command[] _filters =
-        {
-            new Command("Det:Band 3", "", 3),
-            new Command("Det:Band 20", "", 20),
-            new Command("Det:Band 200", "", 200)
-        };
-
-        #endregion
-
-        public AcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:AC")
-        {
-            RangeStorage = new Range();
-        }
-
-        #region IAcFilter Members
-
-        public void SetFilter(MeasPoint<Frequency> filterFreq)
-        {
-            Array.Sort(_filters);
-            Array.Reverse(_filters);
-
-            FilterSet = _filters.FirstOrDefault(q => q.Value < (double) filterFreq
-                .MainPhysicalQuantity.GetNoramalizeValueToSi());
+            #endregion
         }
 
         #endregion
 
-        public override void Setting()
-        {
-            base.Setting();
-            _device.WriteLine(FilterSet.StrCommand);
-        }
+        #region Nested type: AcVoltMeas
 
-        #region Nested type: Range
-
-        public class Range : RangeBaseDevice<Data.Model.PhysicalQuantity.Current>
+        public class AcVoltMeas : MeasureFunction344XxBase<Voltage>, IAcFilter
         {
-            public Range()
+            #region Property
+
+            public Command FilterSet { get; protected set; }
+
+            #endregion
+
+            #region Field
+
+            private readonly Command[] _filters =
             {
-                Ranges.Ranges = new[]
-                {
-                    new PhysicalRange<Data.Model.PhysicalQuantity.Current>(
-                        new MeasPoint<Data.Model.PhysicalQuantity.Current>(0),
-                        new MeasPoint<Data.Model.PhysicalQuantity.Current>(100, UnitMultiplier.Mili))
-                };
-            }
-        }
+                new Command("Det:Band 3", "", 3),
+                new Command("Det:Band 20", "", 20),
+                new Command("Det:Band 200", "", 200)
+            };
 
-        #endregion
-    }
+            #endregion
 
-    public class DcVoltMeas : MeasureFunction344XxBase<Voltage>
-    {
-        public DcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:DC")
-        {
-            RangeStorage = new Range();
-        }
-
-        public override void Setting()
-        {
-            base.Setting();
-            _device.WriteLine($"{FunctionName}:NPLC 100");
-        }
-
-        #region Nested type: Range
-
-        public class Range : RangeBaseDevice<Voltage>
-        {
-            public Range()
+            public AcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:AC")
             {
-                Ranges.Ranges = new[]
-                {
-                    new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),
-                        new MeasPoint<Voltage>(100, UnitMultiplier.Mili))
-                };
+                RangeStorage = new Range();
             }
-        }
 
-        #endregion
-    }
+            #region IAcFilter Members
 
-    public class DcCurrentMeas : MeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>
-    {
-        public DcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:DC")
-        {
-            RangeStorage = new Range();
-        }
-
-        #region IMeterPhysicalQuantity<Current> Members
-
-        public override void Setting()
-        {
-            base.Setting();
-            _device.WriteLine($"{FunctionName}:NPLC 100");
-        }
-
-        #endregion
-
-        #region Nested type: Range
-
-        public class Range : RangeBaseDevice<Data.Model.PhysicalQuantity.Current>
-        {
-            public Range()
+            public void SetFilter(MeasPoint<Frequency> filterFreq)
             {
-                Ranges.Ranges = new[]
-                {
-                    new PhysicalRange<Data.Model.PhysicalQuantity.Current>(
-                        new MeasPoint<Data.Model.PhysicalQuantity.Current>(0),
-                        new MeasPoint<Data.Model.PhysicalQuantity.Current>(100, UnitMultiplier.Mili))
-                };
+                Array.Sort(_filters);
+                Array.Reverse(_filters);
+                FilterSet = _filters.FirstOrDefault(q => q.Value < (double) filterFreq
+                    .MainPhysicalQuantity.GetNoramalizeValueToSi());
             }
+
+            #endregion
+
+            public override void Setting()
+            {
+                base.Setting();
+                _device.WriteLine(FilterSet.StrCommand);
+            }
+
+            #region Nested type: Range
+
+            public class Range : RangeBaseDevice<Voltage>
+            {
+                public Range()
+                {
+                    Ranges.Ranges = new[]
+                    {
+                        new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),
+                            new MeasPoint<Voltage>(100, UnitMultiplier.Mili))
+                    };
+                }
+            }
+
+            #endregion
         }
 
         #endregion
-    }
 
-    public class Resistance2W : MeasureFunction344XxBase<Resistance>
-    {
-        public Resistance2W(IeeeBase inDevice) : base(inDevice, "RES")
+        #region Nested type: DcCurrentMeas
+
+        public class DcCurrentMeas : MeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>
         {
-            RangeStorage = new Range();
-        }
-
-        public override void Setting()
-        {
-            base.Setting();
-            _device.WriteLine($"{FunctionName}:NPLC 100");
-        }
-
-        #region Nested type: Range
-
-        public class Range : RangeBaseDevice<Resistance>
-        {
-            public Range()
+            public DcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:DC")
             {
-                Ranges.Ranges = new[]
-                {
-                    new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0),
-                        new MeasPoint<Resistance>(100, UnitMultiplier.Mili))
-                };
+                RangeStorage = new Range();
             }
+
+            public override void Setting()
+            {
+                base.Setting();
+                _device.WriteLine($"{FunctionName}:NPLC 100");
+            }
+
+            #region Nested type: Range
+
+            public class Range : RangeBaseDevice<Data.Model.PhysicalQuantity.Current>
+            {
+                public Range()
+                {
+                    Ranges.Ranges = new[]
+                    {
+                        new PhysicalRange<Data.Model.PhysicalQuantity.Current>(
+                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(0),
+                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(100, UnitMultiplier.Mili))
+                    };
+                }
+            }
+
+            #endregion
         }
 
         #endregion
-    }
 
-    public class Resistance4W : MeasureFunction344XxBase<Resistance>
-    {
-        public Resistance4W(IeeeBase inDevice) : base(inDevice, "FRES")
+        #region Nested type: DcVoltMeas
+
+        public class DcVoltMeas : MeasureFunction344XxBase<Voltage>
         {
-            RangeStorage = new Range();
-        }
-
-        public override void Setting()
-        {
-            base.Setting();
-            _device.WriteLine($"{FunctionName}:NPLC 100");
-        }
-
-        #region Nested type: Range
-
-        public class Range : RangeBaseDevice<Resistance>
-        {
-            public Range()
+            public DcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:DC")
             {
-                Ranges.Ranges = new[]
-                {
-                    new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0),
-                        new MeasPoint<Resistance>(100, UnitMultiplier.Mili))
-                };
+                RangeStorage = new Range();
             }
+
+            public override void Setting()
+            {
+                base.Setting();
+                _device.WriteLine($"{FunctionName}:NPLC 100");
+            }
+
+            #region Nested type: Range
+
+            public class Range : RangeBaseDevice<Voltage>
+            {
+                public Range()
+                {
+                    Ranges.Ranges = new[]
+                    {
+                        new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),
+                            new MeasPoint<Voltage>(100, UnitMultiplier.Mili))
+                    };
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Nested type: MeasureFunction344XxBase
+
+        public abstract class MeasureFunction344XxBase<T> : IMeterPhysicalQuantity<T>
+            where T : class, IPhysicalQuantity<T>, new()
+        {
+            #region Field
+
+            protected IeeeBase _device;
+            protected string ActivateThisModeCommand;
+            protected string FunctionName;
+            protected string RangeCommand;
+
+            #endregion
+
+            protected MeasureFunction344XxBase(IeeeBase inDevice, string inFunctionName)
+            {
+                _device = inDevice;
+                FunctionName = inFunctionName;
+                ActivateThisModeCommand = $"FUNC \"{FunctionName}\"";
+                RangeCommand = $"{FunctionName}:RANG";
+            }
+
+            #region IMeterPhysicalQuantity<T> Members
+
+            /// <inheritdoc />
+            public virtual void Getting()
+            {
+                _device.WriteLine($"{ActivateThisModeCommand}");
+                var answer = _device.QueryLine($"{RangeCommand}?");
+                RangeStorage.SetRange(ConvertStringToMeasPoint(answer));
+                GetValue();
+            }
+
+            /// <inheritdoc />
+            public virtual void Setting()
+            {
+                _device.WriteLine($"{ActivateThisModeCommand}");
+                if (RangeStorage.IsAutoRange)
+                {
+                    _device.WriteLine($"{RangeCommand}:auto on");
+                }
+                else
+                {
+                    _device.WriteLine($"{RangeCommand}:auto off");
+                    _device.WriteLine(
+                        $"{RangeCommand} {RangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+                }
+            }
+
+            /// <inheritdoc />
+            public IRangePhysicalQuantity<T> RangeStorage { get; set; }
+
+            /// <inheritdoc />
+            public MeasPoint<T> GetValue()
+            {
+                _device.WriteLine("TRIG:SOUR BUS");
+                _device.WriteLine("INIT");
+                _device.WriteLine("*TRG");
+                var answer = _device.QueryLine("FETCH?");
+                Value = ConvertStringToMeasPoint(answer);
+                return Value;
+            }
+
+            /// <inheritdoc />
+            public MeasPoint<T> Value { get; private set; }
+
+            #endregion
+
+            #region Methods
+
+            protected MeasPoint<T> ConvertStringToMeasPoint(string value)
+            {
+                var numb = (decimal) StrToDouble(value);
+                return new MeasPoint<T>();
+            }
+
+            #endregion Methods
+        }
+
+        #endregion
+
+        #region Nested type: Resist2W
+
+        public class Resist2W : MeasureFunction344XxBase<Resistance>
+        {
+            public Resist2W(IeeeBase inDevice) : base(inDevice, "RES")
+            {
+                RangeStorage = new Range();
+            }
+
+            public override void Setting()
+            {
+                base.Setting();
+                _device.WriteLine($"{FunctionName}:NPLC 100");
+            }
+
+            #region Nested type: Range
+
+            public class Range : RangeBaseDevice<Resistance>
+            {
+                public Range()
+                {
+                    Ranges.Ranges = new[]
+                    {
+                        new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0),
+                            new MeasPoint<Resistance>(100, UnitMultiplier.Mili))
+                    };
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Nested type: Resist4W
+
+        public class Resist4W : MeasureFunction344XxBase<Resistance>
+        {
+            public Resist4W(IeeeBase inDevice) : base(inDevice, "FRES")
+            {
+                RangeStorage = new Range();
+            }
+
+            public override void Setting()
+            {
+                base.Setting();
+                _device.WriteLine($"{FunctionName}:NPLC 100");
+            }
+
+            #region Nested type: Range
+
+            public class Range : RangeBaseDevice<Resistance>
+            {
+                public Range()
+                {
+                    Ranges.Ranges = new[]
+                    {
+                        new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0),
+                            new MeasPoint<Resistance>(100, UnitMultiplier.Mili))
+                    };
+                }
+            }
+
+            #endregion
         }
 
         #endregion

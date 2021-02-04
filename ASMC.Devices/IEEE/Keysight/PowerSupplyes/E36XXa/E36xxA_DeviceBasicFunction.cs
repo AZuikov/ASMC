@@ -20,6 +20,10 @@ namespace ASMC.Devices.IEEE.Keysight.PowerSupplyes
 
     public class E36xxA_DeviceBasicFunction : IeeeBase
     {
+        public bool SelfTest()
+        {
+           return this.SelfTest("+0");
+        }
         public enum TriggerSource
         {
             BUS,

@@ -200,10 +200,8 @@ namespace Multimetr34401A
                 {
                     try
                     {
-                        Multimetr.DcVoltage.Range = setPoint;
-                        Multimetr.DcVoltage.AutoRange = false;
-                        Multimetr.DcVoltage.IsEnable = true;
-                        Multimetr.DcVoltage.
+                        Multimetr.DcVoltage.RangeStorage.SetRange(setPoint);
+                        Multimetr.DcVoltage.RangeStorage.IsAutoRange = false;
                         Clalibrator.SetVoltageDc(setPoint);
                         Clalibrator.IsEnableOutput=true;
                     }
