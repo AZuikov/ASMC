@@ -115,12 +115,12 @@ namespace ASMC.Devices.Interface
         bool AutoRange { get; set; }
     }
 
-    public interface ISourcePhysicalQuantityBase : IDevice
+    public interface ISourcePhysicalQuantityBase<T> : IDevice
     {
         /// <summary>
         /// Установить значение величины.
         /// </summary>
-        void SetValue<T>();
+        void SetValue(T value);
 
         bool IsEnableOutput { get; }
         void OutputOn();
@@ -132,7 +132,7 @@ namespace ASMC.Devices.Interface
     /// Интерфейс источника одной физической величины.
     /// </summary>
     /// <typeparam name="TPhysicalQuantity">Физическая величина.</typeparam>
-    public interface ISourcePhysicalQuantity<TPhysicalQuantity> : ISourcePhysicalQuantityBase where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()  
+    public interface ISourcePhysicalQuantity<TPhysicalQuantity> : ISourcePhysicalQuantityBase<MeasPoint<TPhysicalQuantity>> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()  
     {
        public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; set; }
 
@@ -145,7 +145,7 @@ namespace ASMC.Devices.Interface
     /// </summary>
     /// <typeparam name="TPhysicalQuantity">Физическая величина.</typeparam>
     /// /// <typeparam name="TPhysicalQuantity2">Физическая величина.</typeparam>
-    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : ISourcePhysicalQuantityBase where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new() 
+    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : ISourcePhysicalQuantityBase<MeasPoint<TPhysicalQuantity, TPhysicalQuantity2>> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new() 
     {
         IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; set; }
     }
