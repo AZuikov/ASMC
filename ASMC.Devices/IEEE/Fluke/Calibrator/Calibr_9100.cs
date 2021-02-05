@@ -10,7 +10,7 @@ using ASMC.Devices.Interface;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calibr_9100: CalibrMain, ICalibratorOld
+    public class Calibr_9100: CalibrMain//, ICalibratorOld
     {
         public Calibr_9100()
         {
@@ -60,13 +60,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             WriteLine($"Source:freq {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
         }
 
-        public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unit)
-        {
-            WriteLine("Source:func DC");
-            WriteLine($"Source:TEMPerature:THERmocouple:TYPE {typeTermocouple.GetStringValue()}");
-            WriteLine($"Source:TEMPerature:UNITs {unit}");
-            WriteLine($"Source:TEMPerature:THERmocouple {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-        }
+        //public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unit)
+        //{
+        //    WriteLine("Source:func DC");
+        //    WriteLine($"Source:TEMPerature:THERmocouple:TYPE {typeTermocouple.GetStringValue()}");
+        //    WriteLine($"Source:TEMPerature:UNITs {unit}");
+        //    WriteLine($"Source:TEMPerature:THERmocouple {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+        //}
 
         public void SetOutputOn()
         {

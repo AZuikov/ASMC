@@ -62,52 +62,52 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public void SetVoltageDc(MeasPoint<Voltage> setPoint)
         {
-            Out.Set.Voltage.Dc.SetValue(setPoint);
+           //Out.Set.Voltage.Dc.SetValue(setPoint);
             
         }
 
         public void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint)
         {
-            Out.Set.Voltage.Ac.SetValue(setPoint);
+           //Out.Set.Voltage.Ac.SetValue(setPoint);
         }
 
         public void SetResistance2W(MeasPoint<Resistance> setPoint)
         {
-            Out.Set.Resistance.SetValue(setPoint);
-            Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire2);
+           //Out.Set.Resistance.SetValue(setPoint);
+           //Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire2);
 
         }
 
         public void SetResistance4W(MeasPoint<Resistance> setPoint)
         {
-            Out.Set.Resistance.SetValue(setPoint);
-            Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire4);
+           //Out.Set.Resistance.SetValue(setPoint);
+           //Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire4);
         }
 
         public void SetCurrentDc(MeasPoint<Current> setPoint)
         {
-            Out.Set.Current.Dc.SetValue(setPoint);
+           //Out.Set.Current.Dc.SetValue(setPoint);
         }
 
         public void SetCurrentAc(MeasPoint<Current, Frequency> setPoint)
         {
-            Out.Set.Current.Ac.SetValue(setPoint);
+           //Out.Set.Current.Ac.SetValue(setPoint);
         }
 
-        public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unitDegreas)
-        {
-            Out.Set.Temperature.SetTermoCoupleType(typeTermocouple);
-            Out.Set.Temperature.SetValue(setPoint);
-        }
+        //public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unitDegreas)
+        //{
+        //   //Out.Set.Temperature.SetTermoCoupleType(typeTermocouple);
+        //   //Out.Set.Temperature.SetValue(setPoint);
+        //}
 
         public void SetOutputOn()
         {
-            Out.SetOutput(COut.State.On);
+           //Out.SetOutput(COut.State.On);
         }
 
         public void SetOutputOff()
         {
-            Out.SetOutput(COut.State.Off);
+           //Out.SetOutput(COut.State.Off);
         }
 
         public void Reset()

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AP.Utils.Data;
 using ASMC.Data.Model;
@@ -16,13 +17,16 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
     public abstract class CalibrMain: IeeeBase, ICalibratorMultimeterFlukeBase
     {
+       
+
         protected CalibrMain()
         {
-           DcVoltage = new DcVolt();
-           AcVoltage = new AcVolt();
-           DcCurrent = new DcCurr();
-           AcCurrent = new AcCurr();
-           Resistance2W = new Resist2W();
+           
+           DcVoltage = new DcVolt(this);
+           AcVoltage = new AcVolt(this);
+           DcCurrent = new DcCurr(this);
+           AcCurrent = new AcCurr(this);
+           Resistance2W = new Resist2W(this);
 
         }
 
@@ -34,37 +38,68 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
-            public DcVolt()
+            public DcVolt(IeeeBase device) : base(device)
             {
-                
-                
+            }
+
+            protected override string GetUnit()
+            {
+               return "V, 0Hz";
             }
         }
 
         public class AcVolt : ComplexPhysicalQuantity<Voltage, Frequency>
         {
+            public AcVolt(IeeeBase device) : base(device)
+            {
+            }
 
+            protected override string GetMainUnit()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public class DcCurr : SimplyPhysicalQuantity<Current>
         {
+            public DcCurr(IeeeBase device) : base(device)
+            {
+            }
 
+            protected override string GetUnit()
+            {
+                return "A, 0Hz";
+            }
         }
 
         public class AcCurr: ComplexPhysicalQuantity<Current,Frequency>
         {
-            
+            public AcCurr(IeeeBase device) : base(device)
+            {
+            }
+
+            protected override string GetMainUnit()
+            {
+                return "A";
+            }
         }
         public class Resist2W: SimplyPhysicalQuantity<Resistance>
         {
-            
+            public Resist2W(IeeeBase device) : base(device)
+            {
+            }
+
+            protected override string GetUnit()
+            {
+                return "OHM";
+            }
         }
 
         public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> :OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
             public virtual void Getting()
             {
-                throw new NotImplementedException();
+                
             }
 
             public virtual void Setting()
@@ -72,17 +107,41 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 throw new NotImplementedException();
             }
 
+            public MeasPoint<TPhysicalQuantity> Value { get; }
+
             public void SetValue(MeasPoint<TPhysicalQuantity> value)
             {
-                throw new NotImplementedException();
+                _calibrMain.WriteLine($@"OUT " + ConvetrMeasPointToCommand(value));
             }
 
+            protected string ConvetrMeasPointToCommand(MeasPoint<TPhysicalQuantity> value)
+            {
+                MeasPoint<TPhysicalQuantity> point = (MeasPoint<TPhysicalQuantity>) value.Clone();
+                var unit = point.MainPhysicalQuantity.Unit.GetStringValue();
+                point.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
+              return point.Description.Replace(unit, GetUnit()).Replace(',','.');
+            }
+
+            /// <summary>
+            /// Единица измерения физической величины калибратора.
+            /// </summary>
+            /// <returns></returns>
+            protected abstract string GetUnit();
 
             public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
+
+            protected SimplyPhysicalQuantity(IeeeBase device) : base(device)
+            {
+            }
         }
 
         public abstract class ComplexPhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
         {
+            /// <summary>
+            /// Поиск пробела между занчениями двух физических величин.
+            /// </summary>
+            private static readonly Regex regex = new Regex(@"(?!\w) (?=\d)");
+
             public virtual void Getting()
             {
                 throw new NotImplementedException();
@@ -93,636 +152,43 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 throw new NotImplementedException();
             }
 
+            public MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> Value { get; }
+
             public void SetValue(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
             {
-                throw new NotImplementedException();
+                _calibrMain.WriteLine($@"OUT " + ConvetrMeasPointToCommand(value));
             }
+            protected string ConvetrMeasPointToCommand(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
+            {
+                var point = (MeasPoint<TPhysicalQuantity, TPhysicalQuantity2>)value.Clone();
+                var unit = point.MainPhysicalQuantity.Unit.GetStringValue();
+                var unitadd = point.AdditionalPhysicalQuantity.Unit.GetStringValue();
+                point.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
+                point.AdditionalPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
+                string returnCommand = point.Description.Replace(unit, GetMainUnit()).Replace(unitadd, "HZ").Replace(',', '.');
+                returnCommand = regex.Replace(returnCommand, ", ");
+                return returnCommand;
+            }
+
+            /// <summary>
+            /// Единица измерения основной физической величины калибратора.
+            /// </summary>
+            /// <returns></returns>
+            protected abstract string GetMainUnit();
 
 
             public IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
-        }
 
-        public class OutputControl
-        {
-            public bool IsEnableOutput { get; }
-            public void OutputOn()
+            protected ComplexPhysicalQuantity(IeeeBase device) : base(device)
             {
-                throw new NotImplementedException();
-            }
-
-            public void OutputOff()
-            {
-                throw new NotImplementedException();
             }
         }
 
-
-
-        #region RemoveCode
-
-        public COut Out { get; }
-
-        /// <summary>
-        /// Содержит команды позволяющие задовать настройки выхода
-        /// </summary>
-        public class COut
+        public abstract class OutputControl
         {
-            public ICommand[] HerzRanges { get; protected internal set; }
+            protected readonly IeeeBase _calibrMain;
 
-            private readonly CalibrMain _calibrMain;
-
-            public COut(CalibrMain calibrMain)
-            {
-                _calibrMain = calibrMain;
-                Set = new CSet(calibrMain);
-
-            }
-
-            public void GetErrors(string SendComand)
-            {
-                string[] answer = _calibrMain.QueryLine("err?").TrimEnd('\n').Split(',');
-                int errCode;
-                int.TryParse(answer[0], out errCode);
-                ErrorCode Error = (ErrorCode)errCode;
-
-                if (Error != ErrorCode.NoError)
-                {
-                    MessageBox.Show($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
-                    //throw  new Exception($"{_calibrMain.StringConnection}: Команда {SendComand} вызвала ошибку {answer}");
-                }
-            }
-
-            /// <summary>
-            /// Позволяет задать статус выходных клемм калибратора. Вкл/Выкл.
-            /// </summary>
-            /// <param name="state"></param>
-            /// <returns></returns>
-            public CalibrMain SetOutput(State state)
-            {
-                _calibrMain.WriteLine(state.GetStringValue());
-                _calibrMain.Sinchronization();
-                return _calibrMain;
-            }
-            public CSet Set { get; }
-
-            /// <summary>
-            /// Метод очищает регистры памяти калибратора.
-            /// </summary>
-            public void ClearMemoryRegister()
-            {
-                _calibrMain.WriteLine("*cls");
-            }
-
-            /// <summary>
-            /// Содержит команды позволяющие устанавливать значения на выходе
-            /// </summary>
-            public class CSet
-            {
-                private CalibrMain _calibrMain;
-
-                public CSet(CalibrMain calibrMain)
-                {
-                    this._calibrMain = calibrMain;
-                    Capacitance = new CCapacitance(calibrMain);
-                    Resistance = new CResistance(calibrMain);
-                    Voltage = new CVoltage(calibrMain);
-                    Current = new CCurrent(calibrMain);
-                    Temperature = new СTemperature(calibrMain);
-
-                }
-
-
-
-                public CVoltage Voltage { get; }
-
-                /// <summary>
-                /// Содержит команды позволяющие устанавливать напржение на выходе
-                /// </summary>
-                public class CVoltage
-                {
-
-                    private CalibrMain _calibrMain;
-
-                    public CVoltage(CalibrMain calibrMain)
-                    {
-                        this._calibrMain = calibrMain;
-                        Ac = new CAc(calibrMain);
-                        Dc = new CDc(calibrMain);
-                    }
-
-                    public CDc Dc { get; }
-
-                    /// <summary>
-                    /// Содержит команды позволяющие устанавливть на выходе переменное напряжение
-                    /// </summary>
-                    public class CDc : HelpDeviceBase
-                    {
-                        private readonly CalibrMain _calibrMain;
-                        // todo диапазоны должны грузиться из файла точности
-
-                        public CDc(CalibrMain calibrMain)
-                        {
-                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
-                                new Command("N", "н", 1E-9),
-                                new Command("U", "мк", 1E-6),
-                                new Command("M", "м", 1E-3),
-                                new Command("", "", 1),
-                                new Command("K", "к", 1E3)
-
-                            };
-
-
-                            _calibrMain = calibrMain;
-                            Ranges = new RangeStorage<PhysicalRange<Voltage>>();
-                        }
-
-                        /// <summary>
-                        /// Генерирует команду установки постоянного напряжения с указаным значением
-                        /// </summary>
-                        /// <param name="value">Значение величины, которое необходимо установить.</param>
-                        /// <param name = "mult">Множитель единицы измрения (нано, кило, милли и т.д.)</param>
-                        /// <returns>Сформированую команду</returns>
-                        public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
-                        {
-                            MeasPoint<Voltage> setPoint = new MeasPoint<Voltage>(value, mult);
-                            return SetValue(setPoint);
-                        }
-
-                        public CalibrMain SetValue(MeasPoint<Voltage> inPoint)
-                        {
-
-                            string sendLine =
-                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}V, 0{JoinValueMult((double)0, UnitMultiplier.None)}HZ";
-                            _calibrMain.WriteLine(sendLine);
-                            new COut(_calibrMain).GetErrors(sendLine);
-                            _calibrMain.Sinchronization();
-                            return _calibrMain;
-                        }
-
-
-
-                        /// <summary>
-                        /// Здает измерительные диапазоны.
-                        /// </summary>
-                        [AccRange("Mode: Volts", typeof(MeasPoint<Voltage>))]
-                        public RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }
-                    }
-                    public CAc Ac
-                    {
-                        get;
-                    }
-                    /// <summary>
-                    /// Содержит набор команд по установке переменного напряжения
-                    /// </summary>
-                    public class CAc : HelpDeviceBase
-                    {
-                        private readonly CalibrMain _calibrMain;
-                        // todo диапазоны должны грузиться из файла точности
-
-
-                        public CAc(CalibrMain calibrMain)
-                        {
-                            this._calibrMain = calibrMain;
-                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
-                                new Command("N", "н", 1E-9),
-                                new Command("U", "мк", 1E-6),
-                                new Command("m", "м", 1E-3),
-                                new Command("", "", 1),
-                                new Command("K", "к", 1E3),
-                                new Command("M", "М", 1E6)};
-
-
-                        }
-
-                        /// <summary>
-                        /// Генерирует команду становки переменного напряжения с указаным значением
-                        /// </summary>
-                        /// <param name = "value"></param>
-                        /// <param name="hertz">The hertz.</param>
-                        /// <param name="voltMult">Множитель устанавливаемой еденицы напряжения <смотреть cref="UnitMultiplier"/> class.</param>
-                        /// <param name = "herzMult"></param>
-                        /// <returns>Сформированую команду</returns>
-
-                        //todo: множитель для частоты нужно уточнить в документации и сделать перечисление
-                        public CalibrMain SetValue(decimal valueVolt, decimal valueHertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
-                        {
-                            MeasPoint<Voltage, Frequency> setPoint = new MeasPoint<Voltage, Frequency>(valueVolt, voltMult, new Frequency() { Value = valueHertz, Multiplier = herzMult });
-                            return SetValue(setPoint);
-                        }
-
-                        public CalibrMain SetValue(MeasPoint<Voltage, Frequency> setPoint)
-                        {
-                            string SendComand = $@"OUT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}V, {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}HZ";
-                            _calibrMain.WriteLine(SendComand);
-                            new COut(_calibrMain).GetErrors(SendComand);
-
-                            return _calibrMain;
-                        }
-
-
-
-                        /// <summary>
-                        /// Задает измерительные диапазоны.
-                        /// </summary>
-                        [AccRange("Mode: Volts SI", typeof(MeasPoint<Voltage, Frequency>))]
-                        public RangeStorage<PhysicalRange<Voltage, Frequency>> Ranges { get; set; }
-
-
-                        /// <summary>
-                        /// Содержит команды установки формы генерируемого напряжения
-                        /// </summary>
-                        public enum Wave
-                        {
-                            /// <summary>
-                            /// Команда генерации меандра
-                            /// </summary>
-                            [StringValue("WAVE SQUARE")] Square,
-                            /// <summary>
-                            /// Команда генерации синусойды
-                            /// </summary>
-                            [StringValue("WAVE SINE")] Sine,
-                            [StringValue("WAVE TRI")] Tri,
-                            [StringValue("WAVE TRUNCS")] Truncs
-                        }
-                    }
-
-                }
-                public CCurrent Current
-                {
-                    get;
-                }
-                /// <summary>
-                /// Содержит набор команд по установке тока
-                /// </summary>
-                public class CCurrent
-                {
-                    private readonly CalibrMain _calibrMain;
-
-                    public CCurrent(CalibrMain calibrMain)
-                    {
-                        this._calibrMain = calibrMain;
-                        Ac = new CAc(calibrMain);
-                        Dc = new CDc(calibrMain);
-                    }
-
-                    public CDc Dc { get; }
-                    public CAc Ac { get; }
-                    /// <summary>
-                    /// Содержит набор команд по установке постоянного тока
-                    /// </summary>
-                    public class CDc : HelpDeviceBase
-                    {
-                        private readonly CalibrMain _calibrMain;
-
-
-
-                        public CDc(CalibrMain calibrMain)
-                        {
-                            this._calibrMain = calibrMain;
-                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
-                                new Command("N", "н", 1E-9),
-                                new Command("U", "мк", 1E-6),
-                                new Command("M", "м", 1E-3),
-                                new Command("", "", 1),
-                                new Command("K", "к", 1E3)};
-                        }
-                        /// <summary>
-                        /// Задает измерительные диапазоны.
-                        /// </summary>
-
-                        public RangeStorage<PhysicalRange<Current>> Ranges { get; set; }
-                        /// <summary>
-                        /// Генерирует команду установки постоянного тока указной величины
-                        /// </summary> 
-                        public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
-                        {
-                            MeasPoint<Current> setPoint = new MeasPoint<Current>(value, mult);
-                            return SetValue(setPoint);
-                        }
-
-                        public CalibrMain SetValue(MeasPoint<Current> inPoint)
-                        {
-                            string SendComand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}A, 0Hz";
-                            _calibrMain.WriteLine(SendComand);
-                            new COut(_calibrMain).GetErrors(SendComand);
-                            return _calibrMain;
-                        }
-
-
-
-                    }
-                    /// <summary>
-                    /// Содержит набор команд по установке переменного тока
-                    /// </summary>
-                    public class CAc : HelpDeviceBase
-                    {
-                        private readonly CalibrMain _calibrMain;
-
-                        public CAc(CalibrMain calibrMain)
-                        {
-                            this._calibrMain = calibrMain;
-                            Multipliers = new ICommand[]{new Command("N","н", 1E-9),
-                                new Command("N", "н", 1E-9),
-                                new Command("U", "мк", 1E-6),
-                                new Command("M", "м", 1E-3),
-                                new Command("", "", 1),
-                                new Command("K", "к", 1E3)};
-                        }
-
-                        /// <summary>
-                        /// Задает измерительные диапазоны.
-                        /// </summary>
-                        [AccRange("Mode: Amps SI", typeof(MeasPoint<Current, Frequency>))]
-                        public RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
-
-                        /// <summary>
-                        /// Задает измерительные диапазоны.
-                        /// </summary>
-                        [AccRange("Mode: Amps SI HC", typeof(MeasPoint<Current, Frequency>))]
-                        public RangeStorage<PhysicalRange<Current, Frequency>> RangesHiCurrent { get; set; }
-
-
-
-                        /// <summary>
-                        /// Генерирует команду установки переменного тока указной величины и частоты
-                        /// </summary>
-                        /// <param name = "value"></param>
-                        /// <param name="hertz">Устанавливаемое значение частоты</param>
-                        /// <param name = "voltMult"></param>
-                        /// <param name = "herzMult"></param>
-                        /// <returns>Сформированую команду</returns>
-                        public CalibrMain SetValue(decimal value, decimal hertz, UnitMultiplier voltMult, UnitMultiplier herzMult = UnitMultiplier.None)
-                        {
-                            MeasPoint<Current, Frequency> setPoint = new MeasPoint<Current, Frequency>(value, voltMult,
-                                                                                                       new Frequency() { Value = hertz, Multiplier = herzMult });
-                            return SetValue(setPoint);
-                        }
-
-                        public CalibrMain SetValue(MeasPoint<Current, Frequency> inPoint)
-                        {
-                            string SendComand =
-                                $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}A, {inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}HZ";
-                            _calibrMain.WriteLine(SendComand);
-
-                            new COut(_calibrMain).GetErrors(SendComand);
-
-                            return _calibrMain;
-                        }
-                    }
-                }
-
-
-                public CResistance Resistance { get; }
-                /// <summary>
-                /// Содержит набор команд по установке сопротивления
-                /// </summary>
-                public class CResistance : HelpDeviceBase
-                {
-                    private readonly CalibrMain _calibrMain;
-
-                    public CResistance(CalibrMain calibrMain)
-                    {
-                        this._calibrMain = calibrMain;
-                        Multipliers = new ICommand[]{new Command("N","н", 1E-9),
-                            new Command("N", "н", 1E-9),
-                            new Command("U", "мк", 1E-6),
-                            new Command("M", "м", 1E-3),
-                            new Command("", "", 1),
-                            new Command("K", "к", 1E3),
-                            new Command("MA", "М", 1E6),
-                            new Command("G", "Г", 1E9)};
-                    }
-                    public enum Zcomp
-                    {
-                        /// <summary>
-                        /// компенсация 2х проводная
-                        /// </summary>
-                        [StringValue("ZCOMP WIRE2")] Wire2,
-                        /// <summary>
-                        /// компенсация 4х проводная
-                        /// </summary>
-                        [StringValue("ZCOMP WIRE4")] Wire4,
-                        /// <summary>
-                        /// Отключает компенсацию
-                        /// </summary>
-                        [StringValue("ZCOMP NONE")] WireNone
-                    }
-
-                    /// <summary>
-                    /// Установить сопротивление
-                    /// </summary>
-                    /// <param name="value">Значение</param>
-                    /// <param name = "mult"></param>
-                    /// <returns></returns>
-                    public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
-                    {
-                        MeasPoint<Resistance> setPoint = new MeasPoint<Resistance>(value, mult);
-                        return SetValue(setPoint);
-                    }
-
-                    public CalibrMain SetValue(MeasPoint<Resistance> inPoint)
-                    {
-                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}OHM";
-                        _calibrMain.WriteLine(SendCommand);
-                        new COut(_calibrMain).GetErrors(SendCommand);
-
-                        return _calibrMain;
-                    }
-
-                    public CalibrMain SetCompensation(Zcomp compensationMode)
-                    {
-                        _calibrMain.WriteLine($"{compensationMode.GetStringValue()}");
-                        return _calibrMain;
-                    }
-
-
-
-                }
-                /// <summary>
-                /// Активирует или дезактивирует компенсацию импеданса при 2-проводном или 4-проводном подключении. Компенсация в режиме воспроизведения сопротивления доступна для сопротивлений величиной менее 110 кΩ. Компенсация в режиме воспроизведения емкости доступна для емкостей величиной не менее 110 нФ. 
-                /// </summary>
-
-                public CCapacitance Capacitance { get; }
-                /// <summary>
-                /// Содержит набор команд по установке емкости
-                /// </summary>
-                public class CCapacitance : HelpDeviceBase
-                {
-                    private readonly CalibrMain _calibrMain;
-
-                    public CCapacitance(CalibrMain calibrMain)
-                    {
-                        this._calibrMain = calibrMain;
-                        Multipliers = new ICommand[]{new Command("N","н", 1E-9),
-                            new Command("N", "н", 1E-9),
-                            new Command("U", "мк", 1E-6),
-                            new Command("M", "м", 1E-3),
-                            new Command("", "", 1)};
-                    }
-                    public enum Zcomp
-                    {
-                        /// <summary>
-                        /// компенсация 2х проводная
-                        /// </summary>
-                        [StringValue("ZCOMP WIRE2")] Wire2,
-                        /// <summary>
-                        /// Отключает компенсацию
-                        /// </summary>
-                        [StringValue("ZCOMP NONE")] WireNone
-                    }
-
-                    /// <summary>
-                    /// Установить емкость
-                    /// </summary>
-                    /// <param name="value">Значение</param>
-                    /// <param name = "mult"></param>
-                    /// <returns></returns>
-                    public CalibrMain SetValue(decimal value, UnitMultiplier mult = UnitMultiplier.None)
-                    {
-                        MeasPoint<Capacity> setPoint = new MeasPoint<Capacity>(value, mult);
-                        return SetValue(setPoint);
-                    }
-
-                    public CalibrMain SetValue(MeasPoint<Capacity> inPoint)
-                    {
-                        string SendCommand = $@"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString(new CultureInfo("en-US"))}F";
-                        _calibrMain.WriteLine(SendCommand);
-                        new COut(_calibrMain).GetErrors(SendCommand);
-
-                        return _calibrMain;
-                    }
-                }
-
-
-
-                public СTemperature Temperature { get; }
-
-
-                /// <summary>
-                /// Содержит набор команд по установке температуры
-                /// </summary>
-                public class СTemperature : HelpDeviceBase
-                {
-                    private readonly CalibrMain _calibrMain;
-
-                    public СTemperature(CalibrMain calibrMain)
-                    {
-                        _calibrMain = calibrMain;
-                        Multipliers = new ICommand[] { new Command("", "", 1) };
-                    }
-
-                    [AccRange("Mode: TC B", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_B { get; set; }
-
-                    [AccRange("Mode: TC C", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_C { get; set; }
-
-                    [AccRange("Mode: TC E", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_E { get; set; }
-
-                    [AccRange("Mode: TC J", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TCJ { get; set; }
-
-                    [AccRange("Mode: TC K", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_K { get; set; }
-
-                    [AccRange("Mode: TC L", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_L { get; set; }
-
-                    [AccRange("Mode: TC N", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_N { get; set; }
-
-                    [AccRange("Mode: TC R", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_R { get; set; }
-
-                    [AccRange("Mode: TC S", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_S { get; set; }
-
-                    [AccRange("Mode: TC T", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_T { get; set; }
-
-                    [AccRange("Mode: TC U", typeof(MeasPoint<Temperature>))]
-                    public RangeStorage<PhysicalRange<Temperature>> Ranges_TC_U { get; set; }
-
-                    /// <summary>
-                    /// Содержит достумные виды преобразователей
-                    /// </summary>
-                    public enum TypeTermocouple
-                    {
-                        [StringValue("B")] B,
-                        [StringValue("C")] C,
-                        [StringValue("E")] E,
-                        [StringValue("J")] J,
-                        [StringValue("K")] K,
-                        [StringValue("L")] L,
-                        [StringValue("N")] N,
-                        [StringValue("R")] R,
-                        [StringValue("S")] S,
-                        [StringValue("T")] T,
-                        [StringValue("X")] LinOut10mV,
-                        [StringValue("Y")] Himidity,
-                        [StringValue("Z")] LinOut1mV
-                    }
-                    /// <summary>
-                    /// Установка выбранноего типа термо-преобразователя.
-                    /// </summary>
-                    /// <param name="type">Тип термопары.</param>
-                    /// <returns></returns>
-                    public CalibrMain SetTermoCoupleType(TypeTermocouple type)
-                    {
-                        _calibrMain.WriteLine("TC_TYPE " + type.GetStringValue());
-                        return _calibrMain;
-                    }
-                    /// <summary>
-                    /// Установить знаечние температуры
-                    /// </summary>
-                    /// <param name="value">Значение</param>
-                    /// <returns></returns>
-                    public CalibrMain SetValue(decimal value)
-                    {
-                        MeasPoint<Temperature> setPoint = new MeasPoint<Temperature>(value, UnitMultiplier.None);
-                        return SetValue(setPoint);
-                    }
-
-                    public CalibrMain SetValue(MeasPoint<Temperature> inPoint)
-                    {
-                        string SendCommand = $"OUT {inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')} CEL";
-
-                        _calibrMain.WriteLine(SendCommand);
-                        new COut(_calibrMain).GetErrors(SendCommand);
-                        return _calibrMain;
-                    }
-
-                    /// <summary>
-                    /// Подключает внутренний измеритель температуры калибратора. Нужен для компенсации температуры окрю Среды.
-                    /// </summary>
-                    /// <returns></returns>
-                    public CalibrMain SetIntTempSensor()
-                    {
-                        string SendCommand = "TC_REF int";
-                        _calibrMain.WriteLine(SendCommand);
-                        new COut(_calibrMain).GetErrors(SendCommand);
-                        return _calibrMain;
-                    }
-
-                    /// <summary>
-                    /// Устанавливает внешний измеритель температуры окружающей среды, и дает возможность задать смещений по температуре.
-                    /// </summary>
-                    /// <param name="offsetTemp">Смещение температуры в градусах.</param>
-                    /// <returns></returns>
-                    public CalibrMain SetExtTempSensor(MeasPoint<Temperature> offsetTemp)
-                    {
-                        string SendCommand = $"TC_REF ext, {offsetTemp.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')} CEL";
-                        _calibrMain.WriteLine(SendCommand);
-                        new COut(_calibrMain).GetErrors(SendCommand);
-                        return _calibrMain;
-                    }
-                }
-            }
-            /// <summary>
-            /// СОдержит доступные состояние выхода
-            /// </summary>
-            public enum State
+            private enum State
             {
                 /// <summary>
                 /// Включить выход
@@ -733,47 +199,34 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 /// </summary>
                 [StringValue("STBY")] Off
             }
-            public CalibrMain SetEarth(Earth earth)
+            
+            protected OutputControl(IeeeBase device)
             {
-                _calibrMain.WriteLine(earth.GetStringValue());
-                return _calibrMain;
+                _calibrMain = device;
             }
-            /// <summary>
-            /// Замыкает или размыкает внутренний контакт между защитным заземлением и заземлением корпуса (шасси). 
-            /// </summary>
-            public enum Earth
-            {  /// <summary>
-               /// подключить клемму передней панели LO к заземлению шасси
-               /// </summary>
-                [StringValue("EARTH TIED")] On,
-                /// <summary>
-                /// отсоединить клемму передней панели LO от заземления шасси
-                /// </summary>
-                [StringValue("EARTH OPEN")] Off
-
+            public bool IsEnableOutput { get; }
+            public void OutputOn()
+            {
+                _calibrMain.WriteLine(State.On.GetStringValue());
             }
 
+            public void OutputOff()
+            {
+                _calibrMain.WriteLine(State.Off.GetStringValue());
+            }
         }
 
-        public class RangeCalibr : Command
-        {
-            /// <summary>
-            /// Предоставляет окончание, которое необходимо добавить к комманде.
-            /// </summary>
-            public string Postfix { get; }
 
-            public RangeCalibr(string command, string description, double value, string postfix) : base(command + postfix, description, value)
-            {
-                Postfix = postfix;
-            }
 
-        }
-
-        #endregion
+       
 
 
        
     }
+    /// <summary>
+    /// Статусы выхода калбиратора.
+    /// </summary>
+    
 
     /// <summary>
     /// Перечисление кодов ошибок для калибратора 5522А.
