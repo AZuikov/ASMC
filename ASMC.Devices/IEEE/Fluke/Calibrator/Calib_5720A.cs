@@ -8,7 +8,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public Calib_5720A() 
         {
             UserType = "5720A";
-            this.Out.HerzRanges = new ICommand[] { new RangeCalibr(" M", "Множитель мега", 1E6, "HZ"), new RangeCalibr("", "Без множителя", 1E6, "HZ") };
+            //this.Out.HerzRanges = new ICommand[] { new RangeCalibr(" M", "Множитель мега", 1E6, "HZ"), new RangeCalibr("", "Без множителя", 1E6, "HZ") };
         }
         public struct CurrPost
         {

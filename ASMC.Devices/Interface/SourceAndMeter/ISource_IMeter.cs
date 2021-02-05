@@ -5,6 +5,8 @@ namespace ASMC.Devices.Interface.SourceAndMeter
 {
     public interface ISourcePhysicalQuantityBase<T> : IDevice
     {
+        T Value { get; }
+
         /// <summary>
         /// Установить значение величины.
         /// </summary>
