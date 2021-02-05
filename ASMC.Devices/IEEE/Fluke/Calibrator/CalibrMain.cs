@@ -7,31 +7,38 @@ using System.Text.RegularExpressions;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Interface.SourceAndMeter;
+using ASMC.Devices.Model;
+using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public abstract class CalibrMain : IeeeBase, ICalibratorMultimeterFlukeBase
+    public abstract class CalibrMain: ICalibratorMultimeterFlukeBase
     {
+
+        protected IeeeBase Device { get; }
         protected CalibrMain()
         {
-            DcVoltage = new DcVolt(this);
-            AcVoltage = new AcVolt(this);
-            DcCurrent = new DcCurr(this);
-            AcCurrent = new AcCurr(this);
-            Resistance2W = new Resist2W(this);
+            Device= new IeeeBase();
+            DcVoltage = new DcVolt(Device);
+            AcVoltage = new AcVolt(Device);
+            DcCurrent = new DcCurr(Device);
+            AcCurrent = new AcCurr(Device);
+            Resistance2W = new Resist2W(Device);
         }
 
         public ISourcePhysicalQuantity<Voltage> DcVoltage { get; protected set; }
         public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; protected set; }
         public ISourcePhysicalQuantity<Current> DcCurrent { get; protected set; }
         public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; protected set; }
-        public ISourcePhysicalQuantity<Resistance> Resistance2W { get; protected set; }
+        public IResistance Resistance2W { get; protected set; }
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
             public DcVolt(IeeeBase device) : base(device)
             {
+                RangeStorage = new RangeDevice();
             }
 
             #region Methods
@@ -41,29 +48,47 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 return "V, 0Hz";
             }
 
+            
+
             #endregion
+
+            public class RangeDevice : RangeDeviceBase<Voltage>
+            {
+                [AccRange("Mode: Volts", typeof(MeasPoint<Voltage>))]
+                public override RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }
+                
+            }
+
         }
 
         public class AcVolt : ComplexPhysicalQuantity<Voltage, Frequency>
         {
             public AcVolt(IeeeBase device) : base(device)
             {
+                this.RangeStorage = new RangeDevice();
             }
 
             #region Methods
 
             protected override string GetMainUnit()
             {
-                throw new NotImplementedException();
+                return "V";
             }
 
             #endregion
+            public class RangeDevice : RangeDeviceBase<Voltage, Frequency>
+            {
+                [AccRange("Mode: Volts SI", typeof(MeasPoint<Voltage, Frequency>))]
+                public override RangeStorage<PhysicalRange<Voltage, Frequency>> Ranges { get; set; }
+
+            }
         }
 
         public class DcCurr : SimplyPhysicalQuantity<Current>
         {
             public DcCurr(IeeeBase device) : base(device)
             {
+                RangeStorage = new RangeDevice();
             }
 
             #region Methods
@@ -74,12 +99,19 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
 
             #endregion
+            public class RangeDevice : RangeDeviceBase<Current>
+            {
+                [AccRange("Mode: Amps", typeof(MeasPoint<Current>))]
+                public override RangeStorage<PhysicalRange<Current>> Ranges { get; set; }
+
+            }
         }
 
         public class AcCurr : ComplexPhysicalQuantity<Current, Frequency>
         {
             public AcCurr(IeeeBase device) : base(device)
             {
+                RangeStorage  = new RangeDevice();
             }
 
             #region Methods
@@ -90,14 +122,44 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
 
             #endregion
-        }
 
-        public class Resist2W : SimplyPhysicalQuantity<Resistance>
-        {
-            public Resist2W(IeeeBase device) : base(device)
+            public class RangeDevice : RangeDeviceBase<Current, Frequency>
             {
+                public override RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
+
+                [AccRange("Mode: Amps SI", typeof(MeasPoint<Current, Frequency>))]
+                public  RangeStorage<PhysicalRange<Current, Frequency>> Ranges1 { get; set; }
+
+                [AccRange("Mode: Amps SI HC", typeof(MeasPoint<Current, Frequency>))]
+                public  RangeStorage<PhysicalRange<Current, Frequency>> Ranges2 { get; set; }
+
             }
 
+        }
+
+        public class Resist2W : SimplyPhysicalQuantity<Resistance>, IResistance
+        {
+            public enum Zcomp
+            {
+                /// <summary>
+                /// компенсация 2х проводная
+                /// </summary>
+                [StringValue("ZCOMP WIRE2")] Wire2,
+                /// <summary>
+                
+                /// <summary>
+                /// Отключает компенсацию
+                /// </summary>
+                [StringValue("ZCOMP NONE")] WireNone
+            }
+
+            public Resist2W(IeeeBase device) : base(device)
+            {
+                RangeStorage = new RangeDevice();
+                GetCompensationString(Zcomp.Wire2);
+            }
+
+            
             #region Methods
 
             protected override string GetUnit()
@@ -106,10 +168,19 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
 
             #endregion
+
+            public class RangeDevice : RangeDeviceBase<Resistance>
+            {
+                [AccRange("Mode: Ohms 2W", typeof(MeasPoint<Resistance>))]
+                public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
+
+            }
+
+            public Enum CompensationMode { get; set; }
         }
 
-        public abstract class
-            SimplyPhysicalQuantity<TPhysicalQuantity> : OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity>
+        public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> : 
+            OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity>
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
             protected SimplyPhysicalQuantity(IeeeBase device) : base(device)
@@ -143,21 +214,22 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 throw new NotImplementedException();
             }
 
-            public MeasPoint<TPhysicalQuantity> Value { get; }
+            public MeasPoint<TPhysicalQuantity> Value { get; protected set; }
 
-            public void SetValue(MeasPoint<TPhysicalQuantity> value)
+            public virtual void SetValue(MeasPoint<TPhysicalQuantity> value)
             {
+                Value = value;
                 _calibrMain.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                GetErrors();
+                CheckErrors();
             }
 
-            public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
+            
+            public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; protected set; }
         }
 
-        public abstract class
-            ComplexPhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : OutputControl,
-                                                                             ISourcePhysicalQuantity<TPhysicalQuantity,
-                                                                                 TPhysicalQuantity2>
+        public abstract class ComplexPhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : OutputControl,
+                                                                                               ISourcePhysicalQuantity<TPhysicalQuantity,
+                                                                                                   TPhysicalQuantity2>
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
             where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
         {
@@ -203,15 +275,18 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 throw new NotImplementedException();
             }
 
-            public MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> Value { get; }
+            public MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> Value { get; protected set; }
 
-            public void SetValue(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
+            public virtual void SetValue(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
             {
+                Value = value;
                 _calibrMain.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                GetErrors();
+                CheckErrors();
             }
 
-            public IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
+           
+
+            public IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; protected set; }
         }
 
         public abstract class OutputControl
@@ -235,6 +310,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             #region Methods
 
+            public string GetCompensationString(Enum eEnum)
+            {
+                return eEnum.GetStringValue();
+            }
+
             public void OutputOff()
             {
                 _calibrMain.WriteLine(State.Off.GetStringValue());
@@ -245,9 +325,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 _calibrMain.WriteLine(State.On.GetStringValue());
             }
 
+           
+
+
+
             #endregion
 
-            private enum State
+        private enum State
             {
                 /// <summary>
                 /// Включить выход
@@ -262,7 +346,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             #region ErrosCatch
 
-            public void GetErrors()
+            protected void CheckErrors()
             {
                 var listErrors = new List<ErrorCode>();
                 ErrorCode err;
@@ -296,6 +380,15 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             #endregion ErrosCatch
         }
+
+        public string UserType { get; protected set; }
+        public string StringConnection
+        {
+            get => Device.StringConnection;
+            set => Device.StringConnection =value;
+        }
+
+
     }
 
     /// <summary>

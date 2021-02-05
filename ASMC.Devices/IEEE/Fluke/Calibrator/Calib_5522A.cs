@@ -2,122 +2,116 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
+using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib5522A : CalibrMain 
+    public class Calib5522A : CalibrMain , IResistance4W
     {
-        #region Property
-
-        /// <summary>
-        /// Позволяет получить последнюю ошибку из очереди калибратора.
-        /// </summary>
-        public ErrorCode GetLastErrorCode
-        {
-            get
-            {
-                var answer = QueryLine("err?").Split(',');
-                if (answer.Length == 2)
-                {
-                    int.TryParse(answer[0], out var result);
-                    return (ErrorCode) result;
-                }
-
-                return 0;
-            }
-        }
-
-        #endregion
+       
 
         public Calib5522A()
         {
             UserType = "Fluke 5522A";
-            
+            Resistance4W = new Resist4W(Device);
         }
+       
+        public ISourcePhysicalQuantity<Resistance> Resistance4W { get; protected set; }
 
-        #region Methods
-
-        /// <summary>
-        /// Возвращает массив очереди ошибок калибратора. Порядок массива обратный - первый элемент это последняя ошибка.
-        /// </summary>
-        /// <returns></returns>
-        public ErrorCode[] GetErrorStack()
+        public class Resist4W : SimplyPhysicalQuantity<Resistance>
         {
-            var list = new List<ErrorCode>();
-            ErrorCode err;
-            do
+            public enum Zcomp
             {
-                err = GetLastErrorCode;
-                list.Add(err);
-            } while (err != ErrorCode.NoError);
-
-            return list.ToArray();
-        }
-
-        #endregion
-
-        public void SetVoltageDc(MeasPoint<Voltage> setPoint)
-        {
-           //Out.Set.Voltage.Dc.SetValue(setPoint);
+                /// компенсация 4х проводная
+                /// </summary>
+                [StringValue("ZCOMP WIRE4")] Wire4
+            }
             
+            public Resist4W(IeeeBase device) : base(device)
+            {
+            }
+
+            protected override string GetUnit()
+            {
+                return "OHM";
+            }
+
+            public override void SetValue(MeasPoint<Resistance> value)
+            {
+                base.SetValue(value);
+                _calibrMain.WriteLine(GetCompensationString(Zcomp.Wire4));
+                CheckErrors();
+            }
         }
 
-        public void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint)
-        {
-           //Out.Set.Voltage.Ac.SetValue(setPoint);
-        }
 
-        public void SetResistance2W(MeasPoint<Resistance> setPoint)
-        {
-           //Out.Set.Resistance.SetValue(setPoint);
-           //Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire2);
+        #region OldCode
 
-        }
-
-        public void SetResistance4W(MeasPoint<Resistance> setPoint)
-        {
-           //Out.Set.Resistance.SetValue(setPoint);
-           //Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire4);
-        }
-
-        public void SetCurrentDc(MeasPoint<Current> setPoint)
-        {
-           //Out.Set.Current.Dc.SetValue(setPoint);
-        }
-
-        public void SetCurrentAc(MeasPoint<Current, Frequency> setPoint)
-        {
-           //Out.Set.Current.Ac.SetValue(setPoint);
-        }
-
-        //public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unitDegreas)
+        //public void SetVoltageDc(MeasPoint<Voltage> setPoint)
         //{
-        //   //Out.Set.Temperature.SetTermoCoupleType(typeTermocouple);
-        //   //Out.Set.Temperature.SetValue(setPoint);
+        //   //Out.Set.Voltage.Dc.SetValue(setPoint);
+
         //}
 
-        public void SetOutputOn()
-        {
-           //Out.SetOutput(COut.State.On);
-        }
+        //public void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint)
+        //{
+        //   //Out.Set.Voltage.Ac.SetValue(setPoint);
+        //}
 
-        public void SetOutputOff()
-        {
-           //Out.SetOutput(COut.State.Off);
-        }
+        //public void SetResistance2W(MeasPoint<Resistance> setPoint)
+        //{
+        //   //Out.Set.Resistance.SetValue(setPoint);
+        //   //Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire2);
 
-        public void Reset()
-        {
-            WriteLine(IeeeBase.Reset);
-            
-        }
+        //}
+
+        //public void SetResistance4W(MeasPoint<Resistance> setPoint)
+        //{
+        //   //Out.Set.Resistance.SetValue(setPoint);
+        //   //Out.Set.Resistance.SetCompensation(COut.CSet.CResistance.Zcomp.Wire4);
+        //}
+
+        //public void SetCurrentDc(MeasPoint<Current> setPoint)
+        //{
+        //   //Out.Set.Current.Dc.SetValue(setPoint);
+        //}
+
+        //public void SetCurrentAc(MeasPoint<Current, Frequency> setPoint)
+        //{
+        //   //Out.Set.Current.Ac.SetValue(setPoint);
+        //}
+
+        ////public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unitDegreas)
+        ////{
+        ////   //Out.Set.Temperature.SetTermoCoupleType(typeTermocouple);
+        ////   //Out.Set.Temperature.SetValue(setPoint);
+        ////}
+
+        //public void SetOutputOn()
+        //{
+        //   //Out.SetOutput(COut.State.On);
+        //}
+
+        //public void SetOutputOff()
+        //{
+        //   //Out.SetOutput(COut.State.Off);
+        //}
+
+        //public void Reset()
+        //{
+        //    //WriteLine(IeeeBase.Reset);
+
+        //}
 
 
-        
+        #endregion
     }
 
 

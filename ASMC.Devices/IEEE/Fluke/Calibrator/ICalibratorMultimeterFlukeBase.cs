@@ -1,11 +1,12 @@
-﻿using ASMC.Data.Model;
+﻿using System;
+using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, IUserType
+    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, IStringConnect
     {
 
     }
@@ -45,14 +46,18 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get;  }
     }
 
+
     /// <summary>
     /// Интерфейс режима воспроизведения сопротивления калибратора. Двухпроводная схема.
     /// </summary>
     public interface IResistance2W
     {
-        ISourcePhysicalQuantity<Resistance> Resistance2W { get;  }
+        IResistance Resistance2W { get; }
     }
-
+    public interface IResistance : ISourcePhysicalQuantity<Resistance>
+    {
+        Enum CompensationMode { get; set; }
+    }
     /// <summary>
     /// Интерфейс режима воспроизведения сопротивления калибратора. Четырехпроводная схема.
     /// </summary>

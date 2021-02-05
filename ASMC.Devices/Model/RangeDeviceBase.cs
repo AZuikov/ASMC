@@ -12,7 +12,7 @@ namespace ASMC.Devices.Model
             Ranges = new RangeStorage<PhysicalRange<TPhysicalQuantity>>();
         }
         /// <inheritdoc />
-        public RangeStorage<PhysicalRange<TPhysicalQuantity>> Ranges { get;  set; }
+        public virtual RangeStorage<PhysicalRange<TPhysicalQuantity>> Ranges { get;  set; }
 
         /// <inheritdoc />
         public PhysicalRange<TPhysicalQuantity> SelectRange { get; private set; }
@@ -28,6 +28,45 @@ namespace ASMC.Devices.Model
         {
             SelectRange = Ranges.GetRangePointBelong(inRange);
         }
+
+        /// <inheritdoc />
+        public bool IsAutoRange { get; set; }
+    }
+
+    public abstract class RangeDeviceBase<TPhysicalQuantity, TPhysicalQuantity2> : 
+        IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> 
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    {
+        protected RangeDeviceBase()
+        {
+            Ranges = new RangeStorage<PhysicalRange<TPhysicalQuantity, TPhysicalQuantity2>>();
+        }
+        /// <inheritdoc />
+        public virtual RangeStorage<PhysicalRange<TPhysicalQuantity, TPhysicalQuantity2>> Ranges { get; set; }
+
+        /// <inheritdoc />
+        public PhysicalRange<TPhysicalQuantity, TPhysicalQuantity2> SelectRange { get; private set; }
+
+        /// <inheritdoc />
+        public void SetRange(PhysicalRange<TPhysicalQuantity, TPhysicalQuantity2> inRange)
+        {
+            
+            SelectRange = Ranges.Ranges.FirstOrDefault(q => 
+                                                           q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <= inRange.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() &&
+                                                            q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >= inRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi() && 
+                                                            q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <= inRange.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() &&
+                                                            q.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() >= inRange.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+            
+        }
+
+        /// <inheritdoc />
+        public void SetRange(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> inRange)
+        {
+            SelectRange = Ranges.GetRangePointBelong(inRange);
+        }
+
+        public bool AutoRange { get; set; }
 
         /// <inheritdoc />
         public bool IsAutoRange { get; set; }

@@ -49,13 +49,17 @@ namespace OWEN_TRM202
     {
         public OpertionFirsVerf2007(ServicePack servicePack) : base(servicePack)
         {
-            //Необходимые устройства
-            ControlDevices = new IDeviceUi[]
+            var dsds = new Calib5522A();
+            dsds.Resistance2W.Resistance2W.
+            dsds.Resistance2W.Setting();
+           //Необходимые устройства
+           ControlDevices = new IDeviceUi[]
             {
                 new Device
                 {
-                    Devices = new IDeviceRemote[] { new Calibr_9100(), new Calib5522A() },
+                    //Devices = new IDeviceRemote[] { new Calibr_9100(), new Calib5522A() },
                     Description = "Многофунциональный калибратор"
+
                 }
             };
             TestDevices = new IDeviceUi[]

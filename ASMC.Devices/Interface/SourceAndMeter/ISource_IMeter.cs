@@ -25,9 +25,7 @@ namespace ASMC.Devices.Interface.SourceAndMeter
     public interface ISourcePhysicalQuantity<TPhysicalQuantity> : ISourcePhysicalQuantityBase<MeasPoint<TPhysicalQuantity>> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()  
     {
         IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
-
        
-
     }
 
     /// <summary>

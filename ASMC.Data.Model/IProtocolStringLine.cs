@@ -3,18 +3,17 @@ using System.Threading.Tasks;
 
 namespace ASMC.Data.Model
 {
-    public interface IProtocolStringLine : IDeviceRemote
+    public interface IStringConnect: IUserType
     {
-        #region Property
-
         /// <summary>
         /// Строка подключения (адрес последовательного порта или шины GPIB и т.д.)
         /// </summary>
         string StringConnection { get; set; }
+    }
 
-       
-
-        #endregion
+    public interface IProtocolStringLine : IDeviceRemote, IStringConnect
+    {
+        
 
         #region Methods
 

@@ -168,6 +168,9 @@
     <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
     <None Include="ClassDiagram2.cd" />
+    <None Include="ClassDiagram3.cd" />
+    <None Include="ClassDiagram4.cd" />
+    <None Include="ClassDiagram5.cd" />
     <None Include="Port\OWEN\ki_parametry_trm202_105_a3.pdf" />
     <None Include="Port\OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
