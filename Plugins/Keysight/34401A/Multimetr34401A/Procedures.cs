@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +12,10 @@ using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
+using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Interface;
+using DevExpress.Mvvm;
 using NLog;
 
 namespace Multimetr34401A
@@ -23,7 +26,8 @@ namespace Multimetr34401A
     /// <typeparam name="TOperation"></typeparam>
     public abstract class OperationBase<TOperation> : ParagraphBase<TOperation>
     {
-        protected ICalibratorOld Clalibrator { get; set; }
+        private  readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        protected ICalibratorMultimeterFlukeBase Clalibrator { get; set; }
 
         protected Keysight34401A Multimetr { get; set; }
         /// <inheritdoc />
@@ -34,12 +38,38 @@ namespace Multimetr34401A
 
 
         #region Methods
-       /// <summary>
-       /// Создает схему
-       /// </summary>
-       /// <param name="filename">Имя файла с разширением</param>
-       /// <param name="number">Номер схемы</param>
-       /// <returns></returns>
+
+        protected void CatchException(Action action, CancellationTokenSource source)
+        {
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception e)
+            {
+                source.Cancel();
+                Logger.Error(e);
+            }
+        }
+        protected T CatchException<T>(Func<T> action, CancellationTokenSource source)
+        {
+            try
+            {
+               return  action.Invoke();
+            }
+            catch (Exception e)
+            {
+                source.Cancel();
+                Logger.Error(e);
+            }
+            return default;
+        }
+        /// <summary>
+        /// Создает схему
+        /// </summary>
+        /// <param name="filename">Имя файла с разширением</param>
+        /// <param name="number">Номер схемы</param>
+        /// <returns></returns>
         protected SchemeImage ShemeGeneration(string filename, int number)
         {
             return new SchemeImage
@@ -62,7 +92,7 @@ namespace Multimetr34401A
 
         protected override void ConnectionToDevice()
         {
-            Clalibrator = (ICalibratorOld) GetSelectedDevice<ICalibratorOld>();
+            Clalibrator = (ICalibratorMultimeterFlukeBase) GetSelectedDevice<ICalibratorMultimeterFlukeBase>();
             //Clalibrator.StringConnection = GetStringConnect(Clalibrator);
             Multimetr= (Keysight34401A) GetSelectedDevice<Keysight34401A>();
             Multimetr.StringConnection = GetStringConnect(Multimetr);
@@ -165,13 +195,12 @@ namespace Multimetr34401A
             var data = base.FillData();
 
             var dataRow = data.NewRow();
-            if (DataRow.Count == 1)
-            {
-                var dds = DataRow[0] as BasicOperation<bool>;
-                // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting ? "соответствует требованиям" : dds.Comment;
-                data.Rows.Add(dataRow);
-            }
+            if (DataRow.Count != 1) return data;
+
+            var dds = DataRow[0] as BasicOperation<bool>;
+            // ReSharper disable once PossibleNullReferenceException
+            dataRow[0] = dds.Getting ? "соответствует требованиям" : dds.Comment;
+            data.Rows.Add(dataRow);
 
             return data;
         }
@@ -179,7 +208,7 @@ namespace Multimetr34401A
 
     public sealed class DCVoltageError: OperationBase<MeasPoint<Voltage>>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+       
         /// <inheritdoc />
         public DCVoltageError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -198,41 +227,21 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWork = () =>
                 {
-                    try
-                    {
+                  
                         Multimetr.DcVoltage.RangeStorage.SetRange(setPoint);
                         Multimetr.DcVoltage.RangeStorage.IsAutoRange = false;
-                        Clalibrator.SetVoltageDc(setPoint);
-                        Clalibrator.IsEnableOutput=true;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
+                        CatchException(()=>Multimetr.DcVoltage.Setting(), token);
+                        CatchException(() => Clalibrator.DcVoltage.SetValue(setPoint), token);
+                   
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    try
-                    {
-                        Multimetr.DcVoltage.Setting();
-
-                        Multimetr.DcVoltage.Getting();
-                        //Multimetr.DcVoltage.Value
-
-                        //Clalibrator.Setting();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        token.Cancel();
-                    }
-                    finally
-                    {
-                        Clalibrator.IsEnableOutput = false;
-                    }
                    
+                        CatchException(() => Clalibrator.DcVoltage.OutputOn(), token);
+                        operation.Getting = CatchException(() => Multimetr.DcVoltage.GetValue(), token);
+                        CatchException(() => Clalibrator.DcVoltage.OutputOff(), token);
+
                 };
                 operation.CompliteWork = () =>
                 {
@@ -264,7 +273,6 @@ namespace Multimetr34401A
                 
 
           
-            //DataRow.Add();
         }
     }
 

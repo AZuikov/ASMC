@@ -18,7 +18,7 @@ namespace Multimetr34401A
         {
             ControlDevices = new IDeviceUi[]
             {
-                new Device {Devices = new ICalibratorOld[] { new Calib5522A() }},
+                new Device {Devices = new ICalibratorMultimeterFlukeBase[] { new Calib5522A() }},
             };
             TestDevices = new IDeviceUi[]
             {
@@ -32,6 +32,7 @@ namespace Multimetr34401A
             {
                 new VisualInspection(this),
                 new Testing(this),
+                new DCVoltageError(this)
                 /*Остальная часть методики*/
             };
             DocumentName = documentName;

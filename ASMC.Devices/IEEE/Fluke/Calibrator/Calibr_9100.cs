@@ -69,6 +69,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         }
 
         public void SetOutputOn()
+        public void SetOutputOn()
+        public void SetOutputOn()
+        public void SetOutputOn()
+        public void SetOutputOn()ICalibratorMultimeterFlukeB
         {
            WriteLine("outp:stat on");
         }
