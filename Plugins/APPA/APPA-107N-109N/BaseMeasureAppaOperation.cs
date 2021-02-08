@@ -96,7 +96,7 @@ namespace APPA_107N_109N
        protected Mult107_109N appa10XN { get; set; }
 
        //эталон
-       protected Calib5522A flkCalib5522A { get; set; }
+       protected ICalibratorMultimeterFlukeBase flkCalib5522A { get; set; }
 
        #endregion
 

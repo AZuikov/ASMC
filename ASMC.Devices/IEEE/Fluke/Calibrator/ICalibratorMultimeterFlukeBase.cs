@@ -1,4 +1,5 @@
 ﻿using System;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
@@ -6,7 +7,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, IStringConnect
+    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, ICapacity, ITemperature, IStringConnect
     {
 
     }
@@ -46,6 +47,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get;  }
     }
 
+    public interface ICapacity
+    {
+        ISourcePhysicalQuantity<Capacity> Capacity { get; }
+    }
+
+   
+
     public enum Compensation
     {
         CompNone=0,
@@ -75,9 +83,30 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     {
         ISourcePhysicalQuantity<Resistance> Resistance4W { get;  }
     }
-
-    public interface ITemperature
+    public enum TypeTermocouple
     {
-        ISourcePhysicalQuantity<Temperature> Temperature { get; }
+        [StringValue("B")] B,
+        [StringValue("C")] C,
+        [StringValue("E")] E,
+        [StringValue("J")] J,
+        [StringValue("K")] K,
+        [StringValue("L")] L,
+        [StringValue("N")] N,
+        [StringValue("R")] R,
+        [StringValue("S")] S,
+        [StringValue("T")] T,
+        [StringValue("X")] LinOut10mV,
+        [StringValue("Y")] Himidity,
+        [StringValue("Z")] LinOut1mV
+    }
+    public interface ITermocoupleType 
+    {
+        
+        void SetTermoCoupleType(TypeTermocouple typeTermocouple);
+    }
+
+    public interface ITemperature : ISourcePhysicalQuantity<Temperature>
+    {
+        ITermocoupleType Temperature { get; }
     }
 }

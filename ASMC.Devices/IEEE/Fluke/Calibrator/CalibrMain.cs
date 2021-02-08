@@ -17,6 +17,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
     public  class CalibrMain: ICalibratorMultimeterFlukeBase
     {
+        
 
         protected IeeeBase Device { get; }
         protected CalibrMain()
@@ -27,6 +28,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             DcCurrent = new DcCurr(Device);
             AcCurrent = new AcCurr(Device);
             Resistance2W = new Resist2W(Device);
+            Temperature = new Temp(Device);
         }
 
         public ISourcePhysicalQuantity<Voltage> DcVoltage { get; protected set; }
@@ -34,6 +36,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public ISourcePhysicalQuantity<Current> DcCurrent { get; protected set; }
         public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; protected set; }
         public IResistance Resistance2W { get; protected set; }
+        public ISourcePhysicalQuantity<Capacity> Capacity { get; protected set; }
+        public ITemperature Temperature { get; protected set; }
+        
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
@@ -140,6 +145,62 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         }
 
+        public class Cap: SimplyPhysicalQuantity<Capacity>
+        {
+            public Cap(IeeeBase device) : base(device)
+            {
+                RangeStorage = new RangeDevice();
+            }
+
+            protected override string GetUnit()
+            {
+                return "F";
+            }
+
+            public class RangeDevice : RangeDeviceBase<Capacity>
+            {
+                #region Property
+
+                [AccRange("Mode: Farads 2W", typeof(MeasPoint<Capacity>))]
+                public override RangeStorage<PhysicalRange<Capacity>> Ranges { get; set; }
+
+                #endregion
+            }
+        }
+
+        public class Temp : SimplyPhysicalQuantity<Temperature>, ITemperature, ITermocoupleType
+        {
+            public Temp(IeeeBase device) : base(device)
+            {
+            }
+
+            #region Methods
+
+            protected override string GetUnit()
+            {
+                return "CEL";
+            }
+
+            #endregion
+
+            public class RangeDevice : RangeDeviceBase<Temperature>
+            {
+                #region Property
+
+                [AccRange("Mode: Amps", typeof(MeasPoint<Temperature>))]
+                public override RangeStorage<PhysicalRange<Temperature>> Ranges { get; set; }
+
+                #endregion
+            }
+
+            public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
+            {
+                _calibrMain.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
+                CheckErrors();
+            }
+
+            public ITermocoupleType Temperature { get; }
+        }
 
         public abstract class Resist : SimplyPhysicalQuantity<Resistance>, IResistance
         {
@@ -151,7 +212,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public ICommand[] CompensationMode { get; set; }
             public void SetCompensation(Compensation compMode)
             {
-                throw new NotImplementedException();
+                var command = CompensationMode.FirstOrDefault(q => (int)q.Value == (int) compMode);
+                _calibrMain.WriteLine(command.StrCommand);
+                CheckErrors();
             }
         }
         public class Resist2W :Resist, IResistance2W
@@ -409,6 +472,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         }
 
 
+       
     }
 
     /// <summary>

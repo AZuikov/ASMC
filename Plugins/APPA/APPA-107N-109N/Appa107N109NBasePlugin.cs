@@ -408,7 +408,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.DcVoltage.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN
@@ -469,13 +469,12 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            flkCalib5522A.Out.Set.Voltage.Dc.SetValue(currPoint);
-                            flkCalib5522A.Out.ClearMemoryRegister();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            flkCalib5522A.DcVoltage.SetValue(currPoint);
+                            flkCalib5522A.DcVoltage.OutputOn();
                             Thread.Sleep(2000);
                             //измеряем
                             var measurePoint = (decimal)appa10XN.GetValue();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.DcVoltage.OutputOff();
 
                             var mantisa =
                                 MathStatistics
@@ -521,7 +520,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.DcVoltage.OutputOn();
                         }
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -922,7 +921,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.AcVoltage.OutputOff(); });
 
                             var testMeasureModde = appa10XN.GetMeasureMode;
                             while (OperMeasureMode !=
@@ -983,16 +982,16 @@ namespace APPA_107N_109N
                         try
                         {
                             decimal measurePoint = 0;
-                            bool isRealPoint = flkCalib5522A.Out.Set.Voltage.Ac.Ranges.IsPointBelong(currPoint);
+                            
+                            bool isRealPoint = flkCalib5522A.AcVoltage.RangeStorage.Ranges.IsPointBelong(currPoint);
                             if (isRealPoint)
                             {
-                                flkCalib5522A.Out.Set.Voltage.Ac.SetValue(currPoint);
-                                flkCalib5522A.Out.ClearMemoryRegister();
-                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                                flkCalib5522A.AcVoltage.SetValue(currPoint);
+                                flkCalib5522A.AcVoltage.OutputOn();
                                 Thread.Sleep(2000);
                                 //измеряем
                                 measurePoint = (decimal)appa10XN.GetValue();
-                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                                flkCalib5522A.AcVoltage.OutputOff();
                             }
 
 
@@ -1050,7 +1049,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.AcVoltage.OutputOff();
                         }
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -1609,7 +1608,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.DcCurrent.OutputOff(); });
 
                             var testMode = appa10XN.GetMeasureMode;
                             while (OperMeasureMode !=
@@ -2108,7 +2107,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.AcCurrent.OutputOff(); });
 
                             var testMode = appa10XN.GetMeasureMode;
                             while (OperMeasureMode !=
@@ -2632,7 +2631,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.AcCurrent.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -3374,7 +3373,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.Resistance2W.OutputOff();});
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -3624,7 +3623,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.Capacity.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -3667,8 +3666,8 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            flkCalib5522A.Out.Set.Capacitance.SetValue(currPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            flkCalib5522A.Capacity.SetValue(currPoint);
+                            flkCalib5522A.Capacity.OutputOn();
                             if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili &&
                                 appa10XN.GetRangeNominal == Mult107_109N.RangeNominal.Range40mF)
                                 Thread.Sleep(90000);
@@ -3680,7 +3679,7 @@ namespace APPA_107N_109N
 
                             //измеряем
                             var measurePoint = (decimal)appa10XN.GetSingleValue();
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.Capacity.OutputOff();
 
                             var mantisa =
                                 MathStatistics
@@ -3719,7 +3718,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.Capacity.OutputOff();
                         }
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -4166,7 +4165,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off); });
+                            await Task.Run(() => { flkCalib5522A.Temperature.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))

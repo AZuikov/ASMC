@@ -1,47 +1,37 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.IEEE.Keysight.Multimeter;
-using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
-using Current = ASMC.Data.Model.PhysicalQuantity.Current;
+using ASMC.Devices.Model;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib5522A : CalibrMain , IResistance4W
+    public class Calib5522A : CalibrMain, IResistance4W
     {
-       
-
         public Calib5522A()
         {
             UserType = "Fluke 5522A";
             Resistance4W = new Resist4W(Device);
         }
-       
+
         public ISourcePhysicalQuantity<Resistance> Resistance4W { get; protected set; }
+
+        public ISourcePhysicalQuantity<Temperature> Temperature { get; }
 
         public class Resist4W : Resist
         {
-            
-            
             public Resist4W(IeeeBase device) : base(device)
             {
+                RangeStorage = new RangeDevice();
                 CompensationMode = new ICommand[]
                 {
-                    
-                    new Command("ZCOMP WIRE4","4х проводная компенсация",4),
+                    new Command("ZCOMP WIRE4", "4х проводная компенсация", 4)
                 };
             }
 
-            protected override string GetUnit()
-            {
-                return "OHM";
-            }
+            #region Methods
 
             public override void SetValue(MeasPoint<Resistance> value)
             {
@@ -49,8 +39,26 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 _calibrMain.WriteLine(CompensationMode[0].StrCommand);
                 CheckErrors();
             }
+
+            protected override string GetUnit()
+            {
+                return "OHM";
+            }
+
+            #endregion
+
+            public class RangeDevice : RangeDeviceBase<Resistance>
+            {
+                #region Property
+
+                [AccRange("Mode: Ohms 4W", typeof(MeasPoint<Resistance>))]
+                public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
+
+                #endregion
+            }
         }
 
+      
 
         #region OldCode
 
@@ -110,9 +118,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         //}
 
-
-        #endregion
+        #endregion OldCode
     }
-
-
 }
