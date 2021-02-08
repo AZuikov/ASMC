@@ -125,12 +125,12 @@ namespace ASMC.Core.Model
         /// Запускает все операции асинхронно
         /// </summary>
         /// <returns></returns>
-        public async Task StartWork(CancellationTokenSource source)
+        public async Task StartWorkAsync(CancellationTokenSource source)
         {
             var count = SelectedOperation.UserItemOperation.Sum(CountNode);
 
             foreach (var userItemOperationBase in SelectedOperation.UserItemOperation)
-                 await ClrNode(userItemOperationBase);
+                 await ClrNodeAsync(userItemOperationBase);
 
             int CountNode(IUserItemOperationBase userItemOperationBase)
             {
@@ -155,13 +155,13 @@ namespace ASMC.Core.Model
                 return cou;
             }
 
-            async Task ClrNode(IUserItemOperationBase userItemOperationBase)
+            async Task ClrNodeAsync(IUserItemOperationBase userItemOperationBase)
             {
                 try
                 {
                     if (userItemOperationBase.IsCheked || !IsManual)
                     {
-                        ShowShem(userItemOperationBase.Sheme, source);
+                        ShowShemAsync(userItemOperationBase.Sheme, source);
                         await userItemOperationBase.StartWork(source);
                     }
                 }
@@ -174,11 +174,11 @@ namespace ASMC.Core.Model
 
                 var tree = (ITreeNode) userItemOperationBase;
                 foreach (var node in tree.Nodes) 
-                   await  ClrNode((IUserItemOperationBase) node);
+                   await  ClrNodeAsync((IUserItemOperationBase) node);
             }
         }
 
-        private async void ShowShem(SchemeImage sheme, CancellationTokenSource source)
+        private async void ShowShemAsync(SchemeImage sheme, CancellationTokenSource source)
         {
             if (sheme == null || LastShem?.Number == sheme.Number) return;
             LastShem = sheme;
@@ -198,7 +198,7 @@ namespace ASMC.Core.Model
                     source.Cancel(true);
                 }
                 Logger.Debug($@"Была показана схема №{sheme.Number}");
-            } while (!await sheme.ChekShem());
+            } while (!await sheme.ChekShemAsync());
         }
 
         #endregion

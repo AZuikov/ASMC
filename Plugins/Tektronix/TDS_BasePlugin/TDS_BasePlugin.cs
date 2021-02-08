@@ -145,7 +145,7 @@ namespace TDS_BasePlugin
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-            operation.InitWork = () =>
+            operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
@@ -159,7 +159,7 @@ namespace TDS_BasePlugin
                 return Task.CompletedTask;
             };
 
-            operation.CompliteWork = () => { return Task.FromResult(true); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
 
@@ -210,7 +210,7 @@ namespace TDS_BasePlugin
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-            operation.InitWork = () =>
+            operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Опробование";
@@ -224,7 +224,7 @@ namespace TDS_BasePlugin
                 return Task.CompletedTask;
             };
 
-            operation.CompliteWork = () => { return Task.FromResult(true); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
 
@@ -354,7 +354,7 @@ namespace TDS_BasePlugin
             foreach (var currScale in verticalScalesList)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -476,7 +476,7 @@ namespace TDS_BasePlugin
                         someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
                     }
                 };
-                operation.CompliteWork = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWorkAsync = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Voltage>>)operation.Clone());
@@ -586,7 +586,7 @@ namespace TDS_BasePlugin
             foreach (var currScale in ScaleTolDict.Keys)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Time>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -683,7 +683,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.CompliteWork = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWorkAsync = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<MeasPoint<Time>>)operation.Clone());
@@ -853,7 +853,7 @@ namespace TDS_BasePlugin
                     verticalScale == TDS_Oscilloscope.VerticalScale.Scale_20mV) continue;
 
                 var operation = new BasicOperationVerefication<object>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -943,7 +943,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.CompliteWork = () => Task.FromResult(true);
+                operation.CompliteWorkAsync = () => Task.FromResult(true);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
                                 : (BasicOperationVerefication<object>)operation.Clone());

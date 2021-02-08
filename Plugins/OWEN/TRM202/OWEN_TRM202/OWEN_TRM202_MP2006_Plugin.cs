@@ -218,9 +218,9 @@ using NLog;
 //            return $"ITBmOprobovanie7351{_chanelNumber}";
 //        }
 
-//        protected override void InitWork(CancellationTokenSource token)
+//        protected override void InitWorkAsync(CancellationTokenSource token)
 //        {
-//            base.InitWork(token);
+//            base.InitWorkAsync(token);
 
 //            trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
 //                                       .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
@@ -233,7 +233,7 @@ using NLog;
 //            if (UserItemOperation != null)
 //            {
 //                var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
-//                operation.InitWork = async () =>
+//                operation.InitWorkAsync = async () =>
 //                {
 //                    try
 //                    {
@@ -287,7 +287,7 @@ using NLog;
 //                operation.IsGood = () =>
 //                    operation.Getting >= operation.LowerTolerance && operation.Getting <= operation.UpperTolerance;
 
-//                operation.CompliteWork = () =>
+//                operation.CompliteWorkAsync = () =>
 //                {
 //                    if (!operation.IsGood())
 //                    {
@@ -377,9 +377,9 @@ using NLog;
 //            return $"ITBmOprobovanie7353{_chanelNumber}";
 //        }
 
-//        protected override void InitWork(CancellationTokenSource token)
+//        protected override void InitWorkAsync(CancellationTokenSource token)
 //        {
-//            base.InitWork(token);
+//            base.InitWorkAsync(token);
 
 //            trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
 //                                       .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
@@ -392,7 +392,7 @@ using NLog;
 //            if (UserItemOperation != null)
 //            {
 //                var operation = new BasicOperationVerefication<MeasPoint<Percent>>();
-//                operation.InitWork = async () =>
+//                operation.InitWorkAsync = async () =>
 //                {
 //                    try
 //                    {
@@ -450,7 +450,7 @@ using NLog;
 //                };
 //                operation.IsGood = () =>
 //                    operation.Getting >= operation.LowerTolerance && operation.Getting <= operation.UpperTolerance;
-//                operation.CompliteWork = () =>
+//                operation.CompliteWorkAsync = () =>
 //                {
 //                    if (!operation.IsGood())
 //                    {
@@ -544,9 +544,9 @@ using NLog;
 //            return $"ITBmOprobovanie7353{_chanelNumber}";
 //        }
 
-//        protected override void InitWork(CancellationTokenSource token)
+//        protected override void InitWorkAsync(CancellationTokenSource token)
 //        {
-//            base.InitWork(token);
+//            base.InitWorkAsync(token);
 //            trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
 //                                       .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
 
@@ -558,7 +558,7 @@ using NLog;
 //            if (UserItemOperation != null)
 //            {
 //                var operation = new BasicOperationVerefication<MeasPoint<Percent>>();
-//                operation.InitWork = async () =>
+//                operation.InitWorkAsync = async () =>
 //                {
 //                    try
 //                    {
@@ -614,7 +614,7 @@ using NLog;
 //                };
 //                operation.IsGood = () =>
 //                    operation.Getting >= operation.LowerTolerance && operation.Getting <= operation.UpperTolerance;
-//                operation.CompliteWork = () =>
+//                operation.CompliteWorkAsync = () =>
 //                {
 //                    if (!operation.IsGood())
 //                    {

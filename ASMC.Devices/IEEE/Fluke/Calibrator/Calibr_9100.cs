@@ -68,24 +68,24 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         //    WriteLine($"Source:TEMPerature:THERmocouple {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
         //}
 
-        public void SetOutputOn()
-        public void SetOutputOn()
-        public void SetOutputOn()
-        public void SetOutputOn()
-        public void SetOutputOn()ICalibratorMultimeterFlukeB
-        {
-           WriteLine("outp:stat on");
-        }
+        //public void SetOutputOn()
+        //public void SetOutputOn()
+        //public void SetOutputOn()
+        //public void SetOutputOn()
+        //public void SetOutputOn()ICalibratorMultimeterFlukeB
+        //{
+        //   WriteLine("outp:stat on");
+        //}
 
-        public void SetOutputOff()
-        {
-            WriteLine("outp:stat off");
-        }
+        //public void SetOutputOff()
+        //{
+        //    WriteLine("outp:stat off");
+        //}
 
-        public void Reset()
-        {
-            WriteLine(IeeeBase.Reset);
-        }
+        //public void Reset()
+        //{
+        //    WriteLine(IeeeBase.Reset);
+        //}
 
     }
 }
