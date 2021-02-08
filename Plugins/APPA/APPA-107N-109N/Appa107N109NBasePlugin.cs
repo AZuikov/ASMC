@@ -4227,6 +4227,7 @@ namespace APPA_107N_109N
                         {
                             flkCalib5522A.Out.Set.Temperature.SetTermoCoupleType(CalibrMain.COut.CSet.СTemperature
                                                                                        .TypeTermocouple.K);
+                            flkCalib5522A.
                             flkCalib5522A.Out.Set.Temperature.SetValue(currPoint);
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
                             Thread.Sleep(3000);
