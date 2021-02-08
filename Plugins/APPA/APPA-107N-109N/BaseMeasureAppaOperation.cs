@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AP.Extension;
+using AP.Utils.Data;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -27,7 +28,9 @@ namespace APPA_107N_109N
         /// <summary>
         /// Предел измерения поверяемого прибора, необходимый для работы.
         /// </summary>
-        public virtual Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+        public virtual Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
+
+        public virtual PhysicalRange<T> PhysicalRangeAppa { get; protected set; }
 
         /// <summary>
         /// Режим операции измерения прибора.
@@ -51,10 +54,25 @@ namespace APPA_107N_109N
             throw new NotImplementedException();
         }
 
+        protected MeasPoint<T> ErrorCalc(BasicOperationVerefication<MeasPoint<T>> inOperation)
+        {
+            
+            if (PhysicalRangeAppa == null)
+                throw new
+                    Exception($"Не удалось подобрать предел измерения прибора для точки {inOperation.Expected.Description}");
+            
+            MeasPoint<T>  tolMeasPoint = PhysicalRangeAppa.CalculateTollerance(inOperation.Expected);
+
+            if (inOperation.Expected.MainPhysicalQuantity.Value < 0)
+                tolMeasPoint = tolMeasPoint * -1;
+
+            return tolMeasPoint;
+        }
         protected void SetUpperAndLowerToleranceAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
         {
-            inOperation.LowerCalculation = (expected)=> expected - inOperation.Error;
-            inOperation.UpperCalculation = (expected)=> expected + inOperation.Error;
+            var err = ErrorCalc(inOperation);
+            inOperation.LowerCalculation = (expected)=> expected - err;
+            inOperation.UpperCalculation = (expected)=> expected + err;
             inOperation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(inOperation
                                                                           .Expected.MainPhysicalQuantity
                                                                           .Multiplier);
@@ -85,12 +103,14 @@ namespace APPA_107N_109N
        /// <summary>
        /// Предел измерения поверяемого прибора, необходимый для работы.
        /// </summary>
-       public virtual Mult107_109N.RangeNominal OperationRangeNominal { get; protected set; }
+       public virtual Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
-       /// <summary>
-       /// Режим операции измерения прибора.
-       /// </summary>
-       public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
+        public virtual PhysicalRange<T,T1> PhysicalRangeAppa { get; protected set; }
+
+        /// <summary>
+        /// Режим операции измерения прибора.
+        /// </summary>
+        public Mult107_109N.MeasureMode OperMeasureMode { get; protected set; }
 
        //контрлируемый прибор
        protected Mult107_109N appa10XN { get; set; }
@@ -109,10 +129,26 @@ namespace APPA_107N_109N
            throw new NotImplementedException();
        }
 
-       protected void SetUpperAndLowerToleranceAndIsGood(BasicOperationVerefication<MeasPoint<T,T1>> inOperation)
+       protected MeasPoint<T,T1> ErrorCalc(BasicOperationVerefication<MeasPoint<T,T1>> inOperation)
        {
-           inOperation.LowerCalculation = (expected) => expected - inOperation.Error;
-           inOperation.UpperCalculation = (expected) => expected + inOperation.Error;
+
+           if (PhysicalRangeAppa == null)
+               throw new
+                   Exception($"Не удалось подобрать предел измерения прибора для точки {inOperation.Expected.Description}");
+
+           MeasPoint<T,T1> tolMeasPoint = PhysicalRangeAppa.CalculateTollerance(inOperation.Expected);
+
+           if (inOperation.Expected.MainPhysicalQuantity.Value < 0)
+               tolMeasPoint = tolMeasPoint * -1;
+
+           return tolMeasPoint;
+       }
+
+        protected void SetUpperAndLowerToleranceAndIsGood(BasicOperationVerefication<MeasPoint<T,T1>> inOperation)
+        {
+            var err = ErrorCalc(inOperation);
+           inOperation.LowerCalculation = (expected) => expected - err;
+           inOperation.UpperCalculation = (expected) => expected + err;
            inOperation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(inOperation
                                                                            .Expected.MainPhysicalQuantity
                                                                            .Multiplier);

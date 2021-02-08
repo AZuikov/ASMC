@@ -510,18 +510,19 @@ namespace OWEN_TRM202
                         try
                         {
                             //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                            Calibrator.SetTemperature(nullDegPoint, CalibrTypeTermocouple, "CEL");
-                            Calibrator.SetOutputOn();
+                            Calibrator.Temperature.SetValue(nullDegPoint);
+                            Calibrator.Temperature.SetTermoCoupleType(CalibrTypeTermocouple);
+                            Calibrator.Temperature.OutputOn();
                             Thread.Sleep(1900);
                             // у ТРМ должна быть включена схема компенсации  температуры окр среды
                             var measDelta = trm202.GetMeasValChanel(_chanelNumber);
-                            Calibrator.SetTemperature(point, CalibrTypeTermocouple, "CEL");
-                            Calibrator.SetOutputOn();
+                            Calibrator.Temperature.SetValue(point);
+                            Calibrator.Temperature.OutputOn();
                             Thread.Sleep(3000);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             if (CoupleTypeTrm != TRM202Device.in_t.E__b) measPoint = measPoint - measDelta;
 
-                            Calibrator.SetOutputOff();
+                            Calibrator.Temperature.OutputOff();
 
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
@@ -539,7 +540,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.SetOutputOff();
+                            Calibrator.Temperature.OutputOff();
                         }
 
                         operation.IsGood = () =>
@@ -569,7 +570,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__L;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.L;
+                CalibrTypeTermocouple = TypeTermocouple.L;
 
                 measPoints = new[]
                 {
@@ -602,7 +603,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__j;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.J;
+                CalibrTypeTermocouple = TypeTermocouple.J;
 
                 measPoints = new[]
                 {
@@ -635,7 +636,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__n;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.N;
+                CalibrTypeTermocouple = TypeTermocouple.N;
 
                 measPoints = new[]
                 {
@@ -668,7 +669,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__k;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.K;
+                CalibrTypeTermocouple = TypeTermocouple.K;
 
                 measPoints = new[]
                 {
@@ -713,7 +714,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__s;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.S;
+                CalibrTypeTermocouple = TypeTermocouple.S;
 
                 measPoints = new[]
                 {
@@ -746,7 +747,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__r;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.R;
+                CalibrTypeTermocouple = TypeTermocouple.R;
 
                 measPoints = new[]
                 {
@@ -779,7 +780,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__b;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.B;
+                CalibrTypeTermocouple = TypeTermocouple.B;
 
                 measPoints = new[]
                 {
@@ -812,7 +813,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__t;
                 Name = CoupleTypeTrm.GetStringValue();
                 //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
-                CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.T;
+                CalibrTypeTermocouple = TypeTermocouple.T;
 
                 measPoints = new[]
                 {

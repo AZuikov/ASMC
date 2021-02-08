@@ -284,7 +284,7 @@ namespace ASMC.Devices.Port.APPA
             return new RangeStorage<PhysicalRange<Voltage>>(tolArr.Concat(negative).ToArray());
         }
 
-        public RangeStorage<PhysicalRange<Voltage, Frequency>> AcvStorage
+        public RangeStorage<PhysicalRange<Voltage, Frequency>> AcvRangeStorage
         {
             get => GetAcvRangeStorage();
         }
@@ -521,47 +521,47 @@ namespace ASMC.Devices.Port.APPA
         /// <summary>
         /// Допустимые номиналы пределов измерения
         /// </summary>
-        public enum RangeNominal
+        public enum RangeAppaNominal
         {
-            [StringValue("20 мВ")] Range20mV,
-            [StringValue("200 мВ")] Range200mV,
-            [StringValue("2 В")] Range2V,
-            [StringValue("20 В ")] Range20V,
-            [StringValue("200 В")] Range200V,
-            [StringValue("750 В")] Range750V,
-            [StringValue("1000 В")] Range1000V,
-            [StringValue("20 мА")] Range20mA,
-            [StringValue("200 мА")] Range200mA,
-            [StringValue("400 мА")] Range400mA,
-            [StringValue("2 А")] Range2A,
-            [StringValue("10 А")] Range10A,
-            [StringValue("200 Ом")] Range200Ohm,
-            [StringValue("2 кОм")] Range2kOhm,
-            [StringValue("20 кОм")] Range20kOhm,
-            [StringValue("200 кОм")] Range200kOhm,
-            [StringValue("2 МОм")] Range2Mohm,
-            [StringValue("20 МОм")] Range20Mohm,
-            [StringValue("200 МОм")] Range200Mohm,
-            [StringValue("2 ГОм")] Range2Gohm,
-            [StringValue("4 нФ")] Range4nF,
-            [StringValue("40 нФ")] Range40nF,
-            [StringValue("400 нФ")] Range400nF,
-            [StringValue("4 мкФ")] Range4uF,
-            [StringValue("40 мкФ")] Range40uF,
-            [StringValue("400 мкФ")] Range400uF,
-            [StringValue("4 мФ")] Range4mF,
-            [StringValue("40 мФ")] Range40mF,
-            [StringValue("20 Гц")] Range20Hz,
-            [StringValue("200 Гц ")] Range200Hz,
-            [StringValue("2 кГц")] Range2kHz,
-            [StringValue("20 кГц")] Range20kHz,
-            [StringValue("200 кГц")] Range200kHz,
-            [StringValue("1 МГц")] Range1MHz,
-            [StringValue("400 ℃")] Range400degC,
-            [StringValue("400 ℉")] Range400degF,
-            [StringValue("1200 ℃")] Range1200degC,
-            [StringValue("2192 ℉")] Range2192degF,
-            [StringValue("предел не установлен")] RangeNone
+            [DoubleValue(0.02)][StringValue("20 мВ")] Range20mV,
+            [DoubleValue(0.2)][StringValue("200 мВ")] Range200mV,
+            [DoubleValue(2)][StringValue("2 В")] Range2V,
+            [DoubleValue(20)][StringValue("20 В ")] Range20V,
+            [DoubleValue(200)][StringValue("200 В")] Range200V,
+            [DoubleValue(750)][StringValue("750 В")] Range750V,
+            [DoubleValue(1000)][StringValue("1000 В")] Range1000V,
+            [DoubleValue(0.02)][StringValue("20 мА")] Range20mA,
+            [DoubleValue(0.2)][StringValue("200 мА")] Range200mA,
+            [DoubleValue(0.4)][StringValue("400 мА")] Range400mA,
+            [DoubleValue(2)][StringValue("2 А")] Range2A,
+            [DoubleValue(10)][StringValue("10 А")] Range10A,
+            [DoubleValue(200)][StringValue("200 Ом")] Range200Ohm,
+            [DoubleValue(2000)][StringValue("2 кОм")] Range2kOhm,
+            [DoubleValue(20000)][StringValue("20 кОм")] Range20kOhm,
+            [DoubleValue(200000)][StringValue("200 кОм")] Range200kOhm,
+            [DoubleValue(2000000)][StringValue("2 МОм")] Range2Mohm,
+            [DoubleValue(20000000)][StringValue("20 МОм")] Range20Mohm,
+            [DoubleValue(200000000)][StringValue("200 МОм")] Range200Mohm,
+            [DoubleValue(2000000000)][StringValue("2 ГОм")] Range2Gohm,
+            [DoubleValue(0.000000004)][StringValue("4 нФ")] Range4nF,
+            [DoubleValue(0.00000004)][StringValue("40 нФ")] Range40nF,
+            [DoubleValue(0.0000004)][StringValue("400 нФ")] Range400nF,
+            [DoubleValue(0.000004)][StringValue("4 мкФ")] Range4uF,
+            [DoubleValue(0.00004)][StringValue("40 мкФ")] Range40uF,
+            [DoubleValue(0.0004)][StringValue("400 мкФ")] Range400uF,
+            [DoubleValue(0.004)][StringValue("4 мФ")] Range4mF,
+            [DoubleValue(0.04)][StringValue("40 мФ")] Range40mF,
+            [DoubleValue(20)][StringValue("20 Гц")] Range20Hz,
+            [DoubleValue(200)][StringValue("200 Гц ")] Range200Hz,
+            [DoubleValue(2000)][StringValue("2 кГц")] Range2kHz,
+            [DoubleValue(20000)][StringValue("20 кГц")] Range20kHz,
+            [DoubleValue(200000)][StringValue("200 кГц")] Range200kHz,
+            [DoubleValue(1000000)][StringValue("1 МГц")] Range1MHz,
+            [DoubleValue(400)][StringValue("400 ℃")] Range400degC,
+            [DoubleValue(400)][StringValue("400 ℉")] Range400degF,
+            [DoubleValue(1200)][StringValue("1200 ℃")] Range1200degC,
+            [DoubleValue(2192)][StringValue("2192 ℉")] Range2192degF,
+            [DoubleValue(0)] [StringValue("предел не установлен")] RangeNone
         }
 
         /// <summary>
@@ -813,7 +813,7 @@ namespace ASMC.Devices.Port.APPA
         /// <summary>
         /// Возвращает номинал текущего предела измерения
         /// </summary>
-        public RangeNominal GetRangeNominal
+        public RangeAppaNominal GetRangeAppaNominal
         {
             get
             {
@@ -822,104 +822,104 @@ namespace ASMC.Devices.Port.APPA
 
                 if (currMode == MeasureMode.DCV)
                 {
-                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range1000V;
-                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
-                    return RangeNominal.Range2V;
+                    if (((int)currRangeCode & 3) == 3) return RangeAppaNominal.Range1000V;
+                    if (((int)currRangeCode & 2) == 2) return RangeAppaNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range20V;
+                    return RangeAppaNominal.Range2V;
                 }
 
                 if (currMode == MeasureMode.ACV)
                 {
-                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
-                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
-                    return RangeNominal.Range2V;
+                    if (((int)currRangeCode & 3) == 3) return RangeAppaNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeAppaNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range20V;
+                    return RangeAppaNominal.Range2V;
                 }
 
                 if (currMode == MeasureMode.AC_DC_V)
                 {
-                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range750V;
-                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200V;
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20V;
-                    return RangeNominal.Range2V;
+                    if (((int)currRangeCode & 3) == 3) return RangeAppaNominal.Range750V;
+                    if (((int)currRangeCode & 2) == 2) return RangeAppaNominal.Range200V;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range20V;
+                    return RangeAppaNominal.Range2V;
                 }
 
                 if (currMode == MeasureMode.DCmV || currMode == MeasureMode.ACmV || currMode == MeasureMode.AC_DC_mV)
                 {
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200mV;
-                    return RangeNominal.Range20mV;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range200mV;
+                    return RangeAppaNominal.Range20mV;
                 }
 
                 if (currMode == MeasureMode.DCmA || currMode == MeasureMode.ACmA || currMode == MeasureMode.AC_DC_mA)
                 {
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200mA;
-                    return RangeNominal.Range20mA;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range200mA;
+                    return RangeAppaNominal.Range20mA;
                 }
 
                 if (currMode == MeasureMode.DCI || currMode == MeasureMode.ACI || currMode == MeasureMode.AC_DC_I)
                 {
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range10A;
-                    return RangeNominal.Range2A;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range10A;
+                    return RangeAppaNominal.Range2A;
                 }
 
                 if (currMode == MeasureMode.Ohm)
                 {
-                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range2Gohm;
-                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range200Mohm;
-                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range20Mohm;
-                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range2Mohm;
-                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range200kOhm;
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range2kOhm;
-                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range20kOhm;
-                    return RangeNominal.Range200Ohm;
+                    if (((int)currRangeCode & 7) == 7) return RangeAppaNominal.Range2Gohm;
+                    if (((int)currRangeCode & 6) == 6) return RangeAppaNominal.Range200Mohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeAppaNominal.Range20Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeAppaNominal.Range2Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeAppaNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range2kOhm;
+                    if (((int)currRangeCode & 2) == 2) return RangeAppaNominal.Range20kOhm;
+                    return RangeAppaNominal.Range200Ohm;
                 }
 
                 if (currMode == MeasureMode.LowOhm)
                 {
-                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range2Gohm;
-                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range200Mohm;
-                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range20Mohm;
-                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range2Mohm;
-                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range200kOhm;
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range20kOhm;
-                    return RangeNominal.Range2kOhm;
+                    if (((int)currRangeCode & 6) == 6) return RangeAppaNominal.Range2Gohm;
+                    if (((int)currRangeCode & 5) == 5) return RangeAppaNominal.Range200Mohm;
+                    if (((int)currRangeCode & 4) == 4) return RangeAppaNominal.Range20Mohm;
+                    if (((int)currRangeCode & 3) == 3) return RangeAppaNominal.Range2Mohm;
+                    if (((int)currRangeCode & 2) == 2) return RangeAppaNominal.Range200kOhm;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range20kOhm;
+                    return RangeAppaNominal.Range2kOhm;
                 }
 
                 if (currMode == MeasureMode.Cap)
                 {
-                    if (((int)currRangeCode & 7) == 7) return RangeNominal.Range40mF;
-                    if (((int)currRangeCode & 6) == 6) return RangeNominal.Range4mF;
-                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range400uF;
-                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range40uF;
-                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range4uF;
-                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range400nF;
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range40nF;
-                    return RangeNominal.Range4nF;
+                    if (((int)currRangeCode & 7) == 7) return RangeAppaNominal.Range40mF;
+                    if (((int)currRangeCode & 6) == 6) return RangeAppaNominal.Range4mF;
+                    if (((int)currRangeCode & 5) == 5) return RangeAppaNominal.Range400uF;
+                    if (((int)currRangeCode & 4) == 4) return RangeAppaNominal.Range40uF;
+                    if (((int)currRangeCode & 3) == 3) return RangeAppaNominal.Range4uF;
+                    if (((int)currRangeCode & 2) == 2) return RangeAppaNominal.Range400nF;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range40nF;
+                    return RangeAppaNominal.Range4nF;
                 }
 
                 if (currMode == MeasureMode.Herz)
                 {
-                    if (((int)currRangeCode & 5) == 5) return RangeNominal.Range1MHz;
-                    if (((int)currRangeCode & 4) == 4) return RangeNominal.Range200kHz;
-                    if (((int)currRangeCode & 3) == 3) return RangeNominal.Range20kHz;
-                    if (((int)currRangeCode & 2) == 2) return RangeNominal.Range2kHz;
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range200Hz;
-                    return RangeNominal.Range20Hz;
+                    if (((int)currRangeCode & 5) == 5) return RangeAppaNominal.Range1MHz;
+                    if (((int)currRangeCode & 4) == 4) return RangeAppaNominal.Range200kHz;
+                    if (((int)currRangeCode & 3) == 3) return RangeAppaNominal.Range20kHz;
+                    if (((int)currRangeCode & 2) == 2) return RangeAppaNominal.Range2kHz;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range200Hz;
+                    return RangeAppaNominal.Range20Hz;
                 }
 
                 if (currMode == MeasureMode.degC)
                 {
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range1200degC;
-                    return RangeNominal.Range400degC;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range1200degC;
+                    return RangeAppaNominal.Range400degC;
                 }
 
                 if (currMode == MeasureMode.DegF)
                 {
-                    if (((int)currRangeCode & 1) == 1) return RangeNominal.Range2192degF;
-                    return RangeNominal.Range400degF;
+                    if (((int)currRangeCode & 1) == 1) return RangeAppaNominal.Range2192degF;
+                    return RangeAppaNominal.Range400degF;
                 }
 
-                return RangeNominal.RangeNone;
+                return RangeAppaNominal.RangeNone;
             }
         }
 

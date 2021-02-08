@@ -21,7 +21,7 @@ namespace OWEN_TRM202
 
         protected ICalibratorMultimeterFlukeBase Calibrator;
 
-        protected CalibrMain.COut.CSet.СTemperature.TypeTermocouple CalibrTypeTermocouple;
+        protected TypeTermocouple CalibrTypeTermocouple;
 
         protected TRM202Device.in_t CoupleTypeTrm;
         protected MeasPoint<T>[] measPoints;
