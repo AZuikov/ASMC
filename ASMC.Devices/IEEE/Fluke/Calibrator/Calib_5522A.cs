@@ -25,17 +25,17 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
        
         public ISourcePhysicalQuantity<Resistance> Resistance4W { get; protected set; }
 
-        public class Resist4W : SimplyPhysicalQuantity<Resistance>
+        public class Resist4W : Resist
         {
-            public enum Zcomp
-            {
-                /// компенсация 4х проводная
-                /// </summary>
-                [StringValue("ZCOMP WIRE4")] Wire4
-            }
+            
             
             public Resist4W(IeeeBase device) : base(device)
             {
+                CompensationMode = new ICommand[]
+                {
+                    
+                    new Command("ZCOMP WIRE4","4х проводная компенсация",4),
+                };
             }
 
             protected override string GetUnit()
@@ -46,7 +46,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public override void SetValue(MeasPoint<Resistance> value)
             {
                 base.SetValue(value);
-                _calibrMain.WriteLine(GetCompensationString(Zcomp.Wire4));
+                _calibrMain.WriteLine(CompensationMode[0].StrCommand);
                 CheckErrors();
             }
         }

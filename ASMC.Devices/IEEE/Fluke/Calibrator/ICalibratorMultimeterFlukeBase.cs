@@ -46,6 +46,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get;  }
     }
 
+    public enum Compensation
+    {
+        CompNone=0,
+        Comp2W=2
+        
+    }
 
     /// <summary>
     /// Интерфейс режима воспроизведения сопротивления калибратора. Двухпроводная схема.
@@ -53,10 +59,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     public interface IResistance2W
     {
         IResistance Resistance2W { get; }
+        
     }
     public interface IResistance : ISourcePhysicalQuantity<Resistance>
     {
-        Enum CompensationMode { get; set; }
+        ICommand []CompensationMode { get; set; }
+        void SetCompensation(Compensation compMode);
+
+
     }
     /// <summary>
     /// Интерфейс режима воспроизведения сопротивления калибратора. Четырехпроводная схема.

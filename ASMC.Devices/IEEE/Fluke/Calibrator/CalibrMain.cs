@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using AP.Utils.Data;
 using ASMC.Data.Model;
@@ -14,7 +15,7 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public abstract class CalibrMain: ICalibratorMultimeterFlukeBase
+    public  class CalibrMain: ICalibratorMultimeterFlukeBase
     {
 
         protected IeeeBase Device { get; }
@@ -126,7 +127,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public class RangeDevice : RangeDeviceBase<Current, Frequency>
             {
                 public override RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
-
+                
+                
+                //todo склеить два диапазона в один?
                 [AccRange("Mode: Amps SI", typeof(MeasPoint<Current, Frequency>))]
                 public  RangeStorage<PhysicalRange<Current, Frequency>> Ranges1 { get; set; }
 
@@ -137,26 +140,33 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         }
 
-        public class Resist2W : SimplyPhysicalQuantity<Resistance>, IResistance
+
+        public abstract class Resist : SimplyPhysicalQuantity<Resistance>, IResistance
         {
-            public enum Zcomp
+            protected Resist(IeeeBase device) : base(device)
             {
-                /// <summary>
-                /// компенсация 2х проводная
-                /// </summary>
-                [StringValue("ZCOMP WIRE2")] Wire2,
-                /// <summary>
                 
-                /// <summary>
-                /// Отключает компенсацию
-                /// </summary>
-                [StringValue("ZCOMP NONE")] WireNone
             }
+
+            public ICommand[] CompensationMode { get; set; }
+            public void SetCompensation(Compensation compMode)
+            {
+                throw new NotImplementedException();
+            }
+        }
+        public class Resist2W :Resist, IResistance2W
+        {
+           
 
             public Resist2W(IeeeBase device) : base(device)
             {
                 RangeStorage = new RangeDevice();
-                GetCompensationString(Zcomp.Wire2);
+                CompensationMode = new ICommand[]
+                {
+                    new Command("ZCOMP NONE","Отключает компенсации",0),
+                    new Command("ZCOMP WIRE2","2х проводная компенсация",2)
+                    
+                };
             }
 
             
@@ -167,6 +177,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 return "OHM";
             }
 
+            
+
+           
             #endregion
 
             public class RangeDevice : RangeDeviceBase<Resistance>
@@ -176,7 +189,17 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             }
 
-            public Enum CompensationMode { get; set; }
+
+            public ICommand[] CompensationMode { get; set; }
+            public IResistance Resistance2W { get; }
+            public void SetCompensation(Compensation compMode)
+            {
+                var command = CompensationMode.FirstOrDefault(q => q.Value == (double) compMode).StrCommand;
+                _calibrMain.WriteLine(command);
+                CheckErrors();
+            }
+
+            
         }
 
         public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> : 
@@ -310,10 +333,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             #region Methods
 
-            public string GetCompensationString(Enum eEnum)
-            {
-                return eEnum.GetStringValue();
-            }
+           
 
             public void OutputOff()
             {

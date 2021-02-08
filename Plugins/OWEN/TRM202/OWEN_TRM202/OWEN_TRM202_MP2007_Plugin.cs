@@ -50,10 +50,10 @@ namespace OWEN_TRM202
         public OpertionFirsVerf2007(ServicePack servicePack) : base(servicePack)
         {
             var dsds = new Calib5522A();
-            dsds.Resistance2W.Resistance2W.
-            dsds.Resistance2W.Setting();
+            dsds.Resistance2W.SetCompensation(dsds.Resistance2W.CompensationMode.FirstOrDefault(q=> q.Value==2));
+
            //Необходимые устройства
-           ControlDevices = new IDeviceUi[]
+            ControlDevices = new IDeviceUi[]
             {
                 new Device
                 {
@@ -416,9 +416,7 @@ namespace OWEN_TRM202
         public class Operation8_4_HCX_TermocoupleGost8_585 : BaseMeasureOperation<Temperature>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-
-
+            
             public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
             {
@@ -458,7 +456,7 @@ namespace OWEN_TRM202
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
                                      .SelectedDevice as ICalibratorOld;
-
+                
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
 
                 trm202.StringConnection = GetStringConnect(trm202);
