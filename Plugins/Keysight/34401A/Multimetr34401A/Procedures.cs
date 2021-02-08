@@ -16,6 +16,7 @@ using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Interface;
 using DevExpress.Mvvm;
+using Ivi.Visa;
 using NLog;
 
 namespace Multimetr34401A
@@ -39,31 +40,6 @@ namespace Multimetr34401A
 
         #region Methods
 
-        protected void CatchException(Action action, CancellationTokenSource source)
-        {
-            try
-            {
-                action.Invoke();
-            }
-            catch (Exception e)
-            {
-                source.Cancel();
-                Logger.Error(e);
-            }
-        }
-        protected T CatchException<T>(Func<T> action, CancellationTokenSource source)
-        {
-            try
-            {
-               return  action.Invoke();
-            }
-            catch (Exception e)
-            {
-                source.Cancel();
-                Logger.Error(e);
-            }
-            return default;
-        }
         /// <summary>
         /// Создает схему
         /// </summary>
@@ -208,7 +184,7 @@ namespace Multimetr34401A
 
     public sealed class DCVoltageError: OperationBase<MeasPoint<Voltage>>
     {
-       
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <inheritdoc />
         public DCVoltageError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -224,32 +200,32 @@ namespace Multimetr34401A
             foreach (var setPoint in voltRef)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+
                 operation.Expected = setPoint;
-                operation.InitWork = () =>
+                operation.InitWorkAsync = () =>
                 {
-                  
-                        Multimetr.DcVoltage.RangeStorage.SetRange(setPoint);
-                        Multimetr.DcVoltage.RangeStorage.IsAutoRange = false;
-                        CatchException(()=>Multimetr.DcVoltage.Setting(), token);
-                        CatchException(() => Clalibrator.DcVoltage.SetValue(setPoint), token);
+                    Multimetr.DcVoltage.RangeStorage.SetRange(setPoint);
+                    Multimetr.DcVoltage.RangeStorage.IsAutoRange = false;
+                    CatchException<IOTimeoutException>(()=>Multimetr.DcVoltage.Setting(), token, Logger);
+                    CatchException<IOTimeoutException>(() => Clalibrator.DcVoltage.SetValue(setPoint), token, Logger);
                    
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
                 {
                    
-                        CatchException(() => Clalibrator.DcVoltage.OutputOn(), token);
-                        operation.Getting = CatchException(() => Multimetr.DcVoltage.GetValue(), token);
-                        CatchException(() => Clalibrator.DcVoltage.OutputOff(), token);
+                        CatchException<IOTimeoutException>(() => Clalibrator.DcVoltage.OutputOn(), token, Logger);
+                        operation.Getting = CatchException<IOTimeoutException,MeasPoint<Voltage>>(() => Multimetr.DcVoltage.GetValue(), token, Logger).Item1;
+                        CatchException<IOTimeoutException>(() => Clalibrator.DcVoltage.OutputOff(), token, Logger);
 
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
-                                             .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
+                                             .Show($"Текущая точка {operation} не проходит по допуску:\n" +
                                                    $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                                    $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
                                                    $"Допустимое значение погрешности {operation.Error.Description}\n" +

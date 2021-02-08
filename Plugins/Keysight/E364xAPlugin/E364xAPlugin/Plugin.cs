@@ -255,7 +255,7 @@ namespace E364xAPlugin
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-            operation.InitWork = () =>
+            operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
@@ -269,7 +269,7 @@ namespace E364xAPlugin
                 return Task.CompletedTask;
             };
 
-            operation.CompliteWork = () => { return Task.FromResult(true); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
 
@@ -325,14 +325,14 @@ namespace E364xAPlugin
             base.InitWork(token);
 
             var operation = new BasicOperation<bool>();
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
             {
                 operation.Expected = true;
                 operation.Getting = powerSupply.SelfTest();
             };
 
             operation.IsGood = () => operation.Getting;
-            operation.CompliteWork = () => { return Task.FromResult(operation.IsGood()); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood()); };
             DataRow.Add(operation);
         }
 
@@ -397,7 +397,7 @@ namespace E364xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -450,7 +450,7 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOff();
                     }
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -534,7 +534,7 @@ namespace E364xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     MeasPoint<Voltage> U1 = new MeasPoint<Voltage>();
                     try
@@ -596,7 +596,7 @@ namespace E364xAPlugin
                     operation.Comment = powerSupply.GetVoltageRange().Description;
                 };
                 
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -687,7 +687,7 @@ namespace E364xAPlugin
                 var operation = new BasicOperationVerefication<MeasPoint<Time>>();
                 var arrPoints = new[] {"1", "2", "3", "4", "5"};
                 MeasPoint<Time>[] arrGetting = null;
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     var setting = new TableViewModel.SettingTableViewModel {Breaking = 1, CellFormat = "мкс"};
                     var vm = new OneTableViewModel();
@@ -730,7 +730,7 @@ namespace E364xAPlugin
                 operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
                 operation.IsGood = () => operation.Expected < operation.Error;
 
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                operation.CompliteWorkAsync = () => Task.FromResult(operation.IsGood());
 
                 DataRow.Add(operation);
             }
@@ -817,7 +817,7 @@ namespace E364xAPlugin
                 for (var i = 0; i < 17; i++)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -900,7 +900,7 @@ namespace E364xAPlugin
                         return (operation.Getting < operation.UpperTolerance) &
                                (operation.Getting > operation.LowerTolerance);
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -999,7 +999,7 @@ namespace E364xAPlugin
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                     operation.Expected = setPoint;
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1044,7 +1044,7 @@ namespace E364xAPlugin
                             ElectonicLoad.OutputOff();
                         }
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1144,7 +1144,7 @@ namespace E364xAPlugin
                 foreach (MeasPoint<Voltage> setPoint in VoltSteps)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1190,7 +1190,7 @@ namespace E364xAPlugin
                             ElectonicLoad.OutputOff();
                         }
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1281,7 +1281,7 @@ namespace E364xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -1331,7 +1331,7 @@ namespace E364xAPlugin
                         ElectonicLoad.OutputOff();
                     }
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -1419,7 +1419,7 @@ namespace E364xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     MeasPoint<Current> i1 = new MeasPoint<Current>();
                     try
@@ -1471,7 +1471,7 @@ namespace E364xAPlugin
                     }
                 };
                 
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -1558,7 +1558,7 @@ namespace E364xAPlugin
                 for (var i = 0; i < 17; i++)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1633,7 +1633,7 @@ namespace E364xAPlugin
                                    (operation.Getting > operation.LowerTolerance);
                         };
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1728,7 +1728,7 @@ namespace E364xAPlugin
 
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
 
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1769,7 +1769,7 @@ namespace E364xAPlugin
                             ElectonicLoad.OutputOff();
                         }
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1873,7 +1873,7 @@ namespace E364xAPlugin
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                     operation.Expected = setPoint;
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1927,7 +1927,7 @@ namespace E364xAPlugin
                             ElectonicLoad.OutputOff();
                         }
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {

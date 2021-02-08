@@ -25,7 +25,7 @@ namespace ASMC.Common.Helps
             Logger.Debug($@"Указан файл для загрузки {nameFile} и будет поиск в папке сборке {findProjectFile?? Assembly.GetExecutingAssembly()}");
             Expected = true;
             IsGood = () => Equals(Expected,Getting);
-            InitWork = () =>
+            InitWorkAsync = () =>
             {
                 var accessor = TypeAccessor.Create(operation.GetType());
                 var service = ((IUserItemOperation)accessor[operation, nameof(ParagraphBase<object>.UserItemOperation)]).ServicePack.QuestionText(); 
@@ -44,7 +44,7 @@ namespace ASMC.Common.Helps
                 operation.IsGood = Getting;
                 return Task.CompletedTask;
             };
-            this.CompliteWork = () => Task.FromResult(true);
+            this.CompliteWorkAsync = () => Task.FromResult(true);
         }
         /// <summary>
         /// 
@@ -59,7 +59,7 @@ namespace ASMC.Common.Helps
             Logger.Debug($@"Указан файл для загрузки {nameFile} и будет поиск в папке сборке {findProjectFile ?? Assembly.GetExecutingAssembly()}");
             Expected = true;
             IsGood = () => Equals(Expected, Getting);
-            InitWork = async () =>
+            InitWorkAsync = async () =>
             {
                 var accessor = TypeAccessor.Create(operation.GetType());
                 var service = ((IUserItemOperation)accessor[operation, nameof(ParagraphBase<object>.UserItemOperation)]).ServicePack.QuestionText();
@@ -80,7 +80,7 @@ namespace ASMC.Common.Helps
                 Comment = res.Item1;
                 operation.IsGood = Getting;
             };
-            this.CompliteWork = () => Task.FromResult(true);
+            this.CompliteWorkAsync = () => Task.FromResult(true);
         }
     }
 }

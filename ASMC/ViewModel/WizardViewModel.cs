@@ -544,7 +544,7 @@ namespace ASMC.ViewModel
                 Logger.Info("Программа МК запущена");
                 try
                 {
-                    await SelectProgram.Operation.StartWork(_isWorkToken);
+                    await SelectProgram.Operation.StartWorkAsync(_isWorkToken);
                 }
                 catch (Exception e)
                 {

@@ -206,7 +206,7 @@ namespace E363xAPlugin
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-            operation.InitWork = () =>
+            operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
@@ -220,7 +220,7 @@ namespace E363xAPlugin
                 return Task.CompletedTask;
             };
 
-            operation.CompliteWork = () => { return Task.FromResult(true); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
 
@@ -276,14 +276,14 @@ namespace E363xAPlugin
             base.InitWork(token);
 
             var operation = new BasicOperation<bool>();
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
             {
                 operation.Expected = true;
                 operation.Getting = powerSupply.SelfTest();
             };
 
             operation.IsGood = () => operation.Getting;
-            operation.CompliteWork = () => { return Task.FromResult(operation.IsGood()); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood()); };
             DataRow.Add(operation);
         }
 
@@ -347,7 +347,7 @@ namespace E363xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -400,7 +400,7 @@ namespace E363xAPlugin
                         ElectonicLoad.OutputOff();
                     }
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -484,7 +484,7 @@ namespace E363xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     MeasPoint<Voltage> U1 = new MeasPoint<Voltage>();
                     try
@@ -543,7 +543,7 @@ namespace E363xAPlugin
                     SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                 };
                 
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -634,7 +634,7 @@ namespace E363xAPlugin
                 var operation = new BasicOperationVerefication<MeasPoint<Time>>();
                 var arrPoints = new[] {"1", "2", "3", "4", "5"};
                 MeasPoint<Time>[] arrGetting = null;
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     var setting = new TableViewModel.SettingTableViewModel {Breaking = 1, CellFormat = "мкс"};
                     var vm = new OneTableViewModel();
@@ -677,7 +677,7 @@ namespace E363xAPlugin
                 operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
                 operation.IsGood = () => operation.Expected < operation.Error;
 
-                operation.CompliteWork = () => Task.FromResult(operation.IsGood());
+                operation.CompliteWorkAsync = () => Task.FromResult(operation.IsGood());
 
                 DataRow.Add(operation);
             }
@@ -764,7 +764,7 @@ namespace E363xAPlugin
                 for (var i = 0; i < 17; i++)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         SetDevicesForVoltageMode(operation, rangePowerSupply);
 
@@ -838,7 +838,7 @@ namespace E363xAPlugin
                         return (operation.Getting < operation.UpperTolerance) &
                                (operation.Getting > operation.LowerTolerance);
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -926,7 +926,7 @@ namespace E363xAPlugin
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                     operation.Expected = setPoint;
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -970,7 +970,7 @@ namespace E363xAPlugin
 
                         SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1059,7 +1059,7 @@ namespace E363xAPlugin
                 foreach (MeasPoint<Voltage> setPoint in VoltSteps)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1108,7 +1108,7 @@ namespace E363xAPlugin
 
                     SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
 
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1198,7 +1198,7 @@ namespace E363xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -1246,7 +1246,7 @@ namespace E363xAPlugin
 
                     SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -1330,7 +1330,7 @@ namespace E363xAPlugin
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     MeasPoint<Current> i1 = new MeasPoint<Current>();
                     try
@@ -1384,7 +1384,7 @@ namespace E363xAPlugin
                     }
                 };
                 
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (operation.IsGood != null && !operation.IsGood())
                     {
@@ -1471,7 +1471,7 @@ namespace E363xAPlugin
                 for (var i = 0; i < 17; i++)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1540,7 +1540,7 @@ namespace E363xAPlugin
                             ElectonicLoad.OutputOff();
                         }
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1631,7 +1631,7 @@ namespace E363xAPlugin
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
 
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1674,7 +1674,7 @@ namespace E363xAPlugin
                             ElectonicLoad.OutputOff();
                         }
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {
@@ -1771,7 +1771,7 @@ namespace E363xAPlugin
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                     operation.Expected = setPoint;
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1828,7 +1828,7 @@ namespace E363xAPlugin
                             throw;
                         }
                     };
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                     {
                         if (operation.IsGood != null && !operation.IsGood())
                         {

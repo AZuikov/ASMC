@@ -219,7 +219,7 @@ namespace OWEN_TRM202
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
                 operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-                operation.InitWork = () =>
+                operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
                     service.Title = "Внешний осмотр";
@@ -233,7 +233,7 @@ namespace OWEN_TRM202
                     return Task.CompletedTask;
                 };
 
-                operation.CompliteWork = () => { return Task.FromResult(true); };
+                operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
                 DataRow.Add(operation);
             }
 
@@ -288,7 +288,7 @@ namespace OWEN_TRM202
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
                 operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-                operation.InitWork = () =>
+                operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
                     service.Title = "Внешний осмотр";
@@ -302,7 +302,7 @@ namespace OWEN_TRM202
                     return Task.CompletedTask;
                 };
 
-                operation.CompliteWork = () => { return Task.FromResult(true); };
+                operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
                 DataRow.Add(operation);
             }
 
@@ -375,7 +375,7 @@ namespace OWEN_TRM202
                 if (UserItemOperation != null)
                 {
                     var operation = new BasicOperationVerefication<bool>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -403,7 +403,7 @@ namespace OWEN_TRM202
                         }
                     };
                     operation.IsGood = () => true;
-                    operation.CompliteWork = () => { return Task.FromResult(operation.IsGood()); };
+                    operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood()); };
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<bool>)operation.Clone());
@@ -467,7 +467,7 @@ namespace OWEN_TRM202
                 foreach (var point in measPoints)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -549,7 +549,7 @@ namespace OWEN_TRM202
                             operation.Getting <= operation.UpperTolerance;
                         ;
                     };
-                    operation.CompliteWork = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
@@ -992,7 +992,7 @@ namespace OWEN_TRM202
                 foreach (var point in measPoints)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1071,7 +1071,7 @@ namespace OWEN_TRM202
                             operation.Getting <= operation.UpperTolerance;
                         ;
                     };
-                    operation.CompliteWork = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
@@ -1178,7 +1178,7 @@ namespace OWEN_TRM202
                 foreach (var point in measPointsPercentVolt)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Percent>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1242,7 +1242,7 @@ namespace OWEN_TRM202
                             operation.Getting <= operation.UpperTolerance;
                         ;
                     };
-                    operation.CompliteWork = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
@@ -1569,7 +1569,7 @@ namespace OWEN_TRM202
                 foreach (var point in measPointsTempRes)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1642,7 +1642,7 @@ namespace OWEN_TRM202
                             operation.Getting <= operation.UpperTolerance;
                         ;
                     };
-                    operation.CompliteWork = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation

@@ -15,11 +15,11 @@ namespace ASMC.Data.Model.Interface
         /// <summary>
         ///     Выполняет иннициализацию устройств, данных пере выполнением основной работы <see cref="BodyWorkAsync" /> .
         /// </summary>
-        Func<Task> InitWork { get; set; }
+        Func<Task> InitWorkAsync { get; set; }
 
         /// <summary>
         ///     Выполняет основную работку в асинхронном режиме. После чего вызыается метод проверки и завершения работы
-        ///     <see cref="CompliteWork" />.
+        ///     <see cref="CompliteWorkAsync" />.
         /// </summary>
         Action BodyWorkAsync { get; set; }
 
@@ -28,9 +28,9 @@ namespace ASMC.Data.Model.Interface
         /// </summary>
         /// <remarks>
         ///     В случае если возвращает <see cref="false" /> перезапускает выполнение операций загого начиная с инициализации
-        ///     <see cref="InitWork" />.
+        ///     <see cref="InitWorkAsync" />.
         /// </remarks>
-        Func<Task<bool>> CompliteWork { get; set; }
+        Func<Task<bool>> CompliteWorkAsync { get; set; }
 
         /// <summary>
         ///     Уникальный идентификатор операции

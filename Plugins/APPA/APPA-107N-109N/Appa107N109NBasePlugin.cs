@@ -193,7 +193,7 @@ namespace APPA_107N_109N
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
                 operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-                operation.InitWork = () =>
+                operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
                     service.Title = "Внешний осмотр";
@@ -207,7 +207,7 @@ namespace APPA_107N_109N
                     return Task.CompletedTask;
                 };
 
-                operation.CompliteWork = () => { return Task.FromResult(true); };
+                operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
                 DataRow.Add(operation);
             }
 
@@ -256,7 +256,7 @@ namespace APPA_107N_109N
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
                 operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-                operation.InitWork = () =>
+                operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
                     service.Title = "Опробование";
@@ -270,7 +270,7 @@ namespace APPA_107N_109N
                     return Task.CompletedTask;
                 };
 
-                operation.CompliteWork = () => { return Task.FromResult(true); };
+                operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
                 DataRow.Add(operation);
             }
 
@@ -400,7 +400,7 @@ namespace APPA_107N_109N
                 foreach (var currPoint in VoltPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -524,7 +524,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Voltage>>)operation.Clone());
@@ -914,7 +914,7 @@ namespace APPA_107N_109N
                 foreach (var currPoint in VoltPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1053,7 +1053,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Voltage, Frequency>>)operation.Clone());
@@ -1062,9 +1062,9 @@ namespace APPA_107N_109N
 
             #endregion
 
-            //public override async Task StartWork(CancellationToken token)
+            //public override async Task StartWorkAsync(CancellationToken token)
             //{
-            //    await base.StartWork(token);
+            //    await base.StartWorkAsync(token);
             //    appa10XN?.Dispose();
             //}
 
@@ -1601,7 +1601,7 @@ namespace APPA_107N_109N
                 foreach (var currPoint in CurrentDciPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -1722,7 +1722,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Current>>)operation.Clone());
@@ -2100,7 +2100,7 @@ namespace APPA_107N_109N
 
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current, Frequency>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -2238,7 +2238,7 @@ namespace APPA_107N_109N
                         }
                     };
 
-                    operation.CompliteWork = () =>
+                    operation.CompliteWorkAsync = () =>
                         Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
@@ -2624,7 +2624,7 @@ namespace APPA_107N_109N
                 foreach (var freqPoint in HerzPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Frequency>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -2710,7 +2710,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Frequency>>)operation.Clone());
@@ -3366,7 +3366,7 @@ namespace APPA_107N_109N
                 foreach (var currPoint in OhmPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Resistance>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -3499,7 +3499,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Resistance>>)operation.Clone());
@@ -3616,7 +3616,7 @@ namespace APPA_107N_109N
                 foreach (var currPoint in FarMeasPoints)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Capacity>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -3722,7 +3722,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
                         }
                     };
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Capacity>>)operation.Clone());
@@ -4158,7 +4158,7 @@ namespace APPA_107N_109N
                 foreach (var currPoint in DegC_Point)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
-                    operation.InitWork = async () =>
+                    operation.InitWorkAsync = async () =>
                     {
                         try
                         {
@@ -4273,7 +4273,7 @@ namespace APPA_107N_109N
                         }
                     };
 
-                    operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                    operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
                                     : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());

@@ -132,7 +132,7 @@ namespace B5_71_PRO_Abstract
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
             operation.IsGood = () => Equals(operation.Getting, operation.Expected);
-            operation.InitWork = () =>
+            operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
                 service.Title = "Внешний осмотр";
@@ -146,7 +146,7 @@ namespace B5_71_PRO_Abstract
                 return Task.CompletedTask;
             };
 
-            operation.CompliteWork = () => { return Task.FromResult(true); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
 
@@ -214,7 +214,7 @@ namespace B5_71_PRO_Abstract
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<bool>();
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
             {
                 try
                 {
@@ -303,7 +303,7 @@ namespace B5_71_PRO_Abstract
                     Bp.OffOutput();
                 }
             };
-            operation.CompliteWork = () =>
+            operation.CompliteWorkAsync = () =>
             {
                 Load.SetOutputState(MainN3300.State.On);
                 Bp.OnOutput();
@@ -421,7 +421,7 @@ namespace B5_71_PRO_Abstract
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -493,7 +493,7 @@ namespace B5_71_PRO_Abstract
                         Bp.OffOutput();
                     }
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (!operation.IsGood())
                     {
@@ -598,7 +598,7 @@ namespace B5_71_PRO_Abstract
             foreach (var point in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -675,7 +675,7 @@ namespace B5_71_PRO_Abstract
                     }
                 };
 
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (!operation.IsGood())
                     {
@@ -785,7 +785,7 @@ namespace B5_71_PRO_Abstract
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
             {
                 try
                 {
@@ -878,7 +878,7 @@ namespace B5_71_PRO_Abstract
                     Bp.OffOutput();
                 }
             };
-            operation.CompliteWork = () =>
+            operation.CompliteWorkAsync = () =>
             {
                 if (!operation.IsGood())
                 {
@@ -983,7 +983,7 @@ namespace B5_71_PRO_Abstract
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
 
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
             {
                 try
                 {
@@ -1072,7 +1072,7 @@ namespace B5_71_PRO_Abstract
             };
 
 
-            operation.CompliteWork = () =>
+            operation.CompliteWorkAsync = () =>
             {
                 if (operation.IsGood == null) return Task.FromResult(false);
                 if (!operation.IsGood())
@@ -1181,7 +1181,7 @@ namespace B5_71_PRO_Abstract
             {
                 var operation = new BasicOperationVerefication<decimal>();
 
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -1249,7 +1249,7 @@ namespace B5_71_PRO_Abstract
                         Bp.OffOutput();
                     }
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (!operation.IsGood())
                     {
@@ -1355,7 +1355,7 @@ namespace B5_71_PRO_Abstract
             foreach (var coef in MyPoint)
             {
                 var operation = new BasicOperationVerefication<decimal>();
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -1421,7 +1421,7 @@ namespace B5_71_PRO_Abstract
                         Bp.OffOutput();
                     }
                 };
-                operation.CompliteWork = () =>
+                operation.CompliteWorkAsync = () =>
                 {
                     if (!operation.IsGood())
                     {
@@ -1533,7 +1533,7 @@ namespace B5_71_PRO_Abstract
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
             {
                 try
                 {
@@ -1606,7 +1606,7 @@ namespace B5_71_PRO_Abstract
                     Bp.OffOutput();
                 }
             };
-            operation.CompliteWork = () =>
+            operation.CompliteWorkAsync = () =>
             {
                 if (!operation.IsGood())
                 {
@@ -1713,7 +1713,7 @@ namespace B5_71_PRO_Abstract
             base.InitWork(token);
             var operation = new BasicOperationVerefication<decimal>();
 
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
             {
                 try
                 {
@@ -1832,7 +1832,7 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.CompliteWork = () =>
+            operation.CompliteWorkAsync = () =>
             {
                 if (!operation.IsGood())
                 {

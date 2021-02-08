@@ -266,7 +266,7 @@ namespace mp2192_92.DialIndicator
 
 
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
                
@@ -441,7 +441,7 @@ namespace mp2192_92.DialIndicator
             decimal[] arrGetting = null;
 
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
@@ -553,7 +553,7 @@ namespace mp2192_92.DialIndicator
             }
 
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
             
@@ -670,7 +670,7 @@ namespace mp2192_92.DialIndicator
             var arrPoints = EndRange.GetArayMeasPointsInParcent(GeneratenParcent(6, 0, 50, 100)).ToArray();
             MeasPoint<Length>[] arrGetting = { };
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
                 var service = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
@@ -727,7 +727,7 @@ namespace mp2192_92.DialIndicator
                 };
             // ReSharper disable once PossibleNullReferenceException
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.CompliteWork = async () =>
+            operation.CompliteWorkAsync = async () =>
                 operation.Error.FirstOrDefault().MainPhysicalQuantity.GetNoramalizeValueToSi() <=
                 IchBase.PerpendicularPressureMax;
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
@@ -758,7 +758,7 @@ namespace mp2192_92.DialIndicator
             for (var i = 0.2m; i <= EndRange.MainPhysicalQuantity.Value; i += 0.2m)
                 measpoint.Add(new MeasPoint<Length>(i, UnitMultiplier.Mili));
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
                 var freeWindow = UserItemOperation.ServicePack.FreeWindow() as SelectionService;
@@ -892,7 +892,7 @@ namespace mp2192_92.DialIndicator
             var arrPoints = new [] {"1-e", "2-e", "3-e", "4-e"};
             MeasPoint<Length>[] arrGettin = null;
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
@@ -1101,7 +1101,7 @@ namespace mp2192_92.DialIndicator
             MeasPoint<Length> arrGetting = null;
 
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
@@ -1151,7 +1151,7 @@ namespace mp2192_92.DialIndicator
             var arrPoints = new[] { "0", "20", "40", "60", "80" };
             MeasPoint<Length>[] arrGettin = null;
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
@@ -1285,7 +1285,7 @@ namespace mp2192_92.DialIndicator
             MeasPoint<Length> arrGetting = null;
 
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
@@ -1334,7 +1334,7 @@ namespace mp2192_92.DialIndicator
             var arrPoints = new[] { "1 – е", "2 – е", "3 – е", "4 – е" };
             MeasPoint<Length>[] arrGettin = null;
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
 
@@ -1444,7 +1444,7 @@ namespace mp2192_92.DialIndicator
            
 
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-            operation.InitWork = async () =>
+            operation.InitWorkAsync = async () =>
 #pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             {
                 var freeWindow = UserItemOperation.ServicePack.FreeWindow() as SelectionService;

@@ -226,6 +226,12 @@ namespace ASMC.Data.Model
         }
 
         #endregion Constructor
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Description;
+        }
     }
 
     public class MeasPoint<TPhysicalQuantity, TAddPhysicalQuantity> : MeasPoint<TPhysicalQuantity>,
@@ -293,7 +299,10 @@ namespace ASMC.Data.Model
         {
             return MainPhysicalQuantity.CompareTo(other.MainPhysicalQuantity);
         }
-
+        public override string ToString()
+        {
+            return Description;
+        }
         #region Operators
 
         #region Arifmetic

@@ -156,7 +156,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Запускает выполнение операций с указаном Гуидом.
         /// </summary>
-        Task StartSinglWork(CancellationTokenSource token, Guid guid);
+        Task StartSinglWorkAsync(CancellationTokenSource token, Guid guid);
 
         /// <summary>
         /// Запускает выполнение всех операций.
@@ -190,7 +190,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Функция выполняемая для проверки правельности собранной схемы.
         /// </summary>
-        public Func<Task<bool>> ChekShem
+        public Func<Task<bool>> ChekShemAsync
         {
             get
             {

@@ -52,7 +52,55 @@ namespace ASMC.Core.Model
         }
 
         #region Methods
+        
+        protected TException CatchException<TException>(Action action, CancellationTokenSource source, Logger logger = null) where TException : Exception
+        {
+            if (source.IsCancellationRequested) return null;
+            try
+            {
+                action.Invoke();
+            }
+            catch (TException e)
+            {
+                source.Cancel();
+                if (logger != null) logger.Error(e);
+                else
+                {
+                    Logger.Error(e);
+                }
+                return e;
+            }
 
+            return null;
+        }
+
+        /// <summary>
+        /// Выполняет функцию и позволяет перехватить исключение указаного типа.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="func">Выполняемая функция</param>
+        /// <param name="source">CancellationTokenSource</param>
+        /// <param name="logger">Необязательный парамент, позволеет логировать через логер необходимого класса.</param>
+        /// <returns>Возвращает кортеж состоящий из результата и ожидаемого исключения.</returns>
+        protected (TResult, TException) CatchException<TException,TResult>(Func<TResult> func, CancellationTokenSource source, Logger logger=null) where TException : Exception
+        {
+            if (source.IsCancellationRequested) return default;
+            try
+            {
+                return (func.Invoke(), null);
+            }
+            catch (TException e)
+            {
+                source.Cancel();
+                if (logger!=null) logger.Error(e);
+                else
+                {
+                     Logger.Error(e);
+                }
+                return (default,e);
+            }
+        }
         /// <summary>
         /// Предоставляет перечень имен столбцов таблицы для отчетов
         /// </summary>
@@ -216,7 +264,7 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public virtual async Task StartSinglWork(CancellationTokenSource token, Guid guid)
+        public virtual async Task StartSinglWorkAsync(CancellationTokenSource token, Guid guid)
         {
             Logger.Info($@"Начато выполнение пункта {Name}");
             InitWork(token);

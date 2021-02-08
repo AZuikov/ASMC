@@ -116,7 +116,7 @@ namespace N8957APlugin
         {
             base.InitWork(token);
             var operation = new BasicOperationVerefication<bool>();
-            operation.InitWork = () =>
+            operation.InitWorkAsync = () =>
            {
                try
                {
@@ -162,7 +162,7 @@ namespace N8957APlugin
                return Task.CompletedTask;
            };
 
-            operation.CompliteWork = () => { return Task.FromResult(true); };
+            operation.CompliteWorkAsync = () => { return Task.FromResult(true); };
             DataRow.Add(operation);
         }
     }
@@ -257,7 +257,7 @@ namespace N8957APlugin
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Frequency>>();
 
-                operation.InitWork = async () =>
+                operation.InitWorkAsync = async () =>
                 {
                     try
                     {
@@ -404,7 +404,7 @@ namespace N8957APlugin
                     }
                 };
                
-                operation.CompliteWork = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
+                operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
 
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
