@@ -500,13 +500,13 @@ namespace APPA_107N_109N
                                 var range = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
                                 if (range == null)
                                     throw new
-                                        Exception($"Не удалось подобрать предел измерения прибора для точки {currPoint.Description}");
+                                        Exception($"Не удалось подобрать предел измерения прибора для точки {operation.Expected.Description}");
                                 MeasPoint<Voltage> tolMeasPoint;
 
-                                if (currPoint.MainPhysicalQuantity.Value < 0)
-                                    tolMeasPoint = range.CalculateTollerance(currPoint * -1);
+                                if (operation.Expected.MainPhysicalQuantity.Value < 0)
+                                    tolMeasPoint = range.CalculateTollerance(operation.Expected * -1);
                                 else
-                                    tolMeasPoint = range.CalculateTollerance(currPoint);
+                                    tolMeasPoint = range.CalculateTollerance(operation.Expected);
 
                                 return tolMeasPoint;
                             };
