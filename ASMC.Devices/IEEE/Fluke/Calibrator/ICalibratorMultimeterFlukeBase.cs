@@ -99,13 +99,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         [StringValue("Y")] Himidity,
         [StringValue("Z")] LinOut1mV
     }
-    public interface ITermocoupleType 
+    public interface ITermocoupleType : ISourcePhysicalQuantity<Temperature>
     {
-        
+        ICommand[] TermoCoupleType { get; set; }
         void SetTermoCoupleType(TypeTermocouple typeTermocouple);
     }
 
-    public interface ITemperature : ISourcePhysicalQuantity<Temperature>
+    public interface ITemperature 
     {
         ITermocoupleType Temperature { get; }
     }

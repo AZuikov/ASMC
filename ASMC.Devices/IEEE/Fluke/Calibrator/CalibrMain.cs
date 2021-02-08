@@ -28,7 +28,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             DcCurrent = new DcCurr(Device);
             AcCurrent = new AcCurr(Device);
             Resistance2W = new Resist2W(Device);
-            Temperature = new Temp(Device);
+           
         }
 
         public ISourcePhysicalQuantity<Voltage> DcVoltage { get; protected set; }
@@ -37,8 +37,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; protected set; }
         public IResistance Resistance2W { get; protected set; }
         public ISourcePhysicalQuantity<Capacity> Capacity { get; protected set; }
-        public ITemperature Temperature { get; protected set; }
-        
+        public ITermocoupleType Temperature { get; }
+
+
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
@@ -168,7 +169,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
         }
 
-        public class Temp : SimplyPhysicalQuantity<Temperature>, ITemperature, ITermocoupleType
+        public class Temp : SimplyPhysicalQuantity<Temperature>
         {
             public Temp(IeeeBase device) : base(device)
             {
@@ -472,7 +473,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         }
 
 
-       
+        
     }
 
     /// <summary>
