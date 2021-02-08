@@ -19,7 +19,7 @@ namespace OWEN_TRM202
     {
         #region Fields
 
-        protected ICalibratorOld Calibrator;
+        protected ICalibratorMultimeterFlukeBase Calibrator;
 
         protected CalibrMain.COut.CSet.СTemperature.TypeTermocouple CalibrTypeTermocouple;
 

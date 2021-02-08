@@ -13,7 +13,6 @@ using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
-using ASMC.Devices.Interface;
 using ASMC.Devices.OWEN;
 using ASMC.Devices.Port.OWEN;
 using ASMC.Devices.UInterface.TRM.ViewModel;
@@ -49,8 +48,7 @@ namespace OWEN_TRM202
     {
         public OpertionFirsVerf2007(ServicePack servicePack) : base(servicePack)
         {
-            var dsds = new Calib5522A();
-            dsds.Resistance2W.SetCompensation(dsds.Resistance2W.CompensationMode.FirstOrDefault(q=> q.Value==2));
+            
 
            //Необходимые устройства
             ControlDevices = new IDeviceUi[]
@@ -455,7 +453,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorOld;
+                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
                 
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
 
@@ -511,7 +509,7 @@ namespace OWEN_TRM202
 
                         try
                         {
-
+                            //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                             Calibrator.SetTemperature(nullDegPoint, CalibrTypeTermocouple, "CEL");
                             Calibrator.SetOutputOn();
                             Thread.Sleep(1900);
@@ -570,6 +568,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_L_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__L;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.L;
 
                 measPoints = new[]
@@ -602,6 +601,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_J_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__j;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.J;
 
                 measPoints = new[]
@@ -634,6 +634,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_N_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__n;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.N;
 
                 measPoints = new[]
@@ -666,6 +667,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_K_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__k;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.K;
 
                 measPoints = new[]
@@ -710,6 +712,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_S_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__s;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.S;
 
                 measPoints = new[]
@@ -742,6 +745,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_R_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__r;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.R;
 
                 measPoints = new[]
@@ -774,6 +778,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_B_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__b;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.B;
 
                 measPoints = new[]
@@ -806,6 +811,7 @@ namespace OWEN_TRM202
                 MeasureRanges = trm202.GetType_T_TermocoupleRangeStorage;
                 CoupleTypeTrm = TRM202Device.in_t.E__t;
                 Name = CoupleTypeTrm.GetStringValue();
+                //todo Исключить подключение термопар через отдельную вилку. Все подключения через клеммы для воспроизведения напряжения!!!
                 CalibrTypeTermocouple = CalibrMain.COut.CSet.СTemperature.TypeTermocouple.T;
 
                 measPoints = new[]
@@ -928,7 +934,7 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected ICalibratorOld Calibrator;
+            protected ICalibratorMultimeterFlukeBase Calibrator;
             protected MeasPoint<Temperature, Voltage>[] measPoints;
             protected RangeStorage<PhysicalRange<Temperature>> MeasureRanges;
 
@@ -980,7 +986,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorOld;
+                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
 
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
 
@@ -1035,18 +1041,18 @@ namespace OWEN_TRM202
 
                         try
                         {
-                            Calibrator.SetVoltageDc(nullPoint);
-                            Calibrator.SetOutputOn();
+                            Calibrator.DcVoltage.SetValue(nullPoint);
+                            Calibrator.DcVoltage.OutputOn();
                             Thread.Sleep(1900);
                             decimal delta = trm202.GetMeasValChanel(_chanelNumber);
                             MeasPoint<Voltage> setPoint =
                                 new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
-                            Calibrator.SetVoltageDc(setPoint);
-                            Calibrator.SetOutputOn();
+                            Calibrator.DcVoltage.SetValue(setPoint);
+                            Calibrator.DcVoltage.OutputOn();
                             Thread.Sleep(1900);
                             decimal measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             measPoint = measPoint - delta;
-                            Calibrator.SetOutputOff();
+                            Calibrator.DcVoltage.OutputOff();
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
@@ -1063,7 +1069,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.SetOutputOff();
+                            Calibrator.DcVoltage.OutputOff();
                         }
 
                         operation.IsGood = () =>
@@ -1089,7 +1095,7 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected ICalibratorOld Calibrator;
+            protected ICalibratorMultimeterFlukeBase Calibrator;
             protected MeasPoint<Percent, Voltage>[] measPointsPercentVolt;
             protected RangeStorage<PhysicalRange<Percent>> MeasureRanges;
 
@@ -1166,7 +1172,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorOld;
+                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
 
                 if (trm202 == null || Calibrator == null || measPointsPercentVolt == null) return;
 
@@ -1219,11 +1225,11 @@ namespace OWEN_TRM202
                                                                                                 .Multiplier);
                             var setPoint =
                                 new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
-                            Calibrator.SetVoltageDc(setPoint);
-                            Calibrator.SetOutputOn();
+                            Calibrator.DcVoltage.SetValue(setPoint);
+                            Calibrator.DcVoltage.OutputOn();
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            Calibrator.SetOutputOff();
+                            Calibrator.DcVoltage.OutputOff();
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Percent>(measPoint);
                         }
@@ -1234,7 +1240,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.SetOutputOff();
+                            Calibrator.DcVoltage.OutputOff();
                         }
 
                         operation.IsGood = () =>
@@ -1557,7 +1563,7 @@ namespace OWEN_TRM202
                                            .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
                 Calibrator =
                     UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorOld;
+                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
 
                 if (trm202 == null || Calibrator == null || measPointsTempRes == null) return;
 
@@ -1613,11 +1619,12 @@ namespace OWEN_TRM202
                         try
                         {
 
-                            Calibrator.SetResistance2W(setPoint);
-                            Calibrator.SetOutputOn();
+                            Calibrator.Resistance2W.SetValue(setPoint);
+                            Calibrator.Resistance2W.SetCompensation(Compensation.CompNone);
+                            Calibrator.Resistance2W.OutputOn();
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            Calibrator.SetOutputOff();
+                            Calibrator.Resistance2W.OutputOff();
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
@@ -1634,7 +1641,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.SetOutputOff();
+                            Calibrator.Resistance2W.OutputOn();
                         }
 
                         operation.IsGood = () =>
