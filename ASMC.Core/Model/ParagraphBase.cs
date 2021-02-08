@@ -16,7 +16,7 @@ using NLog;
 namespace ASMC.Core.Model
 {
     /// <summary>
-    /// Предоставляет базовый клас для пункта операции.
+    /// Предоставляет базовый класс для пункта операции.
     /// </summary>
     public abstract class ParagraphBase<T> : BindableBase, ITreeNode, IUserItemOperation<T>
     {

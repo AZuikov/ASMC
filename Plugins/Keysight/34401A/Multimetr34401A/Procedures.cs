@@ -40,6 +40,17 @@ namespace Multimetr34401A
 
         #region Methods
 
+
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[] { "Ожидаемое значение",
+                "Измеренное значение",
+                "Минимальное допустимое значение",
+                "Максимальное допустимое значение"
+            }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
+        }
+
         /// <summary>
         /// Создает схему
         /// </summary>
@@ -64,7 +75,6 @@ namespace Multimetr34401A
         {
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
-        #region Methods
 
         protected override void ConnectionToDevice()
         {
@@ -74,15 +84,30 @@ namespace Multimetr34401A
             Multimetr.StringConnection = GetStringConnect(Multimetr);
         }
 
-        #endregion
-
-        /// <param name="token"></param>
         /// <inheritdoc />
-        protected override void InitWork(CancellationTokenSource token)
+        protected override DataTable FillData()
         {
-            /*Сдесь должна быть инициализация*/
-            base.InitWork(token);
+            var data = base.FillData();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = data.NewRow();
+                var dds = row as BasicOperationVerefication<TOperation>;
+                if (dds==null) continue;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting.ToString();
+                dataRow[1] = dds.Expected.ToString();
+                dataRow[2] = dds.LowerTolerance.ToString();
+                dataRow[3] = dds.UpperTolerance.ToString();
+                dataRow[4] = string.IsNullOrWhiteSpace(dds.Comment) ? (dds.IsGood() ? ConstGood : ConstBad) : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+          
+
+            return data;
         }
+
+
 
         #endregion
     }
@@ -121,7 +146,11 @@ namespace Multimetr34401A
         {
             return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
         }
-
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[] { "Результат внешнего оснотра" };
+        }
         /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {
@@ -146,7 +175,11 @@ namespace Multimetr34401A
         {
             return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
         }
-
+        /// <inheritdoc />
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[] { "Результат опробывания" };
+        }
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
@@ -180,6 +213,38 @@ namespace Multimetr34401A
 
             return data;
         }
+
+    }
+
+
+    public abstract class MultiPoint<T1,T2> : OperationBase<MeasPoint<T1,T2>> where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+    {
+        /// <inheritdoc />
+        protected MultiPoint(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+        }
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var data = base.FillData();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = data.NewRow();
+                var dds = row as BasicOperationVerefication<MeasPoint<T1, T2>>;
+                if (dds == null) continue;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting.ToString();
+                dataRow[1] = dds.Expected.MainPhysicalQuantity.ToString();
+                dataRow[2] = dds.LowerTolerance.MainPhysicalQuantity.ToString();
+                dataRow[3] = dds.UpperTolerance.MainPhysicalQuantity.ToString();
+                dataRow[4] = string.IsNullOrWhiteSpace(dds.Comment) ? (dds.IsGood() ? ConstGood : ConstBad) : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
+
+            return data;
+        }
     }
 
     public sealed class DCVoltageError: OperationBase<MeasPoint<Voltage>>
@@ -191,8 +256,6 @@ namespace Multimetr34401A
             Name = "Определение погрешности DC";
             Sheme = ShemeGeneration("",0);
         }
-
-       
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
@@ -221,35 +284,23 @@ namespace Multimetr34401A
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood())
-                    {
-                        var answer =
-                            UserItemOperation.ServicePack.MessageBox()
-                                             .Show($"Текущая точка {operation} не проходит по допуску:\n" +
-                                                   $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
-                                                   $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                                   $"Допустимое значение погрешности {operation.Error.Description}\n" +
-                                                   $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                                   $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
-                                                   "Повторить измерение этой точки?",
-                                                   "Информация по текущему измерению",
-                                                   MessageButton.YesNo, MessageIcon.Question,
-                                                   MessageResult.Yes);
+                    if (operation.IsGood == null || operation.IsGood())
+                        return Task.FromResult(operation.IsGood == null || operation.IsGood());
+                    var answer =
+                        UserItemOperation.ServicePack.MessageBox()
+                            .Show($"Текущая точка {operation} не проходит по допуску:\n" +
+                                  $"Повторить измерение этой точки?",
+                                "Информация по текущему измерению",
+                                MessageButton.YesNo, MessageIcon.Question,
+                                MessageResult.Yes);
 
-                        if (answer == MessageResult.No) return Task.FromResult(true);
-                    }
-
-                    if (operation.IsGood == null)
-                        return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood());
+                    return answer == MessageResult.No ? Task.FromResult(true) : Task.FromResult(operation.IsGood == null || operation.IsGood());
                 };
+                operation.IsGood = () => operation.Getting <= operation.UpperTolerance &&
+                                         operation.Getting >= operation.LowerTolerance;
                 DataRow.Add(operation);
             }
-         
-                
-
-          
         }
     }
-
+   
 }
