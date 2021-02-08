@@ -170,7 +170,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
         }
 
-        public class Temp : SimplyPhysicalQuantity<Temperature>
+        public class Temp : SimplyPhysicalQuantity<Temperature>, ITermocoupleType
         {
             public Temp(IeeeBase device) : base(device)
             {
@@ -194,6 +194,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                 #endregion
             }
+
+            public ICommand[] TermoCoupleType { get; set; }
 
             public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
             {

@@ -1669,13 +1669,13 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            flkCalib5522A.Out.Set.Current.Dc.SetValue(currPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            flkCalib5522A.DcCurrent.SetValue(currPoint);
+                            flkCalib5522A.DcCurrent.OutputOn();
                             Thread.Sleep(2000);
                             //измеряем
                             var measurePoint = (decimal)appa10XN.GetValue();
 
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.DcCurrent.OutputOff();
 
                             var mantisa =
                                 MathStatistics
@@ -1718,7 +1718,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.DcCurrent.OutputOff();
                         }
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -2171,17 +2171,18 @@ namespace APPA_107N_109N
                         {
 
                             decimal measurePoint = 0;
-                            bool isRealPoint = flkCalib5522A.Out.Set.Current.Ac.Ranges.IsPointBelong(curr);
-                            bool isRealPointHiCurr =
-                                flkCalib5522A.Out.Set.Current.Ac.RangesHiCurrent.IsPointBelong(curr);
+                            bool isRealPoint = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
+                            //todo Пределы по току нужно слить в один большой предел
+                            bool isRealPointHiCurr = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
+                            
                             if (isRealPoint || isRealPointHiCurr)
                             {
-                                flkCalib5522A.Out.Set.Current.Ac.SetValue(curr);
-                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                                flkCalib5522A.AcCurrent.SetValue(curr);
+                                flkCalib5522A.AcCurrent.OutputOn();
                                 Thread.Sleep(2000);
                                 //измеряем
                                 measurePoint = (decimal)appa10XN.GetValue();
-                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                                flkCalib5522A.AcCurrent.OutputOff();
                             }
 
 
@@ -2233,7 +2234,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.AcCurrent.OutputOff();
                         }
                     };
 
@@ -2665,13 +2666,13 @@ namespace APPA_107N_109N
                                                                       Multiplier = freqPoint
                                                                                   .MainPhysicalQuantity.Multiplier
                                                                   });
-                            flkCalib5522A.Out.Set.Voltage.Ac.SetValue(setPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            flkCalib5522A.AcVoltage.SetValue(setPoint);
+                            flkCalib5522A.AcVoltage.OutputOn();
                             Thread.Sleep(100);
                             //измеряем
                             var measurePoint = (decimal)appa10XN.GetValue();
 
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.AcVoltage.OutputOff();
 
                             operation.Getting =
                                 new MeasPoint<Frequency>(measurePoint, freqPoint.MainPhysicalQuantity.Multiplier);
@@ -2706,7 +2707,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.AcVoltage.OutputOff();
                         }
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -3436,15 +3437,16 @@ namespace APPA_107N_109N
                             decimal refValue = 0;
                             if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
                             {
-                                flkCalib5522A.Out.Set.Resistance.SetValue(0);
-                                flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                                flkCalib5522A.Resistance2W.SetValue(new MeasPoint<Resistance>(0));
+                                flkCalib5522A.Resistance2W.SetCompensation( Compensation.CompNone);
+                                flkCalib5522A.Resistance2W.OutputOn();
                                 Thread.Sleep(3000);
                                 //измеряем
                                 refValue = (decimal)appa10XN.GetValue();
                             }
 
-                            flkCalib5522A.Out.Set.Resistance.SetValue(currPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            flkCalib5522A.Resistance2W.SetValue(currPoint);
+                            flkCalib5522A.Resistance2W.OutputOn();
 
                             if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mega) Thread.Sleep(9000);
                             else if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Giga)
@@ -3454,7 +3456,7 @@ namespace APPA_107N_109N
                             //измеряем
                             var measurePoint = (decimal)appa10XN.GetValue() - refValue;
 
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.Resistance2W.OutputOff();
 
                             var mantisa =
                                 MathStatistics
@@ -3495,7 +3497,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.Resistance2W.OutputOff();
                         }
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
@@ -4225,16 +4227,14 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            flkCalib5522A.Out.Set.Temperature.SetTermoCoupleType(CalibrMain.COut.CSet.СTemperature
-                                                                                       .TypeTermocouple.K);
-                            flkCalib5522A.
-                            flkCalib5522A.Out.Set.Temperature.SetValue(currPoint);
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.On);
+                            flkCalib5522A.Temperature.SetTermoCoupleType( TypeTermocouple.K);
+                            flkCalib5522A.Temperature.SetValue(currPoint);
+                            flkCalib5522A.Temperature.OutputOn();
                             Thread.Sleep(3000);
                             //измеряем
                             var measurePoint = (decimal)appa10XN.GetValue();
 
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.Temperature.OutputOff();
 
                             var mantisa =
                                 MathStatistics
@@ -4269,7 +4269,7 @@ namespace APPA_107N_109N
                         }
                         finally
                         {
-                            flkCalib5522A.Out.SetOutput(CalibrMain.COut.State.Off);
+                            flkCalib5522A.Temperature.OutputOff();
                         }
                     };
 
