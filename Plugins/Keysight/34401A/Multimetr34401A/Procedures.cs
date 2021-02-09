@@ -49,7 +49,7 @@ namespace Multimetr34401A
         #region Methods
 
         protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
-            IMeterPhysicalQuantity<TPhysicalQuantity> mert, ISourcePhysicalQuantity<TPhysicalQuantity> sourse,
+            IMeterPhysicalQuantity<TPhysicalQuantity> metr, ISourcePhysicalQuantity<TPhysicalQuantity> sourse,
             Logger logger, CancellationTokenSource _token)
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
@@ -58,7 +58,7 @@ namespace Multimetr34401A
             try
             {
                 result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
-                    () => mert.GetValue(), _token, logger);
+                    () => metr.GetValue(), _token, logger);
             }
             finally
             {
@@ -430,7 +430,7 @@ namespace Multimetr34401A
                 {
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
                 };
-
+                operation.ErrorCalculation = (point, measPoint) => null;
                 operation.LowerCalculation = expected =>
                     expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
 
