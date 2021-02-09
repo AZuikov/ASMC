@@ -418,5 +418,7 @@ namespace ASMC.Devices.Port
             _sp.DataReceived -= SerialPort_DataReceived;
             _sp?.Dispose();
         }
+
+      
     }
 }

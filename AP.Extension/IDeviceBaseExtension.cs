@@ -24,9 +24,16 @@ namespace AP.Extension
             void GetMember(object obj, Type type)
             {
                 var accessor = TypeAccessor.Create(type);
-                var propertyClass = accessor.GetMembers().Where(q => q.Type.IsClass).ToArray();
+                var propertyClass = accessor.GetMembers().Where(q => q.Type.IsClass || q.Type.IsInterface).ToArray();
                 foreach (var cl in propertyClass)
                 {
+                    
+                    if (cl.Type.IsInterface&& obj!=null)
+                    {
+                        object value = accessor[obj, cl.Name];
+                        if (value != null) GetMember(value, value.GetType());
+                    }
+                  
                     /*Ищем атрибут для диапазона*/
                     if (cl.GetAttribute(typeof(AccRangeAttribute), true) != null)
                     {
@@ -40,7 +47,7 @@ namespace AP.Extension
 
                             var date = file.Skip(str + 1).Take(end - 1).ToArray();
                             var reg = new Regex(@"\s\s+");
-                            var res = date.Select(q => reg.Replace(q, " ")).Where(q => !q.StartsWith("#")).ToArray();
+                            var res = date.Select(q => reg.Replace(q, " ").Replace("\t", "")).Where(q => !q.StartsWith("#")).ToArray();
                             /*заполняемое хранилище диапазонов*/
                             accessor[obj, cl.Name] = Activator.CreateInstance(cl.Type, res.Where(q => !string.IsNullOrWhiteSpace(q)).Select(q => (IPhysicalRange)GenerateRange(q, accessor[obj, cl.Name], cl.Type, att.MeasPointType)).ToArray());
                            // return;

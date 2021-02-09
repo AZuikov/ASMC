@@ -182,6 +182,8 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
             throw new NotImplementedException();
         }
 
+        
+
         protected enum CommandQuery : byte
         {
             /// <summary>

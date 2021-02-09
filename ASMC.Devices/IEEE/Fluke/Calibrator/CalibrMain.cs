@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -285,7 +286,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 var point = (MeasPoint<TPhysicalQuantity>) value.Clone();
                 var unit = point.MainPhysicalQuantity.Unit.GetStringValue();
                 point.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
-                return point.Description.Replace(unit, GetUnit()).Replace(',', '.');
+                return point.Description.Replace(',', '.').Replace(unit, GetUnit());
             }
 
             /// <summary>
@@ -485,10 +486,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public bool IsTestConnect { get; }
         public async Task InitializeAsync()
         {
-            
-            string fileName = @$"{Environment.CurrentDirectory}acc\{UserType}.acc";
+            var fileName = @$"{Environment.CurrentDirectory}acc\{UserType}.acc";
+            if(!File.Exists(fileName)) return;
             this.FillRangesDevice(fileName);
         }
+
+     
     }
 
     /// <summary>
