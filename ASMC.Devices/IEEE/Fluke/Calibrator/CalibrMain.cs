@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AP.Extension;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -484,7 +485,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public bool IsTestConnect { get; }
         public async Task InitializeAsync()
         {
-            throw new NotImplementedException();
+            
+            string fileName = @$"{Environment.CurrentDirectory}acc\{UserType}.acc";
+            this.FillRangesDevice(fileName);
         }
     }
 

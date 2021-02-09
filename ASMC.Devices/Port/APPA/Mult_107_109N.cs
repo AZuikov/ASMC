@@ -1,6 +1,7 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+using Accord.Math;
 using AP.Math;
 using AP.Utils.Data;
 using ASMC.Data.Model;
@@ -12,9 +13,6 @@ using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Timers;
-using Accord.Math;
-using Accord.Statistics;
-using DevExpress.Mvvm.Native;
 using Timer = System.Timers.Timer;
 
 namespace ASMC.Devices.Port.APPA
@@ -22,384 +20,7 @@ namespace ASMC.Devices.Port.APPA
     // ReSharper disable once InconsistentNaming
     public class Mult107_109N : ComPort
     {
-        #region MeasureCharacteristic
-
-        public RangeStorage<PhysicalRange<Frequency>> FrequencyRangeStorage
-        {
-            get => getFrequencyRangeStorage();
-        }
-
-        protected virtual RangeStorage<PhysicalRange<Frequency>> getFrequencyRangeStorage()
-        {
-            return new RangeStorage<PhysicalRange<Frequency>>(new []
-            {
-                //20 Hz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(20),
-                                             new AccuracyChatacteristic(0.050M,null,0.01M)), 
-                //200 Hz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200),
-                                             new AccuracyChatacteristic(0.10M,null,0.01M)),
-                //2 kHz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(2,UnitMultiplier.Kilo),
-                                             new AccuracyChatacteristic(1.0M,null,0.01M)),
-                //20 kHz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(20,UnitMultiplier.Kilo),
-                                             new AccuracyChatacteristic(0.010M,null,0.01M)),
-                //200 kHz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
-                                             new AccuracyChatacteristic(0.00010M,null,0.01M)),
-                //1 MHz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
-                                             new AccuracyChatacteristic(0.0010M,null,0.01M)),
-            });
-        }
-
-        public RangeStorage<PhysicalRange<Temperature>> GetCelsiumRangeStorage
-        {
-            get => CelsiumRangeStorage();
-        }
-
-        protected virtual RangeStorage<PhysicalRange<Temperature>> CelsiumRangeStorage()
-        {
-            return new RangeStorage<PhysicalRange<Temperature>>(new []{
-                
-                //-200....-100
-                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(-100),
-                                               new AccuracyChatacteristic(6.0M,null,0.1M)),
-                //-100...400
-                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-100), new MeasPoint<Temperature>(400), 
-                                               new AccuracyChatacteristic(3.0M, null, 0.1M)),
-                //400...1200
-                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(400),new MeasPoint<Temperature>(1200), 
-                                               new AccuracyChatacteristic(3M, null,0.1M))
-                
-            });
-        }
-
-        public RangeStorage<PhysicalRange<Capacity>> CapacityRangeStorage
-        {
-            get => getCapacityRangeStorage();
-        }
-
-        protected virtual RangeStorage<PhysicalRange<Capacity>> getCapacityRangeStorage()
-        {
-            return new RangeStorage<PhysicalRange<Capacity>>(new []
-            {
-                // 4 nF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Nano), 
-                                            new AccuracyChatacteristic(0.00000000001M, null,1.5M)), 
-                // 40 nF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Nano),
-                                            new AccuracyChatacteristic(0.00000000010M, null,1.5M)),
-                // 400 nF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(400,UnitMultiplier.Nano),
-                                            new AccuracyChatacteristic(0.0000000005M, null,0.9M)),
-                // 4 uF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Micro),
-                                            new AccuracyChatacteristic(0.000000005M, null,0.9M)),
-                // 40 uF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Micro),
-                                            new AccuracyChatacteristic(0.00000005M, null,1.2M)),
-                // 400 uF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(400,UnitMultiplier.Micro),
-                                            new AccuracyChatacteristic(0.0000005M, null,1.2M)),
-                // 4 mF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Mili),
-                                            new AccuracyChatacteristic(0.000005M, null,1.5M)),
-                // 40 mF
-                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Mili),
-                                            new AccuracyChatacteristic(0.00005M, null,1.5M)),
-            });
-        }
-
-
-        public RangeStorage<PhysicalRange<Resistance>> ResistanceRangeStorage
-        {
-            get => getResistanceRangeStorage();
-        }
-
-        protected virtual RangeStorage<PhysicalRange<Resistance>> getResistanceRangeStorage()
-        {
-            return new RangeStorage<PhysicalRange<Resistance>>(new[]
-            {
-                //200 Om
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200),
-                                              new AccuracyChatacteristic(0.30M,null,0.3M)),
-                // 2kOm
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Kilo), 
-                                              new AccuracyChatacteristic(3.0M,null,0.3M)),
-                // 20kOm
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(20,UnitMultiplier.Kilo),
-                                              new AccuracyChatacteristic(30M,null,0.3M)),
-                // 200kOm
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200,UnitMultiplier.Kilo),
-                                              new AccuracyChatacteristic(300M,null,0.3M)),
-                // 2MOm
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Mega),
-                                              new AccuracyChatacteristic(5000M,null,0.3M)),
-
-                // 20MOm
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(20,UnitMultiplier.Mega),
-                                              new AccuracyChatacteristic(50000M,null,5M)),
-                // 200MOm
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200,UnitMultiplier.Mega),
-                                              new AccuracyChatacteristic(20000000M,null,5M)),
-                // 2GOm
-                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Giga),
-                                              new AccuracyChatacteristic(800000000M,null,5M))
-
-            });
-        }
-
-        public RangeStorage<PhysicalRange<Current>> DciRangeStorage
-        {
-            get => getDciRangeStorage();
-        }
-
-        protected virtual RangeStorage<PhysicalRange<Current>> getDciRangeStorage()
-        {
-            return new RangeStorage<PhysicalRange<Current>>(new[]
-            {
-                // 20 mA
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(20,UnitMultiplier.Mili),
-                                           new AccuracyChatacteristic(0.000040M,null,0.2M)),
-                // 200 mA
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(200,UnitMultiplier.Mili),
-                                           new AccuracyChatacteristic(0.00040M,null,0.2M)),
-                // 2 A
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(2),
-                                           new AccuracyChatacteristic(0.0040M,null,0.2M)),
-                // 10 A
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(10),
-                                           new AccuracyChatacteristic(0.040M,null,0.2M)),
-            });
-        }
-
-        /// <summary>
-        /// Пределы измерения с характеристиками точности для переменного тока.
-        /// </summary>
-        public RangeStorage<PhysicalRange<Current, Frequency>> aciRangeStorage
-        {
-            get => GetAciRangeStorage();
-        }
-
-        protected virtual RangeStorage<PhysicalRange<Current, Frequency>> GetAciRangeStorage()
-        {
-            return new RangeStorage<PhysicalRange<Current, Frequency>>(new[]
-            {
-                // 20 mA
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 40),
-                                                      new MeasPoint<Current, Frequency>(20, UnitMultiplier.Mili, 500),
-                                                      new AccuracyChatacteristic(0.000050m, null, 0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 500),
-                                                      new MeasPoint<Current, Frequency>(20, UnitMultiplier.Mili, 1,
-                                                                                        UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.000080m, null, 1.2M)),
-                //200 mA
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 40),
-                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 500),
-                                                      new AccuracyChatacteristic(0.00050M, null, 0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 500),
-                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 1,
-                                                                                        UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.00080M, null, 1.2M)),
-                new
-                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 1, UnitMultiplier.Kilo),
-                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 3,
-                                                                                        UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.00080M, null, 2M)),
-
-                //2 A
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 40),
-                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 500),
-                                                      new AccuracyChatacteristic(0.0050M, null, 0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 500),
-                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 1,
-                                                                                        UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.0080M, null, 1.2M)),
-                new
-                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
-                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 3,
-                                                                                        UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.0080M, null, 2M)),
-
-                // 10 A
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 40),
-                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 500),
-                                                      new AccuracyChatacteristic(0.050M, null, 0.8M)),
-                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 500),
-                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 1,
-                                                                                        UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.080M, null, 1.2M)),
-                new
-                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
-                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 3,
-                                                                                        UnitMultiplier.Kilo),
-                                                      new AccuracyChatacteristic(0.080M, null, 2M)),
-            });
-        }
-
-        /// <summary>
-        /// Пределы измерения постоянного напряжения.
-        /// </summary>
-        public RangeStorage<PhysicalRange<Voltage>> DcvRangeStorage
-        {
-            get => GetDcvRangeStorage();
-        }
-
-        protected virtual RangeStorage<PhysicalRange<Voltage>> GetDcvRangeStorage()
-        {
-            PhysicalRange<Voltage>[] tolArr = new[]
-            {
-                // 20 мВ
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(20, UnitMultiplier.Mili),
-                                           new AccuracyChatacteristic(0.000060M, null, 0.06M)),
-                // 200 мВ
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(200, UnitMultiplier.Mili),
-                                           new AccuracyChatacteristic(0.00020M, null, 0.06M)),
-
-                // 2 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(2),
-                                           new AccuracyChatacteristic(0.0010M, null, 0.06M)),
-
-                // 20 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(20),
-                                           new AccuracyChatacteristic(0.010M, null, 0.06M)),
-
-                //200 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(200),
-                                           new AccuracyChatacteristic(0.10M, null, 0.06M)),
-
-                //1000 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(1000),
-                                           new AccuracyChatacteristic(1.0M, null, 0.06M)),
-            };
-            PhysicalRange<Voltage>[] negative = new  PhysicalRange<Voltage>[tolArr.Length];
-            for (int i = 0; i < negative.Length; i++)
-            {
-                PhysicalRange<Voltage> buf = new PhysicalRange<Voltage>((MeasPoint<Voltage>)tolArr[i].End*-1,(MeasPoint<Voltage>)tolArr[i].Start*-1, tolArr[i].AccuracyChatacteristic);
-                negative[i] = buf;
-            }
-
-            return new RangeStorage<PhysicalRange<Voltage>>(tolArr.Concat(negative).ToArray());
-        }
-
-        public RangeStorage<PhysicalRange<Voltage, Frequency>> AcvRangeStorage
-        {
-            get => GetAcvRangeStorage();
-        }
-
-        protected RangeStorage<PhysicalRange<Voltage, Frequency>> GetAcvRangeStorage()
-        {
-            return new RangeStorage<PhysicalRange<Voltage, Frequency>>(new[]
-            {
-                //20 mV 40-100Hz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.Mili, new Frequency(100)),
-                                                      new AccuracyChatacteristic(0.000080M,null,0.7M)),
-                //20 mV 100Hz-1kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.Mili, new Frequency(1000)),
-                                                      new AccuracyChatacteristic(0.000080M,null,1M)),
-
-                //200 mV 40-100Hz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
-                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.Mili, new Frequency(100)),
-                                                      new AccuracyChatacteristic(0.00080M,null,0.7M)),
-                //200 mV 100Hz-1kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
-                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.Mili, new Frequency(1000)),
-                                                      new AccuracyChatacteristic(0.00080M,null,1M)),
-
-                //2 V 40-100Hz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
-                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(100)),
-                                                      new AccuracyChatacteristic(0.0050M,null,0.7M)),
-                //2 V 100Hz-1kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
-                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(1000)),
-                                                      new AccuracyChatacteristic(0.0050M,null,1M)),
-
-                //2 V 1kHz-10kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.0060M,null,2M)),
-
-                //2 V 10kHz-20kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10, UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.0070M,null,3M)),
-
-                //2 V 20kHz-50kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.0080M,null,5M)),
-                //2 V 50kHz-100kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(100, UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.0100M,null,10M)),
-
-                //20 V 40-100Hz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(100)),
-                                                      new AccuracyChatacteristic(0.050M,null,0.7M)),
-                //20 V 100Hz-1kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(1000)),
-                                                      new AccuracyChatacteristic(0.050M,null,1M)),
-
-                //20 V 1kHz-10kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.060M,null,2M)),
-
-                //20 V 10kHz-20kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10, UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.070M,null,3M)),
-
-                //20 V 20kHz-50kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.080M,null,5M)),
-                //20 V 50kHz-100kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(100, UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.100M,null,10M)),
-
-                //200 V 40-100Hz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
-                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(100)),
-                                                      new AccuracyChatacteristic(0.50M,null,0.7M)),
-                //200 V 100Hz-1kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
-                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.50M,null,1M)),
-                //200 V 1kHz-10kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.60M,null,2M)),
-                //200 V 10kHz-20kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(20,UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.70M,null,3M)),
-                //200 V 20kHz-50kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20,UnitMultiplier.Kilo)),
-                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(50,UnitMultiplier.Kilo)),
-                                                      new AccuracyChatacteristic(0.80M,null,5M)),
-
-                //750 V 40Hz-100Hz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
-                                                      new MeasPoint<Voltage, Frequency>(750, UnitMultiplier.None, new Frequency(100)),
-                                                      new AccuracyChatacteristic(5.0M,null,0.7M)),
-                //750 V 100Hz-1kHz
-                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
-                                                      new MeasPoint<Voltage, Frequency>(750, UnitMultiplier.None, new Frequency(1000)),
-                                                      new AccuracyChatacteristic(5.0M,null,1M))
-            });
-        }
-
-        #endregion MeasureCharacteristic
+       
 
         public enum BlueState
         {
@@ -523,44 +144,44 @@ namespace ASMC.Devices.Port.APPA
         /// </summary>
         public enum RangeAppaNominal
         {
-            [DoubleValue(0.02)][StringValue("20 мВ")] Range20mV,
-            [DoubleValue(0.2)][StringValue("200 мВ")] Range200mV,
-            [DoubleValue(2)][StringValue("2 В")] Range2V,
-            [DoubleValue(20)][StringValue("20 В ")] Range20V,
-            [DoubleValue(200)][StringValue("200 В")] Range200V,
-            [DoubleValue(750)][StringValue("750 В")] Range750V,
-            [DoubleValue(1000)][StringValue("1000 В")] Range1000V,
-            [DoubleValue(0.02)][StringValue("20 мА")] Range20mA,
-            [DoubleValue(0.2)][StringValue("200 мА")] Range200mA,
-            [DoubleValue(0.4)][StringValue("400 мА")] Range400mA,
-            [DoubleValue(2)][StringValue("2 А")] Range2A,
-            [DoubleValue(10)][StringValue("10 А")] Range10A,
-            [DoubleValue(200)][StringValue("200 Ом")] Range200Ohm,
-            [DoubleValue(2000)][StringValue("2 кОм")] Range2kOhm,
-            [DoubleValue(20000)][StringValue("20 кОм")] Range20kOhm,
-            [DoubleValue(200000)][StringValue("200 кОм")] Range200kOhm,
-            [DoubleValue(2000000)][StringValue("2 МОм")] Range2Mohm,
-            [DoubleValue(20000000)][StringValue("20 МОм")] Range20Mohm,
-            [DoubleValue(200000000)][StringValue("200 МОм")] Range200Mohm,
-            [DoubleValue(2000000000)][StringValue("2 ГОм")] Range2Gohm,
-            [DoubleValue(0.000000004)][StringValue("4 нФ")] Range4nF,
-            [DoubleValue(0.00000004)][StringValue("40 нФ")] Range40nF,
-            [DoubleValue(0.0000004)][StringValue("400 нФ")] Range400nF,
-            [DoubleValue(0.000004)][StringValue("4 мкФ")] Range4uF,
-            [DoubleValue(0.00004)][StringValue("40 мкФ")] Range40uF,
-            [DoubleValue(0.0004)][StringValue("400 мкФ")] Range400uF,
-            [DoubleValue(0.004)][StringValue("4 мФ")] Range4mF,
-            [DoubleValue(0.04)][StringValue("40 мФ")] Range40mF,
-            [DoubleValue(20)][StringValue("20 Гц")] Range20Hz,
-            [DoubleValue(200)][StringValue("200 Гц ")] Range200Hz,
-            [DoubleValue(2000)][StringValue("2 кГц")] Range2kHz,
-            [DoubleValue(20000)][StringValue("20 кГц")] Range20kHz,
-            [DoubleValue(200000)][StringValue("200 кГц")] Range200kHz,
-            [DoubleValue(1000000)][StringValue("1 МГц")] Range1MHz,
-            [DoubleValue(400)][StringValue("400 ℃")] Range400degC,
-            [DoubleValue(400)][StringValue("400 ℉")] Range400degF,
-            [DoubleValue(1200)][StringValue("1200 ℃")] Range1200degC,
-            [DoubleValue(2192)][StringValue("2192 ℉")] Range2192degF,
+            [DoubleValue(0.02)] [StringValue("20 мВ")] Range20mV,
+            [DoubleValue(0.2)] [StringValue("200 мВ")] Range200mV,
+            [DoubleValue(2)] [StringValue("2 В")] Range2V,
+            [DoubleValue(20)] [StringValue("20 В ")] Range20V,
+            [DoubleValue(200)] [StringValue("200 В")] Range200V,
+            [DoubleValue(750)] [StringValue("750 В")] Range750V,
+            [DoubleValue(1000)] [StringValue("1000 В")] Range1000V,
+            [DoubleValue(0.02)] [StringValue("20 мА")] Range20mA,
+            [DoubleValue(0.2)] [StringValue("200 мА")] Range200mA,
+            [DoubleValue(0.4)] [StringValue("400 мА")] Range400mA,
+            [DoubleValue(2)] [StringValue("2 А")] Range2A,
+            [DoubleValue(10)] [StringValue("10 А")] Range10A,
+            [DoubleValue(200)] [StringValue("200 Ом")] Range200Ohm,
+            [DoubleValue(2000)] [StringValue("2 кОм")] Range2kOhm,
+            [DoubleValue(20000)] [StringValue("20 кОм")] Range20kOhm,
+            [DoubleValue(200000)] [StringValue("200 кОм")] Range200kOhm,
+            [DoubleValue(2000000)] [StringValue("2 МОм")] Range2Mohm,
+            [DoubleValue(20000000)] [StringValue("20 МОм")] Range20Mohm,
+            [DoubleValue(200000000)] [StringValue("200 МОм")] Range200Mohm,
+            [DoubleValue(2000000000)] [StringValue("2 ГОм")] Range2Gohm,
+            [DoubleValue(0.000000004)] [StringValue("4 нФ")] Range4nF,
+            [DoubleValue(0.00000004)] [StringValue("40 нФ")] Range40nF,
+            [DoubleValue(0.0000004)] [StringValue("400 нФ")] Range400nF,
+            [DoubleValue(0.000004)] [StringValue("4 мкФ")] Range4uF,
+            [DoubleValue(0.00004)] [StringValue("40 мкФ")] Range40uF,
+            [DoubleValue(0.0004)] [StringValue("400 мкФ")] Range400uF,
+            [DoubleValue(0.004)] [StringValue("4 мФ")] Range4mF,
+            [DoubleValue(0.04)] [StringValue("40 мФ")] Range40mF,
+            [DoubleValue(20)] [StringValue("20 Гц")] Range20Hz,
+            [DoubleValue(200)] [StringValue("200 Гц ")] Range200Hz,
+            [DoubleValue(2000)] [StringValue("2 кГц")] Range2kHz,
+            [DoubleValue(20000)] [StringValue("20 кГц")] Range20kHz,
+            [DoubleValue(200000)] [StringValue("200 кГц")] Range200kHz,
+            [DoubleValue(1000000)] [StringValue("1 МГц")] Range1MHz,
+            [DoubleValue(400)] [StringValue("400 ℃")] Range400degC,
+            [DoubleValue(400)] [StringValue("400 ℉")] Range400degF,
+            [DoubleValue(1200)] [StringValue("1200 ℃")] Range1200degC,
+            [DoubleValue(2192)] [StringValue("2192 ℉")] Range2192degF,
             [DoubleValue(0)] [StringValue("предел не установлен")] RangeNone
         }
 
@@ -1200,5 +821,383 @@ namespace ASMC.Devices.Port.APPA
         {
             UserType = "APPA-109N";
         }
+    }
+
+    public static class Appa107N_109NAccuracyBock
+    {
+        #region MeasureCharacteristic
+
+        public static RangeStorage<PhysicalRange<Frequency>> FrequencyRangeStorage
+        {
+            get => getFrequencyRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Frequency>> getFrequencyRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Frequency>>(new[]
+            {
+                //20 Hz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(20),
+                                             new AccuracyChatacteristic(0.050M,null,0.01M)),
+                //200 Hz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200),
+                                             new AccuracyChatacteristic(0.10M,null,0.01M)),
+                //2 kHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(2,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(1.0M,null,0.01M)),
+                //20 kHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(20,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(0.010M,null,0.01M)),
+                //200 kHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(0.00010M,null,0.01M)),
+                //1 MHz
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
+                                             new AccuracyChatacteristic(0.0010M,null,0.01M)),
+            });
+        }
+
+        public static RangeStorage<PhysicalRange<Temperature>> GetCelsiumRangeStorage
+        {
+            get => CelsiumRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Temperature>> CelsiumRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Temperature>>(new[]{
+                //-200....-100
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-200),new MeasPoint<Temperature>(-100),
+                                               new AccuracyChatacteristic(6.0M,null,0.1M)),
+                //-100...400
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-100), new MeasPoint<Temperature>(400),
+                                               new AccuracyChatacteristic(3.0M, null, 0.1M)),
+                //400...1200
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(400),new MeasPoint<Temperature>(1200),
+                                               new AccuracyChatacteristic(3M, null,0.1M))
+            });
+        }
+
+        public static RangeStorage<PhysicalRange<Capacity>> CapacityRangeStorage
+        {
+            get => getCapacityRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Capacity>> getCapacityRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Capacity>>(new[]
+            {
+                // 4 nF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Nano),
+                                            new AccuracyChatacteristic(0.00000000001M, null,1.5M)),
+                // 40 nF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Nano),
+                                            new AccuracyChatacteristic(0.00000000010M, null,1.5M)),
+                // 400 nF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(400,UnitMultiplier.Nano),
+                                            new AccuracyChatacteristic(0.0000000005M, null,0.9M)),
+                // 4 uF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Micro),
+                                            new AccuracyChatacteristic(0.000000005M, null,0.9M)),
+                // 40 uF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Micro),
+                                            new AccuracyChatacteristic(0.00000005M, null,1.2M)),
+                // 400 uF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(400,UnitMultiplier.Micro),
+                                            new AccuracyChatacteristic(0.0000005M, null,1.2M)),
+                // 4 mF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(4,UnitMultiplier.Mili),
+                                            new AccuracyChatacteristic(0.000005M, null,1.5M)),
+                // 40 mF
+                new PhysicalRange<Capacity>(new MeasPoint<Capacity>(0), new MeasPoint<Capacity>(40,UnitMultiplier.Mili),
+                                            new AccuracyChatacteristic(0.00005M, null,1.5M)),
+            });
+        }
+
+        public static RangeStorage<PhysicalRange<Resistance>> ResistanceRangeStorage
+        {
+            get => getResistanceRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Resistance>> getResistanceRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Resistance>>(new[]
+            {
+                //200 Om
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200),
+                                              new AccuracyChatacteristic(0.30M,null,0.3M)),
+                // 2kOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Kilo),
+                                              new AccuracyChatacteristic(3.0M,null,0.3M)),
+                // 20kOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(20,UnitMultiplier.Kilo),
+                                              new AccuracyChatacteristic(30M,null,0.3M)),
+                // 200kOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200,UnitMultiplier.Kilo),
+                                              new AccuracyChatacteristic(300M,null,0.3M)),
+                // 2MOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Mega),
+                                              new AccuracyChatacteristic(5000M,null,0.3M)),
+
+                // 20MOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(20,UnitMultiplier.Mega),
+                                              new AccuracyChatacteristic(50000M,null,5M)),
+                // 200MOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(200,UnitMultiplier.Mega),
+                                              new AccuracyChatacteristic(20000000M,null,5M)),
+                // 2GOm
+                new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0), new MeasPoint<Resistance>(2,UnitMultiplier.Giga),
+                                              new AccuracyChatacteristic(800000000M,null,5M))
+            });
+        }
+
+        public static RangeStorage<PhysicalRange<Current>> DciRangeStorage
+        {
+            get => getDciRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Current>> getDciRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Current>>(new[]
+            {
+                // 20 mA
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(20,UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.000040M,null,0.2M)),
+                // 200 mA
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(200,UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.00040M,null,0.2M)),
+                // 2 A
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(2),
+                                           new AccuracyChatacteristic(0.0040M,null,0.2M)),
+                // 10 A
+                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(10),
+                                           new AccuracyChatacteristic(0.040M,null,0.2M)),
+            });
+        }
+
+        /// <summary>
+        /// Пределы измерения с характеристиками точности для переменного тока.
+        /// </summary>
+        public static RangeStorage<PhysicalRange<Current, Frequency>> aciRangeStorage
+        {
+            get => GetAciRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Current, Frequency>> GetAciRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Current, Frequency>>(new[]
+            {
+                // 20 mA
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 40),
+                                                      new MeasPoint<Current, Frequency>(20, UnitMultiplier.Mili, 500),
+                                                      new AccuracyChatacteristic(0.000050m, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 500),
+                                                      new MeasPoint<Current, Frequency>(20, UnitMultiplier.Mili, 1,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.000080m, null, 1.2M)),
+                //200 mA
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 40),
+                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 500),
+                                                      new AccuracyChatacteristic(0.00050M, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 500),
+                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 1,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.00080M, null, 1.2M)),
+                new
+                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.Mili, 1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(200, UnitMultiplier.Mili, 3,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.00080M, null, 2M)),
+
+                //2 A
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 40),
+                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 500),
+                                                      new AccuracyChatacteristic(0.0050M, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 500),
+                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 1,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.0080M, null, 1.2M)),
+                new
+                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 3,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.0080M, null, 2M)),
+
+                // 10 A
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 40),
+                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 500),
+                                                      new AccuracyChatacteristic(0.050M, null, 0.8M)),
+                new PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 500),
+                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 1,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.080M, null, 1.2M)),
+                new
+                    PhysicalRange<Current, Frequency>(new MeasPoint<Current, Frequency>(0, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                                                      new MeasPoint<Current, Frequency>(10, UnitMultiplier.None, 3,
+                                                                                        UnitMultiplier.Kilo),
+                                                      new AccuracyChatacteristic(0.080M, null, 2M)),
+            });
+        }
+
+        /// <summary>
+        /// Пределы измерения постоянного напряжения.
+        /// </summary>
+        public static RangeStorage<PhysicalRange<Voltage>> DcvRangeStorage
+        {
+            get => GetDcvRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Voltage>> GetDcvRangeStorage()
+        {
+            PhysicalRange<Voltage>[] tolArr = new[]
+            {
+                // 20 мВ
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(20, UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.000060M, null, 0.06M)),
+                // 200 мВ
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(200, UnitMultiplier.Mili),
+                                           new AccuracyChatacteristic(0.00020M, null, 0.06M)),
+
+                // 2 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(2),
+                                           new AccuracyChatacteristic(0.0010M, null, 0.06M)),
+
+                // 20 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(20),
+                                           new AccuracyChatacteristic(0.010M, null, 0.06M)),
+
+                //200 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(200),
+                                           new AccuracyChatacteristic(0.10M, null, 0.06M)),
+
+                //1000 V
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(1000),
+                                           new AccuracyChatacteristic(1.0M, null, 0.06M)),
+            };
+            PhysicalRange<Voltage>[] negative = new PhysicalRange<Voltage>[tolArr.Length];
+            for (int i = 0; i < negative.Length; i++)
+            {
+                PhysicalRange<Voltage> buf = new PhysicalRange<Voltage>((MeasPoint<Voltage>)tolArr[i].End * -1, (MeasPoint<Voltage>)tolArr[i].Start * -1, tolArr[i].AccuracyChatacteristic);
+                negative[i] = buf;
+            }
+
+            return new RangeStorage<PhysicalRange<Voltage>>(tolArr.Concat(negative).ToArray());
+        }
+
+        public static RangeStorage<PhysicalRange<Voltage, Frequency>> AcvRangeStorage
+        {
+            get => GetAcvRangeStorage();
+        }
+
+        private static RangeStorage<PhysicalRange<Voltage, Frequency>> GetAcvRangeStorage()
+        {
+            return new RangeStorage<PhysicalRange<Voltage, Frequency>>(new[]
+            {
+                //20 mV 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.Mili, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.000080M,null,0.7M)),
+                //20 mV 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.Mili, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.000080M,null,1M)),
+
+                //200 mV 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.Mili, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.00080M,null,0.7M)),
+                //200 mV 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.Mili, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.00080M,null,1M)),
+
+                //2 V 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.0050M,null,0.7M)),
+                //2 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.0050M,null,1M)),
+
+                //2 V 1kHz-10kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0060M,null,2M)),
+
+                //2 V 10kHz-20kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0070M,null,3M)),
+
+                //2 V 20kHz-50kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0080M,null,5M)),
+                //2 V 50kHz-100kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.None, new Frequency(100, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.0100M,null,10M)),
+
+                //20 V 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.050M,null,0.7M)),
+                //20 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(0.050M,null,1M)),
+
+                //20 V 1kHz-10kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.060M,null,2M)),
+
+                //20 V 10kHz-20kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.070M,null,3M)),
+
+                //20 V 20kHz-50kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.080M,null,5M)),
+                //20 V 50kHz-100kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(50, UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, new Frequency(100, UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.100M,null,10M)),
+
+                //200 V 40-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(0.50M,null,0.7M)),
+                //200 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.50M,null,1M)),
+                //200 V 1kHz-10kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(1,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.60M,null,2M)),
+                //200 V 10kHz-20kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(10,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(20,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.70M,null,3M)),
+                //200 V 20kHz-50kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(20,UnitMultiplier.Kilo)),
+                                                      new MeasPoint<Voltage, Frequency>(200, UnitMultiplier.None, new Frequency(50,UnitMultiplier.Kilo)),
+                                                      new AccuracyChatacteristic(0.80M,null,5M)),
+
+                //750 V 40Hz-100Hz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(40)),
+                                                      new MeasPoint<Voltage, Frequency>(750, UnitMultiplier.None, new Frequency(100)),
+                                                      new AccuracyChatacteristic(5.0M,null,0.7M)),
+                //750 V 100Hz-1kHz
+                new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(0,UnitMultiplier.None, new Frequency(100)),
+                                                      new MeasPoint<Voltage, Frequency>(750, UnitMultiplier.None, new Frequency(1000)),
+                                                      new AccuracyChatacteristic(5.0M,null,1M))
+            });
+        }
+
+        #endregion MeasureCharacteristic
     }
 }

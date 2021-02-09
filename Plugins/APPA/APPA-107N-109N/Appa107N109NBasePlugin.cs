@@ -529,7 +529,7 @@ namespace APPA_107N_109N
                 };
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -571,7 +571,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Voltage>(-18)
                 };
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
 
             }
 
@@ -620,7 +620,7 @@ namespace APPA_107N_109N
                 };
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -667,7 +667,7 @@ namespace APPA_107N_109N
                 };
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -714,7 +714,7 @@ namespace APPA_107N_109N
                 };
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -761,7 +761,7 @@ namespace APPA_107N_109N
                 };
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1076,7 +1076,7 @@ namespace APPA_107N_109N
                                                                 new Frequency { Value = 1000 }));
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1127,7 +1127,7 @@ namespace APPA_107N_109N
                                                                 new Frequency { Value = 1000 }));
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1217,7 +1217,7 @@ namespace APPA_107N_109N
                                                                 { Value = 100, Multiplier = UnitMultiplier.Kilo }));
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1300,7 +1300,7 @@ namespace APPA_107N_109N
                                                                 { Value = 100, Multiplier = UnitMultiplier.Kilo }));
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1392,7 +1392,7 @@ namespace APPA_107N_109N
                                                                 { Value = 50, Multiplier = UnitMultiplier.Kilo }));
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1441,7 +1441,7 @@ namespace APPA_107N_109N
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(700 * VoltMultiplier, new Frequency { Value = 1000 }));
 
                 var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = appa10XN.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1724,6 +1724,9 @@ namespace APPA_107N_109N
                 CurrentDciPoint[2] = new MeasPoint<Current>(12 * BaseMultiplier, UnitMultiplier.Mili);
                 CurrentDciPoint[3] = new MeasPoint<Current>(18 * BaseMultiplier, UnitMultiplier.Mili);
                 CurrentDciPoint[4] = new MeasPoint<Current>(-18 * BaseMultiplier, UnitMultiplier.Mili);
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1774,6 +1777,9 @@ namespace APPA_107N_109N
                 CurrentDciPoint[2] = new MeasPoint<Current>(12 * BaseMultiplier, UnitMultiplier.Mili);
                 CurrentDciPoint[3] = new MeasPoint<Current>(18 * BaseMultiplier, UnitMultiplier.Mili);
                 CurrentDciPoint[4] = new MeasPoint<Current>(-18 * BaseMultiplier, UnitMultiplier.Mili);
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1835,6 +1841,9 @@ namespace APPA_107N_109N
                     FileName = "appa_10XN_A_Aux_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1882,6 +1891,9 @@ namespace APPA_107N_109N
                     FileName = "appa_10XN_A_Aux_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -1930,6 +1942,9 @@ namespace APPA_107N_109N
                     FileName = "appa_10XN_20A_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2237,6 +2252,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Current, Frequency>(18 * CurrentMultiplier, UnitMultiplier.Mili,
                                                       new Frequency {Value = 1000})
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2291,6 +2309,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Current, Frequency>(18 * CurrentMultiplier, UnitMultiplier.Mili,
                                                       new Frequency {Value = 3, Multiplier = UnitMultiplier.Kilo})
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2350,6 +2371,9 @@ namespace APPA_107N_109N
                     FileName = "appa_10XN_A_Aux_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2398,6 +2422,9 @@ namespace APPA_107N_109N
                     FileName = "appa_10XN_A_Aux_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2448,6 +2475,9 @@ namespace APPA_107N_109N
                     FileName = "appa_10XN_20A_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
+
+                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2678,6 +2708,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Frequency>(10)
                 };
+
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2712,6 +2745,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Frequency>(100)
                 };
+
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2746,6 +2782,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Frequency>(1, UnitMultiplier.Kilo)
                 };
+
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2779,6 +2818,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Frequency>(10, UnitMultiplier.Kilo)
                 };
+
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2813,6 +2855,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Frequency>(100, UnitMultiplier.Kilo)
                 };
+
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2846,6 +2891,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Frequency>(1, UnitMultiplier.Mega)
                 };
+
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2893,6 +2941,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>(100 * BaseMultiplier),
                     new MeasPoint<Resistance>(200 * BaseMultiplier)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2935,6 +2986,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.5 * BaseMultiplier, UnitMultiplier.Kilo),
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Kilo)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2978,6 +3032,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.5 * BaseMultiplier, UnitMultiplier.Kilo),
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Kilo)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3020,6 +3077,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.5 * BaseMultiplier, UnitMultiplier.Kilo),
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Kilo)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3062,6 +3122,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.5 * BaseMultiplier, UnitMultiplier.Mega),
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Mega)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3102,6 +3165,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>(10 * BaseMultiplier, UnitMultiplier.Mega),
                     new MeasPoint<Resistance>(20 * BaseMultiplier, UnitMultiplier.Mega)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3142,6 +3208,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>(10 * BaseMultiplier, UnitMultiplier.Mega),
                     new MeasPoint<Resistance>(20 * BaseMultiplier, UnitMultiplier.Mega)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3179,6 +3248,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Resistance>((decimal) 0.9, UnitMultiplier.Giga)
                 };
+
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3666,6 +3738,9 @@ namespace APPA_107N_109N
 
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
+
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3703,6 +3778,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(30, UnitMultiplier.Nano)
                 };
+
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3743,6 +3821,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(300, UnitMultiplier.Nano)
                 };
+
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3783,6 +3864,9 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(3, UnitMultiplier.Micro)
                 };
+
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3821,6 +3905,8 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(30, UnitMultiplier.Micro)
                 };
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3859,6 +3945,8 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(300, UnitMultiplier.Micro)
                 };
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3897,6 +3985,8 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(3, UnitMultiplier.Mili)
                 };
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3935,6 +4025,8 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(30, UnitMultiplier.Mili)
                 };
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -4207,6 +4299,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Temperature>(-200),
                     new MeasPoint<Temperature>(-100)
                 };
+
+                var maxOfThisRange = new MeasPoint<Temperature>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -4239,6 +4334,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Temperature>(0),
                     new MeasPoint<Temperature>(100)
                 };
+
+                var maxOfThisRange = new MeasPoint<Temperature>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -4272,6 +4370,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Temperature>(800),
                     new MeasPoint<Temperature>(1200)
                 };
+
+                var maxOfThisRange = new MeasPoint<Temperature>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa = Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
