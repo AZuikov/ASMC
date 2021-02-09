@@ -9,9 +9,11 @@ using AP.Utils.Data;
 using ASMC.Common.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.Interface;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.IEEE.Keysight.Multimeter;
+using ASMC.Devices.Interface.SourceAndMeter;
 using DevExpress.Mvvm;
 using Ivi.Visa;
 using NLog;
@@ -47,6 +49,46 @@ namespace Multimetr34401A
 
         #region Methods
 
+
+        protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
+        {
+            if (operation.IsGood == null || operation.IsGood())
+                return Task.FromResult(operation.IsGood == null || operation.IsGood());
+
+            return ShowQuestionMessage(operation.ToString()) == MessageResult.No
+                ? Task.FromResult(true)
+                : Task.FromResult(operation.IsGood == null || operation.IsGood());
+
+            MessageResult ShowQuestionMessage(string message)
+            {
+                return UserItemOperation.ServicePack.MessageBox()
+                    .Show($"Текущая точка {message} не проходит по допуску:\n" +
+                          "Повторить измерение этой точки?",
+                        "Информация по текущему измерению",
+                        MessageButton.YesNo, MessageIcon.Question,
+                        MessageResult.Yes);
+            }
+        }
+        protected bool ChekedOperation<T>(IBasicOperationVerefication<MeasPoint<T>> operation) where T : class, IPhysicalQuantity<T>, new()
+        {
+            return operation.Getting <= operation.UpperTolerance &&
+                   operation.Getting >= operation.LowerTolerance;
+        }
+       
+        /// <summary>
+        /// Позволяет получить погрешность для указаной точки.
+        /// </summary>
+        /// <typeparam name="T">Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity"/></typeparam>
+        /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
+        /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
+        /// <returns></returns>
+        protected decimal AllowableError<T>(IRangePhysicalQuantity<T> rangeStorage, MeasPoint<T> expected) where T : class, IPhysicalQuantity<T>, new()
+        {
+            rangeStorage.SetRange(expected);
+            return rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
+                expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -148,6 +190,28 @@ namespace Multimetr34401A
             return data;
         }
 
+        /// <summary>
+        /// Позволяет получить погрешность для указаной точки.
+        /// </summary>
+        /// <typeparam name="T">Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity"/></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T1"></typeparam>
+        /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
+        /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
+        /// <returns></returns>
+        protected decimal AllowableError<T1, T2>(IRangePhysicalQuantity<T1,T2> rangeStorage, MeasPoint<T1, T2> expected) where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+        {
+            rangeStorage.SetRange(expected);
+            return rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
+                expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
+        }
+        protected bool ChekedOperation<T1, T2>(IBasicOperationVerefication<MeasPoint<T1, T2>> operation)
+            where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+        {
+            return operation.Getting <= operation.UpperTolerance &&
+                   operation.Getting >= operation.LowerTolerance;
+        }
         protected MeasPoint<T1, T2> ConvertMeasPoint(MeasPoint<T1> gettingMeasPoint,
             MeasPoint<T1, T2> exepectedMeasPoint)
         {
@@ -312,28 +376,17 @@ namespace Multimetr34401A
 
                     operation.Getting = result.Item1;
                 };
-                //operation.LowerCalculation = expected =>
-                //{
 
-                //};
-                operation.CompliteWorkAsync = () =>
-                {
-                    if (operation.IsGood == null || operation.IsGood())
-                        return Task.FromResult(operation.IsGood == null || operation.IsGood());
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox()
-                            .Show($"Текущая точка {operation} не проходит по допуску:\n" +
-                                  "Повторить измерение этой точки?",
-                                "Информация по текущему измерению",
-                                MessageButton.YesNo, MessageIcon.Question,
-                                MessageResult.Yes);
+                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
 
-                    return answer == MessageResult.No
-                        ? Task.FromResult(true)
-                        : Task.FromResult(operation.IsGood == null || operation.IsGood());
-                };
-                operation.IsGood = () => operation.Getting <= operation.UpperTolerance &&
-                                         operation.Getting >= operation.LowerTolerance;
+                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+
+                operation.IsGood = () => ChekedOperation(operation);
+
+               
+
                 DataRow.Add(operation);
             }
         }
@@ -390,24 +443,13 @@ namespace Multimetr34401A
 
                     operation.Getting = result.Item1;
                 };
-                operation.CompliteWorkAsync = () =>
-                {
-                    if (operation.IsGood == null || operation.IsGood())
-                        return Task.FromResult(operation.IsGood == null || operation.IsGood());
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox()
-                            .Show($"Текущая точка {operation} не проходит по допуску:\n" +
-                                  "Повторить измерение этой точки?",
-                                "Информация по текущему измерению",
-                                MessageButton.YesNo, MessageIcon.Question,
-                                MessageResult.Yes);
 
-                    return answer == MessageResult.No
-                        ? Task.FromResult(true)
-                        : Task.FromResult(operation.IsGood == null || operation.IsGood());
-                };
-                operation.IsGood = () => operation.Getting <= operation.UpperTolerance &&
-                                         operation.Getting >= operation.LowerTolerance;
+                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
+                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
+
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+
                 DataRow.Add(operation);
             }
         }
@@ -463,24 +505,10 @@ namespace Multimetr34401A
 
                     operation.Getting = result.Item1;
                 };
-                operation.CompliteWorkAsync = () =>
-                {
-                    if (operation.IsGood == null || operation.IsGood())
-                        return Task.FromResult(operation.IsGood == null || operation.IsGood());
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox()
-                            .Show($"Текущая точка {operation} не проходит по допуску:\n" +
-                                  "Повторить измерение этой точки?",
-                                "Информация по текущему измерению",
-                                MessageButton.YesNo, MessageIcon.Question,
-                                MessageResult.Yes);
-
-                    return answer == MessageResult.No
-                        ? Task.FromResult(true)
-                        : Task.FromResult(operation.IsGood == null || operation.IsGood());
-                };
-                operation.IsGood = () => operation.Getting <= operation.UpperTolerance &&
-                                         operation.Getting >= operation.LowerTolerance;
+                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -530,6 +558,9 @@ namespace Multimetr34401A
 
                     return Task.CompletedTask;
                 };
+
+
+
                 operation.BodyWorkAsync = () =>
                 {
                     CatchException<IOTimeoutException>(() => Clalibrator.AcVoltage.OutputOn(), token, Logger);
@@ -546,24 +577,11 @@ namespace Multimetr34401A
 
                     operation.Getting = ConvertMeasPoint(result.Item1, operation.Expected);
                 };
-                operation.CompliteWorkAsync = () =>
-                {
-                    if (operation.IsGood == null || operation.IsGood())
-                        return Task.FromResult(operation.IsGood == null || operation.IsGood());
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox()
-                            .Show($"Текущая точка {operation} не проходит по допуску:\n" +
-                                  "Повторить измерение этой точки?",
-                                "Информация по текущему измерению",
-                                MessageButton.YesNo, MessageIcon.Question,
-                                MessageResult.Yes);
-
-                    return answer == MessageResult.No
-                        ? Task.FromResult(true)
-                        : Task.FromResult(operation.IsGood == null || operation.IsGood());
-                };
-                operation.IsGood = () => operation.Getting <= operation.UpperTolerance &&
-                                         operation.Getting >= operation.LowerTolerance;
+               
+                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -619,24 +637,11 @@ namespace Multimetr34401A
 
                     operation.Getting = ConvertMeasPoint(result.Item1, operation.Expected);
                 };
-                operation.CompliteWorkAsync = () =>
-                {
-                    if (operation.IsGood == null || operation.IsGood())
-                        return Task.FromResult(operation.IsGood == null || operation.IsGood());
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox()
-                            .Show($"Текущая точка {operation} не проходит по допуску:\n" +
-                                  "Повторить измерение этой точки?",
-                                "Информация по текущему измерению",
-                                MessageButton.YesNo, MessageIcon.Question,
-                                MessageResult.Yes);
+                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
 
-                    return answer == MessageResult.No
-                        ? Task.FromResult(true)
-                        : Task.FromResult(operation.IsGood == null || operation.IsGood());
-                };
-                operation.IsGood = () => operation.Getting <= operation.UpperTolerance &&
-                                         operation.Getting >= operation.LowerTolerance;
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
