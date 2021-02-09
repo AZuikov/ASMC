@@ -65,9 +65,6 @@ namespace ASMC.Devices.Model
         {
             SelectRange = Ranges.GetRangePointBelong(inRange);
         }
-
-        public bool AutoRange { get; set; }
-
         /// <inheritdoc />
         public bool IsAutoRange { get; set; }
     }

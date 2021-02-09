@@ -39,16 +39,30 @@ namespace ASMC.Devices.Interface.SourceAndMeter
     }
 
 
+    public interface IMeterPhysicalQuantityBase<TPhysicalQuantity> : IDevice
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    {
+        public MeasPoint<TPhysicalQuantity> GetValue();
+        public MeasPoint<TPhysicalQuantity> Value { get; }
+    }
 
     /// <summary>
     /// Измерение физической величины.
     /// </summary>
     /// <typeparam name="TPhysicalQuantity"></typeparam>
-    public interface IMeterPhysicalQuantity<TPhysicalQuantity> : IDevice
+    public interface IMeterPhysicalQuantity<TPhysicalQuantity> : IMeterPhysicalQuantityBase<TPhysicalQuantity>
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
-        public MeasPoint<TPhysicalQuantity> GetValue();
-        public MeasPoint<TPhysicalQuantity> Value { get; }
+    }
+
+    /// Измерение физической величины.
+    /// </summary>
+    /// <typeparam name="TPhysicalQuantity"></typeparam>
+    /// <typeparam name="TPhysicalQuantity1"></typeparam>
+    public interface IMeterPhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity1> : IMeterPhysicalQuantityBase<TPhysicalQuantity>
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity1 : class, IPhysicalQuantity<TPhysicalQuantity1>, new()
+    {
+        IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity1> RangeStorage { get; }
     }
 }
