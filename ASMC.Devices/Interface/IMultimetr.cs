@@ -25,7 +25,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Current> AcVoltage { get;  }
+        IMeterPhysicalQuantity<Voltage> AcVoltage { get;  }
 
         #endregion
     }

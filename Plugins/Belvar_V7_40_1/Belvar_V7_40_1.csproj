@@ -97,6 +97,10 @@
       <Project>{F76E5DBB-5041-44C1-9194-6E92AF51B314}</Project>
       <Name>ASMC.Data.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ASMC.Devices\ASMC.Devices.csproj">
+      <Project>{C606FA94-0B7E-4698-801F-206CA9DA0CEF}</Project>
+      <Name>ASMC.Devices</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

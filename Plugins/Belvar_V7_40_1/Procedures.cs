@@ -104,6 +104,7 @@ namespace Belvar_V7_40_1
         {
             base.InitWork(token);
             DataRow.Add(new DialogOperationHelp(this, "Опробывание"));
+            var mult = new ASMC.Devices.IEEE.Belvar_V7_40_1();
         }
 
         /// <inheritdoc />
