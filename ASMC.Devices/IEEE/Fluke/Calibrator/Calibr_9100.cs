@@ -87,5 +87,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             //WriteLine(IeeeBase.Reset);
         }
 
+        protected override string GetError()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

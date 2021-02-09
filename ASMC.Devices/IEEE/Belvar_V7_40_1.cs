@@ -51,14 +51,7 @@ namespace ASMC.Devices.IEEE
 
    public class DcVolt : MeasureFunctionV_7_40_1Base<Voltage>
    {
-       public FunctionAndRanges[] dcv = new[]
-       {
-           new FunctionAndRanges{FunctionCode = FunctionAndRanges.MeasureFunctionCode.Dcv, RangeCode = FunctionAndRanges.RangeCodes.Range2000}, 
-           new FunctionAndRanges{FunctionCode = FunctionAndRanges.MeasureFunctionCode.Dcv, RangeCode = FunctionAndRanges.RangeCodes.Range200}, 
-           new FunctionAndRanges{FunctionCode = FunctionAndRanges.MeasureFunctionCode.Dcv, RangeCode = FunctionAndRanges.RangeCodes.Range20}, 
-           new FunctionAndRanges{FunctionCode = FunctionAndRanges.MeasureFunctionCode.Dcv, RangeCode = FunctionAndRanges.RangeCodes.Range2}, 
-           new FunctionAndRanges{FunctionCode = FunctionAndRanges.MeasureFunctionCode.Dcv, RangeCode = FunctionAndRanges.RangeCodes.Range200m}, 
-       };
+      
        public DcVolt(IeeeBase inDevice) : base(inDevice, "Измерение постоянного напряжения")
        {
            
@@ -107,40 +100,25 @@ namespace ASMC.Devices.IEEE
        public MeasPoint<T> Value { get; protected set; }
    }
 
-   public class FunctionAndRanges<T> where T : PhysicalQuantity<T>, new()
+   public enum RangeCodes
    {
-       
-       public FunctionAndRanges(MeasureFunctionCode function, RangeCodes range , MeasPoint<T> maxValue)
-       {
-           MaxValue = maxValue;
-           FunctionCode = function;
-           RangeCode = range;
-
-       }
-
-       public enum RangeCodes
-       {
-           Range20M = 0,
-           Range2000 = 1,
-           Range200 = 2,
-           Range20 = 3,
-           Range2 = 4,
-           Range200m = 5,
-           AVP = 7
-       }
-
-       public enum MeasureFunctionCode
-       {
-           Dci = 1,
-           Resist = 2,
-           Aci = 3,
-           Dcv = 4,
-           Acv = 6
-       }
-
-        public MeasureFunctionCode FunctionCode { get; protected set; }
-       public RangeCodes RangeCode { get; protected set; }
-       public MeasPoint<T> MaxValue { get; protected set; }
-
+       Range20M = 0,
+       Range2000 = 1,
+       Range200 = 2,
+       Range20 = 3,
+       Range2 = 4,
+       Range200m = 5,
+       AVP = 7
    }
+
+   public enum MeasureFunctionCode
+   {
+       Dci = 1,
+       Resist = 2,
+       Aci = 3,
+       Dcv = 4,
+       Acv = 6
+   }
+
+    
 }

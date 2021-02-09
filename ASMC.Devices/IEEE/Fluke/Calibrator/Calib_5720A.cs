@@ -21,5 +21,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             /// </summary>
             public const string Amplifer = "CUR_POST IB5725";
         }
+
+        protected override string GetError()
+        {
+            return "fault?";
+        }
     }
 }
