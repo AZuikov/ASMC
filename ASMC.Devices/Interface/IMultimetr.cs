@@ -12,16 +12,11 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     
     }
 
-
-    public interface IResolution<T>
-    {
-        void SetResolution(T inResolution);
-    }
     public interface IDcVoltage
     {
         #region Property
 
-        IMeterPhysicalQuantity<Voltage> DcVoltage { get; set; }
+        IMeterPhysicalQuantity<Voltage> DcVoltage { get;  }
 
         #endregion
     }
@@ -30,14 +25,9 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Voltage> AcVoltage { get; set; }
+        IMeterPhysicalQuantity<Current> AcVoltage { get;  }
 
         #endregion
-    }
-
-    public interface IAcFilter
-    {
-        void SetFilter(MeasPoint<Frequency> filterFreq);
     }
 
     public interface ICurrentGroup: IDcCurrent,IAcCurrent
@@ -51,7 +41,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Current> DcCurrent { get; set; }
+        IMeterPhysicalQuantity<Current> DcCurrent { get;  }
 
         #endregion
     }
@@ -60,7 +50,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Current> AcCurrent { get; set; }
+        IMeterPhysicalQuantity<Current> AcCurrent { get; }
 
         #endregion
     }
@@ -76,7 +66,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Resistance> Resistance2W { get; set; }
+        IMeterPhysicalQuantity<Resistance> Resistance2W { get;}
 
         #endregion
     }
@@ -85,7 +75,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Resistance> Resistance4W { get; set; }
+        IMeterPhysicalQuantity<Resistance> Resistance4W { get;  }
 
         #endregion
     }
@@ -94,7 +84,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Capacity> Capacity { get; set; }
+        IMeterPhysicalQuantity<Capacity> Capacity { get;}
 
         #endregion
     }
@@ -103,7 +93,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Frequency> Frequency { get; set; }
+        IMeterPhysicalQuantity<Frequency> Frequency { get; }
 
         #endregion
     }
@@ -112,7 +102,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Time> Time { get; set; }
+        IMeterPhysicalQuantity<Time> Time { get;  }
 
         #endregion
     }
@@ -121,7 +111,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Temperature> Temperature { get; set; }
+        IMeterPhysicalQuantity<Temperature> Temperature { get;  }
 
         #endregion
     }

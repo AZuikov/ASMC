@@ -348,7 +348,7 @@ namespace ASMC.Devices.IEEE
         /// </summary>
         /// <param name="SuccessValue">Значение, которое прибор должен вернуть в случае успешного прохождения тестирования (без символа новой строки).</param>
         /// <returns></returns>
-        protected bool SelfTest(string SuccessValue)
+        public bool SelfTest(string SuccessValue)
         {
             string answer = QueryLine(QueryTestSelf);
             answer = answer.TrimEnd('\n');

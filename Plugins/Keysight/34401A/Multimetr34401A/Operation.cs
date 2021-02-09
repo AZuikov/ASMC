@@ -32,7 +32,10 @@ namespace Multimetr34401A
             {
                 new VisualInspection(this),
                 new Testing(this),
-                new DCVoltageError(this)
+                new DcVoltageError(this),
+                new AcVoltageError(this),
+                new Resistance2WError(this),
+                new Resistance4WError(this),
                 /*Остальная часть методики*/
             };
             DocumentName = documentName;

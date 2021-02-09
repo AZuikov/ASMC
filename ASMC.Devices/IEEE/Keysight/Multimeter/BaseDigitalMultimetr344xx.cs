@@ -1,34 +1,79 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.Interface;
-using ASMC.Devices.Interface.Multimetr.Mode;
 using ASMC.Devices.Interface.SourceAndMeter;
 using ASMC.Devices.Model;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public class BaseDigitalMultimetr344xx : IeeeBase, IDigitalMultimetr344xx
+    public abstract class BaseDigitalMultimetr344xx : IDigitalMultimetr344xx
     {
-        public BaseDigitalMultimetr344xx()
+        #region Property
+
+        public IMeterPhysicalQuantity<Resistance> Resistance4W { get; set; }
+
+        #endregion
+
+        #region Field
+
+        private readonly IeeeBase _device;
+
+        #endregion
+
+        protected BaseDigitalMultimetr344xx()
         {
-            AcVoltage = new AcVoltMeas(this);
-            DcVoltage = new DcVoltMeas(this);
-            DcCurrent = new DcCurrentMeas(this);
-            AcCurrent = new AcCurrentMeas(this);
-            Resistance4W = new Resist4W(this);
-            Resistance2W = new Resist2W(this);
+            _device = new IeeeBase();
+            AcVoltage = new AcVoltMeas(_device);
+            DcVoltage = new DcVoltMeas(_device);
+            DcCurrent = new DcCurrentMeas(_device);
+            AcCurrent = new AcCurrentMeas(_device);
+            Resistance4W = new Resist4W(_device);
+            Resistance2W = new Resist2W(_device);
         }
 
         #region IDigitalMultimetr344xx Members
 
         public IMeterPhysicalQuantity<Resistance> Resistance2W { get; set; }
-        public IMeterPhysicalQuantity<Resistance> Resistance4W { get; set; }
         public IMeterPhysicalQuantity<Voltage> DcVoltage { get; set; }
-        public IMeterPhysicalQuantity<Voltage> AcVoltage { get; set; }
         public IMeterPhysicalQuantity<Data.Model.PhysicalQuantity.Current> DcCurrent { get; set; }
-        public IMeterPhysicalQuantity<Data.Model.PhysicalQuantity.Current> AcCurrent { get; set; }
+
+        /// <inheritdoc />
+        public IAcFilter<Voltage> AcVoltage { get; }
+
+        /// <inheritdoc />
+        public IAcFilter<Data.Model.PhysicalQuantity.Current> AcCurrent { get; }
+
+
+        /// <inheritdoc />
+        public string UserType { get; protected set; }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _device.Dispose();
+        }
+
+        /// <inheritdoc />
+        public bool IsTestConnect { get; }
+
+        /// <inheritdoc />
+        public Task InitializeAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public string StringConnection { get; set; }
+
+        /// <inheritdoc />
+        public IMeterPhysicalQuantity<Capacity> Capacity { get; }
+
+        /// <inheritdoc />
+        public IMeterPhysicalQuantity<Frequency> Frequency { get; }
+
+        #endregion
 
         public void Getting()
         {
@@ -50,20 +95,19 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             Resistance2W.Setting();
         }
 
-        #endregion
-
         /// <summary>
         ///     Вызов самотестирования.
         /// </summary>
         /// <returns></returns>
         public bool SelfTest()
         {
-            return SelfTest("1");
+            return _device.SelfTest("1");
         }
 
         #region Nested type: AcCurrentMeas
 
-        public class AcCurrentMeas : MeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>, IAcFilter
+        public class AcCurrentMeas : MeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>,
+            IAcFilter<Data.Model.PhysicalQuantity.Current>
         {
             #region Property
 
@@ -73,40 +117,79 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Field
 
-            private readonly Command[] _filters =
-            {
-                new Command("Det:Band 3", "", 3),
-                new Command("Det:Band 20", "", 20),
-                new Command("Det:Band 200", "", 200)
-            };
+            private readonly IeeeBase devece;
 
             #endregion
+
 
             public AcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:AC")
             {
+                devece = inDevice;
                 RangeStorage = new RangeDevice();
             }
 
-            #region IAcFilter Members
-
-            public void SetFilter(MeasPoint<Frequency> filterFreq)
-            {
-                Array.Sort(_filters);
-                Array.Reverse(_filters);
-
-                FilterSet = _filters.FirstOrDefault(q => q.Value < (double) filterFreq
-                    .MainPhysicalQuantity.GetNoramalizeValueToSi());
-            }
-
-            #endregion
+            #region IAcFilter<Current> Members
 
             public override void Setting()
             {
                 base.Setting();
-                _device.WriteLine(FilterSet.StrCommand);
+                devece.WriteLine(Filter.FilterSelect.StrCommand);
             }
 
-            #region Nested type: Range
+            /// <inheritdoc />
+            public IFilter<Data.Model.PhysicalQuantity.Current> Filter { get; }
+
+            #endregion
+
+            #region Nested type: Fil
+
+            public class Fil : IFilter<Data.Model.PhysicalQuantity.Current>
+            {
+                public Fil()
+                {
+                    Filters = new ICommand[]
+                    {
+                        new Command("Det:Band 3", "", 3),
+                        new Command("Det:Band 20", "", 20),
+                        new Command("Det:Band 200", "", 200)
+                    };
+                    Array.Sort(Filters);
+                }
+
+                #region IFilter<Current> Members
+
+                /// <inheritdoc />
+                public void SetFilter(MeasPoint<Frequency> filterFreq)
+                {
+                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double) filterFreq
+                        .MainPhysicalQuantity.GetNoramalizeValueToSi());
+                }
+
+                /// <inheritdoc />
+                public void SetFilter(MeasPoint<Data.Model.PhysicalQuantity.Current, Frequency> filterFreq)
+                {
+                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double) filterFreq
+                        .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                }
+
+                /// <inheritdoc />
+                public void SetFilter(ICommand filter)
+                {
+                    FilterSelect = Filters.LastOrDefault(q => q.Value < filter.Value);
+                }
+
+                /// <inheritdoc />
+                public ICommand FilterSelect { get; private set; }
+
+                /// <inheritdoc />
+                public ICommand[] Filters { get; protected set; }
+
+                #endregion
+            }
+
+            #endregion
+
+            #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current>
             {
@@ -128,7 +211,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Nested type: AcVoltMeas
 
-        public class AcVoltMeas : MeasureFunction344XxBase<Voltage>, IAcFilter
+        public class AcVoltMeas : MeasureFunction344XxBase<Voltage>, IAcFilter<Voltage>
         {
             #region Property
 
@@ -152,17 +235,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 RangeStorage = new RangeDevice();
             }
 
-            #region IAcFilter Members
-
-            public void SetFilter(MeasPoint<Frequency> filterFreq)
-            {
-                Array.Sort(_filters);
-                Array.Reverse(_filters);
-                FilterSet = _filters.FirstOrDefault(q => q.Value < (double) filterFreq
-                    .MainPhysicalQuantity.GetNoramalizeValueToSi());
-            }
-
-            #endregion
+            #region IAcFilter<Voltage> Members
 
             public override void Setting()
             {
@@ -170,7 +243,19 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 _device.WriteLine(FilterSet.StrCommand);
             }
 
-            #region Nested type: Range
+            /// <inheritdoc />
+            public IFilter<Voltage> Filter { get; }
+
+            #endregion
+
+            public void SetFilter(MeasPoint<Frequency> filterFreq)
+            {
+                Array.Sort(_filters);
+                FilterSet = _filters.LastOrDefault(q => q.Value < (double) filterFreq
+                    .MainPhysicalQuantity.GetNoramalizeValueToSi());
+            }
+
+            #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Voltage>
             {
@@ -204,7 +289,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 _device.WriteLine($"{FunctionName}:NPLC 100");
             }
 
-            #region Nested type: Range
+            #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current>
             {
@@ -239,7 +324,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 _device.WriteLine($"{FunctionName}:NPLC 100");
             }
 
-            #region Nested type: Range
+            #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Voltage>
             {
@@ -330,7 +415,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             protected MeasPoint<T> ConvertStringToMeasPoint(string value)
             {
-                var numb = (decimal) StrToDouble(value);
+                var numb = (decimal) HelpDeviceBase.StrToDouble(value);
                 return new MeasPoint<T>();
             }
 
@@ -354,7 +439,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 _device.WriteLine($"{FunctionName}:NPLC 100");
             }
 
-            #region Nested type: Range
+            #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
@@ -388,7 +473,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 _device.WriteLine($"{FunctionName}:NPLC 100");
             }
 
-            #region Nested type: Range
+            #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
