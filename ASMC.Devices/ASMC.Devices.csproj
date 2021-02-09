@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="DeviceInfo.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="IEEE\Belvar_V7_40_1.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
