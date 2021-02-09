@@ -16,16 +16,21 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public Calib5522A()
         {
             UserType = "Fluke 5522A";
-            Resistance4W = new Resist4W(Device);
+            Resistance4W = new Resist4W(this);
         }
 
         public ISourcePhysicalQuantity<Resistance> Resistance4W { get; protected set; }
+
+        protected override string GetError()
+        {
+            return "err?";
+        }
 
         public ISourcePhysicalQuantity<Temperature> Temperature { get; }
 
         public class Resist4W : Resist
         {
-            public Resist4W(IeeeBase device) : base(device)
+            public Resist4W(CalibrMain device) : base(device)
             {
                 RangeStorage = new RangeDevice();
                 CompensationMode = new ICommand[]
@@ -39,8 +44,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public override void SetValue(MeasPoint<Resistance> value)
             {
                 base.SetValue(value);
-                _calibrMain.WriteLine(CompensationMode[0].StrCommand);
-                CheckErrors();
+                _calibrMain.Device.WriteLine(CompensationMode[0].StrCommand);
+                _calibrMain.CheckErrors();
             }
 
             protected override string GetUnit()
