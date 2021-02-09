@@ -46,9 +46,37 @@ namespace Multimetr34401A
         {
         }
 
-
         #region Methods
 
+        protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
+            IMeterPhysicalQuantity<TPhysicalQuantity> mert, ISourcePhysicalQuantity<TPhysicalQuantity> sourse,
+            Logger logger, CancellationTokenSource _token)
+            where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        {
+            CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
+            (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
+            try
+            {
+                result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
+                    () => mert.GetValue(), _token, logger);
+            }
+            finally
+            {
+                CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
+            }
+
+            return result;
+        }
+
+        protected void InitWork<T>(IMeterPhysicalQuantity<T> mert, ISourcePhysicalQuantity<T> sourse,
+            MeasPoint<T> setPoint, Logger loger, CancellationTokenSource _token)
+            where T : class, IPhysicalQuantity<T>, new()
+        {
+            mert.RangeStorage.SetRange(setPoint);
+            mert.RangeStorage.IsAutoRange = false;
+            CatchException<IOTimeoutException>(() => mert.Setting(), _token, loger);
+            CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+        }
 
         protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
         {
@@ -69,26 +97,32 @@ namespace Multimetr34401A
                         MessageResult.Yes);
             }
         }
-        protected bool ChekedOperation<T>(IBasicOperationVerefication<MeasPoint<T>> operation) where T : class, IPhysicalQuantity<T>, new()
+
+        protected bool ChekedOperation<T>(IBasicOperationVerefication<MeasPoint<T>> operation)
+            where T : class, IPhysicalQuantity<T>, new()
         {
             return operation.Getting <= operation.UpperTolerance &&
                    operation.Getting >= operation.LowerTolerance;
         }
-       
+
         /// <summary>
-        /// Позволяет получить погрешность для указаной точки.
+        ///     Позволяет получить погрешность для указаной точки.
         /// </summary>
-        /// <typeparam name="T">Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity"/></typeparam>
+        /// <typeparam name="T">
+        ///     Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
+        /// </typeparam>
         /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
         /// <returns></returns>
-        protected decimal AllowableError<T>(IRangePhysicalQuantity<T> rangeStorage, MeasPoint<T> expected) where T : class, IPhysicalQuantity<T>, new()
+        protected decimal AllowableError<T>(IRangePhysicalQuantity<T> rangeStorage, MeasPoint<T> expected)
+            where T : class, IPhysicalQuantity<T>, new()
         {
             rangeStorage.SetRange(expected);
             return rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
                 expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
                 rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
         }
+
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
@@ -152,11 +186,10 @@ namespace Multimetr34401A
                 data.Rows.Add(dataRow);
             }
 
-
             return data;
         }
 
-        #endregion
+        #endregion Methods
     }
 
     public abstract class MultiPointOperation<T1, T2> : OperationBase<MeasPoint<T1, T2>>
@@ -186,32 +219,69 @@ namespace Multimetr34401A
                 data.Rows.Add(dataRow);
             }
 
-
             return data;
         }
 
+        protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
+            IAcFilter<TPhysicalQuantity> mert, ISourcePhysicalQuantity<TPhysicalQuantity, Frequency> sourse,
+            Logger logger, CancellationTokenSource _token)
+            where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        {
+            CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
+            (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
+            try
+            {
+                result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
+                    () => mert.GetValue(), _token, logger);
+            }
+            finally
+            {
+                CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
+            }
+
+            return result;
+        }
+
+        protected void InitWork<TPhysicalQuantity>(IAcFilter<TPhysicalQuantity> mert,
+            ISourcePhysicalQuantity<TPhysicalQuantity, Frequency> sourse,
+            MeasPoint<TPhysicalQuantity, Frequency> setPoint, Logger loger, CancellationTokenSource _token)
+            where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        {
+            mert.RangeStorage.SetRange(setPoint);
+            mert.RangeStorage.IsAutoRange = false;
+            mert.Filter.SetFilter(setPoint);
+            CatchException<IOTimeoutException>(() => mert.Setting(), _token, loger);
+            CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+        }
+
         /// <summary>
-        /// Позволяет получить погрешность для указаной точки.
+        ///     Позволяет получить погрешность для указаной точки.
         /// </summary>
-        /// <typeparam name="T">Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity"/></typeparam>
+        /// <typeparam name="T">
+        ///     Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
+        /// </typeparam>
         /// <typeparam name="T2"></typeparam>
         /// <typeparam name="T1"></typeparam>
         /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
         /// <returns></returns>
-        protected decimal AllowableError<T1, T2>(IRangePhysicalQuantity<T1,T2> rangeStorage, MeasPoint<T1, T2> expected) where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+        protected decimal AllowableError<T1, T2>(IRangePhysicalQuantity<T1, T2> rangeStorage,
+            MeasPoint<T1, T2> expected) where T1 : class, IPhysicalQuantity<T1>, new()
+            where T2 : class, IPhysicalQuantity<T2>, new()
         {
             rangeStorage.SetRange(expected);
             return rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
                 expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
                 rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
         }
+
         protected bool ChekedOperation<T1, T2>(IBasicOperationVerefication<MeasPoint<T1, T2>> operation)
             where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
         {
             return operation.Getting <= operation.UpperTolerance &&
                    operation.Getting >= operation.LowerTolerance;
         }
+
         protected MeasPoint<T1, T2> ConvertMeasPoint(MeasPoint<T1> gettingMeasPoint,
             MeasPoint<T1, T2> exepectedMeasPoint)
         {
@@ -326,7 +396,6 @@ namespace Multimetr34401A
         }
     }
 
-
     public sealed class DcVoltageError : OperationBase<MeasPoint<Voltage>>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -334,7 +403,7 @@ namespace Multimetr34401A
         /// <inheritdoc />
         public DcVoltageError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности DC";
+            Name = "Определение погрешности DCV";
             Sheme = ShemeGeneration("", 0);
         }
 
@@ -353,39 +422,74 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    Multimetr.DcVoltage.RangeStorage.SetRange(setPoint);
-                    Multimetr.DcVoltage.RangeStorage.IsAutoRange = false;
-                    CatchException<IOTimeoutException>(() => Multimetr.DcVoltage.Setting(), token, Logger);
-                    CatchException<IOTimeoutException>(() => Clalibrator.DcVoltage.SetValue(setPoint), token, Logger);
+                    InitWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, setPoint, Logger, token);
 
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    CatchException<IOTimeoutException>(() => Clalibrator.DcVoltage.OutputOn(), token, Logger);
-                    (MeasPoint<Voltage>, IOTimeoutException) result;
-                    try
-                    {
-                        result = CatchException<IOTimeoutException, MeasPoint<Voltage>>(
-                            () => Multimetr.DcVoltage.GetValue(), token, Logger);
-                    }
-                    finally
-                    {
-                        CatchException<IOTimeoutException>(() => Clalibrator.DcVoltage.OutputOff(), token, Logger);
-                    }
-
-                    operation.Getting = result.Item1;
+                    operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
                 };
 
-                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.LowerCalculation = expected =>
+                    expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
 
-                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.UpperCalculation = expected =>
+                    expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
                 operation.IsGood = () => ChekedOperation(operation);
 
-               
+                DataRow.Add(operation);
+            }
+        }
+    }
+
+    public sealed class DcCurrentError : OperationBase<MeasPoint<Current>>
+    {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        /// <inheritdoc />
+        public DcCurrentError(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности DCI";
+            Sheme = ShemeGeneration("", 0);
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            var voltRef = new[]
+            {
+                new MeasPoint<Current>(0.1m), new MeasPoint<Current>(1), new MeasPoint<Current>(10),
+                new MeasPoint<Current>(100), new MeasPoint<Current>(1000)
+            };
+            foreach (var setPoint in voltRef)
+            {
+                var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+
+                operation.Expected = setPoint;
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.DcCurrent, Clalibrator.DcCurrent, setPoint, Logger, token);
+
+                    return Task.CompletedTask;
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    operation.Getting = BodyWork(Multimetr.DcCurrent, Clalibrator.DcCurrent, Logger, token).Item1;
+                };
+
+                operation.LowerCalculation = expected =>
+                    expected - AllowableError(Multimetr.DcCurrent.RangeStorage, expected);
+
+                operation.UpperCalculation = expected =>
+                    expected + AllowableError(Multimetr.DcCurrent.RangeStorage, expected);
+
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+
+                operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -419,33 +523,19 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    Multimetr.Resistance4W.RangeStorage.SetRange(setPoint);
-                    Multimetr.Resistance4W.RangeStorage.IsAutoRange = false;
-                    CatchException<IOTimeoutException>(() => Multimetr.Resistance4W.Setting(), token, Logger);
-                    CatchException<IOTimeoutException>(() => cal4W.Resistance4W.SetValue(setPoint), token,
-                        Logger);
+                    InitWork(Multimetr.Resistance4W, cal4W.Resistance4W, setPoint, Logger, token);
 
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    CatchException<IOTimeoutException>(() => cal4W.Resistance4W.OutputOn(), token, Logger);
-                    (MeasPoint<Resistance>, IOTimeoutException) result;
-                    try
-                    {
-                        result = CatchException<IOTimeoutException, MeasPoint<Resistance>>(
-                            () => Multimetr.Resistance4W.GetValue(), token, Logger);
-                    }
-                    finally
-                    {
-                        CatchException<IOTimeoutException>(() => cal4W.Resistance4W.OutputOff(), token, Logger);
-                    }
-
-                    operation.Getting = result.Item1;
+                    operation.Getting = BodyWork(Multimetr.Resistance4W, cal4W.Resistance4W, Logger, token).Item1;
                 };
 
-                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
-                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
+                operation.LowerCalculation = expected =>
+                    expected - AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
+                operation.UpperCalculation = expected =>
+                    expected + AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
                 operation.IsGood = () => ChekedOperation(operation);
@@ -481,32 +571,19 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    Multimetr.Resistance2W.RangeStorage.SetRange(setPoint);
-                    Multimetr.Resistance2W.RangeStorage.IsAutoRange = false;
-                    CatchException<IOTimeoutException>(() => Multimetr.Resistance2W.Setting(), token, Logger);
-                    CatchException<IOTimeoutException>(() => Clalibrator.Resistance2W.SetValue(setPoint), token,
-                        Logger);
+                    InitWork(Multimetr.Resistance2W, Clalibrator.Resistance2W, setPoint, Logger, token);
 
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    CatchException<IOTimeoutException>(() => Clalibrator.Resistance2W.OutputOn(), token, Logger);
-                    (MeasPoint<Resistance>, IOTimeoutException) result;
-                    try
-                    {
-                        result = CatchException<IOTimeoutException, MeasPoint<Resistance>>(
-                            () => Multimetr.Resistance2W.GetValue(), token, Logger);
-                    }
-                    finally
-                    {
-                        CatchException<IOTimeoutException>(() => Clalibrator.Resistance2W.OutputOff(), token, Logger);
-                    }
-
-                    operation.Getting = result.Item1;
+                    operation.Getting = BodyWork(Multimetr.Resistance2W, Clalibrator.Resistance2W, Logger, token)
+                        .Item1;
                 };
-                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
-                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                operation.LowerCalculation = expected =>
+                    expected - AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                operation.UpperCalculation = expected =>
+                    expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
                 operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
@@ -521,7 +598,7 @@ namespace Multimetr34401A
         /// <inheritdoc />
         public AcVoltageError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности AC";
+            Name = "Определение погрешности ACV";
             Sheme = ShemeGeneration("", 0);
         }
 
@@ -550,36 +627,20 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    Multimetr.AcVoltage.RangeStorage.SetRange(setPoint);
-                    Multimetr.AcVoltage.Filter.SetFilter(setPoint);
-                    Multimetr.AcVoltage.RangeStorage.IsAutoRange = false;
-                    CatchException<IOTimeoutException>(() => Multimetr.AcVoltage.Setting(), token, Logger);
-                    CatchException<IOTimeoutException>(() => Clalibrator.AcVoltage.SetValue(setPoint), token, Logger);
-
+                    InitWork(Multimetr.AcVoltage, Clalibrator.AcVoltage, setPoint, Logger, token);
                     return Task.CompletedTask;
                 };
 
-
-
                 operation.BodyWorkAsync = () =>
                 {
-                    CatchException<IOTimeoutException>(() => Clalibrator.AcVoltage.OutputOn(), token, Logger);
-                    (MeasPoint<Voltage>, IOTimeoutException) result;
-                    try
-                    {
-                        result = CatchException<IOTimeoutException, MeasPoint<Voltage>>(
-                            () => Multimetr.AcVoltage.GetValue(), token, Logger);
-                    }
-                    finally
-                    {
-                        CatchException<IOTimeoutException>(() => Clalibrator.AcVoltage.OutputOff(), token, Logger);
-                    }
-
-                    operation.Getting = ConvertMeasPoint(result.Item1, operation.Expected);
+                    var result = BodyWork(Multimetr.AcVoltage, Clalibrator.AcVoltage, Logger, token).Item1;
+                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
                 };
-               
-                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
-                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+
+                operation.LowerCalculation = expected =>
+                    expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                operation.UpperCalculation = expected =>
+                    expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
                 operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
@@ -594,7 +655,7 @@ namespace Multimetr34401A
         /// <inheritdoc />
         public AcCurrentError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности AC";
+            Name = "Определение погрешности ACI";
             Sheme = ShemeGeneration("", 0);
         }
 
@@ -604,7 +665,7 @@ namespace Multimetr34401A
             var voltRef = new[]
             {
                 new MeasPoint<Current, Frequency>(10, UnitMultiplier.Mili, 1),
-                new MeasPoint<Current, Frequency>(100, UnitMultiplier.Mili, 1),
+                new MeasPoint<Current, Frequency>(100, UnitMultiplier.Mili, 1)
             };
             foreach (var setPoint in voltRef)
             {
@@ -613,32 +674,18 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    Multimetr.AcCurrent.RangeStorage.SetRange(setPoint);
-                    Multimetr.AcCurrent.Filter.SetFilter(setPoint);
-                    Multimetr.AcCurrent.RangeStorage.IsAutoRange = false;
-                    CatchException<IOTimeoutException>(() => Multimetr.AcCurrent.Setting(), token, Logger);
-                    CatchException<IOTimeoutException>(() => Clalibrator.AcCurrent.SetValue(setPoint), token, Logger);
-
+                    InitWork(Multimetr.AcCurrent, Clalibrator.AcCurrent, setPoint, Logger, token);
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    CatchException<IOTimeoutException>(() => Clalibrator.AcVoltage.OutputOn(), token, Logger);
-                    (MeasPoint<Current>, IOTimeoutException) result;
-                    try
-                    {
-                        result = CatchException<IOTimeoutException, MeasPoint<Current>>(
-                            () => Multimetr.AcCurrent.GetValue(), token, Logger);
-                    }
-                    finally
-                    {
-                        CatchException<IOTimeoutException>(() => Clalibrator.AcCurrent.OutputOff(), token, Logger);
-                    }
-
-                    operation.Getting = ConvertMeasPoint(result.Item1, operation.Expected);
+                    var result = BodyWork(Multimetr.AcCurrent, Clalibrator.AcCurrent, Logger, token).Item1;
+                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
                 };
-                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
-                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                operation.LowerCalculation = expected =>
+                    expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                operation.UpperCalculation = expected =>
+                    expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
                 operation.IsGood = () => ChekedOperation(operation);

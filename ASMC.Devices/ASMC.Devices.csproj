@@ -170,6 +170,7 @@
     <None Include="Port\OWEN\ki_parametry_trm202_105_a3.pdf" />
     <None Include="Port\OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
+    <None Include="Resources\ACC\34401A.acc" />
     <None Include="Resources\ACC\5522.acc" />
     <None Include="Resources\ACC\5700_99.1yr" />
     <None Include="Resources\ACC\9100.acc" />

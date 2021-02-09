@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AP.Extension;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface.SourceAndMeter;
@@ -59,13 +61,25 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public bool IsTestConnect { get; }
 
         /// <inheritdoc />
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            throw new NotImplementedException();
+            var fileName = @$"{Environment.CurrentDirectory}\acc\{UserType}.acc";
+            if (!File.Exists(fileName)) return;
+            this.FillRangesDevice(fileName);
         }
 
         /// <inheritdoc />
-        public string StringConnection { get; set; }
+        public string StringConnection
+        {
+            get => _device.StringConnection;
+            set
+            {
+                _device.StringConnection = value;
+#pragma warning disable 4014
+                InitializeAsync();
+#pragma warning restore 4014
+            }
+        }
 
         /// <inheritdoc />
         public IMeterPhysicalQuantity<Capacity> Capacity { get; }
@@ -101,7 +115,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <returns></returns>
         public bool SelfTest()
         {
-            return _device.SelfTest("1");
+            return _device.SelfTest("+0");
         }
 
         #region Nested type: AcCurrentMeas
@@ -117,15 +131,15 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Field
 
-            private readonly IeeeBase devece;
+            private readonly IeeeBase device;
 
             #endregion
 
 
             public AcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:AC")
             {
-                devece = inDevice;
-                RangeStorage = new RangeDevice();
+                device = inDevice;
+                //RangeStorage = new RangeDevice();
             }
 
             #region IAcFilter<Current> Members
@@ -133,7 +147,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             public override void Setting()
             {
                 base.Setting();
-                devece.WriteLine(Filter.FilterSelect.StrCommand);
+                device.WriteLine(Filter.FilterSelect.StrCommand);
             }
 
             /// <inheritdoc />
@@ -193,15 +207,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current>
             {
-                public RangeDevice()
-                {
-                    Ranges.Ranges = new[]
-                    {
-                        new PhysicalRange<Data.Model.PhysicalQuantity.Current>(
-                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(0),
-                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(100, UnitMultiplier.Mili))
-                    };
-                }
+                /// <inheritdoc />
+                [AccRange("Mode: DC Current", typeof(MeasPoint<Data.Model.PhysicalQuantity.Current>))]
+                public override RangeStorage<PhysicalRange<Data.Model.PhysicalQuantity.Current>> Ranges { get; set; }
             }
 
             #endregion
@@ -232,7 +240,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public AcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:AC")
             {
-                RangeStorage = new RangeDevice();
+                //RangeStorage = new RangeDevice();
             }
 
             #region IAcFilter<Voltage> Members
@@ -259,14 +267,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public class RangeDevice : RangeDeviceBase<Voltage>
             {
-                public RangeDevice()
-                {
-                    Ranges.Ranges = new[]
-                    {
-                        new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),
-                            new MeasPoint<Voltage>(100, UnitMultiplier.Mili))
-                    };
-                }
+                /// <inheritdoc />
+                //[AccRange("Mode: Volt AC", typeof(MeasPoint<Voltage>))]
+                public override RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }             
             }
 
             #endregion
@@ -328,14 +331,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public class RangeDevice : RangeDeviceBase<Voltage>
             {
-                public RangeDevice()
-                {
-                    Ranges.Ranges = new[]
-                    {
-                        new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0),
-                            new MeasPoint<Voltage>(100, UnitMultiplier.Mili))
-                    };
-                }
+                /// <inheritdoc />
+                [AccRange("Mode: Volt DC", typeof(MeasPoint<Voltage>))]
+                public override RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }
             }
 
             #endregion
