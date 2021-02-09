@@ -18,19 +18,54 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public  class CalibrMain: ICalibratorMultimeterFlukeBase
+    public abstract class CalibrMain: ICalibratorMultimeterFlukeBase
     {
-        
+
+        #region ErrosCatch
+
+        protected void CheckErrors()
+        {
+            var listErrors = new List<ErrorCode>();
+            ErrorCode err;
+            do
+            {
+                err = GetLastErrorCode();
+                listErrors.Add(err);
+            } while (err != ErrorCode.NoError);
+
+            var errorStr = "";
+            for (var i = 0; i < listErrors.Count; i++)
+                errorStr = $"{i + 1}) {listErrors[i]}: {listErrors[i].GetStringValue()}\n";
+            if (listErrors.Count > 0)
+                throw new Exception($"{Device.StringConnection}: Очередь ошибок: \n{errorStr}");
+        }
+
+        protected abstract string GetError();
+        public ErrorCode GetLastErrorCode()
+        {
+
+            var answer = Device.QueryLine(GetError()).Split(',');
+            if (answer.Length == 2)
+            {
+                int.TryParse(answer[0], out var result);
+                return (ErrorCode)result;
+            }
+
+            return 0;
+
+        }
+
+        #endregion ErrosCatch
 
         protected IeeeBase Device { get; }
         protected CalibrMain()
         {
             Device= new IeeeBase();
-            DcVoltage = new DcVolt(Device);
-            AcVoltage = new AcVolt(Device);
-            DcCurrent = new DcCurr(Device);
-            AcCurrent = new AcCurr(Device);
-            Resistance2W = new Resist2W(Device);
+            DcVoltage = new DcVolt(this);
+            AcVoltage = new AcVolt(this);
+            DcCurrent = new DcCurr(this);
+            AcCurrent = new AcCurr(this);
+            Resistance2W = new Resist2W(this);
            
         }
 
@@ -46,7 +81,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
-            public DcVolt(IeeeBase device) : base(device)
+            public DcVolt(CalibrMain device) : base(device)
             {
                 RangeStorage = new RangeDevice();
             }
@@ -73,7 +108,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class AcVolt : ComplexPhysicalQuantity<Voltage, Frequency>
         {
-            public AcVolt(IeeeBase device) : base(device)
+            public AcVolt(CalibrMain device) : base(device)
             {
                 this.RangeStorage = new RangeDevice();
             }
@@ -96,7 +131,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class DcCurr : SimplyPhysicalQuantity<Current>
         {
-            public DcCurr(IeeeBase device) : base(device)
+            public DcCurr(CalibrMain device) : base(device)
             {
                 RangeStorage = new RangeDevice();
             }
@@ -119,7 +154,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class AcCurr : ComplexPhysicalQuantity<Current, Frequency>
         {
-            public AcCurr(IeeeBase device) : base(device)
+            public AcCurr(CalibrMain device) : base(device)
             {
                 RangeStorage  = new RangeDevice();
             }
@@ -151,7 +186,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class Cap: SimplyPhysicalQuantity<Capacity>
         {
-            public Cap(IeeeBase device) : base(device)
+            public Cap(CalibrMain device) : base(device)
             {
                 RangeStorage = new RangeDevice();
             }
@@ -174,7 +209,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class Temp : SimplyPhysicalQuantity<Temperature>, ITermocoupleType
         {
-            public Temp(IeeeBase device) : base(device)
+            public Temp(CalibrMain device) : base(device)
             {
             }
 
@@ -201,8 +236,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
             {
-                _calibrMain.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
-                CheckErrors();
+                _calibrMain.Device.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
+                this._calibrMain.CheckErrors();
             }
 
             public ITermocoupleType Temperature { get; }
@@ -210,7 +245,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public abstract class Resist : SimplyPhysicalQuantity<Resistance>, IResistance
         {
-            protected Resist(IeeeBase device) : base(device)
+            protected Resist(CalibrMain device) : base(device)
             {
                 
             }
@@ -219,15 +254,15 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public void SetCompensation(Compensation compMode)
             {
                 var command = CompensationMode.FirstOrDefault(q => (int)q.Value == (int) compMode);
-                _calibrMain.WriteLine(command.StrCommand);
-                CheckErrors();
+                _calibrMain.Device.WriteLine(command.StrCommand);
+                _calibrMain.CheckErrors();
             }
         }
         public class Resist2W :Resist, IResistance2W
         {
            
 
-            public Resist2W(IeeeBase device) : base(device)
+            public Resist2W(CalibrMain device) : base(device)
             {
                 RangeStorage = new RangeDevice();
                 CompensationMode = new ICommand[]
@@ -264,8 +299,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public void SetCompensation(Compensation compMode)
             {
                 var command = CompensationMode.FirstOrDefault(q => q.Value == (double) compMode).StrCommand;
-                _calibrMain.WriteLine(command);
-                CheckErrors();
+                _calibrMain.Device.WriteLine(command);
+                _calibrMain.CheckErrors();
             }
 
             
@@ -275,7 +310,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity>
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
-            protected SimplyPhysicalQuantity(IeeeBase device) : base(device)
+            protected SimplyPhysicalQuantity(CalibrMain device) : base(device)
             {
             }
 
@@ -311,8 +346,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public virtual void SetValue(MeasPoint<TPhysicalQuantity> value)
             {
                 Value = value;
-                _calibrMain.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                CheckErrors();
+                _calibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
+                _calibrMain.CheckErrors();
             }
 
             
@@ -330,7 +365,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             /// </summary>
             private static readonly Regex regex = new Regex(@"(?!\w) (?=\d)");
 
-            protected ComplexPhysicalQuantity(IeeeBase device) : base(device)
+            protected ComplexPhysicalQuantity(CalibrMain device) : base(device)
             {
             }
 
@@ -372,8 +407,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public virtual void SetValue(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
             {
                 Value = value;
-                _calibrMain.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                CheckErrors();
+                _calibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
+                _calibrMain.CheckErrors();
             }
 
            
@@ -385,7 +420,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             #region Fields
 
-            protected readonly IeeeBase _calibrMain;
+            protected readonly CalibrMain _calibrMain;
 
             #endregion
 
@@ -395,7 +430,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             #endregion
 
-            protected OutputControl(IeeeBase device)
+            protected OutputControl(CalibrMain device)
             {
                 _calibrMain = device;
             }
@@ -406,12 +441,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public void OutputOff()
             {
-                _calibrMain.WriteLine(State.Off.GetStringValue());
+                _calibrMain.Device.WriteLine(State.Off.GetStringValue());
             }
 
             public void OutputOn()
             {
-                _calibrMain.WriteLine(State.On.GetStringValue());
+                _calibrMain.Device.WriteLine(State.On.GetStringValue());
             }
 
            
@@ -433,41 +468,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 [StringValue("STBY")] Off
             }
 
-            #region ErrosCatch
-
-            protected void CheckErrors()
-            {
-                var listErrors = new List<ErrorCode>();
-                ErrorCode err;
-                do
-                {
-                    err = GetLastErrorCode;
-                    listErrors.Add(err);
-                } while (err != ErrorCode.NoError);
-
-                var errorStr = "";
-                for (var i = 0; i < listErrors.Count; i++)
-                    errorStr = $"{i + 1}) {listErrors[i]}: {listErrors[i].GetStringValue()}\n";
-                if (listErrors.Count > 0)
-                    throw new Exception($"{_calibrMain.StringConnection}: Очередь ошибок: \n{errorStr}");
-            }
-
-            public ErrorCode GetLastErrorCode
-            {
-                get
-                {
-                    var answer = _calibrMain.QueryLine("err?").Split(',');
-                    if (answer.Length == 2)
-                    {
-                        int.TryParse(answer[0], out var result);
-                        return (ErrorCode) result;
-                    }
-
-                    return 0;
-                }
-            }
-
-            #endregion ErrosCatch
         }
 
         public string UserType { get; protected set; }

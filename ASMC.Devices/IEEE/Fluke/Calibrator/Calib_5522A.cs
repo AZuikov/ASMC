@@ -1,6 +1,9 @@
 ﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+using System;
+using System.Collections.Generic;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface.SourceAndMeter;
@@ -56,9 +59,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                 #endregion
             }
+
         }
 
-      
+        #region ErrosCatch
+
+        
+
+        #endregion ErrosCatch
 
         #region OldCode
 

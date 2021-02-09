@@ -509,7 +509,7 @@ namespace ASMC.Devices.IEEE
         public virtual async Task InitializeAsync() { }
 
         /// <summary>
-        /// Считывает строку
+        /// Считывает форматированную строку.
         /// </summary>
         /// <returns>Возвращает считанаю строку</returns>
         public string ReadLine()
@@ -519,6 +519,33 @@ namespace ASMC.Devices.IEEE
             try
             {
                 date = Session.FormattedIO.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $@"Не удалось считать данные с устройства {UserType}");
+                throw;
+            }
+            finally
+            {
+                Close();
+            }
+
+            return date;
+        }
+
+        /// <summary>
+        /// Считывает не форматированную строку.
+        /// </summary>
+        /// <param name="HowManyBytesToGet">Количество байт, которое нужно считать.</param>
+        /// <returns></returns>
+        public string ReadRawString(int HowManyBytesToGet)
+        {
+            Open();
+            string date = null;
+            try
+            {
+                date = Session.RawIO.ReadString(HowManyBytesToGet);
+                
             }
             catch (Exception e)
             {
