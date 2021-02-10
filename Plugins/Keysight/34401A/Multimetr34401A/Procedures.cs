@@ -219,16 +219,17 @@ namespace Multimetr34401A
             return data;
         }
 
-        protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
-            IAcFilter<TPhysicalQuantity> mert, ISourcePhysicalQuantity<TPhysicalQuantity, Frequency> sourse,
-            Logger logger, CancellationTokenSource _token)
-            where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        protected (MeasPoint<T1>, IOTimeoutException) BodyWork(
+            IMeterPhysicalQuantity<T1, T2> mert, ISourcePhysicalQuantity<T1, T2> sourse,
+            Logger logger, CancellationTokenSource _token) 
+
         {
             CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
-            (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
+            (MeasPoint<T1>, IOTimeoutException) result;
             try
             {
-                result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
+                Thread.Sleep(1000);
+                result = CatchException<IOTimeoutException, MeasPoint<T1>>(
                     () => mert.GetValue(), _token, logger);
             }
             finally
@@ -238,19 +239,40 @@ namespace Multimetr34401A
 
             return result;
         }
+        protected (MeasPoint<T1>, IOTimeoutException) BodyWork(
+            IMeterPhysicalQuantity<T1> mert, ISourcePhysicalQuantity<T1, T2> sourse,
+            Logger logger, CancellationTokenSource _token)
 
-        protected void InitWork<TPhysicalQuantity>(IAcFilter<TPhysicalQuantity> mert,
-            ISourcePhysicalQuantity<TPhysicalQuantity, Frequency> sourse,
-            MeasPoint<TPhysicalQuantity, Frequency> setPoint, Logger loger, CancellationTokenSource _token)
-            where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        {
+            CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
+            (MeasPoint<T1>, IOTimeoutException) result;
+            try
+            {
+                Thread.Sleep(1000);
+                result = CatchException<IOTimeoutException, MeasPoint<T1>>(
+                    () => mert.GetValue(), _token, logger);
+            }
+            finally
+            {
+                CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
+            }
+
+            return result;
+        }
+        protected void InitWork(IMeterPhysicalQuantity<T1, T2> mert,
+            ISourcePhysicalQuantity<T1, T2> sourse,
+            MeasPoint<T1, T2> setPoint, Logger loger, CancellationTokenSource _token)
         {
             mert.RangeStorage.SetRange(setPoint);
             mert.RangeStorage.IsAutoRange = false;
-            mert.Filter.SetFilter(setPoint);
+            if (mert is IAcFilter<T1,T2> cast)
+            {
+                cast.Filter.SetFilter(setPoint);
+            }
             CatchException<IOTimeoutException>(() => mert.Setting(), _token, loger);
             CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
         }
-
+      
         /// <summary>
         ///     Позволяет получить погрешность для указаной точки.
         /// </summary>
@@ -441,7 +463,52 @@ namespace Multimetr34401A
             }
         }
     }
+    public sealed class FrequencyError : MultiPointOperation<Frequency,Voltage>
+    {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        /// <inheritdoc />
+        public FrequencyError(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности Частоты";
+            Sheme = ShemeGeneration("", 0);
+        }
+        
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            var voltRef = new[]
+            {
+                new MeasPoint<Frequency, Voltage>(0.1m,0), new MeasPoint<Frequency,Voltage>(1,0), new MeasPoint<Frequency, Voltage>(10,0),
+                new MeasPoint<Frequency, Voltage>(100,0), new MeasPoint<Frequency, Voltage>(1000,0)
+            };
+            foreach (var setPoint in voltRef)
+            {
+                var operation = new BasicOperationVerefication<MeasPoint<Frequency, Voltage>>();
+
+                operation.Expected = setPoint;
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.Frequency, Clalibrator.Frequency, setPoint, Logger, token);
+                    return Task.CompletedTask;
+                };
+
+                operation.BodyWorkAsync = () =>
+                {
+                    var result = BodyWork(Multimetr.Frequency, Clalibrator.Frequency, Logger, token).Item1;
+                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                };
+                operation.ErrorCalculation = (point, measPoint) => null;
+                operation.LowerCalculation = expected =>
+                    expected - AllowableError(Multimetr.Frequency.RangeStorage, expected);
+                operation.UpperCalculation = expected =>
+                    expected + AllowableError(Multimetr.Frequency.RangeStorage, expected);
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+                DataRow.Add(operation);
+            }
+        }
+    }
     public sealed class DcCurrentError : OperationBase<MeasPoint<Current>>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -450,7 +517,7 @@ namespace Multimetr34401A
         public DcCurrentError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности DCI";
-            Sheme = ShemeGeneration("", 0);
+            Sheme = ShemeGeneration("", 1);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -458,8 +525,8 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Current>(0.1m), new MeasPoint<Current>(1), new MeasPoint<Current>(10),
-                new MeasPoint<Current>(100), new MeasPoint<Current>(1000)
+                new MeasPoint<Current>(10, UnitMultiplier.Mili), new MeasPoint<Current>(100, UnitMultiplier.Mili), new MeasPoint<Current>(1),
+                new MeasPoint<Current>(2)
             };
             foreach (var setPoint in voltRef)
             {
@@ -500,7 +567,7 @@ namespace Multimetr34401A
         public Resistance4WError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности сопротивления 4W";
-            Sheme = ShemeGeneration("", 0);
+            Sheme = ShemeGeneration("", 2);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -509,8 +576,8 @@ namespace Multimetr34401A
             var cal4W = Clalibrator as IResistance4W;
             var voltRef = new[]
             {
-                new MeasPoint<Resistance>(0.1m), new MeasPoint<Resistance>(1), new MeasPoint<Resistance>(10),
-                new MeasPoint<Resistance>(100), new MeasPoint<Resistance>(1000)
+                new MeasPoint<Resistance>(100), new MeasPoint<Resistance>(1, UnitMultiplier.Kilo), new MeasPoint<Resistance>(10, UnitMultiplier.Kilo),
+                new MeasPoint<Resistance>(100, UnitMultiplier.Kilo), new MeasPoint<Resistance>(1, UnitMultiplier.Mega), new MeasPoint<Resistance>(10, UnitMultiplier.Mega) 
             };
             foreach (var setPoint in voltRef)
             {
@@ -557,8 +624,7 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Resistance>(0.1m), new MeasPoint<Resistance>(1), new MeasPoint<Resistance>(10),
-                new MeasPoint<Resistance>(100), new MeasPoint<Resistance>(1000)
+                new MeasPoint<Resistance>(100, UnitMultiplier.Mega)
             };
             foreach (var setPoint in voltRef)
             {
@@ -632,7 +698,7 @@ namespace Multimetr34401A
                     var result = BodyWork(Multimetr.AcVoltage, Clalibrator.AcVoltage, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
                 };
-
+                operation.ErrorCalculation = (point, measPoint) => null;
                 operation.LowerCalculation = expected =>
                     expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
                 operation.UpperCalculation = expected =>
@@ -652,7 +718,7 @@ namespace Multimetr34401A
         public AcCurrentError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности ACI";
-            Sheme = ShemeGeneration("", 0);
+            Sheme = ShemeGeneration("", 1);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -660,8 +726,8 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Current, Frequency>(10, UnitMultiplier.Mili, 1),
-                new MeasPoint<Current, Frequency>(100, UnitMultiplier.Mili, 1)
+                new MeasPoint<Current, Frequency>(1, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                new MeasPoint<Current, Frequency>(2, UnitMultiplier.None, 1,UnitMultiplier.Kilo)
             };
             foreach (var setPoint in voltRef)
             {
@@ -678,6 +744,7 @@ namespace Multimetr34401A
                     var result = BodyWork(Multimetr.AcCurrent, Clalibrator.AcCurrent, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
                 };
+                operation.ErrorCalculation = (point, measPoint) => null;
                 operation.LowerCalculation = expected =>
                     expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
                 operation.UpperCalculation = expected =>

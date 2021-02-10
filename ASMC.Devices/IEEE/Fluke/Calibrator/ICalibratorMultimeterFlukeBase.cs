@@ -7,7 +7,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, ICapacity, ITemperature, IProtocolStringLine
+    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, ICapacity, ITemperature, IProtocolStringLine, IFrequency
     {
 
     }
@@ -26,10 +26,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     {
 
     }
-
+    
+    public interface IFrequency
+    {
+        ISourcePhysicalQuantity<Frequency, Voltage> Frequency { get;  }
+    }
     public interface IDcVoltage
     {
-        ISourcePhysicalQuantity<Voltage> DcVoltage { get;  }
+        ISourcePhysicalQuantity<Voltage> DcVoltage { get; }
     }
 
     public interface IAcVoltage
@@ -37,6 +41,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get;  }
     }
 
+    
     public interface IDcCurrent
     {
         ISourcePhysicalQuantity<Current> DcCurrent { get;  }

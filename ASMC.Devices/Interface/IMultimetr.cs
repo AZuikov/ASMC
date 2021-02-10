@@ -93,7 +93,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
     {
         #region Property
 
-        IMeterPhysicalQuantity<Frequency> Frequency { get; }
+        IMeterPhysicalQuantity<Frequency, Voltage> Frequency { get; }
 
         #endregion
     }

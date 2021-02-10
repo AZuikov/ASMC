@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AP.Extension;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Interface.SourceAndMeter;
 using ASMC.Devices.Model;
 
@@ -33,6 +34,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             AcCurrent = new AcCurrentMeas(_device);
             Resistance4W = new Resist4W(_device);
             Resistance2W = new Resist2W(_device);
+            Frequency = new Freq(_device);
         }
 
         #region IDigitalMultimetr344xx Members
@@ -42,10 +44,10 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public IMeterPhysicalQuantity<Data.Model.PhysicalQuantity.Current> DcCurrent { get; set; }
 
         /// <inheritdoc />
-        public IAcFilter<Voltage> AcVoltage { get; }
+        public IAcFilter<Voltage,Frequency> AcVoltage { get; }
 
         /// <inheritdoc />
-        public IAcFilter<Data.Model.PhysicalQuantity.Current> AcCurrent { get; }
+        public IAcFilter<Data.Model.PhysicalQuantity.Current, Frequency> AcCurrent { get; }
 
 
         /// <inheritdoc />
@@ -85,7 +87,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public IMeterPhysicalQuantity<Capacity> Capacity { get; }
 
         /// <inheritdoc />
-        public IMeterPhysicalQuantity<Frequency> Frequency { get; }
+        public IMeterPhysicalQuantity<Frequency, Voltage> Frequency { get; }
 
         #endregion
 
@@ -120,8 +122,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Nested type: AcCurrentMeas
 
-        public class AcCurrentMeas : MultiPointMeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>,
-            IAcFilter<Data.Model.PhysicalQuantity.Current>
+        public class AcCurrentMeas : MultiPointMeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current, Frequency>,
+            IAcFilter<Data.Model.PhysicalQuantity.Current, Frequency>
         {
             #region Property
 
@@ -140,6 +142,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             {
                 device = inDevice;
                 RangeStorage = new RangeDevice();
+                Filter = new Fil();
             }
 
             #region IAcFilter<Current> Members
@@ -151,13 +154,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             }
 
             /// <inheritdoc />
-            public IFilter<Data.Model.PhysicalQuantity.Current> Filter { get; }
+            public IFilter<Data.Model.PhysicalQuantity.Current, Frequency> Filter { get; }
 
             #endregion
 
             #region Nested type: Fil
 
-            public class Fil : IFilter<Data.Model.PhysicalQuantity.Current>
+            public class Fil : IFilter<Data.Model.PhysicalQuantity.Current, Frequency>
             {
                 public Fil()
                 {
@@ -219,7 +222,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Nested type: AcVoltMeas
 
-        public class AcVoltMeas :  MultiPointMeasureFunction344XxBase<Voltage>, IAcFilter<Voltage>
+        public class AcVoltMeas :  MultiPointMeasureFunction344XxBase<Voltage, Frequency>, IAcFilter<Voltage, Frequency>
         {
 
             #endregion
@@ -239,11 +242,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             }
 
             /// <inheritdoc />
-            public IFilter<Voltage> Filter { get; }
+            public IFilter<Voltage, Frequency> Filter { get; }
 
             #endregion
 
-            public class Filt : IFilter<Voltage>
+            public class Filt : IFilter<Voltage, Frequency>
             {
                 public ICommand FilterSelect
                 {
@@ -310,15 +313,9 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current>
             {
-                public RangeDevice()
-                {
-                    Ranges.Ranges = new[]
-                    {
-                        new PhysicalRange<Data.Model.PhysicalQuantity.Current>(
-                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(0),
-                            new MeasPoint<Data.Model.PhysicalQuantity.Current>(100, UnitMultiplier.Mili))
-                    };
-                }
+                /// <inheritdoc />
+                [AccRange("Mode: DC Current", typeof(MeasPoint<Data.Model.PhysicalQuantity.Current>))]
+                public override RangeStorage<PhysicalRange<Data.Model.PhysicalQuantity.Current>> Ranges { get; set; }
             }
 
             #endregion
@@ -376,14 +373,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
-                public RangeDevice()
-                {
-                    Ranges.Ranges = new[]
-                    {
-                        new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0),
-                            new MeasPoint<Resistance>(100, UnitMultiplier.Mili))
-                    };
-                }
+                [AccRange("Mode: Ohms 2W", typeof(MeasPoint<Resistance>))]
+                public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
             }
 
             #endregion
@@ -410,21 +401,34 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
-                public RangeDevice()
-                {
-                    Ranges.Ranges = new[]
-                    {
-                        new PhysicalRange<Resistance>(new MeasPoint<Resistance>(0),
-                            new MeasPoint<Resistance>(100, UnitMultiplier.Mili))
-                    };
-                }
+                [AccRange("Mode: Ohms 4W", typeof(MeasPoint<Resistance>))]
+                public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
             }
 
             #endregion
         }
 
         #endregion
+        public class Freq : MultiPointMeasureFunction344XxBase<Frequency, Voltage>
+        {
+            public Freq(IeeeBase device) : base(device, "")
+            {
+                RangeStorage = new RangeDevice();
+            }
+            public override void Setting()
+            {
+                base.Setting();
+                _device.WriteLine($"{FunctionName}:NPLC 100");
+            }
 
+           
+
+            public class RangeDevice : RangeDeviceBase<Frequency,Voltage>
+            {
+                [AccRange("Mode: Hertz", typeof(MeasPoint<Frequency, Voltage>))]
+                public override RangeStorage<PhysicalRange<Frequency, Voltage>> Ranges { get; set; }
+            }
+        }
 
         #region Nested type: MeasureFunction344XxBase
 
@@ -505,8 +509,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             #endregion Methods
         }
 
-        public abstract class MultiPointMeasureFunction344XxBase<T> : IMeterPhysicalQuantity<T,Frequency>
-        where T : class, IPhysicalQuantity<T>, new()
+        public abstract class MultiPointMeasureFunction344XxBase<T,T2> : IMeterPhysicalQuantity<T,T2>
+        where T : class, IPhysicalQuantity<T>, new() where T2 : class, IPhysicalQuantity<T2>, new()
         {
             #region Field
 
@@ -572,17 +576,21 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #region Methods
 
-            protected MeasPoint<T,Frequency> ConvertStringToMeasPoint(string value)
+            protected MeasPoint<T,T2> ConvertStringToMeasPoint(string value)
             {
                 var numb = (decimal)HelpDeviceBase.StrToDouble(value);
-                return new MeasPoint<T,Frequency>(numb,0);
+                return new MeasPoint<T,T2>(numb,0);
             }
 
             #endregion Methods
 
             /// <inheritdoc />
-            public IRangePhysicalQuantity<T, Frequency> RangeStorage { get; protected set; }
+            public IRangePhysicalQuantity<T, T2> RangeStorage { get; protected set; }
+
+            IRangePhysicalQuantity<T, T2> IMeterPhysicalQuantity<T, T2>.RangeStorage => throw new NotImplementedException();
         }
         #endregion
     }
+
+   
 }

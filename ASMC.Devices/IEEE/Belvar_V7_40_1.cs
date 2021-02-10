@@ -55,7 +55,7 @@ namespace ASMC.Devices.IEEE
       
        public DcVolt(IeeeBase inDevice) : base(inDevice, MeasureFunctionCode.Dcv)
        {
-           RangeStorage
+          // RangeStorage
        }
    }
 
