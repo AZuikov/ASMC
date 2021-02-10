@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface.Multimetr.Mode;
@@ -52,26 +53,29 @@ namespace ASMC.Devices.IEEE
    public class DcVolt : MeasureFunctionV_7_40_1Base<Voltage>
    {
       
-       public DcVolt(IeeeBase inDevice) : base(inDevice, "Измерение постоянного напряжения")
+       public DcVolt(IeeeBase inDevice) : base(inDevice, MeasureFunctionCode.Dcv)
        {
-           
+           RangeStorage
        }
    }
 
-   public abstract class MeasureFunctionV_7_40_1Base<T> : IMeterPhysicalQuantity<T>
-       where T : class, IPhysicalQuantity<T>, new()
+   public abstract class MeasureFunctionV_7_40_1Base<T> : IMeterPhysicalQuantity<T> where T : class, IPhysicalQuantity<T>, new()
    {
        protected IeeeBase _device;
        
        protected string FunctionName;
-       
+
+       public RangeCodes rangeCode { get; set; }
+       protected MeasureFunctionCode FunctionCodes { get; set; }
+
        readonly string EndCommand = "D0E";
        
 
-       public MeasureFunctionV_7_40_1Base(IeeeBase inDevice, string functionName)
+       public MeasureFunctionV_7_40_1Base(IeeeBase inDevice, MeasureFunctionCode function)
        {
            _device = inDevice;
-           FunctionName = functionName;
+           FunctionCodes = function;
+           FunctionName = FunctionCodes.GetStringValue();
            
        }
 
@@ -98,27 +102,29 @@ namespace ASMC.Devices.IEEE
        }
 
        public MeasPoint<T> Value { get; protected set; }
-   }
 
-   public enum RangeCodes
-   {
-       Range20M = 0,
-       Range2000 = 1,
-       Range200 = 2,
-       Range20 = 3,
-       Range2 = 4,
-       Range200m = 5,
-       AVP = 7
-   }
+       public enum RangeCodes
+       {
+           Range20M = 0,
+           Range2000 = 1,
+           Range200 = 2,
+           Range20 = 3,
+           Range2 = 4,
+           Range200m = 5,
+           AutoRange = 7
+       }
 
-   public enum MeasureFunctionCode
-   {
-       Dci = 1,
-       Resist = 2,
-       Aci = 3,
-       Dcv = 4,
-       Acv = 6
-   }
+       public enum MeasureFunctionCode
+       {
+           [StringValue("Измерение постоянного тока")]Dci = 1,
+           [StringValue("Измерение электрического сопротивления")]Resist = 2,
+           [StringValue("Измерение переменного тока")]Aci = 3,
+           [StringValue("Измерение постоянного напряжения")] Dcv = 4,
+           [StringValue("Измерение переменного напряжения")] Acv = 6
+       }
+    }
+
+   
 
     
 }
