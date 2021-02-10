@@ -12,9 +12,9 @@ namespace Belvar_V7_40_1
         /// <inheritdoc />
         public Main(ServicePack service) : base(service)
         {
-            Type = Название;
-            Grsi = Горсреестр или методика;
-            Range = Диапазон;
+            Type = "В7-40/1";
+            Grsi = "39075-08";
+            Range = "Uпост. 0 - 2000 В, Uпер. до 1000 В, R до 20 МОм, Iпост. до 10 А, Iпер. до 10 А";
         }
     }
     public class S801 : OperationMetrControlBase

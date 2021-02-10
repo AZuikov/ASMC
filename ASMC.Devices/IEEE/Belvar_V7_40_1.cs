@@ -7,9 +7,15 @@ using System.Threading.Tasks;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.Interface.Multimetr.Mode;
+using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Interface.SourceAndMeter;
+using ASMC.Devices.Model;
 using static ASMC.Devices.HelpDeviceBase;
+using IAcCurrent = ASMC.Devices.Interface.Multimetr.Mode.IAcCurrent;
+using IAcVoltage = ASMC.Devices.Interface.Multimetr.Mode.IAcVoltage;
+using IDcCurrent = ASMC.Devices.Interface.Multimetr.Mode.IDcCurrent;
+using IDcVoltage = ASMC.Devices.Interface.Multimetr.Mode.IDcVoltage;
+using IResistance2W = ASMC.Devices.Interface.Multimetr.Mode.IResistance2W;
 
 namespace ASMC.Devices.IEEE
 {
@@ -55,8 +61,15 @@ namespace ASMC.Devices.IEEE
       
        public DcVolt(IeeeBase inDevice) : base(inDevice, MeasureFunctionCode.Dcv)
        {
-           RangeStorage = 
+           RangeStorage = new RangeDevice();
        }
+
+
+       public class RangeDevice : RangeDeviceBase<Voltage>
+       {
+           [AccRange("Mode: Volt DC", typeof(MeasPoint<Voltage>))]
+           public override RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }
+        }
    }
 
    public abstract class MeasureFunctionV_7_40_1Base<T> : IMeterPhysicalQuantity<T> where T : class, IPhysicalQuantity<T>, new()
