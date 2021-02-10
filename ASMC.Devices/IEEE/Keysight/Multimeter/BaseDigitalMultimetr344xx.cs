@@ -411,17 +411,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         #endregion
         public class Freq : MultiPointMeasureFunction344XxBase<Frequency, Voltage>
         {
-            public Freq(IeeeBase device) : base(device, "")
+            public Freq(IeeeBase device) : base(device, "FREQ")
             {
                 RangeStorage = new RangeDevice();
             }
-            public override void Setting()
-            {
-                base.Setting();
-                _device.WriteLine($"{FunctionName}:NPLC 100");
-            }
-
-           
+            
 
             public class RangeDevice : RangeDeviceBase<Frequency,Voltage>
             {
