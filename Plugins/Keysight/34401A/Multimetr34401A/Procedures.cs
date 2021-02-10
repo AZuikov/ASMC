@@ -479,8 +479,8 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Frequency, Voltage>(0.1m,0), new MeasPoint<Frequency,Voltage>(1,0), new MeasPoint<Frequency, Voltage>(10,0),
-                new MeasPoint<Frequency, Voltage>(100,0), new MeasPoint<Frequency, Voltage>(1000,0)
+                new MeasPoint<Frequency, Voltage>(100, UnitMultiplier.Kilo ,1),
+                new MeasPoint<Frequency,Voltage>(100, UnitMultiplier.None,10, UnitMultiplier.Mili)
             };
             foreach (var setPoint in voltRef)
             {
