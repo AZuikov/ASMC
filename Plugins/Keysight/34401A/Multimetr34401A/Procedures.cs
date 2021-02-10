@@ -35,12 +35,7 @@ namespace Multimetr34401A
 
         #endregion
 
-        #region Field
-
-        private readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        #endregion
-
+      
         /// <inheritdoc />
         protected OperationBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -49,16 +44,17 @@ namespace Multimetr34401A
         #region Methods
 
         protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
-            IMeterPhysicalQuantity<TPhysicalQuantity> mert, ISourcePhysicalQuantity<TPhysicalQuantity> sourse,
+            IMeterPhysicalQuantity<TPhysicalQuantity> metr, ISourcePhysicalQuantity<TPhysicalQuantity> sourse,
             Logger logger, CancellationTokenSource _token)
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
             CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
+            Thread.Sleep(1000);
             (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
             try
             {
                 result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
-                    () => mert.GetValue(), _token, logger);
+                    () => metr.GetValue(), _token, logger);
             }
             finally
             {
@@ -114,13 +110,14 @@ namespace Multimetr34401A
         /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
         /// <returns></returns>
-        protected decimal AllowableError<T>(IRangePhysicalQuantity<T> rangeStorage, MeasPoint<T> expected)
+        protected MeasPoint<T> AllowableError<T>(IRangePhysicalQuantity<T> rangeStorage, MeasPoint<T> expected)
             where T : class, IPhysicalQuantity<T>, new()
         {
             rangeStorage.SetRange(expected);
-            return rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
+            var toll= rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
                 expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
                 rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
+            return new MeasPoint<T>(toll);
         }
 
         /// <inheritdoc />
@@ -265,18 +262,17 @@ namespace Multimetr34401A
         /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
         /// <returns></returns>
-        protected decimal AllowableError<T1, T2>(IRangePhysicalQuantity<T1, T2> rangeStorage,
-            MeasPoint<T1, T2> expected) where T1 : class, IPhysicalQuantity<T1>, new()
-            where T2 : class, IPhysicalQuantity<T2>, new()
+        protected MeasPoint<T1, T2> AllowableError(IRangePhysicalQuantity<T1, T2> rangeStorage,
+            MeasPoint<T1, T2> expected) 
         {
             rangeStorage.SetRange(expected);
-            return rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
+            var toll=rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
                 expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
                 rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
+           return  ConvertMeasPoint(new MeasPoint<T1>(toll), expected);
         }
 
-        protected bool ChekedOperation<T1, T2>(IBasicOperationVerefication<MeasPoint<T1, T2>> operation)
-            where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+        protected bool ChekedOperation(IBasicOperationVerefication<MeasPoint<T1, T2>> operation)
         {
             return operation.Getting <= operation.UpperTolerance &&
                    operation.Getting >= operation.LowerTolerance;
@@ -430,7 +426,7 @@ namespace Multimetr34401A
                 {
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
                 };
-
+                operation.ErrorCalculation = (point, measPoint) => null;
                 operation.LowerCalculation = expected =>
                     expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
 
@@ -607,18 +603,18 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Voltage, Frequency>(10, UnitMultiplier.Mili, 1),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 1),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 50),
-                new MeasPoint<Voltage, Frequency>(1, 1),
-                new MeasPoint<Voltage, Frequency>(1, 50),
-                new MeasPoint<Voltage, Frequency>(10, 0.01m),
-                new MeasPoint<Voltage, Frequency>(10, 1),
-                new MeasPoint<Voltage, Frequency>(10, 50),
-                new MeasPoint<Voltage, Frequency>(100, 1),
-                new MeasPoint<Voltage, Frequency>(100, 50),
-                new MeasPoint<Voltage, Frequency>(750, 1),
-                new MeasPoint<Voltage, Frequency>(750, 50)
+                new MeasPoint<Voltage, Frequency>(10, UnitMultiplier.Mili, 1, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 1, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 50, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(1, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(1,UnitMultiplier.None, 50, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(10,UnitMultiplier.None, 0.01m, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(10,UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(10,UnitMultiplier.None, 50, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(100,UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(100,UnitMultiplier.None, 50, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(750,UnitMultiplier.None, 1, UnitMultiplier.Kilo),
+                new MeasPoint<Voltage, Frequency>(750,UnitMultiplier.None, 50, UnitMultiplier.Kilo)
             };
             foreach (var setPoint in voltRef)
             {

@@ -36,7 +36,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             var errorStr = "";
             for (var i = 0; i < listErrors.Count; i++)
                 errorStr = $"{i + 1}) {listErrors[i]}: {listErrors[i].GetStringValue()}\n";
-            if (listErrors.Count > 0)
+            if (listErrors.Count > 0 &&!listErrors.Any(q=>q == ErrorCode.NoError))
                 throw new Exception($"{Device.StringConnection}: Очередь ошибок: \n{errorStr}");
         }
 

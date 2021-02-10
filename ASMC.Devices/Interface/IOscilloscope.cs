@@ -98,18 +98,12 @@ namespace ASMC.Devices.Interface
        BWIDth
     }
 
-   public class MeasParam : ICommand
+   public class MeasParam : Command
    {
-       public MeasParam(string inStrCommand, string inDescription, double value, Type type) 
+       public MeasParam(string inStrCommand, string inDescription, double value, Type type) : base(inStrCommand, inDescription, value)
        {
-           StrCommand = inStrCommand;
-           Description = inDescription;
-           Value = value;
            Type = type;
        }
-       public string StrCommand { get; }
-       public string Description { get; }
-       public double Value { get; }
        public Type Type { get; }
 
    }

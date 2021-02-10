@@ -25,7 +25,7 @@ namespace ASMC.Devices.Interface.SourceAndMeter
         /// <summary>
         /// Автоматический выбор предела.
         /// </summary>
-        bool AutoRange { get; set; }
+        bool IsAutoRange { get; set; }
     }
 
     public interface IRangePhysicalQuantity<TPhysicalQuantity> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()

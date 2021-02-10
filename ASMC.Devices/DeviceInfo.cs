@@ -43,7 +43,7 @@ namespace ASMC.Devices
     /// <summary>
     /// Описывает комманду для отправки в устройство.
     /// </summary>
-    public class Command : ICommand, IComparable<ICommand>
+    public class Command : ICommand
     {
         public Command(string strCommand, string description, double value)
         {
@@ -53,13 +53,13 @@ namespace ASMC.Devices
         }
 
         /// <inheritdoc />
-        public string Description { get; }
+        public string Description { get; protected set; }
 
         /// <inheritdoc />
-        public string StrCommand { get; }
+        public string StrCommand { get; protected set; }
 
         /// <inheritdoc />
-        public double Value { get; }
+        public double Value { get; protected set; }
 
         
         public int CompareTo(ICommand other)
@@ -67,7 +67,7 @@ namespace ASMC.Devices
             return Value.CompareTo(other.Value);
         }
     }
-    public interface ICommand
+    public interface ICommand : IComparable<ICommand>
     {
         #region Property
 

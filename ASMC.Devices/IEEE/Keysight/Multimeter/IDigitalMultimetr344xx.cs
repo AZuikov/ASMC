@@ -11,7 +11,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     {
 
     }
-    public interface IAcFilter<T>: IMeterPhysicalQuantity<T> where T : class, IPhysicalQuantity<T>, new()
+    public interface IAcFilter<T>: IMeterPhysicalQuantity<T,Frequency> where T : class, IPhysicalQuantity<T>, new()
     {
         IFilter<T> Filter { get; }
     }
@@ -35,7 +35,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     public interface IFilter<T> where T : class, IPhysicalQuantity<T>, new()
     {
         void SetFilter(MeasPoint<Frequency> filterFreq);
-         void SetFilter(MeasPoint<T, Frequency> filterFreq);
+        void SetFilter(MeasPoint<T, Frequency> filterFreq);
         void SetFilter(ICommand filter);
         ICommand FilterSelect { get; }
 
