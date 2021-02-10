@@ -221,26 +221,13 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public class AcVoltMeas :  MultiPointMeasureFunction344XxBase<Voltage>, IAcFilter<Voltage>
         {
-            #region Property
-
-            public Command FilterSet { get; protected set; }
-
-            #endregion
-
-            #region Field
-
-            private readonly Command[] _filters =
-            {
-                new Command("Det:Band 3", "", 3),
-                new Command("Det:Band 20", "", 20),
-                new Command("Det:Band 200", "", 200)
-            };
 
             #endregion
 
             public AcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:AC")
             {
                 RangeStorage = new RangeDevice();
+                Filter = new Filt();
             }
 
             #region IAcFilter<Voltage> Members
@@ -248,7 +235,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             public override void Setting()
             {
                 base.Setting();
-                _device.WriteLine(FilterSet.StrCommand);
+                _device.WriteLine(Filter.FilterSelect.StrCommand);
             }
 
             /// <inheritdoc />
@@ -256,11 +243,39 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #endregion
 
-            public void SetFilter(MeasPoint<Frequency> filterFreq)
+            public class Filt : IFilter<Voltage>
             {
-                Array.Sort(_filters);
-                FilterSet = _filters.LastOrDefault(q => q.Value < (double) filterFreq
-                    .MainPhysicalQuantity.GetNoramalizeValueToSi());
+                public ICommand FilterSelect
+                {
+                    get;
+                    protected set;
+                }
+
+                public ICommand[] Filters { get; }=
+                {
+                    new Command("Det:Band 3", "", 3),
+                    new Command("Det:Band 20", "", 20),
+                    new Command("Det:Band 200", "", 200)
+                };
+
+                public void SetFilter(MeasPoint<Frequency> filterFreq)
+                {
+                    Array.Sort(Filters);
+                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double)filterFreq
+                        .MainPhysicalQuantity.GetNoramalizeValueToSi());
+                }
+
+                public void SetFilter(MeasPoint<Voltage, Frequency> filterFreq)
+                {
+                    Array.Sort(Filters);
+                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double)filterFreq
+                        .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
+                }
+
+                public void SetFilter(ICommand filter)
+                {
+                    FilterSelect = Filters.FirstOrDefault(q=>q== filter);
+                }
             }
 
             #region Nested type: RangeDevice
@@ -275,8 +290,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             #endregion
 
         }
-
-        #endregion
 
         #region Nested type: DcCurrentMeas
 
