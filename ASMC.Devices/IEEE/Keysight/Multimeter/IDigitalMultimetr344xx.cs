@@ -11,16 +11,16 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     {
 
     }
-    public interface IAcFilter<T>: IMeterPhysicalQuantity<T,Frequency> where T : class, IPhysicalQuantity<T>, new()
+    public interface IAcFilter<T, T2> : IMeterPhysicalQuantity<T, T2> where T : class, IPhysicalQuantity<T>, new() where T2 : class, IPhysicalQuantity<T2>, new()
     {
-        IFilter<T> Filter { get; }
+        IFilter<T,T2> Filter { get; }
     }
 
     public interface IAcVoltage
     {
         #region Property
 
-        IAcFilter<Voltage> AcVoltage { get; }
+        IAcFilter<Voltage,Frequency> AcVoltage { get; }
 
         #endregion
     }
@@ -28,14 +28,14 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
     {
         #region Property
 
-        IAcFilter<Data.Model.PhysicalQuantity.Current> AcCurrent { get; }
+        IAcFilter<Data.Model.PhysicalQuantity.Current, Frequency> AcCurrent { get; }
 
         #endregion
     }
-    public interface IFilter<T> where T : class, IPhysicalQuantity<T>, new()
+    public interface IFilter<T, T2> where T : class, IPhysicalQuantity<T>, new() where T2 : class, IPhysicalQuantity<T2>, new()
     {
-        void SetFilter(MeasPoint<Frequency> filterFreq);
-        void SetFilter(MeasPoint<T, Frequency> filterFreq);
+        void SetFilter(MeasPoint<T2> filterFreq);
+        void SetFilter(MeasPoint<T, T2> filterFreq);
         void SetFilter(ICommand filter);
         ICommand FilterSelect { get; }
 

@@ -66,17 +66,25 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             DcCurrent = new DcCurr(this);
             AcCurrent = new AcCurr(this);
             Resistance2W = new Resist2W(this);
-           
+            Frequency = new Freq(this);
         }
-
+        /// <inheritdoc />
         public ISourcePhysicalQuantity<Voltage> DcVoltage { get; protected set; }
+        /// <inheritdoc />
         public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; protected set; }
+        /// <inheritdoc />
         public ISourcePhysicalQuantity<Current> DcCurrent { get; protected set; }
+        /// <inheritdoc />
         public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; protected set; }
+        /// <inheritdoc />
         public IResistance Resistance2W { get; protected set; }
+        /// <inheritdoc />
         public ISourcePhysicalQuantity<Capacity> Capacity { get; protected set; }
+        /// <inheritdoc />
         public ITermocoupleType Temperature { get; }
 
+        /// <inheritdoc />
+        public ISourcePhysicalQuantity<Frequency, Voltage> Frequency { get; }
 
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
@@ -118,6 +126,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             protected override string GetMainUnit()
             {
                 return "V";
+            }
+
+            /// <inheritdoc />
+            protected override string GetAdditionalUnit()
+            {
+                return "Hz";
             }
 
             #endregion
@@ -164,6 +178,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             protected override string GetMainUnit()
             {
                 return "A";
+            }
+
+            /// <inheritdoc />
+            protected override string GetAdditionalUnit()
+            {
+                return "Hz";
             }
 
             #endregion
@@ -378,7 +398,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 var unitadd = point.AdditionalPhysicalQuantity.Unit.GetStringValue();
                 point.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
                 point.AdditionalPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
-                var returnCommand = point.Description.Replace(unit, GetMainUnit()).Replace(unitadd, "HZ")
+                var returnCommand = point.Description.Replace(unit, GetMainUnit()).Replace(unitadd, GetAdditionalUnit())
                                          .Replace(',', '.');
                 returnCommand = regex.Replace(returnCommand, ", ");
                 return returnCommand;
@@ -390,6 +410,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             /// <returns></returns>
             protected abstract string GetMainUnit();
 
+            /// <summary>
+            /// Единица измерениядополнительной физической величины калибратора.
+            /// </summary>
+            /// <returns></returns>
+            protected abstract string GetAdditionalUnit();
             #endregion
 
             public virtual void Getting()
@@ -491,7 +516,34 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             this.FillRangesDevice(fileName);
         }
 
-     
+        public class Freq : ComplexPhysicalQuantity<Frequency, Voltage>
+        {
+            public Freq(CalibrMain device) : base(device)
+            {
+                this.RangeStorage = new RangeDevice();
+            }
+
+            #region Methods
+
+            protected override string GetMainUnit()
+            {
+                return "Hz";
+            }
+
+            /// <inheritdoc />
+            protected override string GetAdditionalUnit()
+            {
+                return "V";
+            }
+
+            #endregion
+            public class RangeDevice : RangeDeviceBase<Frequency, Voltage>
+            {
+                [AccRange("Mode: Hertz", typeof(MeasPoint<Frequency, Voltage>))]
+                public override RangeStorage<PhysicalRange<Frequency, Voltage>> Ranges { get; set; }
+
+            }
+        }
     }
 
     /// <summary>
