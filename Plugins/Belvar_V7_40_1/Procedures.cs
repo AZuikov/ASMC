@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Extension;
@@ -8,6 +10,7 @@ using ASMC.Common.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface.SourceAndMeter;
 using NLog;
 
 namespace Belvar_V7_40_1
@@ -117,36 +120,25 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            //поверяемые точки
-            var testPoint = new[]
-            {
-                new MeasPoint<Voltage>(0.07M, UnitMultiplier.Mili),
-                new MeasPoint<Voltage>(2, UnitMultiplier.Mili),
-                new MeasPoint<Voltage>(50, UnitMultiplier.Mili),
-                new MeasPoint<Voltage>(100, UnitMultiplier.Mili),
-                new MeasPoint<Voltage>(150, UnitMultiplier.Mili),
-                new MeasPoint<Voltage>(190, UnitMultiplier.Mili),
-                new MeasPoint<Voltage>(0.2M),
-                new MeasPoint<Voltage>(0.5M),
-                new MeasPoint<Voltage>(1),
-                new MeasPoint<Voltage>(1.5M),
-                new MeasPoint<Voltage>(1.9M),
-                new MeasPoint<Voltage>(2),
-                new MeasPoint<Voltage>(10),
-                new MeasPoint<Voltage>(19),
-                new MeasPoint<Voltage>(20),
-                new MeasPoint<Voltage>(100),
-                new MeasPoint<Voltage>(190),
-                new MeasPoint<Voltage>(200),
-                new MeasPoint<Voltage>(500),
-                new MeasPoint<Voltage>(1000)
-            };
+
+            var dic = new Dictionary<int, double[]>();
+            dic.Add(0, new[] { 0.035, 1, 25, 50, 75, 95 });
+            dic.Add(1, new[] { 5.0, 25, 50, 75, 95 });
+            dic.Add(2, new[] { 10.0, 50, 95 });
+            dic.Add(3, new[] { 10.0, 50, 95 });
+            dic.Add(4, new[] { 10.0, 50, 95 });
+
+
+            MeasPoint<Voltage>[] testPoint =  (MeasPoint<Voltage>[]) GetTestPoints(Multimetr.DcVoltage, dic);
+
+
+
 
             foreach (var measPoint in testPoint)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
 
-                operation.Expected = measPoint;
+                operation.Expected = (MeasPoint<Voltage>) measPoint;
                 operation.InitWorkAsync = () =>
                 {
                     InitWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, measPoint, Logger, token);

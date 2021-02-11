@@ -16,7 +16,8 @@ namespace AP.Extension
         /// <param name="rangeEndValue">Максимальноен значение диапазона.</param>
         /// <param name="pointParcent">одно или несколько знаечние в процентах. Может принимать значение от 0 до 100</param>
         /// <returns></returns>
-        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
+        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue,
+            params double[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
         {
             var listPoint = new List<MeasPoint<T>>();
             foreach (var countPoint in pointParcent)
@@ -29,12 +30,13 @@ namespace AP.Extension
                 var mp = new MeasPoint<T>();
                 mp.MainPhysicalQuantity.Multiplier = rangeEndValue.MainPhysicalQuantity.Multiplier;
                 mp.MainPhysicalQuantity.Unit = rangeEndValue.MainPhysicalQuantity.Unit;
-                mp.MainPhysicalQuantity.Value = rangeEndValue.MainPhysicalQuantity.Value * (countPoint / 100M);
+                mp.MainPhysicalQuantity.Value = rangeEndValue.MainPhysicalQuantity.Value * (decimal) (countPoint / 100);
                 yield return mp;
             }
         }
 
-        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue, IMeasPoint<T> rangeStartValue, params int[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
+        public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue,
+            IMeasPoint<T> rangeStartValue, params double[] pointParcent) where T : class, IPhysicalQuantity<T>, new()
         {
             if ((MeasPoint<T>)rangeStartValue >= (MeasPoint<T>)rangeEndValue) throw new ArgumentOutOfRangeException("Начало диапазона больше конца диапазона.");
 
@@ -47,7 +49,7 @@ namespace AP.Extension
 
 
 
-                yield return ((MeasPoint<T>)rangeEndValue + (MeasPoint<T>)rangeStartValue.Abs()) * (countPoint / 100M) - (MeasPoint<T>)rangeStartValue.Abs();
+                yield return ((MeasPoint<T>)rangeEndValue + (MeasPoint<T>)rangeStartValue.Abs()) * (decimal)(countPoint / 100) - (MeasPoint<T>)rangeStartValue.Abs();
 
             }
         }
