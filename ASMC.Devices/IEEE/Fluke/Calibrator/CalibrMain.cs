@@ -23,7 +23,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         #region ErrosCatch
 
-        protected void CheckErrors()
+        public void CheckErrors()
         {
             var listErrors = new List<ErrorCode>();
             ErrorCode err;
@@ -57,7 +57,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         #endregion ErrosCatch
 
-        protected IeeeBase Device { get; }
+        public IeeeBase Device { get; }
         protected CalibrMain()
         {
             Device= new IeeeBase();
@@ -256,8 +256,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
             {
-                _calibrMain.Device.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
-                this._calibrMain.CheckErrors();
+                CalibrMain.Device.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
+                this.CalibrMain.CheckErrors();
             }
 
             public ITermocoupleType Temperature { get; }
@@ -274,11 +274,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public void SetCompensation(Compensation compMode)
             {
                 var command = CompensationMode.FirstOrDefault(q => (int)q.Value == (int) compMode);
-                _calibrMain.Device.WriteLine(command.StrCommand);
-                _calibrMain.CheckErrors();
+                CalibrMain.Device.WriteLine(command.StrCommand);
+                CalibrMain.CheckErrors();
             }
         }
-        public class Resist2W :Resist, IResistance2W
+        public class Resist2W :Resist
         {
            
 
@@ -312,18 +312,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
 
             }
-
-
-            public ICommand[] CompensationMode { get; set; }
-            public IResistance Resistance2W { get; }
-            public void SetCompensation(Compensation compMode)
-            {
-                var command = CompensationMode.FirstOrDefault(q => q.Value == (double) compMode).StrCommand;
-                _calibrMain.Device.WriteLine(command);
-                _calibrMain.CheckErrors();
-            }
-
-            
         }
 
         public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> : 
@@ -367,8 +355,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public virtual void SetValue(MeasPoint<TPhysicalQuantity> value)
             {
                 Value = value;
-                _calibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                _calibrMain.CheckErrors();
+                CalibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
+                CalibrMain.CheckErrors();
             }
 
             
@@ -434,8 +422,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public virtual void SetValue(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
             {
                 Value = value;
-                _calibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                _calibrMain.CheckErrors();
+                CalibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
+                CalibrMain.CheckErrors();
             }
 
            
@@ -447,7 +435,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             #region Fields
 
-            protected readonly CalibrMain _calibrMain;
+            protected CalibrMain CalibrMain { get; }
 
             #endregion
 
@@ -459,7 +447,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             protected OutputControl(CalibrMain device)
             {
-                _calibrMain = device;
+                CalibrMain = device;
             }
 
             #region Methods
@@ -468,12 +456,12 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public void OutputOff()
             {
-                _calibrMain.Device.WriteLine(State.Off.GetStringValue());
+                CalibrMain.Device.WriteLine(State.Off.GetStringValue());
             }
 
             public void OutputOn()
             {
-                _calibrMain.Device.WriteLine(State.On.GetStringValue());
+                CalibrMain.Device.WriteLine(State.On.GetStringValue());
             }
 
            

@@ -577,7 +577,7 @@ namespace Multimetr34401A
             var voltRef = new[]
             {
                 new MeasPoint<Resistance>(100), new MeasPoint<Resistance>(1, UnitMultiplier.Kilo), new MeasPoint<Resistance>(10, UnitMultiplier.Kilo),
-                new MeasPoint<Resistance>(100, UnitMultiplier.Kilo), new MeasPoint<Resistance>(1, UnitMultiplier.Mega), new MeasPoint<Resistance>(10, UnitMultiplier.Mega) 
+                new MeasPoint<Resistance>(100, UnitMultiplier.Kilo) 
             };
             foreach (var setPoint in voltRef)
             {
@@ -625,7 +625,7 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Resistance>(100, UnitMultiplier.Mega)
+                new MeasPoint<Resistance>(1, UnitMultiplier.Mega), new MeasPoint<Resistance>(10, UnitMultiplier.Mega),new MeasPoint<Resistance>(100, UnitMultiplier.Mega)
             };
             foreach (var setPoint in voltRef)
             {
