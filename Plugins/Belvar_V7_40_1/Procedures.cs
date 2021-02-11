@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Extension;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Common.Helps;
@@ -360,99 +361,48 @@ namespace Belvar_V7_40_1
             base.InitWork(token);
             var testPoint = new[]
             {
-                new MeasPoint<Current>(0.05M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(20.0M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(150M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(0.2M),
-                new MeasPoint<Current>(1.0M),
-                new MeasPoint<Current>(1.9M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(10.0M),
-                new MeasPoint<Current>(19.0M),
-                new MeasPoint<Current>(20M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(1000M),
-                new MeasPoint<Current>(1900M),
-                new MeasPoint<Current>(0.05M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(20.0M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(150M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(0.2M),
-                new MeasPoint<Current>(1.0M),
-                new MeasPoint<Current>(1.9M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(10.0M),
-                new MeasPoint<Current>(19.0M),
-                new MeasPoint<Current>(20M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(1000M),
-                new MeasPoint<Current>(1900M),
-                new MeasPoint<Current>(0.05M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(20.0M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(150M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(0.2M),
-                new MeasPoint<Current>(1.0M),
-                new MeasPoint<Current>(1.9M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(10.0M),
-                new MeasPoint<Current>(19.0M),
-                new MeasPoint<Current>(20M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(1000M),
-                new MeasPoint<Current>(1900M),
-                new MeasPoint<Current>(0.05M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(20.0M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(150M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(0.2M),
-                new MeasPoint<Current>(1.0M),
-                new MeasPoint<Current>(1.9M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(10.0M),
-                new MeasPoint<Current>(19.0M),
-                new MeasPoint<Current>(20M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(1000M),
-                new MeasPoint<Current>(1900M),
-                new MeasPoint<Current>(0.05M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(20.0M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(150M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(0.2M),
-                new MeasPoint<Current>(1.0M),
-                new MeasPoint<Current>(1.9M),
-                new MeasPoint<Current>(2.0M),
-                new MeasPoint<Current>(10.0M),
-                new MeasPoint<Current>(19.0M),
-                new MeasPoint<Current>(20M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(190M),
-                new MeasPoint<Current>(100M),
-                new MeasPoint<Current>(1000M),
-                new MeasPoint<Current>(1900M)
+                new MeasPoint<Current>(0.05M, UnitMultiplier.Micro ),
+                new MeasPoint<Current>(2.0M , UnitMultiplier.Micro),
+                new MeasPoint<Current>(20.0M, UnitMultiplier.Micro),
+                new MeasPoint<Current>(100M , UnitMultiplier.Micro),
+                new MeasPoint<Current>(150M , UnitMultiplier.Micro),
+                new MeasPoint<Current>(190M , UnitMultiplier.Micro),
+                
+                new MeasPoint<Current>(0.2M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(1.0M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(1.9M, UnitMultiplier.Mili),
+                
+                new MeasPoint<Current>(2.0M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(10.0M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(19.0M, UnitMultiplier.Mili),
+                
+                new MeasPoint<Current>(20M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(100M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(190M, UnitMultiplier.Mili),
+                
+                new MeasPoint<Current>(100M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(1000M, UnitMultiplier.Mili),
+                new MeasPoint<Current>(1900M, UnitMultiplier.Mili),
+                
             };
         }
 
         #endregion
+    }
+
+    public sealed class AciTest : OperationBase<MeasPoint<Current,Frequency>>
+    {
+        public AciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности измерения постоянного тока";
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            MeasPoint<Current,Frequency> testPoints = new MeasPoint<Current, Frequency>(0,0);
+
+            var arr = new MeasPoint<Current,Frequency>().GetArayMeasPointsInParcent(new MeasPoint<Current,Frequency>(200))
+        }
     }
 }

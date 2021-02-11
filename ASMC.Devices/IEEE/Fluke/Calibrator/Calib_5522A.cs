@@ -44,8 +44,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public override void SetValue(MeasPoint<Resistance> value)
             {
                 base.SetValue(value);
-                //_calibrMain.Device.WriteLine(CompensationMode[0].StrCommand);
-                //_calibrMain.CheckErrors();
+                _calibrMain.Device.WriteLine(CompensationMode[0].StrCommand);
+                _calibrMain.CheckErrors();
             }
 
             protected override string GetUnit()
