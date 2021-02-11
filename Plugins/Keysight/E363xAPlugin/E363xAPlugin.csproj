@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Resources\E363xA_protocol.dotx" />
     <None Include="Resources\E364XA_VisualTest.rtf" />
     <None Include="Resources\VoltageTransientDurationText.rtf" />

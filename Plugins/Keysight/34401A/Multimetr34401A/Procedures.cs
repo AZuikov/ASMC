@@ -228,7 +228,7 @@ namespace Multimetr34401A
             (MeasPoint<T1>, IOTimeoutException) result;
             try
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 result = CatchException<IOTimeoutException, MeasPoint<T1>>(
                     () => mert.GetValue(), _token, logger);
             }
@@ -577,7 +577,7 @@ namespace Multimetr34401A
             var voltRef = new[]
             {
                 new MeasPoint<Resistance>(100), new MeasPoint<Resistance>(1, UnitMultiplier.Kilo), new MeasPoint<Resistance>(10, UnitMultiplier.Kilo),
-                new MeasPoint<Resistance>(100, UnitMultiplier.Kilo), new MeasPoint<Resistance>(1, UnitMultiplier.Mega), new MeasPoint<Resistance>(10, UnitMultiplier.Mega) 
+                new MeasPoint<Resistance>(100, UnitMultiplier.Kilo) 
             };
             foreach (var setPoint in voltRef)
             {
@@ -590,6 +590,7 @@ namespace Multimetr34401A
 
                     return Task.CompletedTask;
                 };
+                operation.ErrorCalculation = (point, measPoint) => null;
                 operation.BodyWorkAsync = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.Resistance4W, cal4W.Resistance4W, Logger, token).Item1;
@@ -624,7 +625,7 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Resistance>(100, UnitMultiplier.Mega)
+                new MeasPoint<Resistance>(1, UnitMultiplier.Mega), new MeasPoint<Resistance>(10, UnitMultiplier.Mega),new MeasPoint<Resistance>(100, UnitMultiplier.Mega)
             };
             foreach (var setPoint in voltRef)
             {

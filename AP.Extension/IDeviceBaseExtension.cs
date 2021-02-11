@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using NLog;
 
 namespace AP.Extension
 {
@@ -19,7 +20,7 @@ namespace AP.Extension
         /// <param name="path">Полный путь к файлу с характеристиками, включая имя и разрешение.</param>
         public static void FillRangesDevice(this IDeviceRemote Devise, string path)
         {
-            GetMember(Devise, Devise.GetType());
+        GetMember(Devise, Devise.GetType());
 
             void GetMember(object obj, Type type)
             {
@@ -33,7 +34,6 @@ namespace AP.Extension
                         object value = accessor[obj, cl.Name];
                         if (value != null) GetMember(value, value.GetType());
                     }
-                  
                     /*Ищем атрибут для диапазона*/
                     if (cl.GetAttribute(typeof(AccRangeAttribute), true) != null)
                     {
@@ -44,13 +44,15 @@ namespace AP.Extension
                             var str = file.FindIndex(s => s.Equals(att.Mode));
                             //todo Не кооретно находит конец и начало некоторых диапазонов. также в диапазон можеет попасть текст
                             var end = file.Skip(str + 1).ToList().FindIndex(s => s.StartsWith("Mode:"));
-
+                            if (end==-1)
+                            {
+                                end = file.FindLastIndex(q => !string.IsNullOrWhiteSpace(q));
+                            }
                             var date = file.Skip(str + 1).Take(end - 1).ToArray();
                             var reg = new Regex(@"\s\s+");
                             var res = date.Select(q => reg.Replace(q, " ").Replace("\t", "")).Where(q => !q.StartsWith("#")).ToArray();
                             /*заполняемое хранилище диапазонов*/
                             accessor[obj, cl.Name] = Activator.CreateInstance(cl.Type, res.Where(q => !string.IsNullOrWhiteSpace(q)).Select(q => (IPhysicalRange)GenerateRange(q, accessor[obj, cl.Name], cl.Type, att.MeasPointType)).ToArray());
-                           // return;
                         }
                     }
                     if (obj == null) continue;

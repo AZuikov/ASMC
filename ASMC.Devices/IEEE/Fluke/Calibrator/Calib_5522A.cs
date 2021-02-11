@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -17,6 +18,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             UserType = "Fluke 5522A";
             Resistance4W = new Resist4W(this);
+
         }
 
         public ISourcePhysicalQuantity<Resistance> Resistance4W { get; protected set; }
@@ -27,49 +29,51 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         }
 
         public ISourcePhysicalQuantity<Temperature> Temperature { get; }
-
         public class Resist4W : Resist
         {
+
+
             public Resist4W(CalibrMain device) : base(device)
             {
                 RangeStorage = new RangeDevice();
                 CompensationMode = new ICommand[]
-                {
-                    new Command("ZCOMP WIRE4", "4х проводная компенсация", 4)
-                };
+                        {
+                            new Command("ZCOMP WIRE4", "4х проводная компенсация", 4)
+                        };
+
             }
+
 
             #region Methods
-
-            public override void SetValue(MeasPoint<Resistance> value)
-            {
-                base.SetValue(value);
-                _calibrMain.Device.WriteLine(CompensationMode[0].StrCommand);
-                _calibrMain.CheckErrors();
-            }
 
             protected override string GetUnit()
             {
                 return "OHM";
             }
 
+            public override void SetValue(MeasPoint<Resistance> value)
+            {
+                    base.SetValue(value);
+                CalibrMain.Device.WriteLine(CompensationMode.First().StrCommand);
+                CalibrMain.CheckErrors();
+            }
+
+
             #endregion
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
-                #region Property
-
                 [AccRange("Mode: Ohms 4W", typeof(MeasPoint<Resistance>))]
                 public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
 
-                #endregion
             }
-
+      
         }
+
 
         #region ErrosCatch
 
-        
+
 
         #endregion ErrosCatch
 

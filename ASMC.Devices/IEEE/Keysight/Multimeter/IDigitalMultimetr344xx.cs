@@ -7,7 +7,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public interface IDigitalMultimetr344xx : IAcVoltage, IResistance2W, ICapacity, IFrequency, IDcVoltage, IDcCurrent, IAcCurrent, IProtocolStringLine
+    public interface IDigitalMultimetr344xx : IAcVoltage, IResistance2W, IFrequency, IDcVoltage, IDcCurrent, IAcCurrent, IProtocolStringLine
     {
 
     }
