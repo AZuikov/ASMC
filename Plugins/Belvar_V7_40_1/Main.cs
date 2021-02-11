@@ -7,7 +7,7 @@ using ASMC.Core.Model;
 
 namespace Belvar_V7_40_1
 {
-    public class Main : Program<S801>
+    public class Main : Program<ProgramV7_40_1>
     {
         /// <inheritdoc />
         public Main(ServicePack service) : base(service)
@@ -17,12 +17,12 @@ namespace Belvar_V7_40_1
             Range = "Uпост. 0 - 2000 В, Uпер. до 1000 В, R до 20 МОм, Iпост. до 10 А, Iпер. до 10 А";
         }
     }
-    public class S801 : OperationMetrControlBase
+    public class ProgramV7_40_1 : OperationMetrControlBase
     {
 
-        public S801(ServicePack servicePac)
+        public ProgramV7_40_1(ServicePack servicePac)
         {
-            UserItemOperationPrimaryVerf = new OperationPrimary<Тип устройства>(Название методики МК, servicePac);
+            UserItemOperationPrimaryVerf = new OperationPrimary<ASMC.Devices.IEEE.Belvar_V7_40_1>("МП 39075-08", servicePac);
         }
 
     }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AP.Extension;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -48,7 +50,16 @@ namespace ASMC.Devices.IEEE
         public bool IsTestConnect { get; }
         public async Task InitializeAsync()
         {
-            throw new NotImplementedException();
+            string deviceName = (string)UserType.Clone();
+            var invalidChars = Path.GetInvalidFileNameChars();
+            foreach (var invalidSymbol in invalidChars)
+            {
+                deviceName.Replace(invalidSymbol, '_');
+            }
+            var fileName = @$"{Environment.CurrentDirectory}\acc\{deviceName}.acc";
+
+            if (!File.Exists(fileName)) return;
+            this.FillRangesDevice(fileName);
         }
 
         public string StringConnection { get; set; }
