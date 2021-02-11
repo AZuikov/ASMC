@@ -27,49 +27,97 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         }
 
         public ISourcePhysicalQuantity<Temperature> Temperature { get; }
-
-        public class Resist4W : Resist
+        public class Resist4W : Resist, IResistance4W
         {
+
+
             public Resist4W(CalibrMain device) : base(device)
             {
                 RangeStorage = new RangeDevice();
                 CompensationMode = new ICommand[]
                 {
-                    new Command("ZCOMP WIRE4", "4х проводная компенсация", 4)
+                    new Command("ZCOMP NONE","Отключает компенсации",0),
+                    new Command("ZCOMP WIRE2","2х проводная компенсация",2)
+
                 };
             }
 
-            #region Methods
 
-            public override void SetValue(MeasPoint<Resistance> value)
-            {
-                base.SetValue(value);
-                //_calibrMain.Device.WriteLine(CompensationMode[0].StrCommand);
-                //_calibrMain.CheckErrors();
-            }
+            #region Methods
 
             protected override string GetUnit()
             {
                 return "OHM";
             }
 
+
+
+
             #endregion
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
-                #region Property
-
-                [AccRange("Mode: Ohms 4W", typeof(MeasPoint<Resistance>))]
+                [AccRange("Mode: Ohms 2W", typeof(MeasPoint<Resistance>))]
                 public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
 
-                #endregion
             }
 
+
+            public ICommand[] CompensationMode { get; set; }
+            public IResistance Resistance2W { get; }
+            public void SetCompensation(Compensation compMode)
+            {
+                var command = CompensationMode.FirstOrDefault(q => q.Value == (double)compMode).StrCommand;
+                _calibrMain.Device.WriteLine(command);
+                _calibrMain.CheckErrors();
+            }
+
+
         }
+        //public class Resist4W : Resist
+        //{
+        //    public Resist4W(CalibrMain device) : base(device)
+        //    {
+        //        this._calibrMain.Device.
+        //        RangeStorage = new RangeDevice();
+        //        CompensationMode = new ICommand[]
+        //        {
+        //            new Command("ZCOMP WIRE4", "4х проводная компенсация", 4)
+        //        };
+        //    }
+
+        //    #region Methods
+
+        //    public override void SetValue(MeasPoint<Resistance> value)
+        //    {
+        //        this._calibrMain.
+        //        base.SetValue(value);
+        //        _calibrMain.Device.WriteLine(CompensationMode[0].StrCommand);
+        //        _calibrMain.CheckErrors();
+        //    }
+
+        //    protected override string GetUnit()
+        //    {
+        //        return "OHM";
+        //    }
+
+        //    #endregion
+
+        //    public class RangeDevice : RangeDeviceBase<Resistance>
+        //    {
+        //        #region Property
+
+        //        [AccRange("Mode: Ohms 4W", typeof(MeasPoint<Resistance>))]
+        //        public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
+
+        //        #endregion
+        //    }
+
+        //}
 
         #region ErrosCatch
 
-        
+
 
         #endregion ErrosCatch
 

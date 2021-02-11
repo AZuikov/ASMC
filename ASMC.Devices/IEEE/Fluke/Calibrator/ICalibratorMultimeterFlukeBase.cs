@@ -22,10 +22,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
     }
 
-    public interface IResistanceGroupForCalibrator : IResistance2W, IResistance4W
-    {
 
-    }
     
     public interface IFrequency
     {

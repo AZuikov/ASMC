@@ -51,7 +51,7 @@ namespace ASMC.Data.Model
 
             if (RangePercentFloor != null) rangeFloor = (decimal) (RangePercentFloor * upperRange / 100);
             //посчитаем погрешность
-            var resultTol = val * TolOfMeasPoint + rangeFloor + Resolution ?? 0;
+            var resultTol = val * TolOfMeasPoint + rangeFloor + (Resolution ?? 0);
             //todo Если разрешение не указано, округление сработате?
             //округлим по числу знаков разрешения
             var mantisa = MathStatistics.GetMantissa(Resolution);

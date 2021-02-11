@@ -228,7 +228,7 @@ namespace Multimetr34401A
             (MeasPoint<T1>, IOTimeoutException) result;
             try
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 result = CatchException<IOTimeoutException, MeasPoint<T1>>(
                     () => mert.GetValue(), _token, logger);
             }
@@ -590,6 +590,7 @@ namespace Multimetr34401A
 
                     return Task.CompletedTask;
                 };
+                operation.ErrorCalculation = (point, measPoint) => null;
                 operation.BodyWorkAsync = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.Resistance4W, cal4W.Resistance4W, Logger, token).Item1;

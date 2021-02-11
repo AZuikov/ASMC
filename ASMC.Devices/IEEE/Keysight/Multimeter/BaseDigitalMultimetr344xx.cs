@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AP.Extension;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.IEEE.Fluke.Calibrator;
 using ASMC.Devices.Interface.SourceAndMeter;
 using ASMC.Devices.Model;
 
@@ -32,19 +31,19 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             DcVoltage = new DcVoltMeas(_device);
             DcCurrent = new DcCurrentMeas(_device);
             AcCurrent = new AcCurrentMeas(_device);
+            Frequency = new Freq(_device);
             Resistance4W = new Resist4W(_device);
             Resistance2W = new Resist2W(_device);
-            Frequency = new Freq(_device);
         }
 
         #region IDigitalMultimetr344xx Members
 
-        public IMeterPhysicalQuantity<Resistance> Resistance2W { get; set; }
-        public IMeterPhysicalQuantity<Voltage> DcVoltage { get; set; }
-        public IMeterPhysicalQuantity<Data.Model.PhysicalQuantity.Current> DcCurrent { get; set; }
+        public IMeterPhysicalQuantity<Resistance> Resistance2W { get; }
+        public IMeterPhysicalQuantity<Voltage> DcVoltage { get; }
+        public IMeterPhysicalQuantity<Data.Model.PhysicalQuantity.Current> DcCurrent { get; }
 
         /// <inheritdoc />
-        public IAcFilter<Voltage,Frequency> AcVoltage { get; }
+        public IAcFilter<Voltage, Frequency> AcVoltage { get; }
 
         /// <inheritdoc />
         public IAcFilter<Data.Model.PhysicalQuantity.Current, Frequency> AcCurrent { get; }
@@ -83,8 +82,6 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             }
         }
 
-        /// <inheritdoc />
-        public IMeterPhysicalQuantity<Capacity> Capacity { get; }
 
         /// <inheritdoc />
         public IMeterPhysicalQuantity<Frequency, Voltage> Frequency { get; }
@@ -138,14 +135,14 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             #endregion
 
 
-            public AcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:AC")
+            public AcCurrentMeas(IeeeBase inDevice) : base(inDevice)
             {
                 device = inDevice;
                 RangeStorage = new RangeDevice();
                 Filter = new Fil();
             }
 
-            #region IAcFilter<Current> Members
+            #region IAcFilter<Current,Frequency> Members
 
             public override void Setting()
             {
@@ -157,6 +154,12 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             public IFilter<Data.Model.PhysicalQuantity.Current, Frequency> Filter { get; }
 
             #endregion
+
+            /// <inheritdoc />
+            protected override string GetFunctionName()
+            {
+                return "CURR:AC";
+            }
 
             #region Nested type: Fil
 
@@ -173,7 +176,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                     Array.Sort(Filters);
                 }
 
-                #region IFilter<Current> Members
+                #region IFilter<Current,Frequency> Members
 
                 /// <inheritdoc />
                 public void SetFilter(MeasPoint<Frequency> filterFreq)
@@ -210,9 +213,17 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current, Frequency>
             {
+                #region Property
+
                 /// <inheritdoc />
-                [AccRange("Mode: AC Current", typeof(MeasPoint<Data.Model.PhysicalQuantity.Current,Frequency>))]
-                public override RangeStorage<PhysicalRange<Data.Model.PhysicalQuantity.Current,Frequency>> Ranges { get; set; }
+                [AccRange("Mode: AC Current", typeof(MeasPoint<Data.Model.PhysicalQuantity.Current, Frequency>))]
+                public override RangeStorage<PhysicalRange<Data.Model.PhysicalQuantity.Current, Frequency>> Ranges
+                {
+                    get;
+                    set;
+                }
+
+                #endregion
             }
 
             #endregion
@@ -220,25 +231,24 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #endregion
 
+      
+
         #region Nested type: AcVoltMeas
 
-        public class AcVoltMeas :  MultiPointMeasureFunction344XxBase<Voltage, Frequency>, IAcFilter<Voltage, Frequency>
+        public class AcVoltMeas : MultiPointMeasureFunction344XxBase<Voltage, Frequency>, IAcFilter<Voltage, Frequency>
         {
-
-            #endregion
-
-            public AcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:AC")
+            public AcVoltMeas(IeeeBase inDevice) : base(inDevice)
             {
                 RangeStorage = new RangeDevice();
                 Filter = new Filt();
             }
 
-            #region IAcFilter<Voltage> Members
+            #region IAcFilter<Voltage,Frequency> Members
 
             public override void Setting()
             {
                 base.Setting();
-                _device.WriteLine(Filter.FilterSelect.StrCommand);
+                Device.WriteLine(Filter.FilterSelect.StrCommand);
             }
 
             /// <inheritdoc />
@@ -246,15 +256,21 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
             #endregion
 
+            /// <inheritdoc />
+            protected override string GetFunctionName()
+            {
+                return "VOLT:AC";
+            }
+
+            #region Nested type: Filt
+
             public class Filt : IFilter<Voltage, Frequency>
             {
-                public ICommand FilterSelect
-                {
-                    get;
-                    protected set;
-                }
+                #region IFilter<Voltage,Frequency> Members
 
-                public ICommand[] Filters { get; }=
+                public ICommand FilterSelect { get; protected set; }
+
+                public ICommand[] Filters { get; } =
                 {
                     new Command("Det:Band 3", "", 3),
                     new Command("Det:Band 20", "", 20),
@@ -264,58 +280,77 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
                 public void SetFilter(MeasPoint<Frequency> filterFreq)
                 {
                     Array.Sort(Filters);
-                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double)filterFreq
+                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double) filterFreq
                         .MainPhysicalQuantity.GetNoramalizeValueToSi());
                 }
 
                 public void SetFilter(MeasPoint<Voltage, Frequency> filterFreq)
                 {
                     Array.Sort(Filters);
-                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double)filterFreq
+                    FilterSelect = Filters.LastOrDefault(q => q.Value < (double) filterFreq
                         .AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
                 }
 
                 public void SetFilter(ICommand filter)
                 {
-                    FilterSelect = Filters.FirstOrDefault(q=>q== filter);
+                    FilterSelect = Filters.FirstOrDefault(q => q == filter);
                 }
-            }
 
-            #region Nested type: RangeDevice
-
-            public class RangeDevice : RangeDeviceBase<Voltage,Frequency>
-            {
-                /// <inheritdoc />
-                [AccRange("Mode: Volt AC", typeof(MeasPoint<Voltage, Frequency>))]
-                public override RangeStorage<PhysicalRange<Voltage,Frequency>> Ranges { get; set; }             
+                #endregion
             }
 
             #endregion
 
+            #region Nested type: RangeDevice
+
+            public class RangeDevice : RangeDeviceBase<Voltage, Frequency>
+            {
+                #region Property
+
+                /// <inheritdoc />
+                [AccRange("Mode: Volt AC", typeof(MeasPoint<Voltage, Frequency>))]
+                public override RangeStorage<PhysicalRange<Voltage, Frequency>> Ranges { get; set; }
+
+                #endregion
+            }
+
+            #endregion
         }
+
+        #endregion
 
         #region Nested type: DcCurrentMeas
 
         public class DcCurrentMeas : MeasureFunction344XxBase<Data.Model.PhysicalQuantity.Current>
         {
-            public DcCurrentMeas(IeeeBase inDevice) : base(inDevice, "CURR:DC")
+            public DcCurrentMeas(IeeeBase inDevice) : base(inDevice)
             {
                 RangeStorage = new RangeDevice();
+            }
+
+            /// <inheritdoc />
+            protected override string GetFunctionName()
+            {
+                return "CURR:DC";
             }
 
             public override void Setting()
             {
                 base.Setting();
-                _device.WriteLine($"{FunctionName}:NPLC 100");
+                Device.WriteLine($"{GetFunctionName()}:NPLC 100");
             }
 
             #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Data.Model.PhysicalQuantity.Current>
             {
+                #region Property
+
                 /// <inheritdoc />
                 [AccRange("Mode: DC Current", typeof(MeasPoint<Data.Model.PhysicalQuantity.Current>))]
                 public override RangeStorage<PhysicalRange<Data.Model.PhysicalQuantity.Current>> Ranges { get; set; }
+
+                #endregion
             }
 
             #endregion
@@ -327,24 +362,34 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public class DcVoltMeas : MeasureFunction344XxBase<Voltage>
         {
-            public DcVoltMeas(IeeeBase inDevice) : base(inDevice, "VOLT:DC")
+            public DcVoltMeas(IeeeBase inDevice) : base(inDevice)
             {
                 RangeStorage = new RangeDevice();
+            }
+
+            /// <inheritdoc />
+            protected override string GetFunctionName()
+            {
+                return "VOLT:DC";
             }
 
             public override void Setting()
             {
                 base.Setting();
-                _device.WriteLine($"{FunctionName}:NPLC 100");
+                Device.WriteLine($"{GetFunctionName()}:NPLC 100");
             }
 
             #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Voltage>
             {
+                #region Property
+
                 /// <inheritdoc />
                 [AccRange("Mode: Volt DC", typeof(MeasPoint<Voltage>))]
                 public override RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }
+
+                #endregion
             }
 
             #endregion
@@ -352,29 +397,257 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #endregion
 
-     
+        #region Nested type: Freq
+
+        public class Freq : MultiPointMeasureFunction344XxBase<Frequency, Voltage>
+        {
+            public Freq(IeeeBase device) : base(device)
+            {
+                RangeStorage = new RangeDevice();
+            }
+            /// <inheritdoc />
+            protected override void SetRangeCommand()
+            {
+                Device.WriteLine($"{GetRangeNameCommand()} {RangeStorage.SelectRange.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            }
+            /// <inheritdoc />
+            protected override string GetRangeNameCommand()
+            {
+                return GetFunctionName() +":VOLT"+ ":RANG";
+            }
+
+            /// <inheritdoc />
+            protected override string GetFunctionName()
+            {
+                return "FREQ";
+            }
+
+            #region Nested type: RangeDevice
+
+            public class RangeDevice : RangeDeviceBase<Frequency, Voltage>
+            {
+                #region Property
+
+                [AccRange("Mode: Hertz", typeof(MeasPoint<Frequency, Voltage>))]
+                public override RangeStorage<PhysicalRange<Frequency, Voltage>> Ranges { get; set; }
+
+                #endregion
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Nested type: MeasureFunction344XxBase
+
+        public abstract class MeasureFunction344XxBase
+        {
+            #region Property
+
+            protected IeeeBase Device { get; }
+
+            protected static string Function => "FUNC";
+
+            #endregion
+
+            protected MeasureFunction344XxBase(IeeeBase device)
+            {
+                Device = device;
+            }
+
+            protected virtual string GetRangeNameCommand()
+            {
+                return GetFunctionName() + ":RANG";
+            }
+
+            protected void SetCurrentMode()
+            {
+                Device.WriteLine($"{Function} \"{GetFunctionName()}\"");
+            }
+
+            /// <summary>
+            ///     Позволяет получить текст команды функции режима.
+            /// </summary>
+            /// <returns></returns>
+            protected abstract string GetFunctionName();
+
+            protected abstract bool SetAutoRange(bool isAutoRange);
+        }
+
+        public abstract class MeasureFunction344XxBase<T> : MeasureFunction344XxBase, IMeterPhysicalQuantity<T>
+            where T : class, IPhysicalQuantity<T>, new()
+        {
+            /// <inheritdoc />
+            protected MeasureFunction344XxBase(IeeeBase device) : base(device)
+            {
+            }
+
+            #region IMeterPhysicalQuantity<T> Members
+
+            /// <inheritdoc />
+            public virtual void Getting()
+            {
+                SetCurrentMode();
+                var answer = Device.QueryLine($"{GetRangeNameCommand()}?");
+                RangeStorage.SetRange(ConvertStringToMeasPoint(answer));
+                GetValue();
+            }
+
+            /// <inheritdoc />
+            public virtual void Setting()
+            {
+                SetCurrentMode();
+                if (!SetAutoRange(RangeStorage.IsAutoRange))
+                    Device.WriteLine(
+                        $"{GetRangeNameCommand()} {RangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            }
+
+            /// <inheritdoc />
+            public IRangePhysicalQuantity<T> RangeStorage { get; set; }
+
+            /// <inheritdoc />
+            public MeasPoint<T> GetValue()
+            {
+                Device.WriteLine("TRIG:SOUR BUS");
+                Device.WriteLine("INIT");
+                Device.WriteLine("*TRG");
+                var answer = Device.QueryLine("FETCH?");
+                Value = ConvertStringToMeasPoint(answer);
+                return Value;
+            }
+
+            /// <inheritdoc />
+            public MeasPoint<T> Value { get; private set; }
+
+            #endregion
+
+            /// <inheritdoc />
+            protected override bool SetAutoRange(bool isAutoRange)
+            {
+                Device.WriteLine(isAutoRange ? $"{GetRangeNameCommand()}:auto on" : $"{GetRangeNameCommand()}:auto off");
+
+                return isAutoRange;
+            }
+
+            #region Methods
+
+            protected MeasPoint<T> ConvertStringToMeasPoint(string value)
+            {
+                var numb = (decimal) HelpDeviceBase.StrToDouble(value);
+                return new MeasPoint<T>(numb);
+            }
+
+            #endregion Methods
+        }
+
+        #endregion
+
+        #region Nested type: MultiPointMeasureFunction344XxBase
+
+        public abstract class MultiPointMeasureFunction344XxBase<T, T2> : MeasureFunction344XxBase,
+            IMeterPhysicalQuantity<T, T2>
+            where T : class, IPhysicalQuantity<T>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+        {
+            /// <inheritdoc />
+            protected MultiPointMeasureFunction344XxBase(IeeeBase device) : base(device)
+            {
+            }
+
+            #region IMeterPhysicalQuantity<T,T2> Members
+
+            /// <inheritdoc />
+            public virtual void Getting()
+            {
+                SetCurrentMode();
+                var answer = Device.QueryLine($"{GetRangeNameCommand()}?");
+                RangeStorage.SetRange(ConvertStringToMeasPoint(answer));
+                GetValue();
+            }
+
+
+            /// <inheritdoc />
+            public virtual void Setting()
+            {
+                SetCurrentMode();
+                if (!SetAutoRange(RangeStorage.IsAutoRange))
+                    SetRangeCommand();
+            }
+
+            protected virtual void SetRangeCommand()
+            {
+                Device.WriteLine(
+                    $"{GetRangeNameCommand()} {RangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            }
+            /// <inheritdoc />
+            public MeasPoint<T> GetValue()
+            {
+                Device.WriteLine("TRIG:SOUR BUS");
+                Device.WriteLine("INIT");
+                Device.WriteLine("*TRG");
+                var answer = Device.QueryLine("FETCH?");
+                Value = ConvertStringToMeasPoint(answer);
+                return Value;
+            }
+
+            /// <inheritdoc />
+            public MeasPoint<T> Value { get; private set; }
+
+            /// <inheritdoc />
+            public IRangePhysicalQuantity<T, T2> RangeStorage { get; protected set; }
+
+            #endregion
+
+            protected override bool SetAutoRange(bool isAutoRange)
+            {
+                Device.WriteLine(RangeStorage.IsAutoRange ? $"{GetRangeNameCommand()}:auto on" : $"{GetRangeNameCommand()}:auto off");
+                return isAutoRange;
+            }
+
+            #region Methods
+
+            protected MeasPoint<T, T2> ConvertStringToMeasPoint(string value)
+            {
+                var numb = (decimal) HelpDeviceBase.StrToDouble(value);
+                return new MeasPoint<T, T2>(numb, 0);
+            }
+
+            #endregion Methods
+        }
+
+        #endregion
 
         #region Nested type: Resist2W
 
         public class Resist2W : MeasureFunction344XxBase<Resistance>
         {
-            public Resist2W(IeeeBase inDevice) : base(inDevice, "RES")
+            public Resist2W(IeeeBase inDevice) : base(inDevice)
             {
                 RangeStorage = new RangeDevice();
+            }
+
+            /// <inheritdoc />
+            protected override string GetFunctionName()
+            {
+                return "RES";
             }
 
             public override void Setting()
             {
                 base.Setting();
-                _device.WriteLine($"{FunctionName}:NPLC 100");
+                Device.WriteLine($"{GetFunctionName()}:NPLC 100");
             }
 
             #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
+                #region Property
+
                 [AccRange("Mode: Ohms 2W", typeof(MeasPoint<Resistance>))]
                 public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
+
+                #endregion
             }
 
             #endregion
@@ -386,205 +659,38 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         public class Resist4W : MeasureFunction344XxBase<Resistance>
         {
-            public Resist4W(IeeeBase inDevice) : base(inDevice, "FRES")
+            public Resist4W(IeeeBase inDevice) : base(inDevice)
             {
                 RangeStorage = new RangeDevice();
+            }
+
+            /// <inheritdoc />
+            protected override string GetFunctionName()
+            {
+                return "FRES";
             }
 
             public override void Setting()
             {
                 base.Setting();
-                _device.WriteLine($"{FunctionName}:NPLC 100");
+                Device.WriteLine($"{GetFunctionName()}:NPLC 100");
             }
 
             #region Nested type: RangeDevice
 
             public class RangeDevice : RangeDeviceBase<Resistance>
             {
+                #region Property
+
                 [AccRange("Mode: Ohms 4W", typeof(MeasPoint<Resistance>))]
                 public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
+
+                #endregion
             }
 
             #endregion
         }
 
-        #endregion
-        public class Freq : MultiPointMeasureFunction344XxBase<Frequency, Voltage>
-        {
-            public Freq(IeeeBase device) : base(device, "FREQ")
-            {
-                RangeStorage = new RangeDevice();
-            }
-            
-
-            public class RangeDevice : RangeDeviceBase<Frequency,Voltage>
-            {
-                [AccRange("Mode: Hertz", typeof(MeasPoint<Frequency, Voltage>))]
-                public override RangeStorage<PhysicalRange<Frequency, Voltage>> Ranges { get; set; }
-            }
-        }
-
-        #region Nested type: MeasureFunction344XxBase
-
-        public abstract class MeasureFunction344XxBase<T> : IMeterPhysicalQuantity<T>
-            where T : class, IPhysicalQuantity<T>, new()
-        {
-            #region Field
-
-            protected IeeeBase _device;
-            protected string ActivateThisModeCommand;
-            protected string FunctionName;
-            protected string RangeCommand;
-
-            #endregion
-
-            protected MeasureFunction344XxBase(IeeeBase inDevice, string inFunctionName)
-            {
-                _device = inDevice;
-                FunctionName = inFunctionName;
-                ActivateThisModeCommand = $"FUNC \"{FunctionName}\"";
-                RangeCommand = $"{FunctionName}:RANG";
-            }
-
-            #region IMeterPhysicalQuantity<T> Members
-
-            /// <inheritdoc />
-            public virtual void Getting()
-            {
-                _device.WriteLine($"{ActivateThisModeCommand}");
-                var answer = _device.QueryLine($"{RangeCommand}?");
-                RangeStorage.SetRange(ConvertStringToMeasPoint(answer));
-                GetValue();
-            }
-
-            /// <inheritdoc />
-            public virtual void Setting()
-            {
-                _device.WriteLine($"{ActivateThisModeCommand}");
-                if (RangeStorage.IsAutoRange)
-                {
-                    _device.WriteLine($"{RangeCommand}:auto on");
-                }
-                else
-                {
-                    _device.WriteLine($"{RangeCommand}:auto off");
-                    _device.WriteLine(
-                        $"{RangeCommand} {RangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-                }
-            }
-
-            /// <inheritdoc />
-            public IRangePhysicalQuantity<T> RangeStorage { get; set; }
-
-            /// <inheritdoc />
-            public MeasPoint<T> GetValue()
-            {
-                _device.WriteLine("TRIG:SOUR BUS");
-                _device.WriteLine("INIT");
-                _device.WriteLine("*TRG");
-                var answer = _device.QueryLine("FETCH?");
-                Value = ConvertStringToMeasPoint(answer);
-                return Value;
-            }
-
-            /// <inheritdoc />
-            public MeasPoint<T> Value { get; private set; }
-
-            #endregion
-
-            #region Methods
-
-            protected MeasPoint<T> ConvertStringToMeasPoint(string value)
-            {
-                var numb = (decimal)HelpDeviceBase.StrToDouble(value);
-                return new MeasPoint<T>(numb);
-            }
-
-            #endregion Methods
-        }
-
-        public abstract class MultiPointMeasureFunction344XxBase<T,T2> : IMeterPhysicalQuantity<T,T2>
-        where T : class, IPhysicalQuantity<T>, new() where T2 : class, IPhysicalQuantity<T2>, new()
-        {
-            #region Field
-
-            protected IeeeBase _device;
-            protected string ActivateThisModeCommand;
-            protected string FunctionName;
-            protected string RangeCommand;
-
-            #endregion
-
-            protected MultiPointMeasureFunction344XxBase(IeeeBase inDevice, string inFunctionName)
-            {
-                _device = inDevice;
-                FunctionName = inFunctionName;
-                ActivateThisModeCommand = $"FUNC \"{FunctionName}\"";
-                RangeCommand = $"{FunctionName}:RANG";
-            }
-
-            #region IMeterPhysicalQuantity<T> Members
-
-            /// <inheritdoc />
-            public virtual void Getting()
-            {
-                _device.WriteLine($"{ActivateThisModeCommand}");
-                var answer = _device.QueryLine($"{RangeCommand}?");
-                RangeStorage.SetRange(ConvertStringToMeasPoint(answer));
-                GetValue();
-            }
-
-            /// <inheritdoc />
-            public virtual void Setting()
-            {
-                _device.WriteLine($"{ActivateThisModeCommand}");
-                if (RangeStorage.IsAutoRange)
-                {
-                    _device.WriteLine($"{RangeCommand}:auto on");
-                }
-                else
-                {
-                    _device.WriteLine($"{RangeCommand}:auto off");
-                    _device.WriteLine(
-                        $"{RangeCommand} {RangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-                }
-            }
-
-
-            /// <inheritdoc />
-            public MeasPoint<T> GetValue()
-            {
-                _device.WriteLine("TRIG:SOUR BUS");
-                _device.WriteLine("INIT");
-                _device.WriteLine("*TRG");
-                var answer = _device.QueryLine("FETCH?");
-                Value = ConvertStringToMeasPoint(answer);
-                return Value;
-            }
-
-            /// <inheritdoc />
-            public MeasPoint<T> Value { get; private set; }
-
-
-            #endregion
-
-            #region Methods
-
-            protected MeasPoint<T,T2> ConvertStringToMeasPoint(string value)
-            {
-                var numb = (decimal)HelpDeviceBase.StrToDouble(value);
-                return new MeasPoint<T,T2>(numb,0);
-            }
-
-            #endregion Methods
-
-            /// <inheritdoc />
-            public IRangePhysicalQuantity<T, T2> RangeStorage { get; protected set; }
-
-            IRangePhysicalQuantity<T, T2> IMeterPhysicalQuantity<T, T2>.RangeStorage => throw new NotImplementedException();
-        }
         #endregion
     }
-
-   
 }

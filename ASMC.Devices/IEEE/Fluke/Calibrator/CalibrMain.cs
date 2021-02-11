@@ -332,6 +332,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             protected SimplyPhysicalQuantity(CalibrMain device) : base(device)
             {
+                
             }
 
             #region Methods
@@ -387,6 +388,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             protected ComplexPhysicalQuantity(CalibrMain device) : base(device)
             {
+                
             }
 
             #region Methods
