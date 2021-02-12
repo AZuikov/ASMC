@@ -89,11 +89,19 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\34401A Поверка 54848-13 и 16500-97.docx" />
+    <None Include="Resources\34401A Поверка 54848-13 и 16500-97.dotx" />
     <None Include="Resources\Внешний осмотр.rtf" />
     <None Include="Resources\Опробывание.rtf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AP.Extension\AP.Extension.csproj">
+      <Project>{7208342F-BF11-4241-B032-30F196CE1A6C}</Project>
+      <Name>AP.Extension</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\AP.Math\AP.Math.csproj">
+      <Project>{3B414E92-0CCD-4321-95C6-FE0C71BDA0E6}</Project>
+      <Name>AP.Math</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\AP.Reports\AP.Reports.csproj">
       <Project>{630EEDDE-FE14-4BA9-A2DA-7976F9BEE39A}</Project>
       <Name>AP.Reports</Name>

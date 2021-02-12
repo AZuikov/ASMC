@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Extension;
+using AP.Math;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Common.Helps;
@@ -55,6 +57,8 @@ namespace Multimetr34401A
             {
                 result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
                     () => metr.GetValue(), _token, logger);
+                result.Item1.Round(
+                    MathStatistics.GetMantissa(metr.RangeStorage.SelectRange.AccuracyChatacteristic.Resolution));
             }
             finally
             {
@@ -64,7 +68,7 @@ namespace Multimetr34401A
             return result;
         }
 
-        protected void InitWork<T>(IMeterPhysicalQuantity<T> mert, ISourcePhysicalQuantity<T> sourse,
+        protected IPhysicalRange<T> InitWork<T>(IMeterPhysicalQuantity<T> mert, ISourcePhysicalQuantity<T> sourse,
             MeasPoint<T> setPoint, Logger loger, CancellationTokenSource _token)
             where T : class, IPhysicalQuantity<T>, new()
         {
@@ -72,6 +76,7 @@ namespace Multimetr34401A
             mert.RangeStorage.IsAutoRange = false;
             CatchException<IOTimeoutException>(() => mert.Setting(), _token, loger);
             CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+            return mert.RangeStorage.SelectRange;
         }
 
         protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
@@ -97,8 +102,9 @@ namespace Multimetr34401A
         protected bool ChekedOperation<T>(IBasicOperationVerefication<MeasPoint<T>> operation)
             where T : class, IPhysicalQuantity<T>, new()
         {
-            return operation.Getting <= operation.UpperTolerance &&
-                   operation.Getting >= operation.LowerTolerance;
+           
+                return operation.Getting <= operation.UpperTolerance &&
+                       operation.Getting >= operation.LowerTolerance;
         }
 
         /// <summary>
@@ -125,6 +131,7 @@ namespace Multimetr34401A
         {
             return new[]
             {
+                "Предел",
                 "Ожидаемое значение",
                 "Измеренное значение",
                 "Минимальное допустимое значение",
@@ -175,11 +182,12 @@ namespace Multimetr34401A
                 var dds = row as BasicOperationVerefication<TOperation>;
                 if (dds == null) continue;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting.ToString();
+                dataRow[0] = dds.Name.ToString();
                 dataRow[1] = dds.Expected.ToString();
-                dataRow[2] = dds.LowerTolerance.ToString();
-                dataRow[3] = dds.UpperTolerance.ToString();
-                dataRow[4] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
+                dataRow[2] = dds.Getting.ToString();
+                dataRow[3] = dds.LowerTolerance.ToString();
+                dataRow[4] = dds.UpperTolerance.ToString();
+                dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -240,7 +248,7 @@ namespace Multimetr34401A
             return result;
         }
         protected (MeasPoint<T1>, IOTimeoutException) BodyWork(
-            IMeterPhysicalQuantity<T1> mert, ISourcePhysicalQuantity<T1, T2> sourse,
+            IMeterPhysicalQuantity<T1> metr, ISourcePhysicalQuantity<T1, T2> sourse,
             Logger logger, CancellationTokenSource _token)
 
         {
@@ -250,7 +258,9 @@ namespace Multimetr34401A
             {
                 Thread.Sleep(1000);
                 result = CatchException<IOTimeoutException, MeasPoint<T1>>(
-                    () => mert.GetValue(), _token, logger);
+                    () => metr.GetValue(), _token, logger);
+                result.Item1.Round(
+                    MathStatistics.GetMantissa(metr.RangeStorage.SelectRange.AccuracyChatacteristic.Resolution));
             }
             finally
             {
@@ -259,7 +269,7 @@ namespace Multimetr34401A
 
             return result;
         }
-        protected void InitWork(IMeterPhysicalQuantity<T1, T2> mert,
+        protected IPhysicalRange<T1,T2> InitWork(IMeterPhysicalQuantity<T1, T2> mert,
             ISourcePhysicalQuantity<T1, T2> sourse,
             MeasPoint<T1, T2> setPoint, Logger loger, CancellationTokenSource _token)
         {
@@ -271,6 +281,7 @@ namespace Multimetr34401A
             }
             CatchException<IOTimeoutException>(() => mert.Setting(), _token, loger);
             CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+            return mert.RangeStorage.SelectRange;
         }
       
         /// <summary>
@@ -430,8 +441,8 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Voltage>(0.1m), new MeasPoint<Voltage>(1), new MeasPoint<Voltage>(10),
-                new MeasPoint<Voltage>(100), new MeasPoint<Voltage>(1000)
+                new MeasPoint<Voltage>(0.1m),new MeasPoint<Voltage>(-0.1m), new MeasPoint<Voltage>(1),new MeasPoint<Voltage>(-1), new MeasPoint<Voltage>(10),new MeasPoint<Voltage>(-10),
+                new MeasPoint<Voltage>(100),new MeasPoint<Voltage>(-100), new MeasPoint<Voltage>(1000),new MeasPoint<Voltage>(-1000)
             };
             foreach (var setPoint in voltRef)
             {
@@ -440,8 +451,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, setPoint, Logger, token);
-
+                   var range= InitWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, setPoint, Logger, token);
+                   operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
@@ -449,11 +460,11 @@ namespace Multimetr34401A
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
                 };
                 operation.ErrorCalculation = (point, measPoint) => null;
-                operation.LowerCalculation = expected =>
-                    expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.LowerCalculation = expected => expected > new MeasPoint<Voltage>()? expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected)
+                    : expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
 
-                operation.UpperCalculation = expected =>
-                    expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.UpperCalculation = expected => expected > new MeasPoint<Voltage>() ? expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected)
+                    : expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
@@ -489,7 +500,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.Frequency, Clalibrator.Frequency, setPoint, Logger, token);
+                   var range=  InitWork(Multimetr.Frequency, Clalibrator.Frequency, setPoint, Logger, token);
+                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
 
@@ -535,8 +547,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.DcCurrent, Clalibrator.DcCurrent, setPoint, Logger, token);
-
+                    var range= InitWork(Multimetr.DcCurrent, Clalibrator.DcCurrent, setPoint, Logger, token);
+                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
@@ -586,8 +598,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.Resistance4W, cal4W.Resistance4W, setPoint, Logger, token);
-
+                    var range= InitWork(Multimetr.Resistance4W, cal4W.Resistance4W, setPoint, Logger, token);
+                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
                 operation.ErrorCalculation = (point, measPoint) => null;
@@ -634,8 +646,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.Resistance2W, Clalibrator.Resistance2W, setPoint, Logger, token);
-
+                   var range= InitWork(Multimetr.Resistance2W, Clalibrator.Resistance2W, setPoint, Logger, token);
+                   operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
@@ -690,7 +702,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.AcVoltage, Clalibrator.AcVoltage, setPoint, Logger, token);
+                    var range= InitWork(Multimetr.AcVoltage, Clalibrator.AcVoltage, setPoint, Logger, token);
+                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
 
@@ -737,7 +750,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.AcCurrent, Clalibrator.AcCurrent, setPoint, Logger, token);
+                    var range= InitWork(Multimetr.AcCurrent, Clalibrator.AcCurrent, setPoint, Logger, token);
+                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
