@@ -462,18 +462,9 @@ namespace Multimetr34401A
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
                 };
                 operation.ErrorCalculation = (point, measPoint) => null;
-                operation.LowerCalculation = expected =>
-                {
-                  
-                        return expected - AllowableError(Multimetr.DcVoltage.RangeStorage, (MeasPoint<Voltage>) expected.Abs());
-            
-                };
+                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.DcVoltage.RangeStorage, (MeasPoint<Voltage>) expected.Abs());
 
-                operation.UpperCalculation = expected =>
-                {
-
-                    return expected + AllowableError(Multimetr.DcVoltage.RangeStorage, (MeasPoint<Voltage>)expected.Abs());
-                };
+                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.DcVoltage.RangeStorage, (MeasPoint<Voltage>)expected.Abs());
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
