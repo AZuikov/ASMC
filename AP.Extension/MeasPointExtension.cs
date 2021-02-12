@@ -59,8 +59,9 @@ namespace AP.Extension
         /// <returns></returns>
         public static IMeasPoint<T> Abs<T>(this IMeasPoint<T> measPoint) where T : class, IPhysicalQuantity<T>, new()
         {
-            measPoint.MainPhysicalQuantity.Value = Math.Abs(measPoint.MainPhysicalQuantity.Value);
-            return measPoint;
+          var  newmp=(IMeasPoint<T>) measPoint.Clone();
+          newmp.MainPhysicalQuantity.Value = Math.Abs(measPoint.MainPhysicalQuantity.Value);
+            return newmp;
         }
         /// <summary>
         /// Округляет значение до нужного числа знаков.
