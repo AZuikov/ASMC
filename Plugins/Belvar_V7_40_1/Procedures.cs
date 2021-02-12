@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading;
@@ -166,9 +167,10 @@ namespace Belvar_V7_40_1
 
         #endregion
     }
-
-    public sealed class AcvTest : OperationBase<MeasPoint<Voltage>>
+    [Description("AcvTest", typeof(MeasPoint<Voltage, Frequency>))]
+    public sealed class AcvTest : MultiOperationBase<Voltage,Frequency>
     {
+        
         public AcvTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения переменного напряжения";
@@ -212,36 +214,15 @@ namespace Belvar_V7_40_1
             dic.Add(4,value: (percentKit5,FreqSmallSet));
 
 
-            IMeasPoint<Voltage, Frequency>[] GetTestPoints(IMeterPhysicalQuantity<Voltage> metr,
-                Dictionary<int, (double[], MeasPoint<Frequency>[])> boockPercentAndFreq)
-            {
-                var endPoinArray = metr.RangeStorage.Ranges.Ranges.Select(q => q.End).OrderBy(q => q.GetMainValue()).ToArray();
-                var testPoint = new List<IMeasPoint<Voltage,Frequency>>();
-
-                for (int i = 0; i < endPoinArray.Length; i++)
-                {
-                    var range = endPoinArray[i];
-                    var frequencys = boockPercentAndFreq[i].Item2;
-                    var percentKit = boockPercentAndFreq[i].Item1;
-
-                    foreach (var freq in frequencys)
-                    {
-                        if ((0 < i && i < endPoinArray.Length - 1) && (freq == new MeasPoint<Frequency>(100, UnitMultiplier.Kilo))) //проверка на диапазоны и частоту
-                        {
-                            percentKit[percentKit.Length - 1] = 0.90; // изменение конечной поверяемой точки предела на частоте 100 кГц для пределов 2 В, 20 В, 200 В (указано в МП таблица 26, стр. 7, столбец поверяемые отметки).
-                        }
-                    }
-                    
-                }
-
-                return testPoint.ToArray();
-            }
-
+           
+            
             var allPoints = GetTestPoints(Multimetr.AcVoltage, dic);
 
         }
 
         #endregion
+
+       
     }
 
     public sealed class DciTest : OperationBase<MeasPoint<Current>>

@@ -91,6 +91,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resource\pointsV7-40_1.asmc" />
+    <None Include="Resource\точки поверки В7-40_1.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AP.Extension\AP.Extension.csproj">
@@ -122,5 +124,6 @@
       <Name>ASMC.Devices</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

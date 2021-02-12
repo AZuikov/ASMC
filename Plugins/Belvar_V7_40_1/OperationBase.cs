@@ -35,6 +35,13 @@ namespace Belvar_V7_40_1
 
         #region Methods
 
+        /// <summary>
+        /// Функция генерирует полный список точек для поверки прибора.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="metr"></param>
+        /// <param name="bockPercents"></param>
+        /// <returns></returns>
         protected IMeasPoint<T>[] GetTestPoints<T>(IMeterPhysicalQuantity<T> metr, Dictionary<int, double[]> bockPercents) where T : class, IPhysicalQuantity<T>, new()
         {
             var endPoinArray = metr.RangeStorage.Ranges.Ranges.Select(q => q.End).OrderBy(q => q.GetMainValue()).ToArray();
@@ -133,5 +140,53 @@ namespace Belvar_V7_40_1
         }
 
         #endregion
+    }
+
+    public abstract class MultiOperationBase<T1, T2> : OperationBase<MeasPoint<T1, T2>>
+        where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+    {
+        protected MultiOperationBase(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+        }
+
+        /// <summary>
+        /// Генерирует перечень точек для поверки, заточена под переменное напряжения
+        /// </summary>
+        /// <param name="metr"></param>
+        /// <param name="boockPercentAndFreq"></param>
+        /// <returns></returns>
+        protected MeasPoint<T1, T2>[] GetTestPoints(IMeterPhysicalQuantity<T1> metr,
+            Dictionary<int, (double[], MeasPoint<T2>[])> boockPercentAndFreq)
+        {
+            var rangeEndPoinArray = metr.RangeStorage.Ranges.Ranges.Select(q => q.End).OrderBy(q => q.GetMainValue()).ToArray();
+            var testPoint = new List<MeasPoint<T1, T2>>();
+
+            for (int i = 0; i < rangeEndPoinArray.Length; i++)
+            {
+                var range = rangeEndPoinArray[i];
+                var frequencys = boockPercentAndFreq[i].Item2;
+                var percentKit = boockPercentAndFreq[i].Item1;
+
+                foreach (var freq in frequencys)
+                {
+                    if ((0 < i && i < rangeEndPoinArray.Length - 1) && (freq == new MeasPoint<T2>(100, UnitMultiplier.Kilo))) //проверка на диапазоны и частоту
+                    {
+                        percentKit[percentKit.Length - 1] = 0.90; // изменение конечной поверяемой точки предела на частоте 100 кГц для пределов 2 В, 20 В, 200 В (указано в МП таблица 26, стр. 7, столбец поверяемые отметки).
+                    }
+
+                    IEnumerable<IMeasPoint<T1>> pointsBuf = range.GetArayMeasPointsInParcent(range, percentKit);
+                    List<MeasPoint<T1, T2>> resultPointsWithFrequency = new List<MeasPoint<T1, T2>>();
+
+                    foreach (var mainPoint in pointsBuf)
+                    {
+                        resultPointsWithFrequency.Add(new MeasPoint<T1, T2>(mainPoint.MainPhysicalQuantity, freq.MainPhysicalQuantity));
+                    }
+                    testPoint.AddRange(resultPointsWithFrequency.ToArray());
+                }
+
+            }
+
+            return testPoint.ToArray();
+        }
     }
 }
