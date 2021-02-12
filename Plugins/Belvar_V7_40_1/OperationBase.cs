@@ -1,5 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using AP.Extension;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Core.Model;
@@ -32,6 +35,18 @@ namespace Belvar_V7_40_1
 
         #region Methods
 
+        protected IMeasPoint<T>[] GetTestPoints<T>(IMeterPhysicalQuantity<T> metr, Dictionary<int, double[]> bockPercents) where T : class, IPhysicalQuantity<T>, new()
+        {
+            var endPoinArray = metr.RangeStorage.Ranges.Ranges.Select(q => q.End).OrderBy(q => q.GetMainValue()).ToArray();
+            var testPoint = new List<IMeasPoint<T>>();
+
+            for (var index = 0; index < endPoinArray.Length; index++)
+            {
+                testPoint.AddRange(endPoinArray[index].GetArayMeasPointsInParcent(endPoinArray[index], bockPercents[index]));
+            }
+
+            return testPoint.ToArray();
+        }
         /// <inheritdoc />
         protected override string GetReportTableName()
         {

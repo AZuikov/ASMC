@@ -179,161 +179,66 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            var testPoint = new[]
+
+            var FreqFullSet = new MeasPoint<Frequency>[]
             {
-                #region 200 мВ
-
-                new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.Mili, 20),
-                new MeasPoint<Voltage, Frequency>(50, UnitMultiplier.Mili, 20),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 20),
-                new MeasPoint<Voltage, Frequency>(150, UnitMultiplier.Mili, 20),
-                new MeasPoint<Voltage, Frequency>(180, UnitMultiplier.Mili, 20),
-
-                new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.Mili, 40),
-                new MeasPoint<Voltage, Frequency>(50, UnitMultiplier.Mili, 40),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 40),
-                new MeasPoint<Voltage, Frequency>(150, UnitMultiplier.Mili, 40),
-                new MeasPoint<Voltage, Frequency>(180, UnitMultiplier.Mili, 20),
-
-                new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.Mili, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(50, UnitMultiplier.Mili, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(150, UnitMultiplier.Mili, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180, UnitMultiplier.Mili, 10, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.Mili, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(50, UnitMultiplier.Mili, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(150, UnitMultiplier.Mili, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180, UnitMultiplier.Mili, 20, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.Mili, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(50, UnitMultiplier.Mili, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(150, UnitMultiplier.Mili, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180, UnitMultiplier.Mili, 50, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(2, UnitMultiplier.Mili, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(50, UnitMultiplier.Mili, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(150, UnitMultiplier.Mili, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180, UnitMultiplier.Mili, 100, UnitMultiplier.Kilo),
-
-                #endregion 200 мВ
-
-                #region 2 В
-
-                new MeasPoint<Voltage, Frequency>(0.2M, 20),
-                new MeasPoint<Voltage, Frequency>(0.5M, 20),
-                new MeasPoint<Voltage, Frequency>(1.0M, 20),
-                new MeasPoint<Voltage, Frequency>(1.5M, 20),
-                new MeasPoint<Voltage, Frequency>(1.8M, 20),
-
-                new MeasPoint<Voltage, Frequency>(0.2M, 40),
-                new MeasPoint<Voltage, Frequency>(0.5M, 40),
-                new MeasPoint<Voltage, Frequency>(1.0M, 40),
-                new MeasPoint<Voltage, Frequency>(1.5M, 40),
-                new MeasPoint<Voltage, Frequency>(1.8M, 20),
-
-                new MeasPoint<Voltage, Frequency>(0.2M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(0.5M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.0M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.5M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.8M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(0.2M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(0.5M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.0M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.5M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.8M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(0.2M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(0.5M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.0M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.5M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.8M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(0.2M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(0.5M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.0M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.5M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(1.8M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-
-                #endregion 2 В
-
-                #region 20 В
-
-                new MeasPoint<Voltage, Frequency>(2M, 20),
-                new MeasPoint<Voltage, Frequency>(10M, 20),
-                new MeasPoint<Voltage, Frequency>(18M, 20),
-
-                new MeasPoint<Voltage, Frequency>(2M, 40),
-                new MeasPoint<Voltage, Frequency>(10M, 40),
-                new MeasPoint<Voltage, Frequency>(18M, 40),
-
-                new MeasPoint<Voltage, Frequency>(2M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(10M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(18M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(2M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(10M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(18M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(2M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(10M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(18M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(2M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(10M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(18M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-
-                #endregion 20 В
-
-                #region 200 В
-
-                new MeasPoint<Voltage, Frequency>(20M, 20),
-                new MeasPoint<Voltage, Frequency>(100M, 20),
-                new MeasPoint<Voltage, Frequency>(180M, 20),
-
-                new MeasPoint<Voltage, Frequency>(20M, 40),
-                new MeasPoint<Voltage, Frequency>(100M, 40),
-                new MeasPoint<Voltage, Frequency>(180M, 40),
-
-                new MeasPoint<Voltage, Frequency>(20M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180M, UnitMultiplier.None, 10, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(20M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180M, UnitMultiplier.None, 20, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(20M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180M, UnitMultiplier.None, 50, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(20M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(100M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(180M, UnitMultiplier.None, 100, UnitMultiplier.Kilo),
-
-                #endregion 200 В
-
-                #region 2000 В
-
-                //без делителя
-                new MeasPoint<Voltage, Frequency>(200M, 40),
-                new MeasPoint<Voltage, Frequency>(500M, 40),
-
-                new MeasPoint<Voltage, Frequency>(200M, 500),
-                new MeasPoint<Voltage, Frequency>(500M, 500),
-
-                new MeasPoint<Voltage, Frequency>(200M, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(500M, UnitMultiplier.None, 1, UnitMultiplier.Kilo),
-
-                new MeasPoint<Voltage, Frequency>(200M, UnitMultiplier.None, 5, UnitMultiplier.Kilo),
-                new MeasPoint<Voltage, Frequency>(500M, UnitMultiplier.None, 5, UnitMultiplier.Kilo),
-
-                #endregion 2000 В
+                new MeasPoint<Frequency>(20),
+                new MeasPoint<Frequency>(40),
+                new MeasPoint<Frequency>(10, UnitMultiplier.Kilo),
+                new MeasPoint<Frequency>(20, UnitMultiplier.Kilo),
+                new MeasPoint<Frequency>(50, UnitMultiplier.Kilo),
+                new MeasPoint<Frequency>(100, UnitMultiplier.Kilo),
             };
+
+            var FreqSmallSet = new MeasPoint<Frequency>[]
+            {
+                new MeasPoint<Frequency>(20),
+                new MeasPoint<Frequency>(40),
+                new MeasPoint<Frequency>(500),
+                new MeasPoint<Frequency>(1, UnitMultiplier.Kilo)
+                
+            };
+
+            var percentKit1 = new[] {10.0,25,50,75,95 };
+            var percentKit2 = new[] {25.0,50,75,95 };
+            var percentKit4 = new[] {10.0,50,95 };
+            var percentKit5 = new[] {10.0,40 };
+
+            var dic  = new Dictionary<int,(double[],MeasPoint<Frequency>[])>();
+            dic.Add(0,value: (percentKit1,FreqFullSet));
+            dic.Add(1,value: (percentKit2,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
+            dic.Add(2,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
+            dic.Add(3,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
+            dic.Add(4,value: (percentKit5,FreqSmallSet));
+
+
+            IMeasPoint<Voltage, Frequency>[] GetTestPoints(IMeterPhysicalQuantity<Voltage> metr,
+                Dictionary<int, (double[], MeasPoint<Frequency>[])> boockPercentAndFreq)
+            {
+                var endPoinArray = metr.RangeStorage.Ranges.Ranges.Select(q => q.End).OrderBy(q => q.GetMainValue()).ToArray();
+                var testPoint = new List<IMeasPoint<Voltage,Frequency>>();
+
+                for (int i = 0; i < endPoinArray.Length; i++)
+                {
+                    var range = endPoinArray[i];
+                    var frequencys = boockPercentAndFreq[i].Item2;
+                    var percentKit = boockPercentAndFreq[i].Item1;
+
+                    foreach (var freq in frequencys)
+                    {
+                        if ((0 < i && i < endPoinArray.Length - 1) && (freq == new MeasPoint<Frequency>(100, UnitMultiplier.Kilo))) //проверка на диапазоны и частоту
+                        {
+                            percentKit[percentKit.Length - 1] = 0.90; // изменение конечной поверяемой точки предела на частоте 100 кГц для пределов 2 В, 20 В, 200 В (указано в МП таблица 26, стр. 7, столбец поверяемые отметки).
+                        }
+                    }
+                    
+                }
+
+                return testPoint.ToArray();
+            }
+
+            var allPoints = GetTestPoints(Multimetr.AcVoltage, dic);
+
         }
 
         #endregion
