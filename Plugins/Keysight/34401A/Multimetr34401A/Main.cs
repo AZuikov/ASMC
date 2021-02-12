@@ -23,7 +23,7 @@ namespace Multimetr34401A
 
         public Mult34401A(ServicePack servicePac)
         {
-            UserItemOperationPrimaryVerf = new OperationPrimary<Keysight34401A>("34401A Поверка 54848-13 и 16500-97.docx", servicePac);
+            UserItemOperationPrimaryVerf = new OperationPrimary<Keysight34401A>("34401A Поверка 54848-13 и 16500-97", servicePac);
             UserItemOperationPeriodicVerf = UserItemOperationPrimaryVerf;
         }
 

@@ -49,6 +49,9 @@ namespace ASMC.Data.Model
         }
 
         /// <inheritdoc />
+        public object Name { get; set; }
+
+        /// <inheritdoc />
         public Action BodyWorkAsync
         {
             get

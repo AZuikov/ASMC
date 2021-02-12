@@ -31,7 +31,13 @@ namespace ASMC.Data.Model.Interface
         ///     <see cref="InitWorkAsync" />.
         /// </remarks>
         Func<Task<bool>> CompliteWorkAsync { get; set; }
-
+        /// <summary>
+        /// Имя операции.
+        /// </summary>
+        /// <remarks>
+        /// Может использоватся для обознаечния измерения, указание придела, номера измерения и т.д.
+        /// </remarks>
+        object Name { get; set; }
         /// <summary>
         ///     Уникальный идентификатор операции
         /// </summary>
