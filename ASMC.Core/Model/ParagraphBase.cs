@@ -31,7 +31,7 @@ namespace ASMC.Core.Model
         private int _count;
 
         #region Property
-
+        
         /// <summary>
         /// Позволяет задать и получить признак ускоренного выполнения операций.
         /// </summary>
@@ -349,6 +349,9 @@ namespace ASMC.Core.Model
 
         /// <inheritdoc />
         public DataTable Data => FillData();
+
+        /// <inheritdoc />
+        public T[] TestMeasPoints { get; set; }
 
         /// <inheritdoc />
         public List<IBasicOperation<T>> DataRow { get; set; }

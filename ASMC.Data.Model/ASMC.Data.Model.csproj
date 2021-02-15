@@ -70,6 +70,7 @@
     <Compile Include="PhysicalQuantity\PhysicalQuantity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RangeStorage.cs" />
+    <Compile Include="TestMeasPointAttribute.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="UserItemOperation.cs" />
   </ItemGroup>

@@ -441,8 +441,10 @@ namespace Multimetr34401A
             base.InitWork(token);
             var voltRef = new[]
             {
-                new MeasPoint<Voltage>(0.1m),new MeasPoint<Voltage>(-0.1m), new MeasPoint<Voltage>(1),new MeasPoint<Voltage>(-1), new MeasPoint<Voltage>(10),new MeasPoint<Voltage>(-10),
-                new MeasPoint<Voltage>(100),new MeasPoint<Voltage>(-100), new MeasPoint<Voltage>(1000),new MeasPoint<Voltage>(-1000)
+                new MeasPoint<Voltage>(0.1m), new MeasPoint<Voltage>(-0.1m), new MeasPoint<Voltage>(1),
+                new MeasPoint<Voltage>(-1), new MeasPoint<Voltage>(10), new MeasPoint<Voltage>(-10),
+                new MeasPoint<Voltage>(100), new MeasPoint<Voltage>(-100), new MeasPoint<Voltage>(1000),
+                new MeasPoint<Voltage>(-1000)
             };
             foreach (var setPoint in voltRef)
             {
@@ -451,8 +453,8 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                   var range= InitWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, setPoint, Logger, token);
-                   operation.Name = range.End.Description;
+                    var range = InitWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, setPoint, Logger, token);
+                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
@@ -460,11 +462,9 @@ namespace Multimetr34401A
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
                 };
                 operation.ErrorCalculation = (point, measPoint) => null;
-                operation.LowerCalculation = expected => expected > new MeasPoint<Voltage>()? expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected)
-                    : expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.LowerCalculation = expected => expected - AllowableError(Multimetr.DcVoltage.RangeStorage, (MeasPoint<Voltage>) expected.Abs());
 
-                operation.UpperCalculation = expected => expected > new MeasPoint<Voltage>() ? expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected)
-                    : expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.UpperCalculation = expected => expected + AllowableError(Multimetr.DcVoltage.RangeStorage, (MeasPoint<Voltage>)expected.Abs());
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
@@ -474,6 +474,7 @@ namespace Multimetr34401A
             }
         }
     }
+
     public sealed class FrequencyError : MultiPointOperation<Frequency,Voltage>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

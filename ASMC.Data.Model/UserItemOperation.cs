@@ -14,7 +14,10 @@ namespace ASMC.Data.Model
     public interface IUserItemOperation<T> : IUserItemOperationBase
     {
         #region Property
-
+        /// <summary>
+        ///ПРоверяемые точки
+        /// </summary>
+         T[] TestMeasPoints { get; set; }
         List<IBasicOperation<T>> DataRow { get; set; }
 
         #endregion
