@@ -35,7 +35,7 @@ namespace Belvar_V7_40_1
             {
                 new VisualInspection(this),
                 new Testing(this),
-                new DcvTest(this), 
+                new AcvTest(this), 
                 /*Остальная часть методики*/
             };
             DocumentName = documentName;

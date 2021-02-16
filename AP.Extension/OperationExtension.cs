@@ -87,7 +87,7 @@ namespace AP.Extension
                 
                 if (generit.Length == 2)
                 {
-                   var pointComplexObj  = Activator.CreateInstance(generit[0], (decimal) mainVal,mainUnitMultiplier,  additionalVal,additionalUnitMultiplier);
+                   var pointComplexObj  = Activator.CreateInstance(attMeasPointType, (decimal) mainVal,mainUnitMultiplier,  additionalVal,additionalUnitMultiplier);
                    
                     pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Value)] = mainVal;
                     pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
@@ -96,7 +96,7 @@ namespace AP.Extension
                     return pointComplexObj;
                 }
 
-                var pointSimpleObj = Activator.CreateInstance(inType.GetGenericArguments().First(), (decimal)mainVal, mainUnitMultiplier);
+                var pointSimpleObj = Activator.CreateInstance(attMeasPointType, (decimal)mainVal, mainUnitMultiplier);
                 //pointAccessor[pointSimpleObj, nameof(MeasPoint<Voltage>.MainPhysicalQuantity.Value)] = mainVal;
                 //pointAccessor[pointSimpleObj, nameof(MeasPoint<Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
 

@@ -211,17 +211,17 @@ namespace Belvar_V7_40_1
             var percentKit4 = new[] {10.0,50,95 };
             var percentKit5 = new[] {10.0,40 };
 
-            var dic  = new Dictionary<int,(double[],MeasPoint<Frequency>[])>();
-            dic.Add(0,value: (percentKit1,FreqFullSet));
-            dic.Add(1,value: (percentKit2,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
-            dic.Add(2,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
-            dic.Add(3,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
-            dic.Add(4,value: (percentKit5,FreqSmallSet));
+            //var dic  = new Dictionary<int,(double[]MeasPoint<Frequency>)>();
+            //dic.Add(0,value: (percentKit1,FreqFullSet));
+            //dic.Add(1,value: (percentKit2,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
+            //dic.Add(2,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
+            //dic.Add(3,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
+            //dic.Add(4,value: (percentKit5,FreqSmallSet));
 
 
            
             
-            var allPoints = GetTestPoints(Multimetr.AcVoltage, dic);
+            //var allPoints = GetTestPoints(Multimetr.AcVoltage, dic);
 
         }
 
