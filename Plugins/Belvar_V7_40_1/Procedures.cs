@@ -107,6 +107,7 @@ namespace Belvar_V7_40_1
         #endregion
     }
 
+    [TestMeasPointAttribute("Operation1: DCV", typeof(MeasPoint<Voltage>))]
     public sealed class DcvTest : OperationBase<MeasPoint<Voltage>>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -120,22 +121,25 @@ namespace Belvar_V7_40_1
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork(token);
+            //base.InitWork(token);
 
-            var dic = new Dictionary<int, double[]>();
-            dic.Add(0, new[] { 0.035, 1, 25, 50, 75, 95 });
-            dic.Add(1, new[] { 5.0, 25, 50, 75, 95 });
-            dic.Add(2, new[] { 10.0, 50, 95 });
-            dic.Add(3, new[] { 10.0, 50, 95 });
-            dic.Add(4, new[] { 10.0, 50, 95 });
-
-
-            MeasPoint<Voltage>[] testPoint =  (MeasPoint<Voltage>[]) GetTestPoints(Multimetr.DcVoltage, dic);
+            //var dic = new Dictionary<int, double[]>();
+            //dic.Add(0, new[] { 0.035, 1, 25, 50, 75, 95 });
+            //dic.Add(1, new[] { 5.0, 25, 50, 75, 95 });
+            //dic.Add(2, new[] { 10.0, 50, 95 });
+            //dic.Add(3, new[] { 10.0, 50, 95 });
+            //dic.Add(4, new[] { 10.0, 50, 95 });
 
 
+            //MeasPoint<Voltage>[] testPoint =  (MeasPoint<Voltage>[]) GetTestPoints(Multimetr.DcVoltage, dic);
+
+            
+            
 
 
-            foreach (var measPoint in testPoint)
+
+
+            foreach (var measPoint in TestMeasPoints)
             {
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
 
@@ -167,7 +171,8 @@ namespace Belvar_V7_40_1
 
         #endregion
     }
-    [Description("AcvTest", typeof(MeasPoint<Voltage, Frequency>))]
+
+    [TestMeasPointAttribute("Operation1: ACV", typeof(MeasPoint<Voltage,Frequency>))]
     public sealed class AcvTest : MultiOperationBase<Voltage,Frequency>
     {
         
@@ -225,6 +230,16 @@ namespace Belvar_V7_40_1
        
     }
 
+    [TestMeasPointAttribute("Operation1: Resistance 2W", typeof(MeasPoint<Resistance>))]
+    public sealed class Resist2WTest : OperationBase<MeasPoint<Resistance>>
+    {
+        public Resist2WTest(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Определение погрешности измерения Электрического сопротивления";
+        }
+    }
+
+    [TestMeasPointAttribute("Operation1: DCI", typeof(MeasPoint<Current>))]
     public sealed class DciTest : OperationBase<MeasPoint<Current>>
     {
         public DciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
@@ -268,6 +283,7 @@ namespace Belvar_V7_40_1
         #endregion
     }
 
+    [TestMeasPointAttribute("Operation1: ACI", typeof(MeasPoint<Current, Frequency>))]
     public sealed class AciTest : OperationBase<MeasPoint<Current,Frequency>>
     {
         public AciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
@@ -280,7 +296,7 @@ namespace Belvar_V7_40_1
             base.InitWork(token);
             MeasPoint<Current,Frequency> testPoints = new MeasPoint<Current, Frequency>(0,0);
 
-            var arr = new MeasPoint<Current,Frequency>().GetArayMeasPointsInParcent(new MeasPoint<Current,Frequency>(200))
+           // var arr = new MeasPoint<Current,Frequency>().GetArayMeasPointsInParcent(new MeasPoint<Current,Frequency>(200))
         }
     }
 }

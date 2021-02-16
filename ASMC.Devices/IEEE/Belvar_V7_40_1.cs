@@ -34,6 +34,7 @@ namespace ASMC.Devices.IEEE
 
         public Belvar_V7_40_1()
         {
+            UserType = "В7-40/1";
             _device = new IeeeBase();
             DcVoltage = new DcVolt(_device);
         }

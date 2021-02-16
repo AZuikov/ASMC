@@ -54,11 +54,16 @@
   <ItemGroup>
     <Compile Include="MeasPointExtension.cs" />
     <Compile Include="IDeviceBaseExtension.cs" />
+    <Compile Include="UnitMultiplierExtension.cs" />
     <Compile Include="ObjectExtension.cs" />
     <Compile Include="OperationExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
+      <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
+      <Name>AP.Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ASMC.Core\ASMC.Core.csproj">
       <Project>{ADB547EB-33AA-4C07-A493-C80729632A8B}</Project>
       <Name>ASMC.Core</Name>

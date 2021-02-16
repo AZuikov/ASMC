@@ -1,18 +1,29 @@
 ﻿using System;
 using System.Collections;
+using System.Globalization;
+using System.Linq;
 
 namespace AP.Utils.Data
 {
     /// <inheritdoc />
     /// <inheritdoc />
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field| AttributeTargets.Property, AllowMultiple = true)]
     public class StringValueAttribute : Attribute
     {
+        public CultureInfo CultureInfo { get; } = null;
+
         /// <inheritdoc />
         public StringValueAttribute(string value)
         {
             Value = value;
-        }      
+        }
+        /// <inheritdoc />
+        public StringValueAttribute(string value, string inCultureInfo)
+        {
+            Value = value;
+            CultureInfo = CultureInfo.GetCultureInfo(inCultureInfo);
+
+        }
         /// <summary>
         /// Gets the value.
         /// </summary>
@@ -58,7 +69,27 @@ namespace AP.Utils.Data
             else
             {
                 var fi = type.GetField(value.ToString());
-                var attrs =  fi.GetCustomAttributes(typeof(StringValueAttribute), false) as StringValueAttribute[];
+                var attrs =  fi.GetCustomAttributes(false).FirstOrDefault(q=>q.GetType()==typeof(StringValueAttribute) && ((StringValueAttribute)q).CultureInfo==null) as StringValueAttribute[];
+                if (attrs != null && attrs.Length <= 0) return null;
+                if (attrs == null) return null;
+                StringValues.Add(value, attrs[0]);
+                output = attrs[0].Value;
+            }
+
+            return output;
+        }
+
+        public static string GetStringValue(this Enum value,CultureInfo cultureInfo)
+        {
+            string output;
+            var type = value.GetType();
+
+            if (StringValues.ContainsKey(value))
+                output = (StringValues[value] as StringValueAttribute)?.Value;
+            else
+            {
+                var fi = type.GetField(value.ToString());
+                var attrs = fi.GetCustomAttributes(false).FirstOrDefault(q => q.GetType() == typeof(StringValueAttribute) && Equals(((StringValueAttribute)q).CultureInfo, cultureInfo)) as StringValueAttribute[];
                 if (attrs != null && attrs.Length <= 0) return null;
                 if (attrs == null) return null;
                 StringValues.Add(value, attrs[0]);

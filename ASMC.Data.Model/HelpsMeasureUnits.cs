@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Globalization;
 using AP.Utils.Data;
 
 namespace ASMC.Data.Model
@@ -121,43 +122,57 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Без множителя.
         /// </summary>
-        [StringValue("")] [DoubleValue(1)] None,
+        [StringValue("")] [StringValue("","en-US")] [DoubleValue(1)] None,
 
         /// <summary>
         /// Множитель пико 1Е-12.
         /// </summary>
-        [StringValue("п")] [DoubleValue(1E-12)]
+        [StringValue("п")]
+        [StringValue("p", "en-US")]
+        [DoubleValue(1E-12)]
         Pico,
 
         /// <summary>
         /// Множитель нано 1Е-9.
         /// </summary>
-        [StringValue("н")] [DoubleValue(1E-9)] Nano,
+        [StringValue("н")]
+        [StringValue("n", "en-US")]
+        [DoubleValue(1E-9)] Nano,
 
         /// <summary>
         /// Множетель микро 1Е-6.
         /// </summary>
-        [StringValue("мк")] [DoubleValue(1E-6)]
+        [StringValue("мк")]
+        [StringValue("u", "en-US")]
+        [DoubleValue(1E-6)]
         Micro,
 
         /// <summary>
         /// Множитель мили 1Е-3.
         /// </summary>
-        [StringValue("м")] [DoubleValue(1E-3)] Mili,
+        [StringValue("м")]
+        [StringValue("m", "en-US")]
+        [DoubleValue(1E-3)] Mili,
 
         /// <summary>
         /// Множитель кило 1Е3
         /// </summary>
-        [StringValue("к")] [DoubleValue(1E3)] Kilo,
+        [StringValue("к")]
+        [StringValue("k", "en-US")]
+        [DoubleValue(1E3)] Kilo,
 
         /// <summary>
         /// Множитель мега 1Е6
         /// </summary>
-        [StringValue("М")] [DoubleValue(1E6)] Mega,
+        [StringValue("М")]
+        [StringValue("M", "en-US")]
+        [DoubleValue(1E6)] Mega,
 
         /// <summary>
         /// Множитель мега 1Е6
         /// </summary>
-        [StringValue("Г")] [DoubleValue(1E9)] Giga
+        [StringValue("Г")]
+        [StringValue("G", "en-US")]
+        [DoubleValue(1E9)] Giga
     }
 }

@@ -21,7 +21,7 @@ namespace ASMC.Core.Model
         string[] AddresDevice { get; set; }
 
         /// <summary>
-        /// Возвращает перечень устройст используемых для МК подключаемых устройств.
+        /// Возвращает перечень устройст используемых для операций поверки (или иного контроля).
         /// </summary>
         IDeviceUi[] ControlDevices { get; set; }
 
@@ -33,7 +33,7 @@ namespace ASMC.Core.Model
         ServicePack ServicePack { get; }
 
         /// <summary>
-        /// Возвращает перечень устройст подвергаемых МК.
+        /// Возвращает перечень устройст подвергаемыхопераций поверки (или иного контроля).
         /// </summary>
         IDeviceUi[] TestDevices { get; set; }
 

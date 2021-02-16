@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AP.Extension;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Devices.IEEE;
+using ASMC.Devices.IEEE.Fluke.Calibrator;
 
 namespace Belvar_V7_40_1
 {
@@ -15,14 +20,14 @@ namespace Belvar_V7_40_1
         {
             ControlDevices = new IDeviceUi[]
             {
-                new Device {Devices = new IUserType[] {/*Указать список 1 устройст с помошью которых происзводится поверка*/}},
-                new Device {Devices = new IUserType[] {/*Указать список 2 устройст с помошью которых происзводится поверка*/}}
+                new Device {Devices = new ICalibratorMultimeterFlukeBase[] { new Calib5522A(), new Calib_5720A() }},
+
             };
             TestDevices = new IDeviceUi[]
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new TTestDevices()}, IsCanStringConnect = false,
+                    Devices = new IUserType[] {new TTestDevices()},
                     Description = $@"{new TTestDevices().UserType}"
                 }
             };
@@ -30,6 +35,7 @@ namespace Belvar_V7_40_1
             {
                 new VisualInspection(this),
                 new Testing(this),
+                new DcvTest(this), 
                 /*Остальная часть методики*/
             };
             DocumentName = documentName;
@@ -37,13 +43,16 @@ namespace Belvar_V7_40_1
             {
                 /*Указать перечень*/
             };
+           // string path = Directory.GetCurrentDirectory() +"\\Plugins\\"+ "Resources\\pointsV7-40_1.asmc";
+            
+            OperationExtension.FillTestPoint(this, @"C:\Users\02zaa01\rep\ASMC\ASMC\bin\Debug\Plugins\Belvar_V7_40_1\Resources\pointsV7-40_1.asmc");
         }
 
 
         /// <inheritdoc />
         public override async void RefreshDevice()
         {
-            throw new NotImplementedException();
+            AddresDevice = IeeeBase.AllStringConnect;
         }
         /// <inheritdoc />
         public override void FindDevice()

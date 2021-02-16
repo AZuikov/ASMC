@@ -1,4 +1,4 @@
-Operation: Volt DCV
+Operation1: DCV
 #--Nominal-----TestingUnit--Mod--ModUnit
 0.07 m NA NA
 2.00 m NA NA
@@ -20,7 +20,7 @@ Operation: Volt DCV
 200 NA NA NA
 1000 NA NA NA
 
-Operation: Volt ACV
+Operation1: ACV
 #--Nominal-----TestingUnit--Mod--ModUnit
 2.00 m 20 NA
 50.00 m 20 NA
@@ -151,7 +151,7 @@ Operation: Volt ACV
 2 NA 1 k
 800 NA 1 k
 
-Operation: Resistance 2W
+Operation1: Resistance 2W
 #--Nominal-----TestingUnit--Mod--ModUnit
 
 0.10 NA NA NA
@@ -187,7 +187,7 @@ Operation: Resistance 2W
 1.500 M NA NA
 1.900 M NA NA
 
-Operation: DCI
+Operation1: DCI
 #--Nominal-----TestingUnit--Mod--ModUnit
 0.10 u NA NA
 2.00 u NA NA
@@ -210,7 +210,7 @@ Operation: DCI
 1000 m NA NA
 1900 m NA NA
 
-Operation: ACI
+Operation1: ACI
 #--Nominal-----TestingUnit--Mod--ModUnit
 2.00 u 40 NA NA
 20.00 u 40 NA
