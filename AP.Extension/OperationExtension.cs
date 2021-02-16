@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using FastMember;
 
 namespace AP.Extension
@@ -20,8 +22,6 @@ namespace AP.Extension
         /// <param name = "path">Путь к  текстовому файлу с точками.</param>
         public static void FillTestPoint(this Operation operation, string path)
         {
-            //((IUserItemOperation<object>)operation.UserItemOperation[0]).TestMeasPoints
-
             foreach (var oper in operation.UserItemOperation)
                 if (oper.GetType().GetCustomAttributes(true).Any(q => q.GetType() == typeof(TestMeasPointAttribute)))
                     GetMember(oper, oper.GetType());
@@ -62,38 +62,46 @@ namespace AP.Extension
                     var arr = resultData.Where(q => !string.IsNullOrWhiteSpace(q))
                                         .Select(q =>
                                                     GenerateMeasurePointFromString(q,
-                                                                                   accessor
-                                                                                       [obj, propertyClass.Name],
                                                                                    propertyClass.Type,
                                                                                    attr?.MeasPointType)).ToArray();
                     //accessor[obj, propertyClass.Name] = Activator.CreateInstance(propertyClass.Type, ).ToArray());
                 }
             }
 
-            object[] GenerateMeasurePointFromString(string str, object inObj, Type inType, Type attMeasPointType)
+            object GenerateMeasurePointFromString(string str,  Type inType, Type attMeasPointType)
             {
                 str = str.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 var strArr = str.Split(' ');
                 if (strArr.Length !=4) 
                     throw new ArgumentException($"Неверное число параметров в строке: {strArr.Length}"); 
                 
-                var MainVal = decimal.TryParse(strArr[0], out _) ? decimal.Parse(strArr[0]) : (decimal?)null;
-                UnitMultiplier mainUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[1]);
+                var mainVal = decimal.TryParse(strArr[0], out _) ? decimal.Parse(strArr[0]) : (decimal?)null;
+                UnitMultiplier mainUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[1], CultureInfo.GetCultureInfo("en-US"));
               
                 var additionalVal = decimal.TryParse(strArr[2], out _)? decimal.Parse(strArr[2]) : (decimal?) null;
                 UnitMultiplier additionalUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[3]);
+
+                var generit = inType.GetGenericArguments();
                 
-                var generit = inType.GetGenericArguments().First();
-                if (generit.GetGenericTypeDefinition().GetInterfaces()
-                           .FirstOrDefault(q => Equals(q.Name, typeof(IMeasPoint<,>).Name)) != null)
+                var pointAccessor = TypeAccessor.Create(attMeasPointType);
+                
+                if (generit.Length == 2)
                 {
-                    //var at = TypeAccessor.Create(generit);
-                    //var gta = generit.GenericTypeArguments;
-                    //MainVal = Activator.CreateInstance(gta[0], (decimal) date[0]);
-                    //var AdditionalVal = Activator.CreateInstance(gta[2], (decimal) date[0]);
+                   var pointComplexObj  = Activator.CreateInstance(generit[0], (decimal) mainVal,mainUnitMultiplier,  additionalVal,additionalUnitMultiplier);
+                   
+                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Value)] = mainVal;
+                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
+                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Value)] = additionalVal;
+                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Multiplier)] = additionalUnitMultiplier;
+                    return pointComplexObj;
                 }
 
-                return new object[] {0.1M, 0.852M};
+                var pointSimpleObj = Activator.CreateInstance(inType.GetGenericArguments().First(), (decimal)mainVal, mainUnitMultiplier);
+                //pointAccessor[pointSimpleObj, nameof(MeasPoint<Voltage>.MainPhysicalQuantity.Value)] = mainVal;
+                //pointAccessor[pointSimpleObj, nameof(MeasPoint<Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
+
+                return pointSimpleObj;
+
             }
 
 

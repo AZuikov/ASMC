@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using Accord.Math;
-using AP.Math;
+
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
@@ -13,6 +13,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Timers;
+using AP.Math;
 using Timer = System.Timers.Timer;
 
 namespace ASMC.Devices.Port.APPA

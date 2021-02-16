@@ -187,15 +187,11 @@
       <Name>AP.Extension</Name>
     </ProjectReference>
     <ProjectReference Include="..\AP.Math\AP.Math.csproj">
-      <Project>{3b414e92-0ccd-4321-95c6-fe0c71bda0e6}</Project>
+      <Project>{3B414E92-0CCD-4321-95C6-FE0C71BDA0E6}</Project>
       <Name>AP.Math</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AP.Reports\AP.Reports.csproj">
-      <Project>{630eedde-fe14-4ba9-a2da-7976f9bee39a}</Project>
-      <Name>AP.Reports</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AP.Utils\AP.Utils.csproj">
-      <Project>{ff877f85-43b8-4779-a822-a2904adc1100}</Project>
+      <Project>{FF877F85-43B8-4779-A822-A2904ADC1100}</Project>
       <Name>AP.Utils</Name>
     </ProjectReference>
     <ProjectReference Include="..\ASMC.Data.Model\ASMC.Data.Model.csproj">

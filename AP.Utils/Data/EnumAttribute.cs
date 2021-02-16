@@ -7,56 +7,69 @@ namespace AP.Utils.Data
 {
     /// <inheritdoc />
     /// <inheritdoc />
-    [AttributeUsage(AttributeTargets.Field| AttributeTargets.Property, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public class StringValueAttribute : Attribute
     {
-        public CultureInfo CultureInfo { get; } = null;
+        #region Property
+
+        public CultureInfo CultureInfo { get; }
+
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <value></value>
+        public string Value { get; }
+
+        #endregion
 
         /// <inheritdoc />
         public StringValueAttribute(string value)
         {
             Value = value;
         }
+
         /// <inheritdoc />
         public StringValueAttribute(string value, string inCultureInfo)
         {
             Value = value;
             CultureInfo = CultureInfo.GetCultureInfo(inCultureInfo);
-
         }
-        /// <summary>
-        /// Gets the value.
-        /// </summary>
-        /// <value></value>
-        public string Value { get; }
     }
 
     /// <inheritdoc />
     [AttributeUsage(AttributeTargets.Field)]
     public class DoubleValueAttribute : Attribute
     {
-        /// <inheritdoc />
-        public DoubleValueAttribute(double value)
-        {
-            Value = value;
-        }
+        #region Property
 
         /// <summary>
         /// Gets the value.
         /// </summary>
         /// <value></value>
         public double Value { get; }
+
+        #endregion
+
+        /// <inheritdoc />
+        public DoubleValueAttribute(double value)
+        {
+            Value = value;
+        }
     }
+
     /// <summary>
-    /// Класс расширяющий <see cref="System.Enum"/>
+    /// Класс расширяющий <see cref = "System.Enum" />
     /// </summary>
     public static class EnumExtensions
 
     {
-        private static readonly Hashtable StringValues = new Hashtable();
         private static readonly Hashtable DoubleValues = new Hashtable();
+        private static readonly Hashtable StringValues = new Hashtable();
+
+        #region Methods
+
         /// <summary>
-        /// Предоставляет возможность получить значение аттрибута  <see cref="StringValueAttribute"/>
+        /// Предоставляет возможность получить значение аттрибута  <see cref = "StringValueAttribute" />
         /// </summary>
         /// <returns> возвращает строку </returns>
         public static string GetStringValue(this Enum value)
@@ -65,42 +78,49 @@ namespace AP.Utils.Data
             var type = value.GetType();
 
             if (StringValues.ContainsKey(value))
+            {
                 output = (StringValues[value] as StringValueAttribute)?.Value;
+            }
             else
             {
                 var fi = type.GetField(value.ToString());
-                var attrs =  fi.GetCustomAttributes(false).FirstOrDefault(q=>q.GetType()==typeof(StringValueAttribute) && ((StringValueAttribute)q).CultureInfo==null) as StringValueAttribute[];
-                if (attrs != null && attrs.Length <= 0) return null;
+                var attrs = fi.GetCustomAttributes(false)
+                              .FirstOrDefault(q => q.GetType() == typeof(StringValueAttribute) &&
+                                                   ((StringValueAttribute) q).CultureInfo == null) ;
                 if (attrs == null) return null;
-                StringValues.Add(value, attrs[0]);
-                output = attrs[0].Value;
+                StringValues.Add(value, attrs);
+                output = ((StringValueAttribute)attrs).Value;
             }
 
             return output;
         }
 
-        public static string GetStringValue(this Enum value,CultureInfo cultureInfo)
+        public static string GetStringValue(this Enum value, CultureInfo cultureInfo)
         {
             string output;
             var type = value.GetType();
 
             if (StringValues.ContainsKey(value))
+            {
                 output = (StringValues[value] as StringValueAttribute)?.Value;
+            }
             else
             {
                 var fi = type.GetField(value.ToString());
-                var attrs = fi.GetCustomAttributes(false).FirstOrDefault(q => q.GetType() == typeof(StringValueAttribute) && Equals(((StringValueAttribute)q).CultureInfo, cultureInfo)) as StringValueAttribute[];
-                if (attrs != null && attrs.Length <= 0) return null;
+                var attrs = fi.GetCustomAttributes(false)
+                              .FirstOrDefault(q => q.GetType() == typeof(StringValueAttribute) &&(
+                                                   ((StringValueAttribute) q).CultureInfo?.Name.Equals(cultureInfo.Name)?? false));
+                
                 if (attrs == null) return null;
-                StringValues.Add(value, attrs[0]);
-                output = attrs[0].Value;
+                StringValues.Add(value, attrs);
+                output = ((StringValueAttribute)attrs).Value;
             }
 
             return output;
         }
 
         /// <summary>
-        /// Предоставляет возможность получить значение аттрибута  <see cref="DoubleValueAttribute"/>
+        /// Предоставляет возможность получить значение аттрибута  <see cref = "DoubleValueAttribute" />
         /// </summary>
         /// <returns> Возвращает значение с плавоющей точкой двойной точности указзанное в аттрибуте </returns>
         public static double GetDoubleValue(this Enum value)
@@ -108,7 +128,9 @@ namespace AP.Utils.Data
             double output = 0;
             var type = value.GetType();
             if (DoubleValues.ContainsKey(value))
+            {
                 output = ((DoubleValueAttribute) DoubleValues[value]).Value;
+            }
             else
             {
                 var fi = type.GetField(value.ToString());
@@ -116,11 +138,11 @@ namespace AP.Utils.Data
                     attrs.Length <= 0) return output;
                 DoubleValues.Add(value, attrs[0]);
                 output = attrs[0].Value;
-            } 
+            }
+
             return output;
         }
 
-
-      
+        #endregion
     }
 }

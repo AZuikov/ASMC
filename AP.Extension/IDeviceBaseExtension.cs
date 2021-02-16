@@ -81,8 +81,7 @@ namespace AP.Extension
                     var EndFirst = Activator.CreateInstance(gta[0], (decimal)date[1]);
                     // ReSharper disable once PossibleInvalidOperationException
                     var EndSecond = Activator.CreateInstance(gta[1], (decimal)date[3]);
-                    var rageAccessor = TypeAccessor.Create(generit);
-
+                    
                     var star = Activator.CreateInstance(attMeasPointType);
                     var atstart = TypeAccessor.Create(attMeasPointType);
                     atstart[star, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity)] = StartFirst;
