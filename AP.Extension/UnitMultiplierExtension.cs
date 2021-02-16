@@ -14,7 +14,7 @@ namespace AP.Extension
         public static UnitMultiplier ParseUnitMultiplier(string inStr)
         {
             string buffer=inStr.Trim();
-            if (string.IsNullOrWhiteSpace(buffer)) return default;
+            if (string.IsNullOrWhiteSpace(buffer)|| string.Equals(buffer,"NA" )) return UnitMultiplier.None;
 
             foreach (UnitMultiplier unit in Enum.GetValues(typeof(UnitMultiplier)))
             {
@@ -24,7 +24,7 @@ namespace AP.Extension
             throw new ArgumentException($"Неизвестный множитель единицы измерения: {inStr}");
         }
 
-        static bool TrueParseUnitMultiplier(string str, ref UnitMultiplier  result)
+        public static bool TryParseUnitMultiplier(string str, ref UnitMultiplier  result)
         {
             try
             {

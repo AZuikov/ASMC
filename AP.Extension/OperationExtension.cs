@@ -73,21 +73,24 @@ namespace AP.Extension
             object[] GenerateMeasurePointFromString(string str, object inObj, Type inType, Type attMeasPointType)
             {
                 str = str.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                var strarr = str.Split(' ');
-
+                var strArr = str.Split(' ');
+                if (strArr.Length !=4) 
+                    throw new ArgumentException($"Неверное число параметров в строке: {strArr.Length}"); 
                 
-
-                var date = str.Split(' ').Where(q => !string.IsNullOrWhiteSpace(q))
-                              .Select(q => q.Contains("NA") ? null : (decimal?) double.Parse(q)).ToArray();
+                var MainVal = decimal.TryParse(strArr[0], out _) ? decimal.Parse(strArr[0]) : (decimal?)null;
+                UnitMultiplier mainUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[1]);
+              
+                var additionalVal = decimal.TryParse(strArr[2], out _)? decimal.Parse(strArr[2]) : (decimal?) null;
+                UnitMultiplier additionalUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[3]);
                 
                 var generit = inType.GetGenericArguments().First();
                 if (generit.GetGenericTypeDefinition().GetInterfaces()
                            .FirstOrDefault(q => Equals(q.Name, typeof(IMeasPoint<,>).Name)) != null)
                 {
-                    var at = TypeAccessor.Create(generit);
-                    var gta = generit.GenericTypeArguments;
-                    var MainVal = Activator.CreateInstance(gta[0], (decimal) date[0]);
-                    var AdditionalVal = Activator.CreateInstance(gta[2], (decimal) date[0]);
+                    //var at = TypeAccessor.Create(generit);
+                    //var gta = generit.GenericTypeArguments;
+                    //MainVal = Activator.CreateInstance(gta[0], (decimal) date[0]);
+                    //var AdditionalVal = Activator.CreateInstance(gta[2], (decimal) date[0]);
                 }
 
                 return new object[] {0.1M, 0.852M};
