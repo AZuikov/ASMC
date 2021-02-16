@@ -112,14 +112,26 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Внешний осмотр ГОСТ 577.rtf" />
-    <None Include="ИЧ-02 Первичная МП 2192-92.dotx" />
-    <None Include="ИЧ-02 Периодическая МП 2192-92.dotx" />
-    <None Include="ИЧ-03 Первичная МП 2192-92.dotx" />
-    <None Include="ИЧ-03 Периодическая МП 2192-92.dotx" />
-    <None Include="ИЧ-10 Первичная МП 2192-92.dotx" />
-    <None Include="ИЧ-10 Периодическая МП 2192-92.dotx" />
-    <None Include="Опробывание ГОСТ 577.rtf" />
+    <None Include="Resources\Внешний осмотр ГОСТ 577.rtf" />
+    <None Include="Resources\ИЧ-02 Первичная МП 2192-92.dotx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ИЧ-02 Периодическая МП 2192-92.dotx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ИЧ-03 Первичная МП 2192-92.dotx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ИЧ-03 Периодическая МП 2192-92.dotx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ИЧ-10 Первичная МП 2192-92.dotx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ИЧ-10 Периодическая МП 2192-92.dotx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Опробывание ГОСТ 577.rtf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\AP.Extension\AP.Extension.csproj">
@@ -185,6 +197,7 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
 mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\" 2&gt; NUL
-xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y</PostBuildEvent>
+xcopy "$(TargetPath)" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\" /Y
+xcopy "$(ProjectDir)Resources" "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\$(TargetName)\Resources\"/Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

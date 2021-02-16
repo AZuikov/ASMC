@@ -176,6 +176,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Licenses.licx" />
     <None Include="app.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="NLog.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>

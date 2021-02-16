@@ -410,10 +410,6 @@ namespace mp2192_92.DialIndicator
                 dataRow[0] = dds.Expected.ToString();
                 dataRow[1] = dds.Getting.ToString();
                 dataRow[2] =IchBase.PerpendicularPressureMax;
-                if (dds.IsGood == null)
-                    dataRow[3] = ConstNotUsed;
-                else
-                    dataRow[3] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -448,7 +444,7 @@ namespace mp2192_92.DialIndicator
 
                 var vm = new OneTableViewModel();
                 vm.Data = TableViewModel.CreateTable("Изменение показаний индикатора, делений шкалы", arrPoints,
-                    new TableViewModel.SettingTableViewModel { IsHorizontal = false });
+                    new TableViewModel.SettingTableViewModel { IsHorizontal = false, CellFormat = "дел."});
                 Service.ViewLocator = new ViewLocator(vm.GetType().Assembly);
                 Service.ViewModel = vm;
                 Service.DocumentType = "OneTableView";
