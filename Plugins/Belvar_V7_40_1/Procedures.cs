@@ -115,6 +115,8 @@ namespace Belvar_V7_40_1
         public DcvTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения постоянного напряжения";
+            
+
         }
 
         #region Methods

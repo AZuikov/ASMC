@@ -55,7 +55,7 @@ namespace OWEN_TRM202
             {
                 new Device
                 {
-                    //Devices = new IDeviceRemote[] { new Calibr_9100(), new Calib5522A() },
+                    Devices = new IDeviceRemote[] { new Calibr_9100(), new Calib5522A() },
                     Description = "Многофунциональный калибратор"
 
                 }

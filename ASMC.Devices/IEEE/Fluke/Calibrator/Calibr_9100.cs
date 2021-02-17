@@ -7,17 +7,33 @@ using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
+using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calibr_9100: CalibrMain
+    public class Calibr_9100: IeeeBase, IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, ICapacity, ITemperature, IProtocolStringLine, IResistance4W
     {
         public Calibr_9100()
         {
             UserType = "Fluke 9100";
+            //Resistance4W = 
         }
 
-        public void SetVoltageDc(MeasPoint<Voltage> setPoint)
+
+        public ISourcePhysicalQuantity<Voltage> DcVoltage { get; }
+        public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; }
+        public ISourcePhysicalQuantity<Current> DcCurrent { get; }
+        public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; }
+        public IResistance Resistance2W { get; }
+        public ISourcePhysicalQuantity<Capacity> Capacity { get; }
+        public ITermocoupleType Temperature { get; }
+        public ISourcePhysicalQuantity<Frequency, Voltage> Frequency { get; }
+        public ISourcePhysicalQuantity<Resistance> Resistance4W { get; }
+    }
+}
+
+/* Remove this code!!!!!!
+ public void SetVoltageDc(MeasPoint<Voltage> setPoint)
         {
             //WriteLine("Source:func DC");
             //WriteLine($"Source:VOLT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
@@ -91,5 +107,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             throw new NotImplementedException();
         }
-    }
-}
+ *
+ *
+ */
