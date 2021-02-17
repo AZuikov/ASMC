@@ -173,8 +173,8 @@
     <None Include="Resources\ACC\34401A.acc" />
     <None Include="Resources\ACC\5522.acc" />
     <None Include="Resources\ACC\5700_99.1yr" />
-    <None Include="Resources\ACC\9100.acc" />
-    <None Include="Resources\ACC\9500.acc" />
+    <None Include="Resources\ACC\Fluke 9100.acc" />
+    <None Include="Resources\ACC\Fluke 9500.acc" />
     <None Include="Resources\ACC\V7-40_1.acc" />
     <None Include="USB_Device\SiliconLabs\AN169.pdf" />
   </ItemGroup>

@@ -46,6 +46,7 @@ namespace Belvar_V7_40_1
             };
              string path = Directory.GetCurrentDirectory() + "\\Plugins\\" + Assembly.GetExecutingAssembly().GetName().Name + "\\Resources\\pointsV7-40_1.asmc";
              //todo пользователь должен иметь возможность выбрать файл с поверяемыми точками
+            
             OperationExtension.FillTestPoint(this, path);
         }
 

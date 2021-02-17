@@ -67,6 +67,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             AcCurrent = new AcCurr(this);
             Resistance2W = new Resist2W(this);
             Frequency = new Freq(this);
+            this.
         }
         /// <inheritdoc />
         public ISourcePhysicalQuantity<Voltage> DcVoltage { get; protected set; }
@@ -485,7 +486,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         }
 
-        public string UserType { get; protected set; }
+       public string UserType { get; protected set; }
         public string StringConnection
         {
             get => Device.StringConnection;
