@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AP.Extension;
 using AP.Utils.Data;
@@ -18,7 +17,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         #region Property
 
         public IeeeBase Device { get; }
-        public ISourcePhysicalQuantity<Frequency, Voltage> Frequency { get; }
 
         #endregion
 
@@ -28,6 +26,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             Device = new IeeeBase();
             DcVoltage = new DcVolt(this);
             AcVoltage = new AcVolt(this);
+            DcCurrent = new DcCurr(this);
+            AcCurrent = new AcCurr(this);
         }
 
         public ISourcePhysicalQuantity<Capacity> Capacity { get; }
@@ -58,13 +58,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public IResistance Resistance2W { get; }
         public ISourcePhysicalQuantity<Resistance> Resistance4W { get; }
         public ITermocoupleType Temperature { get; }
-
         public ISourcePhysicalQuantity<Voltage> DcVoltage { get; }
         public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; }
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
-           
             public DcVolt(Calibr_9100 device) : base(device)
             {
                 functionName = "DC";
@@ -74,11 +72,68 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public class RangeDevice : RangeDeviceBase<Voltage>
             {
+                #region Property
+
                 [AccRange("Mode: Volts", typeof(MeasPoint<Voltage>))]
                 public override RangeStorage<PhysicalRange<Voltage>> Ranges { get; set; }
 
+                #endregion
+            }
+        }
+
+        public class DcCurr : SimplyPhysicalQuantity<Current>
+        {
+            public DcCurr(Calibr_9100 device) : base(device)
+            {
+                functionName = "DC";
+                sourceName = "CURRent";
+                RangeStorage = new RangeDevice();
             }
 
+            public class RangeDevice : RangeDeviceBase<Current>
+            {
+                #region Property
+
+                [AccRange("Mode: Amps", typeof(MeasPoint<Current>))]
+                public override RangeStorage<PhysicalRange<Current>> Ranges { get; set; }
+
+                #endregion
+            }
+        }
+
+        public class AcCurr : ComplexPhysicalQuantity<Current, Frequency>
+        {
+            public AcCurr(Calibr_9100 device) : base(device)
+            {
+                functionName = "sin";
+                mainSourceName = "CURRent";
+                additionalSourceName = "freq";
+                RangeStorage = new RangeDevice();
+            }
+
+            #region Methods
+
+            protected override string GetAdditionalUnit()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override string GetMainUnit()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+
+            public class RangeDevice : RangeDeviceBase<Current, Frequency>
+            {
+                #region Property
+
+                [AccRange("Mode: Amps SI", typeof(MeasPoint<Current, Frequency>))]
+                public override RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
+
+                #endregion
+            }
         }
 
         public class AcVolt : ComplexPhysicalQuantity<Voltage, Frequency>
@@ -91,6 +146,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 RangeStorage = new RangeDevice();
             }
 
+            #region Methods
+
             protected override string GetAdditionalUnit()
             {
                 throw new NotImplementedException();
@@ -101,11 +158,16 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 throw new NotImplementedException();
             }
 
-            public class RangeDevice : RangeDeviceBase<Voltage,Frequency>
+            #endregion
+
+            public class RangeDevice : RangeDeviceBase<Voltage, Frequency>
             {
+                #region Property
+
                 [AccRange("Mode: Volts SI", typeof(MeasPoint<Voltage, Frequency>))]
                 public override RangeStorage<PhysicalRange<Voltage, Frequency>> Ranges { get; set; }
 
+                #endregion
             }
         }
 
@@ -113,7 +175,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity>
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
-            protected string sourceName { get;  set; }
+            #region Property
+
+            protected string sourceName { get; set; }
+
+            #endregion
 
             protected SimplyPhysicalQuantity(Calibr_9100 device) : base(device)
             {
@@ -128,7 +194,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 point.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
                 return point.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.');
             }
-            
+
             #endregion
 
             public virtual void Getting()
@@ -148,7 +214,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 Calibr.Device.WriteLine($"Source:func {functionName}");
                 Calibr.Device.WriteLine($"Source:{sourceName} {ConvetrMeasPointToCommand(value)}");
                 //todo проверка на ошибки после отправки команды
-
             }
 
             public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; protected set; }
@@ -161,8 +226,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
             where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
         {
-            protected string mainSourceName { get; set; }
+            #region Property
+
             protected string additionalSourceName { get; set; }
+            protected string mainSourceName { get; set; }
+
+            #endregion
+
             protected ComplexPhysicalQuantity(Calibr_9100 device) : base(device)
             {
             }
@@ -171,7 +241,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             protected string[] ConvetrMeasPointToCommand(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> inPoint)
             {
-                string[] values = new string[2];
+                var values = new string[2];
                 values[0] = inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.');
                 values[1] = inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.');
                 return values;
@@ -208,7 +278,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 Value = value;
                 var arr = ConvetrMeasPointToCommand(value);
                 Calibr.Device.WriteLine($"Source:func {functionName}");
-                Calibr.Device.WriteLine($"Source:{mainSourceName} {arr[0]}" );
+                Calibr.Device.WriteLine($"Source:{mainSourceName} {arr[0]}");
                 Calibr.Device.WriteLine($"Source:{additionalSourceName} {arr[1]}");
                 //todo проверка на ошибки после отправки команды
             }
