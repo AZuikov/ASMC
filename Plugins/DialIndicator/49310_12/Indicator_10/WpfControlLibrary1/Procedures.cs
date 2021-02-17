@@ -537,9 +537,9 @@ namespace mp2192_92.DialIndicator
             var arrPoints = EndRange.GetArayMeasPointsInParcent(GeneratenParcent(5, 0, 50, 100)).ToArray();
             MeasPoint<Length>[] arrGetting = null;
 
-            int[] GeneratenParcent(int count, params int[] parcent)
+            double[] GeneratenParcent(int count, params int[] parcent)
             {
-                var array = new List<int>(parcent.Length);
+                var array = new List<double>(parcent.Length);
 
                 foreach (var par in parcent)
                     for (var i = 0; i < count; i++)
@@ -651,9 +651,9 @@ namespace mp2192_92.DialIndicator
             base.InitWork(token);
             var operation = new MeasuringOperation<MeasPoint<Length>[]>();
 
-            int[] GeneratenParcent(int count, params int[] parcent)
+            double[] GeneratenParcent(int count, params int[] parcent)
             {
-                var array = new List<int>(parcent.Length);
+                var array = new List<double>(parcent.Length);
 
                 foreach (var par in parcent)
                     for (var i = 0; i < count; i++)
