@@ -64,7 +64,7 @@ namespace AP.Extension
                                                     GenerateMeasurePointFromString(q,
                                                                                    propertyClass.Type,
                                                                                    attr?.MeasPointType)).ToArray();
-                    //accessor[obj, propertyClass.Name] = Activator.CreateInstance(propertyClass.Type, ).ToArray());
+                    //accessor[obj, propertyClass.Name] = Activator.CreateInstance(propertyClass.Type, arr);
                 }
             }
 
@@ -79,7 +79,7 @@ namespace AP.Extension
                 UnitMultiplier mainUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[1], CultureInfo.GetCultureInfo("en-US"));
               
                 var additionalVal = decimal.TryParse(strArr[2], out _)? decimal.Parse(strArr[2]) : (decimal?) null;
-                UnitMultiplier additionalUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[3]);
+                UnitMultiplier additionalUnitMultiplier = UnitMultiplierExtension.ParseUnitMultiplier(strArr[3], CultureInfo.GetCultureInfo("en-US"));
 
                 var generit = inType.GetGenericArguments();
                 
@@ -89,17 +89,15 @@ namespace AP.Extension
                 {
                    var pointComplexObj  = Activator.CreateInstance(attMeasPointType, (decimal) mainVal,mainUnitMultiplier,  additionalVal,additionalUnitMultiplier);
                    
-                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Value)] = mainVal;
-                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
-                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Value)] = additionalVal;
-                    pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Multiplier)] = additionalUnitMultiplier;
+                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Value)] = mainVal;
+                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
+                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Value)] = additionalVal;
+                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Multiplier)] = additionalUnitMultiplier;
                     return pointComplexObj;
                 }
 
                 var pointSimpleObj = Activator.CreateInstance(attMeasPointType, (decimal)mainVal, mainUnitMultiplier);
-                //pointAccessor[pointSimpleObj, nameof(MeasPoint<Voltage>.MainPhysicalQuantity.Value)] = mainVal;
-                //pointAccessor[pointSimpleObj, nameof(MeasPoint<Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
-
+                
                 return pointSimpleObj;
 
             }
