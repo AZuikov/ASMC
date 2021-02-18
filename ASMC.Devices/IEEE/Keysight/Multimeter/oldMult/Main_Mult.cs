@@ -80,11 +80,11 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <returns>Возвращает значение с желаемым множителем.</returns>
         public double GetMeasValue(UnitMultiplier unitMultiplier = UnitMultiplier.None)
         {
-            WriteLine(":TRIG:SOUR BUS");
-            WriteLine("INIT;*TRG");
-            QueryLine("*opc?");
-            WriteLine("FETCH?");
-            
+            WriteLine(":TRIG:SOUR BUS");//устанавливаем источник триггера (источник команды на запуск измерения)
+            WriteLine("INIT;*TRG");// приводим прибор в готовность к измерениям
+            QueryLine("*opc?");//проверяем, завершились ли все перегулировки внутри прибора
+            WriteLine("FETCH?");//запрашиваем измеренное значение
+            //todo тут нужна проверка на считывание очень больших чмсел, которые не влезут не в одну из переменных!!!!!
             var res = DataStrToDoubleMind(ReadString(), unitMultiplier);
             return res;
         }
