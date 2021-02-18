@@ -23,7 +23,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         /// <summary>
         /// Запрос на получение значения (U, I, R, F), для преобразования использовать ConvertDate
         /// </summary>
-        private const string QueryValue = "READ?";
+        private const string QueryValue = "init; READ?";
 
         #region Property
 
