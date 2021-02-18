@@ -477,7 +477,7 @@ namespace B5_71_PRO_Abstract
                         operation.Expected = setPoint;
                         operation.Getting = (decimal)result;
 
-                        SetLowAndUppToleranceAndIsGood(operation);
+                        SetLowAndUppToleranceAndIsGood_Volt(operation);
 
                         Bp.OffOutput();
                         Load.SetOutputState(MainN3300.State.Off);
@@ -657,7 +657,7 @@ namespace B5_71_PRO_Abstract
                         operation.Expected = (decimal)resultMult;
                         operation.Getting = resultBp;
 
-                        SetLowAndUppToleranceAndIsGood(operation);
+                        SetLowAndUppToleranceAndIsGood_Volt(operation);
 
 
 
@@ -762,7 +762,7 @@ namespace B5_71_PRO_Abstract
                     dataRow[0] = dds?.Getting + " В";
                     try
                     {
-                        dataRow[1] = dds?.Error + " В";
+                        dataRow[1] = dds?.UpperTolerance + " В";
                     }
                     catch (NullReferenceException e)
                     {
@@ -863,7 +863,7 @@ namespace B5_71_PRO_Abstract
                     operation.Expected = 0;
                     operation.Getting = resultVoltUnstable;
 
-                    SetLowAndUppToleranceAndIsGood(operation);
+                    SetLowAndUppToleranceAndIsGood_VoltUnstable(operation);
 
                     Load.SetOutputState(MainN3300.State.Off);
                 }
@@ -958,7 +958,7 @@ namespace B5_71_PRO_Abstract
                     dataRow[0] = dds?.Getting + " мВ";
                     try
                     {
-                        dataRow[1] = dds?.Error + "мВ";
+                        dataRow[1] = dds?.UpperTolerance + "мВ";
                     }
                     catch (NullReferenceException e)
                     {
@@ -1054,8 +1054,9 @@ namespace B5_71_PRO_Abstract
 
                     operation.Expected = 0;
                     operation.Getting = voltPulsV357;
+                    operation.ErrorCalculation = (expected, getting) => expected - getting;
 
-                    SetLowAndUppToleranceAndIsGood(operation);
+                    SetLowAndUppToleranceAndIsGood_VoltPuls(operation);
 
 
                 }
@@ -1234,7 +1235,7 @@ namespace B5_71_PRO_Abstract
                         operation.Expected = setPoint;
                         operation.Getting = result;
 
-                        SetLowAndUppToleranceAndIsGood(operation);
+                        SetLowAndUppToleranceAndIsGood_Curr(operation);
 
                         Bp.OffOutput();
                     }
@@ -1406,7 +1407,7 @@ namespace B5_71_PRO_Abstract
                         operation.Expected = resultN3300;
                         operation.Getting = resultBpCurr;
 
-                        SetLowAndUppToleranceAndIsGood(operation);
+                        SetLowAndUppToleranceAndIsGood_Curr(operation);
 
                         Bp.OffOutput();
                     }
@@ -1508,7 +1509,7 @@ namespace B5_71_PRO_Abstract
                     dataRow[0] = dds?.Getting + " А";
                     try
                     {
-                        dataRow[1] = dds?.Error + " А";
+                        dataRow[1] = dds?.UpperTolerance + " А";
                     }
                     catch (NullReferenceException e)
                     {
@@ -1593,7 +1594,7 @@ namespace B5_71_PRO_Abstract
                     MathStatistics.Round(ref resultCurrUnstable, 3);
 
                     operation.Expected = 0;
-                    SetLowAndUppToleranceAndIsGood(operation);
+                    SetLowAndUppToleranceAndIsGood_CurrUnstable(operation);
                 }
                 catch (Exception e)
                 {
@@ -1689,7 +1690,7 @@ namespace B5_71_PRO_Abstract
                     dataRow[0] = dds?.Getting + " мА";
                     try
                     {
-                        dataRow[1] = dds?.Error + "мА";
+                        dataRow[1] = dds?.UpperTolerance + "мА";
                     }
                     catch (NullReferenceException e)
                     {
@@ -1817,8 +1818,8 @@ namespace B5_71_PRO_Abstract
                     operation.Getting = currPulsV357;
 
 
-                    operation.IsGood = () => (operation.Getting <= operation.UpperTolerance) &
-                                             (operation.Getting >= operation.LowerTolerance);
+                    SetLowAndUppToleranceAndIsGood_CurrPuls(operation);
+                    operation.ErrorCalculation = (arg1, arg2) => arg1 - arg2;
                 }
                 catch (Exception e)
                 {

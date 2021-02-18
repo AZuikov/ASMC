@@ -24,8 +24,8 @@ namespace B5_71_PRO_Abstract
         {
             throw new NotImplementedException();
         }
-
-        protected decimal ErrorCalculation(decimal inExpected, bool isSumm = false)
+        //----------------------------------------------------------------------------------
+        protected decimal ErrorCalculationVolt(decimal inExpected, bool isSumm = false)
         {
             decimal error = Bp.TolleranceFormulaVolt(inExpected);
             decimal result = isSumm ? inExpected + error : inExpected - error;
@@ -34,14 +34,98 @@ namespace B5_71_PRO_Abstract
             return result;
         }
 
-        protected void SetLowAndUppToleranceAndIsGood(BasicOperationVerefication<decimal> inOperation)
+        protected void SetLowAndUppToleranceAndIsGood_Volt(BasicOperationVerefication<decimal> inOperation)
         {
-            inOperation.LowerCalculation = (expected) => ErrorCalculation(expected);
-            inOperation.UpperCalculation = (expected) => ErrorCalculation(expected, true);
+            inOperation.LowerCalculation = (expected) => ErrorCalculationVolt(expected);
+            inOperation.UpperCalculation = (expected) => ErrorCalculationVolt(expected, true);
             inOperation.IsGood = () => (inOperation.Getting < inOperation.UpperTolerance) &
                                      (inOperation.Getting > inOperation.LowerTolerance);
         }
+        //-----------------------------------------------------------------------------------
+        protected decimal ErrorCalculationVoltUnstable(decimal inExpected, bool isSumm = false)
+        {
+            decimal error = Bp.TolleranceVoltageUnstability;
+            decimal result = isSumm ? inExpected + error : inExpected - error;
+            MathStatistics.Round(ref result, 3);
 
+            return result;
+        }
+
+        protected void SetLowAndUppToleranceAndIsGood_VoltUnstable(BasicOperationVerefication<decimal> inOperation)
+        {
+            inOperation.LowerCalculation = (expected) => ErrorCalculationVoltUnstable(expected);
+            inOperation.UpperCalculation = (expected) => ErrorCalculationVoltUnstable(expected, true);
+            inOperation.IsGood = () => (inOperation.Getting < inOperation.UpperTolerance) &
+                                       (inOperation.Getting > inOperation.LowerTolerance);
+        }
+        //----------------------------------------------------------------------------------
+        protected decimal ErrorCalculationCurr(decimal inExpected, bool isSumm = false)
+        {
+            decimal error = Bp.TolleranceFormulaVolt(inExpected);
+            decimal result = isSumm ? inExpected + error : inExpected - error;
+            MathStatistics.Round(ref result, 3);
+
+            return result;
+        }
+
+        protected void SetLowAndUppToleranceAndIsGood_Curr(BasicOperationVerefication<decimal> inOperation)
+        {
+            inOperation.LowerCalculation = (expected) => ErrorCalculationCurr(expected);
+            inOperation.UpperCalculation = (expected) => ErrorCalculationCurr(expected, true);
+            inOperation.IsGood = () => (inOperation.Getting < inOperation.UpperTolerance) &
+                                       (inOperation.Getting > inOperation.LowerTolerance);
+        }
+        //----------------------------------------------------------------------------------
+        protected decimal ErrorCalculationCurrUnstable(decimal inExpected, bool isSumm = false)
+        {
+            decimal error = Bp.TolleranceCurrentUnstability;
+            decimal result = isSumm ? inExpected + error : inExpected - error;
+            MathStatistics.Round(ref result, 3);
+
+            return result;
+        }
+
+        protected void SetLowAndUppToleranceAndIsGood_CurrUnstable(BasicOperationVerefication<decimal> inOperation)
+        {
+            inOperation.LowerCalculation = (expected) => ErrorCalculationCurrUnstable(expected);
+            inOperation.UpperCalculation = (expected) => ErrorCalculationCurrUnstable(expected, true);
+            inOperation.IsGood = () => (inOperation.Getting < inOperation.UpperTolerance) &
+                                       (inOperation.Getting > inOperation.LowerTolerance);
+        }
+        //----------------------------------------------------------------------------------
+        protected decimal ErrorCalculationVoltPuls(decimal inExpected, bool isSumm = false)
+        {
+            decimal error = Bp.TolleranceVoltPuls;
+            decimal result = isSumm ? inExpected + error : inExpected - error;
+            MathStatistics.Round(ref result, 3);
+
+            return result;
+        }
+
+        protected void SetLowAndUppToleranceAndIsGood_VoltPuls(BasicOperationVerefication<decimal> inOperation)
+        {
+            inOperation.LowerCalculation = (expected) => ErrorCalculationVoltPuls(expected);
+            inOperation.UpperCalculation = (expected) => ErrorCalculationVoltPuls(expected, true);
+            inOperation.IsGood = () => (inOperation.Getting < inOperation.UpperTolerance) &
+                                       (inOperation.Getting > inOperation.LowerTolerance);
+        }
+        //----------------------------------------------------------------------------------
+        protected decimal ErrorCalculationCurrPuls(decimal inExpected, bool isSumm = false)
+        {
+            decimal error = Bp.TolleranceCurrentPuls;
+            decimal result = isSumm ? inExpected + error : inExpected - error;
+            MathStatistics.Round(ref result, 3);
+
+            return result;
+        }
+
+        protected void SetLowAndUppToleranceAndIsGood_CurrPuls(BasicOperationVerefication<decimal> inOperation)
+        {
+            inOperation.LowerCalculation = (expected) => ErrorCalculationCurrPuls(expected);
+            inOperation.UpperCalculation = (expected) => ErrorCalculationCurrPuls(expected, true);
+            inOperation.IsGood = () => (inOperation.Getting < inOperation.UpperTolerance) &
+                                       (inOperation.Getting > inOperation.LowerTolerance);
+        }
     }
 
     public abstract class BaseOparationWithMultimeter : BaseOperationPowerSupplyAndElectronicLoad
