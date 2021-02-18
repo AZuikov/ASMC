@@ -10,9 +10,7 @@ using ASMC.Devices.Model;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calibr_9100 : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, IResistance4W,
-                               ICapacity,
-                               ITemperature, IProtocolStringLine
+    public class Calibr_9100 : ICalibratorMultimeterFlukeBase
     {
         #region Property
 
@@ -331,6 +329,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 [StringValue("outp:stat off")] Off
             }
         }
+
+        public ISourcePhysicalQuantity<Frequency, Voltage> Frequency { get; }
     }
 }
 

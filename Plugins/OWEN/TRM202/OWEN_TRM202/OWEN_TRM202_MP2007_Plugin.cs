@@ -449,19 +449,10 @@ namespace OWEN_TRM202
 
             protected override void InitWork(CancellationTokenSource token)
             {
-                trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
-                                           .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
-                Calibrator =
-                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
+                ConnectionToDevice();
                 
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
-
-                trm202.StringConnection = GetStringConnect(trm202);
-                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
-
-                base.InitWork(token);
-
+                
                 foreach (var point in measPoints)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
@@ -983,16 +974,11 @@ namespace OWEN_TRM202
 
             protected override void InitWork(CancellationTokenSource token)
             {
-                trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
-                                           .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
-                Calibrator =
-                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
+                ConnectionToDevice();
 
                 if (trm202 == null || Calibrator == null || measPoints == null) return;
 
-                trm202.StringConnection = GetStringConnect(trm202);
-                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
+               
 
                 base.InitWork(token);
 
@@ -1096,11 +1082,11 @@ namespace OWEN_TRM202
             #region Fields
 
             protected TRM202Device.in_t _coupleType;
-            protected ICalibratorMultimeterFlukeBase Calibrator;
+            //protected ICalibratorMultimeterFlukeBase Calibrator;
             protected MeasPoint<Percent, Voltage>[] measPointsPercentVolt;
             protected RangeStorage<PhysicalRange<Percent>> MeasureRanges;
 
-            protected TRM202DeviceUI trm202;
+            //protected TRM202DeviceUI trm202;
 
             #endregion Fields
 
@@ -1169,19 +1155,10 @@ namespace OWEN_TRM202
 
             protected override void InitWork(CancellationTokenSource token)
             {
-                trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
-                                           .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
-                Calibrator =
-                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
-
+                ConnectionToDevice();
+                
                 if (trm202 == null || Calibrator == null || measPointsPercentVolt == null) return;
-
-                trm202.StringConnection = GetStringConnect(trm202);
-                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
-
-                base.InitWork(token);
-
+                
                 foreach (var point in measPointsPercentVolt)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Percent>>();
@@ -1560,18 +1537,11 @@ namespace OWEN_TRM202
 
             protected override void InitWork(CancellationTokenSource token)
             {
-                trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
-                                           .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
-                Calibrator =
-                    UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as CalibrMain != null)
-                                     .SelectedDevice as ICalibratorMultimeterFlukeBase;
+               ConnectionToDevice();
 
                 if (trm202 == null || Calibrator == null || measPointsTempRes == null) return;
 
-                trm202.StringConnection = GetStringConnect(trm202);
-                ((IeeeBase)Calibrator).StringConnection ??= GetStringConnect((IProtocolStringLine)Calibrator);
-
-                base.InitWork(token);
+                
 
                 foreach (var point in measPointsTempRes)
                 {

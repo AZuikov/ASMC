@@ -40,6 +40,17 @@ namespace OWEN_TRM202
         {
         }
 
+        protected override void ConnectionToDevice()
+        {
+            trm202 = (UserItemOperation.TestDevices.FirstOrDefault(q => q.SelectedDevice as TRM202DeviceUI != null)
+                                       .SelectedDevice as IControlPannelDevice).Device as TRM202DeviceUI;
+            Calibrator =
+                UserItemOperation.ControlDevices.FirstOrDefault(q => q.SelectedDevice as ICalibratorMultimeterFlukeBase != null)
+                                 .SelectedDevice as ICalibratorMultimeterFlukeBase;
+            trm202.StringConnection = GetStringConnect(trm202);
+            Calibrator.StringConnection ??= GetStringConnect(Calibrator);
+        }
+
         protected override DataTable FillData()
         {
             var dataTable = base.FillData();
