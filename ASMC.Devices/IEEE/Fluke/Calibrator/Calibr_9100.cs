@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AP.Extension;
 using AP.Utils.Data;
@@ -26,8 +27,17 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             AcVoltage = new AcVolt(this);
             DcCurrent = new DcCurr(this);
             AcCurrent = new AcCurr(this);
+            Resistance2W = new Resist2W(this);
+            Resistance4W = new Resist4W(this);
+            Temperature = new Temp(this);
         }
 
+
+        public IResistance Resistance2W { get; }
+        public ISourcePhysicalQuantity<Resistance> Resistance4W { get; }
+        public ITermocoupleType Temperature { get; }
+        public ISourcePhysicalQuantity<Voltage> DcVoltage { get; }
+        public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; }
         public ISourcePhysicalQuantity<Capacity> Capacity { get; }
         public ISourcePhysicalQuantity<Current> DcCurrent { get; }
         public ISourcePhysicalQuantity<Current, Frequency> AcCurrent { get; }
@@ -53,11 +63,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             set => Device.StringConnection = value;
         }
 
-        public IResistance Resistance2W { get; }
-        public ISourcePhysicalQuantity<Resistance> Resistance4W { get; }
-        public ITermocoupleType Temperature { get; }
-        public ISourcePhysicalQuantity<Voltage> DcVoltage { get; }
-        public ISourcePhysicalQuantity<Voltage, Frequency> AcVoltage { get; }
+        
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
@@ -169,6 +175,106 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
         }
 
+        public class Resist2W : Resist
+        {
+            public Resist2W(Calibr_9100 device) : base(device)
+            {
+                CompensationMode = new[] {new Command("outp:comp off", "компенсация отключена", 0)};
+                RangeStorage = new RangeDevice();
+            }
+
+            public class RangeDevice : RangeDeviceBase<Resistance>
+            {
+                #region Property
+
+                [AccRange("Mode: Ohms 2W SP", typeof(MeasPoint<Resistance>))]
+                public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
+
+                #endregion
+            }
+        }
+
+        public class Resist4W : Resist
+        {
+            public Resist4W(Calibr_9100 device) : base(device)
+            {
+                CompensationMode = new[] { new Command("outp:comp on", "компенсация отключена", 0) };
+                RangeStorage = new RangeDevice();
+            }
+
+            public class RangeDevice : RangeDeviceBase<Resistance>
+            {
+                #region Property
+
+                [AccRange("Mode: Ohms 4W SP", typeof(MeasPoint<Resistance>))]
+                public override RangeStorage<PhysicalRange<Resistance>> Ranges { get; set; }
+
+                #endregion
+            }
+        }
+
+        public abstract class Resist : SimplyPhysicalQuantity<Resistance>, IResistance
+        {
+            public Resist(Calibr_9100 device) : base(device)
+            {
+                functionName = "DC";
+                sourceName = "RESistance";
+               
+            }
+
+            public ICommand[] CompensationMode { get; set; }
+            public void SetCompensation(Compensation compMode)
+            {
+                Calibr.Device.WriteLine(CompensationMode[0].StrCommand);
+            }
+        }
+
+        public class Temp: SimplyPhysicalQuantity<Temperature>, ITermocoupleType
+        {
+            private ICommand typeSetTermocouple;
+            public Temp(Calibr_9100 device) : base(device)
+            {
+                functionName = "DC";
+                sourceName = "TEMPerature";
+                /*типы поддерживаемых термопар*/
+                /*B|C|E|J|K|N|R|S|T*/
+                TermoCoupleType = new[]
+                {
+                    new Command(TypeTermocouple.B.GetStringValue(), $"термопара типа {TypeTermocouple.B.GetStringValue()}", (int) TypeTermocouple.B),
+                    new Command(TypeTermocouple.C.GetStringValue(), $"термопара типа {TypeTermocouple.C.GetStringValue()}", (int) TypeTermocouple.C),
+                    new Command(TypeTermocouple.E.GetStringValue(), $"термопара типа {TypeTermocouple.E.GetStringValue()}", (int) TypeTermocouple.E),
+                    new Command(TypeTermocouple.J.GetStringValue(), $"термопара типа {TypeTermocouple.J.GetStringValue()}", (int) TypeTermocouple.J),
+                    new Command(TypeTermocouple.K.GetStringValue(), $"термопара типа {TypeTermocouple.K.GetStringValue()}", (int) TypeTermocouple.K),
+                    new Command(TypeTermocouple.N.GetStringValue(), $"термопара типа {TypeTermocouple.N.GetStringValue()}", (int) TypeTermocouple.N),
+                    new Command(TypeTermocouple.R.GetStringValue(), $"термопара типа {TypeTermocouple.R.GetStringValue()}", (int) TypeTermocouple.R),
+                    new Command(TypeTermocouple.S.GetStringValue(), $"термопара типа {TypeTermocouple.S.GetStringValue()}", (int) TypeTermocouple.S),
+                    new Command(TypeTermocouple.T.GetStringValue(), $"термопара типа {TypeTermocouple.T.GetStringValue()}", (int) TypeTermocouple.T),
+                };
+            }
+
+            //WriteLine("Source:func DC");
+            //WriteLine($"Source:TEMPerature:THERmocouple:TYPE {typeTermocouple.GetStringValue()}");
+            //WriteLine($"Source:TEMPerature:UNITs {unit}");
+            //WriteLine($"Source:TEMPerature:THERmocouple {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+
+            public ICommand[] TermoCoupleType { get; set; }
+
+            public override void SetValue(MeasPoint<Temperature> value)
+            {
+                Value = value;
+                Calibr.Device.WriteLine($"Source:func {functionName}");
+                Calibr.Device.WriteLine($"Source:{sourceName}:THERmocouple:TYPE {typeSetTermocouple.StrCommand}");
+                Calibr.Device.WriteLine($"Source:TEMPerature:UNITs C"); //пока единицы только цельсии
+                Calibr.Device.WriteLine($"Source:TEMPerature:THERmocouple {value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+                
+            }
+
+            public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
+            {
+                typeSetTermocouple = TermoCoupleType.FirstOrDefault(q => q.Value == (int)typeTermocouple);
+            }
+        }
+
         public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> :
             OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity>
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
@@ -211,6 +317,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 Value = value;
                 Calibr.Device.WriteLine($"Source:func {functionName}");
                 Calibr.Device.WriteLine($"Source:{sourceName} {ConvetrMeasPointToCommand(value)}");
+                Calibr.Device.WriteLine("SOUR:RES:UUT_I SUP");
                 //todo проверка на ошибки после отправки команды
             }
 
@@ -335,47 +442,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 }
 
 /* Remove this code!!!!!!
- public void SetVoltageDc(MeasPoint<Voltage> setPoint)
-        {
-            //WriteLine("Source:func DC");
-            //WriteLine($"Source:VOLT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
-        }
-
-        public void SetVoltageAc(MeasPoint<Voltage, Frequency> setPoint)
-        {
-            //WriteLine("Source:func sin");
-            //WriteLine($"Source:VOLT {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-            //WriteLine($"Source:freq {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-        }
-
-        public void SetResistance2W(MeasPoint<Resistance> setPoint)
-        {
-            //WriteLine("Source:func DC");
-            //WriteLine($"Source:RESistance {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-            //WriteLine("SOUR:RES:UUT_I SUP");
-            //WriteLine("outp:comp off");
-        }
-
-        public void SetResistance4W(MeasPoint<Resistance> setPoint)
-        {
-            //WriteLine("Source:func DC");
-            //WriteLine($"Source:RESistance {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-            //WriteLine("SOUR:RES:UUT_I SUPer}");
-            //WriteLine("outp:comp on");
-        }
-
-        public void SetCurrentDc(MeasPoint<Current> setPoint)
-        {
-            //WriteLine("Source:func DC");
-            //WriteLine("Source:CURRent {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-        }
-
-        public void SetCurrentAc(MeasPoint<Current, Frequency> setPoint)
-        {
-            //WriteLine("Source:func sin");
-            //WriteLine($"Source:CURRent {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-            //WriteLine($"Source:freq {setPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-        }
+      
 
         //public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unit)
         //{
@@ -384,30 +451,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         //    //WriteLine($"Source:TEMPerature:UNITs {unit}");
         //    //WriteLine($"Source:TEMPerature:THERmocouple {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
         //}
+   
+        
 
-        //public void SetOutputOn()
-        //public void SetOutputOn()
-        //public void SetOutputOn()
-        //public void SetOutputOn()
-        //public void SetOutputOn()ICalibratorMultimeterFluke
-        //{
-        //   //WriteLine("outp:stat on");
-        //}
-
-        public void SetOutputOff()
-        {
-            //WriteLine("outp:stat off");
-        }
-
-        public void Reset()
-        {
-            //WriteLine(IeeeBase.Reset);
-        }
-
-        protected override string GetError()
-        {
-            throw new NotImplementedException();
-        }
+        
  *
  *
  */

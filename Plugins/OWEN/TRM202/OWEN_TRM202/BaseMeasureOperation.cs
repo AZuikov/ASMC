@@ -102,14 +102,13 @@ namespace OWEN_TRM202
         public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
-            if (operation.IsGood != null && !operation.IsGood())
+            if (operation.Getting !=null && operation.IsGood != null && !operation.IsGood())
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
                                      .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
                                            $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
                                            $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
                                            "Повторить измерение этой точки?",
@@ -118,10 +117,11 @@ namespace OWEN_TRM202
                                            MessageResult.Yes);
 
                 if (answer == MessageResult.No) return Task.FromResult(true);
-            }
-
-            if (operation.IsGood == null)
+            }else if (operation.IsGood == null || operation.Getting == null)
+            {
                 return Task.FromResult(true);
+            }
+            
             return Task.FromResult(operation.IsGood());
         }
 

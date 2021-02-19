@@ -402,9 +402,7 @@ namespace OWEN_TRM202
                     };
                     operation.IsGood = () => true;
                     operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood()); };
-                    DataRow.Add(DataRow.IndexOf(operation) == -1
-                                    ? operation
-                                    : (BasicOperationVerefication<bool>)operation.Clone());
+                    DataRow.Add(operation);
                 }
             }
 
@@ -541,9 +539,7 @@ namespace OWEN_TRM202
                     };
                     operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
-                    DataRow.Add(DataRow.IndexOf(operation) == -1
-                                    ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
+                    DataRow.Add(operation);
                 }
             }
 
@@ -1066,9 +1062,7 @@ namespace OWEN_TRM202
                     };
                     operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
-                    DataRow.Add(DataRow.IndexOf(operation) == -1
-                                    ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
+                    DataRow.Add(operation);
                 }
             }
 
@@ -1118,15 +1112,16 @@ namespace OWEN_TRM202
                     dataRow["Поверяемая точка"] = dds?.Expected?.Description;
                     dataRow["Измеренное значение"] = dds?.Getting?.Description;
                     PhysicalRange<Percent> range = MeasureRanges.GetRangePointBelong(dds?.Expected);
-                    if (dds?.Getting != null && dds?.Expected != null)
+                    if (range !=null&& dds?.Getting != null && dds?.Expected != null)
                     {
                         //посчитаем основную приведенную погрешность
                         dataRow["Основная приведенная погрешность"] =
                             Helps.CalculateBasicRedundanceTol(dds?.Getting, dds?.Expected, range).Description;
+                        var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
+                        MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
+                        dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
                     }
-                    var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
-                    MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
-                    dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
+                    
 
                     if (dds?.IsGood == null)
                         dataRow[dataRow.Table.Columns.Count - 1] = "не выполнено";
@@ -1228,9 +1223,7 @@ namespace OWEN_TRM202
                     };
                     operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
-                    DataRow.Add(DataRow.IndexOf(operation) == -1
-                                    ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Percent>>)operation.Clone());
+                    DataRow.Add(operation);
                 }
             }
 
@@ -1500,15 +1493,16 @@ namespace OWEN_TRM202
                     dataRow["Поверяемая точка"] = dds?.Expected?.Description;
                     dataRow["Измеренное значение"] = dds?.Getting?.Description;
                     PhysicalRange<Temperature> range = MeasureRanges.GetRangePointBelong(dds?.Expected);
-                    if (dds?.Getting != null && dds?.Expected != null)
+                    if (range !=null && dds?.Getting != null && dds?.Expected != null)
                     {
                         //посчитаем основную приведенную погрешность
                         dataRow["Основная приведенная погрешность"] =
                             Helps.CalculateBasicRedundanceTol(dds?.Getting, dds?.Expected, range).Description;
+                        var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
+                        MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
+                        dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
                     }
-                    var tolRange = (decimal)range.AccuracyChatacteristic.RangePercentFloor;
-                    MeasPoint<Percent> RangeTol = new MeasPoint<Percent>(tolRange);
-                    dataRow["Допустимое значение приведенной погрешности"] = RangeTol.Description;
+                    
 
                     if (dds?.IsGood == null)
                         dataRow[dataRow.Table.Columns.Count - 1] = "не выполнено";
@@ -1612,7 +1606,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.Resistance2W.OutputOn();
+                            Calibrator.Resistance2W.OutputOff();
                         }
 
                         operation.IsGood = () =>
@@ -1622,9 +1616,7 @@ namespace OWEN_TRM202
                     };
                     operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
-                    DataRow.Add(DataRow.IndexOf(operation) == -1
-                                    ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
+                    DataRow.Add(operation);
                 }
             }
 
