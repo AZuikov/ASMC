@@ -61,10 +61,12 @@ namespace OWEN_TRM202
                 if (dds == null) continue;
                 dataRow["Поверяемая точка"] = dds?.Expected?.Description;
                 dataRow["Измеренное значение"] = dds?.Getting?.Description;
-
-                if (dds?.Getting != null && dds?.Expected != null)
+                
+                PhysicalRange<T> range = MeasureRanges.GetRangePointBelong(dds?.Expected);
+                
+                if (range!=null && dds?.Getting != null && dds?.Expected != null)
                 {
-                    PhysicalRange<T> range = MeasureRanges.GetRangePointBelong(dds?.Expected);
+                    
                     //посчитаем основную приведенную погрешность
                     dataRow["Основная приведенная погрешность"] =
                         Helps.CalculateBasicRedundanceTol<T>(dds.Getting, dds.Expected, range).Description;

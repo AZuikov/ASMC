@@ -237,7 +237,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 functionName = "DC";
                 sourceName = "TEMPerature";
                 /*типы поддерживаемых термопар*/
-                /*B|C|E|J|K|N|R|S|T*/
+                
                 TermoCoupleType = new[]
                 {
                     new Command(TypeTermocouple.B.GetStringValue(), $"термопара типа {TypeTermocouple.B.GetStringValue()}", (int) TypeTermocouple.B),
@@ -249,6 +249,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                     new Command(TypeTermocouple.R.GetStringValue(), $"термопара типа {TypeTermocouple.R.GetStringValue()}", (int) TypeTermocouple.R),
                     new Command(TypeTermocouple.S.GetStringValue(), $"термопара типа {TypeTermocouple.S.GetStringValue()}", (int) TypeTermocouple.S),
                     new Command(TypeTermocouple.T.GetStringValue(), $"термопара типа {TypeTermocouple.T.GetStringValue()}", (int) TypeTermocouple.T),
+                    new Command(TypeTermocouple.L.GetStringValue(), $"термопара типа {TypeTermocouple.L.GetStringValue()}", (int) TypeTermocouple.L),
                 };
             }
 
