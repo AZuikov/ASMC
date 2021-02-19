@@ -30,6 +30,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             Resistance2W = new Resist2W(this);
             Resistance4W = new Resist4W(this);
             Temperature = new Temp(this);
+            Capacity = new Cap(this);
         }
 
 
@@ -170,6 +171,26 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
                 [AccRange("Mode: Volts SI", typeof(MeasPoint<Voltage, Frequency>))]
                 public override RangeStorage<PhysicalRange<Voltage, Frequency>> Ranges { get; set; }
+
+                #endregion
+            }
+        }
+
+        public class Cap : SimplyPhysicalQuantity<Capacity>
+        {
+            public Cap(Calibr_9100 device) : base(device)
+            {
+                functionName = "DC";
+                sourceName = "CAPacitance";
+                RangeStorage = new RangeDevice();
+            }
+
+            public class RangeDevice : RangeDeviceBase<Capacity>
+            {
+                #region Property
+
+                [AccRange("Mode: Farads 2W LO", typeof(MeasPoint<Capacity>))]
+                public override RangeStorage<PhysicalRange<Capacity>> Ranges { get; set; }
 
                 #endregion
             }
