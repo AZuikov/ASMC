@@ -19,6 +19,6 @@ namespace ASMC.Devices.Interface
     /// </summary>
     public interface IFrontRearPanel
     {
-        bool IsFront { get; set; }
+        bool IsFrontTerminal { get;  }
     }
 }

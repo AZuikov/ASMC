@@ -91,7 +91,7 @@ namespace B5_71_1_PRO
         public Oper2DcvOutput(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro1();
-            Mult = new Mult_34401A();
+            Mult = new Keysight34401A();
             Load = new N3303A();
         }
     }
@@ -104,7 +104,7 @@ namespace B5_71_1_PRO
         public Oper3DcvMeasure(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro1();
-            Mult = new Mult_34401A();
+            Mult = new Keysight34401A();
             Load = new N3303A();
         }
     }
@@ -117,7 +117,7 @@ namespace B5_71_1_PRO
         public Oper4VoltUnstable(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Bp = new B571Pro1();
-            Mult = new Mult_34401A();
+            Mult = new Keysight34401A();
             Load = new N3303A();
         }
     }
@@ -180,7 +180,7 @@ namespace B5_71_1_PRO
         {
             Bp = new B571Pro1();
             Load = new N3303A();
-            Mult = new Mult_34401A();
+            Mult = new Keysight34401A();
         }
     }
 }

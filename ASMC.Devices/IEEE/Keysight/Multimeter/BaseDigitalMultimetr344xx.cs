@@ -20,7 +20,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         #region Field
 
-        private readonly IeeeBase _device;
+        protected readonly IeeeBase _device;
 
         #endregion
 

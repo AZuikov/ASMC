@@ -130,7 +130,7 @@ namespace B5_71_PRO_Abstract
 
     public abstract class BaseOparationWithMultimeter : BaseOperationPowerSupplyAndElectronicLoad
     {
-        protected Mult_34401A Mult { get; set; }
+        protected Keysight34401A Mult { get; set; }
 
         protected BaseOparationWithMultimeter(IUserItemOperation userItemOperation) : base(userItemOperation)
         {

@@ -21,7 +21,7 @@ using NLog;
 namespace B5_71_PRO_Abstract
 {
     /// <summary>
-    /// В этом пространчтве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели
+    /// В этом пространстве имен будет реализован общий алгоритм поверки блоков питания без жесткой привязки к модели
     /// устройства
     /// </summary>
     public abstract class AbstractB571ProPlugin<T> : Program<T> where T : OperationMetrControlBase
@@ -440,7 +440,7 @@ namespace B5_71_PRO_Abstract
                                     ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                         });
 
-                        while (!Mult.IsTerminal)
+                        while (!Mult.IsFrontTerminal)
                             UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                           " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                                           "Указание оператору", MessageButton.OK,
@@ -468,14 +468,13 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        Mult.Dc.Voltage.Range.Set((double)setPoint);
-                        var result = Mult.GetMeasValue();
+                        var result = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
                         MathStatistics.Round(ref result, 3);
 
                         //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
                         operation.Expected = setPoint;
-                        operation.Getting = (decimal)result;
+                        operation.Getting = result;
 
                         SetLowAndUppToleranceAndIsGood_Volt(operation);
 
@@ -617,7 +616,7 @@ namespace B5_71_PRO_Abstract
                                     ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                         });
 
-                        while (!Mult.IsTerminal)
+                        while (!Mult.IsFrontTerminal)
                             UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                           " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                                           "Указание оператору", MessageButton.OK,
@@ -645,8 +644,8 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        Mult.Dc.Voltage.Range.Set((double)setPoint);
-                        var resultMult = Mult.GetMeasValue();
+                        
+                        var resultMult = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
                         var resultBp = Bp.GetMeasureVolt();
 
                         MathStatistics.Round(ref resultMult, 3);
@@ -803,7 +802,7 @@ namespace B5_71_PRO_Abstract
                                 ArgumentException($"Модуль нагрузки {Load.GetModuleModel} не установлен в базовый блок нагрузки");
                     });
 
-                    while (!Mult.IsTerminal)
+                    while (!Mult.IsFrontTerminal)
                         UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                       " нажмите клавишу REAR,\nчтобы включить передний клеммный терминал.",
                                                                       "Указание оператору", MessageButton.OK,
@@ -848,8 +847,8 @@ namespace B5_71_PRO_Abstract
                         // время выдержки
                         Thread.Sleep(1000);
                         // записываем результаты
-                        Mult.Dc.Voltage.Range.Set((double)Bp.VoltMax);
-                        voltUnstableList.Add((decimal)Mult.GetMeasValue());
+                        
+                        voltUnstableList.Add(Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value);
                     }
 
                     Bp.OffOutput();
@@ -1748,7 +1747,7 @@ namespace B5_71_PRO_Abstract
                         Bp.SetStateCurr(Bp.CurrMax);
                     });
 
-                    while (Mult.IsTerminal)
+                    while (Mult.IsFrontTerminal)
                         UserItemOperation.ServicePack.MessageBox().Show("На панели прибора " + Mult.UserType +
                                                                         " нажмите клавишу REAR,\nчтобы включить задний клеммный терминал.",
                                                                         "Указание оператору", MessageButton.OK,
@@ -1774,11 +1773,11 @@ namespace B5_71_PRO_Abstract
 
                     var a = vm.SelectRange;
 
-                    Mult.Dc.Voltage.Range.Set(100);
+                   
                     decimal currPuls34401 = -1;
                     while (currPuls34401 <= 0)
                     {
-                        currPuls34401 = (decimal)Mult.GetMeasValue();
+                        currPuls34401 = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
                         if (currPuls34401 > 0) break;
 
                         var answer = UserItemOperation.ServicePack.MessageBox().Show(
