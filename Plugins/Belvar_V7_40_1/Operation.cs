@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AP.Extension;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.IEEE.Fluke.Calibrator;
 
@@ -48,6 +49,8 @@ namespace Belvar_V7_40_1
              //todo пользователь должен иметь возможность выбрать файл с поверяемыми точками
             
             OperationExtension.FillTestPoint(this, path);
+            MeasPoint<Voltage> point = new MeasPoint<Voltage>();
+            var str = point.Description;
         }
 
 

@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
+using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 
 namespace B5_71_PRO_Abstract
@@ -468,6 +469,10 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
+                        
+                        Mult.DcVoltage.RangeStorage.SetRange(new MeasPoint<Voltage>(setPoint));
+                        Mult.DcVoltage.RangeStorage.IsAutoRange = true;
+                        Mult.DcVoltage.Setting();
                         var result = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
                         MathStatistics.Round(ref result, 3);
 
@@ -644,7 +649,9 @@ namespace B5_71_PRO_Abstract
                         Thread.Sleep(1300);
 
                         //измеряем напряжение
-                        
+                        Mult.DcVoltage.RangeStorage.SetRange(new MeasPoint<Voltage>(setPoint));
+                        Mult.DcVoltage.RangeStorage.IsAutoRange = true;
+                        Mult.DcVoltage.Setting();
                         var resultMult = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
                         var resultBp = Bp.GetMeasureVolt();
 
@@ -1777,6 +1784,9 @@ namespace B5_71_PRO_Abstract
                     decimal currPuls34401 = -1;
                     while (currPuls34401 <= 0)
                     {
+                        Mult.DcVoltage.RangeStorage.SetRange(new MeasPoint<Voltage>(100, UnitMultiplier.Mili));
+                        Mult.DcVoltage.RangeStorage.IsAutoRange = true;
+                        Mult.DcVoltage.Setting();
                         currPuls34401 = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
                         if (currPuls34401 > 0) break;
 
