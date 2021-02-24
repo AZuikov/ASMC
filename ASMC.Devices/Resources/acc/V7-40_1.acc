@@ -10,7 +10,7 @@ Mode: Volt DC
 
 	# DC Volts
 
-	# NOMINAL                   MOD1        Tol.    Floor   Res.
+	# NOMINAL                   Freq        Tol.    Floor   Res.
 	# ------------------------- ----------- ------- ------- ------
 	-200.00e-3    200.00e-3     NA    NA    0.03    0.02    NA
 	-2.0000       2.0000        NA    NA    0.03    0.02    NA
@@ -21,8 +21,8 @@ Mode: Volt DC
 	
 Mode: Volt AC
 
-	# NOMINAL                   MOD1        Tol.    Floor   Res.
-	# ------------------------- ----------- ------- ------- ------
+	# NOMINAL                   Freq          Tol.   Floor  Res.
+	# ------------------------- -----------   ------ ------ ------
 	-200.00e-3    200.00e-3     20    39.99    0.9   0.1    NA
 	-200.00e-3    200.00e-3     40    9.999e3  0.5   0.1    NA
 	-200.00e-3    200.00e-3     10e3  19.999e3 0.9   0.1    NA
@@ -55,7 +55,7 @@ Mode: DC Current
 
 	# DC Current
 
-	# NOMINAL                   MOD1        Tol.    Floor   Res.
+	# NOMINAL                   Freq        Tol.    Floor   Res.
 	# ------------------------- ----------- ------- ------- ------
 	-200.00e-6    200.00e-6     NA    NA    0.18    0.02    10e-8
 	-2.0000e-3    2.0000e-3     NA    NA    0.18    0.02    10e-8
@@ -66,7 +66,7 @@ Mode: DC Current
 	
 Mode: AC Current
 
-	# NOMINAL                   MOD1        Tol.    Floor   Res.
+	# NOMINAL                   Freq        Tol.    Floor   Res.
 	# ------------------------- ----------- ------- ------- ------
 	-20.00e-6     20.00e-6     40    9.999e3  0.9    0.1     NA     
 	-20.00e-6     20.00e-6     10e3  19.999e3 1.9    0.1     NA     
@@ -87,7 +87,7 @@ Mode: AC Current
 
 Mode: Ohms 2W
 
-	# NOMINAL                   MOD1        Tol.    Floor    Res.
+	# NOMINAL                   Freq        Tol.    Floor    Res.
 	# ------------------------- ----------- ------- -------- ------
 	0          200               NA    NA    0.1     0.05     NA
 	0          2e3               NA    NA    0.1     0.05     NA

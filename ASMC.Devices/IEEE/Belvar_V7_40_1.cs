@@ -68,6 +68,17 @@ namespace ASMC.Devices.IEEE
         public DcVolt(IeeeBase inDevice) : base(inDevice, MeasureFunctionCode.Dcv)
         {
             RangeStorage = new RangeDevice();
+            FunctionCodes = MeasureFunctionCode.Dcv;
+            FunctionName = "Измерение постоянного напряжения";
+            allRangesThisMode = new[]
+            {
+                RangeCodes.Range200mV,
+                RangeCodes.Range2V,
+                RangeCodes.Range20V,
+                RangeCodes.Range200V,
+                RangeCodes.Range2000V,
+
+            };
         }
 
         public class RangeDevice : RangeDeviceBase<Voltage>
@@ -81,12 +92,22 @@ namespace ASMC.Devices.IEEE
     {
         protected IeeeBase _device;
 
+        /// <summary>
+        /// Наимнование функции измерения физической величины.
+        /// </summary>
         protected string FunctionName;
-
-        public RangeCodes rangeCode { get; set; }
+        
+        /// <summary>
+        /// Номер измерительной функции мультиметра
+        /// </summary>
         protected MeasureFunctionCode FunctionCodes { get; set; }
 
-        private readonly string EndCommand = "D0E";
+        private readonly string BeginCommand = "F";//символ измерительной функиции
+        private readonly string EndCommand = "D0E";//окончание команды
+        /// <summary>
+        /// Все пределы измерения, доступные в данном режиме.
+        /// </summary>
+        protected RangeCodes[] allRangesThisMode;
 
         public MeasureFunctionV_7_40_1Base(IeeeBase inDevice, MeasureFunctionCode function)
         {
@@ -97,11 +118,22 @@ namespace ASMC.Devices.IEEE
 
         public void Getting()
         {
+            //получаем информацию о режиме измерения, пределе измерения, измеренное значение
             throw new NotImplementedException();
         }
 
         public void Setting()
         {
+        string firstCommandPart =$"{BeginCommand}{(int)FunctionCodes}B";
+        string rangeNumb = RangeCodes.AutoRange.ToString();//на всякий случай устанавливаем автоматический выбор предела измерения, если не удасттся выбрать подходящий ниже.
+        
+        foreach (RangeCodes multRange in allRangesThisMode)
+        {
+            //todo проверить работоспособность!!!
+            if (RangeStorage.SelectRange.End.MainPhysicalQuantity.Value == (decimal) multRange.GetDoubleValue())
+                rangeNumb = multRange.ToString();
+        }
+        _device.WriteLine($"{firstCommandPart}{rangeNumb}{EndCommand}");
         }
 
         public IRangePhysicalQuantity<T> RangeStorage { get; protected set; }
@@ -120,22 +152,33 @@ namespace ASMC.Devices.IEEE
 
         public enum RangeCodes
         {
-            Range20M = 0,
-            Range2000 = 1,
-            Range200 = 2,
-            Range20 = 3,
-            Range2 = 4,
-            Range200m = 5,
-            AutoRange = 7
+            Range20MOhm = 0,
+            Range2000V = 1,
+            Range200V = 2,
+            Range20V = 3,
+            Range2V = 4,
+            Range200mV = 5,
+            AutoRange = 7,
+            Range200uA = Range200mV,
+            Range2mA = Range2V,
+            Range20mA = Range20V,
+            Range200mA = Range200V,
+            Range2000mA = Range2000V,
+            Range200Ohm = Range200mV,
+            Range2kOhm = Range2V,
+            Range20kOhm = Range20V,
+            Range200kOhm = Range200V,
+            Range2000kOhm = Range2000V,
+
         }
 
         public enum MeasureFunctionCode
         {
-            [StringValue("Измерение постоянного тока")] Dci = 1,
-            [StringValue("Измерение электрического сопротивления")] Resist = 2,
-            [StringValue("Измерение переменного тока")] Aci = 3,
-            [StringValue("Измерение постоянного напряжения")] Dcv = 4,
-            [StringValue("Измерение переменного напряжения")] Acv = 6
+            [StringValue("I")] Dci = 1,
+            [StringValue("R")] Resist = 2,
+            [StringValue("I")] Aci = 3,
+            [StringValue("U")] Dcv = 4,
+            [StringValue("V")] Acv = 6
         }
     }
 }

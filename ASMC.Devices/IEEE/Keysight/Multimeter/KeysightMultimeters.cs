@@ -8,7 +8,7 @@ using ASMC.Devices.Interface;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public class Keysight34401A: BaseDigitalMultimetr344xx, IFrontRearPanel
+    public class Keysight34401A: BaseDigitalMultimetr344xx
     {
         public Keysight34401A()
         {
@@ -17,22 +17,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
 
         
         
-        /// <inheritdoc />
-        public bool IsFrontTerminal
-        {
-            get => IsFrontTerminalActive();
-        }
-        
-        protected enum Terminals344xx
-        {
-            [StringValue("FRON")]Front,
-            [StringValue("REAR")]Rear
-        }
-        protected bool IsFrontTerminalActive()
-        {
-           
-           string answer = _device.QueryLine("ROUT:TERM?");
-           return answer.Equals(Terminals344xx.Front.GetStringValue());
-        }
+       
+       
     }
 }

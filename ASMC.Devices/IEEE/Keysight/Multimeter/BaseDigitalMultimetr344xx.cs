@@ -3,14 +3,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AP.Extension;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
 using ASMC.Devices.Model;
 
 namespace ASMC.Devices.IEEE.Keysight.Multimeter
 {
-    public abstract class BaseDigitalMultimetr344xx : IDigitalMultimetr344xx
+    public abstract class BaseDigitalMultimetr344xx : IDigitalMultimetr344xx, IFrontRearPanel
     {
         #region Property
 
@@ -692,5 +694,23 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public bool IsFrontTerminal
+        {
+            get => IsFrontTerminalActive();
+        }
+
+        protected enum Terminals344xx
+        {
+            [StringValue("FRON")] Front,
+            [StringValue("REAR")] Rear
+        }
+        protected bool IsFrontTerminalActive()
+        {
+
+            string answer = _device.QueryLine("ROUT:TERM?");
+            return answer.Equals(Terminals344xx.Front.GetStringValue());
+        }
     }
 }
