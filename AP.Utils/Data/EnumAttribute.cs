@@ -80,20 +80,18 @@ namespace AP.Utils.Data
 
             var fi = type.GetField(value.ToString());
             var attrs = fi.GetCustomAttributes(false)
-                          .First(q => q.GetType() == typeof(StringValueAttribute) && ((StringValueAttribute)q).CultureInfo == null);
-            
+                          .First(q => q.GetType() == typeof(StringValueAttribute) &&
+                                      ((StringValueAttribute) q).CultureInfo == null);
 
-            if (((StringValueAttribute)attrs).CultureInfo== null && StringValuesNoCultureInfo.ContainsKey(value) )
+            if (((StringValueAttribute) attrs).CultureInfo == null && StringValuesNoCultureInfo.ContainsKey(value))
             {
-
                 output = (StringValuesNoCultureInfo[value] as StringValueAttribute)?.Value;
-                
             }
             else
             {
                 if (attrs == null) return null;
                 StringValuesNoCultureInfo.Add(value, attrs);
-                output = ((StringValueAttribute)attrs).Value;
+                output = ((StringValueAttribute) attrs).Value;
             }
 
             return output;
@@ -112,12 +110,13 @@ namespace AP.Utils.Data
             {
                 var fi = type.GetField(value.ToString());
                 var attrs = fi.GetCustomAttributes(false)
-                              .FirstOrDefault(q => q.GetType() == typeof(StringValueAttribute) &&(
-                                                   ((StringValueAttribute) q).CultureInfo?.Name.Equals(cultureInfo.Name)?? false));
-                
+                              .FirstOrDefault(q => q.GetType() == typeof(StringValueAttribute) && (
+                                                  ((StringValueAttribute) q)
+                                                 .CultureInfo?.Name.Equals(cultureInfo.Name) ?? false));
+
                 if (attrs == null) return null;
                 StringValuesWithCultureInfo.Add(value, attrs);
-                output = ((StringValueAttribute)attrs).Value;
+                output = ((StringValueAttribute) attrs).Value;
             }
 
             return output;

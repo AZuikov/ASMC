@@ -69,17 +69,10 @@ namespace AP.Extension
                                                                                propertyClass.Type,
                                                                                attr?.MeasPointType)).ToArray();
                 //теперь массив точек нужно присвоить списку точек, поверяемых (проверяемых) в данной операции
-                
-                
-                accessor[obj, propertyClass.Name] = Array.CreateInstance(attr.MeasPointType, arr.Length);
-                var buffArr = Array.CreateInstance(attr.MeasPointType, arr.Length);
-                for (int i=0; i<arr.Length;i++)
-                {
-                    var pointAccessor = TypeAccessor.Create(attr.MeasPointType);
-                    var set = pointAccessor.GetMembers();
-                }
 
-                //accessor[obj, propertyClass.Name] = (typeof(attr.MeasPointType))arr; 
+                accessor[obj, propertyClass.Name] = Array.CreateInstance(attr.MeasPointType, arr.Length);
+                //заполняем TestMeasPoint - точки, которые нужно поверять, заполняются для каждой операции поверки
+                for (var i = 0; i < arr.Length; i++) ((Array) accessor[obj, propertyClass.Name]).SetValue(arr[i], i);
             }
 
             object GenerateMeasurePointFromString(string str, Type inType, Type attMeasPointType)
@@ -106,11 +99,6 @@ namespace AP.Extension
                     var pointComplexObj = Activator.CreateInstance(attMeasPointType, (decimal) mainVal,
                                                                    mainUnitMultiplier, additionalVal,
                                                                    additionalUnitMultiplier);
-                    //почему-то не работает... нужно потом удалить
-                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Value)] = mainVal;
-                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity.Multiplier)] = mainUnitMultiplier;
-                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Value)] = additionalVal;
-                    //pointAccessor[pointComplexObj, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity.Multiplier)] = additionalUnitMultiplier;
                     return pointComplexObj;
                 }
 
