@@ -160,6 +160,8 @@ namespace ASMC.Data.Model.PhysicalQuantity
         /// <inheritdoc />
         public string GetMultiplierUnit()
         {
+            //нужно выцеплять верный множитель с учетом культуры
+            
             return Multiplier.GetStringValue() + Unit.GetStringValue();
         }
 

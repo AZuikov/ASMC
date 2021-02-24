@@ -64,7 +64,8 @@ namespace AP.Utils.Data
 
     {
         private static readonly Hashtable DoubleValues = new Hashtable();
-        private static readonly Hashtable StringValues = new Hashtable();
+        private static readonly Hashtable StringValuesNoCultureInfo = new Hashtable();
+        private static readonly Hashtable StringValuesWithCultureInfo = new Hashtable();
 
         #region Methods
 
@@ -77,18 +78,21 @@ namespace AP.Utils.Data
             string output;
             var type = value.GetType();
 
-            if (StringValues.ContainsKey(value))
+            var fi = type.GetField(value.ToString());
+            var attrs = fi.GetCustomAttributes(false)
+                          .First(q => q.GetType() == typeof(StringValueAttribute) && ((StringValueAttribute)q).CultureInfo == null);
+            
+
+            if (((StringValueAttribute)attrs).CultureInfo== null && StringValuesNoCultureInfo.ContainsKey(value) )
             {
-                output = (StringValues[value] as StringValueAttribute)?.Value;
+
+                output = (StringValuesNoCultureInfo[value] as StringValueAttribute)?.Value;
+                
             }
             else
             {
-                var fi = type.GetField(value.ToString());
-                var attrs = fi.GetCustomAttributes(false)
-                              .FirstOrDefault(q => q.GetType() == typeof(StringValueAttribute) &&
-                                                   ((StringValueAttribute) q).CultureInfo == null) ;
                 if (attrs == null) return null;
-                StringValues.Add(value, attrs);
+                StringValuesNoCultureInfo.Add(value, attrs);
                 output = ((StringValueAttribute)attrs).Value;
             }
 
@@ -100,9 +104,9 @@ namespace AP.Utils.Data
             string output;
             var type = value.GetType();
 
-            if (StringValues.ContainsKey(value))
+            if (StringValuesWithCultureInfo.ContainsKey(value))
             {
-                output = (StringValues[value] as StringValueAttribute)?.Value;
+                output = (StringValuesWithCultureInfo[value] as StringValueAttribute)?.Value;
             }
             else
             {
@@ -112,7 +116,7 @@ namespace AP.Utils.Data
                                                    ((StringValueAttribute) q).CultureInfo?.Name.Equals(cultureInfo.Name)?? false));
                 
                 if (attrs == null) return null;
-                StringValues.Add(value, attrs);
+                StringValuesWithCultureInfo.Add(value, attrs);
                 output = ((StringValueAttribute)attrs).Value;
             }
 
