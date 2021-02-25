@@ -64,7 +64,11 @@ namespace AP.Extension
             object GenerateRange(string str, object obj, Type type, Type attMeasPointType)
             {
                 str = str.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                var date = str.Split(' ').Where(q => !string.IsNullOrWhiteSpace(q)).Select(q => q.Contains("NA") ? null : (decimal?)double.Parse(q)).ToArray();
+                
+
+                try
+                {
+                    var date = str.Split(' ').Where(q => !string.IsNullOrWhiteSpace(q)).Select(q => q.Contains("NA") ? null : (decimal?)double.Parse(q)).ToArray();
 
                 var generit = type.GetGenericArguments().First();
                 if (generit.GetGenericTypeDefinition().GetInterfaces()
@@ -129,17 +133,12 @@ namespace AP.Extension
                     at[range, nameof(PhysicalRange<Voltage>.AccuracyChatacteristic)] = acc;
                     return range;
                 }
-
-                //var volteStart = new Voltage((decimal)double.Parse(date[0]));
-                //var freqStart = new Frequency((decimal)double.Parse(date[2]));
-                //var volteEnd = new Voltage((decimal)double.Parse(date[1]));
-                //var freqEnd = new Frequency((decimal)double.Parse(date[3]));
-
-                //var acc = new AccuracyChatacteristic(date[6].Contains("NA") ? (decimal?)null : (decimal?)double.Parse(date[6]),
-                //    date[5].Contains("NA") ? (decimal?)null : (decimal?)double.Parse(date[5]),
-                //    date[4].Contains("NA") ? (decimal?)null : (decimal?)double.Parse(date[4]));
-
-                //return new PhysicalRange<Voltage, Frequency>(new MeasPoint<Voltage, Frequency>(volteStart, freqStart), new MeasPoint<Voltage, Frequency>(volteEnd, freqEnd), acc);
+                }
+                catch (Exception e)
+                {
+                   throw;
+                }
+                
                 return null;
             }
         }

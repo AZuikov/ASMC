@@ -57,7 +57,7 @@ namespace Belvar_V7_40_1
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
             CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
             try
             {

@@ -62,7 +62,11 @@ namespace ASMC.Devices.IEEE
             this.FillRangesDevice(fileName);
         }
 
-        public string StringConnection { get; set; }
+        public string StringConnection
+        {
+            get => _device.StringConnection;
+            set => _device.StringConnection = value;
+        }
     }
 
     public class DcVolt : MeasureFunctionV_7_40_1_SimplePhysicalQuantity<Voltage>

@@ -81,15 +81,15 @@ namespace OWEN_TRM202
             Chanel1Operation.Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this, 1));
             //пункт меьтодики 2007 года. 8.5.1.1
-            Chanel1Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this, 1));
+            //Chanel1Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka(this, 1));
             //пункт меьтодики 2007 года. 8.5.1.3
-            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this, 1));
+            //Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_50_50_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 1));
             //пункт меьтодики 2007 года. 8.5.1.2
-            Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this, 1));
+            //Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_A1_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_A2_Poverka(this, 1));
@@ -99,7 +99,7 @@ namespace OWEN_TRM202
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_N_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka(this, 1));
             // //пункт меьтодики 2007 года. 8.5.1.4
-            Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this, 1));
+            //Chanel1Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_S_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_R_Poverka(this, 1));
             Chanel1Operation.Nodes.Add(new Operation8_4_Type_B_Poverka(this, 1));
@@ -116,15 +116,15 @@ namespace OWEN_TRM202
             Chanel2Operation.Nodes.Add(new Operation8_4_TSP50P_391_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_TSP100P_391_Poverka(this, 2));
             //пункт меьтодики 2007 года. 8.5.1.1
-            Chanel2Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this, 2));
+            //Chanel2Operation.Nodes.Add(new Operation8_4_TSM50M_428_Poverka_8_5_1_1(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka(this, 2));
             //пункт меьтодики 2007 года. 8.5.1.3
-            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this, 2));
+            //Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_1_Poverka_8_5_1_3(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_50_50_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_5mA_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka(this, 2));
             //пункт меьтодики 2007 года. 8.5.1.2
-            Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this, 2));
+            //Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_0_20mA_Poverka_8_5_1_2(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_UnificSignal_4_20mA_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Type_A1_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Type_A2_Poverka(this, 2));
@@ -134,7 +134,7 @@ namespace OWEN_TRM202
             Chanel2Operation.Nodes.Add(new Operation8_4_Type_N_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Type_K_Poverka(this, 2));
             // //пункт меьтодики 2007 года. 8.5.1.4
-            Chanel2Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this, 2));
+            //Chanel2Operation.Nodes.Add(new Operation8_4_Type_K_Poverka_8_5_1_4(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Type_S_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Type_R_Poverka(this, 2));
             Chanel2Operation.Nodes.Add(new Operation8_4_Type_B_Poverka(this, 2));
@@ -290,7 +290,7 @@ namespace OWEN_TRM202
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
                     service.Title = "Внешний осмотр";
-                    service.Entity = new Tuple<string, Assembly>("TRM_Visual_test", null);
+                    service.Entity = new Tuple<string, Assembly>("TRM_IsolationTest", null);
                     service.Show();
                     var res = service.Entity as Tuple<string, bool>;
                     operation.Getting = res.Item2;
