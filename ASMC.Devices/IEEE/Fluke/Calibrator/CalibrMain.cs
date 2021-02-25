@@ -502,7 +502,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public bool IsTestConnect { get; }
         public async Task InitializeAsync()
         {
-            var fileName = @$"{Environment.CurrentDirectory}acc\{UserType}.acc";
+            var fileName = @$"{Environment.CurrentDirectory}\acc\{UserType}.acc";
             if(!File.Exists(fileName)) return;
             this.FillRangesDevice(fileName);
         }

@@ -123,38 +123,24 @@ namespace Belvar_V7_40_1
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            //base.InitWork(token);
-
-            //var dic = new Dictionary<int, double[]>();
-            //dic.Add(0, new[] { 0.035, 1, 25, 50, 75, 95 });
-            //dic.Add(1, new[] { 5.0, 25, 50, 75, 95 });
-            //dic.Add(2, new[] { 10.0, 50, 95 });
-            //dic.Add(3, new[] { 10.0, 50, 95 });
-            //dic.Add(4, new[] { 10.0, 50, 95 });
-
-
-            //MeasPoint<Voltage>[] testPoint =  (MeasPoint<Voltage>[]) GetTestPoints(Multimetr.DcVoltage, dic);
-
-            
-            
-
-
-
-
+            ConnectionToDevice();
             foreach (var measPoint in TestMeasPoints)
             {
+               
+
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+
 
                 operation.Expected = (MeasPoint<Voltage>) measPoint;
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, measPoint, Logger, token);
+                    InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, measPoint, Logger, token);
 
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
+                    operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = expected =>
@@ -189,41 +175,7 @@ namespace Belvar_V7_40_1
         {
             base.InitWork(token);
 
-            var FreqFullSet = new MeasPoint<Frequency>[]
-            {
-                new MeasPoint<Frequency>(20),
-                new MeasPoint<Frequency>(40),
-                new MeasPoint<Frequency>(10, UnitMultiplier.Kilo),
-                new MeasPoint<Frequency>(20, UnitMultiplier.Kilo),
-                new MeasPoint<Frequency>(50, UnitMultiplier.Kilo),
-                new MeasPoint<Frequency>(100, UnitMultiplier.Kilo),
-            };
-
-            var FreqSmallSet = new MeasPoint<Frequency>[]
-            {
-                new MeasPoint<Frequency>(20),
-                new MeasPoint<Frequency>(40),
-                new MeasPoint<Frequency>(500),
-                new MeasPoint<Frequency>(1, UnitMultiplier.Kilo)
-                
-            };
-
-            var percentKit1 = new[] {10.0,25,50,75,95 };
-            var percentKit2 = new[] {25.0,50,75,95 };
-            var percentKit4 = new[] {10.0,50,95 };
-            var percentKit5 = new[] {10.0,40 };
-
-            //var dic  = new Dictionary<int,(double[]MeasPoint<Frequency>)>();
-            //dic.Add(0,value: (percentKit1,FreqFullSet));
-            //dic.Add(1,value: (percentKit2,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
-            //dic.Add(2,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
-            //dic.Add(3,value: (percentKit4,FreqFullSet));//на 100 кГц должно быть 90% от предельного значения (последняя точка)
-            //dic.Add(4,value: (percentKit5,FreqSmallSet));
-
-
-           
             
-            //var allPoints = GetTestPoints(Multimetr.AcVoltage, dic);
 
         }
 

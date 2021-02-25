@@ -30,6 +30,15 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
         #endregion
     }
 
+    public interface IAcVoltageComplexPhysicalQuantity
+    {
+        #region Property
+
+        IMeterPhysicalQuantity<Voltage,Frequency> AcVoltage { get; }
+
+        #endregion
+    }
+
     public interface ICurrentGroup: IDcCurrent,IAcCurrent
     {
         
@@ -55,7 +64,16 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
         #endregion
     }
 
-    
+    public interface IAcCurrentComplexPhysicalQuantity
+    {
+        #region Property
+
+        IMeterPhysicalQuantity<Current,Frequency> AcCurrent { get; }
+
+        #endregion
+    }
+
+
 
     public interface IResistanceGroup: IResistance2W, IResistance4W
     {
