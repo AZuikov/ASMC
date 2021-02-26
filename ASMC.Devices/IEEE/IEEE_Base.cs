@@ -322,26 +322,7 @@ namespace ASMC.Devices.IEEE
             return date;
         }
 
-        /// <summary>
-        /// Синхронизация с прибором
-        /// </summary>
-        public void Sinchronization()
-        {
-            var timer = new System.Timers.Timer { Interval = 30000 };
-            timer.Elapsed += Timer_Elapsed;
-
-            void Timer_Elapsed(object sender, ElapsedEventArgs e)
-            {
-                timer.Elapsed -= Timer_Elapsed;
-                timer.Dispose();
-                throw new TimeoutException($@"Превышено время ожидания синхронизации в {UserType}");
-            }
-
-            // ReSharper disable once EmptyEmbeddedStatement
-            while (!QueryLine(QuerySinchronization).Equals("1")) ;
-            timer.Elapsed -= Timer_Elapsed;
-            timer.Dispose();
-        }
+       
 
         /// <summary>
         /// Вызов стандартного запроса самотестирования устройства.
@@ -578,6 +559,7 @@ namespace ASMC.Devices.IEEE
             try
             {
                 Session.FormattedIO.WriteLine(data);
+                
             }
             catch (Exception e)
             {
@@ -620,6 +602,27 @@ namespace ASMC.Devices.IEEE
             return answer;
         }
 
+        /// <summary>
+        /// Метод опрашивает устройство заврешено ли выполнение всех полученных комманд.
+        /// </summary>
+        public void WaitingRemoteOperationComplete()
+        {
+            var timer = new System.Timers.Timer { Interval = 30000 };
+            timer.Elapsed += Timer_Elapsed;
+
+            void Timer_Elapsed(object sender, ElapsedEventArgs e)
+            {
+                timer.Elapsed -= Timer_Elapsed;
+                timer.Dispose();
+                throw new TimeoutException($@"Превышено время ожидания синхронизации в {UserType}");
+            }
+
+            // ReSharper disable once EmptyEmbeddedStatement
+            while (!QueryLine(QuerySinchronization).Equals("1")) ;
+            timer.Elapsed -= Timer_Elapsed;
+            timer.Dispose();
+
+        }
        
     }
 }

@@ -257,8 +257,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
             {
-                CalibrMain.Device.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
-                this.CalibrMain.CheckErrors();
+                Calibrator.Device.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
+                this.Calibrator.CheckErrors();
             }
 
             public ITermocoupleType Temperature { get; }
@@ -275,8 +275,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public void SetCompensation(Compensation compMode)
             {
                 var command = CompensationMode.FirstOrDefault(q => (int)q.Value == (int) compMode);
-                CalibrMain.Device.WriteLine(command.StrCommand);
-                CalibrMain.CheckErrors();
+                Calibrator.Device.WriteLine(command.StrCommand);
+                Calibrator.CheckErrors();
             }
         }
         public class Resist2W :Resist
@@ -356,8 +356,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public virtual void SetValue(MeasPoint<TPhysicalQuantity> value)
             {
                 Value = value;
-                CalibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                CalibrMain.CheckErrors();
+                Calibrator.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
+                Calibrator.Device.WaitingRemoteOperationComplete();
+                Calibrator.CheckErrors();
             }
 
             
@@ -423,8 +424,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public virtual void SetValue(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> value)
             {
                 Value = value;
-                CalibrMain.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
-                CalibrMain.CheckErrors();
+                Calibrator.Device.WriteLine(@"OUT " + ConvetrMeasPointToCommand(value));
+                Calibrator.Device.WaitingRemoteOperationComplete();
+                Calibrator.CheckErrors();
             }
 
            
@@ -436,7 +438,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             #region Fields
 
-            protected CalibrMain CalibrMain { get; }
+            protected CalibrMain Calibrator { get; }
 
             #endregion
 
@@ -448,7 +450,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             protected OutputControl(CalibrMain device)
             {
-                CalibrMain = device;
+                Calibrator = device;
             }
 
             #region Methods
@@ -457,12 +459,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public void OutputOff()
             {
-                CalibrMain.Device.WriteLine(State.Off.GetStringValue());
+                Calibrator.Device.WriteLine(State.Off.GetStringValue());
+                Calibrator.Device.WaitingRemoteOperationComplete();
             }
 
             public void OutputOn()
             {
-                CalibrMain.Device.WriteLine(State.On.GetStringValue());
+                Calibrator.Device.WriteLine(State.On.GetStringValue());
+                Calibrator.Device.WaitingRemoteOperationComplete();
             }
 
            
