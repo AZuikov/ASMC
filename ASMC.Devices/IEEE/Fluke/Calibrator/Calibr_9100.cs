@@ -274,11 +274,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 };
             }
 
-            //WriteLine("Source:func DC");
-            //WriteLine($"Source:TEMPerature:THERmocouple:TYPE {typeTermocouple.GetStringValue()}");
-            //WriteLine($"Source:TEMPerature:UNITs {unit}");
-            //WriteLine($"Source:TEMPerature:THERmocouple {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-
             public ICommand[] TermoCoupleType { get; set; }
 
             public override void SetValue(MeasPoint<Temperature> value)
@@ -288,7 +283,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 Calibr.Device.WriteLine($"Source:{sourceName}:THERmocouple:TYPE {typeSetTermocouple.StrCommand}");
                 Calibr.Device.WriteLine($"Source:TEMPerature:UNITs C"); //пока единицы только цельсии
                 Calibr.Device.WriteLine($"Source:TEMPerature:THERmocouple {value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-                
+                Calibr.Device.WaitingRemoteOperationComplete();
+
             }
 
             public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
@@ -340,6 +336,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 Calibr.Device.WriteLine($"Source:func {functionName}");
                 Calibr.Device.WriteLine($"Source:{sourceName} {ConvetrMeasPointToCommand(value)}");
                 Calibr.Device.WriteLine("SOUR:RES:UUT_I SUP");
+                Calibr.Device.WaitingRemoteOperationComplete();
                 //todo проверка на ошибки после отправки команды
             }
 
@@ -407,6 +404,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 Calibr.Device.WriteLine($"Source:func {functionName}");
                 Calibr.Device.WriteLine($"Source:{mainSourceName} {arr[0]}");
                 Calibr.Device.WriteLine($"Source:{additionalSourceName} {arr[1]}");
+                Calibr.Device.WaitingRemoteOperationComplete();
                 //todo проверка на ошибки после отправки команды
             }
 
@@ -434,12 +432,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public void OutputOff()
             {
                 Calibr.Device.WriteLine(State.Off.GetStringValue());
+                Calibr.Device.WaitingRemoteOperationComplete();
                 //todo проверка на ошибки после отправки команды
             }
 
             public void OutputOn()
             {
                 Calibr.Device.WriteLine(State.On.GetStringValue());
+                Calibr.Device.WaitingRemoteOperationComplete();
                 //todo проверка на ошибки после отправки команды
             }
 
