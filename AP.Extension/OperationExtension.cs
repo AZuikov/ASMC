@@ -19,10 +19,10 @@ namespace AP.Extension
         /// Загружает контрольные измерительные точки из внешнего файла.
         /// </summary>
         /// <param name = "operation"></param>
-        /// <param name = "path">Путь к  текстовому файлу с точками.</param>
+        /// <param name = "path">Путь к  текстовому файлу с измерительными точками.</param>
         public static void FillTestPoint(this Operation operation, string path)
         {
-            //чтение файла должно быть минимизированно, его лучше весь считать заранее один раз.
+            //файл лучше весь считать заранее один раз.
             var file = new List<string>();
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -51,7 +51,7 @@ namespace AP.Extension
                     if (value != null) GetMember(value, value.GetType(), inFile);
                 }
 
-                /*выбираем из данны тольку ту часть которая нужна для этого вида измерения*/
+                /*выбираем из данных тольку ту часть, которая нужна для этого вида измерения*/
                 var startIndexBlock = inFile.FindIndex(s => s.Equals(mode));
 
                 var endIndexBlock = inFile.Skip(startIndexBlock + 1).ToList()
@@ -61,7 +61,7 @@ namespace AP.Extension
                 var reg = new Regex(@"\s\s+");
                 var resultData = date.Select(q => reg.Replace(q, " ").Replace("\t", ""))
                                      .Where(q => !q.StartsWith("#")).ToArray();
-                /*создаем из текстовых данных масив измерительных точек MeasPoint*/
+                /*создаем из текстовых данных массив измерительных точек MeasPoint*/
 
                 var arr = resultData.Where(q => !string.IsNullOrWhiteSpace(q))
                                     .Select(q =>
