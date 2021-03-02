@@ -15,9 +15,9 @@ namespace ASMC.Data.Model
     {
         #region Property
         /// <summary>
-        ///ПРоверяемые точки
+        ///Массив пар: Предел измерения - проверямая на этом пределе величина
         /// </summary>
-         T[] TestMeasPoints { get; set; }
+         T[,] TestMeasPoints { get; set; }
         List<IBasicOperation<T>> DataRow { get; set; }
 
         #endregion

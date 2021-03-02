@@ -351,7 +351,7 @@ namespace ASMC.Core.Model
         public DataTable Data => FillData();
 
         /// <inheritdoc />
-        public T[] TestMeasPoints { get; set; }
+        public T[,] TestMeasPoints { get; set; }
 
         /// <inheritdoc />
         public List<IBasicOperation<T>> DataRow { get; set; }
