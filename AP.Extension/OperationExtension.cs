@@ -97,7 +97,7 @@ namespace AP.Extension
                 UnitMultiplier mainUnitMultiplier = UnitMultiplier.None;
                 decimal? additionalVal = null;
                 UnitMultiplier additionalUnitMultiplier = UnitMultiplier.None;
-
+                var generit = inType.GetGenericArguments();
                 // от длины строки будет зависеть как она парсится
                 if (strArr.Length == 5)
                 {
@@ -106,11 +106,13 @@ namespace AP.Extension
                      mainUnitMultiplier =
                         UnitMultiplierExtension.ParseUnitMultiplier(strArr[2], CultureInfo.GetCultureInfo("en-US"));
 
-                    additionalVal = decimal.TryParse(strArr[3], out _) ? decimal.Parse(strArr[2]) : (decimal?)null;
+                    additionalVal = decimal.TryParse(strArr[3], out _) ? decimal.Parse(strArr[3]) : (decimal?)null;
                     additionalUnitMultiplier =
                         UnitMultiplierExtension.ParseUnitMultiplier(strArr[4], CultureInfo.GetCultureInfo("en-US"));
 
-                    rangeSimpleObj = Activator.CreateInstance(attMeasPointType, (decimal)RangeVal, mainUnitMultiplier);
+                    rangeSimpleObj = generit.Length == 2 ? 
+                        Activator.CreateInstance(attMeasPointType, (decimal)RangeVal, mainUnitMultiplier, additionalVal, additionalUnitMultiplier):
+                        Activator.CreateInstance(attMeasPointType, (decimal)RangeVal, mainUnitMultiplier);
                 }
                 //если предел не указан, то вместо него будет null
                 else if (strArr.Length == 4)
@@ -124,7 +126,7 @@ namespace AP.Extension
                         UnitMultiplierExtension.ParseUnitMultiplier(strArr[3], CultureInfo.GetCultureInfo("en-US"));
                 }
 
-                var generit = inType.GetGenericArguments();
+               
                 
                 //var pointAccessor = TypeAccessor.Create(attMeasPointType);
                 
