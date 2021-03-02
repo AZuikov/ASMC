@@ -126,20 +126,22 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             ConnectionToDevice();
-            foreach (var measPoint in TestMeasPoints)
+            for (int row=0; row< TestMeasPoints.GetUpperBound(0)+1;row++)
             {
-               
+                var measPoint = TestMeasPoints[row, 1];
+                var rangeToSet = TestMeasPoints[row, 0];
 
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
 
 
                 operation.Expected = (MeasPoint<Voltage>) measPoint;
-                operation.InitWorkAsync = () =>
-                {
-                    InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, measPoint, Logger, token);
+                InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSet, Logger, token);
+                //operation.InitWorkAsync = () =>
+                //{
+                //    InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSet,Logger, token);
 
-                    return Task.CompletedTask;
-                };
+                //    return Task.CompletedTask;
+                //};
                 
                
                 //operation.BodyWorkAsync = () =>

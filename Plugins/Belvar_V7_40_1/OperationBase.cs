@@ -41,11 +41,11 @@ namespace Belvar_V7_40_1
 
         /// <param name = "token"></param>
         /// <inheritdoc />
-        protected void InitWork<T>(IMeterPhysicalQuantity<T> multimetr, ISourcePhysicalQuantity<T> sourse,
-            MeasPoint<T> setPoint, Logger loger, CancellationTokenSource _token)
+        protected void InitWork<T>(IMeterPhysicalQuantity<T> multimetr, ISourcePhysicalQuantity<T> sourse, MeasPoint<T> rangePoint,
+             Logger loger, CancellationTokenSource _token)
             where T : class, IPhysicalQuantity<T>, new()
         {
-            multimetr.RangeStorage.SetRange(setPoint);
+            multimetr.RangeStorage.SetRange(rangePoint);
             multimetr.RangeStorage.IsAutoRange = false;
             CatchException<IOTimeoutException>(() => multimetr.Setting(), _token, loger);
            // CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
@@ -56,7 +56,7 @@ namespace Belvar_V7_40_1
             Logger logger, CancellationTokenSource _token)
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
-            //CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
+            CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
             //todo 5522 должен отрабатывать обратную связь на завершение всех переходных процессов
             (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
             try
@@ -66,7 +66,7 @@ namespace Belvar_V7_40_1
             }
             finally
             {
-               // CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
+                CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
             }
 
             return result;

@@ -309,17 +309,8 @@ namespace ASMC.Devices.IEEE
             [DoubleValue(20)]Range20V = 3,
             [DoubleValue(2)]Range2V = 4,
             [DoubleValue(0.2)]Range200mV = 5,
-            [DoubleValue(0)]AutoRange = 7,
-            [DoubleValue(0.0002)]Range200uA = Range200mV,
-            [DoubleValue(0.002)]Range2mA = Range2V,
-            [DoubleValue(0.02)]Range20mA = Range20V,
-            [DoubleValue(0.2)]Range200mA = Range200V,
-            [DoubleValue(2)]Range2000mA = Range2000V,
-            [DoubleValue(200)]Range200Ohm = Range200mV,
-            [DoubleValue(2000)]Range2kOhm = Range2V,
-            [DoubleValue(20000)]Range20kOhm = Range20V,
-            [DoubleValue(200000)]Range200kOhm = Range200V,
-            [DoubleValue(2000000)] Range2000kOhm = Range2000V,
+            [DoubleValue(0)]AutoRange = 7
+            
 
         }
 
