@@ -1,256 +1,256 @@
 Operation1: DCV
 #Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
 #Range--Nominal-----TestingUnit--Mod--ModUnit
-200    0.07         m            NA    NA
-200    2.00         m            NA    NA
-200    50.00        m            NA    NA
-200    100.00       m            NA    NA
-200    150.00       m            NA    NA
-200    190.00       m            NA    NA
-2      0.1000       NA           NA    NA
-2      0.5000       NA           NA    NA
-2      1.0000       NA           NA    NA
-2      1.5000       NA           NA    NA
-2      1.9000       NA           NA    NA
-20     2.000        NA           NA    NA
-20     10.000       NA           NA    NA
-20     19.000       NA           NA    NA
-200    20.00        NA           NA    NA
-200    100.00       NA           NA    NA
-200    190.00       NA           NA    NA
-2000   200 NA       NA           NA
-2000   1000 NA      NA           NA
+0.07         m            NA    NA
+2.00         m            NA    NA
+#50.00        m            NA    NA
+#100.00       m            NA    NA
+#150.00       m            NA    NA
+#190.00       m            NA    NA
+#0.1000       NA           NA    NA
+0.5000       NA           NA    NA
+1.0000       NA           NA    NA
+1.5000       NA           NA    NA
+1.9000       NA           NA    NA
+#2.000        NA           NA    NA
+#10.000       NA           NA    NA
+19.000       NA           NA    NA
+#20.00        NA           NA    NA
+100.00       NA           NA    NA
+190.00       NA           NA    NA
+#200 NA       NA           NA
+1000 NA      NA           NA
 
 Operation1: ACV
 #Range--Nominal-----TestingUnit--Mod--ModUnit
-200      2.00           m         20    NA
-200      50.00          m         20    NA
-200      100.00         m         20    NA
-200      150.00         m         20    NA
-200      190.00         m         20    NA
-200      2.00           m         40    NA
-200      50.00          m         40    NA
-200      100.00         m         40    NA
-200      150.00         m         40    NA
-200      190.00         m         40    NA
-200      2.00           m         10    k
-200      50.00          m         10    k
-200      100.00         m         10    k
-200      150.00         m         10    k
-200      190.00         m         10    k
-200      2.00           m         40    k
-200      50.00          m         40    k
-200      100.00         m         40    k
-200      150.00         m         40    k
-200      190.00         m         40    k
-200      2.00           m         50    k
-200      50.00          m         50    k
-200      100.00         m         50    k
-200      150.00         m         50    k
-200      190.00         m         50    k
-200      2.00           m         100   k
-200      50.00          m         100   k
-200      100.00         m         100   k
-200      150.00         m         100   k
-200      190.00         m         100   k
-2        0.0200         NA        20    NA
-2        0.5000         NA        20    NA
-2        1.0000         NA        20    NA
-2        1.5000         NA        20    NA
-2        1.9000         NA        20    NA
-2        0.0200         NA        40    NA
-2        0.5000         NA        40    NA
-2        1.0000         NA        40    NA
-2        1.5000         NA        40    NA
-2        1.9000         NA        40    NA
-2        0.0200         NA        10    k
-2        0.5000         NA        10    k
-2        1.0000         NA        10    k
-2        1.5000         NA        10    k
-2        1.9000         NA        10    k
-2        0.0200         NA        40    k
-2        0.5000         NA        40    k
-2        1.0000         NA        40    k
-2        1.5000         NA        40    k
-2        1.9000         NA        40    k
-2        0.0200         NA        50    k
-2        0.5000         NA        50    k
-2        1.0000         NA        50    k
-2        1.5000         NA        50    k
-2        1.9000         NA        50    k
-2        0.0200         NA        100   k
-2        0.5000         NA        100   k
-2        1.0000         NA        100   k
-2        1.5000         NA        100   k
-2        1.8000         NA        100   k
-20       0.200          NA        20    NA
-20       5.000          NA        20    NA
-20       10.000         NA        20    NA
-20       15.000         NA        20    NA
-20       19.000         NA        20    NA
-20       0.200          NA        40    NA
-20       5.000          NA        40    NA
-20       10.000         NA        40    NA
-20       15.000         NA        40    NA
-20       19.000         NA        40    NA
-20       0.200          NA        10    k
-20       5.000          NA        10    k
-20       10.000         NA        10    k
-20       15.000         NA        10    k
-20       19.000         NA        10    k
-20       0.200          NA        40    k
-20       5.000          NA        40    k
-20       10.000         NA        40    k
-20       15.000         NA        40    k
-20       19.000         NA        40    k
-20       0.200          NA        50    k
-20       5.000          NA        50    k
-20       10.000         NA        50    k
-20       15.000         NA        50    k
-20       19.000         NA        50    k
-20       0.200          NA        100   k
-20       5.000          NA        100   k
-20       10.000         NA        100   k
-20       15.000         NA        100   k
-20       18.000         NA        100   k
-200      2.00           NA        20    NA
-200      50.00          NA        20    NA
-200      100.00         NA        20    NA
-200      150.00         NA        20    NA
-200      190.00         NA        20    NA
-200      2.00           NA        40    NA
-200      50.00          NA        40    NA
-200      100.00         NA        40    NA
-200      150.00         NA        40    NA
-200      190.00         NA        40    NA
-200      2.00           NA        10    k
-200      50.00          NA        10    k
-200      100.00         NA        10    k
-200      150.00         NA        10    k
-200      190.00         NA        10    k
-200      2.00           NA        40    k
-200      50.00          NA        40    k
-200      100.00         NA        40    k
-200      150.00         NA        40    k
-200      190.00         NA        40    k
-200      2.00           NA        50    k
-200      50.00          NA        50    k
-200      100.00         NA        50    k
-200      150.00         NA        50    k
-200      190.00         NA        50    k
-200      2.00           NA        100   k
-200      50.00          NA        100   k
-200      100.00         NA        100   k
-200      150.00         NA        100   k
-200      180.00         NA        NA    NA
-2000     200            NA        20    NA
-2000     800            NA        20    NA
-2000     2              NA        40    NA
-2000     800            NA        40    NA
-2000     2              NA        500   k
-2000     800            NA        500   k
-2000     2              NA        1     k
-2000     800            NA        1     k
+2.00           m         20    NA
+50.00          m         20    NA
+100.00         m         20    NA
+150.00         m         20    NA
+190.00         m         20    NA
+2.00           m         40    NA
+50.00          m         40    NA
+100.00         m         40    NA
+150.00         m         40    NA
+190.00         m         40    NA
+2.00           m         10    k
+50.00          m         10    k
+100.00         m         10    k
+150.00         m         10    k
+190.00         m         10    k
+2.00           m         40    k
+50.00          m         40    k
+100.00         m         40    k
+150.00         m         40    k
+190.00         m         40    k
+2.00           m         50    k
+50.00          m         50    k
+100.00         m         50    k
+150.00         m         50    k
+190.00         m         50    k
+2.00           m         100   k
+50.00          m         100   k
+100.00         m         100   k
+150.00         m         100   k
+190.00         m         100   k
+0.0200         NA        20    NA
+0.5000         NA        20    NA
+1.0000         NA        20    NA
+1.5000         NA        20    NA
+1.9000         NA        20    NA
+0.0200         NA        40    NA
+0.5000         NA        40    NA
+1.0000         NA        40    NA
+1.5000         NA        40    NA
+1.9000         NA        40    NA
+0.0200         NA        10    k
+0.5000         NA        10    k
+1.0000         NA        10    k
+1.5000         NA        10    k
+1.9000         NA        10    k
+0.0200         NA        40    k
+0.5000         NA        40    k
+1.0000         NA        40    k
+1.5000         NA        40    k
+1.9000         NA        40    k
+0.0200         NA        50    k
+0.5000         NA        50    k
+1.0000         NA        50    k
+1.5000         NA        50    k
+1.9000         NA        50    k
+0.0200         NA        100   k
+0.5000         NA        100   k
+1.0000         NA        100   k
+1.5000         NA        100   k
+1.8000         NA        100   k
+0.200          NA        20    NA
+5.000          NA        20    NA
+10.000         NA        20    NA
+15.000         NA        20    NA
+19.000         NA        20    NA
+0.200          NA        40    NA
+5.000          NA        40    NA
+10.000         NA        40    NA
+15.000         NA        40    NA
+19.000         NA        40    NA
+0.200          NA        10    k
+5.000          NA        10    k
+10.000         NA        10    k
+15.000         NA        10    k
+19.000         NA        10    k
+0.200          NA        40    k
+5.000          NA        40    k
+10.000         NA        40    k
+15.000         NA        40    k
+19.000         NA        40    k
+0.200          NA        50    k
+5.000          NA        50    k
+10.000         NA        50    k
+15.000         NA        50    k
+19.000         NA        50    k
+0.200          NA        100   k
+5.000          NA        100   k
+10.000         NA        100   k
+15.000         NA        100   k
+18.000         NA        100   k
+2.00           NA        20    NA
+50.00          NA        20    NA
+100.00         NA        20    NA
+150.00         NA        20    NA
+190.00         NA        20    NA
+2.00           NA        40    NA
+50.00          NA        40    NA
+100.00         NA        40    NA
+150.00         NA        40    NA
+190.00         NA        40    NA
+2.00           NA        10    k
+50.00          NA        10    k
+100.00         NA        10    k
+150.00         NA        10    k
+190.00         NA        10    k
+2.00           NA        40    k
+50.00          NA        40    k
+100.00         NA        40    k
+150.00         NA        40    k
+190.00         NA        40    k
+2.00           NA        50    k
+50.00          NA        50    k
+100.00         NA        50    k
+150.00         NA        50    k
+190.00         NA        50    k
+2.00           NA        100   k
+50.00          NA        100   k
+100.00         NA        100   k
+150.00         NA        100   k
+180.00         NA        NA    NA
+200            NA        20    NA
+800            NA        20    NA
+2              NA        40    NA
+800            NA        40    NA
+2              NA        500   k
+800            NA        500   k
+2              NA        1     k
+800            NA        1     k
 
 Operation1: Resistance 2W
 #Range--Nominal-----TestingUnit--Mod--ModUnit
 
-200      0.10           NA       NA    NA
-200      2.00           NA       NA    NA
-200      20.00          NA       NA    NA
-200      50.00          NA       NA    NA
-200      100.00         NA       NA    NA
-200      150.00         NA       NA    NA
-200      190.00         NA       NA    NA
-2        0.2000         k        NA    NA
-2        0.5000         k        NA    NA
-2        1.0000         k        NA    NA
-2        1.5000         k        NA    NA
-2        1.9000         k        NA    NA
-20       2.000          k        NA    NA
-20       5.000          k        NA    NA
-20       10.000         k        NA    NA
-20       15.000         k        NA    NA
-20       19.000         k        NA    NA
-200      20.00          k        NA    NA
-200      50.00          k        NA    NA
-200      100.00         k        NA    NA
-200      150.00         k        NA    NA
-200      190.00         k        NA    NA
-2000     200            k        NA    NA
-2000     500            k        NA    NA
-2000     1000           k        NA    NA
-2000     1500           k        NA    NA
-2000     1900           k        NA    NA
-2        0.200          M        NA    NA
-2        0.500          M        NA    NA
-2        1.000          M        NA    NA
-2        1.500          M        NA    NA
-2        1.900          M        NA    NA
+0.10           NA       NA    NA
+2.00           NA       NA    NA
+20.00          NA       NA    NA
+50.00          NA       NA    NA
+100.00         NA       NA    NA
+150.00         NA       NA    NA
+190.00         NA       NA    NA
+0.2000         k        NA    NA
+0.5000         k        NA    NA
+1.0000         k        NA    NA
+1.5000         k        NA    NA
+1.9000         k        NA    NA
+2.000          k        NA    NA
+5.000          k        NA    NA
+10.000         k        NA    NA
+15.000         k        NA    NA
+19.000         k        NA    NA
+20.00          k        NA    NA
+50.00          k        NA    NA
+100.00         k        NA    NA
+150.00         k        NA    NA
+190.00         k        NA    NA
+200            k        NA    NA
+500            k        NA    NA
+1000           k        NA    NA
+1500           k        NA    NA
+1900           k        NA    NA
+0.200          M        NA    NA
+0.500          M        NA    NA
+1.000          M        NA    NA
+1.500          M        NA    NA
+1.900          M        NA    NA
 
 Operation1: DCI
 #Range--Nominal-----TestingUnit--Mod--ModUnit
-200     0.10             u        NA    NA
-200     2.00             u        NA    NA
-200     20.00            u        NA    NA
-200     100.00           u        NA    NA
-200     150.00           u        NA    NA
-200     190.00           u        NA    NA
-2       0.2000           m        NA    NA
-2       1.0000           m        NA    NA
-2       1.9000           m        NA    NA
-20      2.000            m        NA    NA
-20      10.000           m        NA    NA
-20      19.000           m        NA    NA
-200     20.00            m        NA    NA
-200     100.00           m        NA    NA
-200     190.00           m        NA    NA
-2000    100              m        NA    NA
-2000    1000             m        NA    NA
-2000    1900             m        NA    NA
+0.10             u        NA    NA
+2.00             u        NA    NA
+20.00            u        NA    NA
+100.00           u        NA    NA
+150.00           u        NA    NA
+190.00           u        NA    NA
+0.2000           m        NA    NA
+1.0000           m        NA    NA
+1.9000           m        NA    NA
+2.000            m        NA    NA
+10.000           m        NA    NA
+19.000           m        NA    NA
+20.00            m        NA    NA
+100.00           m        NA    NA
+190.00           m        NA    NA
+100              m        NA    NA
+1000             m        NA    NA
+1900             m        NA    NA
 
 Operation1: ACI
 #Range--Nominal-----TestingUnit--Mod--ModUnit
-200       2.00           u        40    NA 
-200       20.00          u        40    NA
-200       100.00         u        40    NA
-200       190.00         u        40    NA
-200       2.00           u        5     k
-200       20.00          u        5     NA
-200       100.00         u        5     NA
-200       190.00         u        5     NA
-200       2.00           u        10    k
-200       20.00          u        10    k
-200       100.00         u        10    k
-200       190.00         u        10    k
-200       2.00           u        15    k
-200       20.00          u        15    k
-200       100.00         u        15    k
-200       190.00         u        15    k
-200       2.00           u        20    k
-200       20.00          u        20    k
-200       100.00         u        20    k
-200       190.00         u        20    k
-200       2.00           u        100   k
-200       50.00          u        100   k
-200       100.00         u        100   k
-200       180.00         u        100   k
-2         1.9000         m        40    NA
-2         1.9000         m        5     k
-2         1.9000         m        10    k
-2         1.9000         m        15    k
-2         1.9000         m        20    k
-20        19.000         m        40    NA
-20        19.000         m        5     k
-20        19.000         m        10    k
-20        19.000         m        15    k
-20        19.000         m        20    k
-20        20.00          m        40    NA
-20        20.00          m        5     k
-20        20.00          m        10    k
-20        20.00          m        15    k
-20        20.00          m        20    k
-200       200            m        40    NA
-200       200            m        500   NA
-200       200            m        1     k
-200       200            m        2     k
+2.00           u        40    NA 
+20.00          u        40    NA
+100.00         u        40    NA
+190.00         u        40    NA
+2.00           u        5     k
+20.00          u        5     NA
+100.00         u        5     NA
+190.00         u        5     NA
+2.00           u        10    k
+20.00          u        10    k
+100.00         u        10    k
+190.00         u        10    k
+2.00           u        15    k
+20.00          u        15    k
+100.00         u        15    k
+190.00         u        15    k
+2.00           u        20    k
+20.00          u        20    k
+100.00         u        20    k
+190.00         u        20    k
+2.00           u        100   k
+50.00          u        100   k
+100.00         u        100   k
+180.00         u        100   k
+1.9000         m        40    NA
+1.9000         m        5     k
+1.9000         m        10    k
+1.9000         m        15    k
+1.9000         m        20    k
+19.000         m        40    NA
+19.000         m        5     k
+19.000         m        10    k
+19.000         m        15    k
+19.000         m        20    k
+20.00          m        40    NA
+20.00          m        5     k
+20.00          m        10    k
+20.00          m        15    k
+20.00          m        20    k
+200            m        40    NA
+200            m        500   NA
+200            m        1     k
+200            m        2     k

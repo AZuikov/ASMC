@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Extension;
+using AP.Math;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Common.Helps;
@@ -138,16 +140,30 @@ namespace Belvar_V7_40_1
 
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
-                {
-                    operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
-                };
+                
+               
+                //operation.BodyWorkAsync = () =>
+                //{
+                //    operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
+                //};
                 operation.ErrorCalculation = (expected, getting) => null;
-                operation.LowerCalculation = expected =>
-                    expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result =expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                    
 
-                operation.UpperCalculation = expected =>
-                    expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 

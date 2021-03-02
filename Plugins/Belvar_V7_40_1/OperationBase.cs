@@ -48,7 +48,7 @@ namespace Belvar_V7_40_1
             multimetr.RangeStorage.SetRange(setPoint);
             multimetr.RangeStorage.IsAutoRange = false;
             CatchException<IOTimeoutException>(() => multimetr.Setting(), _token, loger);
-            CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+           // CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
         }
 
         protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
@@ -56,8 +56,8 @@ namespace Belvar_V7_40_1
             Logger logger, CancellationTokenSource _token)
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
-            CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
-            Thread.Sleep(2000);
+            //CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
+            //todo 5522 должен отрабатывать обратную связь на завершение всех переходных процессов
             (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
             try
             {
@@ -66,7 +66,7 @@ namespace Belvar_V7_40_1
             }
             finally
             {
-                CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
+               // CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
             }
 
             return result;
