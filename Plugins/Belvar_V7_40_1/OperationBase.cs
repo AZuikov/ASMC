@@ -57,7 +57,7 @@ namespace Belvar_V7_40_1
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
             CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
-            //todo 5522 должен отрабатывать обратную связь на завершение всех переходных процессов
+            
             (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
             try
             {
@@ -139,6 +139,72 @@ namespace Belvar_V7_40_1
         {
         }
 
-       
+        protected IPhysicalRange<T1, T2> InitWork(IMeterPhysicalQuantity<T1, T2> mult,
+            ISourcePhysicalQuantity<T1, T2> sourse, MeasPoint<T1, T2> rangeToSetOnMetr,
+            MeasPoint<T1, T2> setPoint, Logger loger, CancellationTokenSource _token)
+        {
+            
+            mult.RangeStorage.SetRange(rangeToSetOnMetr);
+            mult.RangeStorage.IsAutoRange = false;
+            
+            CatchException<IOTimeoutException>(() => mult.Setting(), _token, loger);
+            CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+            return mult.RangeStorage.SelectRange;
+        }
+
+        protected (MeasPoint<T1>, IOTimeoutException) BodyWork(
+            IMeterPhysicalQuantity<T1, T2> mult, ISourcePhysicalQuantity<T1, T2> sourse,
+            Logger logger, CancellationTokenSource _token)
+
+        {
+            CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
+            (MeasPoint<T1>, IOTimeoutException) result;
+            try
+            {
+                
+                result = CatchException<IOTimeoutException, MeasPoint<T1>>(
+                                                                           () => mult.GetValue(), _token, logger);
+            }
+            finally
+            {
+                CatchException<IOTimeoutException>(() => sourse.OutputOff(), _token, logger);
+            }
+
+            return result;
+        }
+
+        protected MeasPoint<T1, T2> ConvertMeasPoint(MeasPoint<T1> gettingMeasPoint,
+            MeasPoint<T1, T2> exepectedMeasPoint)
+        {
+            return new MeasPoint<T1, T2>(gettingMeasPoint.MainPhysicalQuantity,
+                                         exepectedMeasPoint.AdditionalPhysicalQuantity);
+        }
+
+        /// <summary>
+        ///     Позволяет получить погрешность для указаной точки.
+        /// </summary>
+        /// <typeparam name="T">
+        ///     Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
+        /// </typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T1"></typeparam>
+        /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
+        /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
+        /// <returns></returns>
+        protected MeasPoint<T1, T2> AllowableError(IRangePhysicalQuantity<T1, T2> rangeStorage,
+            MeasPoint<T1, T2> expected)
+        {
+            rangeStorage.SetRange(expected);
+            var toll = rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
+                                                                                   expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                                                                   rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
+            return ConvertMeasPoint(new MeasPoint<T1>(toll), expected);
+        }
+
+        protected bool ChekedOperation(IBasicOperationVerefication<MeasPoint<T1, T2>> operation)
+        {
+            return operation.Getting <= operation.UpperTolerance &&
+                   operation.Getting >= operation.LowerTolerance;
+        }
     }
 }

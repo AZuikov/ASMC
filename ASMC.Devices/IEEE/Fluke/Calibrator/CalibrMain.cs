@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -387,7 +388,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             {
                 var point = (MeasPoint<TPhysicalQuantity, TPhysicalQuantity2>) value.Clone();
                 var unit = point.MainPhysicalQuantity.Unit.GetStringValue();
-                var unitadd = point.AdditionalPhysicalQuantity.Unit.GetStringValue();
+                var unitadd = point.AdditionalPhysicalQuantity.Unit.GetStringValue(/*CultureInfo.GetCultureInfo("en-US")*/);
                 point.MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
                 point.AdditionalPhysicalQuantity.ChangeMultiplier(UnitMultiplier.None);
                 var returnCommand = point.Description.Replace(unit, GetMainUnit()).Replace(unitadd, GetAdditionalUnit())

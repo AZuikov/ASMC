@@ -101,7 +101,7 @@ namespace ASMC.Devices.IEEE
         public AcVolt(IeeeBase inDevice) : base(inDevice, MeasureFunctionCode.Acv)
         {
             RangeStorage = new RangeDevice();
-            FunctionCodes = MeasureFunctionCode.Dcv;
+            FunctionCodes = MeasureFunctionCode.Acv;
             FunctionName = "Измерение переменного напряжения";
             allRangesThisMode = new[]
             {
@@ -226,7 +226,6 @@ namespace ASMC.Devices.IEEE
 
             foreach (var multRange in allRangesThisMode)
             {
-                //todo проверить работоспособность!!!
                 if (RangeStorage.SelectRange.End.MainPhysicalQuantity.Value == (decimal) multRange.Value)
                 {
                     rangeNumb =  multRange;
@@ -249,7 +248,25 @@ namespace ASMC.Devices.IEEE
 
         public void Setting()
         {
-            throw new NotImplementedException();
+            string firstCommandPart = $"{BeginCommand}{(int)FunctionCodes}B";
+            var rangeNumb = new Command("автовыбор предела", "7", 0);//на всякий случай устанавливаем автоматический выбор предела измерения, если не удасться выбрать подходящий ниже.
+            
+            if (RangeStorage.SelectRange != null)// если null значит при выборе предела измерения в файле точности ничего подходящего не нашлось
+            {
+                foreach (var multRange in allRangesThisMode)
+                {
+                    //todo проверить работоспособность!!!
+                    if (RangeStorage.SelectRange.End.MainPhysicalQuantity.Value == (decimal)multRange.Value)
+                    {
+                        rangeNumb = multRange;
+                        break;
+                    }
+                }
+            }
+            
+
+            string coomandToSend = $"{firstCommandPart}{rangeNumb.Description}{EndCommand}";
+            _device.WriteLine(coomandToSend);
         }
 
         public MeasPoint<T> GetValue()

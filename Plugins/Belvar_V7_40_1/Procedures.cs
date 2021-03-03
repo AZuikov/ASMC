@@ -181,7 +181,8 @@ namespace Belvar_V7_40_1
     [TestMeasPointAttribute("Operation1: ACV", typeof(MeasPoint<Voltage,Frequency>))]
     public sealed class AcvTest : MultiOperationBase<Voltage,Frequency>
     {
-        
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public AcvTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения переменного напряжения";
@@ -191,9 +192,57 @@ namespace Belvar_V7_40_1
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork(token);
+            ConnectionToDevice();
+            for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)
+            {
+                var testingMeasureValue = TestMeasPoints[row, 1];
+                var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
-            
+                var operation = new BasicOperationVerefication<MeasPoint<Voltage,Frequency>>();
+
+
+                operation.Expected = (MeasPoint<Voltage,Frequency>)testingMeasureValue;
+
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+
+                    return Task.CompletedTask;
+                };
+
+
+                operation.BodyWorkAsync = () =>
+                {
+                    var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
+                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                };
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+
+
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+
+
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+
+                operation.IsGood = () => ChekedOperation(operation);
+
+                DataRow.Add(operation);
+            }
+
+
 
         }
 

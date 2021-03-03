@@ -91,27 +91,27 @@ namespace ASMC.Data.Model
     /// </summary>
     public enum MeasureUnits
     {
-        [StringValue("NONE")] NONE,
-        [StringValue("В")] V,
-        [StringValue("А")] I,
-        [StringValue("Ом")] Resistance,
-        [StringValue("Ф")] Far,
-        [StringValue("Гц")] Frequency,
-        [StringValue("°C")] degC,
-        [StringValue("°F")] DegF,
-        [StringValue("дБ")] Db,
-        [StringValue("с")] Time,
-        [StringValue("м")] Length,
-        [StringValue("г")] Weight,
+        [StringValue("NONE"),StringValue("NONE", "en-US")] NONE,
+        [StringValue("В"), StringValue("V","en-US")] V,
+        [StringValue("А"), StringValue("A", "en-US")] I,
+        [StringValue("Ом"), StringValue("Ohm", "en-US")] Resistance,
+        [StringValue("Ф"), StringValue("Far", "en-US")] Far,
+        [StringValue("Гц"),StringValue("Hz", "en-US")] Frequency,
+        [StringValue("°C"),StringValue("CEL", "en-US")] degC,
+        [StringValue("°F"),StringValue("FAR", "en-US")] DegF,
+        [StringValue("дБ"), StringValue("DB", "en-US")] Db,
+        [StringValue("с"),StringValue("sec", "en-US")] Time,
+        [StringValue("м"),StringValue("metr", "en-US")] Length,
+        [StringValue("г"), StringValue("gramm", "en-US")] Weight,
 
         /// <summary>
         /// Ньютоны
         /// </summary>
-        [StringValue("Н")] N,
+        [StringValue("Н"), StringValue("Nu", "en-US")] N,
 
-        [StringValue("м.рт.ст")] MercuryPressure,
-        [StringValue("Па")] Pressure,
-        [StringValue("%")] Percent
+        [StringValue("мм.рт.ст"), StringValue("MercuryPressure", "en-US")] MercuryPressure,
+        [StringValue("Па"), StringValue("Pressure en-US", "en-US")] Pressure,
+        [StringValue("%"), StringValue("gramm", "en-US")] Percent
     }
 
 
