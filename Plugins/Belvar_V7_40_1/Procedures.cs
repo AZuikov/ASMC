@@ -128,26 +128,26 @@ namespace Belvar_V7_40_1
             ConnectionToDevice();
             for (int row=0; row< TestMeasPoints.GetUpperBound(0)+1;row++)
             {
-                var measPoint = TestMeasPoints[row, 1];
-                var rangeToSet = TestMeasPoints[row, 0];
+                var testingMeasureValue = TestMeasPoints[row, 1];
+                var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
 
 
-                operation.Expected = (MeasPoint<Voltage>) measPoint;
-                InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSet, Logger, token);
-                //operation.InitWorkAsync = () =>
-                //{
-                //    InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSet,Logger, token);
+                operation.Expected = (MeasPoint<Voltage>) testingMeasureValue;
+                
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSetOnDmm,testingMeasureValue, Logger,token);
 
-                //    return Task.CompletedTask;
-                //};
+                    return Task.CompletedTask;
+                };
                 
                
-                //operation.BodyWorkAsync = () =>
-                //{
-                //    operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
-                //};
+                operation.BodyWorkAsync = () =>
+                {
+                    operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
+                };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {

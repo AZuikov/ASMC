@@ -41,14 +41,14 @@ namespace Belvar_V7_40_1
 
         /// <param name = "token"></param>
         /// <inheritdoc />
-        protected void InitWork<T>(IMeterPhysicalQuantity<T> multimetr, ISourcePhysicalQuantity<T> sourse, MeasPoint<T> rangePoint,
+        protected void InitWork<T>(IMeterPhysicalQuantity<T> multimetr, ISourcePhysicalQuantity<T> sourse, MeasPoint<T> rangeMeasureValue, MeasPoint<T> controlValue,
              Logger loger, CancellationTokenSource _token)
             where T : class, IPhysicalQuantity<T>, new()
         {
-            multimetr.RangeStorage.SetRange(rangePoint);
+            multimetr.RangeStorage.SetRange(rangeMeasureValue);
             multimetr.RangeStorage.IsAutoRange = false;
             CatchException<IOTimeoutException>(() => multimetr.Setting(), _token, loger);
-           // CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+            CatchException<IOTimeoutException>(() => sourse.SetValue(controlValue), _token, loger);
         }
 
         protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(

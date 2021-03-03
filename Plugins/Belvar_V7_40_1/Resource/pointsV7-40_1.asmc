@@ -18,8 +18,8 @@ Operation1: DCV
 200    20.00        NA           NA    NA
 200    100.00       NA           NA    NA
 200    190.00       NA           NA    NA
-2000   200 NA       NA           NA
-2000   1000 NA      NA           NA
+2000   200.0 NA       NA           NA
+2000   1000.0 NA      NA           NA
 
 Operation1: ACV
 #Range--Nominal-----TestingUnit--Mod--ModUnit
