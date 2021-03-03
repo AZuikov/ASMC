@@ -71,17 +71,20 @@ namespace ASMC.Devices.IEEE
 
     public class DcVolt : MeasureFunctionV_7_40_1_SimplePhysicalQuantity<Voltage>
     {
+
         public DcVolt(IeeeBase inDevice) : base(inDevice, MeasureFunctionCode.Dcv)
         {
+            
             RangeStorage = new RangeDevice();
             FunctionName = "Измерение постоянного напряжения";
             allRangesThisMode = new[]
             {
-                RangeCodes.Range200mV,
-                RangeCodes.Range2V,
-                RangeCodes.Range20V,
-                RangeCodes.Range200V,
-                RangeCodes.Range2000V,
+                new Command("2000 В","1",2000),
+                new Command("200 В","2",200),
+                new Command("20 В","3",20),
+                new Command("2 В","4",2),
+                new Command("200 мВ","5",0.2),
+                new Command("автовыбор предела","7",0)
 
             };
         }
@@ -102,11 +105,12 @@ namespace ASMC.Devices.IEEE
             FunctionName = "Измерение переменного напряжения";
             allRangesThisMode = new[]
             {
-                RangeCodes.Range200mV,
-                RangeCodes.Range2V,
-                RangeCodes.Range20V,
-                RangeCodes.Range200V,
-                RangeCodes.Range2000V,
+                new Command("2000 В","1",2000),
+                new Command("200 В","2",200),
+                new Command("20 В","3",20),
+                new Command("2 В","4",2),
+                new Command("200 мВ","5",0.2),
+                new Command("автовыбор предела","7",0)
 
             };
         }
@@ -126,12 +130,13 @@ namespace ASMC.Devices.IEEE
             FunctionName = "Измерение электрического сопротивления";
             allRangesThisMode = new[]
             {
-                RangeCodes.Range200Ohm,
-                RangeCodes.Range2kOhm,
-                RangeCodes.Range20kOhm,
-                RangeCodes.Range200kOhm,
-                RangeCodes.Range2000kOhm,
-                RangeCodes.Range20MOhm
+                new Command("20 МОм","0",20000000),
+                new Command("2000 кОм","1",2000000),
+                new Command("200 кОм","2",200000),
+                new Command("20 кОм","3",20000),
+                new Command("2 кОм","4",2000),
+                new Command("200 Ом","5",200),
+                new Command("автовыбор предела","7",0)
 
             };
         }
@@ -151,11 +156,12 @@ namespace ASMC.Devices.IEEE
             FunctionName = "Измерение постоянного тока";
             allRangesThisMode = new[]
             {
-                RangeCodes.Range200uA,
-                RangeCodes.Range2mA,
-                RangeCodes.Range20mA,
-                RangeCodes.Range200mA,
-                RangeCodes.Range2000mA,
+                new Command("2000 мА","1",2),
+                new Command("200 мА","2",0.200),
+                new Command("20 мА","3",0.020),
+                new Command("2 мА","4",0.002),
+                new Command("200 мкА","5",0.0002),
+                new Command("автовыбор предела","7",0)
 
             };
         }
@@ -175,11 +181,12 @@ namespace ASMC.Devices.IEEE
             FunctionName = "Измерение переменного тока";
             allRangesThisMode = new[]
             {
-                RangeCodes.Range200uA,
-                RangeCodes.Range2mA,
-                RangeCodes.Range20mA,
-                RangeCodes.Range200mA,
-                RangeCodes.Range2000mA,
+                new Command("2000 мА","1",2),
+                new Command("200 мА","2",0.200),
+                new Command("20 мА","3",0.020),
+                new Command("2 мА","4",0.002),
+                new Command("200 мкА","5",0.0002),
+                new Command("автовыбор предела","7",0)
 
             };
         }
@@ -215,19 +222,19 @@ namespace ASMC.Devices.IEEE
         public void Setting()
         {
             string firstCommandPart = $"{BeginCommand}{(int)FunctionCodes}B";
-            int rangeNumb = (int)RangeCodes.AutoRange;//на всякий случай устанавливаем автоматический выбор предела измерения, если не удасться выбрать подходящий ниже.
+            var rangeNumb = new Command("автовыбор предела", "7", 0);//на всякий случай устанавливаем автоматический выбор предела измерения, если не удасться выбрать подходящий ниже.
 
-            foreach (RangeCodes multRange in allRangesThisMode)
+            foreach (var multRange in allRangesThisMode)
             {
                 //todo проверить работоспособность!!!
-                if (RangeStorage.SelectRange.End.MainPhysicalQuantity.Value == (decimal) multRange.GetDoubleValue())
+                if (RangeStorage.SelectRange.End.MainPhysicalQuantity.Value == (decimal) multRange.Value)
                 {
-                    rangeNumb = (int)multRange;
+                    rangeNumb =  multRange;
                     break;
                 }
             }
 
-            string coomandToSend = $"{firstCommandPart}{rangeNumb}{EndCommand}";
+            string coomandToSend = $"{firstCommandPart}{rangeNumb.Description}{EndCommand}";
             _device.WriteLine(coomandToSend);
         }
     }
@@ -272,10 +279,23 @@ namespace ASMC.Devices.IEEE
 
         protected readonly string BeginCommand = "F";//символ измерительной функиции
         protected readonly string EndCommand = "D0E";//окончание команды
+
         /// <summary>
         /// Все пределы измерения, доступные в данном режиме.
         /// </summary>
-        protected RangeCodes[] allRangesThisMode;
+        protected Command[] allRangesThisMode {
+            get
+            {
+                return ranges;
+            }
+            set
+            {
+                ranges = value;
+            }
+        }
+
+        private Command[] ranges;
+        
 
         public MeasureFunctionV_7_40_1Base(IeeeBase inDevice, MeasureFunctionCode function)
         {
@@ -301,18 +321,16 @@ namespace ASMC.Devices.IEEE
             return value;
         }
 
-        protected enum RangeCodes
-        {
-            [DoubleValue(20000000)]Range20MOhm = 0,
-            [DoubleValue(2000)]Range2000V = 1,
-            [DoubleValue(200)]Range200V = 2,
-            [DoubleValue(20)]Range20V = 3,
-            [DoubleValue(2)]Range2V = 4,
-            [DoubleValue(0.2)]Range200mV = 5,
-            [DoubleValue(0)]AutoRange = 7
-            
-
-        }
+        //protected enum RangeCodes
+        //{
+        //    [DoubleValue(20000000)]Range20MOhm = 0,
+        //    [DoubleValue(2000)]Range2000V = 1,
+        //    [DoubleValue(200)]Range200V = 2,
+        //    [DoubleValue(20)]Range20V = 3,
+        //    [DoubleValue(2)]Range2V = 4,
+        //    [DoubleValue(0.2)]Range200mV = 5,
+        //    [DoubleValue(0)]AutoRange = 7
+        //}
 
         public enum MeasureFunctionCode
         {
