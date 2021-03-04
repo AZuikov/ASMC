@@ -14,6 +14,7 @@ using ASMC.Core.Model;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface.SourceAndMeter;
+using DevExpress.Mvvm;
 using NLog;
 
 namespace Belvar_V7_40_1
@@ -197,47 +198,71 @@ namespace Belvar_V7_40_1
             {
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
+                
+                //установим пределы измерения мултиметра и воспроизведения калибратора
+                Multimetr.AcVoltage.RangeStorage.SetRange(rangeToSetOnDmm);
+                Calibrator.AcVoltage.RangeStorage.SetRange(testingMeasureValue);
 
-                var operation = new BasicOperationVerefication<MeasPoint<Voltage,Frequency>>();
-
-
-                operation.Expected = (MeasPoint<Voltage,Frequency>)testingMeasureValue;
-
-                operation.InitWorkAsync = () =>
+                //если у какого-то из устройств нет подходящего диапазона?
+                if (!RangeIsSet(Calibrator.AcVoltage.RangeStorage) ||
+                    !RangeIsSet(Multimetr.AcVoltage.RangeStorage))
                 {
-                    InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+                    string message="!!!ВНИМАНИЕ!!!\n\n";
+                    string endStr = ", согласно характеристикам в его файле точности.\n\n";
+                    //разберемся, у кого нет диапазона?
+                    if (!RangeIsSet(Multimetr.AcVoltage.RangeStorage))
+                    {
+                        //todo как-то проинформировать пользователя
+                        message = message + $"Предел {rangeToSetOnDmm.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
+                    }
+                    if (!RangeIsSet(Calibrator.AcVoltage.RangeStorage))
+                    {
+                        //todo как-то проинформировать пользователя
+                        message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
+                    }
 
-                    return Task.CompletedTask;
-                };
+                    message = message + $"\n\n!!!Данное значение не будет добавлено в протокол!!!";
 
+                    UserItemOperation.ServicePack.MessageBox()
+                                     .Show(message,
+                                           "Значение физической величины вне технических характеристик оборудования",
+                                           MessageButton.OK, MessageIcon.Information, MessageResult.Yes);
 
-                operation.BodyWorkAsync = () =>
-                {
-                    var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
-                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                };
-                operation.ErrorCalculation = (expected, getting) => null;
-                operation.LowerCalculation = (expected) =>
-                {
-                    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
-                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                    return result;
-                };
+                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
+                    continue;
+                }
 
+                //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
+                var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
+                operation.Expected = testingMeasureValue;
 
-                operation.UpperCalculation = (expected) =>
-                {
-                    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
-                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                    return result;
-                };
-
-
-                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-
-                operation.IsGood = () => ChekedOperation(operation);
+                //operation.InitWorkAsync = () =>
+                //{
+                //    InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+                //    return Task.CompletedTask;
+                //};
+                //operation.BodyWorkAsync = () =>
+                //{
+                //    var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
+                //    operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                //};
+                //operation.ErrorCalculation = (expected, getting) => null;
+                //operation.LowerCalculation = (expected) =>
+                //{
+                //    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                //    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                //    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                //    return result;
+                //};
+                //operation.UpperCalculation = (expected) =>
+                //{
+                //    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                //    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                //    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                //    return result;
+                //};
+                //operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                //operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }

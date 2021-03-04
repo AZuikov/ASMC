@@ -146,10 +146,21 @@ namespace Belvar_V7_40_1
             
             mult.RangeStorage.SetRange(rangeToSetOnMetr);
             mult.RangeStorage.IsAutoRange = false;
-            
             CatchException<IOTimeoutException>(() => mult.Setting(), _token, loger);
+            
+            sourse.RangeStorage.SetRange(setPoint);
             CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
             return mult.RangeStorage.SelectRange;
+        }
+
+        /// <summary>
+        /// Проверка, установлен ли диапазон измерения/воспроизведения физ. величины.
+        /// </summary>
+        /// <param name="inRangeStorage">Точностные характеристики устройства из файла точности.</param>
+        /// <returns></returns>
+        protected bool RangeIsSet(IRangePhysicalQuantity<T1, T2> inRangeStorage)
+        {
+            return inRangeStorage.SelectRange != null ;
         }
 
         protected (MeasPoint<T1>, IOTimeoutException) BodyWork(
@@ -195,6 +206,7 @@ namespace Belvar_V7_40_1
             MeasPoint<T1, T2> expected)
         {
             rangeStorage.SetRange(expected);
+            //todo а если выбранный предел null?
             var toll = rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
                                                                                    expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
                                                                                    rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
