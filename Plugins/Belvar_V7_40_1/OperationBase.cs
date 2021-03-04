@@ -39,6 +39,37 @@ namespace Belvar_V7_40_1
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
 
+        protected bool RangeIsSet<T>(IRangePhysicalQuantity<T> inRangeStorage) where T : class, IPhysicalQuantity<T>, new()
+        {
+            return inRangeStorage.SelectRange != null;
+        }
+
+        protected void ShowNotSupportedMeasurePointMeessage<T>(IMeterPhysicalQuantity<T> mult,
+            ISourcePhysicalQuantity<T> sourse, MeasPoint<T> rangeToSetOnMetr, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
+        {
+            string message = "!!!ВНИМАНИЕ!!!\n\n";
+            string endStr = ", согласно характеристикам в его файле точности.\n\n";
+            //разберемся, у кого нет диапазона?
+            if (!RangeIsSet<T>(mult.RangeStorage))
+            {
+                //todo как-то проинформировать пользователя
+                message = message + $"Предел {rangeToSetOnMetr.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
+            }
+            if (!RangeIsSet<T>(sourse.RangeStorage))
+            {
+                //todo как-то проинформировать пользователя
+                message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
+            }
+
+            message = message + $"\n\n!!!Данное значение не будет добавлено в протокол!!!";
+
+            UserItemOperation.ServicePack.MessageBox()
+                             .Show(message,
+                                   "Значение физической величины вне технических характеристик оборудования",
+                                   MessageButton.OK, MessageIcon.Information, MessageResult.Yes);
+        }
+
+
         /// <param name = "token"></param>
         /// <inheritdoc />
         protected void InitWork<T>(IMeterPhysicalQuantity<T> multimetr, ISourcePhysicalQuantity<T> sourse, MeasPoint<T> rangeMeasureValue, MeasPoint<T> controlValue,
@@ -139,17 +170,42 @@ namespace Belvar_V7_40_1
         {
         }
 
+        protected void ShowNotSupportedMeasurePointMeessage(IMeterPhysicalQuantity<T1, T2> mult,
+            ISourcePhysicalQuantity<T1, T2> sourse, MeasPoint<T1,T2> rangeToSetOnMetr, MeasPoint<T1, T2> testingMeasureValue)
+        {
+            string message = "!!!ВНИМАНИЕ!!!\n\n";
+            string endStr = ", согласно характеристикам в его файле точности.\n\n";
+            //разберемся, у кого нет диапазона?
+            if (!RangeIsSet(mult.RangeStorage))
+            {
+                //todo как-то проинформировать пользователя
+                message = message + $"Предел {rangeToSetOnMetr.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
+            }
+            if (!RangeIsSet(sourse.RangeStorage))
+            {
+                //todo как-то проинформировать пользователя
+                message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
+            }
+
+            message = message + $"\n\n!!!Данное значение не будет добавлено в протокол!!!";
+
+            UserItemOperation.ServicePack.MessageBox()
+                             .Show(message,
+                                   "Значение физической величины вне технических характеристик оборудования",
+                                   MessageButton.OK, MessageIcon.Information, MessageResult.Yes);
+        }
+
         protected IPhysicalRange<T1, T2> InitWork(IMeterPhysicalQuantity<T1, T2> mult,
             ISourcePhysicalQuantity<T1, T2> sourse, MeasPoint<T1, T2> rangeToSetOnMetr,
-            MeasPoint<T1, T2> setPoint, Logger loger, CancellationTokenSource _token)
+            MeasPoint<T1, T2> testingMeasureValue, Logger loger, CancellationTokenSource _token)
         {
             
             mult.RangeStorage.SetRange(rangeToSetOnMetr);
             mult.RangeStorage.IsAutoRange = false;
             CatchException<IOTimeoutException>(() => mult.Setting(), _token, loger);
             
-            sourse.RangeStorage.SetRange(setPoint);
-            CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
+            sourse.RangeStorage.SetRange(testingMeasureValue);
+            CatchException<IOTimeoutException>(() => sourse.SetValue(testingMeasureValue), _token, loger);
             return mult.RangeStorage.SelectRange;
         }
 

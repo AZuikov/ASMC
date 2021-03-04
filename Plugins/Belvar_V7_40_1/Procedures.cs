@@ -132,19 +132,31 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
+                //установим пределы измерения мултиметра и воспроизведения калибратора
+                Multimetr.DcVoltage.RangeStorage.SetRange(rangeToSetOnDmm);
+                Calibrator.DcVoltage.RangeStorage.SetRange(testingMeasureValue);
+
+                //если у какого-то из устройств нет подходящего диапазона?
+                if (!RangeIsSet(Calibrator.DcVoltage.RangeStorage) ||
+                    !RangeIsSet(Multimetr.DcVoltage.RangeStorage))
+                {
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSetOnDmm,
+                                                         testingMeasureValue);
+
+                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
+                    continue;
+                }
+
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
 
 
-                operation.Expected = (MeasPoint<Voltage>) testingMeasureValue;
-                
+                operation.Expected =  testingMeasureValue;
                 operation.InitWorkAsync = () =>
                 {
                     InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSetOnDmm,testingMeasureValue, Logger,token);
 
                     return Task.CompletedTask;
                 };
-                
-               
                 operation.BodyWorkAsync = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
@@ -157,8 +169,6 @@ namespace Belvar_V7_40_1
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
                 };
-                    
-
                 operation.UpperCalculation = (expected) =>
                 {
                     var result = expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
@@ -166,10 +176,7 @@ namespace Belvar_V7_40_1
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
                 };
-
-
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-
                 operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
@@ -207,26 +214,8 @@ namespace Belvar_V7_40_1
                 if (!RangeIsSet(Calibrator.AcVoltage.RangeStorage) ||
                     !RangeIsSet(Multimetr.AcVoltage.RangeStorage))
                 {
-                    string message="!!!ВНИМАНИЕ!!!\n\n";
-                    string endStr = ", согласно характеристикам в его файле точности.\n\n";
-                    //разберемся, у кого нет диапазона?
-                    if (!RangeIsSet(Multimetr.AcVoltage.RangeStorage))
-                    {
-                        //todo как-то проинформировать пользователя
-                        message = message + $"Предел {rangeToSetOnDmm.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
-                    }
-                    if (!RangeIsSet(Calibrator.AcVoltage.RangeStorage))
-                    {
-                        //todo как-то проинформировать пользователя
-                        message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
-                    }
-
-                    message = message + $"\n\n!!!Данное значение не будет добавлено в протокол!!!";
-
-                    UserItemOperation.ServicePack.MessageBox()
-                                     .Show(message,
-                                           "Значение физической величины вне технических характеристик оборудования",
-                                           MessageButton.OK, MessageIcon.Information, MessageResult.Yes);
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm,
+                                                         testingMeasureValue);
 
                     //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
                     continue;

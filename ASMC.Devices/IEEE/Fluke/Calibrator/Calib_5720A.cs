@@ -26,5 +26,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             return "fault?";
         }
+
+        protected override ErrorCode5522A GetLastErrorCode()
+        {
+            var answer = Device.QueryLine(GetError());
+                
+                    int.TryParse(answer, out var result);
+                    return (ErrorCode5522A)result;
+
+        }
     }
 }

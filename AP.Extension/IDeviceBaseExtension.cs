@@ -136,9 +136,9 @@ namespace AP.Extension
                 }
                 catch (Exception e)
                 {
-                   throw;
+                    throw new Exception($"Проблема при обработке строки: {str}");
                 }
-                
+
                 return null;
             }
         }

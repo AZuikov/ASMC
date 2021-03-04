@@ -171,7 +171,7 @@
     <None Include="Port\OWEN\opisanie_biblioteki_owenionet.pdf" />
     <None Include="packages.config" />
     <None Include="Resources\ACC\34401A.acc" />
-    <None Include="Resources\ACC\5522.acc" />
+    <None Include="Resources\ACC\Fluke 5522A.acc" />
     <None Include="Resources\ACC\5720A.acc" />
     <None Include="Resources\ACC\Fluke 9100.acc" />
     <None Include="Resources\ACC\Fluke 9500.acc" />
