@@ -95,7 +95,7 @@ Mode: Volts
              220E-6      21.99999E-3          10     1.2E+6         NA         NA         NA
 
 # AC Voltage, no external divider.
-
+Mode: Volts SI
 # Output (V)                         Frequency (Hz)           Tol (%)     Floor   Resolution
 # ---------------------------------- ---------------------- ---------------------------------
               22E-3      219.9999E-3          10      19.99    27.00E-3    15.0E-6     100E-9

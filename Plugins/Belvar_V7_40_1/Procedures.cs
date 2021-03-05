@@ -228,33 +228,35 @@ namespace Belvar_V7_40_1
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
                 operation.Expected = testingMeasureValue;
 
-                //operation.InitWorkAsync = () =>
-                //{
-                //    InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
-                //    return Task.CompletedTask;
-                //};
-                //operation.BodyWorkAsync = () =>
-                //{
-                //    var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
-                //    operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                //};
-                //operation.ErrorCalculation = (expected, getting) => null;
-                //operation.LowerCalculation = (expected) =>
-                //{
-                //    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
-                //    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                //    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                //    return result;
-                //};
-                //operation.UpperCalculation = (expected) =>
-                //{
-                //    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
-                //    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                //    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                //    return result;
-                //};
-                //operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                //operation.IsGood = () => ChekedOperation(operation);
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+                    return Task.CompletedTask;
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
+                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                     .Multiplier);
+                };
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
