@@ -23,21 +23,21 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public ISourcePhysicalQuantity<Resistance> Resistance4W { get; protected set; }
 
-        protected override string GetError()
+        protected override string GetCommandForErrorQuery()
         {
             return "err?";
         }
 
-        protected override string GetLastErrorCode()
+        protected override int GetLastErrorCode()
         {
-            var answer = Device.QueryLine(GetError()).Split(',');
+            var answer = Device.QueryLine(GetCommandForErrorQuery()).Split(',');
             if (answer.Length == 2)
             {
                 int.TryParse(answer[0], out var result);
-                return ((ErrorCode5522A)result).GetStringValue();
+                if (Enum.IsDefined(typeof(ErrorCode5522A), result))
+                    return result;
             }
-
-            return ErrorCode5522A.NoError.GetStringValue();
+            return (int)ErrorCode5522A.NoError;
 
        
     }
@@ -45,20 +45,26 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         protected internal override void CheckErrors()
         {
             //todo механизм перекочевал из CalibrMain т.к. коды ошибок разные. Нужно проверить работу.
-                var listErrors = new List<string>();
-                string err;
-                do
+            List<int> errCodeList = new List<int>();
+            List<string> errStrList = new List<string>();
+            int errCode;
+            do
+            {
+                errCode = GetLastErrorCode();
+                if (Enum.IsDefined(typeof(ErrorCode5522A), errCode) && (errCode != (int)ErrorCode5522A.NoError))
                 {
-                    err = GetLastErrorCode();
-                    listErrors.Add(err);
-                } while (!err.Equals(ErrorCode5522A.NoError.GetStringValue()) );
+                    errCodeList.Add(errCode);
+                    errStrList.Add(((ErrorCode5522A)errCode).GetStringValue());
+                }
 
-                var errorStr = "";
-                for (var i = 0; i < listErrors.Count; i++)
-                    errorStr = $"{i + 1}) {listErrors[i]}: {listErrors[i]}\n";
-                if (listErrors.Count > 0 && !listErrors.Any(q => q.Equals(ErrorCode5522A.NoError.GetStringValue()) ))
-                    throw new Exception($"{Device.StringConnection}: Очередь ошибок: \n{errorStr}");
-            
+            } while (errCode != 0);
+
+            var errorStr = "";
+            for (var i = 0; i < errStrList.Count; i++)
+                errorStr = errorStr + $"{i + 1}) {errCodeList[i]}: {errStrList[i]}\n";
+            if (errCodeList.Count > 0)
+                throw new Exception($"{Device.StringConnection}: Очередь ошибок: \n{errorStr}");
+
         }
 
         public ISourcePhysicalQuantity<Temperature> Temperature { get; }

@@ -27,8 +27,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         protected internal abstract void CheckErrors();
         
 
-        protected abstract string GetError();
-        protected abstract string GetLastErrorCode();
+        protected abstract string GetCommandForErrorQuery();
+        protected abstract int GetLastErrorCode();
        
 
         #endregion ErrosCatch

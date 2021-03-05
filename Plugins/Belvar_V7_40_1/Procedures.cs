@@ -135,6 +135,7 @@ namespace Belvar_V7_40_1
                 //установим пределы измерения мултиметра и воспроизведения калибратора
                 Multimetr.DcVoltage.RangeStorage.SetRange(rangeToSetOnDmm);
                 Calibrator.DcVoltage.RangeStorage.SetRange(testingMeasureValue);
+                
 
                 //если у какого-то из устройств нет подходящего диапазона?
                 if (!RangeIsSet(Calibrator.DcVoltage.RangeStorage) ||
@@ -160,6 +161,8 @@ namespace Belvar_V7_40_1
                 operation.BodyWorkAsync = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
+                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                     .Multiplier);
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>

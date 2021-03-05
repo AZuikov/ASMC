@@ -1,8 +1,8 @@
-Begin Header
-                   instrument       =Fluke 5720A
-                   interval         =90 Days
-                   confidence       =2.58 sigma
-End Header
+#Begin Header
+#                   instrument       =Fluke 5720A
+#                   interval         =90 Days
+#                   confidence       =2.58 sigma
+#End Header
 
 # $Revision: 20303 $
 #

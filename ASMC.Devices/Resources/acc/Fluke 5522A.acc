@@ -1,8 +1,8 @@
-Begin Header
-                  instrument      = Fluke 5522A
-                  interval        = 365 days
-                  confidence      = 2.58 sigma
-End Header
+#Begin Header
+#                  instrument      = Fluke 5522A
+#                  interval        = 365 days
+#                  confidence      = 2.58 sigma
+#End Header
 
 # $Revision: 14400 $
 #

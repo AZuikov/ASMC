@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Security.Policy;
 using AP.Utils.Data;
 
@@ -11,7 +13,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     {
         public Calib_5720A() 
         {
-            UserType = "5720A";
+            UserType = "Fluke 5720A";
             //this.Out.HerzRanges = new ICommand[] { new RangeCalibr(" M", "Множитель мега", 1E6, "HZ"), new RangeCalibr("", "Без множителя", 1E6, "HZ") };
         }
         public struct CurrPost
@@ -26,34 +28,54 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public const string Amplifer = "CUR_POST IB5725";
         }
 
+
         protected internal override void CheckErrors()
         {
-            throw new NotImplementedException();
+            List<int> errCodeList = new List<int>();
+            List<string> errStrList = new List<string>();
+            int errCode;
+            do
+            { 
+                errCode = GetLastErrorCode();
+                if (Enum.IsDefined(typeof(ErrorCode5720A), errCode) &&(errCode != (int)ErrorCode5720A.NoError))
+                {
+                    
+                    errCodeList.Add(errCode);
+                    errStrList.Add(((ErrorCode5720A)errCode).GetStringValue());
+                    
+                    
+                }
+                    
+            } while (errCode!=0);
+
+            var errorStr = "";
+            for (var i = 0; i < errStrList.Count; i++)
+                errorStr = errorStr + $"{i + 1}) {errCodeList[i]}: {errStrList[i]}\n";
+            if (errCodeList.Count > 0)
+                throw new Exception($"{Device.StringConnection}: Очередь ошибок: \n{errorStr}");
+
         }
 
-        protected override string GetError()
+        protected override string GetCommandForErrorQuery()
         {
-            return "fault?";
+            return "FAULT?";
         }
 
-        protected override string GetLastErrorCode()
+        protected override int GetLastErrorCode()
         {
-            string answer = Device.QueryLine(GetError());
-
+            string answer = Device.QueryLine(GetCommandForErrorQuery());
             //todo код ошибки получили теперь нужно проверить его в перечислении
             int.TryParse(answer, out var result);
-            ErrorCode5720A err = ErrorCode5720A.NoErro;
-            if (ErrorCode5720A.TryParse(answer,out err))
-                return ((ErrorCode5720A)result).GetStringValue();
-            return err.GetStringValue();
-
+            if (Enum.IsDefined(typeof(ErrorCode5720A), result))
+                return result;
+            return (int)ErrorCode5720A.NoError;
         }
 
        
 
         public enum ErrorCode5720A
         {
-            [StringValue("No Error")] NoErro = 0,
+            [StringValue("No Error")] NoError = 0,
             [StringValue("Low Air Flow")] err100 = 100,
             [StringValue("5725 No Error")] err200 = 200,
             [StringValue("5725 Self-Test ROM Failure")] err201 = 201,

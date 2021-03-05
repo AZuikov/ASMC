@@ -1,8 +1,8 @@
-Begin Header
-	instrument = Datron 9100
-	interval   = 365 days
-	confidence = 2 sigma
-End Header
+#Begin Header
+#	instrument = Datron 9100
+#	interval   = 365 days
+#	confidence = 2 sigma
+#End Header
 
 	# $Revision: 9682 $
 
