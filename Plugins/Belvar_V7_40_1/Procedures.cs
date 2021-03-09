@@ -357,13 +357,73 @@ namespace Belvar_V7_40_1
 
         #region Methods
 
-       
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            ConnectionToDevice();
+            for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)
+            {
+                var testingMeasureValue = TestMeasPoints[row, 1];
+                var rangeToSetOnDmm = TestMeasPoints[row, 0];
+
+                //установим пределы измерения мултиметра и воспроизведения калибратора
+                Multimetr.DcCurrent.RangeStorage.SetRange(rangeToSetOnDmm);
+                Calibrator.DcCurrent.RangeStorage.SetRange(testingMeasureValue);
+
+
+                //если у какого-то из устройств нет подходящего диапазона?
+                if (!RangeIsSet(Calibrator.DcVoltage.RangeStorage) ||
+                    !RangeIsSet(Multimetr.DcVoltage.RangeStorage))
+                {
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcCurrent, Calibrator.DcCurrent, rangeToSetOnDmm,
+                                                         testingMeasureValue);
+
+                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
+                    continue;
+                }
+
+                var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+
+
+                operation.Expected = testingMeasureValue;
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.DcCurrent, Calibrator.DcCurrent, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+
+                    return Task.CompletedTask;
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator.DcCurrent, Logger, token).Item1;
+                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                     .Multiplier);
+                };
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result = expected - AllowableError(Multimetr.DcCurrent.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.DcCurrent.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+
+                DataRow.Add(operation);
+            }
+        }
 
         #endregion
     }
 
     [TestMeasPointAttribute("Operation1: ACI", typeof(MeasPoint<Current, Frequency>))]
-    public sealed class AciTest : OperationBase<MeasPoint<Current,Frequency>>
+    public sealed class AciTest : MultiOperationBase<Current,Frequency>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -372,6 +432,69 @@ namespace Belvar_V7_40_1
             Name = "Определение погрешности измерения постоянного тока";
         }
 
-       
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            ConnectionToDevice();
+            for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)
+            {
+                var testingMeasureValue = TestMeasPoints[row, 1];
+                var rangeToSetOnDmm = TestMeasPoints[row, 0];
+
+                //установим пределы измерения мултиметра и воспроизведения калибратора
+                Multimetr.AcCurrent.RangeStorage.SetRange(rangeToSetOnDmm);
+                Calibrator.AcCurrent.RangeStorage.SetRange(testingMeasureValue);
+
+                //если у какого-то из устройств нет подходящего диапазона?
+                if (!RangeIsSet(Calibrator.AcCurrent.RangeStorage) ||
+                    !RangeIsSet(Multimetr.AcCurrent.RangeStorage))
+                {
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcCurrent, Calibrator.AcCurrent, rangeToSetOnDmm,
+                                                         testingMeasureValue);
+
+                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
+                    continue;
+                }
+
+                //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
+                var operation = new BasicOperationVerefication<MeasPoint<Current, Frequency>>();
+                operation.Expected = testingMeasureValue;
+
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.AcCurrent, Calibrator.AcCurrent, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+                    return Task.CompletedTask;
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    var result = BodyWork(Multimetr.AcCurrent, Calibrator.AcCurrent, Logger, token).Item1;
+                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                     .Multiplier);
+                };
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result = expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+
+                DataRow.Add(operation);
+            }
+
+
+
+        }
+
     }
 }
