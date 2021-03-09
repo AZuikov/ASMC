@@ -273,15 +273,83 @@ namespace Belvar_V7_40_1
     [TestMeasPointAttribute("Operation1: Resistance 2W", typeof(MeasPoint<Resistance>))]
     public sealed class Resist2WTest : OperationBase<MeasPoint<Resistance>>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public Resist2WTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения Электрического сопротивления";
         }
+
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            ConnectionToDevice();
+            for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)
+            {
+                var testingMeasureValue = TestMeasPoints[row, 1];
+                var rangeToSetOnDmm = TestMeasPoints[row, 0];
+
+                //установим пределы измерения мултиметра и воспроизведения калибратора
+                Multimetr.Resistance2W.RangeStorage.SetRange(rangeToSetOnDmm);
+                Calibrator.Resistance2W.RangeStorage.SetRange(testingMeasureValue);
+
+
+                //если у какого-то из устройств нет подходящего диапазона?
+                if (!RangeIsSet(Calibrator.DcVoltage.RangeStorage) ||
+                    !RangeIsSet(Multimetr.DcVoltage.RangeStorage))
+                {
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm,
+                                                         testingMeasureValue);
+
+                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
+                    continue;
+                }
+
+                var operation = new BasicOperationVerefication<MeasPoint<Resistance>>();
+
+
+                operation.Expected = testingMeasureValue;
+                operation.InitWorkAsync = () =>
+                {
+                    InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+
+                    return Task.CompletedTask;
+                };
+                operation.BodyWorkAsync = () =>
+                {
+                    operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
+                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                     .Multiplier);
+                };
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result = expected - AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+
+                DataRow.Add(operation);
+            }
+        }
+
     }
 
     [TestMeasPointAttribute("Operation1: DCI", typeof(MeasPoint<Current>))]
     public sealed class DciTest : OperationBase<MeasPoint<Current>>
     {
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public DciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения постоянного тока";
@@ -289,36 +357,7 @@ namespace Belvar_V7_40_1
 
         #region Methods
 
-        protected override void InitWork(CancellationTokenSource token)
-        {
-            base.InitWork(token);
-            var testPoint = new[]
-            {
-                new MeasPoint<Current>(0.05M, UnitMultiplier.Micro ),
-                new MeasPoint<Current>(2.0M , UnitMultiplier.Micro),
-                new MeasPoint<Current>(20.0M, UnitMultiplier.Micro),
-                new MeasPoint<Current>(100M , UnitMultiplier.Micro),
-                new MeasPoint<Current>(150M , UnitMultiplier.Micro),
-                new MeasPoint<Current>(190M , UnitMultiplier.Micro),
-                
-                new MeasPoint<Current>(0.2M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(1.0M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(1.9M, UnitMultiplier.Mili),
-                
-                new MeasPoint<Current>(2.0M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(10.0M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(19.0M, UnitMultiplier.Mili),
-                
-                new MeasPoint<Current>(20M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(100M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(190M, UnitMultiplier.Mili),
-                
-                new MeasPoint<Current>(100M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(1000M, UnitMultiplier.Mili),
-                new MeasPoint<Current>(1900M, UnitMultiplier.Mili),
-                
-            };
-        }
+       
 
         #endregion
     }
@@ -326,17 +365,13 @@ namespace Belvar_V7_40_1
     [TestMeasPointAttribute("Operation1: ACI", typeof(MeasPoint<Current, Frequency>))]
     public sealed class AciTest : OperationBase<MeasPoint<Current,Frequency>>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public AciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности измерения постоянного тока";
         }
 
-        protected override void InitWork(CancellationTokenSource token)
-        {
-            base.InitWork(token);
-            MeasPoint<Current,Frequency> testPoints = new MeasPoint<Current, Frequency>(0,0);
-
-           // var arr = new MeasPoint<Current,Frequency>().GetArayMeasPointsInParcent(new MeasPoint<Current,Frequency>(200))
-        }
+       
     }
 }
