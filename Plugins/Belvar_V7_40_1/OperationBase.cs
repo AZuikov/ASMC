@@ -39,7 +39,7 @@ namespace Belvar_V7_40_1
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
 
-        protected bool RangeIsSet<T>(IRangePhysicalQuantity<T> inRangeStorage) where T : class, IPhysicalQuantity<T>, new()
+        protected bool IsSetRange<T>(IRangePhysicalQuantity<T> inRangeStorage) where T : class, IPhysicalQuantity<T>, new()
         {
             return inRangeStorage.SelectRange != null;
         }
@@ -50,12 +50,12 @@ namespace Belvar_V7_40_1
             string message = "!!!ВНИМАНИЕ!!!\n\n";
             string endStr = ", согласно характеристикам в его файле точности.\n\n";
             //разберемся, у кого нет диапазона?
-            if (!RangeIsSet<T>(mult.RangeStorage))
+            if (!IsSetRange<T>(mult.RangeStorage))
             {
                 //todo как-то проинформировать пользователя
                 message = message + $"Предел {rangeToSetOnMetr.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
             }
-            if (!RangeIsSet<T>(sourse.RangeStorage))
+            if (!IsSetRange<T>(sourse.RangeStorage))
             {
                 //todo как-то проинформировать пользователя
                 message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";

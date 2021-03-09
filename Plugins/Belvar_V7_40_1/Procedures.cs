@@ -138,8 +138,8 @@ namespace Belvar_V7_40_1
                 
 
                 //если у какого-то из устройств нет подходящего диапазона?
-                if (!RangeIsSet(Calibrator.DcVoltage.RangeStorage) ||
-                    !RangeIsSet(Multimetr.DcVoltage.RangeStorage))
+                if (!IsSetRange(Calibrator.DcVoltage.RangeStorage) ||
+                    !IsSetRange(Multimetr.DcVoltage.RangeStorage))
                 {
                     ShowNotSupportedMeasurePointMeessage(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSetOnDmm,
                                                          testingMeasureValue);
@@ -295,8 +295,8 @@ namespace Belvar_V7_40_1
 
 
                 //если у какого-то из устройств нет подходящего диапазона?
-                if (!RangeIsSet(Calibrator.DcVoltage.RangeStorage) ||
-                    !RangeIsSet(Multimetr.DcVoltage.RangeStorage))
+                if (!IsSetRange(Calibrator.DcVoltage.RangeStorage) ||
+                    !IsSetRange(Multimetr.DcVoltage.RangeStorage))
                 {
                     ShowNotSupportedMeasurePointMeessage(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm,
                                                          testingMeasureValue);
@@ -371,8 +371,8 @@ namespace Belvar_V7_40_1
 
 
                 //если у какого-то из устройств нет подходящего диапазона?
-                if (!RangeIsSet(Calibrator.DcVoltage.RangeStorage) ||
-                    !RangeIsSet(Multimetr.DcVoltage.RangeStorage))
+                if (!IsSetRange(Calibrator.DcVoltage.RangeStorage) ||
+                    !IsSetRange(Multimetr.DcVoltage.RangeStorage))
                 {
                     ShowNotSupportedMeasurePointMeessage(Multimetr.DcCurrent, Calibrator.DcCurrent, rangeToSetOnDmm,
                                                          testingMeasureValue);
