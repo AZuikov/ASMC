@@ -617,10 +617,19 @@ namespace ASMC.Devices.IEEE
                 throw new TimeoutException($@"Превышено время ожидания синхронизации в {UserType}");
             }
 
+            try
+            {
+                while (!QueryLine(QuerySinchronization).Equals("1")) ;
+                timer.Elapsed -= Timer_Elapsed;
+                timer.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e,$"Неудачная попытка опроса устройства {UserType} командой {QuerySinchronization}");
+                throw;
+            }
             // ReSharper disable once EmptyEmbeddedStatement
-            while (!QueryLine(QuerySinchronization).Equals("1")) ;
-            timer.Elapsed -= Timer_Elapsed;
-            timer.Dispose();
+            
 
         }
        

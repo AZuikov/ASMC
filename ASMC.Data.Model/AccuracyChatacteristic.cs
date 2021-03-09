@@ -46,6 +46,8 @@ namespace ASMC.Data.Model
         /// <returns></returns>
         public decimal GetAccuracy(decimal val, decimal upperRange =0)
         {
+            val = val > 0 ? val : -val;
+
             decimal TolOfMeasPoint = 0;
             decimal rangeFloor = 0;
             if (PercentOfMeasurePointTol != null) TolOfMeasPoint = (decimal) (PercentOfMeasurePointTol / 100);

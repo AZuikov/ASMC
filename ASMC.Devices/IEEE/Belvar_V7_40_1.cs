@@ -39,6 +39,9 @@ namespace ASMC.Devices.IEEE
             _device = new IeeeBase();
             DcVoltage = new DcVolt(_device);
             AcVoltage = new AcVolt(_device);
+            Resistance2W = new Resist2W(_device);
+            DcCurrent = new DcCurr(_device);
+            AcCurrent = new AcCurr(_device);
         }
 
         public void Dispose()
@@ -338,16 +341,7 @@ namespace ASMC.Devices.IEEE
             return value;
         }
 
-        //protected enum RangeCodes
-        //{
-        //    [DoubleValue(20000000)]Range20MOhm = 0,
-        //    [DoubleValue(2000)]Range2000V = 1,
-        //    [DoubleValue(200)]Range200V = 2,
-        //    [DoubleValue(20)]Range20V = 3,
-        //    [DoubleValue(2)]Range2V = 4,
-        //    [DoubleValue(0.2)]Range200mV = 5,
-        //    [DoubleValue(0)]AutoRange = 7
-        //}
+        
 
         public enum MeasureFunctionCode
         {

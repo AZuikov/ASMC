@@ -94,6 +94,7 @@ namespace Belvar_V7_40_1
             {
                 result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
                                                                                           () => multimetr.GetValue(), _token, logger);
+
             }
             finally
             {

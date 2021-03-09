@@ -371,8 +371,8 @@ namespace Belvar_V7_40_1
 
 
                 //если у какого-то из устройств нет подходящего диапазона?
-                if (!IsSetRange(Calibrator.DcVoltage.RangeStorage) ||
-                    !IsSetRange(Multimetr.DcVoltage.RangeStorage))
+                if (!IsSetRange(Calibrator.DcCurrent.RangeStorage) ||
+                    !IsSetRange(Multimetr.DcCurrent.RangeStorage))
                 {
                     ShowNotSupportedMeasurePointMeessage(Multimetr.DcCurrent, Calibrator.DcCurrent, rangeToSetOnDmm,
                                                          testingMeasureValue);
@@ -394,8 +394,8 @@ namespace Belvar_V7_40_1
                 operation.BodyWorkAsync = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator.DcCurrent, Logger, token).Item1;
-                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                     .Multiplier);
+                    operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
+                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>

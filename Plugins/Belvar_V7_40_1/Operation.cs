@@ -38,6 +38,7 @@ namespace Belvar_V7_40_1
                 //new Testing(this),
                 new DcvTest(this), 
                 new AcvTest(this), 
+                new DciTest(this), 
                 /*Остальная часть методики*/
             };
             DocumentName = documentName;
