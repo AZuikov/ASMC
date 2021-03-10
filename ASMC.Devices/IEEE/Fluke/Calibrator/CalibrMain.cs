@@ -167,13 +167,10 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public class RangeDevice : RangeDeviceBase<Current, Frequency>
             {
-                public override RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
-                
-                
                 //todo склеить два диапазона в один?
                 [AccRange("Mode: Amps SI", typeof(MeasPoint<Current, Frequency>))]
-                public  RangeStorage<PhysicalRange<Current, Frequency>> Ranges1 { get; set; }
-
+                public override RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
+                
                 [AccRange("Mode: Amps SI HC", typeof(MeasPoint<Current, Frequency>))]
                 public  RangeStorage<PhysicalRange<Current, Frequency>> Ranges2 { get; set; }
 

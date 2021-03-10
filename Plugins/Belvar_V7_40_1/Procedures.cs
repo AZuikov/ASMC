@@ -117,7 +117,7 @@ namespace Belvar_V7_40_1
 
         public DcvTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности измерения постоянного напряжения";
+            Name = "DCV Определение погрешности измерения постоянного напряжения";
             
 
         }
@@ -196,7 +196,7 @@ namespace Belvar_V7_40_1
 
         public AcvTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности измерения переменного напряжения";
+            Name = "ACV Определение погрешности измерения переменного напряжения";
         }
 
         #region Methods
@@ -277,7 +277,7 @@ namespace Belvar_V7_40_1
 
         public Resist2WTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности измерения Электрического сопротивления";
+            Name = "Resist Определение погрешности измерения Электрического сопротивления";
         }
 
 
@@ -352,7 +352,7 @@ namespace Belvar_V7_40_1
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public DciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности измерения постоянного тока";
+            Name = "DCI Определение погрешности измерения постоянного тока";
         }
 
         #region Methods
@@ -429,7 +429,7 @@ namespace Belvar_V7_40_1
 
         public AciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Определение погрешности измерения постоянного тока";
+            Name = "ACI Определение погрешности измерения переменного тока";
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -467,6 +467,7 @@ namespace Belvar_V7_40_1
                 operation.BodyWorkAsync = () =>
                 {
                     var result = BodyWork(Multimetr.AcCurrent, Calibrator.AcCurrent, Logger, token).Item1;
+                    result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
                     operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
                                                                                      .Multiplier);

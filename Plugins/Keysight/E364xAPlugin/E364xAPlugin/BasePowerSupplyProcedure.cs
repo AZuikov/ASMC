@@ -39,7 +39,7 @@ namespace E364xAPlugin
             digitalMult = UserItemOperation
                          .ControlDevices.FirstOrDefault(q => q.SelectedDevice as IDigitalMultimetr344xx != null)
                          .SelectedDevice as IDigitalMultimetr344xx;
-            ((IeeeBase) digitalMult).StringConnection = GetStringConnect(digitalMult);
+            digitalMult.StringConnection = GetStringConnect(digitalMult);
         }
 
         #endregion
