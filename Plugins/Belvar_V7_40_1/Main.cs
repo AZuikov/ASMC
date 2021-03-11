@@ -22,7 +22,7 @@ namespace Belvar_V7_40_1
 
         public ProgramV7_40_1(ServicePack servicePac)
         {
-            UserItemOperationPrimaryVerf = new OperationPrimary<ASMC.Devices.IEEE.Belvar_V7_40_1>("МП 39075-08", servicePac);
+            UserItemOperationPrimaryVerf = new OperationPrimary<ASMC.Devices.IEEE.Belvar_V7_40_1>("Belvar_V7_40_1", servicePac);
         }
 
     }
