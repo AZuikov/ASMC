@@ -111,7 +111,9 @@ namespace E364xAPlugin
                                            .SelectedDevice as E364XADevice;
 
             powerSupply.StringConnection = GetStringConnect(powerSupply);
+            
             ((IeeeBase) ElectonicLoad).StringConnection = GetStringConnect((IProtocolStringLine) ElectonicLoad);
+            ElectonicLoad.SetThisModuleAsWorking();
         }
 
         protected override DataTable FillData()
@@ -211,7 +213,7 @@ namespace E364xAPlugin
                                                     .GetNoramalizeValueToSi());
             resistToLoad.Round(4);
 
-            ElectonicLoad.SetThisModuleAsWorking();
+            
             ElectonicLoad.SetResistanceMode();
             ElectonicLoad.SetResistanceLevel(resistToLoad);
         }

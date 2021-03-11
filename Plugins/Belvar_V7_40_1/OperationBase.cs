@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using AP.Reports.Utils;
 using AP.Utils.Data;
@@ -32,7 +33,40 @@ namespace Belvar_V7_40_1
 
         #region Methods
 
-       
+        protected override DataTable FillData()
+        {
+            var dataTable= base.FillData();
+            
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var rowFromDataRow = row as BasicOperationVerefication<TOperation>;
+                if (rowFromDataRow == null) continue;
+                //dataRow["Предел измерения"] = 
+                dataRow["Поверяемое значение"] = rowFromDataRow.Expected.ToString();
+                dataRow["Измеренное значение"] = rowFromDataRow.Getting.ToString();
+                dataRow["Минимальное допустимое значение"] = rowFromDataRow.LowerTolerance;
+                dataRow["Максимальное допустимое значение"] = rowFromDataRow.UpperTolerance;
+                dataRow["Результат"] = rowFromDataRow.IsGood() ? ConstGood : ConstBad;
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел измерения",
+                "Поверяемое значение",
+                "Измеренное значение",
+                "Минимальное допустимое значение",
+                "Максимальное допустимое значение",
+                "Результат"
+            };
+        }
+
         /// <inheritdoc />
         protected override string GetReportTableName()
         {

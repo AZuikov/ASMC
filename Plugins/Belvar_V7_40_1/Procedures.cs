@@ -149,6 +149,7 @@ namespace Belvar_V7_40_1
                 }
 
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+                operation.Name = rangeToSetOnDmm.Description;
 
 
                 operation.Expected =  testingMeasureValue;
@@ -226,6 +227,7 @@ namespace Belvar_V7_40_1
 
                 //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
+                operation.Name = rangeToSetOnDmm.Description;
                 operation.Expected = testingMeasureValue;
 
                 operation.InitWorkAsync = () =>
@@ -306,7 +308,7 @@ namespace Belvar_V7_40_1
                 }
 
                 var operation = new BasicOperationVerefication<MeasPoint<Resistance>>();
-
+                operation.Name = rangeToSetOnDmm.Description;
 
                 operation.Expected = testingMeasureValue;
                 operation.InitWorkAsync = () =>
@@ -382,6 +384,7 @@ namespace Belvar_V7_40_1
                 }
 
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+                operation.Name = rangeToSetOnDmm.Description;
 
 
                 operation.Expected = testingMeasureValue;
@@ -457,6 +460,7 @@ namespace Belvar_V7_40_1
 
                 //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
                 var operation = new BasicOperationVerefication<MeasPoint<Current, Frequency>>();
+                operation.Name = rangeToSetOnDmm.Description;
                 operation.Expected = testingMeasureValue;
 
                 operation.InitWorkAsync = () =>

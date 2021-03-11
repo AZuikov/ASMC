@@ -93,6 +93,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resource\Belvar_V7_40_1.dotx" />
     <None Include="Resource\pointsV7-40_1.asmc" />
     <None Include="Resource\точки поверки В7-40_1.xlsx" />
   </ItemGroup>
