@@ -569,6 +569,15 @@ Mode: Amps SI
                1.1         2.99999             45         1E+3        0.060         100E-6       10E-6
                1.1         2.99999           1E+3         5E+3        0.600           1E-3       10E-6
                1.1         2.99999           5E+3        10E+3        2.500           5E-3       10E-6
+# 20A Output, LCOMP OFF
+#Mode: Amps SI HC
+                 3         10.9999             45          100         0.06           2E-3      100E-6
+                 3         10.9999            100         1E+3         0.10           2E-3      100E-6
+                 3         10.9999           1E+3         5E+3         3.00           2E-3      100E-6
+
+                11            20.5             45          100         0.12           5E-3      100E-6
+                11            20.5            100         1E+3         0.15           5E-3      100E-6
+                11            20.5           1E+3         5E+3         3.00           5E-3      100E-6
 
 # Auxiliary Output, LCOMP OFF (floor only)
 Mode: Amps SI Floor
@@ -614,15 +623,8 @@ Mode: Amps SI Floor
                1.1         2.99999           1E+3         5E+3            0           1E-3       10E-6
                1.1         2.99999           5E+3        10E+3            0           5E-3       10E-6
 
-# 20A Output, LCOMP OFF
-Mode: Amps SI HC
-                 3         10.9999             45          100         0.06           2E-3      100E-6
-                 3         10.9999            100         1E+3         0.10           2E-3      100E-6
-                 3         10.9999           1E+3         5E+3         3.00           2E-3      100E-6
 
-                11            20.5             45          100         0.12           5E-3      100E-6
-                11            20.5            100         1E+3         0.15           5E-3      100E-6
-                11            20.5           1E+3         5E+3         3.00           5E-3      100E-6
+
 
 # 20A Output, LCOMP OFF (floor only)
 Mode: Amps SI HC Floor

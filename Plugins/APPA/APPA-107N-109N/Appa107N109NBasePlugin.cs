@@ -454,6 +454,10 @@ namespace APPA_107N_109N
                             var measurePoint = (decimal) appa10XN.GetValue();
                             flkCalib5522A.DcVoltage.OutputOff();
 
+                            operation.Expected = currPoint;
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(operation.Expected);
+
                             var mantisa =
                                 MathStatistics
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
@@ -464,7 +468,7 @@ namespace APPA_107N_109N
                             operation.Getting =
                                 new MeasPoint<Voltage>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
 
-                            operation.Expected = currPoint;
+                            
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
 
@@ -1623,6 +1627,10 @@ namespace APPA_107N_109N
 
                             flkCalib5522A.DcCurrent.OutputOff();
 
+                            operation.Expected = currPoint;
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(operation.Expected);
+
                             var mantisa =
                                 MathStatistics
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
@@ -1632,7 +1640,7 @@ namespace APPA_107N_109N
 
                             operation.Getting =
                                 new MeasPoint<Current>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
-                            operation.Expected = currPoint;
+                            
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
 
@@ -2110,9 +2118,9 @@ namespace APPA_107N_109N
                             decimal measurePoint = 0;
                             var isRealPoint = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
                             //todo Пределы по току нужно слить в один большой предел
-                            var isRealPointHiCurr = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
+                            //var isRealPointHiCurr = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
 
-                            if (isRealPoint || isRealPointHiCurr)
+                            if (isRealPoint )
                             {
                                 flkCalib5522A.AcCurrent.SetValue(curr);
                                 flkCalib5522A.AcCurrent.OutputOn();
@@ -2137,7 +2145,7 @@ namespace APPA_107N_109N
 
                             SetUpperAndLowerToleranceAndIsGood(operation);
 
-                            if (!isRealPoint && !isRealPointHiCurr)
+                            if (!isRealPoint )
                                 measurePoint =
                                     MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
                                                                  operation.UpperTolerance.MainPhysicalQuantity.Value);
@@ -2607,6 +2615,8 @@ namespace APPA_107N_109N
                             operation.Getting =
                                 new MeasPoint<Frequency>(measurePoint, freqPoint.MainPhysicalQuantity.Multiplier);
                             operation.Expected = freqPoint;
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(operation.Expected);
 
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
@@ -3425,6 +3435,10 @@ namespace APPA_107N_109N
                             var measurePoint = (decimal) appa10XN.GetValue() - refValue;
 
                             flkCalib5522A.Resistance2W.OutputOff();
+                            operation.Expected = currPoint;
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock
+                                   .ResistanceRangeStorage.GetRangePointBelong(operation.Expected);
 
                             var mantisa =
                                 MathStatistics
@@ -3436,7 +3450,7 @@ namespace APPA_107N_109N
 
                             operation.Getting =
                                 new MeasPoint<Resistance>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
-                            operation.Expected = currPoint;
+                            
                             //расчет погрешности для конкретной точки предела измерения
 
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
@@ -3632,6 +3646,10 @@ namespace APPA_107N_109N
                             var measurePoint = (decimal) appa10XN.GetSingleValue();
                             flkCalib5522A.Capacity.OutputOff();
 
+                            operation.Expected = currPoint;
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(operation.Expected);
+
                             var mantisa =
                                 MathStatistics
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
@@ -3641,7 +3659,7 @@ namespace APPA_107N_109N
 
                             operation.Getting =
                                 new MeasPoint<Capacity>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
-                            operation.Expected = currPoint;
+                            
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
 

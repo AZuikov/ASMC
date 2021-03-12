@@ -150,6 +150,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public AcCurr(CalibrMain device) : base(device)
             {
                 RangeStorage  = new RangeDevice();
+                
+                
             }
 
             #region Methods

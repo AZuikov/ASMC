@@ -853,7 +853,7 @@ namespace ASMC.Devices.Port.APPA
                 new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
                                              new AccuracyChatacteristic(0.00010M,null,0.01M)),
                 //1 MHz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(1,UnitMultiplier.Mega),
                                              new AccuracyChatacteristic(0.0010M,null,0.01M)),
             });
         }
