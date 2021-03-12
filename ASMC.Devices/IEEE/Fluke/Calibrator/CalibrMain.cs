@@ -43,6 +43,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             AcCurrent = new AcCurr(this);
             Resistance2W = new Resist2W(this);
             Frequency = new Freq(this);
+            Capacity = new Cap(this);
+            Temperature = new Temp(this);
             
         }
         /// <inheritdoc />

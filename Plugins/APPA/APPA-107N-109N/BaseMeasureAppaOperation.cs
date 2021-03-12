@@ -63,7 +63,7 @@ namespace APPA_107N_109N
             
             MeasPoint<T>  tolMeasPoint = PhysicalRangeAppa.CalculateTollerance(inOperation.Expected);
 
-            
+             
             return tolMeasPoint;
         }
         protected void SetUpperAndLowerToleranceAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)

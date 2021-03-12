@@ -2121,14 +2121,16 @@ namespace APPA_107N_109N
                                 measurePoint = (decimal) appa10XN.GetValue();
                                 flkCalib5522A.AcCurrent.OutputOff();
                             }
-
+                            operation.Expected = (MeasPoint<Current, Frequency>)curr.Clone();
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(operation.Expected);
 
                             var mantisa =
                                 MathStatistics
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) curr.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
 
-                            operation.Expected = (MeasPoint<Current, Frequency>) curr.Clone();
+                            
 
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
 
@@ -4189,6 +4191,9 @@ namespace APPA_107N_109N
                             operation.Getting =
                                 new MeasPoint<Temperature>(measurePoint);
                             operation.Expected = currPoint;
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock
+                                   .GetCelsiumRangeStorage.GetRangePointBelong(operation.Expected);
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (inA, inB) =>
                             {
