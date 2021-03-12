@@ -63,16 +63,24 @@ namespace APPA_107N_109N
             
             MeasPoint<T>  tolMeasPoint = PhysicalRangeAppa.CalculateTollerance(inOperation.Expected);
 
-            if (inOperation.Expected.MainPhysicalQuantity.Value < 0)
-                tolMeasPoint = tolMeasPoint * -1;
-
+            
             return tolMeasPoint;
         }
         protected void SetUpperAndLowerToleranceAndIsGood(BasicOperationVerefication<MeasPoint<T>> inOperation)
         {
             var err = ErrorCalc(inOperation);
-            inOperation.LowerCalculation = (expected)=> expected - err;
-            inOperation.UpperCalculation = (expected)=> expected + err;
+            inOperation.LowerCalculation = (expected)=>
+            {
+                MeasPoint<T> result = expected - err;
+                result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                return result;
+            };
+            inOperation.UpperCalculation = (expected)=>
+            {
+                MeasPoint<T> result = expected + err;
+                result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                return result;
+            };
             inOperation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(inOperation
                                                                           .Expected.MainPhysicalQuantity
                                                                           .Multiplier);
@@ -147,8 +155,18 @@ namespace APPA_107N_109N
         protected void SetUpperAndLowerToleranceAndIsGood(BasicOperationVerefication<MeasPoint<T,T1>> inOperation)
         {
             var err = ErrorCalc(inOperation);
-           inOperation.LowerCalculation = (expected) => expected - err;
-           inOperation.UpperCalculation = (expected) => expected + err;
+           inOperation.LowerCalculation = (expected) =>
+           {
+               MeasPoint<T, T1> result = expected - err;
+               result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+               return result;
+           };
+           inOperation.UpperCalculation = (expected) =>
+           {
+               MeasPoint<T, T1> result = expected + err;
+               result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+               return result;
+           };
            inOperation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(inOperation
                                                                            .Expected.MainPhysicalQuantity
                                                                            .Multiplier);

@@ -63,9 +63,7 @@ namespace APPA_107N_109N
                                      .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
                                            $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -90,9 +88,7 @@ namespace APPA_107N_109N
                                      .Show($"Текущая точка {operation.Expected.Description} не проходит по допуску:\n" +
                                            $"Минимально допустимое значение {operation.LowerTolerance.Description}\n" +
                                            $"Максимально допустимое значение {operation.UpperTolerance.Description}\n" +
-                                           $"Допустимое значение погрешности {operation.Error.Description}\n" +
                                            $"ИЗМЕРЕННОЕ значение {operation.Getting.Description}\n\n" +
-                                           $"\nФАКТИЧЕСКАЯ погрешность {(operation.Expected - operation.Getting).Description}\n\n" +
                                            "Повторить измерение этой точки?",
                                            "Информация по текущему измерению",
                                            MessageButton.YesNo, MessageIcon.Question,
@@ -109,7 +105,7 @@ namespace APPA_107N_109N
         #endregion
     }
 
-    public abstract class OpertionFirsVerf : ASMC.Core.Model.Operation
+    public abstract class OpertionFirsVerf : Operation
     {
         public OpertionFirsVerf(ServicePack servicePack) : base(servicePack)
         {
@@ -168,8 +164,6 @@ namespace APPA_107N_109N
                         dataRow[0] = dds.Getting ? "Соответствует" : dds?.Comment;
                         data.Rows.Add(dataRow);
                     }
-
-
                 }
 
                 return data;
@@ -178,7 +172,7 @@ namespace APPA_107N_109N
             /// <inheritdoc />
             protected override string[] GenerateDataColumnTypeObject()
             {
-                return new[] { "Результат внешнего осмотра" };
+                return new[] {"Результат внешнего осмотра"};
             }
 
             /// <inheritdoc />
@@ -241,7 +235,7 @@ namespace APPA_107N_109N
             /// <inheritdoc />
             protected override string[] GenerateDataColumnTypeObject()
             {
-                return new[] { "Результат опробования" };
+                return new[] {"Результат опробования"};
             }
 
             /// <inheritdoc />
@@ -277,7 +271,6 @@ namespace APPA_107N_109N
             #endregion
         }
 
-       
 
         //////////////////////////////******DCV*******///////////////////////////////
 
@@ -292,7 +285,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Процент от измеряемой точки для расчета погрешности (уже переведе в абсолютные единицы).
             /// </summary>
-            public decimal BaseTolCoeff = (decimal)0.0006;
+            public decimal BaseTolCoeff = (decimal) 0.0006;
 
             /// <summary>
             /// Число пределов для данного режима.
@@ -328,8 +321,6 @@ namespace APPA_107N_109N
                 DataRow = new List<IBasicOperation<MeasPoint<Voltage>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
-
-               
             }
 
             #region Methods
@@ -429,8 +420,8 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 4;
-                                    var curRange = (int)appa10XN.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
+                                    var curRange = (int) appa10XN.GetRangeCode - 127;
+                                    var targetRange = (int) OperationRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
@@ -455,14 +446,17 @@ namespace APPA_107N_109N
                         {
                             flkCalib5522A.DcVoltage.SetValue(currPoint);
                             flkCalib5522A.DcVoltage.OutputOn();
-                            Thread.Sleep(2000);
+                            if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili)
+                                Thread.Sleep(5000);
+                            else
+                                Thread.Sleep(2000);
                             //измеряем
-                            var measurePoint = (decimal)appa10XN.GetValue();
+                            var measurePoint = (decimal) appa10XN.GetValue();
                             flkCalib5522A.DcVoltage.OutputOff();
 
                             var mantisa =
                                 MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
@@ -489,7 +483,7 @@ namespace APPA_107N_109N
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Voltage>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Voltage>>) operation.Clone());
                 }
             }
 
@@ -500,12 +494,12 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
 
-            public Oper3_1DC_2V_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal, IUserItemOperation userItemOperation,
+            public Oper3_1DC_2V_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal,
+                IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
@@ -514,7 +508,7 @@ namespace APPA_107N_109N
 
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.0006;
+                BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Voltage>(100, UnitMultiplier.Micro);
 
@@ -528,7 +522,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Voltage>((decimal) -1.8)
                 };
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -547,12 +541,12 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
 
-            public Oper3_1DC_20V_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal, IUserItemOperation userItemOperation,
+            public Oper3_1DC_20V_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal,
+                IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
@@ -570,9 +564,8 @@ namespace APPA_107N_109N
                     new MeasPoint<Voltage>(18),
                     new MeasPoint<Voltage>(-18)
                 };
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
-
             }
 
             #region Methods
@@ -591,7 +584,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-           
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -605,7 +597,7 @@ namespace APPA_107N_109N
 
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.0006;
+                BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Mili);
 
@@ -619,7 +611,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Voltage>(-180)
                 };
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -638,7 +630,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -652,7 +643,7 @@ namespace APPA_107N_109N
 
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.0006;
+                BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Voltage>(100, UnitMultiplier.Mili);
 
@@ -666,7 +657,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Voltage>(-900)
                 };
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -685,7 +676,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -699,7 +689,7 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Micro);
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.0006;
+                BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 60;
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Micro);
 
@@ -713,7 +703,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Voltage>(-18, UnitMultiplier.Mili)
                 };
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -732,7 +722,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -746,7 +735,7 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Micro);
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.0006;
+                BaseTolCoeff = (decimal) 0.0006;
                 EdMlRaz = 20;
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Micro);
 
@@ -760,7 +749,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Voltage>(-180, UnitMultiplier.Mili)
                 };
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -809,6 +798,16 @@ namespace APPA_107N_109N
             /// </summary>
             protected int CountOfRanges;
 
+
+            #region TolleranceFormula
+
+            /// <summary>
+            /// Разарешение пределеа измерения (последний значащий разряд)
+            /// </summary>
+            protected MeasPoint<Voltage> RangeResolution;
+
+            #endregion TolleranceFormula
+
             /// <summary>
             /// Множитель для поверяемых точек. (Если точки можно посчитать простым умножением).
             /// </summary>
@@ -822,7 +821,6 @@ namespace APPA_107N_109N
             #endregion
 
 
-
             public Oper4AcvMeasureBaseMeasureAppaAc(IUserItemOperation userItemOperation, string inResourceDir) :
                 base(userItemOperation)
             {
@@ -834,9 +832,6 @@ namespace APPA_107N_109N
 
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
-
-                
-
             }
 
             #region Methods
@@ -889,8 +884,8 @@ namespace APPA_107N_109N
             {
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa10XN == null) return;
-
-                DeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory() + "\\acc\\5522a_1yr_99CF.acc");
+                //запрос файла ниже нужен для выявления точек, которые не может воспроизвести эталон
+                flkCalib5522A.FillRangesDevice(Directory.GetCurrentDirectory() + "\\acc\\Fluke 5522A.acc");
 
                 foreach (var currPoint in VoltPoint)
                 {
@@ -939,8 +934,8 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 4;
-                                    var curRange = (int)appa10XN.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
+                                    var curRange = (int) appa10XN.GetRangeCode - 127;
+                                    var targetRange = (int) OperationRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
@@ -964,27 +959,29 @@ namespace APPA_107N_109N
                         try
                         {
                             decimal measurePoint = 0;
-                            
-                            bool isRealPoint = flkCalib5522A.AcVoltage.RangeStorage.Ranges.IsPointBelong(currPoint);
+
+                            var isRealPoint = flkCalib5522A.AcVoltage.RangeStorage.Ranges.IsPointBelong(currPoint);
                             if (isRealPoint)
                             {
                                 flkCalib5522A.AcVoltage.SetValue(currPoint);
                                 flkCalib5522A.AcVoltage.OutputOn();
                                 Thread.Sleep(2000);
                                 //измеряем
-                                measurePoint = (decimal)appa10XN.GetValue();
+                                measurePoint = (decimal) appa10XN.GetValue();
                                 flkCalib5522A.AcVoltage.OutputOff();
                             }
 
+                            operation.Expected = currPoint;
+                            PhysicalRangeAppa =
+                                Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(operation.Expected);
 
 
                             //вычисляе на сколько знаков округлять
                             var mantisa =
                                 MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
 
-                            operation.Expected = currPoint;
 
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
@@ -992,11 +989,9 @@ namespace APPA_107N_109N
                             SetUpperAndLowerToleranceAndIsGood(operation);
 
                             if (!isRealPoint)
-                            {
                                 measurePoint =
                                     MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
                                                                  operation.UpperTolerance.MainPhysicalQuantity.Value);
-                            }
 
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
@@ -1019,31 +1014,17 @@ namespace APPA_107N_109N
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Voltage, Frequency>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Voltage, Frequency>>) operation.Clone());
                 }
             }
 
             #endregion
-
-            
-
-            #region TolleranceFormula
-
-           
-
-            /// <summary>
-            /// Разарешение пределеа измерения (последний значащий разряд)
-            /// </summary>
-            protected MeasPoint<Voltage> RangeResolution;
-
-            #endregion TolleranceFormula
         }
 
         public class Ope4_1_AcV_20mV_Measure : Oper4AcvMeasureBaseMeasureAppaAc
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1063,19 +1044,19 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Voltage>(1, UnitMultiplier.Micro);
 
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(4 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 40 }));
+                                                                new Frequency {Value = 40}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(4 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 1000}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(10 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 40 }));
+                                                                new Frequency {Value = 40}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(10 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 1000}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(18 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 40 }));
+                                                                new Frequency {Value = 40}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(18 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 1000}));
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1094,7 +1075,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1114,19 +1094,19 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Micro);
 
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(4 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 40 }));
+                                                                new Frequency {Value = 40}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(4 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 1000}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(10 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 40 }));
+                                                                new Frequency {Value = 40}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(10 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 1000}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(18 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 40 }));
+                                                                new Frequency {Value = 40}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(18 * VoltMultiplier, UnitMultiplier.Mili,
-                                                                new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 1000}));
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1145,12 +1125,12 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
 
-            public Ope4_1_AcV_2V_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal, IUserItemOperation userItemOperation,
+            public Ope4_1_AcV_2V_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal,
+                IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
@@ -1162,20 +1142,20 @@ namespace APPA_107N_109N
 
                 VoltMultiplier = 1;
 
-                RangeResolution = new MeasPoint<Voltage>((decimal)0.1, UnitMultiplier.Mili);
+                RangeResolution = new MeasPoint<Voltage>((decimal) 0.1, UnitMultiplier.Mili);
 
                 //конкретно для первой точки 0.2 нужны не все частоты, поэтому вырежем только необходимые
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2, new Frequency { Value = 40 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2, new Frequency { Value = 1000 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2, new Frequency {Value = 40}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2, new Frequency {Value = 1000}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2,
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
 
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1, new Frequency { Value = 40 * VoltMultiplier }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1, new Frequency { Value = 1000 * VoltMultiplier }));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1, new Frequency {Value = 40 * VoltMultiplier}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1, new Frequency {Value = 1000 * VoltMultiplier}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1,
                                                                 new Frequency
                                                                 {
@@ -1201,22 +1181,22 @@ namespace APPA_107N_109N
                                                                     Multiplier = UnitMultiplier.Kilo
                                                                 }));
 
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8, new Frequency { Value = 40 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8, new Frequency { Value = 1000 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8, new Frequency {Value = 40}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8, new Frequency {Value = 1000}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8,
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8,
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8,
                                                                 new Frequency
-                                                                { Value = 50, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8,
+                                                                    {Value = 50, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8,
                                                                 new Frequency
-                                                                { Value = 100, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 100, Multiplier = UnitMultiplier.Kilo}));
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1235,7 +1215,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1256,50 +1235,50 @@ namespace APPA_107N_109N
 
                 //конкретно для первой точки 2 нужны не все частоты, поэтому вырежем только необходимые
 
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
-                                                                new Frequency { Value = 40 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
-                                                                new Frequency { Value = 1000 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
+                                                                new Frequency {Value = 40}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
+                                                                new Frequency {Value = 1000}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
 
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier, new Frequency { Value = 40 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier, new Frequency { Value = 1000 }));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier, new Frequency {Value = 40}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier, new Frequency {Value = 1000}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 50, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 50, Multiplier = UnitMultiplier.Kilo}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 100, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 100, Multiplier = UnitMultiplier.Kilo}));
 
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
-                                                                new Frequency { Value = 40 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
-                                                                new Frequency { Value = 1000 }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
+                                                                new Frequency {Value = 40}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
+                                                                new Frequency {Value = 1000}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 50, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                                                                    {Value = 50, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 100, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 100, Multiplier = UnitMultiplier.Kilo}));
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1318,7 +1297,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1337,21 +1315,21 @@ namespace APPA_107N_109N
 
                 RangeResolution = new MeasPoint<Voltage>(10, UnitMultiplier.Mili);
 
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
                                                                 new Frequency
                                                                 {
                                                                     Value = 40,
                                                                     Multiplier = UnitMultiplier.None
                                                                 })); //.IsFake = true;
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 1000, Multiplier = UnitMultiplier.None }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
+                                                                    {Value = 1000, Multiplier = UnitMultiplier.None}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)0.2 * VoltMultiplier,
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 0.2 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
 
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
@@ -1361,37 +1339,37 @@ namespace APPA_107N_109N
                                                                 })); //.IsFake = true;
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 1000, Multiplier = UnitMultiplier.None }));
+                                                                    {Value = 1000, Multiplier = UnitMultiplier.None}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(1 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 50, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 50, Multiplier = UnitMultiplier.Kilo}));
 
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
                                                                 {
                                                                     Value = 40,
                                                                     Multiplier = UnitMultiplier.None
                                                                 })); //.IsFake = true;
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 1000, Multiplier = UnitMultiplier.None }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                                                                    {Value = 1000, Multiplier = UnitMultiplier.None}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 10, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                                                                    {Value = 10, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 20, Multiplier = UnitMultiplier.Kilo }));
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal)1.8 * VoltMultiplier,
+                                                                    {Value = 20, Multiplier = UnitMultiplier.Kilo}));
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>((decimal) 1.8 * VoltMultiplier,
                                                                 new Frequency
-                                                                { Value = 50, Multiplier = UnitMultiplier.Kilo }));
+                                                                    {Value = 50, Multiplier = UnitMultiplier.Kilo}));
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1410,7 +1388,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1429,18 +1406,18 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Voltage>(100, UnitMultiplier.Mili);
 
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(100 * VoltMultiplier,
-                                                                new Frequency { Value = 40 })); //fake
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(100 * VoltMultiplier, new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 40})); //fake
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(100 * VoltMultiplier, new Frequency {Value = 1000}));
 
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(400 * VoltMultiplier,
-                                                                new Frequency { Value = 40 })); //fake
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(400 * VoltMultiplier, new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 40})); //fake
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(400 * VoltMultiplier, new Frequency {Value = 1000}));
 
                 VoltPoint.Add(new MeasPoint<Voltage, Frequency>(700 * VoltMultiplier,
-                                                                new Frequency { Value = 40 })); //fake
-                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(700 * VoltMultiplier, new Frequency { Value = 1000 }));
+                                                                new Frequency {Value = 40})); //fake
+                VoltPoint.Add(new MeasPoint<Voltage, Frequency>(700 * VoltMultiplier, new Frequency {Value = 1000}));
 
-                var maxOfThisRange = new MeasPoint<Voltage>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Voltage>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1495,7 +1472,6 @@ namespace APPA_107N_109N
             protected MeasPoint<Current> RangeResolution;
 
             #endregion
-
 
 
             public Oper5DciMeasureBaseMeasureAppa(IUserItemOperation userItemOperation, string inResourceDir) :
@@ -1615,8 +1591,8 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 2;
-                                    var curRange = (int)appa10XN.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
+                                    var curRange = (int) appa10XN.GetRangeCode - 127;
+                                    var targetRange = (int) OperationRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
@@ -1643,13 +1619,13 @@ namespace APPA_107N_109N
                             flkCalib5522A.DcCurrent.OutputOn();
                             Thread.Sleep(2000);
                             //измеряем
-                            var measurePoint = (decimal)appa10XN.GetValue();
+                            var measurePoint = (decimal) appa10XN.GetValue();
 
                             flkCalib5522A.DcCurrent.OutputOff();
 
                             var mantisa =
                                 MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
@@ -1658,7 +1634,7 @@ namespace APPA_107N_109N
                                 new MeasPoint<Current>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
                             operation.Expected = currPoint;
                             //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected , getting) =>expected - getting;
+                            operation.ErrorCalculation = (expected, getting) => expected - getting;
 
                             SetUpperAndLowerToleranceAndIsGood(operation);
                         }
@@ -1675,7 +1651,7 @@ namespace APPA_107N_109N
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Current>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Current>>) operation.Clone());
                 }
             }
 
@@ -1691,7 +1667,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1713,7 +1688,7 @@ namespace APPA_107N_109N
                     FileName = @"appa_10XN_ma_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
-                BaseTolCoeff = (decimal)0.002;
+                BaseTolCoeff = (decimal) 0.002;
                 EdMlRaz = 40;
                 RangeResolution = new MeasPoint<Current>(1, UnitMultiplier.Micro);
 
@@ -1725,7 +1700,7 @@ namespace APPA_107N_109N
                 CurrentDciPoint[3] = new MeasPoint<Current>(18 * BaseMultiplier, UnitMultiplier.Mili);
                 CurrentDciPoint[4] = new MeasPoint<Current>(-18 * BaseMultiplier, UnitMultiplier.Mili);
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1744,7 +1719,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1766,7 +1740,7 @@ namespace APPA_107N_109N
                     FileName = @"appa_10XN_ma_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
-                BaseTolCoeff = (decimal)0.002;
+                BaseTolCoeff = (decimal) 0.002;
                 EdMlRaz = 40;
                 RangeResolution = new MeasPoint<Current>(10, UnitMultiplier.Micro);
 
@@ -1778,7 +1752,7 @@ namespace APPA_107N_109N
                 CurrentDciPoint[3] = new MeasPoint<Current>(18 * BaseMultiplier, UnitMultiplier.Mili);
                 CurrentDciPoint[4] = new MeasPoint<Current>(-18 * BaseMultiplier, UnitMultiplier.Mili);
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1797,12 +1771,12 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
 
-            public Oper5_1Dci_2A_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal, IUserItemOperation userItemOperation,
+            public Oper5_1Dci_2A_Measure(Mult107_109N.RangeAppaNominal inRangeAppaNominal,
+                IUserItemOperation userItemOperation,
                 string inResourceDir) :
                 base(userItemOperation, inResourceDir)
             {
@@ -1819,11 +1793,11 @@ namespace APPA_107N_109N
                     FileName = @"appa_10XN_A_Aux_5522A.jpg",
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
-                BaseTolCoeff = (decimal)0.002;
+                BaseTolCoeff = (decimal) 0.002;
                 EdMlRaz = 40;
                 RangeResolution = new MeasPoint<Current>(100, UnitMultiplier.Micro);
 
-                BaseMultiplier = (decimal)0.1;
+                BaseMultiplier = (decimal) 0.1;
                 CurrentDciPoint = new[]
                 {
                     new MeasPoint<Current>(4 * BaseMultiplier),
@@ -1842,7 +1816,7 @@ namespace APPA_107N_109N
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1861,7 +1835,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1874,7 +1847,7 @@ namespace APPA_107N_109N
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeAppaNominal = inRangeAppaNominal;
 
-                BaseTolCoeff = (decimal)0.002;
+                BaseTolCoeff = (decimal) 0.002;
                 EdMlRaz = 40;
                 RangeResolution = new MeasPoint<Current>(1, UnitMultiplier.Mili);
 
@@ -1892,7 +1865,7 @@ namespace APPA_107N_109N
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1911,7 +1884,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -1925,7 +1897,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.002;
+                BaseTolCoeff = (decimal) 0.002;
                 EdMlRaz = 40;
                 RangeResolution = new MeasPoint<Current>(1, UnitMultiplier.Mili);
 
@@ -1943,7 +1915,7 @@ namespace APPA_107N_109N
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -1986,7 +1958,6 @@ namespace APPA_107N_109N
             protected decimal CurrentMultiplier;
 
             #endregion
-
 
 
             public Oper6AciMeasureBaseMeasureAppaAc(IUserItemOperation userItemOperation, string inResourceDir) :
@@ -2059,7 +2030,8 @@ namespace APPA_107N_109N
             {
                 base.InitWork(token);
                 if (flkCalib5522A == null || appa10XN == null) return;
-                DeviceBaseExtension.FillRangesDevice(flkCalib5522A, Directory.GetCurrentDirectory() + "\\acc\\5522a_1yr_99CF.acc");
+                //запрос файла ниже нужен для выявления точек, которые не может воспроизвести эталон
+                flkCalib5522A.FillRangesDevice(Directory.GetCurrentDirectory() + "\\acc\\Fluke 5522A.acc");
 
                 foreach (var curr in AciPoint)
 
@@ -2110,8 +2082,8 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 2;
-                                    var curRange = (int)appa10XN.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
+                                    var curRange = (int) appa10XN.GetRangeCode - 127;
+                                    var targetRange = (int) OperationRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
@@ -2135,46 +2107,44 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-
                             decimal measurePoint = 0;
-                            bool isRealPoint = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
+                            var isRealPoint = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
                             //todo Пределы по току нужно слить в один большой предел
-                            bool isRealPointHiCurr = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
-                            
+                            var isRealPointHiCurr = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
+
                             if (isRealPoint || isRealPointHiCurr)
                             {
                                 flkCalib5522A.AcCurrent.SetValue(curr);
                                 flkCalib5522A.AcCurrent.OutputOn();
                                 Thread.Sleep(2000);
                                 //измеряем
-                                measurePoint = (decimal)appa10XN.GetValue();
+                                measurePoint = (decimal) appa10XN.GetValue();
                                 flkCalib5522A.AcCurrent.OutputOff();
                             }
 
 
                             var mantisa =
                                 MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)curr.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) curr.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
 
-                            operation.Expected = (MeasPoint<Current, Frequency>)curr.Clone();
+                            operation.Expected = (MeasPoint<Current, Frequency>) curr.Clone();
 
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
-                           
+
 
                             SetUpperAndLowerToleranceAndIsGood(operation);
 
-                            if ((!isRealPoint) && (!isRealPointHiCurr))
-                            {
+                            if (!isRealPoint && !isRealPointHiCurr)
                                 measurePoint =
                                     MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
                                                                  operation.UpperTolerance.MainPhysicalQuantity.Value);
-                            }
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
 
                             operation.Getting =
-                                new MeasPoint<Current, Frequency>(measurePoint, curr.MainPhysicalQuantity.Multiplier, curr.AdditionalPhysicalQuantity);
+                                new MeasPoint<Current, Frequency>(measurePoint, curr.MainPhysicalQuantity.Multiplier,
+                                                                  curr.AdditionalPhysicalQuantity);
                         }
                         catch (Exception e)
                         {
@@ -2191,7 +2161,7 @@ namespace APPA_107N_109N
                         Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Current, Frequency>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Current, Frequency>>) operation.Clone());
                 }
             }
 
@@ -2221,7 +2191,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -2253,7 +2222,7 @@ namespace APPA_107N_109N
                                                       new Frequency {Value = 1000})
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2272,7 +2241,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -2310,7 +2278,7 @@ namespace APPA_107N_109N
                                                       new Frequency {Value = 3, Multiplier = UnitMultiplier.Kilo})
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2329,7 +2297,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -2343,7 +2310,7 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Current>(100, UnitMultiplier.Micro);
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                CurrentMultiplier = (decimal)0.1;
+                CurrentMultiplier = (decimal) 0.1;
 
                 AciPoint = new[]
                 {
@@ -2372,7 +2339,7 @@ namespace APPA_107N_109N
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2391,7 +2358,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -2423,7 +2389,7 @@ namespace APPA_107N_109N
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2442,7 +2408,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -2476,7 +2441,7 @@ namespace APPA_107N_109N
                     ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
                 };
 
-                var maxOfThisRange = new MeasPoint<Current>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Current>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2518,7 +2483,6 @@ namespace APPA_107N_109N
             protected MeasPoint<Frequency> RangeResolution;
 
             #endregion
-
 
 
             public Oper7FreqMeasureBaseMeasureAppa(IUserItemOperation userItemOperation, string inResourceDir) :
@@ -2634,7 +2598,7 @@ namespace APPA_107N_109N
                             flkCalib5522A.AcVoltage.OutputOn();
                             Thread.Sleep(100);
                             //измеряем
-                            var measurePoint = (decimal)appa10XN.GetValue();
+                            var measurePoint = (decimal) appa10XN.GetValue();
 
                             flkCalib5522A.AcVoltage.OutputOff();
 
@@ -2647,7 +2611,7 @@ namespace APPA_107N_109N
                             {
                                 var result = BaseTolCoeff * operation.Expected.MainPhysicalQuantity.Value + EdMlRaz *
                                     RangeResolution.MainPhysicalQuantity.Value *
-                                    (decimal)(RangeResolution
+                                    (decimal) (RangeResolution
                                               .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
                                                freqPoint.MainPhysicalQuantity.Multiplier
                                                         .GetDoubleValue()
@@ -2655,7 +2619,7 @@ namespace APPA_107N_109N
 
                                 var mantisa =
                                     MathStatistics
-                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)freqPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) freqPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                     true);
 
                                 MathStatistics.Round(ref result, mantisa);
@@ -2677,13 +2641,11 @@ namespace APPA_107N_109N
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Frequency>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Frequency>>) operation.Clone());
                 }
             }
 
             #endregion
-
-
         }
 
         public class Oper71Freq20HzMeasureBaseMeasureAppa : Oper7FreqMeasureBaseMeasureAppa
@@ -2700,7 +2662,7 @@ namespace APPA_107N_109N
                 Name = OperationRangeAppaNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
-                BaseTolCoeff = (decimal)0.0001;
+                BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 50;
                 RangeResolution = new MeasPoint<Frequency>(1, UnitMultiplier.Mili);
 
@@ -2709,7 +2671,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Frequency>(10)
                 };
 
-                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2737,7 +2699,7 @@ namespace APPA_107N_109N
                 Name = OperationRangeAppaNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
-                BaseTolCoeff = (decimal)0.0001;
+                BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Frequency>(10, UnitMultiplier.Mili);
 
@@ -2746,7 +2708,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Frequency>(100)
                 };
 
-                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2774,7 +2736,7 @@ namespace APPA_107N_109N
                 Name = OperationRangeAppaNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
-                BaseTolCoeff = (decimal)0.0001;
+                BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Frequency>(100, UnitMultiplier.Mili);
 
@@ -2783,7 +2745,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Frequency>(1, UnitMultiplier.Kilo)
                 };
 
-                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2810,7 +2772,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                BaseTolCoeff = (decimal)0.0001;
+                BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Frequency>(1);
 
@@ -2819,7 +2781,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Frequency>(10, UnitMultiplier.Kilo)
                 };
 
-                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2847,7 +2809,7 @@ namespace APPA_107N_109N
                 Name = OperationRangeAppaNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
-                BaseTolCoeff = (decimal)0.0001;
+                BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Frequency>(10);
 
@@ -2856,7 +2818,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Frequency>(100, UnitMultiplier.Kilo)
                 };
 
-                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2883,7 +2845,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
-                BaseTolCoeff = (decimal)0.0001;
+                BaseTolCoeff = (decimal) 0.0001;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Frequency>(100);
 
@@ -2892,7 +2854,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Frequency>(1, UnitMultiplier.Mega)
                 };
 
-                var maxOfThisRange = new MeasPoint<Frequency>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -2917,7 +2879,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -2930,7 +2891,7 @@ namespace APPA_107N_109N
 
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.003;
+                BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
                 RangeResolution = new MeasPoint<Resistance>(10, UnitMultiplier.Mili);
 
@@ -2942,8 +2903,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>(200 * BaseMultiplier)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -2961,7 +2923,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -2973,7 +2934,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.003;
+                BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
                 RangeResolution = new MeasPoint<Resistance>(100, UnitMultiplier.Mili);
 
@@ -2987,8 +2948,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Kilo)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3006,7 +2968,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3019,7 +2980,7 @@ namespace APPA_107N_109N
 
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.003;
+                BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
                 RangeResolution = new MeasPoint<Resistance>(1);
 
@@ -3033,8 +2994,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Kilo)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3052,7 +3014,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3064,7 +3025,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.003;
+                BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 30;
                 RangeResolution = new MeasPoint<Resistance>(10);
 
@@ -3078,8 +3039,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Kilo)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3097,7 +3059,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3109,7 +3070,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.003;
+                BaseTolCoeff = (decimal) 0.003;
                 EdMlRaz = 50;
                 RangeResolution = new MeasPoint<Resistance>(100);
 
@@ -3123,8 +3084,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 1.8 * BaseMultiplier, UnitMultiplier.Mega)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3142,7 +3104,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3154,7 +3115,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.05;
+                BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 50;
                 RangeResolution = new MeasPoint<Resistance>(1, UnitMultiplier.Kilo);
 
@@ -3166,8 +3127,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>(20 * BaseMultiplier, UnitMultiplier.Mega)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3185,7 +3147,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3197,7 +3158,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.05;
+                BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 20;
                 RangeResolution = new MeasPoint<Resistance>(1, UnitMultiplier.Mega);
 
@@ -3209,8 +3170,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>(20 * BaseMultiplier, UnitMultiplier.Mega)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3228,7 +3190,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3240,7 +3201,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.05;
+                BaseTolCoeff = (decimal) 0.05;
                 EdMlRaz = 8;
                 RangeResolution = new MeasPoint<Resistance>(100, UnitMultiplier.Mega);
 
@@ -3249,8 +3210,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Resistance>((decimal) 0.9, UnitMultiplier.Giga)
                 };
 
-                var maxOfThisRange = new MeasPoint<Resistance>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Resistance>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.ResistanceRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -3315,8 +3277,6 @@ namespace APPA_107N_109N
                 DataRow = new List<IBasicOperation<MeasPoint<Resistance>>>();
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
-
-
             }
 
             #region Methods
@@ -3380,7 +3340,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.Resistance2W.OutputOff();});
+                            await Task.Run(() => { flkCalib5522A.Resistance2W.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -3415,8 +3375,8 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 8;
-                                    var curRange = (int)appa10XN.GetRangeCode - 127;
-                                    var targetRange = (int)OperationOhmRangeCode - 127;
+                                    var curRange = (int) appa10XN.GetRangeCode - 127;
+                                    var targetRange = (int) OperationOhmRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
@@ -3444,11 +3404,11 @@ namespace APPA_107N_109N
                             if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
                             {
                                 flkCalib5522A.Resistance2W.SetValue(new MeasPoint<Resistance>(0));
-                                flkCalib5522A.Resistance2W.SetCompensation( Compensation.CompNone);
+                                flkCalib5522A.Resistance2W.SetCompensation(Compensation.CompNone);
                                 flkCalib5522A.Resistance2W.OutputOn();
                                 Thread.Sleep(3000);
                                 //измеряем
-                                refValue = (decimal)appa10XN.GetValue();
+                                refValue = (decimal) appa10XN.GetValue();
                             }
 
                             flkCalib5522A.Resistance2W.SetValue(currPoint);
@@ -3460,13 +3420,13 @@ namespace APPA_107N_109N
                             else
                                 Thread.Sleep(3000);
                             //измеряем
-                            var measurePoint = (decimal)appa10XN.GetValue() - refValue;
+                            var measurePoint = (decimal) appa10XN.GetValue() - refValue;
 
                             flkCalib5522A.Resistance2W.OutputOff();
 
                             var mantisa =
                                 MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
 
                             //округляем измерения
@@ -3480,7 +3440,7 @@ namespace APPA_107N_109N
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
 
 
-                                SetUpperAndLowerToleranceAndIsGood(operation);
+                            SetUpperAndLowerToleranceAndIsGood(operation);
                         }
                         catch (Exception e)
                         {
@@ -3495,13 +3455,11 @@ namespace APPA_107N_109N
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Resistance>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Resistance>>) operation.Clone());
                 }
             }
 
             #endregion
-
-
         }
 
         #endregion OHM
@@ -3541,7 +3499,6 @@ namespace APPA_107N_109N
             #endregion
 
 
-
             public Oper9FarMeasureBase(IUserItemOperation userItemOperation) : base(userItemOperation)
             {
                 Name = "Определение погрешности измерения электрической ёмкости";
@@ -3552,8 +3509,6 @@ namespace APPA_107N_109N
                 Sheme = ShemeTemplateDefault.TemplateSheme;
 
                 CountOfRanges = 8;
-
-
             }
 
             #region Methods
@@ -3639,8 +3594,8 @@ namespace APPA_107N_109N
                             {
                                 int countPushRangeButton;
                                 CountOfRanges = 8;
-                                var curRange = (int)appa10XN.GetRangeCode - 127;
-                                var targetRange = (int)OperationRangeCode - 127;
+                                var curRange = (int) appa10XN.GetRangeCode - 127;
+                                var targetRange = (int) OperationRangeCode - 127;
                                 countPushRangeButton = Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
                                 UserItemOperation.ServicePack.MessageBox()
@@ -3672,12 +3627,12 @@ namespace APPA_107N_109N
                                 Thread.Sleep(4000);
 
                             //измеряем
-                            var measurePoint = (decimal)appa10XN.GetSingleValue();
+                            var measurePoint = (decimal) appa10XN.GetSingleValue();
                             flkCalib5522A.Capacity.OutputOff();
 
                             var mantisa =
                                 MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
@@ -3688,7 +3643,7 @@ namespace APPA_107N_109N
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
 
-                                SetUpperAndLowerToleranceAndIsGood(operation);
+                            SetUpperAndLowerToleranceAndIsGood(operation);
                         }
                         catch (Exception e)
                         {
@@ -3703,7 +3658,7 @@ namespace APPA_107N_109N
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Capacity>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Capacity>>) operation.Clone());
                 }
             }
 
@@ -3714,7 +3669,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3725,7 +3679,7 @@ namespace APPA_107N_109N
             {
                 OperationRangeCode = Mult107_109N.RangeCode.Range1Manual;
                 OperationRangeAppaNominal = inRangeAppaNominal;
-                BaseTolCoeff = (decimal)0.015;
+                BaseTolCoeff = (decimal) 0.015;
                 EdMlRaz = 10;
                 RangeResolution = new MeasPoint<Capacity>(1, UnitMultiplier.Pico);
 
@@ -3739,7 +3693,7 @@ namespace APPA_107N_109N
                 Sheme = ShemeTemplateDefault.TemplateSheme;
                 Sheme.AssemblyLocalName = inResourceDir;
 
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -3758,7 +3712,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3770,7 +3723,7 @@ namespace APPA_107N_109N
                 OperationRangeCode = Mult107_109N.RangeCode.Range2Manual;
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 RangeResolution = new MeasPoint<Capacity>(10, UnitMultiplier.Pico);
-                BaseTolCoeff = (decimal)0.015;
+                BaseTolCoeff = (decimal) 0.015;
                 EdMlRaz = 10;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
@@ -3779,7 +3732,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Capacity>(30, UnitMultiplier.Nano)
                 };
 
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -3798,7 +3751,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3810,11 +3762,11 @@ namespace APPA_107N_109N
                 OperationRangeCode = Mult107_109N.RangeCode.Range3Manual;
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 RangeResolution = new MeasPoint<Capacity>(100, UnitMultiplier.Pico);
-                BaseTolCoeff = (decimal)0.009;
+                BaseTolCoeff = (decimal) 0.009;
                 EdMlRaz = 5;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.009;
+                BaseTolCoeff = (decimal) 0.009;
                 EdMlRaz = 5;
 
                 FarMeasPoints = new[]
@@ -3822,7 +3774,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Capacity>(300, UnitMultiplier.Nano)
                 };
 
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -3841,7 +3793,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3854,10 +3805,10 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.009;
+                BaseTolCoeff = (decimal) 0.009;
                 EdMlRaz = 5;
                 RangeResolution = new MeasPoint<Capacity>(1, UnitMultiplier.Nano);
-                BaseTolCoeff = (decimal)0.009;
+                BaseTolCoeff = (decimal) 0.009;
                 EdMlRaz = 5;
 
                 FarMeasPoints = new[]
@@ -3865,7 +3816,7 @@ namespace APPA_107N_109N
                     new MeasPoint<Capacity>(3, UnitMultiplier.Micro)
                 };
 
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -3884,7 +3835,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3897,7 +3847,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.012;
+                BaseTolCoeff = (decimal) 0.012;
                 EdMlRaz = 5;
                 RangeResolution = new MeasPoint<Capacity>(10, UnitMultiplier.Nano);
 
@@ -3905,7 +3855,7 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(30, UnitMultiplier.Micro)
                 };
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -3924,7 +3874,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3937,7 +3886,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.012;
+                BaseTolCoeff = (decimal) 0.012;
                 EdMlRaz = 5;
                 RangeResolution = new MeasPoint<Capacity>(100, UnitMultiplier.Nano);
 
@@ -3945,7 +3894,7 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(300, UnitMultiplier.Micro)
                 };
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -3964,7 +3913,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -3977,7 +3925,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.015;
+                BaseTolCoeff = (decimal) 0.015;
                 EdMlRaz = 5;
                 RangeResolution = new MeasPoint<Capacity>(1, UnitMultiplier.Micro);
 
@@ -3985,7 +3933,7 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(3, UnitMultiplier.Mili)
                 };
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -4004,7 +3952,6 @@ namespace APPA_107N_109N
         {
             #region Property
 
-            
             public override Mult107_109N.RangeAppaNominal OperationRangeAppaNominal { get; protected set; }
 
             #endregion
@@ -4017,7 +3964,7 @@ namespace APPA_107N_109N
                 OperationRangeAppaNominal = inRangeAppaNominal;
                 Name = OperationRangeAppaNominal.GetStringValue();
 
-                BaseTolCoeff = (decimal)0.015;
+                BaseTolCoeff = (decimal) 0.015;
                 EdMlRaz = 5;
                 RangeResolution = new MeasPoint<Capacity>(10, UnitMultiplier.Micro);
 
@@ -4025,7 +3972,7 @@ namespace APPA_107N_109N
                 {
                     new MeasPoint<Capacity>(30, UnitMultiplier.Mili)
                 };
-                var maxOfThisRange = new MeasPoint<Capacity>((decimal)OperationRangeAppaNominal.GetDoubleValue());
+                var maxOfThisRange = new MeasPoint<Capacity>((decimal) OperationRangeAppaNominal.GetDoubleValue());
                 PhysicalRangeAppa = Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
@@ -4058,7 +4005,7 @@ namespace APPA_107N_109N
             /// <summary>
             /// Процент от измеряемой точки для расчета погрешности (уже переведе в абсолютные единицы).
             /// </summary>
-            public decimal BaseTolCoeff = (decimal)0.0006;
+            public decimal BaseTolCoeff = (decimal) 0.0006;
 
             /// <summary>
             /// Число пределов измерения.
@@ -4081,7 +4028,6 @@ namespace APPA_107N_109N
             protected MeasPoint<Temperature> RangeResolution;
 
             #endregion
-
 
 
             public Oper10TemperatureMeasureBase(IUserItemOperation userItemOperation, string inDirectory) :
@@ -4200,8 +4146,8 @@ namespace APPA_107N_109N
                                 {
                                     //работает только для ручного режима переключения пределов
                                     CountOfRanges = 2;
-                                    var curRange = (int)appa10XN.GetRangeCode - 127;
-                                    var targetRange = (int)OperationRangeCode - 127;
+                                    var curRange = (int) appa10XN.GetRangeCode - 127;
+                                    var targetRange = (int) OperationRangeCode - 127;
                                     countPushRangeButton =
                                         Hepls.CountOfPushButton(CountOfRanges, curRange, targetRange);
 
@@ -4224,18 +4170,18 @@ namespace APPA_107N_109N
                     {
                         try
                         {
-                            flkCalib5522A.Temperature.SetTermoCoupleType( TypeTermocouple.K);
+                            flkCalib5522A.Temperature.SetTermoCoupleType(TypeTermocouple.K);
                             flkCalib5522A.Temperature.SetValue(currPoint);
                             flkCalib5522A.Temperature.OutputOn();
                             Thread.Sleep(3000);
                             //измеряем
-                            var measurePoint = (decimal)appa10XN.GetValue();
+                            var measurePoint = (decimal) appa10XN.GetValue();
 
                             flkCalib5522A.Temperature.OutputOff();
 
                             var mantisa =
                                 MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
                                                 true);
                             //округляем измерения
                             MathStatistics.Round(ref measurePoint, mantisa);
@@ -4248,7 +4194,7 @@ namespace APPA_107N_109N
                             {
                                 var result = BaseTolCoeff * operation.Expected.MainPhysicalQuantity.Value + EdMlRaz *
                                     RangeResolution.MainPhysicalQuantity.Value *
-                                    (decimal)(RangeResolution
+                                    (decimal) (RangeResolution
                                               .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
                                                currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue()
                                     );
@@ -4273,7 +4219,7 @@ namespace APPA_107N_109N
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
                                     ? operation
-                                    : (BasicOperationVerefication<MeasPoint<Temperature>>)operation.Clone());
+                                    : (BasicOperationVerefication<MeasPoint<Temperature>>) operation.Clone());
                 }
             }
 
@@ -4291,7 +4237,7 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Temperature>(100, UnitMultiplier.Mili);
                 Name = "-200 ⁰C ... -100 ⁰C";
 
-                BaseTolCoeff = (decimal)0.001;
+                BaseTolCoeff = (decimal) 0.001;
                 EdMlRaz = 60;
 
                 DegC_Point = new[]
@@ -4300,8 +4246,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Temperature>(-100)
                 };
 
-                var maxOfThisRange = new MeasPoint<Temperature>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Temperature>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -4326,7 +4273,7 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Temperature>(100, UnitMultiplier.Mili);
                 Name = "-100 ⁰C ... 400 ⁰C";
 
-                BaseTolCoeff = (decimal)0.001;
+                BaseTolCoeff = (decimal) 0.001;
                 EdMlRaz = 30;
 
                 DegC_Point = new[]
@@ -4335,8 +4282,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Temperature>(100)
                 };
 
-                var maxOfThisRange = new MeasPoint<Temperature>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Temperature>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods
@@ -4361,7 +4309,7 @@ namespace APPA_107N_109N
                 RangeResolution = new MeasPoint<Temperature>(1);
                 Name = "400 ⁰C ... 1200 ⁰C";
 
-                BaseTolCoeff = (decimal)0.001;
+                BaseTolCoeff = (decimal) 0.001;
                 EdMlRaz = 3;
 
                 DegC_Point = new[]
@@ -4371,8 +4319,9 @@ namespace APPA_107N_109N
                     new MeasPoint<Temperature>(1200)
                 };
 
-                var maxOfThisRange = new MeasPoint<Temperature>((decimal)OperationRangeAppaNominal.GetDoubleValue());
-                PhysicalRangeAppa = Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
+                var maxOfThisRange = new MeasPoint<Temperature>((decimal) OperationRangeAppaNominal.GetDoubleValue());
+                PhysicalRangeAppa =
+                    Appa107N_109NAccuracyBock.GetCelsiumRangeStorage.GetRangePointBelong(maxOfThisRange);
             }
 
             #region Methods

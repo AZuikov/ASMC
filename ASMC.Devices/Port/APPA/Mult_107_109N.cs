@@ -961,16 +961,16 @@ namespace ASMC.Devices.Port.APPA
             return new RangeStorage<PhysicalRange<Current>>(new[]
             {
                 // 20 mA
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(20,UnitMultiplier.Mili),
+                new PhysicalRange<Current>(new MeasPoint<Current>(-20),new MeasPoint<Current>(20,UnitMultiplier.Mili),
                                            new AccuracyChatacteristic(0.000040M,null,0.2M)),
                 // 200 mA
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(200,UnitMultiplier.Mili),
+                new PhysicalRange<Current>(new MeasPoint<Current>(-200),new MeasPoint<Current>(200,UnitMultiplier.Mili),
                                            new AccuracyChatacteristic(0.00040M,null,0.2M)),
                 // 2 A
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(2),
+                new PhysicalRange<Current>(new MeasPoint<Current>(-2),new MeasPoint<Current>(2),
                                            new AccuracyChatacteristic(0.0040M,null,0.2M)),
                 // 10 A
-                new PhysicalRange<Current>(new MeasPoint<Current>(0),new MeasPoint<Current>(10),
+                new PhysicalRange<Current>(new MeasPoint<Current>(-10),new MeasPoint<Current>(10),
                                            new AccuracyChatacteristic(0.040M,null,0.2M)),
             });
         }
@@ -1052,26 +1052,26 @@ namespace ASMC.Devices.Port.APPA
             PhysicalRange<Voltage>[] tolArr = new[]
             {
                 // 20 мВ
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(20, UnitMultiplier.Mili),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-20), new MeasPoint<Voltage>(20, UnitMultiplier.Mili),
                                            new AccuracyChatacteristic(0.000060M, null, 0.06M)),
                 // 200 мВ
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(200, UnitMultiplier.Mili),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-200), new MeasPoint<Voltage>(200, UnitMultiplier.Mili),
                                            new AccuracyChatacteristic(0.00020M, null, 0.06M)),
 
                 // 2 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(2),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-2), new MeasPoint<Voltage>(2),
                                            new AccuracyChatacteristic(0.0010M, null, 0.06M)),
 
                 // 20 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(20),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-20), new MeasPoint<Voltage>(20),
                                            new AccuracyChatacteristic(0.010M, null, 0.06M)),
 
                 //200 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(200),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-200), new MeasPoint<Voltage>(200),
                                            new AccuracyChatacteristic(0.10M, null, 0.06M)),
 
                 //1000 V
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(0), new MeasPoint<Voltage>(1000),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-1000), new MeasPoint<Voltage>(1000),
                                            new AccuracyChatacteristic(1.0M, null, 0.06M)),
             };
             PhysicalRange<Voltage>[] negative = new PhysicalRange<Voltage>[tolArr.Length];
