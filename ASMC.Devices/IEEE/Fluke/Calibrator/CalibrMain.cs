@@ -175,8 +175,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 [AccRange("Mode: Amps SI", typeof(MeasPoint<Current, Frequency>))]
                 public override RangeStorage<PhysicalRange<Current, Frequency>> Ranges { get; set; }
                 
-                [AccRange("Mode: Amps SI HC", typeof(MeasPoint<Current, Frequency>))]
-                public  RangeStorage<PhysicalRange<Current, Frequency>> Ranges2 { get; set; }
 
             }
 
