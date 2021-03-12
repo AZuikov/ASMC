@@ -202,6 +202,8 @@ namespace Belvar_V7_40_1
 
         #region Methods
 
+       
+
         protected override void InitWork(CancellationTokenSource token)
         {
             ConnectionToDevice();
@@ -227,7 +229,7 @@ namespace Belvar_V7_40_1
 
                 //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
-                operation.Name = rangeToSetOnDmm.Description;
+                operation.Name = rangeToSetOnDmm.MainPhysicalQuantity.ToString();
                 operation.Expected = testingMeasureValue;
 
                 operation.InitWorkAsync = () =>

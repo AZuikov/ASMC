@@ -214,6 +214,52 @@ namespace Belvar_V7_40_1
         {
         }
 
+        protected override string[] GenerateDataColumnTypeObject()
+        {
+            return new[]
+            {
+                "Предел измерения",
+                "Поверяемое значение",
+                "Значение частоты",
+                "Измеренное значение",
+                "Минимальное допустимое значение",
+                "Максимальное допустимое значение",
+                "Результат"
+            };
+        }
+
+        protected override DataTable FillData()
+        {
+            var dataTable = base.FillData();
+            dataTable.Rows.Clear();
+
+            foreach (var row in DataRow)
+            {
+                var dataRow = dataTable.NewRow();
+                var rowFromDataRow = row as BasicOperationVerefication<MeasPoint<T1, T2>>;
+                if (rowFromDataRow == null) continue;
+                dataRow["Предел измерения"] = rowFromDataRow?.Name?.ToString();
+                dataRow["Поверяемое значение"] = rowFromDataRow?.Expected?.MainPhysicalQuantity.ToString();
+                dataRow["Значение частоты"] = rowFromDataRow?.Expected?.AdditionalPhysicalQuantity.ToString();
+                dataRow["Измеренное значение"] = rowFromDataRow?.Getting?.MainPhysicalQuantity.ToString();
+                if (rowFromDataRow.LowerTolerance != null)
+                    dataRow["Минимальное допустимое значение"] = rowFromDataRow.LowerTolerance.MainPhysicalQuantity.ToString(); 
+                if (rowFromDataRow.UpperTolerance != null)
+                    dataRow["Максимальное допустимое значение"] = rowFromDataRow.UpperTolerance.MainPhysicalQuantity.ToString(); 
+                if ( rowFromDataRow.Getting != null)
+                {
+                    dataRow["Результат"] = rowFromDataRow.IsGood() ? ConstGood : ConstBad;
+                }
+                else
+                {
+                    dataRow["Результат"] = "не выполнено";
+                }
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
         protected void ShowNotSupportedMeasurePointMeessage(IMeterPhysicalQuantity<T1, T2> mult,
             ISourcePhysicalQuantity<T1, T2> sourse, MeasPoint<T1,T2> rangeToSetOnMetr, MeasPoint<T1, T2> testingMeasureValue)
         {
