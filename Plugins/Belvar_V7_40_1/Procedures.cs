@@ -397,9 +397,13 @@ namespace Belvar_V7_40_1
                 operation.BodyWorkAsync = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator.DcCurrent, Logger, token).Item1;
+                    if (operation.Getting == null) return;// если программа ничего не считала, тогда заканчиваем
                     operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
                     operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
+
                 };
+                
+
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {

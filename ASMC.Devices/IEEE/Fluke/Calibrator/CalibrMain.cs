@@ -482,6 +482,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             var fileName = @$"{Environment.CurrentDirectory}\acc\{UserType}.acc";
             if(!File.Exists(fileName)) return;
             this.FillRangesDevice(fileName);
+            
         }
 
         public class Freq : ComplexPhysicalQuantity<Frequency, Voltage>
