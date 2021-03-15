@@ -127,6 +127,7 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             ConnectionToDevice();
+            DataRow.Clear();
             for (int row=0; row< TestMeasPoints.GetUpperBound(0)+1;row++)
             {
                 var testingMeasureValue = TestMeasPoints[row, 1];
@@ -159,12 +160,25 @@ namespace Belvar_V7_40_1
 
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
-                {
-                    operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
-                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                     .Multiplier);
-                };
+                
+                    operation.BodyWorkAsync = () =>
+                    {
+                        try
+                        {
+                            operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
+                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                             .Multiplier);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Logger.Error($"Не удалось получить измеренное значение с В7-40/1 в точке {testingMeasureValue}");
+                        }
+                        
+                    };
+                
+
+                
+                
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {
@@ -207,6 +221,7 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             ConnectionToDevice();
+            DataRow.Clear();
             for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)
             {
                 var testingMeasureValue = TestMeasPoints[row, 1];
@@ -239,10 +254,18 @@ namespace Belvar_V7_40_1
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
-                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                     .Multiplier);
+                    try
+                    {
+                        var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
+                        operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                         .Multiplier);
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Logger.Error($"Не удалось получить значение с В7-40/1 в точке {testingMeasureValue}");
+                    }
+                    
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
@@ -288,6 +311,7 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             ConnectionToDevice();
+            DataRow.Clear();
             for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)
             {
                 var testingMeasureValue = TestMeasPoints[row, 1];
@@ -321,9 +345,17 @@ namespace Belvar_V7_40_1
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
-                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                     .Multiplier);
+                    try
+                    {
+                        operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                         .Multiplier);
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Logger.Error($"Не удалось считать показания с В7-40/1 в точке {testingMeasureValue}");
+                    }
+                    
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
@@ -364,6 +396,7 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             ConnectionToDevice();
+            DataRow.Clear();
             for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)
             {
                 var testingMeasureValue = TestMeasPoints[row, 1];
@@ -398,10 +431,17 @@ namespace Belvar_V7_40_1
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator.DcCurrent, Logger, token).Item1;
-                    if (operation.Getting == null) return;// если программа ничего не считала, тогда заканчиваем
-                    operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
-                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
+                    try
+                    {
+                        operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator.DcCurrent, Logger, token).Item1;
+                        operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Logger.Error($"Не удалось считать показания с В7-40/1 в точке {testingMeasureValue}");
+                    }
+                    
 
                 };
                 
@@ -476,11 +516,19 @@ namespace Belvar_V7_40_1
                 };
                 operation.BodyWorkAsync = () =>
                 {
-                    var result = BodyWork(Multimetr.AcCurrent, Calibrator.AcCurrent, Logger, token).Item1;
-                    result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
-                    operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                    operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                     .Multiplier);
+                    try
+                    {
+                        var result = BodyWork(Multimetr.AcCurrent, Calibrator.AcCurrent, Logger, token).Item1;
+                        result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
+                        operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                         .Multiplier);
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Logger.Error($"Не удалось считать показания с В7-40/1 в точке {testingMeasureValue}");
+                    }
+                    
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
