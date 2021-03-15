@@ -42,14 +42,14 @@ namespace Belvar_V7_40_1
                 var dataRow = dataTable.NewRow();
                 var rowFromDataRow = row as BasicOperationVerefication<TOperation>;
                 if (rowFromDataRow == null) continue;
-                dataRow["Предел измерения"] = rowFromDataRow?.Name?.ToString();
-                dataRow["Поверяемое значение"] = rowFromDataRow?.Expected?.ToString();
-                dataRow["Измеренное значение"] = rowFromDataRow?.Getting?.ToString();
+                dataRow["Предел измерения"] = rowFromDataRow.Name?.ToString();
+                dataRow["Поверяемое значение"] = rowFromDataRow.Expected?.ToString();
+                dataRow["Измеренное значение"] = rowFromDataRow.Getting?.ToString();
                 if (rowFromDataRow.LowerTolerance != null)
                     dataRow["Минимальное допустимое значение"] = rowFromDataRow.LowerTolerance;
                 if (rowFromDataRow.UpperTolerance != null)
                     dataRow["Максимальное допустимое значение"] = rowFromDataRow.UpperTolerance;
-                if (rowFromDataRow.IsGood() != null)
+                if (rowFromDataRow.Getting != null)
                 {
                     dataRow["Результат"] = rowFromDataRow.IsGood() ? ConstGood : ConstBad;
                 }
@@ -238,10 +238,10 @@ namespace Belvar_V7_40_1
                 var dataRow = dataTable.NewRow();
                 var rowFromDataRow = row as BasicOperationVerefication<MeasPoint<T1, T2>>;
                 if (rowFromDataRow == null) continue;
-                dataRow["Предел измерения"] = rowFromDataRow?.Name?.ToString();
-                dataRow["Поверяемое значение"] = rowFromDataRow?.Expected?.MainPhysicalQuantity.ToString();
-                dataRow["Значение частоты"] = rowFromDataRow?.Expected?.AdditionalPhysicalQuantity.ToString();
-                dataRow["Измеренное значение"] = rowFromDataRow?.Getting?.MainPhysicalQuantity.ToString();
+                dataRow["Предел измерения"] = rowFromDataRow.Name?.ToString();
+                dataRow["Поверяемое значение"] = rowFromDataRow.Expected?.MainPhysicalQuantity.ToString();
+                dataRow["Значение частоты"] = rowFromDataRow.Expected?.AdditionalPhysicalQuantity.ToString();
+                dataRow["Измеренное значение"] = rowFromDataRow.Getting?.MainPhysicalQuantity.ToString();
                 if (rowFromDataRow.LowerTolerance != null)
                     dataRow["Минимальное допустимое значение"] = rowFromDataRow.LowerTolerance.MainPhysicalQuantity.ToString(); 
                 if (rowFromDataRow.UpperTolerance != null)
