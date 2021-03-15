@@ -133,21 +133,9 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
-                //установим пределы измерения мултиметра и воспроизведения калибратора
-                Multimetr.DcVoltage.RangeStorage.SetRange(rangeToSetOnDmm);
-                Calibrator.DcVoltage.RangeStorage.SetRange(testingMeasureValue);
-                
-
-                //если у какого-то из устройств нет подходящего диапазона?
-                if (!IsSetRange(Calibrator.DcVoltage.RangeStorage) ||
-                    !IsSetRange(Multimetr.DcVoltage.RangeStorage))
-                {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcVoltage.RangeStorage, Calibrator.DcVoltage.RangeStorage, rangeToSetOnDmm,
-                                                         testingMeasureValue);
-
-                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
-                    continue;
-                }
+                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.DcVoltage.RangeStorage, Calibrator.DcVoltage.RangeStorage, rangeToSetOnDmm, testingMeasureValue))
+                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
 
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 operation.Name = rangeToSetOnDmm.Description;
@@ -227,20 +215,9 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
                 
-                //установим пределы измерения мултиметра и воспроизведения калибратора
-                Multimetr.AcVoltage.RangeStorage.SetRange(rangeToSetOnDmm);
-                Calibrator.AcVoltage.RangeStorage.SetRange(testingMeasureValue);
-
-                //если у какого-то из устройств нет подходящего диапазона?
-                if (!RangeIsSet(Calibrator.AcVoltage.RangeStorage) ||
-                    !RangeIsSet(Multimetr.AcVoltage.RangeStorage))
-                {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcVoltage.RangeStorage, Calibrator.AcVoltage.RangeStorage, rangeToSetOnDmm,
-                                                         testingMeasureValue);
-
-                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
-                    continue;
-                }
+                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcVoltage.RangeStorage,Calibrator.AcVoltage.RangeStorage,rangeToSetOnDmm,testingMeasureValue))
+                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
 
                 //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
@@ -292,6 +269,8 @@ namespace Belvar_V7_40_1
 
         }
 
+        
+
         #endregion
 
        
@@ -317,21 +296,9 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
-                //установим пределы измерения мултиметра и воспроизведения калибратора
-                Multimetr.Resistance2W.RangeStorage.SetRange(rangeToSetOnDmm);
-                Calibrator.Resistance2W.RangeStorage.SetRange(testingMeasureValue);
-
-
-                //если у какого-то из устройств нет подходящего диапазона?
-                if (!IsSetRange(Calibrator.Resistance2W.RangeStorage) ||
-                    !IsSetRange(Multimetr.Resistance2W.RangeStorage))
-                {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.Resistance2W.RangeStorage, Calibrator.Resistance2W.RangeStorage, rangeToSetOnDmm,
-                                                         testingMeasureValue);
-
-                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
-                    continue;
-                }
+                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.Resistance2W.RangeStorage, Calibrator.Resistance2W.RangeStorage, rangeToSetOnDmm, testingMeasureValue))
+                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
 
                 var operation = new BasicOperationVerefication<MeasPoint<Resistance>>();
                 operation.Name = rangeToSetOnDmm.Description;
@@ -425,21 +392,9 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
-                //установим пределы измерения мултиметра и воспроизведения калибратора
-                Multimetr.DcCurrent.RangeStorage.SetRange(rangeToSetOnDmm);
-                Calibrator.DcCurrent.RangeStorage.SetRange(testingMeasureValue);
-
-
-                //если у какого-то из устройств нет подходящего диапазона?
-                if (!IsSetRange(Calibrator.DcCurrent.RangeStorage) ||
-                    !IsSetRange(Multimetr.DcCurrent.RangeStorage))
-                {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcCurrent.RangeStorage, Calibrator.DcCurrent.RangeStorage, rangeToSetOnDmm,
-                                                         testingMeasureValue);
-
-                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
-                    continue;
-                }
+                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.DcCurrent.RangeStorage, Calibrator.DcCurrent.RangeStorage, rangeToSetOnDmm, testingMeasureValue))
+                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
 
                 var operation = new BasicOperationVerefication<MeasPoint<Current>>();
                 operation.Name = rangeToSetOnDmm.Description;
@@ -512,20 +467,9 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
-                //установим пределы измерения мултиметра и воспроизведения калибратора
-                Multimetr.AcCurrent.RangeStorage.SetRange(rangeToSetOnDmm);
-                Calibrator.AcCurrent.RangeStorage.SetRange(testingMeasureValue);
-
-                //если у какого-то из устройств нет подходящего диапазона?
-                if (!RangeIsSet(Calibrator.AcCurrent.RangeStorage) ||
-                    !RangeIsSet(Multimetr.AcCurrent.RangeStorage))
-                {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcCurrent.RangeStorage, Calibrator.AcCurrent.RangeStorage, rangeToSetOnDmm,
-                                                         testingMeasureValue);
-
-                    //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
-                    continue;
-                }
+                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcCurrent.RangeStorage, Calibrator.AcCurrent.RangeStorage, rangeToSetOnDmm, testingMeasureValue))
+                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
 
                 //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
                 var operation = new BasicOperationVerefication<MeasPoint<Current, Frequency>>();

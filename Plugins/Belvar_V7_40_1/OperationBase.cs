@@ -82,19 +82,44 @@ namespace Belvar_V7_40_1
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
 
+        /// <summary>
+        /// Устанавливает на мультиметре предел измерения. У калибратора устанавливает значение физ. величины для воспроизведения. Проверяет успешность этих операций.
+        /// </summary>
+        /// <param name="multRangeStorage">Диапазоны измерения мультиметра.</param>
+        /// <param name="calibrRangeStorage">Диапазоны воспроизведения калибратора.</param>
+        /// <param name="rangeToSetOnDmm">Диапазон, который нужно установить у мультиметра.</param>
+        /// <param name="testingMeasureValue">Значение, которое должен воспроизвести калибратор.</param>
+        /// <returns></returns>
+        protected bool CheckAndSetPhisicalValuesIsSuccess<T>(IRangePhysicalQuantity<T> multRangeStorage, IRangePhysicalQuantity<T> calibrRangeStorage,
+            MeasPoint<T> rangeToSetOnDmm, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
+        {
+            //установим пределы измерения мултиметра и воспроизведения калибратора
+            multRangeStorage.SetRange(rangeToSetOnDmm);
+            calibrRangeStorage.SetRange(testingMeasureValue);
+            //если у какого-то из устройств нет подходящего диапазона?
+            if (!IsSetRange(calibrRangeStorage) ||
+                !IsSetRange(multRangeStorage))
+            {
+                ShowNotSupportedMeasurePointMeessage(multRangeStorage, calibrRangeStorage, rangeToSetOnDmm, testingMeasureValue);
+                return false;
+            }
+
+            return true;
+        }
+
+
         protected bool IsSetRange<T>(IRangePhysicalQuantity<T> inRangeStorage) where T : class, IPhysicalQuantity<T>, new()
         {
             return inRangeStorage.SelectRange != null;
         }
 
         /// <summary>
-        /// Выводим пользователю сообщение почему это значение физ. величины нельзя восрпоизвести эталоном или измерить прибором.
+        /// Формирует и выводи тсообщение со значениями, которые нельзя воспроизвести или измерить.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="mult"></param>
-        /// <param name="calibrRangeStorage"></param>
-        /// <param name="rangeToSetOnMetr"></param>
-        /// <param name="testingMeasureValue"></param>
+        /// <param name="multRangeStorage">Диапазоны измерения физю величин мультиметра.</param>
+        /// <param name="calibrRangeStorage">Диапазоны воспроизведения физю величин калибратора.</param>
+        /// <param name="rangeToSetOnMetr">Диапазон измерения, который нужно установить на мультиметре.</param>
+        /// <param name="testingMeasureValue">Значение физической величины, которое нужно воспроизвести на эталоне.</param>
         protected void ShowNotSupportedMeasurePointMeessage<T>(IRangePhysicalQuantity<T> multRangeStorage,
             IRangePhysicalQuantity<T> calibrRangeStorage, MeasPoint<T> rangeToSetOnMetr, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
         {
@@ -267,6 +292,38 @@ namespace Belvar_V7_40_1
             return dataTable;
         }
 
+        /// <summary>
+        /// Устанавливает на мультиметре предел измерения. У калибратора устанавливает значение физ. величины для воспроизведения. Проверяет успешность этих операций.
+        /// </summary>
+        /// <param name="multRangeStorage">Диапазоны измерения мультиметра.</param>
+        /// <param name="calibrRangeStorage">Диапазоны воспроизведения калибратора.</param>
+        /// <param name="rangeToSetOnDmm">Диапазон, который нужно установить у мультиметра.</param>
+        /// <param name="testingMeasureValue">Значение, которое должен воспроизвести калибратор.</param>
+        /// <returns></returns>
+        protected bool CheckAndSetPhisicalValuesIsSuccess(IRangePhysicalQuantity<T1, T2> multRangeStorage, IRangePhysicalQuantity<T1, T2> calibrRangeStorage, 
+            MeasPoint<T1, T2> rangeToSetOnDmm, MeasPoint<T1, T2> testingMeasureValue)
+        {
+            //установим пределы измерения мултиметра и воспроизведения калибратора
+            multRangeStorage.SetRange(rangeToSetOnDmm);
+            calibrRangeStorage.SetRange(testingMeasureValue);
+            //если у какого-то из устройств нет подходящего диапазона?
+            if (!RangeIsSet(calibrRangeStorage) ||
+                !RangeIsSet(multRangeStorage))
+            {
+                ShowNotSupportedMeasurePointMeessage(multRangeStorage, calibrRangeStorage, rangeToSetOnDmm, testingMeasureValue);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Формирует и выводи тсообщение со значениями, которые нельзя воспроизвести или измерить.
+        /// </summary>
+        /// <param name="multRangeStorage">Диапазоны измерения физю величин мультиметра.</param>
+        /// <param name="calibrRangeStorage">Диапазоны воспроизведения физю величин калибратора.</param>
+        /// <param name="rangeToSetOnMetr">Диапазон измерения, который нужно установить на мультиметре.</param>
+        /// <param name="testingMeasureValue">Значение физической величины, которое нужно воспроизвести на эталоне.</param>
         protected void ShowNotSupportedMeasurePointMeessage(IRangePhysicalQuantity<T1, T2> multRangeStorage,
             IRangePhysicalQuantity<T1, T2> calibrRangeStorage, MeasPoint<T1,T2> rangeToSetOnMetr, MeasPoint<T1, T2> testingMeasureValue)
         {
