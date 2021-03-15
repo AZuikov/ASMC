@@ -142,7 +142,7 @@ namespace Belvar_V7_40_1
                 if (!IsSetRange(Calibrator.DcVoltage.RangeStorage) ||
                     !IsSetRange(Multimetr.DcVoltage.RangeStorage))
                 {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSetOnDmm,
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcVoltage.RangeStorage, Calibrator.DcVoltage.RangeStorage, rangeToSetOnDmm,
                                                          testingMeasureValue);
 
                     //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
@@ -235,7 +235,7 @@ namespace Belvar_V7_40_1
                 if (!RangeIsSet(Calibrator.AcVoltage.RangeStorage) ||
                     !RangeIsSet(Multimetr.AcVoltage.RangeStorage))
                 {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm,
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcVoltage.RangeStorage, Calibrator.AcVoltage.RangeStorage, rangeToSetOnDmm,
                                                          testingMeasureValue);
 
                     //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
@@ -323,10 +323,10 @@ namespace Belvar_V7_40_1
 
 
                 //если у какого-то из устройств нет подходящего диапазона?
-                if (!IsSetRange(Calibrator.DcVoltage.RangeStorage) ||
-                    !IsSetRange(Multimetr.DcVoltage.RangeStorage))
+                if (!IsSetRange(Calibrator.Resistance2W.RangeStorage) ||
+                    !IsSetRange(Multimetr.Resistance2W.RangeStorage))
                 {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm,
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.Resistance2W.RangeStorage, Calibrator.Resistance2W.RangeStorage, rangeToSetOnDmm,
                                                          testingMeasureValue);
 
                     //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
@@ -347,7 +347,30 @@ namespace Belvar_V7_40_1
                 {
                     try
                     {
-                        operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
+                        MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
+                        int timeOut = 700;//таймаут для измерения
+                        if (Multimetr.Resistance2W.RangeStorage.SelectRange.End.MainPhysicalQuantity
+                                     .GetNoramalizeValueToSi() == 200) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
+                        {
+                            //зададим 0 Ом и считвем сопротивление проводов
+                            InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, nullPointResistance, Logger, token);
+                            nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
+                            nullPointResistance.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
+                        }
+                        else
+                        {
+                            timeOut = 3000;//на других пределах нужно дольше измерять и не учитывать провода
+                        }
+                        InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+                        
+                        operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token, timeOut ).Item1;
+                        operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
+                        //если сопротивление проводов измерено, то его нужно учесть
+                        if (nullPointResistance.MainPhysicalQuantity.GetNoramalizeValueToSi() > 0)
+                        {
+                            operation.Getting = operation.Getting - nullPointResistance;
+                        }
+
                         operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
                                                                                          .Multiplier);
                     }
@@ -411,7 +434,7 @@ namespace Belvar_V7_40_1
                 if (!IsSetRange(Calibrator.DcCurrent.RangeStorage) ||
                     !IsSetRange(Multimetr.DcCurrent.RangeStorage))
                 {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcCurrent, Calibrator.DcCurrent, rangeToSetOnDmm,
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.DcCurrent.RangeStorage, Calibrator.DcCurrent.RangeStorage, rangeToSetOnDmm,
                                                          testingMeasureValue);
 
                     //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы
@@ -497,7 +520,7 @@ namespace Belvar_V7_40_1
                 if (!RangeIsSet(Calibrator.AcCurrent.RangeStorage) ||
                     !RangeIsSet(Multimetr.AcCurrent.RangeStorage))
                 {
-                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcCurrent, Calibrator.AcCurrent, rangeToSetOnDmm,
+                    ShowNotSupportedMeasurePointMeessage(Multimetr.AcCurrent.RangeStorage, Calibrator.AcCurrent.RangeStorage, rangeToSetOnDmm,
                                                          testingMeasureValue);
 
                     //эту точку не будем поверять, не добавляем ее в протокол и не подаем значение на приборы

@@ -87,20 +87,26 @@ namespace Belvar_V7_40_1
             return inRangeStorage.SelectRange != null;
         }
 
-        protected void ShowNotSupportedMeasurePointMeessage<T>(IMeterPhysicalQuantity<T> mult,
-            ISourcePhysicalQuantity<T> sourse, MeasPoint<T> rangeToSetOnMetr, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
+        /// <summary>
+        /// Выводим пользователю сообщение почему это значение физ. величины нельзя восрпоизвести эталоном или измерить прибором.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="mult"></param>
+        /// <param name="calibrRangeStorage"></param>
+        /// <param name="rangeToSetOnMetr"></param>
+        /// <param name="testingMeasureValue"></param>
+        protected void ShowNotSupportedMeasurePointMeessage<T>(IRangePhysicalQuantity<T> multRangeStorage,
+            IRangePhysicalQuantity<T> calibrRangeStorage, MeasPoint<T> rangeToSetOnMetr, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
         {
             string message = "!!!ВНИМАНИЕ!!!\n\n";
             string endStr = ", согласно характеристикам в его файле точности.\n\n";
             //разберемся, у кого нет диапазона?
-            if (!IsSetRange<T>(mult.RangeStorage))
+            if (!IsSetRange<T>(multRangeStorage))
             {
-                //todo как-то проинформировать пользователя
                 message = message + $"Предел {rangeToSetOnMetr.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
             }
-            if (!IsSetRange<T>(sourse.RangeStorage))
+            if (!IsSetRange<T>(calibrRangeStorage))
             {
-                //todo как-то проинформировать пользователя
                 message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
             }
 
@@ -127,7 +133,7 @@ namespace Belvar_V7_40_1
 
         protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
             IMeterPhysicalQuantity<TPhysicalQuantity> multimetr, ISourcePhysicalQuantity<TPhysicalQuantity> sourse,
-            Logger logger, CancellationTokenSource _token)
+            Logger logger, CancellationTokenSource _token, int timeOut=0)
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
             CatchException<IOTimeoutException>(() => sourse.OutputOn(), _token, logger);
@@ -135,6 +141,7 @@ namespace Belvar_V7_40_1
             (MeasPoint<TPhysicalQuantity>, IOTimeoutException) result;
             try
             {
+                Thread.Sleep(timeOut);
                 result = CatchException<IOTimeoutException, MeasPoint<TPhysicalQuantity>>(
                                                                                           () => multimetr.GetValue(), _token, logger);
 
@@ -260,18 +267,18 @@ namespace Belvar_V7_40_1
             return dataTable;
         }
 
-        protected void ShowNotSupportedMeasurePointMeessage(IMeterPhysicalQuantity<T1, T2> mult,
-            ISourcePhysicalQuantity<T1, T2> sourse, MeasPoint<T1,T2> rangeToSetOnMetr, MeasPoint<T1, T2> testingMeasureValue)
+        protected void ShowNotSupportedMeasurePointMeessage(IRangePhysicalQuantity<T1, T2> multRangeStorage,
+            IRangePhysicalQuantity<T1, T2> calibrRangeStorage, MeasPoint<T1,T2> rangeToSetOnMetr, MeasPoint<T1, T2> testingMeasureValue)
         {
             string message = "!!!ВНИМАНИЕ!!!\n\n";
             string endStr = ", согласно характеристикам в его файле точности.\n\n";
             //разберемся, у кого нет диапазона?
-            if (!RangeIsSet(mult.RangeStorage))
+            if (!RangeIsSet(multRangeStorage))
             {
                 //todo как-то проинформировать пользователя
                 message = message + $"Предел {rangeToSetOnMetr.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
             }
-            if (!RangeIsSet(sourse.RangeStorage))
+            if (!RangeIsSet(calibrRangeStorage))
             {
                 //todo как-то проинформировать пользователя
                 message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
