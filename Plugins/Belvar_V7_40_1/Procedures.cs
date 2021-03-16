@@ -118,7 +118,9 @@ namespace Belvar_V7_40_1
         public DcvTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "DCV Определение погрешности измерения постоянного напряжения";
-            
+            Sheme = ShemeGeneration("V7-40_U_R.jpg", 1);
+
+
 
         }
 
@@ -200,6 +202,7 @@ namespace Belvar_V7_40_1
         public AcvTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "ACV Определение погрешности измерения переменного напряжения";
+            Sheme = ShemeGeneration("V7-40_U_R.jpg", 1);
         }
 
         #region Methods
@@ -216,6 +219,7 @@ namespace Belvar_V7_40_1
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
                 
                 //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                
                 if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcVoltage.RangeStorage,Calibrator.AcVoltage.RangeStorage,rangeToSetOnDmm,testingMeasureValue))
                     continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
 
@@ -284,6 +288,7 @@ namespace Belvar_V7_40_1
         public Resist2WTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Resist Определение погрешности измерения Электрического сопротивления";
+            Sheme = ShemeGeneration("V7-40_U_R.jpg", 1);
         }
 
 
@@ -379,6 +384,7 @@ namespace Belvar_V7_40_1
         public DciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "DCI Определение погрешности измерения постоянного тока";
+            Sheme = ShemeGeneration("V7-40_Curr.jpg", 2);
         }
 
         #region Methods
@@ -457,6 +463,7 @@ namespace Belvar_V7_40_1
         public AciTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "ACI Определение погрешности измерения переменного тока";
+            Sheme = ShemeGeneration("V7-40_Curr.jpg", 2);
         }
 
         protected override void InitWork(CancellationTokenSource token)

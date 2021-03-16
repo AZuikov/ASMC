@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AP.Reports.Utils;
@@ -61,6 +62,24 @@ namespace Belvar_V7_40_1
             }
 
             return dataTable;
+        }
+
+        /// <summary>
+        ///     Создает схему
+        /// </summary>
+        /// <param name="filename">Имя файла с разширением</param>
+        /// <param name="number">Номер схемы</param>
+        /// <returns></returns>
+        protected SchemeImage ShemeGeneration(string filename, int number)
+        {
+            return new SchemeImage
+            {
+                AssemblyLocalName = Assembly.GetExecutingAssembly().GetName().Name,
+                Description = "Измерительная схема. " + Name,
+                Number = number,
+                FileName = filename,
+                ExtendedDescription = "Соберите измерительную схему, согласно рисунку"
+            };
         }
 
         protected override string[] GenerateDataColumnTypeObject()

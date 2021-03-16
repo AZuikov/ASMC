@@ -137,6 +137,10 @@
     <Resource Include="Resource\Fluke 5720A_V7-40_Curr.jpg" />
     <Resource Include="Resource\Fluke 5720A_V7-40_U_R.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\V7-40_Curr.jpg" />
+    <Resource Include="Resource\V7-40_U_R.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
