@@ -331,7 +331,7 @@ namespace Belvar_V7_40_1
                         }
                         else
                         {
-                            timeOut = 3000;//на других пределах нужно дольше измерять и не учитывать провода
+                            timeOut = 4000;//на других пределах нужно дольше измерять и не учитывать провода
                         }
                         InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
                         
