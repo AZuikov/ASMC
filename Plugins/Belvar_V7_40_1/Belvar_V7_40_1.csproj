@@ -131,7 +131,12 @@
       <Name>ASMC.Devices</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resource\Fluke 5522A_V7-40_Curr.jpg" />
+    <Resource Include="Resource\Fluke 5522A_V7-40_U_R.jpg" />
+    <Resource Include="Resource\Fluke 5720A_V7-40_Curr.jpg" />
+    <Resource Include="Resource\Fluke 5720A_V7-40_U_R.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL
