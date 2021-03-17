@@ -324,7 +324,7 @@ namespace Belvar_V7_40_1
                     }
                     catch (NullReferenceException e)
                     {
-                        Logger.Error($"Не удалось считать показания с В7-40/1 в точке {testingMeasureValue}");
+                        Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
                     }
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
@@ -396,7 +396,7 @@ namespace Belvar_V7_40_1
                     }
                     catch (NullReferenceException e)
                     {
-                        Logger.Error($"Не удалось считать показания с В7-40/1 в точке {testingMeasureValue}");
+                        Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
                     }
                 };
 
@@ -470,7 +470,7 @@ namespace Belvar_V7_40_1
                     }
                     catch (NullReferenceException e)
                     {
-                        Logger.Error($"Не удалось считать показания с В7-40/1 в точке {testingMeasureValue}");
+                        Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
                     }
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
