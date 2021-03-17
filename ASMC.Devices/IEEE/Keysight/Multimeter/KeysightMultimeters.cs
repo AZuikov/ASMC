@@ -13,11 +13,15 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public Keysight34401A()
         {
             UserType = "34401A";
-        }
 
-        
-        
-       
-       
+        }
+    }
+
+    public class Keysight34461A : BaseDigitalMultimetr344xx
+    {
+        public Keysight34461A()
+        {
+            UserType = "34461A";
+        }
     }
 }
