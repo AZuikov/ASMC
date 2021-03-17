@@ -230,9 +230,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             public ICommand[] TermoCoupleType { get; set; }
 
-            public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
+            public void SetTermoCoupleType(FlukeTypeTermocouple flukeTypeTermocouple)
             {
-                Calibrator.Device.WriteLine("TC_TYPE " + typeTermocouple.GetStringValue());
+                Calibrator.Device.WriteLine("TC_TYPE " + flukeTypeTermocouple.GetStringValue());
                 this.Calibrator.CheckErrors();
             }
 

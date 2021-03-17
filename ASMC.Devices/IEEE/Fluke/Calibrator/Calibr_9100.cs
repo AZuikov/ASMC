@@ -261,16 +261,16 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
                 
                 TermoCoupleType = new[]
                 {
-                    new Command(TypeTermocouple.B.GetStringValue(), $"термопара типа {TypeTermocouple.B.GetStringValue()}", (int) TypeTermocouple.B),
-                    new Command(TypeTermocouple.C.GetStringValue(), $"термопара типа {TypeTermocouple.C.GetStringValue()}", (int) TypeTermocouple.C),
-                    new Command(TypeTermocouple.E.GetStringValue(), $"термопара типа {TypeTermocouple.E.GetStringValue()}", (int) TypeTermocouple.E),
-                    new Command(TypeTermocouple.J.GetStringValue(), $"термопара типа {TypeTermocouple.J.GetStringValue()}", (int) TypeTermocouple.J),
-                    new Command(TypeTermocouple.K.GetStringValue(), $"термопара типа {TypeTermocouple.K.GetStringValue()}", (int) TypeTermocouple.K),
-                    new Command(TypeTermocouple.N.GetStringValue(), $"термопара типа {TypeTermocouple.N.GetStringValue()}", (int) TypeTermocouple.N),
-                    new Command(TypeTermocouple.R.GetStringValue(), $"термопара типа {TypeTermocouple.R.GetStringValue()}", (int) TypeTermocouple.R),
-                    new Command(TypeTermocouple.S.GetStringValue(), $"термопара типа {TypeTermocouple.S.GetStringValue()}", (int) TypeTermocouple.S),
-                    new Command(TypeTermocouple.T.GetStringValue(), $"термопара типа {TypeTermocouple.T.GetStringValue()}", (int) TypeTermocouple.T),
-                    new Command(TypeTermocouple.L.GetStringValue(), $"термопара типа {TypeTermocouple.L.GetStringValue()}", (int) TypeTermocouple.L),
+                    new Command(FlukeTypeTermocouple.B.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.B.GetStringValue()}", (int) FlukeTypeTermocouple.B),
+                    new Command(FlukeTypeTermocouple.C.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.C.GetStringValue()}", (int) FlukeTypeTermocouple.C),
+                    new Command(FlukeTypeTermocouple.E.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.E.GetStringValue()}", (int) FlukeTypeTermocouple.E),
+                    new Command(FlukeTypeTermocouple.J.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.J.GetStringValue()}", (int) FlukeTypeTermocouple.J),
+                    new Command(FlukeTypeTermocouple.K.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.K.GetStringValue()}", (int) FlukeTypeTermocouple.K),
+                    new Command(FlukeTypeTermocouple.N.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.N.GetStringValue()}", (int) FlukeTypeTermocouple.N),
+                    new Command(FlukeTypeTermocouple.R.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.R.GetStringValue()}", (int) FlukeTypeTermocouple.R),
+                    new Command(FlukeTypeTermocouple.S.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.S.GetStringValue()}", (int) FlukeTypeTermocouple.S),
+                    new Command(FlukeTypeTermocouple.T.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.T.GetStringValue()}", (int) FlukeTypeTermocouple.T),
+                    new Command(FlukeTypeTermocouple.L.GetStringValue(), $"термопара типа {FlukeTypeTermocouple.L.GetStringValue()}", (int) FlukeTypeTermocouple.L),
                 };
             }
 
@@ -287,9 +287,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             }
 
-            public void SetTermoCoupleType(TypeTermocouple typeTermocouple)
+            public void SetTermoCoupleType(FlukeTypeTermocouple flukeTypeTermocouple)
             {
-                typeSetTermocouple = TermoCoupleType.FirstOrDefault(q => q.Value == (int)typeTermocouple);
+                typeSetTermocouple = TermoCoupleType.FirstOrDefault(q => q.Value == (int)flukeTypeTermocouple);
             }
         }
 

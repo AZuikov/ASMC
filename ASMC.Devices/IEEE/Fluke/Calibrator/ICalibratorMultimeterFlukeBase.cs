@@ -85,7 +85,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     {
         ISourcePhysicalQuantity<Resistance> Resistance4W { get;  }
     }
-    public enum TypeTermocouple
+    public enum FlukeTypeTermocouple
     {
         [StringValue("B")] B,
         [StringValue("C")] C,
@@ -98,13 +98,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         [StringValue("S")] S,
         [StringValue("T")] T,
         [StringValue("X")] LinOut10mV,
-        [StringValue("Y")] Himidity,
+        [StringValue("Y")] Humidity,
         [StringValue("Z")] LinOut1mV
     }
     public interface ITermocoupleType : ISourcePhysicalQuantity<Temperature>
     {
         ICommand[] TermoCoupleType { get; set; }
-        void SetTermoCoupleType(TypeTermocouple typeTermocouple);
+        void SetTermoCoupleType(FlukeTypeTermocouple flukeTypeTermocouple);
     }
 
     public interface ITemperature 

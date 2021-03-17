@@ -294,6 +294,7 @@ namespace Belvar_V7_40_1
 
         protected override void InitWork(CancellationTokenSource token)
         {
+            
             ConnectionToDevice();
             DataRow.Clear();
             for (int row = 0; row < TestMeasPoints.GetUpperBound(0) + 1; row++)

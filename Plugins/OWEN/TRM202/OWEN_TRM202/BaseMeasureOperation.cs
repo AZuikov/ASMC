@@ -21,10 +21,16 @@ namespace OWEN_TRM202
 
         protected ICalibratorMultimeterFlukeBase Calibrator;
 
-        protected TypeTermocouple CalibrTypeTermocouple;
+        //protected FlukeTypeTermocouple CalibrFlukeTypeTermocouple;
 
         protected TRM202Device.in_t CoupleTypeTrm;
+        /// <summary>
+        /// Перечь проверяемых точек.
+        /// </summary>
         protected MeasPoint<T>[] measPoints;
+        /// <summary>
+        /// Диапазон измерения типа датчика ТРМ.
+        /// </summary>
         protected RangeStorage<PhysicalRange<T>> MeasureRanges;
         protected TRM202DeviceUI trm202;
 
