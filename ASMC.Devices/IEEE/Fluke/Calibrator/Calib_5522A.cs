@@ -67,7 +67,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         }
 
-        public ISourcePhysicalQuantity<Temperature> Temperature { get; }
+        
         public class Resist4W : Resist
         {
 

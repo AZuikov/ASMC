@@ -463,20 +463,3 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
     }
 }
 
-/* Remove this code!!!!!!
-      
-
-        //public void SetTemperature(MeasPoint<Temperature> setPoint, COut.CSet.СTemperature.TypeTermocouple typeTermocouple, string unit)
-        //{
-        //    //WriteLine("Source:func DC");
-        //    //WriteLine($"Source:TEMPerature:THERmocouple:TYPE {typeTermocouple.GetStringValue()}");
-        //    //WriteLine($"Source:TEMPerature:UNITs {unit}");
-        //    //WriteLine($"Source:TEMPerature:THERmocouple {setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-        //}
-   
-        
-
-        
- *
- *
- */

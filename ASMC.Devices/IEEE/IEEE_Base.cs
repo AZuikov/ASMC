@@ -91,7 +91,17 @@ namespace ASMC.Devices.IEEE
             //  \HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB  чистить реестр тут
             get
             {
-                var arr = GlobalResourceManager.Find("?*INSTR").ToList();
+                List<string> arr = null;
+                try
+                {
+                    arr = GlobalResourceManager.Find("?*INSTR").ToList();
+                }
+                catch (Ivi.Visa.NativeVisaException e)
+                {
+                    Logger.Error("VISA: Поиск устройств не дал результатов!");
+                    return null;
+                }
+                
                 var ResultList = new List<string>();
 
                 Parallel.For(0, arr.Count, i =>

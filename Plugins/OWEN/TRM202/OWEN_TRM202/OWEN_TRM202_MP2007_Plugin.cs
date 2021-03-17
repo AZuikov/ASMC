@@ -899,11 +899,7 @@ namespace OWEN_TRM202
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-            #region Property
-
-            protected ushort _chanelNumber { get; set; }
-
-            #endregion
+           
 
             public Operation8_4_A1_A3_TermocouoleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber)
                 :
