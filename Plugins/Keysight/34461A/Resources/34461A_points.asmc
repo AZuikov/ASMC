@@ -5,18 +5,18 @@ Operation1: DCV
 100      100           m           NA   NA
 100      -100          m           NA   NA
 #--------1 В-------------------------
-1        1                         NA   NA
-1        -1                        NA   NA
+1        1            NA           NA   NA
+1        -1           NA           NA   NA
 #--------10 В-------------------------
-10       4                         NA   NA
-10       10                        NA   NA
-10       -10                       NA   NA
+10       4            NA            NA   NA
+10       10           NA            NA   NA
+10       -10          NA            NA   NA
 #--------100 В-------------------------
-100      100                       NA   NA
-100      -100                      NA   NA
+100      100          NA            NA   NA
+100      -100         NA            NA   NA
 #--------1000 В-------------------------
-1000     1000                      NA   NA
-1000     -500                      NA   NA
+1000     1000         NA            NA   NA
+1000     -500         NA            NA   NA
 
 Operation1: ACV
 #Предел--Точка-----Множитель ед.--Доп.ед.изм.--Множитель доп. ед.
@@ -106,6 +106,7 @@ Operation1: DCI
 
 Operation1: ACI
 #Range--Nominal-----TestingUnit--Mod--ModUnit--Mod2--ModUnit
+#                             Частота сигнала  Фильтр
 #----- 100 мкА--------------
 100      100            u         1     k      200     NA
 100      100            u         5     k      200     NA
