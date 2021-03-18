@@ -285,10 +285,12 @@ namespace ProgramFor34461A
                 };
                 operation.BodyWorkAsync = () =>
                 {
+                    MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
+                    int timeOut = 700;//таймаут для измерения
+
                     try
                     {
-                        MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
-                        int timeOut = 700;//таймаут для измерения
+                        
                         if (Multimetr.Resistance2W.RangeStorage.SelectRange.End.MainPhysicalQuantity
                                      .GetNoramalizeValueToSi() <= 100) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
                         {
@@ -302,7 +304,6 @@ namespace ProgramFor34461A
                             timeOut = 4000;//на других пределах нужно дольше измерять и не учитывать провода
                         }
                         InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
-
                         operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token, timeOut).Item1;
                         
                         //если сопротивление проводов измерено, то его нужно учесть
