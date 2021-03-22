@@ -53,7 +53,7 @@ namespace OWEN_TRM202
             {
                 new Device
                 {
-                    Devices = new IDeviceRemote[] {new Calibr_9100(), new Calib5522A()},
+                    Devices = new IDeviceRemote[] { new Calib_5720A(),  new Calibr_9100(), new Calib_5522A()},
                     Description = "Многофунциональный калибратор"
                 }
             };
@@ -445,7 +445,7 @@ namespace OWEN_TRM202
                 ConnectionToDevice();
                 DataRow.Clear();
 
-                if (trm202 == null || Calibrator == null || measPoints == null) return;
+                if (trm202 == null || Calibrator == null || measPointsTemperatureVolt == null) return;
 
                 UserItemOperation.ServicePack.MessageBox()
                                  .Show("Отключите компенсацию холодного спая!!!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -640,7 +640,7 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E__k;
                 Name = CoupleTypeTrm.GetStringValue();
 
-                measPoints = new[]
+                measPointsTemperatureVolt = new[]
                 {
                     new MeasPoint<Temperature, Voltage>(-125, UnitMultiplier.None, -4.276M, UnitMultiplier.Mili),
                     new MeasPoint<Temperature, Voltage>(175M, UnitMultiplier.None, 7.140M, UnitMultiplier.Mili),
@@ -802,7 +802,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A1_Poverka : Operation8_4_A1_A3_TermocouoleGost8_585
+        public class Operation8_4_Type_A1_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_A1_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -813,13 +813,13 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E_A1;
                 Name = CoupleTypeTrm.GetStringValue();
 
-                measPoints = new[]
+                measPointsTemperatureVolt = new[]
                 {
-                    new MeasPoint<Temperature, Voltage>(125, 1.706M),
-                    new MeasPoint<Temperature, Voltage>(625M, 10.028M),
-                    new MeasPoint<Temperature, Voltage>(1250M, 19.876M),
-                    new MeasPoint<Temperature, Voltage>(1875M, 27.844M),
-                    new MeasPoint<Temperature, Voltage>(2375M, 32.654M)
+                    new MeasPoint<Temperature, Voltage>(125, UnitMultiplier.None, 1.706M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(625M, UnitMultiplier.None, 10.028M , UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(1250M,UnitMultiplier.None,  19.876M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(1875M,UnitMultiplier.None,  27.844M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(2375M,UnitMultiplier.None,  32.654M, UnitMultiplier.Mili)
                 };
             }
 
@@ -833,7 +833,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A2_Poverka : Operation8_4_A1_A3_TermocouoleGost8_585
+        public class Operation8_4_Type_A2_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_A2_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -844,13 +844,13 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E_A2;
                 Name = CoupleTypeTrm.GetStringValue();
 
-                measPoints = new[]
+                measPointsTemperatureVolt = new[]
                 {
-                    new MeasPoint<Temperature, Voltage>(90, 1.191M),
-                    new MeasPoint<Temperature, Voltage>(450M, 7.139M),
-                    new MeasPoint<Temperature, Voltage>(900M, 14.696M),
-                    new MeasPoint<Temperature, Voltage>(1350M, 21.478M),
-                    new MeasPoint<Temperature, Voltage>(1710M, 26.180M)
+                    new MeasPoint<Temperature, Voltage>(90,   UnitMultiplier.None ,1.191M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(450M, UnitMultiplier.None, 7.139M , UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(900M, UnitMultiplier.None, 14.696M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(1350M,UnitMultiplier.None, 21.478M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(1710M,UnitMultiplier.None, 26.180M, UnitMultiplier.Mili)
                 };
             }
 
@@ -864,7 +864,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A3_Poverka : Operation8_4_A1_A3_TermocouoleGost8_585
+        public class Operation8_4_Type_A3_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_A3_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -875,13 +875,13 @@ namespace OWEN_TRM202
                 CoupleTypeTrm = TRM202Device.in_t.E_A3;
                 Name = CoupleTypeTrm.GetStringValue();
 
-                measPoints = new[]
+                measPointsTemperatureVolt = new[]
                 {
-                    new MeasPoint<Temperature, Voltage>(90, 1.176M),
-                    new MeasPoint<Temperature, Voltage>(450M, 6.985M),
-                    new MeasPoint<Temperature, Voltage>(900M, 14.411M),
-                    new MeasPoint<Temperature, Voltage>(1350M, 21.100M),
-                    new MeasPoint<Temperature, Voltage>(1710M, 25.728M)
+                    new MeasPoint<Temperature, Voltage>(90, UnitMultiplier.None, 1.176M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(450M, UnitMultiplier.None, 6.985M , UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(900M, UnitMultiplier.None,14.411M , UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(1350M,UnitMultiplier.None, 21.100M, UnitMultiplier.Mili),
+                    new MeasPoint<Temperature, Voltage>(1710M,UnitMultiplier.None, 25.728M, UnitMultiplier.Mili)
                 };
             }
 
@@ -899,7 +899,7 @@ namespace OWEN_TRM202
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-           
+            protected MeasPoint<Temperature, Voltage> []measPointsTemperatureVolt;
 
             public Operation8_4_A1_A3_TermocouoleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber)
                 :
@@ -937,11 +937,11 @@ namespace OWEN_TRM202
                 ConnectionToDevice();
                 DataRow.Clear();
 
-                if (trm202 == null || Calibrator == null || measPoints == null) return;
+                if (trm202 == null || Calibrator == null || measPointsTemperatureVolt == null) return;
 
                 base.InitWork(token);
 
-                foreach (var point in measPoints)
+                foreach (var point in measPointsTemperatureVolt)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
                     operation.InitWorkAsync = async () =>
@@ -989,10 +989,11 @@ namespace OWEN_TRM202
                         try
                         {
                             var setPoint =
-                                new MeasPoint<Voltage>(point.MainPhysicalQuantity.Value, UnitMultiplier.Mili);
+                                new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
                             Calibrator.DcVoltage.SetValue(setPoint);
                             Calibrator.DcVoltage.OutputOn();
                             Thread.Sleep(1900);
+
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
                             //measPoint = measPoint - delta;
                             Calibrator.DcVoltage.OutputOff();
@@ -1132,6 +1133,12 @@ namespace OWEN_TRM202
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Percent>(measPoint);
                         }
+                        catch (TrmException e)
+                        {
+                            var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
+                            operation.Comment = err;
+                            Logger.Error(err);
+                        }
                         catch (Exception e)
                         {
                             Logger.Error(e);
@@ -1168,11 +1175,11 @@ namespace OWEN_TRM202
 
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(5, 50M),
-                    new MeasPoint<Percent, Voltage>(25M, 250M),
-                    new MeasPoint<Percent, Voltage>(50M, 500M),
-                    new MeasPoint<Percent, Voltage>(75M, 750M),
-                    new MeasPoint<Percent, Voltage>(95M, 950M)
+                    new MeasPoint<Percent, Voltage>(5,UnitMultiplier.None, 50M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(25M,UnitMultiplier.None,  250M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None,  500M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(75M,UnitMultiplier.None,  750M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(95M,UnitMultiplier.None,  950M, UnitMultiplier.Mili)
                 };
             }
 
@@ -1199,7 +1206,7 @@ namespace OWEN_TRM202
 
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(50M, 500M)
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None, 500M, UnitMultiplier.Mili)
                 };
             }
 
@@ -1225,11 +1232,11 @@ namespace OWEN_TRM202
 
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(5, -45M),
-                    new MeasPoint<Percent, Voltage>(25M, -25M),
-                    new MeasPoint<Percent, Voltage>(50M, 0M),
-                    new MeasPoint<Percent, Voltage>(75M, 25M),
-                    new MeasPoint<Percent, Voltage>(95M, 45M)
+                    new MeasPoint<Percent, Voltage>(5, UnitMultiplier.None, -45M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(25M,UnitMultiplier.None,  -25M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None,  0M  , UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(75M,UnitMultiplier.None,  25M , UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(95M,UnitMultiplier.None,  45M , UnitMultiplier.Mili)
                 };
             }
 
@@ -1258,11 +1265,11 @@ namespace OWEN_TRM202
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(5, 25),
-                    new MeasPoint<Percent, Voltage>(25M, 125M),
-                    new MeasPoint<Percent, Voltage>(50M, 250M),
-                    new MeasPoint<Percent, Voltage>(75M, 375M),
-                    new MeasPoint<Percent, Voltage>(95M, 475M)
+                    new MeasPoint<Percent, Voltage>(5, UnitMultiplier.None, 25M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(25M,UnitMultiplier.None, 125M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None, 250M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(75M,UnitMultiplier.None, 375M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(95M,UnitMultiplier.None, 475M, UnitMultiplier.Mili)
                 };
             }
 
@@ -1291,11 +1298,11 @@ namespace OWEN_TRM202
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(5, 100),
-                    new MeasPoint<Percent, Voltage>(25M, 500M),
-                    new MeasPoint<Percent, Voltage>(50M, 1000M),
-                    new MeasPoint<Percent, Voltage>(75M, 1500M),
-                    new MeasPoint<Percent, Voltage>(95M, 1900M)
+                    new MeasPoint<Percent, Voltage>(5, UnitMultiplier.None, 100, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(25M,UnitMultiplier.None, 500M , UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None, 1000M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(75M, UnitMultiplier.None,1500M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(95M,UnitMultiplier.None, 1900M, UnitMultiplier.Mili)
                 };
             }
 
@@ -1325,7 +1332,7 @@ namespace OWEN_TRM202
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(50M, 1000M)
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None, 100M, UnitMultiplier.Mili)
                 };
             }
 
@@ -1354,11 +1361,11 @@ namespace OWEN_TRM202
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(5, 480),
-                    new MeasPoint<Percent, Voltage>(25M, 800M),
-                    new MeasPoint<Percent, Voltage>(50M, 1200M),
-                    new MeasPoint<Percent, Voltage>(75M, 1600M),
-                    new MeasPoint<Percent, Voltage>(95M, 1920M)
+                    new MeasPoint<Percent, Voltage>(5, UnitMultiplier.None, 480   , UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(25M,UnitMultiplier.None, 800M , UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None, 1200M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(75M,UnitMultiplier.None, 1600M, UnitMultiplier.Mili),
+                    new MeasPoint<Percent, Voltage>(95M,UnitMultiplier.None, 1920M, UnitMultiplier.Mili)
                 };
             }
 

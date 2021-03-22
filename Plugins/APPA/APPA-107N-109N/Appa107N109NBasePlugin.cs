@@ -114,7 +114,7 @@ namespace APPA_107N_109N
             {
                 new Device
                 {
-                    Devices = new IDeviceRemote[] {new Calib5522A()}, Description = "Многофунциональный калибратор"
+                    Devices = new IDeviceRemote[] {new Calib_5522A()}, Description = "Многофунциональный калибратор"
                 }
             };
 

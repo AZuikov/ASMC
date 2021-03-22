@@ -18,7 +18,7 @@ namespace Multimetr34401A
         {
             ControlDevices = new IDeviceUi[]
             {
-                new Device {Devices = new ICalibratorMultimeterFlukeBase[] { new Calib5522A(), new Calib_5720A() }},
+                new Device {Devices = new ICalibratorMultimeterFlukeBase[] { new Calib_5522A(), new Calib_5720A() }},
             };
             TestDevices = new IDeviceUi[]
             {

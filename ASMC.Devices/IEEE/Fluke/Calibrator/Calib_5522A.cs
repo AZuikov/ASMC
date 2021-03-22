@@ -12,9 +12,9 @@ using ASMC.Devices.Model;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public class Calib5522A : CalibrMain, IResistance4W
+    public class Calib_5522A : CalibrMain, IResistance4W
     {
-        public Calib5522A()
+        public Calib_5522A()
         {
             UserType = "Fluke 5522A";
             Resistance4W = new Resist4W(this);

@@ -15,7 +15,7 @@ namespace ProgramFor34461A
         {
             ControlDevices = new IDeviceUi[]
             {
-                new Device {Devices = new IUserType[] {new Calib5522A(), new Calib_5720A()}}
+                new Device {Devices = new IUserType[] {new Calib_5522A(), new Calib_5720A()}}
             };
             TestDevices = new IDeviceUi[]
             {
