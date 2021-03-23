@@ -53,7 +53,7 @@ namespace OWEN_TRM202
             {
                 new Device
                 {
-                    Devices = new IDeviceRemote[] { new Calib_5720A(),  new Calibr_9100(), new Calib_5522A()},
+                    Devices = new IDeviceRemote[] { /*new Calib_5720A(),  new Calibr_9100(),*/ new Calib_5522A()},
                     Description = "Многофунциональный калибратор"
                 }
             };
@@ -400,7 +400,23 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_HCX_TermocoupleGost8_585 : BaseMeasureOperation<Temperature>
+        public class Operation8_4_HCX_TermocoupleGost8_585 : BaseVoltMeasureOperation
+        {
+            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+            public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) : base(userItemOperation, inChanelNumber)
+            {
+            }
+
+            protected override void InitWork(CancellationTokenSource token)
+            {
+                UserItemOperation.ServicePack.MessageBox()
+                                 .Show("Отключите компенсацию холодного спая!!!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Information);
+                base.InitWork(token);
+            }
+        }
+
+        public class BaseVoltMeasureOperation : BaseMeasureOperation<Temperature>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -410,7 +426,7 @@ namespace OWEN_TRM202
 
             #endregion
 
-            public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) :
+            public BaseVoltMeasureOperation(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
             {
                 _chanelNumber = inChanelNumber;
@@ -447,8 +463,7 @@ namespace OWEN_TRM202
 
                 if (trm202 == null || Calibrator == null || measPointsTemperatureVolt == null) return;
 
-                UserItemOperation.ServicePack.MessageBox()
-                                 .Show("Отключите компенсацию холодного спая!!!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Information);
+                
 
                 foreach (var point in measPointsTemperatureVolt)
                 {
@@ -802,7 +817,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A1_Poverka : Operation8_4_HCX_TermocoupleGost8_585
+        public class Operation8_4_Type_A1_Poverka : BaseVoltMeasureOperation
         {
             public Operation8_4_Type_A1_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -833,7 +848,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A2_Poverka : Operation8_4_HCX_TermocoupleGost8_585
+        public class Operation8_4_Type_A2_Poverka : BaseVoltMeasureOperation
         {
             public Operation8_4_Type_A2_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -864,7 +879,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A3_Poverka : Operation8_4_HCX_TermocoupleGost8_585
+        public class Operation8_4_Type_A3_Poverka : BaseVoltMeasureOperation
         {
             public Operation8_4_Type_A3_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -895,141 +910,6 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_A1_A3_TermocouoleGost8_585 : BaseMeasureOperation<Temperature>
-        {
-            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-            protected MeasPoint<Temperature, Voltage> []measPointsTemperatureVolt;
-
-            public Operation8_4_A1_A3_TermocouoleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber)
-                :
-                base(userItemOperation)
-            {
-                _chanelNumber = inChanelNumber;
-                Name = "Определение основной приведенной погрешности прибора со специализированным входом";
-                Sheme = new SchemeImage
-                {
-                    Number = _chanelNumber + 5,
-                    FileName = $"TRM202_VoltageTermocouple_chanel{_chanelNumber}.jpg",
-                    ExtendedDescription = "Соберите схему, как показано на рисунке."
-                };
-            }
-
-            #region Methods
-
-            protected override string[] GenerateDataColumnTypeObject()
-            {
-                return new[]
-                {
-                    "Поверяемая точка", "Измеренное значение",
-                    "Основная приведенная погрешность",
-                    "Допустимое значение приведенной погрешности"
-                }.Concat(base.GenerateDataColumnTypeObject()).ToArray();
-            }
-
-            protected override string GetReportTableName()
-            {
-                return null;
-            }
-
-            protected override void InitWork(CancellationTokenSource token)
-            {
-                ConnectionToDevice();
-                DataRow.Clear();
-
-                if (trm202 == null || Calibrator == null || measPointsTemperatureVolt == null) return;
-
-                base.InitWork(token);
-
-                foreach (var point in measPointsTemperatureVolt)
-                {
-                    var operation = new BasicOperationVerefication<MeasPoint<Temperature>>();
-                    operation.InitWorkAsync = async () =>
-                    {
-                        try
-                        {
-                            await Task.Run(() =>
-                            {
-                                //делаем предварительные настройка канала прибора
-
-                                //1. задаем на каналах нужную характеристику
-                                var typeTermoCouple = BitConverter
-                                                     .GetBytes((int) CoupleTypeTrm).Where(a => a != 0)
-                                                     .ToArray(); //выкидываем из массива лишние нули
-                                trm202.WriteParametrToTRM(TRM202Device.Parametr.InT, typeTermoCouple, _chanelNumber);
-                                //2. ставим сдвиги и наклоны характеристик
-                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.SH, 0, _chanelNumber);
-                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.KU, 1, _chanelNumber);
-                                //3. ставим полосы фильтров и постоянную времени фильтра
-                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.Fb, 0, _chanelNumber);
-                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.InF, 0, _chanelNumber);
-                            });
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                    };
-                    operation.BodyWorkAsync = () =>
-                    {
-                        operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-
-                        operation.UpperCalculation =
-                            expected => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
-                        operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                            .Multiplier);
-
-                        operation.LowerCalculation =
-                            expected => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
-                        operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                            .Multiplier);
-                        var nullPoint = new MeasPoint<Voltage>(0);
-
-                        try
-                        {
-                            var setPoint =
-                                new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.GetNoramalizeValueToSi());
-                            Calibrator.DcVoltage.SetValue(setPoint);
-                            Calibrator.DcVoltage.OutputOn();
-                            Thread.Sleep(1900);
-
-                            var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            //measPoint = measPoint - delta;
-                            Calibrator.DcVoltage.OutputOff();
-                            MathStatistics.Round(ref measPoint, 1);
-                            operation.Getting = new MeasPoint<Temperature>(measPoint);
-                        }
-                        catch (TrmException e)
-                        {
-                            var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
-                            operation.Comment = err;
-                            Logger.Error(err);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            Calibrator.DcVoltage.OutputOff();
-                        }
-
-                        operation.IsGood = () =>
-                            operation.Getting >= operation.LowerTolerance &&
-                            operation.Getting <= operation.UpperTolerance;
-                        ;
-                    };
-                    operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
-
-                    DataRow.Add(operation);
-                }
-            }
-
-            #endregion
-        }
-
         public class Operation8_4_UnicSignal : BaseMeasureOperation<Percent>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -1039,6 +919,14 @@ namespace OWEN_TRM202
             protected TRM202Device.in_t _coupleType;
 
             protected MeasPoint<Percent, Voltage>[] measPointsPercentVolt;
+            /// <summary>
+            /// Нижнее значение диапазона измерения.
+            /// </summary>
+            protected float MeasureRangeStart = 0;
+            /// <summary>
+            /// Верхнее значение диапазона измерения.
+            /// </summary>
+            protected float MeasureRangeEnd = 1;
 
             #endregion
 
@@ -1101,6 +989,9 @@ namespace OWEN_TRM202
                                 //3. ставим полосы фильтров и постоянную времени фильтра
                                 trm202.WriteFloat24Parametr(TRM202Device.Parametr.Fb, 0, _chanelNumber);
                                 trm202.WriteFloat24Parametr(TRM202Device.Parametr.InF, 0, _chanelNumber);
+                                //4. ставим границы измеряемых значений
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.SL_L, MeasureRangeStart, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.SL_H, MeasureRangeEnd, _chanelNumber);
                             });
                         }
                         catch (Exception e)
@@ -1229,6 +1120,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.U_50;
                 Name = _coupleType.GetStringValue();
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                MeasureRangeEnd = 100;
 
                 measPointsPercentVolt = new[]
                 {
@@ -1259,6 +1151,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.i0_5;
                 Name = _coupleType.GetStringValue();
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                MeasureRangeEnd = 100;
 
                 //в этом пункте прибор работает с сигналом 0-5мА,
                 //но измеренное значние получает с шунта,
@@ -1292,6 +1185,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.i0_20;
                 Name = _coupleType.GetStringValue();
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                MeasureRangeEnd = 100;
 
                 //в этом пункте прибор работает с сигналом 0-20мА,
                 //но измеренное значние получает с шунта,
@@ -1326,13 +1220,14 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.i0_20;
                 Name = $"8.5.1.2 {_coupleType.GetStringValue()}";
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                MeasureRangeEnd = 100;
 
                 //в этом пункте прибор работает с сигналом 0-20мА,
                 //но измеренное значние получает с шунта,
                 //поэтому вместо тока будем сразу подавать напряжение, пропорциональное шунту 100 Ом по закону Ома.
                 measPointsPercentVolt = new[]
                 {
-                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None, 100M, UnitMultiplier.Mili)
+                    new MeasPoint<Percent, Voltage>(50M,UnitMultiplier.None, 1000M, UnitMultiplier.Mili)
                 };
             }
 
@@ -1355,6 +1250,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.i4_20;
                 Name = _coupleType.GetStringValue();
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                MeasureRangeEnd = 100;
 
                 //в этом пункте прибор работает с сигналом 4-20мА,
                 //но измеренное значние получает с шунта,
