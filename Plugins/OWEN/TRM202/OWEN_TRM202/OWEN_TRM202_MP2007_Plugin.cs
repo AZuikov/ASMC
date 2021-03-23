@@ -400,23 +400,9 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_HCX_TermocoupleGost8_585 : BaseVoltMeasureOperation
-        {
-            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        
 
-            public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) : base(userItemOperation, inChanelNumber)
-            {
-            }
-
-            protected override void InitWork(CancellationTokenSource token)
-            {
-                UserItemOperation.ServicePack.MessageBox()
-                                 .Show("Отключите компенсацию холодного спая!!!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Information);
-                base.InitWork(token);
-            }
-        }
-
-        public class BaseVoltMeasureOperation : BaseMeasureOperation<Temperature>
+        public class Operation8_4_HCX_TermocoupleGost8_585 : BaseMeasureOperation<Temperature>
         {
             private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -426,7 +412,7 @@ namespace OWEN_TRM202
 
             #endregion
 
-            public BaseVoltMeasureOperation(IUserItemOperation userItemOperation, ushort inChanelNumber) :
+            public Operation8_4_HCX_TermocoupleGost8_585(IUserItemOperation userItemOperation, ushort inChanelNumber) :
                 base(userItemOperation)
             {
                 _chanelNumber = inChanelNumber;
@@ -817,7 +803,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A1_Poverka : BaseVoltMeasureOperation
+        public class Operation8_4_Type_A1_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_A1_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -848,7 +834,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A2_Poverka : BaseVoltMeasureOperation
+        public class Operation8_4_Type_A2_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_A2_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -879,7 +865,7 @@ namespace OWEN_TRM202
             #endregion
         }
 
-        public class Operation8_4_Type_A3_Poverka : BaseVoltMeasureOperation
+        public class Operation8_4_Type_A3_Poverka : Operation8_4_HCX_TermocoupleGost8_585
         {
             public Operation8_4_Type_A3_Poverka(IUserItemOperation userItemOperation, ushort inChanel) :
                 base(userItemOperation, inChanel)
@@ -926,7 +912,7 @@ namespace OWEN_TRM202
             /// <summary>
             /// Верхнее значение диапазона измерения.
             /// </summary>
-            protected float MeasureRangeEnd = 1;
+            protected float MeasureRangeEnd = 100;
 
             #endregion
 
@@ -990,8 +976,8 @@ namespace OWEN_TRM202
                                 trm202.WriteFloat24Parametr(TRM202Device.Parametr.Fb, 0, _chanelNumber);
                                 trm202.WriteFloat24Parametr(TRM202Device.Parametr.InF, 0, _chanelNumber);
                                 //4. ставим границы измеряемых значений
-                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.SL_L, MeasureRangeStart, _chanelNumber);
-                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.SL_H, MeasureRangeEnd, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.InL, MeasureRangeStart, _chanelNumber);
+                                trm202.WriteFloat24Parametr(TRM202Device.Parametr.InH, MeasureRangeEnd, _chanelNumber);
                             });
                         }
                         catch (Exception e)
@@ -1063,6 +1049,7 @@ namespace OWEN_TRM202
                 _coupleType = TRM202Device.in_t.U0_1;
                 Name = _coupleType.GetStringValue();
                 MeasureRanges = trm202.GetUnificSignalRangeStorage;
+                
 
                 measPointsPercentVolt = new[]
                 {
