@@ -129,7 +129,11 @@
       <Name>ASMC.Devices</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\34401A_Cal_4W.jpg" />
+    <Resource Include="Resources\34401A_Cal_Current.jpg" />
+    <Resource Include="Resources\34401A_Cal_Volt.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)ASMC\bin\$(ConfigurationName)\Plugins\" 2&gt; NUL

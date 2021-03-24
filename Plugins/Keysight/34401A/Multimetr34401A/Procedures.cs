@@ -436,7 +436,7 @@ namespace Multimetr34401A
         public DcVoltageError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности DCV";
-            Sheme = ShemeGeneration("", 0);
+            Sheme = ShemeGeneration("34401A_Cal_Volt.jpg", 0);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -486,7 +486,7 @@ namespace Multimetr34401A
         public FrequencyError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности Частоты";
-            Sheme = ShemeGeneration("", 0);
+            Sheme = ShemeGeneration("34401A_Cal_Volt.jpg", 0);
         }
         
         protected override void InitWork(CancellationTokenSource token)
@@ -533,7 +533,7 @@ namespace Multimetr34401A
         public DcCurrentError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности DCI";
-            Sheme = ShemeGeneration("", 1);
+            Sheme = ShemeGeneration("34401A_Cal_Current.jpg", 1);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -559,7 +559,7 @@ namespace Multimetr34401A
                 {
                     operation.Getting = BodyWork(Multimetr.DcCurrent, Clalibrator.DcCurrent, Logger, token).Item1;
                 };
-
+                operation.ErrorCalculation = (point, measPoint) => null;
                 operation.LowerCalculation = expected =>
                     expected - AllowableError(Multimetr.DcCurrent.RangeStorage, expected);
 
@@ -583,7 +583,7 @@ namespace Multimetr34401A
         public Resistance4WError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности сопротивления 4W";
-            Sheme = ShemeGeneration("", 2);
+            Sheme = ShemeGeneration("34401A_Cal_4W.jpg", 2);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -633,7 +633,7 @@ namespace Multimetr34401A
         public Resistance2WError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности сопротивления";
-            Sheme = ShemeGeneration("", 0);
+            Sheme = ShemeGeneration("34401A_Cal_Volt.jpg", 0);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -678,7 +678,7 @@ namespace Multimetr34401A
         public AcVoltageError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности ACV";
-            Sheme = ShemeGeneration("", 0);
+            Sheme = ShemeGeneration("34401A_Cal_Volt.jpg", 0);
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -736,7 +736,7 @@ namespace Multimetr34401A
         public AcCurrentError(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Определение погрешности ACI";
-            Sheme = ShemeGeneration("", 1);
+            Sheme = ShemeGeneration("34401A_Cal_Current.jpg", 1);
         }
 
         protected override void InitWork(CancellationTokenSource token)
