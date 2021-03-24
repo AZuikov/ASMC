@@ -184,11 +184,11 @@ namespace Multimetr34401A
                 var dds = row as BasicOperationVerefication<TOperation>;
                 if (dds == null) continue;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Name.ToString();
-                dataRow[1] = dds.Expected.ToString();
-                dataRow[2] = dds.Getting.ToString();
-                dataRow[3] = dds.LowerTolerance.ToString();
-                dataRow[4] = dds.UpperTolerance.ToString();
+                dataRow[0] = dds.Name?.ToString();
+                dataRow[1] = dds.Expected?.ToString();
+                dataRow[2] = dds.Getting?.ToString();
+                dataRow[3] = dds.LowerTolerance?.ToString();
+                dataRow[4] = dds.UpperTolerance?.ToString();
                 dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
                 data.Rows.Add(dataRow);
             }
@@ -271,19 +271,20 @@ namespace Multimetr34401A
 
             return result;
         }
-        protected IPhysicalRange<T1,T2> InitWork(IMeterPhysicalQuantity<T1, T2> mert,
+
+        protected IPhysicalRange<T1, T2> InitWork(IMeterPhysicalQuantity<T1, T2> multimetr,
             ISourcePhysicalQuantity<T1, T2> sourse,
-            MeasPoint<T1, T2> setPoint, Logger loger, CancellationTokenSource _token)
+            MeasPoint<T1, T2> setPoint, Logger loger, CancellationTokenSource _token, bool isAutoRange = false)
         {
-            mert.RangeStorage.SetRange(setPoint);
-            mert.RangeStorage.IsAutoRange = false;
-            if (mert is IAcFilter<T1,T2> cast)
+            multimetr.RangeStorage.SetRange(setPoint);
+            multimetr.RangeStorage.IsAutoRange = isAutoRange;
+            if (multimetr is IAcFilter<T1,T2> cast)
             {
                 cast.Filter.SetFilter(setPoint);
             }
-            CatchException<IOTimeoutException>(() => mert.Setting(), _token, loger);
+            CatchException<IOTimeoutException>(() => multimetr.Setting(), _token, loger);
             CatchException<IOTimeoutException>(() => sourse.SetValue(setPoint), _token, loger);
-            return mert.RangeStorage.SelectRange;
+            return multimetr.RangeStorage.SelectRange;
         }
       
         /// <summary>
@@ -503,7 +504,7 @@ namespace Multimetr34401A
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
-                   var range=  InitWork(Multimetr.Frequency, Clalibrator.Frequency, setPoint, Logger, token);
+                   var range=  InitWork(Multimetr.Frequency, Clalibrator.Frequency, setPoint, Logger, token, true);
                     operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
