@@ -44,7 +44,8 @@ namespace Multimetr34401A
             DocumentName = documentName;
             Accessories = new[]
             {
-                "Калибратор многофункциональный Fluke 5522A"
+                "Калибратор многофункциональный Fluke 5522A",
+                "Калибратор многофункциональный Fluke 5720A"
             };
         }
 
