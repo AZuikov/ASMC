@@ -220,10 +220,10 @@ namespace Multimetr34401A
                 if (dds == null) continue;
                 // ReSharper disable once PossibleNullReferenceException
                 dataRow[0] = dds.Name;
-                dataRow[1] = dds.Expected.Description;
-                dataRow[2] = dds.Getting.MainPhysicalQuantity.ToString();
-                dataRow[3] = dds.LowerTolerance.MainPhysicalQuantity.ToString();
-                dataRow[4] = dds.UpperTolerance.MainPhysicalQuantity.ToString();
+                dataRow[1] = dds.Expected?.Description;
+                dataRow[2] = dds.Getting?.MainPhysicalQuantity.ToString();
+                dataRow[3] = dds.LowerTolerance?.MainPhysicalQuantity.ToString();
+                dataRow[4] = dds.UpperTolerance?.MainPhysicalQuantity.ToString();
                 //dataRow[4] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
                 data.Rows.Add(dataRow);
             }

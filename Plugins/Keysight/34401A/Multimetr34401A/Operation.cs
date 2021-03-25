@@ -34,12 +34,12 @@ namespace Multimetr34401A
                 new Testing(this),
                 new DcVoltageError(this),
                 new AcVoltageError(this),
-                new DcCurrentError(this),
-                new AcCurrentError(this),
+                new FrequencyError(this),
                 new Resistance2WError(this),
                 new Resistance4WError(this),
-                new FrequencyError(this)
-                /*Остальная часть методики*/
+                new DcCurrentError(this),
+                new AcCurrentError(this)
+
             };
             DocumentName = documentName;
             Accessories = new[]
