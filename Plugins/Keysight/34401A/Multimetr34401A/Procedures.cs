@@ -211,6 +211,7 @@ namespace Multimetr34401A
         protected override DataTable FillData()
         {
             var data = base.FillData();
+            data.Rows.Clear();
 
             foreach (var row in DataRow)
             {
@@ -218,11 +219,12 @@ namespace Multimetr34401A
                 var dds = row as BasicOperationVerefication<MeasPoint<T1, T2>>;
                 if (dds == null) continue;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting.ToString();
-                dataRow[1] = dds.Expected.MainPhysicalQuantity.ToString();
-                dataRow[2] = dds.LowerTolerance.MainPhysicalQuantity.ToString();
-                dataRow[3] = dds.UpperTolerance.MainPhysicalQuantity.ToString();
-                dataRow[4] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
+                dataRow[0] = dds.Name;
+                dataRow[1] = dds.Expected.Description;
+                dataRow[2] = dds.Getting.MainPhysicalQuantity.ToString();
+                dataRow[3] = dds.LowerTolerance.MainPhysicalQuantity.ToString();
+                dataRow[4] = dds.UpperTolerance.MainPhysicalQuantity.ToString();
+                //dataRow[4] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -755,7 +757,7 @@ namespace Multimetr34401A
                 operation.InitWorkAsync = () =>
                 {
                     var range= InitWork(Multimetr.AcCurrent, Clalibrator.AcCurrent, setPoint, Logger, token);
-                    operation.Name = range.End.Description;
+                    operation.Name = range.End.MainPhysicalQuantity.ToString();
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
