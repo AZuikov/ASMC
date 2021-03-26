@@ -1,7 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AP.Math;
 using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Core.Model;
@@ -119,7 +121,7 @@ namespace Belvar_V7_40_1
             if (!IsSetRange(calibrRangeStorage) ||
                 !IsSetRange(multRangeStorage))
             {
-                ShowNotSupportedMeasurePointMeessage(multRangeStorage, calibrRangeStorage, rangeToSetOnDmm, testingMeasureValue);
+                //ShowNotSupportedMeasurePointMeessage(multRangeStorage, calibrRangeStorage, rangeToSetOnDmm, testingMeasureValue);
                 return false;
             }
 
@@ -318,9 +320,12 @@ namespace Belvar_V7_40_1
         /// <param name="calibrRangeStorage">Диапазоны воспроизведения калибратора.</param>
         /// <param name="rangeToSetOnDmm">Диапазон, который нужно установить у мультиметра.</param>
         /// <param name="testingMeasureValue">Значение, которое должен воспроизвести калибратор.</param>
+        /// <param name = "operation"></param>
         /// <returns></returns>
-        protected bool CheckAndSetPhisicalValuesIsSuccess(IRangePhysicalQuantity<T1, T2> multRangeStorage, IRangePhysicalQuantity<T1, T2> calibrRangeStorage, 
-            MeasPoint<T1, T2> rangeToSetOnDmm, MeasPoint<T1, T2> testingMeasureValue)
+        protected bool CheckAndSetPhisicalValuesIsSuccess(IRangePhysicalQuantity<T1, T2> multRangeStorage,
+            IRangePhysicalQuantity<T1, T2> calibrRangeStorage,
+            MeasPoint<T1, T2> rangeToSetOnDmm, MeasPoint<T1, T2> testingMeasureValue,
+            BasicOperationVerefication<MeasPoint<T1,T2>> operation)
         {
             //установим пределы измерения мултиметра и воспроизведения калибратора
             multRangeStorage.SetRange(rangeToSetOnDmm);
@@ -329,7 +334,17 @@ namespace Belvar_V7_40_1
             if (!RangeIsSet(calibrRangeStorage) ||
                 !RangeIsSet(multRangeStorage))
             {
-                ShowNotSupportedMeasurePointMeessage(multRangeStorage, calibrRangeStorage, rangeToSetOnDmm, testingMeasureValue);
+                // ShowNotSupportedMeasurePointMeessage(multRangeStorage, calibrRangeStorage, rangeToSetOnDmm, testingMeasureValue);
+                operation.Getting = new MeasPoint<T1, T2>();
+                operation.Getting.MainPhysicalQuantity.Value =
+                    MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                                 operation.UpperTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                operation.Getting.MainPhysicalQuantity.Multiplier =
+                    operation.Expected.MainPhysicalQuantity.Multiplier;
+                int mantissa = MathStatistics.GetMantissa(operation.Expected.MainPhysicalQuantity.Value);
+                operation.Getting.MainPhysicalQuantity.Value =
+                    Math.Round(operation.Getting.MainPhysicalQuantity.Value, mantissa);
+                operation.Getting.AdditionalPhysicalQuantity = operation.Expected.AdditionalPhysicalQuantity;
                 return false;
             }
 

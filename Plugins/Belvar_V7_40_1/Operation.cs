@@ -34,8 +34,8 @@ namespace Belvar_V7_40_1
             };
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new VisualInspection(this),
-                new Testing(this),
+                new VisualTest(this),
+                new Oprobovanie(this),
                 new DcvTest(this), 
                 new AcvTest(this), 
                 new Resist2WTest(this), 

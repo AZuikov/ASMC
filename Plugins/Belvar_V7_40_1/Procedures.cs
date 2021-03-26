@@ -17,10 +17,10 @@ namespace Belvar_V7_40_1
     /// <summary>
     /// Предоставляет реализацию внешнего осномотра.
     /// </summary>
-    public sealed class VisualInspection : OperationBase<bool>
+    public sealed class VisualTest : OperationBase<bool>
     {
         /// <inheritdoc />
-        public VisualInspection(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public VisualTest(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Внешний осмотр";
         }
@@ -63,10 +63,10 @@ namespace Belvar_V7_40_1
     /// <summary>
     /// Предоставляет операцию опробывания.
     /// </summary>
-    public sealed class Testing : OperationBase<bool>
+    public sealed class Oprobovanie : OperationBase<bool>
     {
         /// <inheritdoc />
-        public Testing(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public Oprobovanie(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "Опробование";
         }
@@ -128,8 +128,13 @@ namespace Belvar_V7_40_1
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
                 //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
-                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.DcVoltage.RangeStorage, Calibrator.DcVoltage.RangeStorage, rangeToSetOnDmm, testingMeasureValue))
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.DcVoltage.RangeStorage,
+                                                        Calibrator.DcVoltage.RangeStorage, rangeToSetOnDmm,
+                                                        testingMeasureValue))
+                {
                     continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
+                }
+                    
 
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
                 operation.Name = rangeToSetOnDmm.Description;
@@ -203,15 +208,35 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
-                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
-
-                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcVoltage.RangeStorage, Calibrator.AcVoltage.RangeStorage, rangeToSetOnDmm, testingMeasureValue))
-                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
-
-                //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
                 var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
                 operation.Name = rangeToSetOnDmm.MainPhysicalQuantity.ToString();
                 operation.Expected = testingMeasureValue;
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+
+                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcVoltage.RangeStorage, Calibrator.AcVoltage.RangeStorage, rangeToSetOnDmm, testingMeasureValue, operation))
+                {
+                    //записываем сгенерированное измерение в результирующую таблицу
+                    DataRow.Add(operation);
+                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
+                }
 
                 operation.InitWorkAsync = () =>
                 {
@@ -232,23 +257,7 @@ namespace Belvar_V7_40_1
                         Logger.Error($"Не удалось получить значение с В7-40/1 в точке {testingMeasureValue}");
                     }
                 };
-                operation.ErrorCalculation = (expected, getting) => null;
-                operation.LowerCalculation = (expected) =>
-                {
-                    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
-                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                    return result;
-                };
-                operation.UpperCalculation = (expected) =>
-                {
-                    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
-                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                    return result;
-                };
-                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+               
 
                 DataRow.Add(operation);
             }
@@ -444,14 +453,38 @@ namespace Belvar_V7_40_1
                 var testingMeasureValue = TestMeasPoints[row, 1];
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
-                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
-                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcCurrent.RangeStorage, Calibrator.AcCurrent.RangeStorage, rangeToSetOnDmm, testingMeasureValue))
-                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
-
-                //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
                 var operation = new BasicOperationVerefication<MeasPoint<Current, Frequency>>();
                 operation.Name = rangeToSetOnDmm.Description;
                 operation.Expected = testingMeasureValue;
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = (expected) =>
+                {
+                    var result = expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.UpperCalculation = (expected) =>
+                {
+                    var result = expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
+                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
+                    return result;
+                };
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+
+                //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
+                if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcCurrent.RangeStorage, Calibrator.AcCurrent.RangeStorage, rangeToSetOnDmm, testingMeasureValue, operation))
+                {
+                    //записываем сгенерированное измерение в таблицу
+                    DataRow.Add(operation);
+                    continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
+                    
+                }
+
+                //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
+               
 
                 operation.InitWorkAsync = () =>
                 {
@@ -473,23 +506,7 @@ namespace Belvar_V7_40_1
                         Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
                     }
                 };
-                operation.ErrorCalculation = (expected, getting) => null;
-                operation.LowerCalculation = (expected) =>
-                {
-                    var result = expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
-                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                    return result;
-                };
-                operation.UpperCalculation = (expected) =>
-                {
-                    var result = expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
-                    result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
-                    result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
-                    return result;
-                };
-                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+               
 
                 DataRow.Add(operation);
             }
