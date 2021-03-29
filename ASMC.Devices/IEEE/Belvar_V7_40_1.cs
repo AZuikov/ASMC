@@ -335,12 +335,13 @@ namespace ASMC.Devices.IEEE
         protected decimal GetDecimalValFromDevice()
         {
             string readStr = "";
-            for (int i =0; i<=10;i++)
+            for (int i =0; i<=10;i++)//если уж 10 раз неудачное считывание, то проблема в приборе
             {
                 readStr = _device.ReadRawString(12); //одна посылка 12 байт
                 if (readStr.Length==12) break;
             }
-            if (readStr.Length!=12) throw new IOException($"считанное значение имеет неверный формат: [{readStr}]");
+            if (readStr.Length!=12) throw new IOException($"{_device.UserType} считанное значение имеет неверный формат: [{readStr}]");
+           
             Regex regex = new Regex(@"[-+\S]\d*E[-+]\d");
             readStr = regex.Match(readStr).Value;
             decimal value = (decimal)StrToDouble(readStr);

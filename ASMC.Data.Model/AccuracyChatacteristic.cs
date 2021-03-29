@@ -60,7 +60,7 @@ namespace ASMC.Data.Model
             if (Resolution != null)
             {
                 var mantisa = MathStatistics.GetMantissa(Resolution);
-                resultTol = Math.Round(resultTol, mantisa);
+                resultTol = Math.Round(resultTol, mantisa, MidpointRounding.AwayFromZero);
             }
             
             return resultTol;

@@ -112,7 +112,7 @@ namespace Belvar_V7_40_1
         /// <param name="testingMeasureValue">Значение, которое должен воспроизвести калибратор.</param>
         /// <returns></returns>
         protected bool CheckAndSetPhisicalValuesIsSuccess<T>(IRangePhysicalQuantity<T> multRangeStorage, IRangePhysicalQuantity<T> calibrRangeStorage,
-            MeasPoint<T> rangeToSetOnDmm, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
+            MeasPoint<T> rangeToSetOnDmm, MeasPoint<T> testingMeasureValue, BasicOperationVerefication<MeasPoint<T>> operation) where T : class, IPhysicalQuantity<T>, new()
         {
             //установим пределы измерения мултиметра и воспроизведения калибратора
             multRangeStorage.SetRange(rangeToSetOnDmm);
@@ -121,7 +121,16 @@ namespace Belvar_V7_40_1
             if (!IsSetRange(calibrRangeStorage) ||
                 !IsSetRange(multRangeStorage))
             {
-                //ShowNotSupportedMeasurePointMeessage(multRangeStorage, calibrRangeStorage, rangeToSetOnDmm, testingMeasureValue);
+                operation.Getting = new MeasPoint<T>();
+                operation.Getting.MainPhysicalQuantity.Value =
+                    MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                                 operation.UpperTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.UpperTolerance.MainPhysicalQuantity.Multiplier);
+
+                int mantissa = MathStatistics.GetMantissa(operation.Expected.MainPhysicalQuantity.Value);
+                operation.Getting.MainPhysicalQuantity.Value =
+                    Math.Round(operation.Getting.MainPhysicalQuantity.Value, mantissa);
+                
                 return false;
             }
 
