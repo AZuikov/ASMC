@@ -339,8 +339,8 @@ namespace Belvar_V7_40_1
                 operation.Getting.MainPhysicalQuantity.Value =
                     MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi(),
                                                  operation.UpperTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi());
-                operation.Getting.MainPhysicalQuantity.Multiplier =
-                    operation.Expected.MainPhysicalQuantity.Multiplier;
+                operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.UpperTolerance.MainPhysicalQuantity.Multiplier);
+                    
                 int mantissa = MathStatistics.GetMantissa(operation.Expected.MainPhysicalQuantity.Value);
                 operation.Getting.MainPhysicalQuantity.Value =
                     Math.Round(operation.Getting.MainPhysicalQuantity.Value, mantissa);

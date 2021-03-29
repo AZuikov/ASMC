@@ -478,6 +478,7 @@ namespace Belvar_V7_40_1
                 if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcCurrent.RangeStorage, Calibrator.AcCurrent.RangeStorage, rangeToSetOnDmm, testingMeasureValue, operation))
                 {
                     //записываем сгенерированное измерение в таблицу
+                    
                     DataRow.Add(operation);
                     continue;//если что-то не можем, тогда информируем пользователя и эту точку не добавляем в протокол
                     
