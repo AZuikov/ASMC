@@ -132,7 +132,7 @@ namespace ASMC.Data.Model
             {
                 val2 = val1 * rangeLeght.MainPhysicalQuantity.Value;
                 int mantisa = MathStatistics.GetMantissa(range.AccuracyChatacteristic.Resolution);
-                val2 = Math.Round(val2,mantisa);
+                val2 = Math.Round(val2,mantisa, MidpointRounding.AwayFromZero);
             }
             MeasPoint<T> result = new MeasPoint<T>(val2, range.Start.MainPhysicalQuantity.Multiplier);
             return result;

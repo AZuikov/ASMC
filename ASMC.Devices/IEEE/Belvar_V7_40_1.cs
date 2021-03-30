@@ -7,6 +7,7 @@ using ASMC.Devices.Model;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using ASMC.Devices.Interface.Multimetr.Mode;
 using static ASMC.Devices.HelpDeviceBase;
@@ -335,9 +336,14 @@ namespace ASMC.Devices.IEEE
         protected decimal GetDecimalValFromDevice()
         {
             string readStr = "";
-            for (int i =0; i<=10;i++)//если уж 10 раз неудачное считывание, то проблема в приборе
+            for (int i =0; i<=15;i++)//если уж 10 раз неудачное считывание, то проблема в приборе
             {
                 readStr = _device.ReadRawString(12); //одна посылка 12 байт
+                if (readStr.Contains("<") || readStr.Contains(">"))//значит там превышение предела измерения и нужно еще подождать
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
                 if (readStr.Length==12) break;
             }
             if (readStr.Length!=12) throw new IOException($"{_device.UserType} считанное значение имеет неверный формат: [{readStr}]");

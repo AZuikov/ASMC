@@ -462,7 +462,7 @@ namespace Belvar_V7_40_1
                 var rangeToSetOnDmm = TestMeasPoints[row, 0];
 
                 var operation = new BasicOperationVerefication<MeasPoint<Current, Frequency>>();
-                operation.Name = rangeToSetOnDmm.Description;
+                operation.Name = rangeToSetOnDmm.MainPhysicalQuantity.ToString();
                 operation.Expected = testingMeasureValue;
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
