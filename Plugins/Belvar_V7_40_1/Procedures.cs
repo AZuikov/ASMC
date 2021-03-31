@@ -528,28 +528,154 @@ namespace Belvar_V7_40_1
     /// <summary>
     /// Определение погрешности измерения постоянного напряжения с высоковольтным делителем.
     /// </summary>
-    public sealed class Zip_DcvTest_DNV : OperationBase<MeasPoint<Voltage>>
+
+    public sealed class DCV_DNV_ZIP : Zip_DcvTest_DNV<MeasPoint<Voltage>>
     {
-        public Zip_DcvTest_DNV(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public DCV_DNV_ZIP(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
             Name = "DCV ЗИП с ДНВ";
         }
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork(token);
-            var refPoints = new[]
+            //base.InitWork(token);
+            MeasPoint<Voltage>[][] refPoints = new[]
             {//                                                        точка в киловольтах           точка в вольтах                    погрешность в вольтах
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1, UnitMultiplier.Kilo),    new MeasPoint<Voltage>(1.0000M),  new MeasPoint<Voltage>(0.0044M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.5M, UnitMultiplier.Kilo), new MeasPoint<Voltage>(1.5000M),  new MeasPoint<Voltage>(0.0063M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.9M, UnitMultiplier.Kilo), new MeasPoint<Voltage>(1.9000M),  new MeasPoint<Voltage>(0.0076M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(5M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(5.000M),   new MeasPoint<Voltage>(0.026M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(10M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(10.000M),   new MeasPoint<Voltage>(0.044M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(15M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(15.000M),   new MeasPoint<Voltage>(0.063M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(19M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(19.000M),   new MeasPoint<Voltage>(0.076M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1, UnitMultiplier.Kilo),     new MeasPoint<Voltage>(1.0000M),  new MeasPoint<Voltage>(0.0044M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.5M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(1.5000M),  new MeasPoint<Voltage>(0.0063M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.9M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(1.9000M),  new MeasPoint<Voltage>(0.0076M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(5M, UnitMultiplier.Kilo),    new MeasPoint<Voltage>(5.000M),   new MeasPoint<Voltage>(0.026M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(10M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(10.000M),  new MeasPoint<Voltage>(0.044M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(15M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(15.000M),  new MeasPoint<Voltage>(0.063M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(19M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(19.000M),  new MeasPoint<Voltage>(0.076M)  },
                 new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(20M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(20.00M),   new MeasPoint<Voltage>(0.15M)  },
                 new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(30M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(30.00M),   new MeasPoint<Voltage>(0.19M)  },
             };
+
+            DataRow.Clear();
+
+            foreach (var VARIABLE in refPoints)
+            {
+                DataRow.Add(CalcValues(VARIABLE));
+            }
+
+            
+
+
+        }
+
+    }
+
+    public sealed class DCV_DNV_K2_ZIP : Zip_DcvTest_DNV<MeasPoint<Voltage>>
+    {
+        public DCV_DNV_K2_ZIP(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "DCV ЗИП с ДНВ и шунтом К2";
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            //base.InitWork(token);
+            MeasPoint<Voltage>[][] refPoints = new[]
+            {//                                                        точка в киловольтах           точка в вольтах                    погрешность в вольтах
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(4, UnitMultiplier.Kilo),     new MeasPoint<Voltage>(2.000M),  new MeasPoint<Voltage>(0.016M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(30M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(15.000M),  new MeasPoint<Voltage>(0.063M)  },
+               
+            };
+
+            DataRow.Clear();
+
+            foreach (var VARIABLE in refPoints)
+            {
+                DataRow.Add(CalcValues(VARIABLE));
+            }
+
+
+
+
+        }
+
+    }
+
+    public  sealed class DCV_DNV_K3_ZIP : Zip_DcvTest_DNV<MeasPoint<Voltage>>
+    {
+        public DCV_DNV_K3_ZIP(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "DCV ЗИП с ДНВ и шунтом К3";
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            //base.InitWork(token);
+            MeasPoint<Voltage>[][] refPoints = new[]
+            {//                                                        точка в киловольтах           точка в вольтах                    погрешность в вольтах
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(0.8M, UnitMultiplier.Kilo), new MeasPoint<Voltage>(0.800M),  new MeasPoint<Voltage>(0.0037M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(30M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(6.000M),  new MeasPoint<Voltage>(0.030M)  },
+
+            };
+
+            DataRow.Clear();
+
+            foreach (var VARIABLE in refPoints)
+            {
+                DataRow.Add(CalcValues(VARIABLE));
+            }
+
+
+
+
+        }
+
+    }
+
+
+    public abstract class Zip_DcvTest_DNV<TOperation> : OperationBase<TOperation>
+    {
+        protected Zip_DcvTest_DNV(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+           
+        }
+
+       
+
+        //protected override string[] GenerateDataColumnTypeObject()
+        //{
+        //    return new[]
+        //    {
+        //        "Поверяемая точка",
+        //        "Номинальное значение напряжения",
+        //        "Измеренное значение напряжения",
+        //        "Минимальное допустимое значение",
+        //        "Максимальное допустимое значение",
+        //        "Результат"
+        //    };
+        //}
+
+        /// <summary>
+        /// Вычисляет и заполняет измеренные значения.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="refPoints"></param>
+        protected BasicOperationVerefication<MeasPoint<T>> CalcValues<T>(MeasPoint<T>[] points) where T : class, IPhysicalQuantity<T>, new()
+        {
+            
+                var operation = new BasicOperationVerefication<MeasPoint<T>>();
+                operation.Name = points[0].Description;
+                operation.Expected = points[1];
+                operation.ErrorCalculation = (expected, getting) => null;
+                operation.LowerCalculation = expected => expected - points[2];
+                operation.UpperCalculation = expected => expected + points[2];
+                operation.Getting = new MeasPoint<T>();
+                operation.Getting.MainPhysicalQuantity.Value =
+                    MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                                 operation.UpperTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi());
+                operation.Getting.MainPhysicalQuantity.Multiplier = operation.Expected.MainPhysicalQuantity.Multiplier;
+                int mantissa = MathStatistics.GetMantissa(operation.Expected.MainPhysicalQuantity.Value);
+                operation.Getting.MainPhysicalQuantity.Value =
+                    Math.Round(operation.Getting.MainPhysicalQuantity.Value, mantissa);
+                operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+                operation.IsGood = () => ChekedOperation(operation);
+            return operation;
         }
     }
 

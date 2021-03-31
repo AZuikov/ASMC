@@ -40,8 +40,11 @@ namespace Belvar_V7_40_1
                 new AcvTest(this), 
                 new Resist2WTest(this), 
                 new DciTest(this), 
-                new AciTest(this)
-                
+                new AciTest(this),
+                new DCV_DNV_ZIP(this),
+                new DCV_DNV_K2_ZIP(this), 
+                new DCV_DNV_K3_ZIP(this), 
+
             };
             DocumentName = documentName;
             Accessories = new string[]
