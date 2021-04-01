@@ -541,15 +541,15 @@ namespace Belvar_V7_40_1
             //base.InitWork(token);
             MeasPoint<Voltage>[][] refPoints = new[]
             {//                                                        точка в киловольтах           точка в вольтах                    погрешность в вольтах
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1, UnitMultiplier.Kilo),     new MeasPoint<Voltage>(1.0000M),  new MeasPoint<Voltage>(0.0044M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.5M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(1.5000M),  new MeasPoint<Voltage>(0.0063M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.9M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(1.9000M),  new MeasPoint<Voltage>(0.0076M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(5M, UnitMultiplier.Kilo),    new MeasPoint<Voltage>(5.000M),   new MeasPoint<Voltage>(0.026M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(10M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(10.000M),  new MeasPoint<Voltage>(0.044M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(15M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(15.000M),  new MeasPoint<Voltage>(0.063M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(19M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(19.000M),  new MeasPoint<Voltage>(0.076M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(20M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(20.00M),   new MeasPoint<Voltage>(0.15M)  },
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(30M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(30.00M),   new MeasPoint<Voltage>(0.19M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1, UnitMultiplier.Kilo),     new MeasPoint<Voltage>(1.0000M),  new MeasPoint<Voltage>(0.0044M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.5M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(1.5000M),  new MeasPoint<Voltage>(0.0063M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(1.9M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(1.9000M),  new MeasPoint<Voltage>(0.0076M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(5M, UnitMultiplier.Kilo),    new MeasPoint<Voltage>(5.000M),   new MeasPoint<Voltage>(0.026M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(10M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(10.000M),  new MeasPoint<Voltage>(0.044M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(15M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(15.000M),  new MeasPoint<Voltage>(0.063M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(19M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(19.000M),  new MeasPoint<Voltage>(0.076M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(20M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(20.00M),   new MeasPoint<Voltage>(0.15M)},
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(30M, UnitMultiplier.Kilo),   new MeasPoint<Voltage>(30.00M),   new MeasPoint<Voltage>(0.19M)},
             };
 
             DataRow.Clear();

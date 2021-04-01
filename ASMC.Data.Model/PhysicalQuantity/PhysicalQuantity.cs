@@ -157,6 +157,42 @@ namespace ASMC.Data.Model.PhysicalQuantity
             return this;
         }
 
+        /// <summary>
+        /// Автоматически выбирает оптимальный множитель физической величины, для удобства отображения. Без выполнения окргуления.
+        /// </summary>
+        public void AutoSelectMultiplier()
+        {
+            UnitMultiplier baseMultiplier = Multiplier;
+
+            if (Value == 0) return;
+            
+            else if (Value > 1)
+            {
+                foreach (UnitMultiplier newMultiplier in Enum.GetValues(typeof(UnitMultiplier)))
+                {
+                    decimal checkValue = GetNoramalizeValueToSi() / (decimal)newMultiplier.GetDoubleValue();
+                    if (checkValue < 1000)//сравниваем их порядковые номера в перечислении
+                    {
+                        ChangeMultiplier(newMultiplier);
+                        return;
+                    }
+                }
+            }
+            else //if (Value < 1)
+            {
+                foreach (UnitMultiplier newMultiplier in Enum.GetValues(typeof(UnitMultiplier)))
+                {
+                    decimal checkValue = GetNoramalizeValueToSi() / (decimal) newMultiplier.GetDoubleValue();
+                    if (checkValue < 1000 )
+                    {
+                        ChangeMultiplier(newMultiplier);
+                         return;
+
+                    }
+                }
+            }
+        }
+
         /// <inheritdoc />
         public string GetMultiplierUnit()
         {
