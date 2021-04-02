@@ -1,54 +1,54 @@
 Operation1: DCV
 #Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
-#Range--Nominal-----TestingUnit--Mod--ModUnit
+#Range--Nominal-----TestingUnit--Mod--ModUnit---Tolearance
 #-------200 мВ------------------
-200    0.07         m            NA    NA
-200    2.00         m            NA    NA
-200    50.00        m            NA    NA
-200    100.00       m            NA    NA
-200    150.00       m            NA    NA
-200    190.00       m            NA    NA
-200   -0.07         m            NA    NA
-200   -2.00         m            NA    NA
-200   -50.00        m            NA    NA
-200   -100.00       m            NA    NA
-200   -150.00       m            NA    NA
-200   -190.00       m            NA    NA
+200    0.07         m            NA    NA  
+200    2.00         m            NA    NA  
+200    50.00        m            NA    NA  
+200    100.00       m            NA    NA  
+200    150.00       m            NA    NA  
+200    190.00       m            NA    NA  
+200   -0.07         m            NA    NA  
+200   -2.00         m            NA    NA  
+200   -50.00        m            NA    NA  
+200   -100.00       m            NA    NA  
+200   -150.00       m            NA    NA  
+200   -190.00       m            NA    NA  
 #-------2 В------------------
-2      0.2000       NA           NA    NA
-2      0.5000       NA           NA    NA
-2      1.0000       NA           NA    NA
-2      1.5000       NA           NA    NA
-2      1.9000       NA           NA    NA
-2      -0.2000       NA           NA    NA
-2      -0.5000       NA           NA    NA
-2      -1.0000       NA           NA    NA
-2      -1.5000       NA           NA    NA
-2      -1.9000       NA           NA    NA
+2      0.2000       NA           NA    NA  
+2      0.5000       NA           NA    NA  
+2      1.0000       NA           NA    NA  
+2      1.5000       NA           NA    NA  
+2      1.9000       NA           NA    NA  
+2      -0.2000      NA           NA    NA  
+2      -0.5000      NA           NA    NA  
+2      -1.0000      NA           NA    NA  
+2      -1.5000      NA           NA    NA  
+2      -1.9000      NA           NA    NA  
 #-------20 В------------------
-20     2.000        NA           NA    NA
-20     10.000       NA           NA    NA
-20     19.000       NA           NA    NA
-20     -2.000        NA           NA    NA
-20     -10.000       NA           NA    NA
-20     -19.000       NA           NA    NA
+20     2.000        NA           NA    NA  
+20     10.000       NA           NA    NA  
+20     19.000       NA           NA    NA  
+20     -2.000       NA           NA    NA  
+20     -10.000      NA           NA    NA  
+20     -19.000      NA           NA    NA  
 #-------200 В------------------
-200    20.00        NA           NA    NA
-200    100.00       NA           NA    NA
-200    190.00       NA           NA    NA
-200    -20.00        NA           NA    NA
-200    -100.00       NA           NA    NA
-200    -190.00       NA           NA    NA
+200    20.00        NA           NA    NA  
+200    100.00       NA           NA    NA  
+200    190.00       NA           NA    NA  
+200    -20.00       NA           NA    NA  
+200    -100.00      NA           NA    NA  
+200    -190.00      NA           NA    NA  
 #-------2000 В------------------
-2000   200.0        NA           NA    NA
-2000   500.0        NA           NA    NA
-2000   1000.0       NA           NA    NA
-2000   -200.0        NA           NA    NA
-2000   -500.0        NA           NA    NA
-2000   -1000.0       NA           NA    NA
+2000   200.0        NA           NA    NA  
+2000   500.0        NA           NA    NA  
+2000   1000.0       NA           NA    NA  
+2000   -200.0       NA           NA    NA  
+2000   -500.0       NA           NA    NA  
+2000   -1000.0      NA           NA    NA  
 
 Operation1: ACV
-#Range--Nominal-----TestingUnit--Mod--ModUnit
+#Range--Nominal-----TestingUnit--Mod--ModUnit---Tolearance
 #-------200 мВ------------------
 200      2.00         m           20    NA
 200      2.00         m           40    NA

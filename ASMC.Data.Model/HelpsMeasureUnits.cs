@@ -120,7 +120,10 @@ namespace ASMC.Data.Model
     /// </summary>
     public enum UnitMultiplier
     {
-        
+        /// <summary>
+        /// Без множителя.
+        /// </summary>
+        [StringValue("")] [StringValue("", "en-US")] [DoubleValue(1)] None,
 
         /// <summary>
         /// Множитель пико 1Е-12.
@@ -152,10 +155,7 @@ namespace ASMC.Data.Model
         [StringValue("m", "en-US")]
         [DoubleValue(1E-3)] Mili,
 
-        /// <summary>
-        /// Без множителя.
-        /// </summary>
-        [StringValue("")] [StringValue("", "en-US")] [DoubleValue(1)] None,
+       
 
         /// <summary>
         /// Множитель кило 1Е3

@@ -11,6 +11,7 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using DevExpress.Mvvm.DataAnnotations;
 
 namespace Belvar_V7_40_1
 {
@@ -629,28 +630,13 @@ namespace Belvar_V7_40_1
     }
 
 
-    public abstract class Zip_DcvTest_DNV<TOperation> : OperationBase<TOperation>
+   public abstract class Zip_DcvTest_DNV<TOperation> : OperationBase<TOperation>
     {
         protected Zip_DcvTest_DNV(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
            
         }
-
-       
-
-        //protected override string[] GenerateDataColumnTypeObject()
-        //{
-        //    return new[]
-        //    {
-        //        "Поверяемая точка",
-        //        "Номинальное значение напряжения",
-        //        "Измеренное значение напряжения",
-        //        "Минимальное допустимое значение",
-        //        "Максимальное допустимое значение",
-        //        "Результат"
-        //    };
-        //}
-
+        
         /// <summary>
         /// Вычисляет и заполняет измеренные значения.
         /// </summary>
@@ -678,5 +664,154 @@ namespace Belvar_V7_40_1
             return operation;
         }
     }
+
+   public class Zip_AcvTest_DN: Zip_ACTest<Voltage, Frequency>
+   {
+       public Zip_AcvTest_DN(IUserItemOperation userItemOperation) : base(userItemOperation)
+       {
+           Name = "ЗИП Определение погрешности измерения переменного напряжения с делителем переменного напряжения";
+       }
+
+       protected override void InitWork(CancellationTokenSource token)
+       {
+           MeasPoint<Voltage, Frequency>[][] refPoint = new[]
+           {//                                Предел измерения вольтметра                   Поверяемая точка                                           Погрешность         
+               new []{new MeasPoint<Voltage, Frequency>(2,20),     new MeasPoint<Voltage, Frequency>(0.5000M,20),     new MeasPoint<Voltage, Frequency>(0.0065M, 20)}, 
+               new []{new MeasPoint<Voltage, Frequency>(2,40),     new MeasPoint<Voltage, Frequency>(0.5000M,40),     new MeasPoint<Voltage, Frequency>(0.0045M, 40)}, 
+               new []{new MeasPoint<Voltage, Frequency>(2,500),    new MeasPoint<Voltage, Frequency>(0.5000M,500),    new MeasPoint<Voltage, Frequency>(0.0045M, 500)}, 
+               new []{new MeasPoint<Voltage, Frequency>(2,1000),   new MeasPoint<Voltage, Frequency>(0.5000M,1000),   new MeasPoint<Voltage, Frequency>(0.0045M, 1000)},
+
+               new []{new MeasPoint<Voltage, Frequency>(2,20),     new MeasPoint<Voltage, Frequency>(0.7500M,20),    new MeasPoint<Voltage, Frequency>(0.0087M, 20)},
+               new []{new MeasPoint<Voltage, Frequency>(2,40),     new MeasPoint<Voltage, Frequency>(0.7500M,40),    new MeasPoint<Voltage, Frequency>(0.0057M, 40)},
+               new []{new MeasPoint<Voltage, Frequency>(2,500),    new MeasPoint<Voltage, Frequency>(0.7500M,500),   new MeasPoint<Voltage, Frequency>(0.0057M, 500)},
+               new []{new MeasPoint<Voltage, Frequency>(2,1000),   new MeasPoint<Voltage, Frequency>(0.7500M,1000),  new MeasPoint<Voltage, Frequency>(0.0057M, 1000)},
+
+               new []{new MeasPoint<Voltage, Frequency>(2,20),     new MeasPoint<Voltage, Frequency>(1.0000M,20),        new MeasPoint<Voltage, Frequency>(0.0110M, 20)},
+               new []{new MeasPoint<Voltage, Frequency>(2,40),     new MeasPoint<Voltage, Frequency>(1.0000M,40),        new MeasPoint<Voltage, Frequency>(0.0070M, 40)},
+               new []{new MeasPoint<Voltage, Frequency>(2,500),    new MeasPoint<Voltage, Frequency>(1.0000M,500),       new MeasPoint<Voltage, Frequency>(0.0070M, 500)},
+               new []{new MeasPoint<Voltage, Frequency>(2,1000),   new MeasPoint<Voltage, Frequency>(1.0000M,1000),      new MeasPoint<Voltage, Frequency>(0.0070M, 1000)},
+           };
+            DataRow.Clear();
+
+           foreach (var measPoints in refPoint)
+           {
+              DataRow.Add(CalcValues(measPoints));   
+           }
+       }
+   }
+
+    public class Zip_AcvTest_HighFreqProbe : Zip_ACTest<Voltage, Frequency>
+    {
+        public Zip_AcvTest_HighFreqProbe(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "ЗИП Определение погрешности измерения переменного напряжения с высокочастотным пробником";
+        }
+
+       
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            MeasPoint<Voltage, Frequency>[][] refPoint = new[]
+            {//                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Kilo),    new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,50, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.0094M, UnitMultiplier.None,50, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Kilo),    new MeasPoint<Voltage, Frequency>(0.5000M, UnitMultiplier.None,50, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.1370M, UnitMultiplier.None,50, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Kilo),    new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,50, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.1840M, UnitMultiplier.None,50, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Kilo),    new MeasPoint<Voltage, Frequency>(5.0000M,   UnitMultiplier.None,50, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.5600M, UnitMultiplier.None,50, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Kilo),    new MeasPoint<Voltage, Frequency>(10.0000M,  UnitMultiplier.None,50, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(1.0300M, UnitMultiplier.None,50, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Kilo),    new MeasPoint<Voltage, Frequency>(15.0000M,  UnitMultiplier.None,50, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(1.5000M, UnitMultiplier.None,50, UnitMultiplier.Kilo)},
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Kilo), new MeasPoint<Voltage, Frequency>(0.1000M,  UnitMultiplier.None,100, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.0094M, UnitMultiplier.None,100, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Kilo), new MeasPoint<Voltage, Frequency>(0.5000M,  UnitMultiplier.None,100, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.1370M, UnitMultiplier.None,100, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Kilo), new MeasPoint<Voltage, Frequency>(1.0000M,  UnitMultiplier.None,100, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.1840M, UnitMultiplier.None,100, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Kilo), new MeasPoint<Voltage, Frequency>(5.0000M,  UnitMultiplier.None,100, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(0.5600M, UnitMultiplier.None,100, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Kilo), new MeasPoint<Voltage, Frequency>(10.0000M, UnitMultiplier.None,100, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(1.0300M, UnitMultiplier.None,100, UnitMultiplier.Kilo)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Kilo), new MeasPoint<Voltage, Frequency>(15.0000M, UnitMultiplier.None,100, UnitMultiplier.Kilo),   new MeasPoint<Voltage, Frequency>(1.5000M, UnitMultiplier.None,100, UnitMultiplier.Kilo)},
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,30, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,30, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0094M, UnitMultiplier.None,30, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,30, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,30, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1182M, UnitMultiplier.None,30, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,30, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,30, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1840M, UnitMultiplier.None,30, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None, 30, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,30, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.3720M, UnitMultiplier.None, 30, UnitMultiplier.Mega) },
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,50, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0094M, UnitMultiplier.None,50, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,50, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1182M, UnitMultiplier.None,50, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,50, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1840M, UnitMultiplier.None,50, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,50, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,50, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.3720M, UnitMultiplier.None,50, UnitMultiplier.Mega) },
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,100, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0970M, UnitMultiplier.None,100, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,100, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1110M, UnitMultiplier.None,100, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,100, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1600M, UnitMultiplier.None,100, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,100, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,100, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.300M,  UnitMultiplier.None,100, UnitMultiplier.Mega) },
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,150, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,150, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0970M, UnitMultiplier.None,150, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,150, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,150, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1110M, UnitMultiplier.None,150, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,150, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,150, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1600M, UnitMultiplier.None,150, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,150, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,150, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.300M,  UnitMultiplier.None,150, UnitMultiplier.Mega) },
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,300, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,300, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0970M, UnitMultiplier.None,300, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,300, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,300, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1110M, UnitMultiplier.None,300, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,300, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,300, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1600M, UnitMultiplier.None,300, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,300, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,300, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.300M,  UnitMultiplier.None,300, UnitMultiplier.Mega)},
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,600, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,600, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0780M, UnitMultiplier.None,600, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,600, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,600, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1140M, UnitMultiplier.None,600, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,600, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,600, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.2400M, UnitMultiplier.None,600, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,600, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,600, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.6000M,  UnitMultiplier.None,600, UnitMultiplier.Mega) },
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,700, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,700, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0780M, UnitMultiplier.None,700, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,700, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,700, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1140M, UnitMultiplier.None,700, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,700, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,700, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.2400M, UnitMultiplier.None,700, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,700, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,700, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.6000M, UnitMultiplier.None,700, UnitMultiplier.Mega)},
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{  new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,800, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,800, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0780M, UnitMultiplier.None,800, UnitMultiplier.Mega)},
+                  new[]{  new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,800, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,800, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1140M, UnitMultiplier.None,800, UnitMultiplier.Mega)},
+                  new[]{  new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,800, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,800, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.2400M, UnitMultiplier.None,800, UnitMultiplier.Mega)},
+                  new[]{  new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,800, UnitMultiplier.Mega), new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,800, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.6000M, UnitMultiplier.None,800, UnitMultiplier.Mega)},
+                  //                  Предел измерения вольтметра                                                                                                      Поверяемая точка                                                                                                                      Погрешность         
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,1000, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.1000M, UnitMultiplier.None,1000, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.0880M, UnitMultiplier.None,1000, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,1000, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(0.3000M, UnitMultiplier.None,1000, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.1140M, UnitMultiplier.None,1000, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,1000, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(1.0000M, UnitMultiplier.None,1000, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.3400M, UnitMultiplier.None,1000, UnitMultiplier.Mega)},
+                  new[]{ new MeasPoint<Voltage, Frequency>(20, UnitMultiplier.None,1000, UnitMultiplier.Mega),  new MeasPoint<Voltage, Frequency>(3.0000M,   UnitMultiplier.None,1000, UnitMultiplier.Mega),   new MeasPoint<Voltage, Frequency>(0.9000M, UnitMultiplier.None,1000, UnitMultiplier.Mega)},
+
+           };
+
+            DataRow.Clear();
+            foreach (var measPoints in refPoint)
+            {
+                DataRow.Add(CalcValues(measPoints));
+            }
+        }
+    }
+
+    public abstract class Zip_ACTest<T1, T2> : MultiOperationBase<T1, T2>
+       where T1 : class, IPhysicalQuantity<T1>, new() where T2 : class, IPhysicalQuantity<T2>, new()
+   {
+       protected Zip_ACTest(IUserItemOperation userItemOperation) : base(userItemOperation)
+       {
+       }
+
+       protected virtual BasicOperationVerefication<MeasPoint<T1, T2>> CalcValues(MeasPoint<T1, T2>[] points)
+       {
+
+           var operation = new BasicOperationVerefication<MeasPoint<T1, T2>>();
+           operation.Name = points[0].MainPhysicalQuantity.ToString();
+           operation.Expected = points[1];
+           operation.ErrorCalculation = (expected, getting) => null;
+           operation.LowerCalculation = expected => expected - points[2];
+           operation.UpperCalculation = expected => expected + points[2];
+           operation.Getting = new MeasPoint<T1, T2>();
+           operation.Getting.MainPhysicalQuantity.Value =
+               MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi(),
+                                            operation.UpperTolerance.MainPhysicalQuantity.GetNoramalizeValueToSi());
+           operation.Getting.MainPhysicalQuantity.Multiplier = operation.Expected.MainPhysicalQuantity.Multiplier;
+           operation.Getting.AdditionalPhysicalQuantity = operation.Expected.AdditionalPhysicalQuantity;
+           int mantissa = MathStatistics.GetMantissa(operation.Expected.MainPhysicalQuantity.Value);
+           operation.Getting.MainPhysicalQuantity.Value =
+               Math.Round(operation.Getting.MainPhysicalQuantity.Value, mantissa);
+           operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
+           operation.IsGood = () => ChekedOperation(operation);
+           return operation;
+       }
+
+   }
 
 }
