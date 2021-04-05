@@ -176,12 +176,13 @@ namespace Belvar_V7_40_1
 
         /// <param name = "token"></param>
         /// <inheritdoc />
-        protected void InitWork<T>(IMeterPhysicalQuantity<T> multimetr, ISourcePhysicalQuantity<T> sourse, MeasPoint<T> rangeMeasureValue, MeasPoint<T> controlValue,
+        protected void InitWork<T>(IMeterPhysicalQuantity<T> multimetr, ISourcePhysicalQuantity<T> sourse, MeasPoint<T> controlValue,
              Logger loger, CancellationTokenSource _token)
             where T : class, IPhysicalQuantity<T>, new()
         {
-            multimetr.RangeStorage.SetRange(rangeMeasureValue);
             multimetr.RangeStorage.IsAutoRange = false;
+            multimetr.RangeStorage.SetRange(controlValue);
+            
             CatchException<IOTimeoutException>(() => multimetr.Setting(), _token, loger);
             CatchException<IOTimeoutException>(() => sourse.SetValue(controlValue), _token, loger);
         }
@@ -393,12 +394,11 @@ namespace Belvar_V7_40_1
         }
 
         protected IPhysicalRange<T1, T2> InitWork(IMeterPhysicalQuantity<T1, T2> mult,
-            ISourcePhysicalQuantity<T1, T2> sourse, MeasPoint<T1, T2> rangeToSetOnMetr,
+            ISourcePhysicalQuantity<T1, T2> sourse,
             MeasPoint<T1, T2> testingMeasureValue, Logger loger, CancellationTokenSource _token)
         {
-            
-            mult.RangeStorage.SetRange(rangeToSetOnMetr);
             mult.RangeStorage.IsAutoRange = false;
+            mult.RangeStorage.SetRange(testingMeasureValue);
             CatchException<IOTimeoutException>(() => mult.Setting(), _token, loger);
             
             sourse.RangeStorage.SetRange(testingMeasureValue);

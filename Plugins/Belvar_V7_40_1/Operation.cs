@@ -45,7 +45,10 @@ namespace Belvar_V7_40_1
                 new DCV_DNV_K2_ZIP(this), 
                 new DCV_DNV_K3_ZIP(this), 
                 new Zip_AcvTest_DN(this), 
-                new Zip_AcvTest_HighFreqProbe(this)
+                new Zip_AcvTest_HighFreqProbe(this),
+                new DCI_10A_ZIP(this), 
+
+
 
             };
             DocumentName = documentName;

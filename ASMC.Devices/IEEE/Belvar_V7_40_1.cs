@@ -84,10 +84,10 @@ namespace ASMC.Devices.IEEE
             allRangesThisMode = new[]
             {
                 new Command("2000 В","1",2000),
-                new Command("200 В","2",200),
-                new Command("20 В","3",20),
-                new Command("2 В","4",2),
-                new Command("200 мВ","5",0.2),
+                new Command("200 В","2",199.999),
+                new Command("20 В","3",19.999),
+                new Command("2 В","4",1.999),
+                new Command("200 мВ","5",0.199),
                 new Command("автовыбор предела","7",0)
 
             };
@@ -134,12 +134,12 @@ namespace ASMC.Devices.IEEE
             FunctionName = "Измерение электрического сопротивления";
             allRangesThisMode = new[]
             {
-                new Command("20 МОм","0",20000000),
-                new Command("2000 кОм","1",2000000),
-                new Command("200 кОм","2",200000),
-                new Command("20 кОм","3",20000),
-                new Command("2 кОм","4",2000),
-                new Command("200 Ом","5",200),
+                new Command("20 МОм","0",19999999),
+                new Command("2000 кОм","1",1999999),
+                new Command("200 кОм","2",199999),
+                new Command("20 кОм","3",19999),
+                new Command("2 кОм","4",1999),
+                new Command("200 Ом","5",199.999),
                 new Command("автовыбор предела","7",0)
 
             };
@@ -161,10 +161,10 @@ namespace ASMC.Devices.IEEE
             allRangesThisMode = new[]
             {
                 new Command("2000 мА","1",2),
-                new Command("200 мА","2",0.200),
-                new Command("20 мА","3",0.020),
-                new Command("2 мА","4",0.002),
-                new Command("200 мкА","5",0.0002),
+                new Command("200 мА","2",0.199999),
+                new Command("20 мА","3",0.019999),
+                new Command("2 мА","4",0.001999),
+                new Command("200 мкА","5",0.000199),
                 new Command("автовыбор предела","7",0)
 
             };
@@ -186,8 +186,8 @@ namespace ASMC.Devices.IEEE
             allRangesThisMode = new[]
             {
                 new Command("2000 мА","1",2),
-                new Command("200 мА","2",0.200),
-                new Command("20 мА","3",0.020),
+                new Command("200 мА","2",0.1999),
+                new Command("20 мА","3",0.019999),
                 new Command("2 мА","4",0.002),
                 new Command("200 мкА","5",0.0002),
                 new Command("автовыбор предела","7",0)

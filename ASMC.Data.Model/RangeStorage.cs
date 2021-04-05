@@ -54,7 +54,7 @@ namespace ASMC.Data.Model
         {
             var range = Ranges as IPhysicalRange<T1>[];
             var result = (T)range?.FirstOrDefault(q => q.Start as MeasPoint<T1> <= (inPoint as MeasPoint<T1>) &&
-                                                       q.End as MeasPoint<T1> >= (inPoint as MeasPoint<T1>));
+                                                       q.End as MeasPoint<T1> > (inPoint as MeasPoint<T1>));
             return result;
         }
         /// <summary>
@@ -70,7 +70,7 @@ namespace ASMC.Data.Model
             var range = Ranges as IPhysicalRange<T1, T2>[];
             T returnRange = (T)range?.FirstOrDefault(q => q.Start.MainPhysicalQuantity.GetNoramalizeValueToSi() <=
                                                           inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi() &&
-                                                          q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                                                          q.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >
                                                           inPoint.MainPhysicalQuantity.GetNoramalizeValueToSi()
                                                           && q.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <=
                                                           inPoint.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()
