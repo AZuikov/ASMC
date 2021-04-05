@@ -36,6 +36,8 @@ namespace Belvar_V7_40_1
             {
                 new VisualTest(this),
                 new Oprobovanie(this),
+                new IsolationTest1(this), 
+                new IsolationTest2(this), 
                 new DcvTest(this), 
                 new AcvTest(this), 
                 new Resist2WTest(this), 

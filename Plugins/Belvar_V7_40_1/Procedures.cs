@@ -55,7 +55,7 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            DataRow.Add(new DialogOperationHelp(this, "V740_1_VisualTest.rtf"));
+            DataRow.Add(new DialogOperationHelp(this, "V740_1_VisualTest"));
         }
 
         #endregion Methods
@@ -100,11 +100,97 @@ namespace Belvar_V7_40_1
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            DataRow.Add(new DialogOperationHelp(this, "V740_1_Oprobovanie.rtf"));
+            DataRow.Add(new DialogOperationHelp(this, "V740_1_Oprobovanie"));
         }
 
         #endregion Methods
     }
+
+    public sealed class IsolationTest1 : OperationBase<bool>
+    {
+        /// <inheritdoc />
+        public IsolationTest1(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Проверка электрической прочности изоляции вольтметра";
+        }
+
+        #region Methods
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var data = base.FillData();
+
+            var dataRow = data.NewRow();
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting ? "соответствует требованиям" : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
+            return data;
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            DataRow.Add(new DialogOperationHelp(this, "V740_1_IsolationTest1"));
+        }
+
+        #endregion Methods
+    }
+
+    public sealed class IsolationTest2 : OperationBase<bool>
+    {
+        /// <inheritdoc />
+        public IsolationTest2(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "Проверка электрической прочности изоляции высоковольтного делителя постоянного напряжения";
+        }
+
+        #region Methods
+
+        /// <inheritdoc />
+        protected override DataTable FillData()
+        {
+            var data = base.FillData();
+
+            var dataRow = data.NewRow();
+            if (DataRow.Count == 1)
+            {
+                var dds = DataRow[0] as BasicOperation<bool>;
+                // ReSharper disable once PossibleNullReferenceException
+                dataRow[0] = dds.Getting ? "соответствует требованиям" : dds.Comment;
+                data.Rows.Add(dataRow);
+            }
+
+            return data;
+        }
+
+        /// <inheritdoc />
+        protected override string GetReportTableName()
+        {
+            return MarkReportEnum.InsetrTextByMark.GetStringValue() + GetType().Name;
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            DataRow.Add(new DialogOperationHelp(this, "V740_1_IsolationTest2"));
+        }
+
+        #endregion Methods
+    }
+
+
 
     [TestMeasPointAttribute("Operation1: DCV", typeof(MeasPoint<Voltage>))]
     public sealed class DcvTest : OperationBase<MeasPoint<Voltage>>
@@ -329,7 +415,7 @@ namespace Belvar_V7_40_1
                         MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
                         int timeOut = 700;//таймаут для измерения
                         if (Multimetr.Resistance2W.RangeStorage.SelectRange.End.MainPhysicalQuantity
-                                     .GetNoramalizeValueToSi() == 200) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
+                                     .GetNoramalizeValueToSi() == 199.999M) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
                         {
                             //зададим 0 Ом и считвем сопротивление проводов
                             InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, nullPointResistance, Logger, token);

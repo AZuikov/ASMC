@@ -361,7 +361,7 @@ namespace Multimetr34401A
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Результат внешнего оснотра"};
+            return new[] {"Результат внешнего осмотра"};
         }
 
         /// <inheritdoc />
@@ -380,7 +380,7 @@ namespace Multimetr34401A
         /// <inheritdoc />
         public Testing(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Опробывание";
+            Name = "Опробование";
         }
 
         /// <inheritdoc />
@@ -392,7 +392,7 @@ namespace Multimetr34401A
         /// <inheritdoc />
         protected override string[] GenerateDataColumnTypeObject()
         {
-            return new[] {"Результат опробывания"};
+            return new[] {"Результат опробования"};
         }
 
         protected override void InitWork(CancellationTokenSource token)
