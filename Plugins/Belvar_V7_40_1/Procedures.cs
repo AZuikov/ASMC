@@ -628,9 +628,9 @@ namespace Belvar_V7_40_1
             //base.InitWork(token);
             MeasPoint<Current>[][] refPoints = new[]
             {//                            предел                                     точка                     погрешность
-                new  [] {new MeasPoint<Current>(10),  new MeasPoint<Current>(2),  new MeasPoint<Current>(0.010M)},
-                new  [] {new MeasPoint<Current>(10),  new MeasPoint<Current>(5),  new MeasPoint<Current>(0.021M)},
-                new  [] {new MeasPoint<Current>(10),  new MeasPoint<Current>(10), new MeasPoint<Current>(0.040M)},
+                new  [] {new MeasPoint<Current>(10),  new MeasPoint<Current>(2.000M),  new MeasPoint<Current>(0.010M)},
+                new  [] {new MeasPoint<Current>(10),  new MeasPoint<Current>(5.000M),  new MeasPoint<Current>(0.021M)},
+                new  [] {new MeasPoint<Current>(10),  new MeasPoint<Current>(10.000M), new MeasPoint<Current>(0.040M)},
                 
             };
 
@@ -728,7 +728,7 @@ namespace Belvar_V7_40_1
             //base.InitWork(token);
             MeasPoint<Voltage>[][] refPoints = new[]
             {//                                                        точка в киловольтах           точка в вольтах                    погрешность в вольтах
-                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(0.8M, UnitMultiplier.Kilo), new MeasPoint<Voltage>(0.800M),  new MeasPoint<Voltage>(0.0037M)  },
+                new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(0.8M, UnitMultiplier.Kilo), new MeasPoint<Voltage>(0.8000M),  new MeasPoint<Voltage>(0.0037M)  },
                 new MeasPoint<Voltage> [] {new MeasPoint<Voltage>(30M, UnitMultiplier.Kilo),  new MeasPoint<Voltage>(6.000M),  new MeasPoint<Voltage>(0.030M)  },
 
             };
