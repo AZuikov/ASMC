@@ -26,7 +26,15 @@ namespace ASMC.Devices.Model
         /// <inheritdoc />
         public void SetRange(MeasPoint<TPhysicalQuantity> inRange)
         {
-            SelectRange = Ranges.GetRangePointBelong(inRange);
+            foreach (PhysicalRange<TPhysicalQuantity> range in Ranges)
+            {
+                if (range.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                    inRange.MainPhysicalQuantity.GetNoramalizeValueToSi())
+                {
+                    SelectRange = range;
+                    break;
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -63,7 +71,17 @@ namespace ASMC.Devices.Model
         /// <inheritdoc />
         public void SetRange(MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> inRange)
         {
-            SelectRange = Ranges.GetRangePointBelong(inRange);
+            foreach (PhysicalRange<TPhysicalQuantity, TPhysicalQuantity2> range in Ranges)
+            {
+                if (range.End.MainPhysicalQuantity.GetNoramalizeValueToSi() >=
+                    inRange.MainPhysicalQuantity.GetNoramalizeValueToSi() &&
+                    inRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()>= range.Start.AdditionalPhysicalQuantity.GetNoramalizeValueToSi()&&
+                    inRange.AdditionalPhysicalQuantity.GetNoramalizeValueToSi() <= range.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi())
+                {
+                    SelectRange = range;
+                    break;
+                }
+            }
         }
         /// <inheritdoc />
         public bool IsAutoRange { get; set; }

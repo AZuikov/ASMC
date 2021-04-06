@@ -21,7 +21,7 @@ namespace Belvar_V7_40_1
         {
             ControlDevices = new IDeviceUi[]
             {
-                new Device {Devices = new ICalibratorMultimeterFlukeBase[] {/*new Calibr_9100(),*/ new Calib_5522A(), new Calib_5720A() }},
+                new Device {Devices = new ICalibratorMultimeterFlukeBase[] {/*new Calibr_9100(), new Calib_5522A(),*/ new Calib_5720A() }},
 
             };
             TestDevices = new IDeviceUi[]
@@ -48,7 +48,7 @@ namespace Belvar_V7_40_1
                 new DCV_DNV_K3_ZIP(this), 
                 new Zip_AcvTest_DN(this), 
                 new Zip_AcvTest_HighFreqProbe(this),
-                new DCI_10A_ZIP(this), 
+                new ZIP_DCI_10A(this), 
 
 
 

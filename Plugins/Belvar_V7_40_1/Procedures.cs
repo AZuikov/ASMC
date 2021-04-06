@@ -221,14 +221,14 @@ namespace Belvar_V7_40_1
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {
-                    var result = expected - AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                    var result = expected - AllowableError(Multimetr.DcVoltage.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
                 };
                 operation.UpperCalculation = (expected) =>
                 {
-                    var result = expected + AllowableError(Multimetr.DcVoltage.RangeStorage, expected);
+                    var result = expected + AllowableError(Multimetr.DcVoltage.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
@@ -247,7 +247,7 @@ namespace Belvar_V7_40_1
                 
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, testingMeasureValue, Logger, token);
+                    InitWork(Multimetr.DcVoltage, Calibrator.DcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
 
                     return Task.CompletedTask;
                 };
@@ -303,14 +303,14 @@ namespace Belvar_V7_40_1
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {
-                    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    var result = expected - AllowableError(Multimetr.AcVoltage.RangeStorage,  rangeToSetOnDmm,expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
                 };
                 operation.UpperCalculation = (expected) =>
                 {
-                    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
+                    var result = expected + AllowableError(Multimetr.AcVoltage.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
@@ -329,7 +329,7 @@ namespace Belvar_V7_40_1
 
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, testingMeasureValue, Logger, token);
+                    InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
@@ -382,14 +382,14 @@ namespace Belvar_V7_40_1
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {
-                    var result = expected - AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                    var result = expected - AllowableError(Multimetr.Resistance2W.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
                 };
                 operation.UpperCalculation = (expected) =>
                 {
-                    var result = expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
+                    var result = expected + AllowableError(Multimetr.Resistance2W.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
@@ -404,7 +404,7 @@ namespace Belvar_V7_40_1
                
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, testingMeasureValue, Logger, token);
+                    InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm ,testingMeasureValue, Logger, token);
 
                     return Task.CompletedTask;
                 };
@@ -418,7 +418,7 @@ namespace Belvar_V7_40_1
                                      .GetNoramalizeValueToSi() == 199.999M) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
                         {
                             //зададим 0 Ом и считвем сопротивление проводов
-                            InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, nullPointResistance, Logger, token);
+                            InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, nullPointResistance, Logger, token);
                             nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
                             nullPointResistance.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
                         }
@@ -426,7 +426,7 @@ namespace Belvar_V7_40_1
                         {
                             timeOut = 4000;//на других пределах нужно дольше измерять и не учитывать провода
                         }
-                        InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, testingMeasureValue, Logger, token);
+                        InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
 
                         operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token, timeOut).Item1;
                         operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
@@ -480,14 +480,14 @@ namespace Belvar_V7_40_1
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {
-                    var result = expected - AllowableError(Multimetr.DcCurrent.RangeStorage, expected);
+                    var result = expected - AllowableError(Multimetr.DcCurrent.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
                 };
                 operation.UpperCalculation = (expected) =>
                 {
-                    var result = expected + AllowableError(Multimetr.DcCurrent.RangeStorage, expected);
+                    var result = expected + AllowableError(Multimetr.DcCurrent.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
@@ -502,7 +502,7 @@ namespace Belvar_V7_40_1
                 
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.DcCurrent, Calibrator.DcCurrent, testingMeasureValue, Logger, token);
+                    InitWork(Multimetr.DcCurrent, Calibrator.DcCurrent, rangeToSetOnDmm, testingMeasureValue, Logger, token);
 
                     return Task.CompletedTask;
                 };
@@ -554,14 +554,14 @@ namespace Belvar_V7_40_1
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
                 {
-                    var result = expected - AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                    var result = expected - AllowableError(Multimetr.AcCurrent.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
                 };
                 operation.UpperCalculation = (expected) =>
                 {
-                    var result = expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
+                    var result = expected + AllowableError(Multimetr.AcCurrent.RangeStorage, rangeToSetOnDmm, expected);
                     result.MainPhysicalQuantity.ChangeMultiplier(expected.MainPhysicalQuantity.Multiplier);
                     result.Round(MathStatistics.GetMantissa(expected.MainPhysicalQuantity.Value));
                     return result;
@@ -584,7 +584,7 @@ namespace Belvar_V7_40_1
 
                 operation.InitWorkAsync = () =>
                 {
-                    InitWork(Multimetr.AcCurrent, Calibrator.AcCurrent, testingMeasureValue, Logger, token);
+                    InitWork(Multimetr.AcCurrent, Calibrator.AcCurrent, rangeToSetOnDmm, testingMeasureValue, Logger, token);
                     return Task.CompletedTask;
                 };
                 operation.BodyWorkAsync = () =>
@@ -616,11 +616,11 @@ namespace Belvar_V7_40_1
     /// Определение погрешности измерения постоянного напряжения с высоковольтным делителем.
     /// </summary>
 
-    public sealed class DCI_10A_ZIP : Zip_DcvTest_DNV<MeasPoint<Current>>
+    public sealed class ZIP_DCI_10A : Zip_DcvTest_DNV<MeasPoint<Current>>
     {
-        public DCI_10A_ZIP(IUserItemOperation userItemOperation) : base(userItemOperation)
+        public ZIP_DCI_10A(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "DCI ЗИП  постоянный ток с шунтом 10 А";
+            Name = "ЗИП DCI постоянный ток с шунтом 10 А";
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -652,7 +652,7 @@ namespace Belvar_V7_40_1
     {
         public DCV_DNV_ZIP(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "DCV ЗИП с ДНВ";
+            Name = "ЗИП DCV с ДНВ";
         }
 
         protected override void InitWork(CancellationTokenSource token)

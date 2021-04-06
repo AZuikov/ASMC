@@ -220,10 +220,10 @@ namespace Belvar_V7_40_1
         /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
         /// <returns></returns>
-        protected MeasPoint<T> AllowableError<T>(IRangePhysicalQuantity<T> rangeStorage, MeasPoint<T> expected)
+        protected MeasPoint<T> AllowableError<T>(IRangePhysicalQuantity<T> rangeStorage, MeasPoint<T> rangeToSetOnDmm, MeasPoint<T> expected)
             where T : class, IPhysicalQuantity<T>, new()
         {
-            rangeStorage.SetRange(expected);
+            rangeStorage.SetRange(rangeToSetOnDmm);
             var toll = rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
                                                                                    expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
                                                                                    rangeStorage.SelectRange.End.MainPhysicalQuantity.GetNoramalizeValueToSi());
@@ -395,7 +395,7 @@ namespace Belvar_V7_40_1
         }
 
         protected IPhysicalRange<T1, T2> InitWork(IMeterPhysicalQuantity<T1, T2> mult,
-            ISourcePhysicalQuantity<T1, T2> sourse,
+            ISourcePhysicalQuantity<T1, T2> sourse, MeasPoint<T1, T2> rangeToSetOnMetr,
             MeasPoint<T1, T2> testingMeasureValue, Logger loger, CancellationTokenSource _token)
         {
             mult.RangeStorage.IsAutoRange = false;
@@ -458,9 +458,9 @@ namespace Belvar_V7_40_1
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
         /// <returns></returns>
         protected MeasPoint<T1, T2> AllowableError(IRangePhysicalQuantity<T1, T2> rangeStorage,
-            MeasPoint<T1, T2> expected)
+            MeasPoint<T1, T2> rangeToSetOnDmm, MeasPoint<T1, T2> expected)
         {
-            rangeStorage.SetRange(expected);
+            rangeStorage.SetRange(rangeToSetOnDmm);
             //todo а если выбранный предел null?
             var toll = rangeStorage.SelectRange.AccuracyChatacteristic.GetAccuracy(
                                                                                    expected.MainPhysicalQuantity.GetNoramalizeValueToSi(),
