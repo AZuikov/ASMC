@@ -38,10 +38,6 @@ namespace E364xAPlugin
             SpeedUserItemOperationPrimaryVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             SpeedUserItemOperationPeriodicVerf = new SpeedOpertionFirsVerf(servicePack, Activator.CreateInstance<T>());
             
-
-           
-            
-            
         }
     }
 

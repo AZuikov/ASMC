@@ -17,6 +17,17 @@ namespace Belvar_V7_40_1
             Range = "Uпост. 0 - 2000 В, Uпер. до 1000 В, R до 20 МОм, Iпост. до 10 А, Iпер. до 10 А";
         }
     }
+
+    public class Main2 : Program<ProgramV7_40_1>
+    {
+        /// <inheritdoc />
+        public Main2(ServicePack service) : base(service)
+        {
+            Type = "В7-40/5";
+            Grsi = "39075-08";
+            Range = "Uпост. 0 - 2000 В, Uпер. до 1000 В, R до 20 МОм, Iпост. до 10 А, Iпер. до 10 А";
+        }
+    }
     public class ProgramV7_40_1 : OperationMetrControlBase
     {
 

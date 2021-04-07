@@ -181,7 +181,7 @@ namespace E363xAPlugin
             {
                 var dds = DataRow[0] as BasicOperation<bool>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting ? "Соответствует" : dds?.Comment;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds?.Name;
                 data.Rows.Add(dataRow);
             }
 
@@ -214,7 +214,7 @@ namespace E363xAPlugin
                 service.Show();
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
-                operation.Comment = res.Item1;
+                operation.Name = res.Item1;
                 operation.IsGood = () => operation.Getting;
 
                 return Task.CompletedTask;
@@ -250,7 +250,7 @@ namespace E363xAPlugin
             if (DataRow.Count == 1)
             {
                 var dds = DataRow[0] as BasicOperation<bool>;
-                dataRow[0] = dds.Getting ? "Соответствует" : dds?.Comment;
+                dataRow[0] = dds.Getting ? "Соответствует" : dds?.Name;
                 data.Rows.Add(dataRow);
             }
 
@@ -305,7 +305,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
-            dataRow[0] = dds?.Comment;
+            dataRow[0] = dds?.Name;
             dataRow[1] = dds?.Expected?.Description;
             dataRow[2] = dds?.Getting?.Description;
             var mp = dds?.Expected - dds?.Getting;
@@ -359,7 +359,7 @@ namespace E363xAPlugin
                         throw;
                     }
 
-                    operation.Comment = powerSupply.GetVoltageRange().Description;
+                    operation.Name = powerSupply.GetVoltageRange().Description;
                 };
                 operation.BodyWorkAsync = () =>
                 {
@@ -406,7 +406,7 @@ namespace E363xAPlugin
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
-                                             .Show($"Нестабильность напряжени не проходит по допуску на пределе {operation.Comment}:\n" +
+                                             .Show($"Нестабильность напряжени не проходит по допуску на пределе {operation.Name}:\n" +
                                                    $"{operation.Expected.Description} - {operation.Getting.Description} = {(operation.Getting - operation.Expected).Description}\n" +
                                                    $"Допустимое значение дрейфа: {operation.Error.Description}\n\n" +
                                                    "Повторить измерение этой точки?",
@@ -443,7 +443,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
-            dataRow[0] = dds?.Comment;
+            dataRow[0] = dds?.Name;
             dataRow[1] = dds?.Expected?.Description;
             dataRow[2] = dds?.Getting?.Description;
             var mp = dds?.Expected - dds?.Getting;
@@ -539,7 +539,7 @@ namespace E363xAPlugin
                         ElectonicLoad.OutputOff();
                     }
 
-                    operation.Comment = powerSupply.GetVoltageRange().Description;
+                    operation.Name = powerSupply.GetVoltageRange().Description;
                     SetErrorCalculationUpperLowerCalcAndIsGood(operation);
                 };
                 
@@ -549,7 +549,7 @@ namespace E363xAPlugin
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
-                                             .Show($"Нестабильность выходного напряжения не проходит по допускуна пределе {operation.Comment}:\n" +
+                                             .Show($"Нестабильность выходного напряжения не проходит по допускуна пределе {operation.Name}:\n" +
                                                    $"{operation.Expected.Description} - {operation.Getting.Description} = {(operation.Getting - operation.Expected).Description}\n" +
                                                    $"Допустимое значение нестабильности: {operation.Error.Description}\n\n" +
                                                    "Повторить измерение этой точки?",
@@ -601,7 +601,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Time>> dds)
         {
-            dataRow["Номер измерения канала"] = dds?.Comment;
+            dataRow["Номер измерения канала"] = dds?.Name;
             dataRow["Значение длительности переходного процесса"] = dds.Getting?.Description;
             dataRow["Среднее значение времени переходного процесса"] = dds.Expected?.Description;
             dataRow["Максимально допустимое значение"] = dds?.Error?.Description;
@@ -667,7 +667,7 @@ namespace E363xAPlugin
                     for (var i = 0; i < arrPoints.Length; i++)
                     {
                         if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone();
-                        operation.Comment = arrPoints[i];
+                        operation.Name = arrPoints[i];
                         operation.Expected = averTime;
                         operation.Getting = arrGetting[i];
 
@@ -720,7 +720,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
-            dataRow["Предел напряжения канала"] = dds?.Comment;
+            dataRow["Предел напряжения канала"] = dds?.Name;
             dataRow["Измеренное значение напряжения"] = dds?.Expected?.Description;
             dataRow["Абсолютное отклонение напряжения"] = dds?.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
@@ -756,6 +756,8 @@ namespace E363xAPlugin
 
             if (powerSupply == null || ElectonicLoad == null) return;
 
+
+
             foreach (E36xxA_Ranges rangePowerSupply in Enum.GetValues(typeof(E36xxA_Ranges)))
             {
                 MeasPoint<Voltage> U1 = null;
@@ -776,7 +778,7 @@ namespace E363xAPlugin
 
                         if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17) Thread.Sleep(3000);
 
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                        operation.Name = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -883,7 +885,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
-            dataRow["Предел напряжения канала"] = dds?.Comment;
+            dataRow["Предел напряжения канала"] = dds?.Name;
             dataRow["Поверяемая точка"] = dds?.Expected?.Description;
             dataRow["Измеренное значение"] = dds.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
@@ -932,7 +934,7 @@ namespace E363xAPlugin
                         {
                             SetDevicesForVoltageMode(operation, rangePowerSupply);
                             powerSupply.SetVoltageLevel(setPoint);
-                            operation.Comment = powerSupply.GetVoltageRange().Description;
+                            operation.Name = powerSupply.GetVoltageRange().Description;
                         }
                         catch (Exception e)
                         {
@@ -1017,7 +1019,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
-            dataRow["Предел напряжения канала"] = dds?.Comment;
+            dataRow["Предел напряжения канала"] = dds?.Name;
             dataRow["Поверяемая точка"] = dds?.Expected?.Description;
             dataRow["Измеренное значение"] = dds.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
@@ -1073,7 +1075,7 @@ namespace E363xAPlugin
                             throw;
                         }
 
-                        operation.Comment =
+                        operation.Name =
                             $"Предел {powerSupply.GetVoltageRange().Description}, напряжение выхода {setPoint.Description}";
                     };
                     operation.BodyWorkAsync = () =>
@@ -1155,7 +1157,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
-            dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+            dataRow["Предел воспроизведения напряжения"] = dds?.Name;
             dataRow["Измеренный ток I1"] = dds?.Expected?.Description;
             dataRow["Измеренный ток I2"] = dds?.Getting?.Description;
             var point = dds?.Expected - dds?.Getting;
@@ -1290,7 +1292,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
-            dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+            dataRow["Предел воспроизведения напряжения"] = dds?.Name;
             dataRow["Измеренный ток I1"] = dds?.Expected?.Description;
             dataRow["Измеренный ток I2"] = dds?.Getting?.Description;
             var point = dds?.Expected - dds?.Getting;
@@ -1429,7 +1431,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
-            dataRow["Предел напряжения канала"] = dds?.Comment;
+            dataRow["Предел напряжения канала"] = dds?.Name;
             dataRow["Измеренное значение тока"] = dds?.Expected?.Description;
             dataRow["Абсолютное отклонение тока"] = dds?.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
@@ -1485,7 +1487,7 @@ namespace E363xAPlugin
                             throw;
                         }
 
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                        operation.Name = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1584,7 +1586,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Current>> dds)
         {
-            dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+            dataRow["Предел воспроизведения напряжения"] = dds?.Name;
             dataRow["Поверяемая точка"] = dds?.Expected?.Description;
             dataRow["Измеренное значение"] = dds.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
@@ -1645,7 +1647,7 @@ namespace E363xAPlugin
                             throw;
                         }
 
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                        operation.Name = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
                     {
@@ -1725,7 +1727,7 @@ namespace E363xAPlugin
 
         public override void DefaultFillingRowTable(DataRow dataRow, BasicOperationVerefication<MeasPoint<Voltage>> dds)
         {
-            dataRow["Предел воспроизведения напряжения"] = dds?.Comment;
+            dataRow["Предел воспроизведения напряжения"] = dds?.Name;
             dataRow["Поверяемая точка"] = dds?.Expected?.Description;
             dataRow["Измеренное значение"] = dds.Getting?.Description;
             dataRow["Минимально допустимое значение"] = dds?.LowerTolerance?.Description;
@@ -1789,7 +1791,7 @@ namespace E363xAPlugin
                             ElectonicLoad.OutputOff();
                         }
 
-                        operation.Comment = powerSupply.GetVoltageRange().Description;
+                        operation.Name = powerSupply.GetVoltageRange().Description;
                     };
                     operation.BodyWorkAsync = () =>
                     {
