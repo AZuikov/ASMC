@@ -33,7 +33,9 @@ namespace ASMC.Devices.Interface.SourceAndMeter
     /// </summary>
     /// <typeparam name="TPhysicalQuantity">Физическая величина.</typeparam>
     /// /// <typeparam name="TPhysicalQuantity2">Физическая величина.</typeparam>
-    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : ISourcePhysicalQuantityBase<MeasPoint<TPhysicalQuantity, TPhysicalQuantity2>> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new() 
+    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : 
+        ISourcePhysicalQuantityBase<MeasPoint<TPhysicalQuantity, TPhysicalQuantity2>> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
+                                                                                      where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new() 
     {
          IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
     }
@@ -56,6 +58,7 @@ namespace ASMC.Devices.Interface.SourceAndMeter
         IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
     }
 
+    /// <summary>
     /// Измерение физической величины.
     /// </summary>
     /// <typeparam name="TPhysicalQuantity"></typeparam>

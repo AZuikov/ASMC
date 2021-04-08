@@ -11,7 +11,13 @@ namespace ASMC.Devices.Interface
     /// </summary>
     public interface IDevice
     {
+        /// <summary>
+        /// Получить параметры (настройки) устройства.
+        /// </summary>
         void Getting();
+        /// <summary>
+        /// Записать созданные настройки в устройство.
+        /// </summary>
         void Setting();
     }
     /// <summary>
