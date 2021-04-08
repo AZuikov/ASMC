@@ -30,6 +30,8 @@ namespace ASMC.Devices.Interface
         /// </summary>
         public bool IsPositivePolarity { get; set; }
 
+        public string SignalFormName { get; }
+
     }
 
     /// <summary>
@@ -87,10 +89,23 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс выхода генератора сигналов.
     /// </summary>
-     public interface ISignalGeneratorOutput<TPhysicalQuantity, TPhysicalQuantity2>: 
+     public interface IOutputSignalGenerator<TPhysicalQuantity, TPhysicalQuantity2>: 
         ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> 
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
+        /// <summary>
+        /// Активная в данный момент форма сигнала.
+        /// </summary>
+        public ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2> ActiveSignalForm { get; set; }
+        public string NameOfOutput { get; set; }
+
+    }
+
+    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> 
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    {
+     public   IOutputSignalGenerator<TPhysicalQuantity, TPhysicalQuantity2>[] outputs { get;   }
     }
 }

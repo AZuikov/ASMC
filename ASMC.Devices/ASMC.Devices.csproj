@@ -109,6 +109,7 @@
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5522A.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\Calib_5720A.cs" />
     <Compile Include="IEEE\Keysight\Generator\81160A.cs" />
+    <Compile Include="IEEE\Keysight\Generator\SignalGeneratorTypes.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\BaseDigitalMultimetr344xx.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\IDigitalMultimetr344xx.cs" />
     <Compile Include="IEEE\Keysight\Multimeter\KeysightMultimeters.cs" />
