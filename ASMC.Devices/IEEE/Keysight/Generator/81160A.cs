@@ -8,11 +8,24 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 {
     public class OutputSignalGenerator81160A : IOutputSignalGenerator<Voltage, Frequency>
     {
+        /// <summary>
+        /// Доступные для воспроизведения формы сигналов.
+        /// </summary>
+        public ISignalStandartParametr<Voltage,Frequency>[] AvailableWaveForms { get; protected set; }
         private IeeeBase device;
         public OutputSignalGenerator81160A(IeeeBase inDevice, string name)
         {
             device = inDevice;
             NameOfOutput = name;
+            AvailableWaveForms = new ISignalStandartParametr<Voltage, Frequency>[]
+            {
+                new ImpulseFormSignal(), 
+                new RampFormSignal(), 
+                new SquareFormSignal(), 
+                new SineFormSignal(),
+            };
+
+           
         }
 
         public void Getting()
@@ -25,6 +38,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             throw new NotImplementedException();
         }
+        
 
         public MeasPoint<Voltage, Frequency> Value { get; }
 
@@ -61,8 +75,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             _device = new IeeeBase();
             outputs = new[]
             {
-                new OutputSignalGenerator81160A(_device, "out1"),
-                new OutputSignalGenerator81160A(_device, "out2")
+                new OutputSignalGenerator81160A(_device, "1"),
+                new OutputSignalGenerator81160A(_device, "2")
             };
         }
 

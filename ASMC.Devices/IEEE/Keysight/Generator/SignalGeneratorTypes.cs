@@ -4,6 +4,15 @@ using ASMC.Devices.Interface;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
+
+    //Type[] AvailableTypeWaveForms = new[]
+    //{
+    //    typeof(ImpulseFormSignal),
+    //    typeof(RampFormSignal),
+    //    typeof(SquareFormSignal),
+    //    typeof(SineFormSignal)
+    //};
+
     public abstract class AbstractSignalGenerator : ISignalStandartParametr<Voltage, Frequency>
     {
         public MeasPoint<Voltage, Frequency> AmplitudeAndFrequency { get; set; }
@@ -11,6 +20,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public MeasPoint<Time> Delay { get; set; }
         public bool IsPositivePolarity { get; set; }
         public string SignalFormName { get; protected set; }
+        
 
         public AbstractSignalGenerator()
         {
@@ -26,7 +36,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     {
         public SineFormSignal()
         {
-            SignalFormName = "sine";
+            SignalFormName = "SINusoid";
         }
     }
 
@@ -37,7 +47,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     {
         public ImpulseFormSignal()
         {
-            SignalFormName = "pulse";
+            SignalFormName = "PULSe";
             RiseEdge = new MeasPoint<Time>(0);
             FallEdge = new MeasPoint<Time>(0);
             Width = new MeasPoint<Time>(50, UnitMultiplier.Nano);
@@ -57,9 +67,10 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public SquareFormSignal()
         {
-            SignalFormName = "square";
+            SignalFormName = "SQUare";
             DutyCicle = new MeasPoint<Percent>(50);
         }
+        
     }
 
     /// <summary>
@@ -72,7 +83,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public RampFormSignal()
         {
-            SignalFormName = "ramp";
+            SignalFormName = "RAMP";
             Symmetry = new MeasPoint<Percent>(100);
         }
     }
