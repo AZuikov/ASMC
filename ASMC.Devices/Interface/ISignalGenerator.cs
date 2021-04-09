@@ -17,7 +17,7 @@ namespace ASMC.Devices.Interface
         /// </summary>
         public MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> AmplitudeAndFrequency { get; set; }
 
-        public string AmplitudeUnit { get;set }
+        
         /// <summary>
         /// Смещение сигнала.
         /// </summary>

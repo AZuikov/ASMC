@@ -9,10 +9,10 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 {
     public  class OutputSignalGenerator81160A :GeneratorOfSignals_81160A
     {
-        public string ChanelNumberOrName { get; }
+        public string ChanelNumber { get; }
         public OutputSignalGenerator81160A(string chanelNumber)
         {
-            ChanelNumberOrName = chanelNumber;
+            ChanelNumber = chanelNumber;
         }
     }
 
