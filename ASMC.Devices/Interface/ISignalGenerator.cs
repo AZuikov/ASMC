@@ -16,6 +16,8 @@ namespace ASMC.Devices.Interface
         /// Амплитуда и частота сигнала.
         /// </summary>
         public MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> AmplitudeAndFrequency { get; set; }
+
+        public string AmplitudeUnit { get;set }
         /// <summary>
         /// Смещение сигнала.
         /// </summary>
@@ -31,6 +33,8 @@ namespace ASMC.Devices.Interface
         public bool IsPositivePolarity { get; set; }
 
         public string SignalFormName { get; }
+
+        
 
     }
 
@@ -94,10 +98,7 @@ namespace ASMC.Devices.Interface
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
-        /// <summary>
-        /// Активная в данный момент форма сигнала.
-        /// </summary>
-        public ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2> ActiveSignalForm { get; set; }
+        
         public string NameOfOutput { get; set; }
 
     }
@@ -106,6 +107,6 @@ namespace ASMC.Devices.Interface
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
-     public   IOutputSignalGenerator<TPhysicalQuantity, TPhysicalQuantity2>[] outputs { get;   }
+     
     }
 }

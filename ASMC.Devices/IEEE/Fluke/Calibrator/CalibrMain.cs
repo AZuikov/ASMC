@@ -12,7 +12,6 @@ using AP.Extension;
 using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.IEEE.Keysight.Multimeter;
 using ASMC.Devices.Interface.SourceAndMeter;
 using ASMC.Devices.Model;
 using Current = ASMC.Data.Model.PhysicalQuantity.Current;
@@ -516,9 +515,4 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
         }
     }
-
-    /// <summary>
-    /// Перечисление кодов ошибок для калибратора 5522А.
-    /// </summary>
-   
 }
