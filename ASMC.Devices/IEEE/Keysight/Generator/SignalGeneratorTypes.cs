@@ -17,20 +17,20 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             get
             {
-                string answer = Device.QueryLine($"OUTP{ChanelNumber}:POL?");
+                string answer = Generator.Device.QueryLine($"OUTP{ChanelNumber}:POL?");
                 return answer.Equals(Polarity.NORM.ToString());
             }
             set
             {
                 if (value)
                 {
-                    Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.NORM}");
+                    Generator.Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.NORM}");
                 }
                 else
                 {
-                    Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.INV}");
+                    Generator.Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.INV}");
                 }
-                Device.WaitingRemoteOperationComplete();
+                Generator.Device.WaitingRemoteOperationComplete();
             }
         }
 
@@ -64,22 +64,22 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public virtual void Setting()
         {
-            Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
+            Generator.Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
             //одной командой  устанавливает частоту, амплитуду и смещение
-            Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {AmplitudeAndFrequency.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, "+
+            Generator.Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {AmplitudeAndFrequency.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, "+
                              $"{AmplitudeAndFrequency.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}, "+
                              $"{SignalOffset.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-           Device.WaitingRemoteOperationComplete(); 
+           Generator.Device.WaitingRemoteOperationComplete(); 
            
         }
 
         public bool IsEnableOutput { get; protected set; }
         public void OutputOn()
         {
-           Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.ON}");
-           Device.WaitingRemoteOperationComplete();
+           Generator.Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.ON}");
+           Generator.Device.WaitingRemoteOperationComplete();
            //теперь проверим, что выход включился.
-           string answer = Device.QueryLine($"OUTP{ChanelNumber}?");
+           string answer = Generator.Device.QueryLine($"OUTP{ChanelNumber}?");
            int resultAnswerNumb = -1;
            if (int.TryParse(answer, out resultAnswerNumb))
            {
@@ -90,10 +90,10 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public void OutputOff()
         {
-            Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.OFF}");
-            Device.WaitingRemoteOperationComplete();
+            Generator.Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.OFF}");
+            Generator.Device.WaitingRemoteOperationComplete();
             //теперь проверим, что выход включился.
-            string answer = Device.QueryLine($"OUTP{ChanelNumber}?");
+            string answer = Generator.Device.QueryLine($"OUTP{ChanelNumber}?");
             int resultAnswerNumb = -1;
             if (int.TryParse(answer, out resultAnswerNumb))
             {
@@ -106,7 +106,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
     #region SignalsForm
 
-    public class SineFormSignal : AbstractSignalGenerator, IOutputSignalGenerator<Voltage, Frequency>
+    public class SineFormSignal : AbstractSignalGenerator, IOutputSignalGenerator
     {
         public SineFormSignal(string chanelNumber) : base(chanelNumber)
         {
@@ -136,7 +136,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// <summary>
     /// Одиночный импульс.
     /// </summary>
-    public class ImpulseFormSignal : AbstractSignalGenerator, IOutputSignalGenerator<Voltage, Frequency>, IImpulseSignal<Voltage, Frequency>
+    public class ImpulseFormSignal : AbstractSignalGenerator, IOutputSignalGenerator, IImpulseSignal<Voltage, Frequency>
     {
         public ImpulseFormSignal(string chanelNumber) : base(chanelNumber)
         {
@@ -158,13 +158,15 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             base.Setting();
             //ставим единицы измерения фронтов в секундах
-            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:unit SEC");
+            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:unit SEC");
+            Generator.Device.WriteLine($"{NameOfOutput}:del{SignalFormName}:unit SEC");
             //ставим длительность импульса
-            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}WIDT {Width.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}WIDT {Width.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
             //фронт импульса
-            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
             //спад импульса
-            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:tra {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:tra {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            Generator.Device.WaitingRemoteOperationComplete();
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
@@ -183,7 +185,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// <summary>
     /// Импульсы с коэффициентом заполнения.
     /// </summary>
-    public class SquareFormSignal : AbstractSignalGenerator, IOutputSignalGenerator<Voltage, Frequency>, ISquareSignal<Voltage, Frequency>
+    public class SquareFormSignal : AbstractSignalGenerator, IOutputSignalGenerator, ISquareSignal<Voltage, Frequency>
     {
         private MeasPoint<Percent> dutyCilcle;
         public MeasPoint<Percent> DutyCicle
@@ -218,7 +220,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public void Setting()
         {
             base.Setting();
-            Device.WriteLine($"func{NameOfOutput}:{SignalFormName}:dcyc {DutyCicle.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}PCT");
+            Generator.Device.WriteLine($"func{NameOfOutput}:{SignalFormName}:dcyc {DutyCicle.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}PCT");
+            Generator.Device.WaitingRemoteOperationComplete();
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
@@ -236,7 +239,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// <summary>
     /// Пилообразный сигнал.
     /// </summary>
-    public class RampFormSignal : AbstractSignalGenerator, IOutputSignalGenerator<Voltage, Frequency>, IRampSignal<Voltage, Frequency>
+    public class RampFormSignal : AbstractSignalGenerator, IOutputSignalGenerator, IRampSignal<Voltage, Frequency>
     {
         /// <summary>
         /// Процент симметричности сигнала.
@@ -278,8 +281,9 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public void Setting()
         {
            base.Setting();
-           Device.WriteLine($":FUNC{NameOfOutput}:{SignalFormName}:SYMM {Symmetry.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(",",".")}PCT");
-          
+           Generator.Device.WriteLine($":FUNC{NameOfOutput}:{SignalFormName}:SYMM {Symmetry.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(",",".")}PCT");
+           Generator.Device.WaitingRemoteOperationComplete();
+
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }

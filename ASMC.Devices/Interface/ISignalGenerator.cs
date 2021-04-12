@@ -93,20 +93,24 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс выхода генератора сигналов.
     /// </summary>
-     public interface IOutputSignalGenerator<TPhysicalQuantity, TPhysicalQuantity2>: 
-        ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> 
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
-        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+     public interface IOutputSignalGenerator
     {
         
         public string NameOfOutput { get; set; }
 
     }
 
-    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> 
+    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> :IReferenceClock
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
-     
+        public void SetExternalReferenceClock();
+        public void SetInternalReferenceClock();
+    }
+
+    public interface IReferenceClock
+    {
+        public void SetExternalReferenceClock();
+        public void SetInternalReferenceClock();
     }
 }
