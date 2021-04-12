@@ -140,7 +140,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     {
         public ImpulseFormSignal(string chanelNumber) : base(chanelNumber)
         {
-            SignalFormName = "PULSe";
+            SignalFormName = "PULS";
             RiseEdge = new MeasPoint<Time>(0);
             FallEdge = new MeasPoint<Time>(0);
             Width = new MeasPoint<Time>(50, UnitMultiplier.Nano);
@@ -156,7 +156,15 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public void Setting()
         {
-            throw new System.NotImplementedException();
+            base.Setting();
+            //ставим единицы измерения фронтов в секундах
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:unit SEC");
+            //ставим длительность импульса
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}WIDT {Width.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            //фронт импульса
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            //спад импульса
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:tra {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
@@ -166,15 +174,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         }
 
         public bool IsEnableOutput { get; }
-        public void OutputOn()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OutputOff()
-        {
-            throw new System.NotImplementedException();
-        }
+       
 
         public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
         public string NameOfOutput { get; set; }
@@ -185,11 +185,28 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public class SquareFormSignal : AbstractSignalGenerator, IOutputSignalGenerator<Voltage, Frequency>, ISquareSignal<Voltage, Frequency>
     {
-        public MeasPoint<Percent> DutyCicle { get; set; }
+        private MeasPoint<Percent> dutyCilcle;
+        public MeasPoint<Percent> DutyCicle
+        {
+            get => dutyCilcle;
+            set
+            {
+                if (value.MainPhysicalQuantity.Value < 0)
+                {
+                    dutyCilcle = new MeasPoint<Percent>(0);
+                }
+                else if (value.MainPhysicalQuantity.Value > 100)
+                    dutyCilcle = new MeasPoint<Percent>(100);
+                else
+                {
+                    dutyCilcle = value;
+                }
+            }
+        }
 
         public SquareFormSignal(string chanelNumber) : base(chanelNumber)
         {
-            SignalFormName = "SQUare";
+            SignalFormName = "SQU";
             DutyCicle = new MeasPoint<Percent>(50);
         }
 
@@ -200,7 +217,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public void Setting()
         {
-            throw new System.NotImplementedException();
+            base.Setting();
+            Device.WriteLine($"func{NameOfOutput}:{SignalFormName}:dcyc {DutyCicle.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}PCT");
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
@@ -210,16 +228,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         }
 
         public bool IsEnableOutput { get; }
-        public void OutputOn()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OutputOff()
-        {
-            throw new System.NotImplementedException();
-        }
-
+       
         public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
         public string NameOfOutput { get; set; }
     }
@@ -229,8 +238,30 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public class RampFormSignal : AbstractSignalGenerator, IOutputSignalGenerator<Voltage, Frequency>, IRampSignal<Voltage, Frequency>
     {
-
-        public MeasPoint<Percent> Symmetry { get; set; }
+        /// <summary>
+        /// Процент симметричности сигнала.
+        /// </summary>
+        private MeasPoint<Percent> symmetry;
+        /// <summary>
+        /// Процент симметричности сигнала.
+        /// </summary>
+        public MeasPoint<Percent> Symmetry
+        {
+            get => symmetry;
+            set
+            {
+                if (value.MainPhysicalQuantity.Value < 0)
+                {
+                    symmetry = new MeasPoint<Percent>(0);
+                }
+                else if (value.MainPhysicalQuantity.Value>100)
+                    symmetry=new MeasPoint<Percent>(100);
+                else
+                {
+                    symmetry = value;
+                }
+            }
+        }
 
         public RampFormSignal(string chanelNumber) : base(chanelNumber)
         {
@@ -246,7 +277,9 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public void Setting()
         {
-            throw new System.NotImplementedException();
+           base.Setting();
+           Device.WriteLine($":FUNC{NameOfOutput}:{SignalFormName}:SYMM {Symmetry.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(",",".")}PCT");
+          
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
@@ -256,15 +289,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         }
 
         public bool IsEnableOutput { get; }
-        public void OutputOn()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OutputOff()
-        {
-            throw new System.NotImplementedException();
-        }
+       
 
         public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
         public string NameOfOutput { get; set; }

@@ -18,7 +18,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
     public class GeneratorOfSignals_81160A : ISignalGenerator<Voltage, Frequency>
     {
-        public IeeeBase Device;
+        public IeeeBase Device { get; }
 
         public GeneratorOfSignals_81160A()
         {
