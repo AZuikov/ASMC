@@ -10,7 +10,9 @@ using AP.Utils.Data;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
-    
+    /// <summary>
+    /// Выход генератора сигналов.
+    /// </summary>
     public  class OutputSignalGenerator81160A 
     {
         public IeeeBase Device { get; }
@@ -20,14 +22,15 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public IRampSignal<Voltage,Frequency> RampSignal { get; }
 
         public string ChanelNumber { get; }
-        public OutputSignalGenerator81160A(string chanelNumber)
+        public OutputSignalGenerator81160A(string chanelNumber, GeneratorOfSignals_81160A generator )
         {
             Device = new IeeeBase();
+            Device.StringConnection = generator.StringConnection;
             ChanelNumber = chanelNumber;
-            SineSignal = new SineFormSignal(ChanelNumber);
-            ImpulseSignal = new ImpulseFormSignal(ChanelNumber);
-            SquareSignal = new SquareFormSignal(ChanelNumber);
-            RampSignal = new RampFormSignal(ChanelNumber);
+            SineSignal = new SineFormSignal(ChanelNumber, generator);
+            ImpulseSignal = new ImpulseFormSignal(ChanelNumber, generator);
+            SquareSignal = new SquareFormSignal(ChanelNumber, generator);
+            RampSignal = new RampFormSignal(ChanelNumber, generator);
             
         }
     }
@@ -50,7 +53,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public GeneratorOfSignals_81160A()
         {
             UserType = "81160A";
-            OUT1 = new OutputSignalGenerator81160A("1");
+            OUT1 = new OutputSignalGenerator81160A("1",this);
             //для инициализации второго канала нужно проверить, есть ли такая опция.
             //это происходит в методе InitializeAsync 
 
@@ -70,6 +73,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             OUT1.Device.WriteLine(":ROSC:SOUR INT");
             OUT1.Device.WaitingRemoteOperationComplete();
             
+            
         }
 
         public string UserType { get; }
@@ -82,26 +86,15 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public async Task InitializeAsync()
         {
             //получим список опций
-            OptionList = OUT1.Device.GetOption();
-            if (OptionList.Contains(Option.Opt002.GetStringValue()))
-            {
-                OUT2 = new OutputSignalGenerator81160A("2");
-            }
+            //OptionList = OUT1.Device.GetOption();
+            //if (OptionList.Contains(Option.Opt002.GetStringValue()))
+            //{
+            //    OUT2 = new OutputSignalGenerator81160A("2");
+            //}
 
         }
 
-        private string stringConnection;
-
-        public string StringConnection
-        {
-            get => stringConnection;
-            set
-            {
-                stringConnection = value;
-                OUT1.Device.StringConnection = stringConnection;
-                OUT2.Device.StringConnection = stringConnection;
-            }
-        }
+        public string StringConnection { get; set; }
     }
 
    

@@ -54,7 +54,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             INV
         }
         
-        protected AbstractSignalGenerator(string chanelNumber) : base(chanelNumber)
+        protected AbstractSignalGenerator(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber,generator)
         {
             Delay = new MeasPoint<Time>(0);
             SignalOffset = new MeasPoint<Voltage>(0);
@@ -127,7 +127,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
     public class SineFormSignal : AbstractSignalGenerator
     {
-        public SineFormSignal(string chanelNumber) : base(chanelNumber)
+        public SineFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber,generator)
         {
             SignalFormName = "SINusoid";
             
@@ -150,7 +150,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public class ImpulseFormSignal : AbstractSignalGenerator,  IImpulseSignal<Voltage, Frequency>
     {
-        public ImpulseFormSignal(string chanelNumber) : base(chanelNumber)
+        public ImpulseFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
         {
             SignalFormName = "PULS";
             RiseEdge = new MeasPoint<Time>(0);
@@ -212,7 +212,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             }
         }
 
-        public SquareFormSignal(string chanelNumber) : base(chanelNumber)
+        public SquareFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
         {
             SignalFormName = "SQU";
             DutyCicle = new MeasPoint<Percent>(50);
@@ -267,7 +267,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             }
         }
 
-        public RampFormSignal(string chanelNumber) : base(chanelNumber)
+        public RampFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
         {
             SignalFormName = "RAMP";
             Symmetry = new MeasPoint<Percent>(100);

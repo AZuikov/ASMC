@@ -4,11 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AP.Utils.Data;
+using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
+using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
-    class Pendulum_CNT_90: ICounter
+    /// <summary>
+    /// Класс частотомера.
+    /// </summary>
+    public class Pendulum_CNT_90: ICounter
     {
         enum InstallTimebaseOption
         {
@@ -53,6 +59,47 @@ namespace ASMC.Devices.IEEE.PENDULUM
             throw new NotImplementedException();
         }
 
+        public string UserType { get; }
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsTestConnect { get; }
+        public async Task InitializeAsync()
+        {
+            
+        }
+
+        public string StringConnection { get; set; }
+    }
+
+    public abstract class CounterInput:ICounterInput<Frequency>
+    {
+        public IeeeBase Measure { get; }
+        public CounterInput(string chanelName)
+        {
+            Measure  = new IeeeBase();
+            NameOfChanel = chanelName;
+        }
+        public void Getting()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Setting()
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeasPoint<Frequency> GetValue()
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeasPoint<Frequency> Value { get; }
+        public IRangePhysicalQuantity<Frequency> RangeStorage { get; }
+        public string NameOfChanel { get; }
         public string UserType { get; }
         public void Dispose()
         {
