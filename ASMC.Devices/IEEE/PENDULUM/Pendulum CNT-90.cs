@@ -77,7 +77,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
     public abstract class CounterInput:ICounterInput<Frequency>
     {
         public IeeeBase Measure { get; }
-        public CounterInput(string chanelName)
+        protected CounterInput(string chanelName)
         {
             Measure  = new IeeeBase();
             NameOfChanel = chanelName;

@@ -212,7 +212,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             }
         }
 
-        public SquareFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
+        public SquareFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : 
+            base(chanelNumber, generator)
         {
             SignalFormName = "SQU";
             DutyCicle = new MeasPoint<Percent>(50);

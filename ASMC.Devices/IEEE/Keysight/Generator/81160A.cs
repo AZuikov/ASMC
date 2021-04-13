@@ -56,14 +56,11 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             OUT1 = new OutputSignalGenerator81160A("1",this);
             //для инициализации второго канала нужно проверить, есть ли такая опция.
             //это происходит в методе InitializeAsync 
-
-
         }
 
 
         public void SetExternalReferenceClock()
         {
-            
             OUT1.Device.WriteLine(":ROSC:SOUR EXT");
             OUT1.Device.WaitingRemoteOperationComplete();
         }
@@ -72,8 +69,6 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             OUT1.Device.WriteLine(":ROSC:SOUR INT");
             OUT1.Device.WaitingRemoteOperationComplete();
-            
-            
         }
 
         public string UserType { get; }
