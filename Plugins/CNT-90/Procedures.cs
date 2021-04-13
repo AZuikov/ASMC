@@ -83,6 +83,8 @@ namespace CNT_90
             base.InitWork(token);
             DataRow.Add(new DialogOperationHelp(this, "Внешний осмотр"));
             GeneratorOfSignals_81160A generator = new GeneratorOfSignals_81160A();
+            
+            
         }
     }
 

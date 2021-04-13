@@ -9,15 +9,11 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.Interface
 {
-    public interface ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
-                                                                                    where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    public interface ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2>:ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> 
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
+        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
-        /// <summary>
-        /// Амплитуда и частота сигнала.
-        /// </summary>
-        public MeasPoint<TPhysicalQuantity, TPhysicalQuantity2> AmplitudeAndFrequency { get; set; }
-
-        
+       
         /// <summary>
         /// Смещение сигнала.
         /// </summary>
@@ -43,7 +39,7 @@ namespace ASMC.Devices.Interface
     /// </summary>
     /// <typeparam name="TPhysicalQuantity"></typeparam>
     /// <typeparam name="TPhysicalQuantity2"></typeparam>
-    public interface IImpulseSignal <TPhysicalQuantity, TPhysicalQuantity2> : 
+    public interface IImpulseSignal <TPhysicalQuantity, TPhysicalQuantity2> : IOutputSignalGenerator,
         ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
                                                                        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
@@ -104,13 +100,6 @@ namespace ASMC.Devices.Interface
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
-        public void SetExternalReferenceClock();
-        public void SetInternalReferenceClock();
-    }
-
-    public interface IReferenceClock
-    {
-        public void SetExternalReferenceClock();
-        public void SetInternalReferenceClock();
+       
     }
 }

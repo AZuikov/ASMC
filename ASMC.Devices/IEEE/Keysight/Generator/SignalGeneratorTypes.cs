@@ -8,7 +8,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     
     public abstract class AbstractSignalGenerator : OutputSignalGenerator81160A, ISignalStandartParametr<Voltage, Frequency>
     {
-        public MeasPoint<Voltage, Frequency> AmplitudeAndFrequency { get; set; }
+        
         
         public MeasPoint<Voltage> SignalOffset { get; set; }
         public MeasPoint<Time> Delay { get; set; }
@@ -62,16 +62,33 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         
         }
 
+        public void Getting()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public virtual void Setting()
         {
             
             Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
             //одной командой  устанавливает частоту, амплитуду и смещение
-            Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {AmplitudeAndFrequency.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, "+
-                             $"{AmplitudeAndFrequency.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}, "+
+            Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {Value.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, "+
+                             $"{Value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}, "+
                              $"{SignalOffset.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
            Device.WaitingRemoteOperationComplete(); 
            
+        }
+        /// <summary>
+        /// Значение Амплитуды и частоты.
+        /// </summary>
+        public MeasPoint<Voltage, Frequency> Value { get; private set; }
+        /// <summary>
+        /// Установить амплитуду и частоту.
+        /// </summary>
+        /// <param name="value">Измерительная точка содержащая амплитуду и частоту.</param>
+        public void SetValue(MeasPoint<Voltage, Frequency> value)
+        {
+            Value = value;
         }
 
         public bool IsEnableOutput { get; protected set; }
@@ -103,11 +120,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         }
 
 
+        public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
     }
 
     #region SignalsForm
 
-    public class SineFormSignal : AbstractSignalGenerator, IOutputSignalGenerator
+    public class SineFormSignal : AbstractSignalGenerator
     {
         public SineFormSignal(string chanelNumber) : base(chanelNumber)
         {
@@ -123,21 +141,14 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
        
 
         public MeasPoint<Voltage, Frequency> Value { get; }
-        public void SetValue(MeasPoint<Voltage, Frequency> value)
-        {
-            throw new System.NotImplementedException();
-        }
-
-      
-
-        public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
-        public string NameOfOutput { get; set; }
+       
+        
     }
 
     /// <summary>
     /// Одиночный импульс.
     /// </summary>
-    public class ImpulseFormSignal : AbstractSignalGenerator, IOutputSignalGenerator, IImpulseSignal<Voltage, Frequency>
+    public class ImpulseFormSignal : AbstractSignalGenerator,  IImpulseSignal<Voltage, Frequency>
     {
         public ImpulseFormSignal(string chanelNumber) : base(chanelNumber)
         {
@@ -171,22 +182,16 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
-        public void SetValue(MeasPoint<Voltage, Frequency> value)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsEnableOutput { get; }
        
 
-        public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
+        
         public string NameOfOutput { get; set; }
     }
 
     /// <summary>
     /// Импульсы с коэффициентом заполнения.
     /// </summary>
-    public class SquareFormSignal : AbstractSignalGenerator, IOutputSignalGenerator, ISquareSignal<Voltage, Frequency>
+    public class SquareFormSignal : AbstractSignalGenerator,  ISquareSignal<Voltage, Frequency>
     {
         private MeasPoint<Percent> dutyCilcle;
         public MeasPoint<Percent> DutyCicle
@@ -226,21 +231,16 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
-        public void SetValue(MeasPoint<Voltage, Frequency> value)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsEnableOutput { get; }
        
-        public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
+
+      
         public string NameOfOutput { get; set; }
     }
 
     /// <summary>
     /// Пилообразный сигнал.
     /// </summary>
-    public class RampFormSignal : AbstractSignalGenerator, IOutputSignalGenerator, IRampSignal<Voltage, Frequency>
+    public class RampFormSignal : AbstractSignalGenerator,  IRampSignal<Voltage, Frequency>
     {
         /// <summary>
         /// Процент симметричности сигнала.
@@ -286,17 +286,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
            Device.WaitingRemoteOperationComplete();
 
         }
-
-        public MeasPoint<Voltage, Frequency> Value { get; }
-        public void SetValue(MeasPoint<Voltage, Frequency> value)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsEnableOutput { get; }
-       
-
-        public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
+        
         public string NameOfOutput { get; set; }
     }
 
