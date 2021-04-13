@@ -100,7 +100,7 @@ namespace ASMC.Devices.Interface
 
     }
 
-    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> :IReferenceClock
+    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> :IReferenceClock, IProtocolStringLine
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {

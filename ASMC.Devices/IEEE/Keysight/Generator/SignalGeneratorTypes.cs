@@ -17,20 +17,20 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             get
             {
-                string answer = Generator.Device.QueryLine($"OUTP{ChanelNumber}:POL?");
+                string answer = Device.QueryLine($"OUTP{ChanelNumber}:POL?");
                 return answer.Equals(Polarity.NORM.ToString());
             }
             set
             {
                 if (value)
                 {
-                    Generator.Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.NORM}");
+                    Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.NORM}");
                 }
                 else
                 {
-                    Generator.Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.INV}");
+                    Device.WriteLine($"OUTP{ChanelNumber}:POL {Polarity.INV}");
                 }
-                Generator.Device.WaitingRemoteOperationComplete();
+                Device.WaitingRemoteOperationComplete();
             }
         }
 
@@ -64,22 +64,23 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public virtual void Setting()
         {
-            Generator.Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
+            
+            Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
             //одной командой  устанавливает частоту, амплитуду и смещение
-            Generator.Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {AmplitudeAndFrequency.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, "+
+            Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {AmplitudeAndFrequency.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, "+
                              $"{AmplitudeAndFrequency.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}, "+
                              $"{SignalOffset.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-           Generator.Device.WaitingRemoteOperationComplete(); 
+           Device.WaitingRemoteOperationComplete(); 
            
         }
 
         public bool IsEnableOutput { get; protected set; }
         public void OutputOn()
         {
-           Generator.Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.ON}");
-           Generator.Device.WaitingRemoteOperationComplete();
+           Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.ON}");
+           Device.WaitingRemoteOperationComplete();
            //теперь проверим, что выход включился.
-           string answer = Generator.Device.QueryLine($"OUTP{ChanelNumber}?");
+           string answer = Device.QueryLine($"OUTP{ChanelNumber}?");
            int resultAnswerNumb = -1;
            if (int.TryParse(answer, out resultAnswerNumb))
            {
@@ -90,10 +91,10 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public void OutputOff()
         {
-            Generator.Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.OFF}");
-            Generator.Device.WaitingRemoteOperationComplete();
+            Device.WriteLine($"OUTP{ChanelNumber} {ChanelStatus.OFF}");
+            Device.WaitingRemoteOperationComplete();
             //теперь проверим, что выход включился.
-            string answer = Generator.Device.QueryLine($"OUTP{ChanelNumber}?");
+            string answer = Device.QueryLine($"OUTP{ChanelNumber}?");
             int resultAnswerNumb = -1;
             if (int.TryParse(answer, out resultAnswerNumb))
             {
@@ -158,15 +159,15 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             base.Setting();
             //ставим единицы измерения фронтов в секундах
-            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:unit SEC");
-            Generator.Device.WriteLine($"{NameOfOutput}:del{SignalFormName}:unit SEC");
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:unit SEC");
+            Device.WriteLine($"{NameOfOutput}:del{SignalFormName}:unit SEC");
             //ставим длительность импульса
-            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}WIDT {Width.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}WIDT {Width.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
             //фронт импульса
-            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
             //спад импульса
-            Generator.Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:tra {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
-            Generator.Device.WaitingRemoteOperationComplete();
+            Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:tra {RiseEdge.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            Device.WaitingRemoteOperationComplete();
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
@@ -220,8 +221,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public void Setting()
         {
             base.Setting();
-            Generator.Device.WriteLine($"func{NameOfOutput}:{SignalFormName}:dcyc {DutyCicle.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}PCT");
-            Generator.Device.WaitingRemoteOperationComplete();
+            Device.WriteLine($"func{NameOfOutput}:{SignalFormName}:dcyc {DutyCicle.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}PCT");
+            Device.WaitingRemoteOperationComplete();
         }
 
         public MeasPoint<Voltage, Frequency> Value { get; }
@@ -281,8 +282,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public void Setting()
         {
            base.Setting();
-           Generator.Device.WriteLine($":FUNC{NameOfOutput}:{SignalFormName}:SYMM {Symmetry.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(",",".")}PCT");
-           Generator.Device.WaitingRemoteOperationComplete();
+           Device.WriteLine($":FUNC{NameOfOutput}:{SignalFormName}:SYMM {Symmetry.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(",",".")}PCT");
+           Device.WaitingRemoteOperationComplete();
 
         }
 
