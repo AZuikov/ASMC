@@ -1052,10 +1052,10 @@ namespace ASMC.Devices.Port.APPA
             PhysicalRange<Voltage>[] tolArr = new[]
             {
                 // 20 мВ
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-20), new MeasPoint<Voltage>(20, UnitMultiplier.Mili),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-20, UnitMultiplier.Mili), new MeasPoint<Voltage>(20, UnitMultiplier.Mili),
                                            new AccuracyChatacteristic(0.000060M, null, 0.06M)),
                 // 200 мВ
-                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-200), new MeasPoint<Voltage>(200, UnitMultiplier.Mili),
+                new PhysicalRange<Voltage>(new MeasPoint<Voltage>(-200, UnitMultiplier.Mili), new MeasPoint<Voltage>(200, UnitMultiplier.Mili),
                                            new AccuracyChatacteristic(0.00020M, null, 0.06M)),
 
                 // 2 V
