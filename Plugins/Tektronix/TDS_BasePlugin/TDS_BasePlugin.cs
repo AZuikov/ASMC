@@ -117,7 +117,7 @@ namespace TDS_BasePlugin
             {
                 var dds = DataRow[0] as BasicOperation<bool>;
                 // ReSharper disable once PossibleNullReferenceException
-                dataRow[0] = dds.Getting ? "Соответствует" : dds.Comment;
+                dataRow[0] = dds.Getting? "Соответствует" : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -298,7 +298,7 @@ namespace TDS_BasePlugin
                 var dds = row as BasicOperationVerefication<MeasPoint<Voltage>>;
                 if (dds == null) continue;
 
-                if (dds.Expected != null && dds.Getting != null)
+                if (dds.Expected.MainPhysicalQuantity != null && dds.Getting != null)
                 {
                     dataRow["Коэффициент развёртки"] = new MeasPoint<Voltage>(dds.Expected.MainPhysicalQuantity.Value / 6,
                                                                               dds.Expected.MainPhysicalQuantity.Multiplier)
@@ -803,7 +803,7 @@ namespace TDS_BasePlugin
             {
                 var dataRow = dataTable.NewRow();
                 var dds = row as BasicOperationVerefication<object>;
-                if (dds == null) continue;
+                if (dds == null ) continue;
 
                 dataRow[0] = new MeasPoint<Time>(2.5M, UnitMultiplier.Nano).Description + "/Дел";
                 dataRow[1] = new MeasPoint<Voltage>(((MeasPoint<Voltage>)dds.Expected).MainPhysicalQuantity.Value / 3,

@@ -848,13 +848,13 @@ namespace ASMC.Devices.Port.APPA
                                              new AccuracyChatacteristic(1.0M,null,0.01M)),
                 //20 kHz
                 new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(20,UnitMultiplier.Kilo),
-                                             new AccuracyChatacteristic(0.010M,null,0.01M)),
+                                             new AccuracyChatacteristic(10M,null,0.01M)),
                 //200 kHz
                 new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(200,UnitMultiplier.Kilo),
-                                             new AccuracyChatacteristic(0.00010M,null,0.01M)),
+                                             new AccuracyChatacteristic(100M,null,0.01M)),
                 //1 MHz
-                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(1,UnitMultiplier.Mega),
-                                             new AccuracyChatacteristic(0.0010M,null,0.01M)),
+                new PhysicalRange<Frequency>(new MeasPoint<Frequency>(0), new MeasPoint<Frequency>(1.00001M,UnitMultiplier.Mega),
+                                             new AccuracyChatacteristic(1000M,null,0.01M)),
             });
         }
 
@@ -873,7 +873,7 @@ namespace ASMC.Devices.Port.APPA
                 new PhysicalRange<Temperature>(new MeasPoint<Temperature>(-100), new MeasPoint<Temperature>(400),
                                                new AccuracyChatacteristic(3.0M, null, 0.1M)),
                 //400...1200
-                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(400),new MeasPoint<Temperature>(1200),
+                new PhysicalRange<Temperature>(new MeasPoint<Temperature>(400),new MeasPoint<Temperature>(1210),//1210 что бы точка 1200 была доступна для рсчета погрешности
                                                new AccuracyChatacteristic(3M, null,0.1M))
             });
         }

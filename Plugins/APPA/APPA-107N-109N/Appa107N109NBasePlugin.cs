@@ -375,6 +375,11 @@ namespace APPA_107N_109N
                 foreach (var currPoint in VoltPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+                    operation.Expected = currPoint;
+                    PhysicalRangeAppa =
+                        Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(operation.Expected);
+                    SetUpperAndLowerToleranceAndIsGood(operation);
+
                     operation.InitWorkAsync = async () =>
                     {
                         try
@@ -454,9 +459,7 @@ namespace APPA_107N_109N
                             var measurePoint = (decimal) appa10XN.GetValue();
                             flkCalib5522A.DcVoltage.OutputOff();
 
-                            operation.Expected = currPoint;
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock.DcvRangeStorage.GetRangePointBelong(operation.Expected);
+                           
 
                             var mantisa =
                                 MathStatistics
@@ -472,7 +475,7 @@ namespace APPA_107N_109N
                             //расчет погрешности для конкретной точки предела измерения
                             operation.ErrorCalculation = (expected, getting) => expected - getting;
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
+                            
                         }
                         catch (Exception e)
                         {
@@ -894,6 +897,11 @@ namespace APPA_107N_109N
                 foreach (var currPoint in VoltPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Voltage, Frequency>>();
+                    operation.Expected = currPoint;
+                    PhysicalRangeAppa =
+                        Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(operation.Expected);
+                    SetUpperAndLowerToleranceAndIsGood(operation);
+
                     operation.InitWorkAsync = async () =>
                     {
                         try
@@ -975,9 +983,7 @@ namespace APPA_107N_109N
                                 flkCalib5522A.AcVoltage.OutputOff();
                             }
 
-                            operation.Expected = currPoint;
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock.AcvRangeStorage.GetRangePointBelong(operation.Expected);
+                            
 
 
                             //вычисляе на сколько знаков округлять
@@ -988,9 +994,9 @@ namespace APPA_107N_109N
 
 
                             //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected, getting) => expected - getting;
+                            operation.ErrorCalculation = (expected, getting) => null;
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
+                            
 
                             if (!isRealPoint)
                                 measurePoint =
@@ -1550,6 +1556,11 @@ namespace APPA_107N_109N
                 foreach (var currPoint in CurrentDciPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+                    operation.Expected = currPoint;
+                    PhysicalRangeAppa =
+                        Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(operation.Expected);
+                    SetUpperAndLowerToleranceAndIsGood(operation);
+
                     operation.InitWorkAsync = async () =>
                     {
                         try
@@ -1626,11 +1637,7 @@ namespace APPA_107N_109N
                             var measurePoint = (decimal) appa10XN.GetValue();
 
                             flkCalib5522A.DcCurrent.OutputOff();
-
-                            operation.Expected = currPoint;
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock.DciRangeStorage.GetRangePointBelong(operation.Expected);
-
+                            
                             var mantisa =
                                 MathStatistics
                                    .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
@@ -1642,9 +1649,9 @@ namespace APPA_107N_109N
                                 new MeasPoint<Current>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
                             
                             //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected, getting) => expected - getting;
+                            operation.ErrorCalculation = (expected, getting) => null;
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
+                            
                         }
                         catch (Exception e)
                         {
@@ -2045,6 +2052,11 @@ namespace APPA_107N_109N
 
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Current, Frequency>>();
+                    operation.Expected = (MeasPoint<Current, Frequency>)curr.Clone();
+                    PhysicalRangeAppa =
+                        Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(operation.Expected);
+                    SetUpperAndLowerToleranceAndIsGood(operation);
+
                     operation.InitWorkAsync = async () =>
                     {
                         try
@@ -2129,9 +2141,7 @@ namespace APPA_107N_109N
                                 measurePoint = (decimal) appa10XN.GetValue();
                                 flkCalib5522A.AcCurrent.OutputOff();
                             }
-                            operation.Expected = (MeasPoint<Current, Frequency>)curr.Clone();
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock.aciRangeStorage.GetRangePointBelong(operation.Expected);
+                            
 
                             var mantisa =
                                 MathStatistics
@@ -2140,10 +2150,10 @@ namespace APPA_107N_109N
 
                             
 
-                            operation.ErrorCalculation = (expected, getting) => expected - getting;
+                            operation.ErrorCalculation = (expected, getting) => null;
 
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
+                            
 
                             if (!isRealPoint )
                                 measurePoint =
@@ -2617,27 +2627,7 @@ namespace APPA_107N_109N
                             operation.Expected = freqPoint;
                             PhysicalRangeAppa =
                                 Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(operation.Expected);
-
-                            //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (inA, inB) =>
-                            {
-                                var result = BaseTolCoeff * operation.Expected.MainPhysicalQuantity.Value + EdMlRaz *
-                                    RangeResolution.MainPhysicalQuantity.Value *
-                                    (decimal) (RangeResolution
-                                              .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                               freqPoint.MainPhysicalQuantity.Multiplier
-                                                        .GetDoubleValue()
-                                    );
-
-                                var mantisa =
-                                    MathStatistics
-                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) freqPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                    true);
-
-                                MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Frequency>(result, freqPoint.MainPhysicalQuantity.Multiplier);
-                            };
-
+                            
                             SetUpperAndLowerToleranceAndIsGood(operation);
                         }
                         catch (Exception e)
@@ -2680,7 +2670,7 @@ namespace APPA_107N_109N
 
                 HerzPoint = new[]
                 {
-                    new MeasPoint<Frequency>(10)
+                    new MeasPoint<Frequency>(10.000M)
                 };
 
                 var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
@@ -2717,7 +2707,7 @@ namespace APPA_107N_109N
 
                 HerzPoint = new[]
                 {
-                    new MeasPoint<Frequency>(100)
+                    new MeasPoint<Frequency>(100.00M)
                 };
 
                 var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
@@ -2754,7 +2744,7 @@ namespace APPA_107N_109N
 
                 HerzPoint = new[]
                 {
-                    new MeasPoint<Frequency>(1, UnitMultiplier.Kilo)
+                    new MeasPoint<Frequency>(1.0000M, UnitMultiplier.Kilo)
                 };
 
                 var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
@@ -2790,7 +2780,7 @@ namespace APPA_107N_109N
 
                 HerzPoint = new[]
                 {
-                    new MeasPoint<Frequency>(10, UnitMultiplier.Kilo)
+                    new MeasPoint<Frequency>(10.000M, UnitMultiplier.Kilo)
                 };
 
                 var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
@@ -2827,7 +2817,7 @@ namespace APPA_107N_109N
 
                 HerzPoint = new[]
                 {
-                    new MeasPoint<Frequency>(100, UnitMultiplier.Kilo)
+                    new MeasPoint<Frequency>(100.00M, UnitMultiplier.Kilo)
                 };
 
                 var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
@@ -2863,7 +2853,7 @@ namespace APPA_107N_109N
 
                 HerzPoint = new[]
                 {
-                    new MeasPoint<Frequency>(1, UnitMultiplier.Mega)
+                    new MeasPoint<Frequency>(1.0000M, UnitMultiplier.Mega)
                 };
 
                 var maxOfThisRange = new MeasPoint<Frequency>((decimal) OperationRangeAppaNominal.GetDoubleValue());
@@ -3344,6 +3334,12 @@ namespace APPA_107N_109N
                 foreach (var currPoint in OhmPoint)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Resistance>>();
+                    operation.Expected = currPoint;
+                    PhysicalRangeAppa =
+                        Appa107N_109NAccuracyBock
+                           .ResistanceRangeStorage.GetRangePointBelong(operation.Expected);
+                    SetUpperAndLowerToleranceAndIsGood(operation);
+
                     operation.InitWorkAsync = async () =>
                     {
                         try
@@ -3435,10 +3431,7 @@ namespace APPA_107N_109N
                             var measurePoint = (decimal) appa10XN.GetValue() - refValue;
 
                             flkCalib5522A.Resistance2W.OutputOff();
-                            operation.Expected = currPoint;
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock
-                                   .ResistanceRangeStorage.GetRangePointBelong(operation.Expected);
+                           
 
                             var mantisa =
                                 MathStatistics
@@ -3453,10 +3446,10 @@ namespace APPA_107N_109N
                             
                             //расчет погрешности для конкретной точки предела измерения
 
-                            operation.ErrorCalculation = (expected, getting) => expected - getting;
+                            operation.ErrorCalculation = (expected, getting) => null;
 
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
+                            
                         }
                         catch (Exception e)
                         {
@@ -3580,6 +3573,11 @@ namespace APPA_107N_109N
                 foreach (var currPoint in FarMeasPoints)
                 {
                     var operation = new BasicOperationVerefication<MeasPoint<Capacity>>();
+                    operation.Expected = currPoint;
+                    PhysicalRangeAppa =
+                        Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(operation.Expected);
+                    SetUpperAndLowerToleranceAndIsGood(operation);
+
                     operation.InitWorkAsync = async () =>
                     {
                         try
@@ -3646,9 +3644,7 @@ namespace APPA_107N_109N
                             var measurePoint = (decimal) appa10XN.GetSingleValue();
                             flkCalib5522A.Capacity.OutputOff();
 
-                            operation.Expected = currPoint;
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock.CapacityRangeStorage.GetRangePointBelong(operation.Expected);
+                           
 
                             var mantisa =
                                 MathStatistics
@@ -3661,9 +3657,9 @@ namespace APPA_107N_109N
                                 new MeasPoint<Capacity>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
                             
                             //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected, getting) => expected - getting;
+                            operation.ErrorCalculation = (expected, getting) => null;
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
+                           
                         }
                         catch (Exception e)
                         {
