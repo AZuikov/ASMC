@@ -1,0 +1,270 @@
+﻿Operation1: DCV
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+#--------- 20 mV-------------
+20       4            m          NA     NA
+20       8            m          NA     NA
+20       12           m          NA     NA
+20       16           m          NA     NA
+20       18           m          NA     NA
+20      -18           m          NA     NA
+#--------- 200 mV-------------
+200       40            m          NA     NA
+200       80            m          NA     NA
+200       120           m          NA     NA
+200       160           m          NA     NA
+200       180           m          NA     NA
+200      -180           m          NA     NA
+#--------- 2 V-------------
+2      0.4            NA          NA     NA
+2      0.8            NA          NA     NA
+2      0.12           NA          NA     NA
+2      0.16           NA          NA     NA
+2      0.18           NA          NA     NA
+2     -0.18           NA          NA     NA
+#--------- 20 V-------------
+20      4            NA          NA     NA
+20      8            NA          NA     NA
+20      12           NA          NA     NA
+20      16           NA          NA     NA
+20      18           NA          NA     NA
+20     -18           NA          NA     NA
+#--------- 200 V-------------
+200       40            NA          NA     NA
+200       80            NA          NA     NA
+200       120           NA          NA     NA
+200       160           NA          NA     NA
+200       180           NA          NA     NA
+200      -180           NA          NA     NA
+#--------- 1000 V-------------
+1000      100         NA            NA     NA
+1000      200         NA            NA     NA
+1000      400         NA            NA     NA
+1000      700         NA            NA     NA
+1000      900         NA            NA     NA
+1000     -900         NA            NA     NA
+
+
+Operation1: ACV
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+#--------- 20 mV-------------
+20       4            m           40   NA
+20       4            m           1000 NA
+20       10           m           40   NA
+20       10           m           1000 NA
+20       18           m           40   NA
+20       18           m           1000 NA
+#--------- 200 mV-------------
+200      40           m           40   NA
+200      40           m           1000 NA
+200      100          m           40   NA
+200      100          m           1000 NA
+200      180          m           40   NA
+200      180          m           1000 NA
+#--------- 2 V-------------
+2        0.2          NA          40   NA
+2        0.2          NA          1000 NA
+2        0.2          NA          10   k
+2        0.2          NA          20   k
+2        1            NA          40   NA
+2        1            NA          1000 NA
+2        1            NA          10   k
+2        1            NA          20   k
+2        1            NA          50   k
+2        1            NA          100  k
+2        1.8          NA          40   NA
+2        1.8          NA          1000 NA
+2        1.8          NA          10   k
+2        1.8          NA          20   k
+2        1.8          NA          50   k
+2        1.8          NA          100  k
+#--------- 20 V-------------
+20 	     2.0          NA          40   NA
+20 	     2.0          NA          1000 NA
+20 	     2.0          NA          10   k
+20 	     2.0          NA          20   k
+20 	     10           NA          40   NA
+20 	     10           NA          1000 NA
+20 	     10           NA          10   k
+20 	     10           NA          20   k
+20 	     10           NA          50   k
+20 	     10           NA          100  k
+20 	     18.0         NA          40   NA
+20 	     18.0         NA          1000 NA
+20 	     18.0         NA          10   k
+20 	     18.0         NA          20   k
+20 	     18.0         NA          50   k
+20 	     18.0         NA          100  k
+#--------- 200 V-------------
+200      20.0         NA          40   NA
+200      20.0         NA          1000 NA
+200      20.0         NA          10   k
+200      20.0         NA          20   k
+200      100          NA          40   NA
+200      100          NA          1000 NA
+200      100          NA          10   k
+200      100          NA          20   k
+200      100          NA          50   k
+200      180.0        NA          40   NA
+200      180.0        NA          1000 NA
+200      180.0        NA          10   k
+200      180.0        NA          20   k
+200      180.0        NA          50   k
+#--------- 750 V-------------
+750      100          NA          40   NA
+750      100          NA          1000 NA
+750      400          NA          40   NA
+750      400          NA          1000 NA
+750      700          NA          40   NA
+750      700          NA          1000 NA
+
+Operation1: DCI
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+#--------- 20 mA-------------
+20       4            m          NA     NA
+20       8            m          NA     NA
+20       12           m          NA     NA
+20       18           m          NA     NA
+20      -18           m          NA     NA
+#--------- 200 mA-------------
+200       40            m          NA     NA
+200       80            m          NA     NA
+200       120           m          NA     NA
+200       180           m          NA     NA
+200      -180           m          NA     NA
+#--------- 2 A------------
+2      0.4            NA          NA     NA
+2      0.8            NA          NA     NA
+2      0.12           NA          NA     NA
+2      0.18           NA          NA     NA
+2     -0.18           NA          NA     NA
+#--------- 10 A------------
+10      1             NA          NA     NA
+
+Operation2: DCI
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+#--------- 10 A------------
+10      5             NA          NA     NA
+10      9             NA          NA     NA
+10     -9             NA          NA     NA
+
+Operation1: ACI
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+#--------- 20 mA-------------
+20      4            m          40   NA
+20      4            m          1000 NA
+20      10           m          40   NA
+20      10           m          1000 NA
+20      18           m          40   NA
+20      18           m          1000 NA
+#--------- 200 mA-------------
+200     40           m           40   NA
+200     40           m           1000 NA
+200     40           m           3    k
+200     100          m           40   NA
+200     100          m           1000 NA
+200     100          m           3    k
+200     180          m           40   NA
+200     180          m           1000 NA
+200     180          m           3    k
+#--------- 2 A-------------
+2       0.4          NA          40   NA
+2       0.4          NA          1000 NA
+2       0.4          NA          3    k
+2       1.0          NA          40   NA
+2       1.0          NA          1000 NA
+2       1.0          NA          3    k
+2       1.8          NA          40   NA
+2       1.8          NA          1000 NA
+2       1.8          NA          3    k
+#--------- 10 A-------------
+10      2            NA          40   NA
+10      2            NA          1000 NA
+10      2            NA          3    k 
+Operation2: ACI
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+#--------- 10 A-------------
+10       5           NA          40    NA
+10       5           NA          1     k
+10       5           NA          3     k
+10       9           NA          40    NA
+10       9           NA          1     k
+10       9           NA          3     k
+
+Operation1: Frequency
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+20      10.000          NA       NA    NA
+200     100.00          NA       NA    NA
+2       1.0000          k        NA    NA
+20      10.000          k        NA    NA
+200     100.00          k        NA    NA
+1       1.0000          M        NA    NA
+
+Operation1: Capacity
+#Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+4         3           n          NA    NA
+40        30          n          NA    NA
+400       300         n          NA    NA
+4         3           u          NA    NA
+40        30          u          NA    NA
+400       300         u          NA    NA
+4         3           m          NA    NA
+40        30          m          NA    NA
+
+Operation1: Resistance 2W
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+#----- 200 Ом--------------
+200       50          NA         NA    NA
+200       100         NA         NA    NA
+200       200         NA         NA    NA
+#----- 2 k--------------
+2       0.4          k           NA    NA
+2       0.8          k           NA    NA
+2       1            k           NA    NA
+2       1.5          k           NA    NA
+2       1.8          k           NA    NA
+#----- 20 k--------------
+20      4.0          k           NA    NA
+20      8.0          k           NA    NA
+20      10           k           NA    NA
+20      15.0         k           NA    NA
+20      18.0         k           NA    NA
+#----- 200 k--------------
+200     40.0         k           NA    NA
+200     80.0         k           NA    NA
+200     100          k           NA    NA
+200     150.0        k           NA    NA
+200     180.0        k           NA    NA
+#----- 2 МОм--------------
+2       0.4          M           NA    NA
+2       0.8          M           NA    NA
+2       1            M           NA    NA
+2       1.5          M           NA    NA
+2       1.8          M           NA    NA
+#----- 20 МОм--------------
+20      5            M           NA    NA
+20      10           M           NA    NA
+20      20           M           NA    NA
+#----- 200 МОм--------------
+200     50           M           NA    NA
+200     100          M           NA    NA
+200     200          M           NA    NA
+#----- 2 ГОм--------------
+2      0.9           G           NA    NA
+
+Operation1: Temperature
+#Range--Nominal-----TestingUnit--Mod--ModUnit
+-100  -200           NA          NA    NA
+400   -100           NA          NA    NA
+400   0              NA          NA    NA
+400   100            NA          NA    NA
+1200  500            NA          NA    NA
+1200  800            NA          NA    NA
+1200  1200           NA          NA    NA

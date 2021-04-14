@@ -1,6 +1,6 @@
 Operation1: DCV
 #Предел--Точка-----Множитель ед.--Доп. ед. изм.--Множитель доп. ед.
-#Range--Nominal-----TestingUnit--Mod--ModUnit---Tolearance
+#Range--Nominal-----TestingUnit--Mod--ModUnit
 #-------200 мВ------------------
 200    0.07         m            NA    NA  
 200    2.00         m            NA    NA  

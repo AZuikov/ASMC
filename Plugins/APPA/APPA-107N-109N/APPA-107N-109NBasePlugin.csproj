@@ -92,6 +92,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Resources\appa107_109.asmc" />
     <None Include="Resources\APPA_107N_109N.dotx" />
   </ItemGroup>
   <ItemGroup>
