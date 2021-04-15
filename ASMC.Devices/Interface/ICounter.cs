@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Activation;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Data.Model;
@@ -17,6 +18,48 @@ namespace ASMC.Devices.Interface
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         public string NameOfChanel { get; }
+
+        /// <summary>
+        /// Запуск по фронту.
+        /// </summary>
+        public void SetInputSlopePositive();
+        /// <summary>
+        /// Запуск по спаду.
+        /// </summary>
+        public void SetInputSlopeNegative();
+    }
+
+    public interface ITypicalCounterInput<TPhysicalQuantity> : ICounterInput<TPhysicalQuantity>
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    {
+        /// <summary>
+        /// Установить аттенюатор 1:1.
+        /// </summary>
+        public void SetAtt_1();
+        /// <summary>
+        /// Установить аттенюатор 1:10.
+        /// </summary>
+        public void SetAtt_10();
+
+        /// <summary>
+        ///Установить максимальный входной импеданс. 
+        /// </summary>
+        public void SetHightImpedance();
+        /// <summary>
+        /// Установить минимальный входной импеданс. 
+        /// </summary>
+        public void SetLowImpedance();
+
+        /// <summary>
+        /// Связь по переменному току.
+        /// </summary>
+        public void SetCoupleAC();
+        /// <summary>
+        /// Связь по постоянному току.
+        /// </summary>
+        public void SetCoupleDC();
+
+        
     }
 
 
