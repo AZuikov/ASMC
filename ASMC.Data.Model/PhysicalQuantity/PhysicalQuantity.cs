@@ -440,6 +440,85 @@ namespace ASMC.Data.Model.PhysicalQuantity
             Unit = MeasureUnits.N;
         }
     }
+
+    /// <summary>
+    /// Реализует физическую величину мощности.
+    /// </summary>
+    public sealed class Power : PhysicalQuantity<Power>
+    {
+        /// <inheritdoc />
+        public Power(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.Watt, MeasureUnits.dBm };
+            Unit = MeasureUnits.Watt;
+        }
+
+        /// <inheritdoc />
+        public Power(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.Watt, MeasureUnits.dBm };
+            Unit = MeasureUnits.Watt;
+        }
+
+        public Power()
+        {
+            Units = new[] { MeasureUnits.Watt, MeasureUnits.dBm };
+            Unit = MeasureUnits.Watt;
+        }
+    }
+
+    /// <summary>
+    /// Реализует безразмерную физическую величину (без единиц измерения).
+    /// </summary>
+    public sealed class NoUnits : PhysicalQuantity<NoUnits>
+    {
+        /// <inheritdoc />
+        public NoUnits(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.NONE,MeasureUnits.dB};
+            Unit = MeasureUnits.NONE;
+        }
+
+        /// <inheritdoc />
+        public NoUnits(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.NONE, MeasureUnits.dB };
+            Unit = MeasureUnits.NONE;
+        }
+
+        public NoUnits()
+        {
+            Units = new[] { MeasureUnits.NONE, MeasureUnits.dB };
+            Unit = MeasureUnits.NONE;
+        }
+    }
+
+    /// <summary>
+    /// Реализует безразмерную физическую величину (без единиц измерения).
+    /// </summary>
+    public sealed class Degreas : PhysicalQuantity<Degreas>
+    {
+        /// <inheritdoc />
+        public Degreas(decimal value) : base(value)
+        {
+            Units = new[] { MeasureUnits.NONE, MeasureUnits.dB };
+            Unit = MeasureUnits.NONE;
+        }
+
+        /// <inheritdoc />
+        public Degreas(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
+        {
+            Units = new[] { MeasureUnits.NONE };
+            Unit = MeasureUnits.NONE;
+        }
+
+        public Degreas()
+        {
+            Units = new[] { MeasureUnits.NONE };
+            Unit = MeasureUnits.NONE;
+        }
+    }
+
     /// <summary>
     /// Реализует физическую величину длинны.
     /// </summary>

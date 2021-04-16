@@ -18,6 +18,58 @@ namespace ASMC.Devices.Interface
     {
         public string NameOfChanel { get; }
         ITypicalCounterInputSettings InputSetting { get; }
+        /// <summary>
+        /// Измерение частоты.
+        /// </summary>
+        IMeterPhysicalQuantity<Frequency> Frequency { get; }
+        /// <summary>
+        /// Измерение несущей частоты пакета.
+        /// </summary>
+        IMeterPhysicalQuantity<Frequency> FrequencyBURSt { get; }
+        /// <summary>
+        /// Количество циклов в пакете.
+        /// </summary>
+        IMeterPhysicalQuantity<NoUnits> NumberOfCyclesInBurst { get; }
+        /// <summary>
+        /// Измерение мощности сигнала.
+        /// </summary>
+        IMeterPhysicalQuantity<Power> PowerAC_Signal { get; }
+        /// <summary>
+        /// Частота следования импульсов в пакете.
+        /// </summary>
+        IMeterPhysicalQuantity<Percent> PulseRepetitionFrequencyBurstSignal { get; }
+        /// <summary>
+        /// Коэффициент заполнения.
+        /// </summary>
+        IMeterPhysicalQuantity<Percent> PositiveDutyFactor { get; }
+        /// <summary>
+        /// Коэффициент заполнения.
+        /// </summary>
+        IMeterPhysicalQuantity<Percent> NegativeDutyFactor { get; }
+        /// <summary>
+        /// Отношение частот каналов.
+        /// </summary>
+        IMeterPhysicalQuantity<NoUnits> FrequencyRatio { get; }
+        /// <summary>
+        /// Максимальное значение переменного сигнала.
+        /// </summary>
+        IMeterPhysicalQuantity<Voltage> Maximum{ get; }
+        /// <summary>
+        /// Минимальное значение переменного сигнала.
+        /// </summary>
+        IMeterPhysicalQuantity<Voltage> Minimum{ get; }
+        /// <summary>
+        /// Измерение от пика до пика.
+        /// </summary>
+        IMeterPhysicalQuantity<Voltage> PeakToPeak{ get; }
+        IMeterPhysicalQuantity<Voltage> Ratio { get; }
+        IMeterPhysicalQuantity<Time> Period{ get; }
+        IMeterPhysicalQuantity<Time> PeriodAver{ get; }
+        IMeterPhysicalQuantity<Time> TimeInterval{ get; }
+        IMeterPhysicalQuantity<Time> PositivePulseWidth { get; }
+        IMeterPhysicalQuantity<Time> NegativePulseWidth { get; }
+        IMeterPhysicalQuantity<Degreas> Phase{ get; }
+        
 
     }
 
@@ -71,10 +123,6 @@ namespace ASMC.Devices.Interface
        
     }
 
-    public interface ITypicalCounterInputMeasure<TPhysicalQuantity>
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
-    {
-        public void
-    }
+    
 
 }

@@ -116,7 +116,9 @@
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E363xADevices.cs" />
     <Compile Include="IEEE\Keysight\PowerSupplyes\E36XXa\E364xADevices.cs" />
     <Compile Include="IEEE\Fluke\Calibrator\ICalibratorMultimeterFlukeBase.cs" />
-    <Compile Include="IEEE\PENDULUM\Pendulum CNT-90.cs" />
+    <Compile Include="IEEE\Counters\PENDULUM\CounterAbstract.cs" />
+    <Compile Include="IEEE\Counters\PENDULUM\CounterInputAbstract.cs" />
+    <Compile Include="IEEE\Counters\PENDULUM\Pendulum CNT-90.cs" />
     <Compile Include="Interface\ICounter.cs" />
     <Compile Include="Interface\IDevice.cs" />
     <Compile Include="IEEE\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />

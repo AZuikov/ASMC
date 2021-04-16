@@ -98,8 +98,10 @@ namespace ASMC.Data.Model
         [StringValue("Ф"), StringValue("Far", "en-US")] Far,
         [StringValue("Гц"),StringValue("Hz", "en-US")] Frequency,
         [StringValue("°C"),StringValue("CEL", "en-US")] degC,
+        [StringValue("°"),StringValue("°", "en-US")] degreas,
         [StringValue("°F"),StringValue("FAR", "en-US")] DegF,
-        [StringValue("дБ"), StringValue("DB", "en-US")] Db,
+        [StringValue("дБ"), StringValue("dB", "en-US")] dB,
+        [StringValue("дБм"), StringValue("dBm", "en-US")] dBm,
         [StringValue("с"),StringValue("sec", "en-US")] Time,
         [StringValue("м"),StringValue("metr", "en-US")] Length,
         [StringValue("г"), StringValue("gramm", "en-US")] Weight,
@@ -108,10 +110,11 @@ namespace ASMC.Data.Model
         /// Ньютоны
         /// </summary>
         [StringValue("Н"), StringValue("Nu", "en-US")] N,
+        [StringValue("Вт"), StringValue("W", "en-US")] Watt,
 
         [StringValue("мм.рт.ст"), StringValue("MercuryPressure", "en-US")] MercuryPressure,
-        [StringValue("Па"), StringValue("Pressure en-US", "en-US")] Pressure,
-        [StringValue("%"), StringValue("gramm", "en-US")] Percent
+        [StringValue("Па"), StringValue("Pressure", "en-US")] Pressure,
+        [StringValue("%"), StringValue("%", "en-US")] Percent
     }
 
 
