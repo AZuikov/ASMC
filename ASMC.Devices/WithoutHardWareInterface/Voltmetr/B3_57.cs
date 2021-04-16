@@ -15,7 +15,7 @@ namespace ASMC.Devices.WithoutInterface.Voltmetr
         public MeasPoint<Voltage>[] Ranges { get; set; }
 
 
-        public MeasureUnits[] MeasureUnits { get; } = {Data.Model.MeasureUnits.Db, Data.Model.MeasureUnits.V};
+        public MeasureUnits[] MeasureUnits { get; } = {Data.Model.MeasureUnits.dB, Data.Model.MeasureUnits.V};
 
         public UnitMultiplier[] MultipliersEnum { get; } = {UnitMultiplier.None, UnitMultiplier.Mili};
 

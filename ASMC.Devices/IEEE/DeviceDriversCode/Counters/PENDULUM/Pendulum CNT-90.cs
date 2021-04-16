@@ -64,5 +64,14 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         #endregion
 
+        public void SetExternalReferenceClock()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetInternalReferenceClock()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
