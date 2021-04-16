@@ -501,21 +501,21 @@ namespace ASMC.Data.Model.PhysicalQuantity
         /// <inheritdoc />
         public Degreas(decimal value) : base(value)
         {
-            Units = new[] { MeasureUnits.NONE, MeasureUnits.dB };
-            Unit = MeasureUnits.NONE;
+            Units = new[] {MeasureUnits.degreas};
+            Unit = MeasureUnits.degreas;
         }
 
         /// <inheritdoc />
         public Degreas(decimal value, UnitMultiplier multiplier) : base(value, multiplier)
         {
-            Units = new[] { MeasureUnits.NONE };
-            Unit = MeasureUnits.NONE;
+            Units = new[] { MeasureUnits.degreas };
+            Unit = MeasureUnits.degreas;
         }
 
         public Degreas()
         {
-            Units = new[] { MeasureUnits.NONE };
-            Unit = MeasureUnits.NONE;
+            Units = new[] { MeasureUnits.degreas };
+            Unit = MeasureUnits.degreas;
         }
     }
 
