@@ -14,15 +14,32 @@ namespace ASMC.Devices.Interface
     {
     }
 
-    public interface ICounterInput<TPhysicalQuantity> :IProtocolStringLine, IMeterPhysicalQuantity<TPhysicalQuantity> 
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    public interface ICounterInput
     {
         public string NameOfChanel { get; }
         ITypicalCounterInputSettings InputSetting { get; }
 
     }
 
-    public interface ITypicalCounterInputSettings
+    /// <summary>
+    /// Интерфейс выбора условий запуска измерений частотомера (по признакас формы сигнала).
+    /// </summary>
+    public interface ICounterInputSlopeSetting
+    {
+        /// <summary>
+        /// Запуск по фронту.
+        /// </summary>
+        public void SetInputSlopePositive();
+        /// <summary>
+        /// Запуск по спаду.
+        /// </summary>
+        public void SetInputSlopeNegative();
+    }
+
+    /// <summary>
+    /// Интрефейс содержащий типовые настройки входа частотомера.
+    /// </summary>
+    public interface ITypicalCounterInputSettings: ICounterInputSlopeSetting
     {
         /// <summary>
         /// Установить аттенюатор 1:1.
@@ -51,20 +68,13 @@ namespace ASMC.Devices.Interface
         /// </summary>
         public void SetCoupleDC();
 
-        /// <summary>
-        /// Запуск по фронту.
-        /// </summary>
-        public void SetInputSlopePositive();
-        /// <summary>
-        /// Запуск по спаду.
-        /// </summary>
-        public void SetInputSlopeNegative();
+       
     }
 
     public interface ITypicalCounterInputMeasure<TPhysicalQuantity>
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
-
+        public void
     }
 
 }

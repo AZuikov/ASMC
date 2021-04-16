@@ -147,6 +147,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             public ChanelSetting()
             {
+                //настройки канала по умолчаниюа 
                 Attenuator = InputAttenuator.ATT1;
                 Impedance = InputImpedance.IMP50Ohm;
                 Couple = InputCouple.DC;
