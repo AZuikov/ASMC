@@ -73,26 +73,49 @@ namespace ASMC.Devices.IEEE.PENDULUM
         }
     }
 
-    public abstract class CounterInput : ITypicalCounterInput<Frequency>
+    public class Counter : IProtocolStringLine
+    {
+        public IeeeBase Device { get; }
+        public string UserType { get; }
+
+        public Counter()
+        {
+            Device = new IeeeBase();
+        }
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsTestConnect { get; }
+        public async Task InitializeAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string StringConnection { get; set; }
+    }
+
+    public  class CounterInput: ICounterInput
     {
         #region Enums
 
-        protected enum InputCouple
+        public enum InputCouple
         { AC, DC }
 
-        enum InputImpedance
+        public enum InputImpedance
         {
             [DoubleValue(50)] IMP50Ohm,
             [DoubleValue(1e6)] IMPMegaOhm
         }
 
-        protected enum InputAtt
+        public enum InputAttenuator
         {
             ATT1,
             ATT10
         }
 
-        protected enum InputSlope
+        public enum InputSlope
         {
             POS,
             NEG
@@ -103,52 +126,72 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         #endregion
 
-        #region Property
-
-
-
-        public IeeeBase Device { get; }
-
-        #endregion
-
-        protected CounterInput(string chanelName)
+        private Counter _counter;
+       public CounterInput(string chanelName, Counter counter)
         {
-            Device = new IeeeBase();
             NameOfChanel = chanelName;
+            InputSetting = new ChanelSetting();
+            _counter = counter;
         }
 
-        public void Getting()
-        {
-            throw new NotImplementedException();
-        }
 
-        public void Setting()
-        {
-            throw new NotImplementedException();
-        }
-
-        public MeasPoint<Frequency> GetValue()
-        {
-            throw new NotImplementedException();
-        }
-
-        public MeasPoint<Frequency> Value { get; }
-        public IRangePhysicalQuantity<Frequency> RangeStorage { get; }
         public string NameOfChanel { get; }
-        public string UserType { get; }
+        public ITypicalCounterInputSettings InputSetting { get; }
 
-        public void Dispose()
+        public class ChanelSetting : ITypicalCounterInputSettings
         {
-            throw new NotImplementedException();
+            public InputAttenuator Attenuator { get; protected set; }
+            public InputImpedance Impedance { get; protected set; }
+            public InputCouple Couple { get; protected set; }
+            public InputSlope Slope { get; protected set; }
+
+            public ChanelSetting()
+            {
+                Attenuator = InputAttenuator.ATT1;
+                Impedance = InputImpedance.IMP50Ohm;
+                Couple = InputCouple.DC;
+                Slope = InputSlope.POS;
+            }
+
+            public virtual void SetAtt_1()
+            {
+                Attenuator = InputAttenuator.ATT1;
+            }
+
+            public virtual void SetAtt_10()
+            {
+                Attenuator = InputAttenuator.ATT10;
+            }
+
+            public virtual void SetHightImpedance()
+            {
+                Impedance = InputImpedance.IMPMegaOhm;
+            }
+
+            public virtual void SetLowImpedance()
+            {
+                Impedance = InputImpedance.IMP50Ohm;
+            }
+
+            public virtual void SetCoupleAC()
+            {
+                Couple = InputCouple.AC;
+            }
+
+            public virtual void SetCoupleDC()
+            {
+                Couple = InputCouple.DC;
+            }
+
+            public virtual void SetInputSlopePositive()
+            {
+                Slope = InputSlope.POS;
+            }
+
+            public virtual void SetInputSlopeNegative()
+            {
+                Slope = InputSlope.NEG;
+            }
         }
-
-        public bool IsTestConnect { get; }
-
-        public async Task InitializeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string StringConnection { get; set; }
     }
 }

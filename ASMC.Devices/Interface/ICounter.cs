@@ -18,19 +18,11 @@ namespace ASMC.Devices.Interface
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         public string NameOfChanel { get; }
+        ITypicalCounterInputSettings InputSetting { get; }
 
-        /// <summary>
-        /// Запуск по фронту.
-        /// </summary>
-        public void SetInputSlopePositive();
-        /// <summary>
-        /// Запуск по спаду.
-        /// </summary>
-        public void SetInputSlopeNegative();
     }
 
-    public interface ITypicalCounterInput<TPhysicalQuantity> : ICounterInput<TPhysicalQuantity>
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    public interface ITypicalCounterInputSettings
     {
         /// <summary>
         /// Установить аттенюатор 1:1.
@@ -59,8 +51,20 @@ namespace ASMC.Devices.Interface
         /// </summary>
         public void SetCoupleDC();
 
-        
+        /// <summary>
+        /// Запуск по фронту.
+        /// </summary>
+        public void SetInputSlopePositive();
+        /// <summary>
+        /// Запуск по спаду.
+        /// </summary>
+        public void SetInputSlopeNegative();
     }
 
+    public interface ITypicalCounterInputMeasure<TPhysicalQuantity>
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    {
+
+    }
 
 }
