@@ -435,7 +435,7 @@ namespace TDS_BasePlugin
                                                (decimal)ChanelVerticalRange
                                                         .MainPhysicalQuantity.Multiplier.GetDoubleValue();
                             MeasPoint<Voltage> resultError;
-                            if (nominalPoint == 2M && nominalPoint == 5)
+                            if (nominalPoint == 2M || nominalPoint == 5)
                             {
                                 resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 4 / 100,
                                                                  currScale.GetUnitMultipliersValue());
