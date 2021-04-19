@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASMC.Core.Model;
+using ASMC.Devices.IEEE.PENDULUM;
 
 namespace CNT_90
 {
@@ -12,9 +13,9 @@ namespace CNT_90
         /// <inheritdoc />
         public Main(ServicePack service) : base(service)
         {
-            Type = Название;
-            Grsi = Горсреестр или методика;
-            Range = Диапазон;
+            Type = "CNT-90";
+            Grsi = "41567-09";
+            Range = "";
         }
     }
     public class S801 : OperationMetrControlBase
@@ -22,7 +23,7 @@ namespace CNT_90
 
         public S801(ServicePack servicePac)
         {
-            UserItemOperationPrimaryVerf = new OperationPrimary<Тип устройства>(Название методики МК, servicePac);
+            UserItemOperationPrimaryVerf = new OperationPrimary<Pendulum_CNT_90>("CNT-90", servicePac);
         }
 
     }

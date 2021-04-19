@@ -435,15 +435,15 @@ namespace TDS_BasePlugin
                                                (decimal)ChanelVerticalRange
                                                         .MainPhysicalQuantity.Multiplier.GetDoubleValue();
                             MeasPoint<Voltage> resultError;
-                            if (nominalPoint >= (decimal)0.01 && nominalPoint <= 5)
+                            if (nominalPoint == 2M && nominalPoint == 5)
                             {
-                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
+                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 4 / 100,
                                                                  currScale.GetUnitMultipliersValue());
 
                             }
                             else
                             {
-                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 4 / 100,
+                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
                                                                      currScale.GetUnitMultipliersValue());
                             }
 
