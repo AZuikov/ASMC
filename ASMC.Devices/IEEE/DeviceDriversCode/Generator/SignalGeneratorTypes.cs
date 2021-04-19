@@ -6,7 +6,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
     
-    public abstract class AbstractSignalGenerator : OutputSignalGenerator81160A, ISignalStandartParametr<Voltage, Frequency>
+    public abstract class AbstractSignalGenerator : OutputSignalGenerator81160A, ISignalStandartSetParametrs<Voltage, Frequency>
     {
         
         

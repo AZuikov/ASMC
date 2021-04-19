@@ -9,7 +9,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.Interface
 {
-    public interface ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2>:ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> 
+    public interface ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2>:ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> 
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
@@ -40,7 +40,7 @@ namespace ASMC.Devices.Interface
     /// <typeparam name="TPhysicalQuantity"></typeparam>
     /// <typeparam name="TPhysicalQuantity2"></typeparam>
     public interface IImpulseSignal <TPhysicalQuantity, TPhysicalQuantity2> : IOutputSignalGenerator,
-        ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
+        ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
                                                                        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
         /// <summary>
@@ -59,7 +59,7 @@ namespace ASMC.Devices.Interface
     }
 
     public interface ISquareSignal<TPhysicalQuantity, TPhysicalQuantity2> :
-        ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2>
+        ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2>
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
@@ -75,7 +75,7 @@ namespace ASMC.Devices.Interface
     /// <typeparam name="TPhysicalQuantity"></typeparam>
     /// <typeparam name="TPhysicalQuantity2"></typeparam>
     public interface IRampSignal<TPhysicalQuantity, TPhysicalQuantity2> :
-        ISignalStandartParametr<TPhysicalQuantity, TPhysicalQuantity2>
+        ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2>
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {

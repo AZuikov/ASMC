@@ -35,35 +35,36 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         #endregion
 
-        private CounterAbstract _counterAbstract;
-        public CounterInputAbstract(string chanelName, CounterAbstract counterAbstract)
+        private CounterAbstract _counter;
+        public CounterInputAbstract(string chanelName, CounterAbstract counter)
         {
             NameOfChanel = chanelName;
             InputSetting = new ChanelSetting();
-            _counterAbstract = counterAbstract;
+            _counter = counter;
+            
         }
 
 
         public string NameOfChanel { get; }
         public ITypicalCounterInputSettings InputSetting { get; }
-        public IMeterPhysicalQuantity<Frequency> Frequency { get; }
-        public IMeterPhysicalQuantity<Frequency> FrequencyBURSt { get; }
-        public IMeterPhysicalQuantity<NoUnits> NumberOfCyclesInBurst { get; }
-        public IMeterPhysicalQuantity<Power> PowerAC_Signal { get; }
-        public IMeterPhysicalQuantity<Percent> PulseRepetitionFrequencyBurstSignal { get; }
-        public IMeterPhysicalQuantity<Percent> PositiveDutyFactor { get; }
-        public IMeterPhysicalQuantity<Percent> NegativeDutyFactor { get; }
-        public IMeterPhysicalQuantity<NoUnits> FrequencyRatio { get; }
-        public IMeterPhysicalQuantity<Voltage> Maximum { get; }
-        public IMeterPhysicalQuantity<Voltage> Minimum { get; }
-        public IMeterPhysicalQuantity<Voltage> PeakToPeak { get; }
-        public IMeterPhysicalQuantity<Voltage> Ratio { get; }
-        public IMeterPhysicalQuantity<Time> Period { get; }
-        public IMeterPhysicalQuantity<Time> PeriodAver { get; }
-        public IMeterPhysicalQuantity<Time> TimeInterval { get; }
-        public IMeterPhysicalQuantity<Time> PositivePulseWidth { get; }
-        public IMeterPhysicalQuantity<Time> NegativePulseWidth { get; }
-        public IMeterPhysicalQuantity<Degreas> Phase { get; }
+        public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; }
+        public IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; }
+        public IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; }
+        public IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; }
+        public IMeterPhysicalQuantity<Percent> MeasPulseRepetitionFrequencyBurstSignal { get; }
+        public IMeterPhysicalQuantity<Percent> MeasPositiveDutyFactor { get; }
+        public IMeterPhysicalQuantity<Percent> MeasNegativeDutyFactor { get; }
+        public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; }
+        public IMeterPhysicalQuantity<Voltage> MeasMaximum { get; }
+        public IMeterPhysicalQuantity<Voltage> MeasMinimum { get; }
+        public IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; }
+        public IMeterPhysicalQuantity<Voltage> MeasRatio { get; }
+        public IMeterPhysicalQuantity<Time> MeasPeriod { get; }
+        public IMeterPhysicalQuantity<Time> MeasPeriodAver { get; }
+        public IMeterPhysicalQuantity<Time> MeasTimeInterval { get; }
+        public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; }
+        public IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; }
+        public IMeterPhysicalQuantity<Degreas> MeasPhase { get; }
 
         public class ChanelSetting : ITypicalCounterInputSettings
         {

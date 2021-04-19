@@ -7,7 +7,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
     public abstract class CounterAbstract : ICounter
     {
         public IeeeBase Device { get; }
-        public string UserType { get; }
+        public string UserType { get; protected set; }
 
         public CounterAbstract()
         {
@@ -21,7 +21,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public bool IsTestConnect { get; }
 
-        public async Task InitializeAsync()
+        public virtual async Task InitializeAsync()
         {
             throw new NotImplementedException();
         }
@@ -39,5 +39,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             //:ROSCillator:SOURce INT
             throw new NotImplementedException();
         }
+
+        public ICounterInput[] Outputs { get; set; }
     }
 }

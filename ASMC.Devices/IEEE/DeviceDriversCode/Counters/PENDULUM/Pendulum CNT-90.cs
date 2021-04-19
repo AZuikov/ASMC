@@ -9,30 +9,27 @@ namespace ASMC.Devices.IEEE.PENDULUM
     /// <summary>
     /// Класс частотомера.
     /// </summary>
-    public class Pendulum_CNT_90 : ICounter
+    public class Pendulum_CNT_90 : CounterAbstract
     {
         public Pendulum_CNT_90()
         {
             UserType = "CNT-90";
+            
+            Outputs = new ICounterInput[2]
+            {
+                new CNT90Input("1",this), 
+                new CNT90Input("2",this), 
+            };
+        }
+
+        public override Task InitializeAsync()
+        {
             //todo нужно как то проверять наличие опций и создавать нужную конфигурацию
+            //получим список опций
+            //var options= Device.GetOption();
+            return InitializeAsync();
+
         }
-
-        
-
-        public string UserType { get; }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsTestConnect { get; }
-
-        public async Task InitializeAsync()
-        {
-        }
-
-        public string StringConnection { get; set; }
 
         #region Enums
 
@@ -63,15 +60,13 @@ namespace ASMC.Devices.IEEE.PENDULUM
         }
 
         #endregion
+    }
 
-        public void SetExternalReferenceClock()
+    public class CNT90Input : CounterInputAbstract
+    {
+        public CNT90Input(string chanelName, CounterAbstract counter) :base (chanelName,counter)
         {
-            throw new NotImplementedException();
-        }
-
-        public void SetInternalReferenceClock()
-        {
-            throw new NotImplementedException();
+            
         }
     }
 }

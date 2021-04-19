@@ -12,6 +12,7 @@ namespace ASMC.Devices.Interface
 {
     public interface ICounter: IReferenceClock, IProtocolStringLine
     {
+        public ICounterInput[] Outputs { get; set; }
     }
 
     public interface ICounterInput
@@ -21,54 +22,54 @@ namespace ASMC.Devices.Interface
         /// <summary>
         /// Измерение частоты.
         /// </summary>
-        IMeterPhysicalQuantity<Frequency> Frequency { get; }
+        IMeterPhysicalQuantity<Frequency> MeasFrequency { get; }
         /// <summary>
         /// Измерение несущей частоты пакета.
         /// </summary>
-        IMeterPhysicalQuantity<Frequency> FrequencyBURSt { get; }
+        IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; }
         /// <summary>
         /// Количество циклов в пакете.
         /// </summary>
-        IMeterPhysicalQuantity<NoUnits> NumberOfCyclesInBurst { get; }
+        IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; }
         /// <summary>
         /// Измерение мощности сигнала.
         /// </summary>
-        IMeterPhysicalQuantity<Power> PowerAC_Signal { get; }
+        IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; }
         /// <summary>
         /// Частота следования импульсов в пакете.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> PulseRepetitionFrequencyBurstSignal { get; }
+        IMeterPhysicalQuantity<Percent> MeasPulseRepetitionFrequencyBurstSignal { get; }
         /// <summary>
         /// Коэффициент заполнения.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> PositiveDutyFactor { get; }
+        IMeterPhysicalQuantity<Percent> MeasPositiveDutyFactor { get; }
         /// <summary>
         /// Коэффициент заполнения.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> NegativeDutyFactor { get; }
+        IMeterPhysicalQuantity<Percent> MeasNegativeDutyFactor { get; }
         /// <summary>
         /// Отношение частот каналов.
         /// </summary>
-        IMeterPhysicalQuantity<NoUnits> FrequencyRatio { get; }
+        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; }
         /// <summary>
         /// Максимальное значение переменного сигнала.
         /// </summary>
-        IMeterPhysicalQuantity<Voltage> Maximum{ get; }
+        IMeterPhysicalQuantity<Voltage> MeasMaximum { get; }
         /// <summary>
         /// Минимальное значение переменного сигнала.
         /// </summary>
-        IMeterPhysicalQuantity<Voltage> Minimum{ get; }
+        IMeterPhysicalQuantity<Voltage> MeasMinimum { get; }
         /// <summary>
         /// Измерение от пика до пика.
         /// </summary>
-        IMeterPhysicalQuantity<Voltage> PeakToPeak{ get; }
-        IMeterPhysicalQuantity<Voltage> Ratio { get; }
-        IMeterPhysicalQuantity<Time> Period{ get; }
-        IMeterPhysicalQuantity<Time> PeriodAver{ get; }
-        IMeterPhysicalQuantity<Time> TimeInterval{ get; }
-        IMeterPhysicalQuantity<Time> PositivePulseWidth { get; }
-        IMeterPhysicalQuantity<Time> NegativePulseWidth { get; }
-        IMeterPhysicalQuantity<Degreas> Phase{ get; }
+        IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; }
+        IMeterPhysicalQuantity<Voltage> MeasRatio { get; }
+        IMeterPhysicalQuantity<Time> MeasPeriod { get; }
+        IMeterPhysicalQuantity<Time> MeasPeriodAver { get; }
+        IMeterPhysicalQuantity<Time> MeasTimeInterval { get; }
+        IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; }
+        IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; }
+        IMeterPhysicalQuantity<Degreas> MeasPhase { get; }
         
 
     }
