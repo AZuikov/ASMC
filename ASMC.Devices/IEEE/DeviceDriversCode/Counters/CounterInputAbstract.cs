@@ -1,4 +1,5 @@
-﻿using AP.Utils.Data;
+﻿using System.Threading.Tasks;
+using AP.Utils.Data;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
@@ -35,18 +36,18 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         #endregion
 
-        private CounterAbstract _counter;
+        public IeeeBase Input;
         public CounterInputAbstract(string chanelName, CounterAbstract counter)
         {
+            Input = new IeeeBase();
             NameOfChanel = chanelName;
             InputSetting = ChanelSetting.getInstance();
-            _counter = counter;
-            
+            UserType = counter.UserType+" chanel";
         }
 
 
         public string NameOfChanel { get; }
-        public  ITypicalCounterInputSettings InputSetting { get; set; }
+        public ITypicalCounterInputSettings InputSetting { get; set; }
         public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
         public IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; set; }
         public IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; set; }
@@ -73,10 +74,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
         {
             /*Настройки у канала должны быть одни, поэтому будет синглтон!!!*/
 
-            public InputAttenuator Attenuator { get; protected set; }
-            public InputImpedance Impedance { get; protected set; }
-            public InputCouple Couple { get; protected set; }
-            public InputSlope Slope { get; protected set; }
+            private InputAttenuator Attenuator;
+            private InputImpedance Impedance;
+            private InputCouple Couple;
+            private InputSlope Slope;
 
             
             private static ChanelSetting instance;
@@ -110,6 +111,11 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 Attenuator = InputAttenuator.ATT10;
             }
 
+            public string GetAtt()
+            {
+                return Attenuator.ToString();
+            }
+
             public virtual void SetHightImpedance()
             {
                 Impedance = InputImpedance.IMPMegaOhm;
@@ -118,6 +124,11 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public virtual void SetLowImpedance()
             {
                 Impedance = InputImpedance.IMP50Ohm;
+            }
+
+            public string GetImpedance()
+            {
+                return Impedance.ToString().Replace(',', '.');
             }
 
             public virtual void SetCoupleAC()
@@ -130,6 +141,11 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 Couple = InputCouple.DC;
             }
 
+            public string GetCouple()
+            {
+                return Couple.ToString();
+            }
+
             public virtual void SetInputSlopePositive()
             {
                 Slope = InputSlope.POS;
@@ -138,6 +154,32 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public virtual void SetInputSlopeNegative()
             {
                 Slope = InputSlope.NEG;
+            }
+
+            public string GetSlope()
+            {
+                return Slope.ToString();
+            }
+        }
+
+        public string UserType { get; }
+        public void Dispose()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool IsTestConnect { get; }
+        public async Task InitializeAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string StringConnection
+        {
+            get => Input.StringConnection;
+            set
+            {
+                Input.StringConnection = value;
             }
         }
     }

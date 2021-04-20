@@ -17,10 +17,10 @@ namespace ASMC.Devices.Interface
         public ICounterInput InputE { get; set; }
     }
 
-    public interface ICounterInput
+    public interface ICounterInput:IProtocolStringLine
     {
         public string NameOfChanel { get; }
-         ITypicalCounterInputSettings InputSetting { get; set; }
+        public ITypicalCounterInputSettings InputSetting { get; set; }
         /// <summary>
         /// Измерение частоты.
         /// </summary>
@@ -89,6 +89,8 @@ namespace ASMC.Devices.Interface
         /// Запуск по спаду.
         /// </summary>
         public void SetInputSlopeNegative();
+
+        public string GetSlope();
     }
 
     /// <summary>
@@ -96,6 +98,8 @@ namespace ASMC.Devices.Interface
     /// </summary>
     public interface ITypicalCounterInputSettings: ICounterInputSlopeSetting
     {
+       
+
         /// <summary>
         /// Установить аттенюатор 1:1.
         /// </summary>
@@ -104,6 +108,8 @@ namespace ASMC.Devices.Interface
         /// Установить аттенюатор 1:10.
         /// </summary>
         public void SetAtt_10();
+
+        public string GetAtt();
 
         /// <summary>
         ///Установить максимальный входной импеданс. 
@@ -114,6 +120,8 @@ namespace ASMC.Devices.Interface
         /// </summary>
         public void SetLowImpedance();
 
+        public string GetImpedance();
+
         /// <summary>
         /// Связь по переменному току.
         /// </summary>
@@ -123,7 +131,9 @@ namespace ASMC.Devices.Interface
         /// </summary>
         public void SetCoupleDC();
 
-       
+        public string GetCouple();
+
+
     }
 
     

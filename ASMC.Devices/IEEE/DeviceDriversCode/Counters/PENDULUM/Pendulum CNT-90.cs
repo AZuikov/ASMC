@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using AP.Utils.Data;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
+using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
@@ -15,9 +17,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
         {
             UserType = "CNT-90";
             
-            Out1 = new CNT90Input("1",this);
-            Out2 = new CNT90Input("2",this);
-            Out3 = new CNT90Input("3",this);
+            
+            InputA = new CNT90Input("1",this);
+            InputB = new CNT90Input("2",this);
+            InputE = new CNT90Input("3",this);
         }
 
         public override Task InitializeAsync()
@@ -62,9 +65,55 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
     public class CNT90Input : CounterInputAbstract
     {
+        
         public CNT90Input(string chanelName, CounterAbstract counter) :base (chanelName,counter)
         {
-            Freq
+            
         }
+
+        
+        public class MeasFreq :MeasBase,  IMeterPhysicalQuantity<Frequency>
+        {
+            
+            public MeasFreq(CounterInputAbstract device):base(device)
+            {
+                
+            }
+            public void Getting()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Setting()
+            {
+                
+            }
+
+            public MeasPoint<Frequency> GetValue()
+            {
+                throw new NotImplementedException();
+            }
+
+            public MeasPoint<Frequency> Value { get; }
+            public IRangePhysicalQuantity<Frequency> RangeStorage { get; }
+        }
+
+        public class MeasBase
+        {
+            
+            public MeasBase(CounterInputAbstract device)
+            {
+                
+            }
+
+            public void Setting()
+            {
+                
+                
+
+            }
+        }
+
+        
     }
 }

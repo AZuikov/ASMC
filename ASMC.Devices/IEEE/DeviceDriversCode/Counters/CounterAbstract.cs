@@ -6,12 +6,12 @@ namespace ASMC.Devices.IEEE.PENDULUM
 {
     public abstract class CounterAbstract : ICounter
     {
-        public IeeeBase Device { get; }
+       
         public string UserType { get; protected set; }
 
         public CounterAbstract()
         {
-            Device = new IeeeBase();
+            
         }
 
         public virtual void Dispose()
