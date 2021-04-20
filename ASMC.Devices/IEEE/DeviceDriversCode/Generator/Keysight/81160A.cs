@@ -16,7 +16,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     public  class OutputSignalGenerator81160A 
     {
         public IeeeBase Device { get; }
-        public ISignalStandartParametr<Voltage, Frequency> SineSignal { get;  }
+        public ISignalStandartSetParametrs<Voltage, Frequency> SineSignal { get;  }
         public IImpulseSignal<Voltage,Frequency>ImpulseSignal { get; }
         public ISquareSignal<Voltage,Frequency> SquareSignal { get; }
         public IRampSignal<Voltage,Frequency> RampSignal { get; }

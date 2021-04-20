@@ -12,64 +12,66 @@ namespace ASMC.Devices.Interface
 {
     public interface ICounter: IReferenceClock, IProtocolStringLine
     {
-        public ICounterInput[] Outputs { get; set; }
+        public ICounterInput InputA { get; set; }
+        public ICounterInput InputB { get; set; }
+        public ICounterInput InputE { get; set; }
     }
 
     public interface ICounterInput
     {
         public string NameOfChanel { get; }
-        ITypicalCounterInputSettings InputSetting { get; }
+         ITypicalCounterInputSettings InputSetting { get; set; }
         /// <summary>
         /// Измерение частоты.
         /// </summary>
-        IMeterPhysicalQuantity<Frequency> MeasFrequency { get; }
+        IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
         /// <summary>
         /// Измерение несущей частоты пакета.
         /// </summary>
-        IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; }
+        IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; set; }
         /// <summary>
         /// Количество циклов в пакете.
         /// </summary>
-        IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; }
+        IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; set; }
         /// <summary>
         /// Измерение мощности сигнала.
         /// </summary>
-        IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; }
+        IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; set; }
         /// <summary>
         /// Частота следования импульсов в пакете.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> MeasPulseRepetitionFrequencyBurstSignal { get; }
+        IMeterPhysicalQuantity<Percent> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
         /// <summary>
         /// Коэффициент заполнения.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> MeasPositiveDutyFactor { get; }
+        IMeterPhysicalQuantity<Percent> MeasPositiveDutyFactor { get; set; }
         /// <summary>
         /// Коэффициент заполнения.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> MeasNegativeDutyFactor { get; }
+        IMeterPhysicalQuantity<Percent> MeasNegativeDutyFactor { get; set; }
         /// <summary>
         /// Отношение частот каналов.
         /// </summary>
-        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; }
+        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; set; }
         /// <summary>
         /// Максимальное значение переменного сигнала.
         /// </summary>
-        IMeterPhysicalQuantity<Voltage> MeasMaximum { get; }
+        IMeterPhysicalQuantity<Voltage> MeasMaximum { get; set; }
         /// <summary>
         /// Минимальное значение переменного сигнала.
         /// </summary>
-        IMeterPhysicalQuantity<Voltage> MeasMinimum { get; }
+        IMeterPhysicalQuantity<Voltage> MeasMinimum { get; set; }
         /// <summary>
         /// Измерение от пика до пика.
         /// </summary>
-        IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; }
-        IMeterPhysicalQuantity<Voltage> MeasRatio { get; }
-        IMeterPhysicalQuantity<Time> MeasPeriod { get; }
-        IMeterPhysicalQuantity<Time> MeasPeriodAver { get; }
-        IMeterPhysicalQuantity<Time> MeasTimeInterval { get; }
-        IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; }
-        IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; }
-        IMeterPhysicalQuantity<Degreas> MeasPhase { get; }
+        IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; set; }
+        IMeterPhysicalQuantity<Voltage> MeasRatio { get; set; }
+        IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
+        IMeterPhysicalQuantity<Time> MeasPeriodAver { get; set; }
+        IMeterPhysicalQuantity<Time> MeasTimeInterval { get; set; }
+        IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
+        IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; set; }
+        IMeterPhysicalQuantity<Degreas> MeasPhase { get; set; }
         
 
     }

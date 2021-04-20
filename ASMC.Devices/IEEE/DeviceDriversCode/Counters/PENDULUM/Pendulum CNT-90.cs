@@ -15,11 +15,9 @@ namespace ASMC.Devices.IEEE.PENDULUM
         {
             UserType = "CNT-90";
             
-            Outputs = new ICounterInput[2]
-            {
-                new CNT90Input("1",this), 
-                new CNT90Input("2",this), 
-            };
+            Out1 = new CNT90Input("1",this);
+            Out2 = new CNT90Input("2",this);
+            Out3 = new CNT90Input("3",this);
         }
 
         public override Task InitializeAsync()
@@ -66,7 +64,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
     {
         public CNT90Input(string chanelName, CounterAbstract counter) :base (chanelName,counter)
         {
-            
+            Freq
         }
     }
 }

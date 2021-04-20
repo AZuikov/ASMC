@@ -39,47 +39,65 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public CounterInputAbstract(string chanelName, CounterAbstract counter)
         {
             NameOfChanel = chanelName;
-            InputSetting = new ChanelSetting();
+            InputSetting = ChanelSetting.getInstance();
             _counter = counter;
             
         }
 
 
         public string NameOfChanel { get; }
-        public ITypicalCounterInputSettings InputSetting { get; }
-        public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; }
-        public IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; }
-        public IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; }
-        public IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; }
-        public IMeterPhysicalQuantity<Percent> MeasPulseRepetitionFrequencyBurstSignal { get; }
-        public IMeterPhysicalQuantity<Percent> MeasPositiveDutyFactor { get; }
-        public IMeterPhysicalQuantity<Percent> MeasNegativeDutyFactor { get; }
-        public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; }
-        public IMeterPhysicalQuantity<Voltage> MeasMaximum { get; }
-        public IMeterPhysicalQuantity<Voltage> MeasMinimum { get; }
-        public IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; }
-        public IMeterPhysicalQuantity<Voltage> MeasRatio { get; }
-        public IMeterPhysicalQuantity<Time> MeasPeriod { get; }
-        public IMeterPhysicalQuantity<Time> MeasPeriodAver { get; }
-        public IMeterPhysicalQuantity<Time> MeasTimeInterval { get; }
-        public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; }
-        public IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; }
-        public IMeterPhysicalQuantity<Degreas> MeasPhase { get; }
+        public  ITypicalCounterInputSettings InputSetting { get; set; }
+        public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
+        public IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; set; }
+        public IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; set; }
+        public IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; set; }
+        public IMeterPhysicalQuantity<Percent> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
+        public IMeterPhysicalQuantity<Percent> MeasPositiveDutyFactor { get; set; }
+        public IMeterPhysicalQuantity<Percent> MeasNegativeDutyFactor { get; set; }
+        public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; set; }
+        public IMeterPhysicalQuantity<Voltage> MeasMaximum { get; set; }
+        public IMeterPhysicalQuantity<Voltage> MeasMinimum { get; set; }
+        public IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; set; }
+        public IMeterPhysicalQuantity<Voltage> MeasRatio { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasPeriodAver { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasTimeInterval { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; set; }
+        public IMeterPhysicalQuantity<Degreas> MeasPhase { get; set; }
 
+        /// <summary>
+        /// Настройка канала.
+        /// </summary>
         public class ChanelSetting : ITypicalCounterInputSettings
         {
+            /*Настройки у канала должны быть одни, поэтому будет синглтон!!!*/
+
             public InputAttenuator Attenuator { get; protected set; }
             public InputImpedance Impedance { get; protected set; }
             public InputCouple Couple { get; protected set; }
             public InputSlope Slope { get; protected set; }
 
-            public ChanelSetting()
+            
+            private static ChanelSetting instance;
+
+            private ChanelSetting()
             {
                 //настройки канала по умолчаниюа 
                 Attenuator = InputAttenuator.ATT1;
                 Impedance = InputImpedance.IMP50Ohm;
                 Couple = InputCouple.DC;
                 Slope = InputSlope.POS;
+            }
+
+            public static ChanelSetting getInstance()
+            {
+                if (instance == null)
+                {
+                    instance = new ChanelSetting();
+                }
+
+                return instance;
             }
 
             public virtual void SetAtt_1()
