@@ -6,13 +6,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 {
     public abstract class CounterAbstract : ICounter
     {
-       
         public string UserType { get; protected set; }
-
-        public CounterAbstract()
-        {
-            
-        }
 
         public virtual void Dispose()
         {
@@ -39,7 +33,6 @@ namespace ASMC.Devices.IEEE.PENDULUM
             //:ROSCillator:SOURce INT
             throw new NotImplementedException();
         }
-
 
         public ICounterInput InputA { get; set; }
         public ICounterInput InputB { get; set; }
