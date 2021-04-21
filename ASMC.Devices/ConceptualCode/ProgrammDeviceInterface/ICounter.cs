@@ -12,12 +12,15 @@ namespace ASMC.Devices.Interface
 {
     public interface ICounter: IReferenceClock, IProtocolStringLine
     {
-        public ICounterInput InputA { get; set; }
-        public ICounterInput InputB { get; set; }
-        public ICounterInput InputE { get; set; }
+        public ICounterInputStandartSingleChanelMeasure InputA { get; set; }
+        public ICounterInputStandartSingleChanelMeasure InputB { get; set; }
+        public ICounterInputStandartSingleChanelMeasure InputE { get; set; }
     }
 
-    public interface ICounterInput:IProtocolStringLine
+    /// <summary>
+    /// Измерения, для которых нужен только один канал.
+    /// </summary>
+    public interface ICounterInputStandartSingleChanelMeasure : IProtocolStringLine
     {
         public string NameOfChanel { get; }
         public ITypicalCounterInputSettings InputSetting { get; set; }
@@ -33,26 +36,20 @@ namespace ASMC.Devices.Interface
         /// Количество циклов в пакете.
         /// </summary>
         IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; set; }
-        /// <summary>
-        /// Измерение мощности сигнала.
-        /// </summary>
-        IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; set; }
+        
         /// <summary>
         /// Частота следования импульсов в пакете.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
+        IMeterPhysicalQuantity<Frequency> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
         /// <summary>
         /// Коэффициент заполнения.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> MeasPositiveDutyFactor { get; set; }
+        IMeterPhysicalQuantity<Percent> MeasPositiveDutyCycle { get; set; }
         /// <summary>
         /// Коэффициент заполнения.
         /// </summary>
-        IMeterPhysicalQuantity<Percent> MeasNegativeDutyFactor { get; set; }
-        /// <summary>
-        /// Отношение частот каналов.
-        /// </summary>
-        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; set; }
+        IMeterPhysicalQuantity<Percent> MeasNegativeDutyCycle { get; set; }
+       
         /// <summary>
         /// Максимальное значение переменного сигнала.
         /// </summary>
@@ -65,15 +62,34 @@ namespace ASMC.Devices.Interface
         /// Измерение от пика до пика.
         /// </summary>
         IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; set; }
-        IMeterPhysicalQuantity<Voltage> MeasRatio { get; set; }
+       
         IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
         IMeterPhysicalQuantity<Time> MeasPeriodAver { get; set; }
-        IMeterPhysicalQuantity<Time> MeasTimeInterval { get; set; }
+        
         IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
         IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; set; }
-        IMeterPhysicalQuantity<Degreas> MeasPhase { get; set; }
         
+    }
 
+    public interface ICounterInputDualChanelMeasure:IProtocolStringLine
+    {
+
+        /// <summary>
+        /// Отношение частот каналов.
+        /// </summary>
+        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; set; }
+        IMeterPhysicalQuantity<Voltage> MeasRatio { get; set; }
+        IMeterPhysicalQuantity<Degreas> MeasPhase { get; set; }
+        IMeterPhysicalQuantity<Time> MeasTimeInterval { get; set; }
+
+    }
+
+    public interface ICounterInputPowerMeasure : IProtocolStringLine
+    {
+        /// <summary>
+        /// Измерение мощности сигнала.
+        /// </summary>
+        IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; set; }
     }
 
     /// <summary>

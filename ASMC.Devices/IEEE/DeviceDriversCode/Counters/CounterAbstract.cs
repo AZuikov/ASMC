@@ -34,8 +34,8 @@ namespace ASMC.Devices.IEEE.PENDULUM
             throw new NotImplementedException();
         }
 
-        public ICounterInput InputA { get; set; }
-        public ICounterInput InputB { get; set; }
-        public ICounterInput InputE { get; set; }
+        public ICounterInputStandartSingleChanelMeasure InputA { get; set; }
+        public ICounterInputStandartSingleChanelMeasure InputB { get; set; }
+        public ICounterInputStandartSingleChanelMeasure InputE { get; set; }
     }
 }

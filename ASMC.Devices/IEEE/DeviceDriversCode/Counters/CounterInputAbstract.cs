@@ -7,7 +7,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
-    public abstract class CounterInputAbstract : ICounterInput
+    public abstract class CounterInputAbstract : ICounterInputStandartSingleChanelMeasure
     {
         public static IeeeBase CounterInput = new IeeeBase();
 
@@ -23,25 +23,19 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
         public IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; set; }
         public IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; set; }
-        public IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; set; }
-        public IMeterPhysicalQuantity<Frequency> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
+       public IMeterPhysicalQuantity<Frequency> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
         public IMeterPhysicalQuantity<Percent> MeasPositiveDutyCycle { get; set; }
         public IMeterPhysicalQuantity<Percent> MeasNegativeDutyCycle { get; set; }
-        public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; set; }
-        public IMeterPhysicalQuantity<Voltage> MeasMaximum { get; set; }
+       public IMeterPhysicalQuantity<Voltage> MeasMaximum { get; set; }
         public IMeterPhysicalQuantity<Voltage> MeasMinimum { get; set; }
         public IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; set; }
-        public IMeterPhysicalQuantity<Voltage> MeasRatio { get; set; }
-        public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
+       public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
         public IMeterPhysicalQuantity<Time> MeasPeriodAver { get; set; }
-        public IMeterPhysicalQuantity<Time> MeasTimeInterval { get; set; }
-        public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
+       public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
         public IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; set; }
-        public IMeterPhysicalQuantity<Degreas> MeasPhase { get; set; }
-
-        public string UserType { get; }
-
-        public void Dispose()
+       public string UserType { get; }
+        
+       public void Dispose()
         {
             throw new NotImplementedException();
         }
