@@ -2060,9 +2060,7 @@ namespace APPA_107N_109N
                         {
                             decimal measurePoint = 0;
                             var isRealPoint = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
-                            //todo Пределы по току нужно слить в один большой предел
-                            //var isRealPointHiCurr = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
-
+                            
                             if (isRealPoint)
                             {
                                 flkCalib5522A.AcCurrent.SetValue(curr);

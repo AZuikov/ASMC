@@ -377,12 +377,10 @@ namespace Belvar_V7_40_1
             //разберемся, у кого нет диапазона?
             if (!RangeIsSet(multRangeStorage))
             {
-                //todo как-то проинформировать пользователя
                 message = message + $"Предел {rangeToSetOnMetr.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
             }
             if (!RangeIsSet(calibrRangeStorage))
             {
-                //todo как-то проинформировать пользователя
                 message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
             }
 

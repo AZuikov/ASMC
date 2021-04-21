@@ -5,6 +5,8 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
+using NLog.LayoutRenderers.Wrappers;
+using static ASMC.Devices.HelpDeviceBase;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
@@ -71,47 +73,67 @@ namespace ASMC.Devices.IEEE.PENDULUM
             
         }
 
-        
-        public class MeasFreq :MeasBase,  IMeterPhysicalQuantity<Frequency>
+        /// <summary>
+        /// Измерение частоты.
+        /// </summary>
+        public class MeasFreq :MeasBase<Frequency>
         {
             
             public MeasFreq(CounterInputAbstract device):base(device)
             {
                 
             }
-            public void Getting()
-            {
-                throw new NotImplementedException();
-            }
+            
 
             public void Setting()
             {
-                
+                base.Setting();
+                CounterInput.WriteLine($"CONF:MEAS:FREQ (@{_device.NameOfChanel})");
+               
             }
-
-            public MeasPoint<Frequency> GetValue()
-            {
-                throw new NotImplementedException();
-            }
+            
 
             public MeasPoint<Frequency> Value { get; }
             public IRangePhysicalQuantity<Frequency> RangeStorage { get; }
         }
 
-        public class MeasBase
+        public class MeasBase<TPhysicalQuantity> : IMeterPhysicalQuantity<TPhysicalQuantity> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
-            
+            protected CounterInputAbstract _device;
             public MeasBase(CounterInputAbstract device)
             {
-                
+                _device = device;
             }
 
             public void Setting()
             {
-                
-                
-
+                //todo проверить проинициализированно ли к этому моменту устройство? задана ли строка подключения?
+             CounterInput.WriteLine($"inp{_device.NameOfChanel}:imp {_device.InputSetting.GetImpedance()}"); 
+             CounterInput.WriteLine($"inp{_device.NameOfChanel}:att {_device.InputSetting.GetAtt()}");   
+             CounterInput.WriteLine($"inp{_device.NameOfChanel}:coup {_device.InputSetting.GetCouple()}");   
+             CounterInput.WriteLine($"inp{_device.NameOfChanel}:slop {_device.InputSetting.GetSlope()}");   
+             CounterInput.WriteLine($"inp{_device.NameOfChanel}:filt {_device.InputSetting.GetFilterStatus()}");   
             }
+
+            public void Getting()
+            {
+                
+            }
+
+            public MeasPoint<TPhysicalQuantity> GetValue()
+            {
+                //считывание измеренного значения, сработает при условии, что перед эим был запущен метод Setting
+                CounterInput.WriteLine($":FORMat ASCii");//формат получаемых от прибора данных
+                CounterInput.WriteLine($":INITiate:CONTinuous 0");//выключаем многократный запуск
+                CounterInput.WriteLine($":INITiate");//взводим триггер
+                string answer = CounterInput.QueryLine($":FETCh?");//считываем ответ
+                decimal value = (decimal)StrToDouble(answer);
+                Value = new MeasPoint<TPhysicalQuantity>(value);
+                return Value;
+            }
+
+            public MeasPoint<TPhysicalQuantity> Value { get; protected set; }
+            public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
         }
 
         

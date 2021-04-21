@@ -36,10 +36,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         #endregion
 
-        public IeeeBase Input;
+        public static IeeeBase Input = new IeeeBase();
         public CounterInputAbstract(string chanelName, CounterAbstract counter)
         {
-            Input = new IeeeBase();
+            
             NameOfChanel = chanelName;
             InputSetting = ChanelSetting.getInstance();
             UserType = counter.UserType+" chanel";
@@ -78,6 +78,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             private InputImpedance Impedance;
             private InputCouple Couple;
             private InputSlope Slope;
+            private Status InputFilter;
 
             
             private static ChanelSetting instance;
@@ -89,6 +90,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 Impedance = InputImpedance.IMP50Ohm;
                 Couple = InputCouple.DC;
                 Slope = InputSlope.POS;
+                InputFilter = Status.OFF;
             }
 
             public static ChanelSetting getInstance()
@@ -144,6 +146,21 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public string GetCouple()
             {
                 return Couple.ToString();
+            }
+
+            public void SetFilterOn()
+            {
+                InputFilter = Status.ON;
+            }
+
+            public void SetFilterOff()
+            {
+                InputFilter = Status.OFF;
+            }
+
+            public string GetFilterStatus()
+            {
+                return InputFilter.ToString();
             }
 
             public virtual void SetInputSlopePositive()

@@ -132,7 +132,19 @@ namespace ASMC.Devices.Interface
         public void SetCoupleDC();
 
         public string GetCouple();
-
+        /// <summary>
+        /// Включить входной фильтр.
+        /// </summary>
+        public void SetFilterOn();
+        /// <summary>
+        /// Выключить входной фильтр.
+        /// </summary>
+        public void SetFilterOff();
+        /// <summary>
+        /// Возвращает текущий статус фильтра.
+        /// </summary>
+        /// <returns>Статус фильтра on/off.</returns>
+        public string GetFilterStatus();
 
     }
 

@@ -17,7 +17,7 @@ namespace AP.Extension
                 .Replace(".",
                     Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
         }
-        public static MeasPoint<T> ConvertToMeasPint<T>(this object number, UnitMultiplier multiplier = UnitMultiplier.None) where T : class, IPhysicalQuantity<T>, new()
+        public static MeasPoint<T> ConvertToMeasPoint<T>(this object number, UnitMultiplier multiplier = UnitMultiplier.None) where T : class, IPhysicalQuantity<T>, new()
         {
             var val= decimal.Parse(number.ToString().Trim()
                 .Replace(".",

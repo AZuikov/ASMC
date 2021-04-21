@@ -410,8 +410,8 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             /// <inheritdoc />
             protected override void SetRangeCommand()
             {
-                //todo по этой логике мультиметр ставит предел по напряжению с максимальным значением (например 750 В), а измерить нужно например на меньшем пределе (например 1 В)!!!
-                //todo измерение не произойдет корректно
+                //todo по этой логике мультиметр ставит предел по напряжению с максимальным значением (например 750 В), а измерить нужно например на меньшем пределе (например 1 В)!!! измерение не произойдет корректно
+
                 Device.WriteLine($"{GetRangeNameCommand()} {RangeStorage.SelectRange.End.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
             }
             /// <inheritdoc />

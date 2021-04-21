@@ -44,7 +44,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         protected internal override void CheckErrors()
         {
-            //todo механизм перекочевал из CalibrMain т.к. коды ошибок разные. Нужно проверить работу.
             List<int> errCodeList = new List<int>();
             List<string> errStrList = new List<string>();
             int errCode;

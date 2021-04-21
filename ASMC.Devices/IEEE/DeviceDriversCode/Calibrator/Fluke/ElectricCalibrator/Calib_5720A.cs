@@ -64,7 +64,6 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         protected override int GetLastErrorCode()
         {
             string answer = Device.QueryLine(GetCommandForErrorQuery());
-            //todo код ошибки получили теперь нужно проверить его в перечислении
             int.TryParse(answer, out var result);
             if (Enum.IsDefined(typeof(ErrorCode5720A), result))
                 return result;
