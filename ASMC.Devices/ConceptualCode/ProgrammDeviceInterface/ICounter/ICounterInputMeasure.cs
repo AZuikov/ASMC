@@ -7,16 +7,29 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Измерения, для котрых нужны сразу два канала.
     /// </summary>
-    public interface ICounterInputDualChanelMeasure 
+    public interface ICounterInputDualChanelMeasure : IProtocolStringLine
     {
         /// <summary>
         /// Отношение частот каналов.
         /// </summary>
-        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatio { get; set; }
+        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioAB { get; set; }
+        IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioBA { get; set; }
+        /// <summary>
+        /// Отношение напряжений.
+        /// </summary>
+        IMeterPhysicalQuantity<Voltage> MeasRatioAB { get; set; }
+        IMeterPhysicalQuantity<Voltage> MeasRatioBA { get; set; }
 
-        IMeterPhysicalQuantity<Voltage> MeasRatio { get; set; }
-        IMeterPhysicalQuantity<Degreas> MeasPhase { get; set; }
-        IMeterPhysicalQuantity<Time> MeasTimeInterval { get; set; }
+        /// <summary>
+        /// Измерение фазы.
+        /// </summary>
+        IMeterPhysicalQuantity<Degreas> MeasPhaseAB { get; set; }
+        IMeterPhysicalQuantity<Degreas> MeasPhaseBA { get; set; }
+        /// <summary>
+        /// Измерение временных интервалов (задержек) между каналами.
+        /// </summary>
+        IMeterPhysicalQuantity<Time> MeasTimeIntervalAB { get; set; }
+        IMeterPhysicalQuantity<Time> MeasTimeIntervalBA { get; set; }
     }
 
     /// <summary>

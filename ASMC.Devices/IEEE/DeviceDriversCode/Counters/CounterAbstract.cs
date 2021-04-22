@@ -20,7 +20,14 @@ namespace ASMC.Devices.IEEE.PENDULUM
             throw new NotImplementedException();
         }
 
-        public string StringConnection { get; set; }
+        public string StringConnection { get=>InputA.StringConnection;
+            set
+            {
+                InputA.StringConnection = value;
+                InputB.StringConnection = value;
+                InputC_HighFrequency.StringConnection = value;
+            }
+        }
 
         public virtual void SetExternalReferenceClock()
         {
@@ -36,7 +43,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public ICounterInput InputA { get; set; }
         public ICounterInput InputB { get; set; }
-        public ICOunterInputHighFrequency InputC { get; set; }
+        public ICOunterInputHighFrequency InputC_HighFrequency { get; set; }
         public ICounterInputDualChanelMeasure DualChanelMeasure { get; set; }
     }
 }

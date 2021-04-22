@@ -1,6 +1,5 @@
 ﻿using ASMC.Data.Model;
-using ASMC.Data.Model.PhysicalQuantity;
-using ASMC.Devices.Interface.SourceAndMeter;
+
 
 namespace ASMC.Devices.Interface
 {
@@ -11,7 +10,7 @@ namespace ASMC.Devices.Interface
     {
         public ICounterInput InputA { get; set; }
         public ICounterInput InputB { get; set; }
-        public ICOunterInputHighFrequency InputC { get; set; }
+        public ICOunterInputHighFrequency InputC_HighFrequency { get; set; }
         public ICounterInputDualChanelMeasure DualChanelMeasure { get; set; }
     }
 
@@ -39,8 +38,4 @@ namespace ASMC.Devices.Interface
 
     }
 
-    
-                                     
-
-   
 }

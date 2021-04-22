@@ -7,7 +7,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
-    public abstract class CounterInputAbstract : ICounterInputTypicalParametr
+    public abstract class CounterInputAbstract : ICounterInput
     {
         public static IeeeBase CounterInput = new IeeeBase();
 
@@ -202,5 +202,53 @@ namespace ASMC.Devices.IEEE.PENDULUM
         }
 
         #endregion Enums
+    }
+
+    public abstract class CounterInputAbstractHF : CounterInputAbstract, ICOunterInputHighFrequency
+    {
+        protected CounterInputAbstractHF(string chanelName, CounterAbstract counter) : base(chanelName, counter)
+        {
+        }
+
+        public IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; set; }
+    }
+
+    public abstract class CounterDualChanelMeasureAbstract: ICounterInputDualChanelMeasure
+    {
+        protected Pendulum_CNT_90 _counter;
+        public static IeeeBase _device = new IeeeBase();
+        public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioAB { get; set; }
+        public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioBA { get; set; }
+        public IMeterPhysicalQuantity<Voltage> MeasRatioAB { get; set; }
+        public IMeterPhysicalQuantity<Voltage> MeasRatioBA { get; set; }
+        public IMeterPhysicalQuantity<Degreas> MeasPhaseAB { get; set; }
+        public IMeterPhysicalQuantity<Degreas> MeasPhaseBA { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasTimeIntervalAB { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasTimeIntervalBA { get; set; }
+        public string UserType { get; }
+
+        public CounterDualChanelMeasureAbstract(Pendulum_CNT_90 counter)
+        {
+            _counter = counter;
+        }
+        
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsTestConnect { get; }
+        public async Task InitializeAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string StringConnection
+        {
+            get => _device.StringConnection;
+            set
+            {
+                _device.StringConnection = value;
+            } }
     }
 }

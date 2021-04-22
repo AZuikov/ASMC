@@ -117,7 +117,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     {
         #region Property
 
-        public MeasPoint<Voltage, Frequency> Value { get; }
+        public new MeasPoint<Voltage, Frequency> Value { get; }
 
         #endregion
 
@@ -128,7 +128,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         #region Methods
 
-        public void Getting()
+        public new void Getting()
         {
             throw new NotImplementedException();
         }
@@ -154,12 +154,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public MeasPoint<Time> FallEdge { get; set; }
         public MeasPoint<Time> Width { get; set; }
 
-        public void Getting()
+        public new void Getting()
         {
             throw new NotImplementedException();
         }
 
-        public void Setting()
+        public new void Setting()
         {
             base.Setting();
             //ставим единицы измерения фронтов в секундах
@@ -174,7 +174,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             Device.WaitingRemoteOperationComplete();
         }
 
-        public MeasPoint<Voltage, Frequency> Value { get; }
+        public new MeasPoint<Voltage, Frequency> Value { get; }
 
         public string NameOfOutput { get; set; }
     }
@@ -217,19 +217,19 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             }
         }
 
-        public void Getting()
+        public new void Getting()
         {
             throw new NotImplementedException();
         }
 
-        public void Setting()
+        public new  void Setting()
         {
             base.Setting();
             Device.WriteLine($"func{NameOfOutput}:{SignalFormName}:dcyc {DutyCicle.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}PCT");
             Device.WaitingRemoteOperationComplete();
         }
 
-        public MeasPoint<Voltage, Frequency> Value { get; }
+        public new MeasPoint<Voltage, Frequency> Value { get; }
     }
 
     /// <summary>
@@ -275,12 +275,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             }
         }
 
-        public void Getting()
+        public new void Getting()
         {
             throw new NotImplementedException();
         }
 
-        public void Setting()
+        public new void Setting()
         {
             base.Setting();
             Device.WriteLine($":FUNC{NameOfOutput}:{SignalFormName}:SYMM {Symmetry.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(",", ".")}PCT");

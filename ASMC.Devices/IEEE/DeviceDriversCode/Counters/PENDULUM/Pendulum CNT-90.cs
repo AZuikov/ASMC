@@ -18,21 +18,11 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             InputA = new CNT90Input("1", this);
             InputB = new CNT90Input("2", this);
-            InputC = new CNT90Input("3", this);
+            InputC_HighFrequency = new CNT90InputC_HighFreq("3", this);
+            DualChanelMeasure = new CNT90DualChanelMeasure(InputA, InputB);
         }
 
-        #region Methods
-
-        public override Task InitializeAsync()
-        {
-            //todo нужно как то проверять наличие опций и создавать нужную конфигурацию
-            //получим список опций
-            //var options= Device.GetOption();
-            return InitializeAsync();
-        }
-
-        #endregion
-
+        
         #region Enums
 
         private enum InstallTimebaseOption
@@ -94,7 +84,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:FREQ (@{_device.NameOfChanel})");
@@ -109,7 +99,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             {
             }
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:FREQ:BURSt (@{_device.NameOfChanel})");
@@ -123,7 +113,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             {
             }
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEASure:VOLT:NCYCles (@{_device.NameOfChanel})");
@@ -139,7 +129,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:FREQ:PRF (@{_device.NameOfChanel})");
@@ -156,7 +146,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:PDUTycycle (@{_device.NameOfChanel})");
@@ -173,7 +163,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:NDUTycycle (@{_device.NameOfChanel})");
@@ -190,7 +180,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:VOLT:MAXimum (@{_device.NameOfChanel})");
@@ -207,7 +197,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:VOLT:MINimum (@{_device.NameOfChanel})");
@@ -224,7 +214,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:VOLT:PTPeak (@{_device.NameOfChanel})");
@@ -241,7 +231,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:PERiod (@{_device.NameOfChanel})");
@@ -258,7 +248,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:PERiod:AVERage (@{_device.NameOfChanel})");
@@ -275,7 +265,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:PWIDth (@{_device.NameOfChanel})");
@@ -291,7 +281,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             #region Methods
 
-            public void Setting()
+            public new void Setting()
             {
                 base.Setting();
                 CounterInput.WriteLine($":CONF:MEAS:NWIDth (@{_device.NameOfChanel})");
@@ -341,6 +331,67 @@ namespace ASMC.Devices.IEEE.PENDULUM
             }
 
             public MeasPoint<TPhysicalQuantity> Value { get; protected set; }
+            public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
+        }
+    }
+
+    public class CNT90InputC_HighFreq : CounterInputAbstractHF
+    {
+        public CNT90InputC_HighFreq(string chanelName, CounterAbstract counter) : base(chanelName, counter)
+        {
+        }
+    }
+
+    public class CNT90DualChanelMeasure : CounterDualChanelMeasureAbstract
+    {
+        
+        public CNT90DualChanelMeasure(Pendulum_CNT_90 counter):base(counter)
+        {
+            MeasFrequencyRatioAB = null;
+            MeasRatioAB = null;
+            MeasPhaseAB = null;
+            MeasTimeIntervalAB = null;
+            
+        }
+
+        public abstract class DualChanelBaseMeasure<TPhysicalQuantity> : IMeterPhysicalQuantity<TPhysicalQuantity>
+            where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        {
+            protected CounterInputAbstract _chanelA;
+            protected CounterInputAbstract _chanelB;
+
+            public DualChanelBaseMeasure(CounterInputAbstract chnA, CounterInputAbstract chnB)
+            {
+                _chanelA = chnA;
+                _chanelB = chnB;
+            }
+            public void Getting()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void Setting()
+            {
+                //todo проверить проинициализированно ли к этому моменту устройство? задана ли строка подключения?
+                _device.WriteLine($"inp{_chanelA.NameOfChanel}:imp { _chanelA.InputSetting.GetImpedance()}");
+                _device.WriteLine($"inp{_chanelA.NameOfChanel}:att { _chanelA.InputSetting.GetAtt()}");
+                _device.WriteLine($"inp{_chanelA.NameOfChanel}:coup {_chanelA.InputSetting.GetCouple()}");
+                _device.WriteLine($"inp{_chanelA.NameOfChanel}:slop {_chanelA.InputSetting.GetSlope()}");
+                _device.WriteLine($"inp{_chanelA.NameOfChanel}:filt {_chanelA.InputSetting.GetFilterStatus()}");
+
+                _device.WriteLine($"inp{_chanelB.NameOfChanel}:imp { _chanelB.InputSetting.GetImpedance()}");
+                _device.WriteLine($"inp{_chanelB.NameOfChanel}:att { _chanelB.InputSetting.GetAtt()}");
+                _device.WriteLine($"inp{_chanelB.NameOfChanel}:coup {_chanelB.InputSetting.GetCouple()}");
+                _device.WriteLine($"inp{_chanelB.NameOfChanel}:slop {_chanelB.InputSetting.GetSlope()}");
+                _device.WriteLine($"inp{_chanelB.NameOfChanel}:filt {_chanelB.InputSetting.GetFilterStatus()}");
+            }
+
+            public MeasPoint<TPhysicalQuantity> GetValue()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public MeasPoint<TPhysicalQuantity> Value { get; }
             public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
         }
     }
