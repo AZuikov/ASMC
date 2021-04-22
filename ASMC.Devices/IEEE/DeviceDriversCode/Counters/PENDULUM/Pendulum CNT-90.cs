@@ -18,7 +18,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
             InputA = new CNT90Input("1", this);
             InputB = new CNT90Input("2", this);
-            InputE = new CNT90Input("3", this);
+            InputC = new CNT90Input("3", this);
         }
 
         #region Methods

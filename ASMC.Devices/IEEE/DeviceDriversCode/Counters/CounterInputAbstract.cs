@@ -7,7 +7,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
-    public abstract class CounterInputAbstract : ICounterInputStandartSingleChanelMeasure
+    public abstract class CounterInputAbstract : ICounterInputTypicalParametr
     {
         public static IeeeBase CounterInput = new IeeeBase();
 

@@ -102,6 +102,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConceptualCode\ProgrammDeviceInterface\ICounter\ICounterInputMeasure.cs" />
+    <Compile Include="ConceptualCode\ProgrammDeviceInterface\ICounter\ICounterInputSetting.cs" />
     <Compile Include="DeviceInfo.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Multimeter\BELVAR\Belvar_V7_40_1.cs" />
@@ -119,7 +121,7 @@
     <Compile Include="IEEE\DeviceDriversCode\Counters\CounterAbstract.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Counters\CounterInputAbstract.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Counters\PENDULUM\Pendulum CNT-90.cs" />
-    <Compile Include="ConceptualCode\ProgrammDeviceInterface\ICounter.cs" />
+    <Compile Include="ConceptualCode\ProgrammDeviceInterface\ICounter\ICounter.cs" />
     <Compile Include="ConceptualCode\ProgrammDeviceInterface\IDevice.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Calibrator\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
