@@ -1,8 +1,8 @@
-﻿using System;
-using ASMC.Data.Model;
+﻿using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
+using System;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
@@ -77,7 +77,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             //теперь проверим, что выход включился.
             var answer = Device.QueryLine($"OUTP{ChanelNumber}?");
             var resultAnswerNumb = -1;
-            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int) ChanelStatus.ON;
+            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int)ChanelStatus.ON;
         }
 
         public void OutputOff()
@@ -87,7 +87,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             //теперь проверим, что выход включился.
             var answer = Device.QueryLine($"OUTP{ChanelNumber}?");
             var resultAnswerNumb = -1;
-            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int) ChanelStatus.ON;
+            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int)ChanelStatus.ON;
         }
 
         public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
@@ -119,7 +119,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public new MeasPoint<Voltage, Frequency> Value { get; }
 
-        #endregion
+        #endregion Property
 
         public SineFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
         {
@@ -133,7 +133,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             throw new NotImplementedException();
         }
 
-        #endregion
+        #endregion Methods
     }
 
     /// <summary>
@@ -188,13 +188,13 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         private MeasPoint<Percent> dutyCilcle;
 
-        #endregion
+        #endregion Fields
 
         #region Property
 
         public string NameOfOutput { get; set; }
 
-        #endregion
+        #endregion Property
 
         public SquareFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) :
             base(chanelNumber, generator)
@@ -222,7 +222,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             throw new NotImplementedException();
         }
 
-        public new  void Setting()
+        public new void Setting()
         {
             base.Setting();
             Device.WriteLine($"func{NameOfOutput}:{SignalFormName}:dcyc {DutyCicle.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}PCT");
@@ -244,13 +244,13 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         /// </summary>
         private MeasPoint<Percent> symmetry;
 
-        #endregion
+        #endregion Fields
 
         #region Property
 
         public string NameOfOutput { get; set; }
 
-        #endregion
+        #endregion Property
 
         public RampFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
         {

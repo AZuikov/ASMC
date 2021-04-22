@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using AP.Utils.Data;
+﻿using AP.Utils.Data;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
+using System;
+using System.Threading.Tasks;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
@@ -23,19 +23,19 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
         public IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; set; }
         public IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; set; }
-       public IMeterPhysicalQuantity<Frequency> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
+        public IMeterPhysicalQuantity<Frequency> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
         public IMeterPhysicalQuantity<Percent> MeasPositiveDutyCycle { get; set; }
         public IMeterPhysicalQuantity<Percent> MeasNegativeDutyCycle { get; set; }
-       public IMeterPhysicalQuantity<Voltage> MeasMaximum { get; set; }
+        public IMeterPhysicalQuantity<Voltage> MeasMaximum { get; set; }
         public IMeterPhysicalQuantity<Voltage> MeasMinimum { get; set; }
         public IMeterPhysicalQuantity<Voltage> MeasPeakToPeak { get; set; }
-       public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
         public IMeterPhysicalQuantity<Time> MeasPeriodAver { get; set; }
-       public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
         public IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; set; }
-       public string UserType { get; }
-        
-       public void Dispose()
+        public string UserType { get; }
+
+        public void Dispose()
         {
             throw new NotImplementedException();
         }
@@ -70,7 +70,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             private Status InputFilter;
             private InputSlope Slope;
 
-            #endregion
+            #endregion Fields
 
             private ChanelSetting()
             {
@@ -91,7 +91,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 return instance;
             }
 
-            #endregion
+            #endregion Methods
 
             public virtual void SetAtt_1()
             {
@@ -213,7 +213,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public IMeterPhysicalQuantity<Power> MeasPowerAC_Signal { get; set; }
     }
 
-    public abstract class CounterDualChanelMeasureAbstract: ICounterInputDualChanelMeasure
+    public abstract class CounterDualChanelMeasureAbstract : ICounterInputDualChanelMeasure
     {
         protected Pendulum_CNT_90 _counter;
         public static IeeeBase _device = new IeeeBase();
@@ -231,13 +231,14 @@ namespace ASMC.Devices.IEEE.PENDULUM
         {
             _counter = counter;
         }
-        
+
         public void Dispose()
         {
             throw new NotImplementedException();
         }
 
         public bool IsTestConnect { get; }
+
         public async Task InitializeAsync()
         {
             throw new NotImplementedException();
@@ -249,6 +250,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             set
             {
                 _device.StringConnection = value;
-            } }
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using ASMC.Data.Model;
 
-
 namespace ASMC.Devices.Interface
 {
     /// <summary>
@@ -21,7 +20,6 @@ namespace ASMC.Devices.Interface
     {
         public string NameOfChanel { get; }
         public ITypicalCounterInputSettings InputSetting { get; set; }
-
     }
 
     /// <summary>
@@ -30,12 +28,9 @@ namespace ASMC.Devices.Interface
     public interface ICounterInput : ICounterInputTypicalParametr, ICounterSingleChanelMeasureAorB,
                                      ICounterSingleChanelMeasureABC
     {
-
     }
 
     public interface ICOunterInputHighFrequency : ICounterInput, ICounterInputPowerMeasure
     {
-
     }
-
 }

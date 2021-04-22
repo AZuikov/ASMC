@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ASMC.Devices.Interface;
+using System;
 using System.Threading.Tasks;
-using ASMC.Devices.Interface;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
@@ -20,7 +20,9 @@ namespace ASMC.Devices.IEEE.PENDULUM
             throw new NotImplementedException();
         }
 
-        public string StringConnection { get=>InputA.StringConnection;
+        public string StringConnection
+        {
+            get => InputA.StringConnection;
             set
             {
                 InputA.StringConnection = value;

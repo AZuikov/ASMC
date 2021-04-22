@@ -13,29 +13,35 @@ namespace ASMC.Devices.Interface
         /// Отношение частот каналов.
         /// </summary>
         IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioAB { get; set; }
+
         IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioBA { get; set; }
+
         /// <summary>
         /// Отношение напряжений.
         /// </summary>
         IMeterPhysicalQuantity<Voltage> MeasRatioAB { get; set; }
+
         IMeterPhysicalQuantity<Voltage> MeasRatioBA { get; set; }
 
         /// <summary>
         /// Измерение фазы.
         /// </summary>
         IMeterPhysicalQuantity<Degreas> MeasPhaseAB { get; set; }
+
         IMeterPhysicalQuantity<Degreas> MeasPhaseBA { get; set; }
+
         /// <summary>
         /// Измерение временных интервалов (задержек) между каналами.
         /// </summary>
         IMeterPhysicalQuantity<Time> MeasTimeIntervalAB { get; set; }
+
         IMeterPhysicalQuantity<Time> MeasTimeIntervalBA { get; set; }
     }
 
     /// <summary>
     /// Типовые измерительные операции для каналов A и B частотомера.
     /// </summary>
-    public interface ICounterSingleChanelMeasureAorB 
+    public interface ICounterSingleChanelMeasureAorB
     {
         /// <summary>
         /// Коэффициент заполнения.
@@ -69,7 +75,7 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Типовые измерительные операции для каналов частотомера A, B, C
     /// </summary>
-    public interface ICounterSingleChanelMeasureABC 
+    public interface ICounterSingleChanelMeasureABC
     {
         /// <summary>
         /// Измерение частоты.
@@ -85,6 +91,7 @@ namespace ASMC.Devices.Interface
         /// Частота следования импульсов в пакете.
         /// </summary>
         IMeterPhysicalQuantity<Frequency> MeasPulseRepetitionFrequencyBurstSignal { get; set; }
+
         IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
         IMeterPhysicalQuantity<Time> MeasPeriodAver { get; set; }
 
@@ -94,8 +101,7 @@ namespace ASMC.Devices.Interface
         IMeterPhysicalQuantity<NoUnits> MeasNumberOfCyclesInBurst { get; set; }
     }
 
-
-    public interface ICounterInputPowerMeasure 
+    public interface ICounterInputPowerMeasure
     {
         /// <summary>
         /// Измерение мощности сигнала.
