@@ -1,32 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASMC.Core.Model;
+﻿using ASMC.Core.Model;
 using ASMC.Devices.IEEE.PENDULUM;
 
 namespace CNT_90
 {
-    public class Main : Program<S801>
+    public class Main : Program<Program_CNT_90>
     {
         /// <inheritdoc />
         public Main(ServicePack service) : base(service)
         {
             Type = "CNT-90";
             Grsi = "41567-09";
-            Range = "";
+            Range = "0,001 Гц...300 МГц";
         }
     }
-    public class S801 : OperationMetrControlBase
+
+    public class Program_CNT_90 : OperationMetrControlBase
     {
-
-        public S801(ServicePack servicePac)
+        public Program_CNT_90(ServicePack servicePac)
         {
-            UserItemOperationPrimaryVerf = new OperationPrimary<Pendulum_CNT_90>("CNT-90", servicePac);
+            UserItemOperationPrimaryVerf = new OperationPrimary<Pendulum_CNT_90>("CNT-90_protocol", servicePac);
         }
-
     }
-
-
 }

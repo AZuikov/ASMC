@@ -1,7 +1,7 @@
-﻿using System;
-using System.Globalization;
-using AP.Utils.Data;
+﻿using AP.Utils.Data;
 using ASMC.Data.Model;
+using System;
+using System.Globalization;
 
 namespace AP.Extension
 {
@@ -59,6 +59,6 @@ namespace AP.Extension
             }
         }
 
-        #endregion
+        #endregion Methods
     }
 }

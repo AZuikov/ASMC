@@ -6,11 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using NLog;
 
 namespace AP.Extension
 {
-    
     public static class DeviceBaseExtension
     {
         /// <summary>
@@ -20,7 +18,7 @@ namespace AP.Extension
         /// <param name="path">Полный путь к файлу с характеристиками, включая имя и разрешение.</param>
         public static void FillRangesDevice(this IDeviceRemote Devise, string path)
         {
-        GetMember(Devise, Devise.GetType());
+            GetMember(Devise, Devise.GetType());
 
             void GetMember(object obj, Type type)
             {
@@ -28,8 +26,7 @@ namespace AP.Extension
                 var propertyClass = accessor.GetMembers().Where(q => q.Type.IsClass || q.Type.IsInterface).ToArray();
                 foreach (var cl in propertyClass)
                 {
-                    
-                    if (cl.Type.IsInterface&& obj!=null)
+                    if (cl.Type.IsInterface && obj != null)
                     {
                         object value = accessor[obj, cl.Name];
                         if (value != null) GetMember(value, value.GetType());
@@ -44,7 +41,7 @@ namespace AP.Extension
                             var str = file.FindIndex(s => s.Equals(att.Mode));
                             //todo Не кооретно находит конец и начало некоторых диапазонов. также в диапазон можеет попасть текст
                             var end = file.Skip(str + 1).ToList().FindIndex(s => s.StartsWith("Mode:"));
-                            if (end==-1)
+                            if (end == -1)
                             {
                                 end = file.FindLastIndex(q => !string.IsNullOrWhiteSpace(q));
                             }
@@ -64,75 +61,74 @@ namespace AP.Extension
             object GenerateRange(string str, object obj, Type type, Type attMeasPointType)
             {
                 str = str.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                
 
                 try
                 {
                     var date = str.Split(' ').Where(q => !string.IsNullOrWhiteSpace(q)).Select(q => q.Contains("NA") ? null : (decimal?)double.Parse(q)).ToArray();
 
-                var generit = type.GetGenericArguments().First();
-                if (generit.GetGenericTypeDefinition().GetInterfaces()
-                 .FirstOrDefault(q => Equals(q.Name, typeof(IPhysicalRange<,>).Name)) != null)
-                {
-                    var at = TypeAccessor.Create(generit);
+                    var generit = type.GetGenericArguments().First();
+                    if (generit.GetGenericTypeDefinition().GetInterfaces()
+                     .FirstOrDefault(q => Equals(q.Name, typeof(IPhysicalRange<,>).Name)) != null)
+                    {
+                        var at = TypeAccessor.Create(generit);
 
-                    var gta = generit.GenericTypeArguments;
-                    // ReSharper disable once PossibleInvalidOperationException
-                    var StartFirst = Activator.CreateInstance(gta[0], (decimal)date[0]);
-                    // ReSharper disable once PossibleInvalidOperationException
-                    var StartSecond = Activator.CreateInstance(gta[1], (decimal)date[2]);
-                    // ReSharper disable once PossibleInvalidOperationException
-                    var EndFirst = Activator.CreateInstance(gta[0], (decimal)date[1]);
-                    // ReSharper disable once PossibleInvalidOperationException
-                    var EndSecond = Activator.CreateInstance(gta[1], (decimal)date[3]);
-                    
-                    var star = Activator.CreateInstance(attMeasPointType);
-                    var atstart = TypeAccessor.Create(attMeasPointType);
-                    atstart[star, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity)] = StartFirst;
-                    atstart[star, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity)] = StartSecond;
+                        var gta = generit.GenericTypeArguments;
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var StartFirst = Activator.CreateInstance(gta[0], (decimal)date[0]);
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var StartSecond = Activator.CreateInstance(gta[1], (decimal)date[2]);
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var EndFirst = Activator.CreateInstance(gta[0], (decimal)date[1]);
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var EndSecond = Activator.CreateInstance(gta[1], (decimal)date[3]);
 
-                    var end = Activator.CreateInstance(attMeasPointType);
+                        var star = Activator.CreateInstance(attMeasPointType);
+                        var atstart = TypeAccessor.Create(attMeasPointType);
+                        atstart[star, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity)] = StartFirst;
+                        atstart[star, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity)] = StartSecond;
 
-                    atstart[end, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity)] = EndFirst;
-                    atstart[end, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity)] = EndSecond;
+                        var end = Activator.CreateInstance(attMeasPointType);
 
-                    var acc = new AccuracyChatacteristic(date[6], date[5], date[4]);
-                    /*Диапазон*/
-                    var range = Activator.CreateInstance(generit);
+                        atstart[end, nameof(MeasPoint<Voltage, Voltage>.MainPhysicalQuantity)] = EndFirst;
+                        atstart[end, nameof(MeasPoint<Voltage, Voltage>.AdditionalPhysicalQuantity)] = EndSecond;
 
-                    at[range, nameof(PhysicalRange<Voltage, Voltage>.Start)] = star;
-                    at[range, nameof(PhysicalRange<Voltage, Voltage>.End)] = end;
-                    at[range, nameof(PhysicalRange<Voltage, Voltage>.AccuracyChatacteristic)] = acc;
-                    return range;
-                }
-                else
-                {
-                    var at = TypeAccessor.Create(generit);
+                        var acc = new AccuracyChatacteristic(date[6], date[5], date[4]);
+                        /*Диапазон*/
+                        var range = Activator.CreateInstance(generit);
 
-                    var gta = generit.GenericTypeArguments;
-                    // ReSharper disable once PossibleInvalidOperationException
-                    var StartFirst = Activator.CreateInstance(gta[0], (decimal)date[0]);
-                    // ReSharper disable once PossibleInvalidOperationException
-                    var EndFirst = Activator.CreateInstance(gta[0], (decimal)date[1]);
-                    var rageAccessor = TypeAccessor.Create(generit);
+                        at[range, nameof(PhysicalRange<Voltage, Voltage>.Start)] = star;
+                        at[range, nameof(PhysicalRange<Voltage, Voltage>.End)] = end;
+                        at[range, nameof(PhysicalRange<Voltage, Voltage>.AccuracyChatacteristic)] = acc;
+                        return range;
+                    }
+                    else
+                    {
+                        var at = TypeAccessor.Create(generit);
 
-                    var star = Activator.CreateInstance(attMeasPointType);
-                    var atstart = TypeAccessor.Create(attMeasPointType);
-                    atstart[star, nameof(MeasPoint<Voltage>.MainPhysicalQuantity)] = StartFirst;
+                        var gta = generit.GenericTypeArguments;
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var StartFirst = Activator.CreateInstance(gta[0], (decimal)date[0]);
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var EndFirst = Activator.CreateInstance(gta[0], (decimal)date[1]);
+                        var rageAccessor = TypeAccessor.Create(generit);
 
-                    var end = Activator.CreateInstance(attMeasPointType);
+                        var star = Activator.CreateInstance(attMeasPointType);
+                        var atstart = TypeAccessor.Create(attMeasPointType);
+                        atstart[star, nameof(MeasPoint<Voltage>.MainPhysicalQuantity)] = StartFirst;
 
-                    atstart[end, nameof(MeasPoint<Voltage>.MainPhysicalQuantity)] = EndFirst;
+                        var end = Activator.CreateInstance(attMeasPointType);
 
-                    var acc = new AccuracyChatacteristic(date[6], date[5], date[4]);
-                    /*Диапазон*/
-                    var range = Activator.CreateInstance(generit);
+                        atstart[end, nameof(MeasPoint<Voltage>.MainPhysicalQuantity)] = EndFirst;
 
-                    at[range, nameof(PhysicalRange<Voltage>.Start)] = star;
-                    at[range, nameof(PhysicalRange<Voltage>.End)] = end;
-                    at[range, nameof(PhysicalRange<Voltage>.AccuracyChatacteristic)] = acc;
-                    return range;
-                }
+                        var acc = new AccuracyChatacteristic(date[6], date[5], date[4]);
+                        /*Диапазон*/
+                        var range = Activator.CreateInstance(generit);
+
+                        at[range, nameof(PhysicalRange<Voltage>.Start)] = star;
+                        at[range, nameof(PhysicalRange<Voltage>.End)] = end;
+                        at[range, nameof(PhysicalRange<Voltage>.AccuracyChatacteristic)] = acc;
+                        return range;
+                    }
                 }
                 catch (Exception e)
                 {

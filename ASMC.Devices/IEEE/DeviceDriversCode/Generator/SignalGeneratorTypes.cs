@@ -6,12 +6,18 @@ using System;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
-    public abstract class AbstractSignalGenerator : OutputSignalGenerator81160A,
-                                                    ISignalStandartSetParametrs<Voltage, Frequency>
+    /// <summary>
+    /// Типовой сигнал генератора, с минимальным набором характеристик.
+    /// </summary>
+    public abstract class AbstractSignalForm :ISignalStandartSetParametrs<Voltage, Frequency>
     {
-        protected AbstractSignalGenerator(string chanelNumber, GeneratorOfSignals_81160A generator) :
-            base(chanelNumber, generator)
+        protected static IeeeBase Device = new IeeeBase();
+        private string ChanelNumber = "";
+        protected AbstractSignalForm(string chanelNumber, GeneratorOutput_81160A output)
+
         {
+            ChanelNumber = output.NameOfOutput;
+            Device.StringConnection = output.StringConnection;
             Delay = new MeasPoint<Time>(0);
             SignalOffset = new MeasPoint<Voltage>(0);
             IsPositivePolarity = true;
@@ -109,11 +115,13 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             NORM,
             INV
         }
+
+        public string NameOfOutput { get; protected set; }
     }
 
     #region SignalsForm
 
-    public class SineFormSignal : AbstractSignalGenerator
+    public class SineFormSignal : AbstractSignalForm
     {
         #region Property
 
@@ -121,7 +129,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         #endregion Property
 
-        public SineFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
+        public SineFormSignal(string chanelNumber, GeneratorOutput_81160A output) : base(chanelNumber, output)
         {
             SignalFormName = "SINusoid";
         }
@@ -139,10 +147,10 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// <summary>
     /// Одиночный импульс.
     /// </summary>
-    public class ImpulseFormSignal : AbstractSignalGenerator, IImpulseSignal<Voltage, Frequency>
+    public class ImpulseFormSignal : AbstractSignalForm, IImpulseSignal<Voltage, Frequency>
     {
-        public ImpulseFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) :
-            base(chanelNumber, generator)
+        public ImpulseFormSignal(string chanelNumber, GeneratorOutput_81160A output) :
+            base(chanelNumber, output)
         {
             SignalFormName = "PULS";
             RiseEdge = new MeasPoint<Time>(0);
@@ -162,6 +170,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public new void Setting()
         {
             base.Setting();
+            
             //ставим единицы измерения фронтов в секундах
             Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:unit SEC");
             Device.WriteLine($"{NameOfOutput}:del{SignalFormName}:unit SEC");
@@ -182,7 +191,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// <summary>
     /// Импульсы с коэффициентом заполнения.
     /// </summary>
-    public class SquareFormSignal : AbstractSignalGenerator, ISquareSignal<Voltage, Frequency>
+    public class SquareFormSignal : AbstractSignalForm, ISquareSignal<Voltage, Frequency>
     {
         #region Fields
 
@@ -196,8 +205,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         #endregion Property
 
-        public SquareFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) :
-            base(chanelNumber, generator)
+        public SquareFormSignal(string chanelNumber, GeneratorOutput_81160A output) :
+            base(chanelNumber, output)
         {
             SignalFormName = "SQU";
             DutyCicle = new MeasPoint<Percent>(50);
@@ -235,7 +244,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// <summary>
     /// Пилообразный сигнал.
     /// </summary>
-    public class RampFormSignal : AbstractSignalGenerator, IRampSignal<Voltage, Frequency>
+    public class RampFormSignal : AbstractSignalForm, IRampSignal<Voltage, Frequency>
     {
         #region Fields
 
@@ -252,7 +261,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         #endregion Property
 
-        public RampFormSignal(string chanelNumber, GeneratorOfSignals_81160A generator) : base(chanelNumber, generator)
+        public RampFormSignal(string chanelNumber, GeneratorOutput_81160A output) : base(chanelNumber, output)
         {
             SignalFormName = "RAMP";
             Symmetry = new MeasPoint<Percent>(100);

@@ -3,8 +3,6 @@ using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE;
 using ASMC.Devices.Interface;
 using System;
-using System.CodeDom;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ASMC.Devices.Rohde_Schwarz
@@ -20,7 +18,7 @@ namespace ASMC.Devices.Rohde_Schwarz
 
         public void ChanelOn(int ChanelNumber)
         {
-            if (Chanels.Length <= (ChanelNumber-1))
+            if (Chanels.Length <= (ChanelNumber - 1))
                 throw new
                     ArgumentException($"Осциллограф имеет {Chanels.Length} каналов. Нельзя получить доступ к несуществующему каналу {ChanelNumber}.");
             WriteLine($"CHANnel{ChanelNumber}:STATe on");
@@ -29,14 +27,14 @@ namespace ASMC.Devices.Rohde_Schwarz
 
         public void ChanelOff(int ChanelNumber)
         {
-            if (Chanels.Length <= (ChanelNumber-1))
+            if (Chanels.Length <= (ChanelNumber - 1))
                 throw new
                     ArgumentException($"Осциллограф имеет {Chanels.Length} каналов. Нельзя получить доступ к несуществующему каналу {ChanelNumber}.");
             WriteLine($"CHANnel{ChanelNumber}:STATe off");
             Chanels[ChanelNumber].IsEnable = false;
         }
 
-        private static readonly Coupling[] couplings = new[] {Coupling.AC, Coupling.DC, Coupling.GND};
+        private static readonly Coupling[] couplings = new[] { Coupling.AC, Coupling.DC, Coupling.GND };
 
         private static readonly MeasPoint<Frequency>[] chanelBand = new MeasPoint<Frequency>[]
         {
@@ -70,12 +68,12 @@ namespace ASMC.Devices.Rohde_Schwarz
                 IsEnable = answer.Equals("1");
 
                 answer = Device.QueryLine($"CHANnel{Number}:OFFSet?");
-                decimal digitsValue = (decimal) StrToDouble(answer);
+                decimal digitsValue = (decimal)StrToDouble(answer);
                 VerticalOffset = new MeasPoint<Voltage>(digitsValue);
 
                 digitsValue = 0;
                 answer = Device.QueryLine($"CHANnel{Number}:scale?");
-                digitsValue = (decimal) StrToDouble(answer);
+                digitsValue = (decimal)StrToDouble(answer);
                 VerticalScale = new MeasPoint<Voltage>(digitsValue);
 
                 answer = Device.QueryLine($"CHANnel{Number}:COUPling?");
@@ -91,8 +89,6 @@ namespace ASMC.Devices.Rohde_Schwarz
                         break;
                     }
                 }
-
-
 
                 //с пробником(делителем) пока непонятно, не могу найти команду, которая позволяет считать его настройки
             }
@@ -115,9 +111,6 @@ namespace ASMC.Devices.Rohde_Schwarz
                     valueToWrite = valueToWrite + "L";
                 Device.WriteLine($"CHANnel{Number}:COUPling {valueToWrite}");
             }
-
-
-
         }
 
         public MeasParam[] measParams = {
@@ -156,20 +149,17 @@ namespace ASMC.Devices.Rohde_Schwarz
             new MeasParam("TBPeriod", "", 1,typeof(Time))
         };
 
-    public IMeasPoint<T> GetParametr<T>(IOscillChanel inChanel, MeasParam inMeasParam, int? measNum) where T : class, IPhysicalQuantity, new()
-    {
-           inChanel.Device.WriteLine($"MEASurement1:SOURce ch{inChanel.Number}");
-           inChanel.Device.WriteLine($"MEASurement1:MAIN {inMeasParam}");
-           inChanel.Device.WriteLine($"MEASurement1:ENABle on");
-           string answer = inChanel.Device.QueryLine($"MEASurement1:RESult:ACTual? {inMeasParam}");
-           if (answer.Equals("NAN")) return null;
-           decimal answerNumb = (decimal)StrToDouble(answer);
-           
-           
-           return null;
-        }
+        public IMeasPoint<T> GetParametr<T>(IOscillChanel inChanel, MeasParam inMeasParam, int? measNum) where T : class, IPhysicalQuantity, new()
+        {
+            inChanel.Device.WriteLine($"MEASurement1:SOURce ch{inChanel.Number}");
+            inChanel.Device.WriteLine($"MEASurement1:MAIN {inMeasParam}");
+            inChanel.Device.WriteLine($"MEASurement1:ENABle on");
+            string answer = inChanel.Device.QueryLine($"MEASurement1:RESult:ACTual? {inMeasParam}");
+            if (answer.Equals("NAN")) return null;
+            decimal answerNumb = (decimal)StrToDouble(answer);
 
-   
+            return null;
+        }
     }
 
     public class RTM2054 : RohdeSchwarz_RTMOscilloscope
@@ -179,7 +169,7 @@ namespace ASMC.Devices.Rohde_Schwarz
             return chanels;
         }
 
-        private IOscillChanel[] chanels ;
+        private IOscillChanel[] chanels;
 
         public RTM2054()
         {
@@ -192,9 +182,6 @@ namespace ASMC.Devices.Rohde_Schwarz
                 new RohdeSchwarz_RtmOscChanel(4,this)
             };
         }
-
-
-
 
         /// <summary>
         /// Считываем настройки каналов осциллографа.
@@ -211,7 +198,7 @@ namespace ASMC.Devices.Rohde_Schwarz
              });
         }
 
-        public class TriggerEdge: BaseEdgeTrigger
+        public class TriggerEdge : BaseEdgeTrigger
         {
             public override void Getting()
             {

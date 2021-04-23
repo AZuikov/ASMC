@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASMC.Data.Model;
+﻿using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.Interface
 {
-    public interface ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2>:ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> 
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
+    public interface ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> : ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2>
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
-       
         /// <summary>
         /// Смещение сигнала.
         /// </summary>
         public MeasPoint<TPhysicalQuantity> SignalOffset { get; set; }
+
         /// <summary>
         /// Здержка сигнала (работает не для всех видов сигналов).
         /// </summary>
@@ -29,9 +24,6 @@ namespace ASMC.Devices.Interface
         public bool IsPositivePolarity { get; set; }
 
         public string SignalFormName { get; }
-
-        
-
     }
 
     /// <summary>
@@ -39,14 +31,15 @@ namespace ASMC.Devices.Interface
     /// </summary>
     /// <typeparam name="TPhysicalQuantity"></typeparam>
     /// <typeparam name="TPhysicalQuantity2"></typeparam>
-    public interface IImpulseSignal <TPhysicalQuantity, TPhysicalQuantity2> : IOutputSignalGenerator,
-        ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() 
+    public interface IImpulseSignal<TPhysicalQuantity, TPhysicalQuantity2> :
+        ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
                                                                        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
         /// <summary>
         /// Длительность фронта.
         /// </summary>
         public MeasPoint<Time> RiseEdge { get; set; }
+
         /// <summary>
         /// Длительность спада.
         /// </summary>
@@ -85,21 +78,28 @@ namespace ASMC.Devices.Interface
         public MeasPoint<Percent> Symmetry { get; set; }
     }
 
-
     /// <summary>
     /// Интерфейс выхода генератора сигналов.
     /// </summary>
-     public interface IOutputSignalGenerator
+    public interface IOutputSignalGenerator: IProtocolStringLine
     {
-        
         public string NameOfOutput { get; set; }
-
+        public ISignalStandartSetParametrs<Voltage, Frequency> SineSignal { get; set; }
+        public IImpulseSignal<Voltage, Frequency> ImpulseSignal { get; set; }
+        public ISquareSignal<Voltage, Frequency> SquareSignal { get; set; }
+        public IRampSignal<Voltage, Frequency> RampSignal { get; set; }
     }
 
-    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> :IReferenceClock, IProtocolStringLine
+    /// <summary>
+    /// Интерфейс генератора сигналов.
+    /// </summary>
+    /// <typeparam name="TPhysicalQuantity"></typeparam>
+    /// <typeparam name="TPhysicalQuantity2"></typeparam>
+    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> : IReferenceClock 
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
-       
+        public IOutputSignalGenerator OUT1 { get; set; }
+        public IOutputSignalGenerator OUT2 { get; set; }
     }
 }

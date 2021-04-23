@@ -6,6 +6,9 @@ namespace ASMC.Devices.IEEE.PENDULUM
 {
     public abstract class CounterAbstract : ICounter
     {
+        /// этот объект нужен только для установки параметров внешнего/внутреннего источника частоты (опорного стандарта).
+        private IeeeBase deviceForReferenceClock = new IeeeBase();
+
         public string UserType { get; protected set; }
 
         public virtual void Dispose()
@@ -22,9 +25,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public string StringConnection
         {
-            get => InputA.StringConnection;
+            get => deviceForReferenceClock.StringConnection;
             set
             {
+                deviceForReferenceClock.StringConnection = value;
                 InputA.StringConnection = value;
                 InputB.StringConnection = value;
                 InputC_HighFrequency.StringConnection = value;
@@ -33,14 +37,14 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public virtual void SetExternalReferenceClock()
         {
-            //:ROSCillator:SOURce EXT
-            throw new NotImplementedException();
+            deviceForReferenceClock.WriteLine($":ROSCillator:SOURce EXT");
+            deviceForReferenceClock.WaitingRemoteOperationComplete();
         }
 
         public virtual void SetInternalReferenceClock()
         {
-            //:ROSCillator:SOURce INT
-            throw new NotImplementedException();
+            deviceForReferenceClock.WriteLine($":ROSCillator:SOURce INT");
+            deviceForReferenceClock.WaitingRemoteOperationComplete();
         }
 
         public ICounterInput InputA { get; set; }

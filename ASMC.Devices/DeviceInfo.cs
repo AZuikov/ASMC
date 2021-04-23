@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace ASMC.Devices
 {
     /// <summary>
@@ -30,7 +29,7 @@ namespace ASMC.Devices
         /// </summary>
         public string Type { get; }
 
-        #endregion
+        #endregion Property
 
         public DeviceInfo(string firmwareVersion, string manufacturer, string serialNumber, string type)
         {
@@ -40,6 +39,7 @@ namespace ASMC.Devices
             Type = type;
         }
     }
+
     /// <summary>
     /// Описывает комманду для отправки в устройство.
     /// </summary>
@@ -61,12 +61,12 @@ namespace ASMC.Devices
         /// <inheritdoc />
         public double Value { get; protected set; }
 
-        
         public int CompareTo(ICommand other)
         {
             return Value.CompareTo(other.Value);
         }
     }
+
     public interface ICommand : IComparable<ICommand>
     {
         #region Property
@@ -86,6 +86,6 @@ namespace ASMC.Devices
         /// </summary>
         double Value { get; }
 
-        #endregion
+        #endregion Property
     }
 }

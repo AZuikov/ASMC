@@ -1,4 +1,12 @@
-﻿using System;
+﻿using AP.Reports.AutoDocumets;
+using ASMC.Core;
+using ASMC.Core.Model;
+using ASMC.Core.ViewModel;
+using ASMC.Data.Model;
+using DevExpress.Mvvm;
+using DevExpress.Mvvm.Native;
+using NLog;
+using System;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -11,14 +19,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using AP.Reports.AutoDocumets;
-using ASMC.Core;
-using ASMC.Core.Model;
-using ASMC.Core.ViewModel;
-using ASMC.Data.Model;
-using DevExpress.Mvvm;
-using DevExpress.Mvvm.Native;
-using NLog;
 
 namespace ASMC.ViewModel
 {
@@ -36,7 +36,7 @@ namespace ASMC.ViewModel
             Pause
         }
 
-        #endregion
+        #endregion StateWork enum
 
         #region TabItemControl enum
 
@@ -76,7 +76,7 @@ namespace ASMC.ViewModel
             Documents
         }
 
-        #endregion
+        #endregion TabItemControl enum
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -135,7 +135,7 @@ namespace ASMC.ViewModel
         }
 
         // ReSharper disable once UnusedMember.Global
-        public bool[] ModeWork { get; set; } = {true, false};
+        public bool[] ModeWork { get; set; } = { true, false };
 
         /// <summary>
         ///     Предоставляет команжу смены режима работы <see cref="IsManual" />
@@ -213,7 +213,7 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _userItemOperation, value, nameof(UserItemOperation));
         }
 
-        #endregion
+        #endregion Property
 
         #region Field
 
@@ -234,14 +234,14 @@ namespace ASMC.ViewModel
         private OperationMetrControlBase.TypeOpeation _typeOpertion;
         private IUserItemOperationBase[] _userItemOperation;
 
-        #endregion
+        #endregion Field
 
         public WizardViewModel()
         {
             StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
             NextCommand =
                 new DelegateCommand(OnNextCommand,
-                    () => typeof(TabItemControl).GetFields().Length - 2 > (int) SelectedTabItem &&
+                    () => typeof(TabItemControl).GetFields().Length - 2 > (int)SelectedTabItem &&
                           SelectProgram != null);
             BackCommand =
                 new DelegateCommand(OnBackCommand, () => SelectedTabItem > 0 && SelectProgram != null);
@@ -451,7 +451,7 @@ namespace ASMC.ViewModel
             foreach (var type in types)
                 try
                 {
-                    Prog.Add((IProgram) Activator.CreateInstance(type, servicePack));
+                    Prog.Add((IProgram)Activator.CreateInstance(type, servicePack));
                     Logger.Debug($@"Загружена сборка {type}");
                 }
                 catch (InvalidCastException e)
@@ -526,9 +526,9 @@ namespace ASMC.ViewModel
             EnableOpeation = SelectProgram.Operation.EnabledOperation;
             EnableSpeedCheckBox = SelectProgram.Operation.IsSpeed;
             foreach (Enum en in Enum.GetValues(typeof(OperationMetrControlBase.TypeOpeation)))
-                if (EnableOpeation != null && ((Enum) EnableOpeation).HasFlag(en))
+                if (EnableOpeation != null && ((Enum)EnableOpeation).HasFlag(en))
                 {
-                    TypeOpertion = (OperationMetrControlBase.TypeOpeation) en;
+                    TypeOpertion = (OperationMetrControlBase.TypeOpeation)en;
                     break;
                 }
 
@@ -573,7 +573,7 @@ namespace ASMC.ViewModel
             if (SelectedTabItem == TabItemControl.Settings) OnRefreshCommand();
         }
 
-        #endregion
+        #endregion Methods
 
         #region Command
 

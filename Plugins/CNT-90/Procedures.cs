@@ -1,12 +1,12 @@
-﻿using System.Data;
-using System.Threading;
-using AP.Reports.Utils;
+﻿using AP.Reports.Utils;
 using AP.Utils.Data;
 using ASMC.Common.Helps;
 using ASMC.Core.Model;
 using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Keysight.Generator;
-
+using System.Data;
+using System.Threading;
 
 namespace CNT_90
 {
@@ -21,7 +21,6 @@ namespace CNT_90
         {
         }
 
-
         #region Methods
 
         /// <inheritdoc />
@@ -29,7 +28,6 @@ namespace CNT_90
         {
             return MarkReportEnum.FillTableByMark.GetStringValue() + GetType().Name;
         }
-
 
         /// <param name="token"></param>
         /// <inheritdoc />
@@ -39,9 +37,8 @@ namespace CNT_90
             base.InitWork(token);
         }
 
-        #endregion
+        #endregion Methods
     }
-
 
     /// <summary>
     ///     Предоставляет реализацию внешнего осномотра.
@@ -83,8 +80,6 @@ namespace CNT_90
             base.InitWork(token);
             DataRow.Add(new DialogOperationHelp(this, "Внешний осмотр"));
             GeneratorOfSignals_81160A generator = new GeneratorOfSignals_81160A();
-            
-            
         }
     }
 
@@ -96,7 +91,7 @@ namespace CNT_90
         /// <inheritdoc />
         public Testing(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "Опробывание";
+            Name = "Опробование";
         }
 
         /// <inheritdoc />
@@ -108,7 +103,7 @@ namespace CNT_90
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            DataRow.Add(new DialogOperationHelp(this, "Опробывание"));
+            DataRow.Add(new DialogOperationHelp(this, "Опробование"));
         }
 
         /// <inheritdoc />
@@ -126,6 +121,23 @@ namespace CNT_90
             }
 
             return data;
+        }
+    }
+
+    public sealed class FrequencyMeasureCNT90 : OperationBase<Frequency>
+    {
+        public FrequencyMeasureCNT90(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+            Name = "";
+            //Sheme
+        }
+
+        protected override void InitWork(CancellationTokenSource token)
+        {
+            base.InitWork(token);
+            var generator = new GeneratorOfSignals_81160A();
+            generator.OUT1.SineSignal.SignalFormName;
+            generator.OUT1.
         }
     }
 }

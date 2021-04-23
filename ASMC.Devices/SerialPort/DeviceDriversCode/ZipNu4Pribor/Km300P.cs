@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Accord.Math;
+using NLog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Timers;
-using Accord.Math;
-using Microsoft.Build.Utilities;
 using Logger = NLog.Logger;
 using Timer = System.Timers.Timer;
 
@@ -123,14 +122,12 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
         /// <summary>
         /// Получить измеренное значение.
         /// </summary>
-        public  void GetMeasureValue()
+        public void GetMeasureValue()
         {
             throw new NotImplementedException("Метод не реализован");
             Sincronization(TestConnectByte); // спамим тест-обмен
             SendQuery(new byte[] { 0x03, 0x44, 0x03, 0x21 });//получаем измеренное значение
         }
-
-        
 
         /// <summary>
         /// Включение режима измерения.
@@ -266,7 +263,7 @@ namespace ASMC.Devices.Port.ZipNu4Pribor
                     //проверка сходимости контрольной суммы
                     byte[] ArrToCalcCRC = new byte[readBytes.Length - 2];//создаем массив что бы отбросить CRC  сумму и адрес (первый байт)
                     Array.Copy(readBytes, 1, ArrToCalcCRC, 0, readBytes[1] + 1); //отбрасываем CRC сумму  и адрес
-                   // _readData.Clear();
+                                                                                 // _readData.Clear();
                     _readData.AddRange(readBytes);
                     _wait.Stop();
                     WaitEvent.Set();
