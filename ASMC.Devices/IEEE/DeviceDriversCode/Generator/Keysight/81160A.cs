@@ -16,7 +16,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             StringConnection = generator.StringConnection;
             NameOfOutput = chanelNumber;
-            SineSignal = new SineFormSignal(ChanelNumber, generator);
+            SineSignal = new SineFormSignal(NameOfOutput, this);
             //ImpulseSignal = new ImpulseFormSignal(ChanelNumber, generator);
             //SquareSignal = new SquareFormSignal(ChanelNumber, generator);
             //RampSignal = new RampFormSignal(ChanelNumber, generator);

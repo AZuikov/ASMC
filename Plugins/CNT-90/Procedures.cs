@@ -135,9 +135,7 @@ namespace CNT_90
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            var generator = new GeneratorOfSignals_81160A();
-            generator.OUT1.SineSignal.SignalFormName;
-            generator.OUT1.
+           
         }
     }
 }
