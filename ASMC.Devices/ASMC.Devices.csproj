@@ -122,7 +122,7 @@
     <Compile Include="IEEE\DeviceDriversCode\Counters\CounterInputAbstract.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Counters\PENDULUM\Pendulum CNT-90.cs" />
     <Compile Include="ConceptualCode\ProgrammDeviceInterface\ICounter\ICounter.cs" />
-    <Compile Include="ConceptualCode\ProgrammDeviceInterface\IDevice.cs" />
+    <Compile Include="ConceptualCode\ProgrammDeviceInterface\IDeviceSettingsControl.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Calibrator\Fluke\CalibtatorOscilloscope\Calibr_9500B.cs" />
     <Compile Include="HelpDeviceBase.cs" />
     <Compile Include="IEEE\HardWareInterfaceBaseCode\IEEE_Base.cs" />

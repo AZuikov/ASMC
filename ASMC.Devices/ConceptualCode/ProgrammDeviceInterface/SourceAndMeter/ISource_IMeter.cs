@@ -3,7 +3,7 @@ using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.Interface.SourceAndMeter
 {
-    public interface ISourcePhysicalQuantityBase<T> : IDevice
+    public interface ISourcePhysicalQuantityBase<T> : IDeviceSettingsControl
     {
         T Value { get; }
 
@@ -40,7 +40,7 @@ namespace ASMC.Devices.Interface.SourceAndMeter
         IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
     }
 
-    public interface IMeterPhysicalQuantityBase<TPhysicalQuantity> : IDevice
+    public interface IMeterPhysicalQuantityBase<TPhysicalQuantity> : IDeviceSettingsControl
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
         public MeasPoint<TPhysicalQuantity> GetValue();

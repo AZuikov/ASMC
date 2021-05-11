@@ -26,6 +26,13 @@ namespace ASMC.Devices.Interface
         public string SignalFormName { get; }
     }
 
+    public interface ISineSignal<TPhysicalQuantity, TPhysicalQuantity2>  : ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> 
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    {
+
+    }
+
     /// <summary>
     /// Единичный импульс.
     /// </summary>
@@ -81,10 +88,10 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс выхода генератора сигналов.
     /// </summary>
-    public interface IOutputSignalGenerator: IProtocolStringLine
+    public interface IOutputSignalGenerator
     {
         public string NameOfOutput { get; set; }
-        public ISignalStandartSetParametrs<Voltage, Frequency> SineSignal { get; set; }
+        public ISineSignal<Voltage, Frequency> SineSignal { get; set; }
         public IImpulseSignal<Voltage, Frequency> ImpulseSignal { get; set; }
         public ISquareSignal<Voltage, Frequency> SquareSignal { get; set; }
         public IRampSignal<Voltage, Frequency> RampSignal { get; set; }
@@ -95,7 +102,7 @@ namespace ASMC.Devices.Interface
     /// </summary>
     /// <typeparam name="TPhysicalQuantity"></typeparam>
     /// <typeparam name="TPhysicalQuantity2"></typeparam>
-    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> : IReferenceClock 
+    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> : IProtocolStringLine, IReferenceClock
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {

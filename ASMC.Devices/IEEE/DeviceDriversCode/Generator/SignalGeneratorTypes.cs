@@ -11,12 +11,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public abstract class AbstractSignalForm :ISignalStandartSetParametrs<Voltage, Frequency>
     {
-        protected static IeeeBase Device = new IeeeBase();
+        protected IeeeBase Device;
         private string ChanelNumber = "";
-        protected AbstractSignalForm(string chanelNumber, GeneratorOutput_81160A output)
+        protected AbstractSignalForm(string chanelNumber, IeeeBase output)
 
         {
-            ChanelNumber = output.NameOfOutput;
+            ChanelNumber = chanelNumber;
             Device.StringConnection = output.StringConnection;
             Delay = new MeasPoint<Time>(0);
             SignalOffset = new MeasPoint<Voltage>(0);
@@ -121,7 +121,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
     #region SignalsForm
 
-    public class SineFormSignal : AbstractSignalForm
+    public class SineFormSignal : AbstractSignalForm, ISineSignal<Voltage, Frequency>
     {
         #region Property
 
@@ -129,7 +129,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         #endregion Property
 
-        public SineFormSignal(string chanelNumber, GeneratorOutput_81160A output) : base(chanelNumber, output)
+        public SineFormSignal(string chanelNumber, IeeeBase output) : base(chanelNumber, output)
         {
             SignalFormName = "SINusoid";
         }
@@ -149,7 +149,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public class ImpulseFormSignal : AbstractSignalForm, IImpulseSignal<Voltage, Frequency>
     {
-        public ImpulseFormSignal(string chanelNumber, GeneratorOutput_81160A output) :
+        public ImpulseFormSignal(string chanelNumber, IeeeBase output) :
             base(chanelNumber, output)
         {
             SignalFormName = "PULS";
@@ -205,7 +205,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         #endregion Property
 
-        public SquareFormSignal(string chanelNumber, GeneratorOutput_81160A output) :
+        public SquareFormSignal(string chanelNumber, IeeeBase output) :
             base(chanelNumber, output)
         {
             SignalFormName = "SQU";
@@ -261,7 +261,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         #endregion Property
 
-        public RampFormSignal(string chanelNumber, GeneratorOutput_81160A output) : base(chanelNumber, output)
+        public RampFormSignal(string chanelNumber, IeeeBase output) : base(chanelNumber, output)
         {
             SignalFormName = "RAMP";
             Symmetry = new MeasPoint<Percent>(100);
