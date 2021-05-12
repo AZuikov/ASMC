@@ -7,7 +7,7 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Измерения, для котрых нужны сразу два канала.
     /// </summary>
-    public interface ICounterInputDualChanelMeasure : IProtocolStringLine
+    public interface ICounterInputDualChanelMeasure 
     {
         /// <summary>
         /// Отношение частот каналов.

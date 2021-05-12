@@ -8,6 +8,77 @@ using System.Threading.Tasks;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
+    public class GeneratorOfSignals_81160A : ISignalGenerator<Voltage, Frequency>
+    {
+        private IeeeBase generator = new IeeeBase();
+
+        private enum Option
+        {
+            [StringValue("Opt. 001")] Opt001,//81160A-001	1 Channel 330MHz Pulse Function Arbitrary Generator
+            [StringValue("Opt. 002")] Opt002,//81160A-002	2 Channel 330MHz Pulse Function Arbitrary Generator
+            [StringValue("Opt. PAT_330")] PAT_330,//81160A-330	License for 330 Mbit/s Pattern Generation
+            [StringValue("Opt. PAT_660")] PAT_660//81160A-660	License for 660 Mbit/s Pattern Generation
+        }
+
+        public List<string> OptionList { get; private set; }
+
+        public GeneratorOfSignals_81160A()
+        {
+            UserType = "81160A";
+
+        }
+
+        public void SetExternalReferenceClock()
+        {
+            generator.WriteLine(":ROSC:SOUR EXT");
+            generator.WaitingRemoteOperationComplete();
+        }
+
+        public void SetInternalReferenceClock()
+        {
+            generator.WriteLine(":ROSC:SOUR INT");
+            generator.WaitingRemoteOperationComplete();
+        }
+
+        public string UserType { get; }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsTestConnect { get; }
+
+        public async Task InitializeAsync()
+        {
+            OUT1 = new GeneratorOutput_81160A(1, generator);
+            if (generator.GetOption().Any(q => Equals(q, Option.Opt002.GetStringValue())))
+            {
+                OUT2 = new GeneratorOutput_81160A(2, generator);
+
+            }
+
+            //для инициализации второго канала нужно проверить, есть ли такая опция.
+            //это наверное должно происходить в методе InitializeAsync
+        }
+
+        private string stringconnect = "";
+
+        public string StringConnection
+        {
+            get => stringconnect;
+            set
+            {
+                stringconnect = value;
+                InitializeAsync();
+
+            }
+        }
+
+        public IOutputSignalGenerator OUT1 { get; set; }
+        public IOutputSignalGenerator OUT2 { get; set; }
+    }
+
     /// <summary>
     /// Выход генератора сигналов.
     /// </summary>
@@ -43,76 +114,5 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public string StringConnection { get; set; }
     }
 
-    public class GeneratorOfSignals_81160A : ISignalGenerator<Voltage, Frequency>
-    {
-        /// этот объект нужен только для установки параметров внешнего/внутреннего источника частоты (опорного стандарта).
-        private IeeeBase generator = new IeeeBase();
-
-        private enum Option
-        {
-            [StringValue("Opt. 001")] Opt001,//81160A-001	1 Channel 330MHz Pulse Function Arbitrary Generator
-            [StringValue("Opt. 002")] Opt002,//81160A-002	2 Channel 330MHz Pulse Function Arbitrary Generator
-            [StringValue("Opt. PAT_330")] PAT_330,//81160A-330	License for 330 Mbit/s Pattern Generation
-            [StringValue("Opt. PAT_660")] PAT_660//81160A-660	License for 660 Mbit/s Pattern Generation
-        }
-
-        public List<string> OptionList { get; private set; }
-
-        public GeneratorOfSignals_81160A()
-        {
-            UserType = "81160A";
-           
-        }
-
-        public void SetExternalReferenceClock()
-        {
-            generator.WriteLine(":ROSC:SOUR EXT");
-            generator.WaitingRemoteOperationComplete();
-        }
-
-        public void SetInternalReferenceClock()
-        {
-            generator.WriteLine(":ROSC:SOUR INT");
-            generator.WaitingRemoteOperationComplete();
-        }
-
-        public string UserType { get; }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsTestConnect { get; }
-
-        public async Task InitializeAsync()
-        {
-            OUT1 = new GeneratorOutput_81160A(1, generator);
-            if (generator.GetOption().Any(q => Equals(q, Option.Opt002.GetStringValue())))
-            {
-                OUT2 = new GeneratorOutput_81160A(2, generator);
-            }
-
-           
-          
-            //для инициализации второго канала нужно проверить, есть ли такая опция.
-            //это наверное должно происходить в методе InitializeAsync
-        }
-
-        private string stringconnect = "";
-
-        public string StringConnection
-        {
-            get => stringconnect;
-            set
-            {
-                stringconnect = value;
-                InitializeAsync();
-
-            }
-        }
-
-        public IOutputSignalGenerator OUT1 { get; set; }
-        public IOutputSignalGenerator OUT2 { get; set; }
-    }
+   
 }

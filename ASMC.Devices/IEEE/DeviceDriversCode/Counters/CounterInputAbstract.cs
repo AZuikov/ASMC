@@ -9,16 +9,17 @@ namespace ASMC.Devices.IEEE.PENDULUM
 {
     public abstract class CounterInputAbstract : ICounterInput
     {
-        public static IeeeBase CounterInput = new IeeeBase();
+        
 
-        public CounterInputAbstract(string chanelName, CounterAbstract counter)
+        public CounterInputAbstract(int chanelName, CounterAbstract counter)
         {
             NameOfChanel = chanelName;
             InputSetting = ChanelSetting.getInstance();
             UserType = counter.UserType + " chanel";
+            
         }
 
-        public string NameOfChanel { get; }
+        public int NameOfChanel { get; }
         public ITypicalCounterInputSettings InputSetting { get; set; }
         public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
         public IMeterPhysicalQuantity<Frequency> MeasFrequencyBURSt { get; set; }
@@ -34,24 +35,6 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public IMeterPhysicalQuantity<Time> MeasPositivePulseWidth { get; set; }
         public IMeterPhysicalQuantity<Time> MeasNegativePulseWidth { get; set; }
         public string UserType { get; }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsTestConnect { get; }
-
-        public async Task InitializeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string StringConnection
-        {
-            get => CounterInput.StringConnection;
-            set => CounterInput.StringConnection = value;
-        }
 
         /// <summary>
         /// Настройка канала.
@@ -206,7 +189,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
     public abstract class CounterInputAbstractHF : CounterInputAbstract, ICOunterInputHighFrequency
     {
-        protected CounterInputAbstractHF(string chanelName, CounterAbstract counter) : base(chanelName, counter)
+        protected CounterInputAbstractHF(int chanelName, CounterAbstract counter) : base(chanelName, counter)
         {
         }
 
@@ -216,7 +199,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
     public abstract class CounterDualChanelMeasureAbstract : ICounterInputDualChanelMeasure
     {
         protected Pendulum_CNT_90 _counter;
-        public static IeeeBase _device = new IeeeBase();
+        
         public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioAB { get; set; }
         public IMeterPhysicalQuantity<NoUnits> MeasFrequencyRatioBA { get; set; }
         public IMeterPhysicalQuantity<Voltage> MeasRatioAB { get; set; }
@@ -232,25 +215,6 @@ namespace ASMC.Devices.IEEE.PENDULUM
             _counter = counter;
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsTestConnect { get; }
-
-        public async Task InitializeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string StringConnection
-        {
-            get => _device.StringConnection;
-            set
-            {
-                _device.StringConnection = value;
-            }
-        }
+      
     }
 }
