@@ -49,7 +49,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public bool IsTestConnect { get; }
 
-        public async Task InitializeAsync()
+        public  void Initialize()
         {
             OUT1 = new GeneratorOutput_81160A(1, generator);
             if (generator.GetOption().Any(q => Equals(q, Option.Opt002.GetStringValue())))
@@ -62,16 +62,15 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             //это наверное должно происходить в методе InitializeAsync
         }
 
-        private string stringconnect = "";
+       
 
         public string StringConnection
         {
-            get => stringconnect;
+            get => generator.StringConnection;
             set
             {
-                stringconnect = value;
-                InitializeAsync();
-
+                generator.StringConnection = value;
+                Initialize();
             }
         }
 

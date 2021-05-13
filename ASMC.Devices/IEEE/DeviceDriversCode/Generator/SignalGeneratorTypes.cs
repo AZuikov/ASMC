@@ -17,7 +17,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         {
             ChanelNumber = chanelNumber;
-            Device.StringConnection = output.StringConnection;
+            Device = output;
             Delay = new MeasPoint<Time>(0);
             SignalOffset = new MeasPoint<Voltage>(0);
             IsPositivePolarity = true;

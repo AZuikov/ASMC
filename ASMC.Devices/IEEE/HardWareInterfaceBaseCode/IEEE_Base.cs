@@ -302,10 +302,10 @@ namespace ASMC.Devices.IEEE
             return false;
         }
 
-        public List<string> GetOption()
+        public string[] GetOption()
         {
-            WriteLine(QueryConfig);
-            return new List<string>(ReadString().Split(','));
+            string answer =QueryLine(QueryConfig);
+            return answer.Split(',').Select(q=>q.Trim()).ToArray();
         }
 
         /// <summary>
@@ -465,7 +465,7 @@ namespace ASMC.Devices.IEEE
             }
             catch (Exception e)
             {
-                Logger.Error(e, $@"Порт не удалось открыть для устроства {UserType}.");
+                Logger.Error(e, $@"Порт не удалось открыть для устройства {UserType}.");
                 Session?.Clear();
                 IsOpen = false;
                 throw;
@@ -489,7 +489,7 @@ namespace ASMC.Devices.IEEE
                     lock (StringConnection)
                     {
 #pragma warning disable 4014
-                        InitializeAsync();
+                        Initialize();
 #pragma warning restore 4014
                     }
                 }
@@ -497,7 +497,7 @@ namespace ASMC.Devices.IEEE
             }
         }
 
-        public virtual async Task InitializeAsync() { }
+        public virtual async void Initialize() { }
 
         /// <summary>
         /// Считывает форматированную строку.

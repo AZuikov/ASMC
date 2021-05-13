@@ -51,7 +51,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public bool IsTestConnect { get; }
 
-        public async Task InitializeAsync()
+        public async void Initialize()
         {
             var fileName = @$"{Environment.CurrentDirectory}acc\{UserType}.acc";
             if (!File.Exists(fileName)) return;

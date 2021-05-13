@@ -163,8 +163,16 @@ namespace CNT_90
 
         protected override void InitWork(CancellationTokenSource token)
         {
-            base.InitWork(token);
+            //base.InitWork(token);
             ConnectionToDevice();
+
+            Counter.InputA.SettingSlope.SetInputSlopePositive();
+
+            Generator.OUT1.SineSignal.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
+            Generator.OUT1.SineSignal.Setting();
+            Generator.OUT1.SineSignal.OutputOn();
+
+            var value = Counter.InputA.MeasureStandart.MeasFrequency.GetValue();
 
         }
         

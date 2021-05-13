@@ -50,7 +50,7 @@ namespace ASMC.Devices.IEEE
 
         public bool IsTestConnect { get; }
 
-        public async Task InitializeAsync()
+        public async void Initialize()
         {
             string deviceName = (string)UserType.Clone();
             var invalidChars = Path.GetInvalidFileNameChars();

@@ -1,6 +1,8 @@
-﻿using ASMC.Data.Model.PhysicalQuantity;
+﻿using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
+using static ASMC.Devices.HelpDeviceBase;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
@@ -20,6 +22,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public MeasFreq(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr,
                                                                                                deviceIeeeBase)
             {
+                FunctionName = "FREQ";
             }
 
             #region Methods
@@ -27,7 +30,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:FREQ (@{CounterAbstr.NameOfChanel})");
+                
             }
 
             #endregion Methods
@@ -247,10 +250,11 @@ namespace ASMC.Devices.IEEE.PENDULUM
             #region Fields
 
             protected CounterInputAbstract CounterAbstr;
+            
 
             #endregion Fields
 
-            public MeasBase(CounterInputAbstract counterAbstr, IeeeBase devIeeeBase) : base(devIeeeBase)
+            public MeasBase(CounterInputAbstract counterAbstr, IeeeBase devIeeeBase) : base(counterAbstr.NameOfChanel, devIeeeBase)
             {
                 CounterAbstr = counterAbstr;
                 
@@ -260,7 +264,9 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 //todo проверить проинициализированно ли к этому моменту устройство? задана ли строка подключения?
+                CounterInput.WriteLine($":CONF:MEAS:{FunctionName} (@{CounterAbstr.NameOfChanel})");
                 CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:slop {CounterAbstr.SettingSlope.GetSlope()}");
+
 
                 //CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:imp {CounterAbstr.InputSetting.GetImpedance()}");
                 //CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:att {CounterAbstr.InputSetting.GetAtt()}");
@@ -276,5 +282,34 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
         public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
+    }
+
+    public abstract class MeasReadValue<TPhysicalQuantity> : IMeterPhysicalQuantity<TPhysicalQuantity>
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    {
+        protected IeeeBase CounterInput;
+        protected string FunctionName { get; set; }
+
+        public MeasReadValue(int chanelNumb, IeeeBase inDevice)
+        {
+            CounterInput = inDevice;
+        }
+        public MeasPoint<TPhysicalQuantity> GetValue()
+        {
+            //считывание измеренного значения, сработает при условии, что перед этим был запущен метод Setting
+            CounterInput.WriteLine(":FORMat ASCii"); //формат получаемых от прибора данных
+            CounterInput.WriteLine(":INITiate:CONTinuous 0"); //выключаем многократный запуск
+            //CounterInput.WriteLine(":INITiate"); //взводим триггер
+            //var answer = CounterInput.QueryLine(":FETCh?"); //считываем ответ
+            var answer = CounterInput.QueryLine($":Measure:{FunctionName}?"); //считываем ответ
+            var value = (decimal)StrToDouble(answer);
+            Value = new MeasPoint<TPhysicalQuantity>(value);
+            return Value;
+        }
+
+        public MeasPoint<TPhysicalQuantity> Value { get; protected set; }
+        public abstract void Getting();
+        public abstract void Setting();
+        public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
     }
 }

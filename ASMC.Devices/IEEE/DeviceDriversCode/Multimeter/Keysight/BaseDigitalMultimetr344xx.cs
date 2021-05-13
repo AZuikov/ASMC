@@ -64,7 +64,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
         public bool IsTestConnect { get; }
 
         /// <inheritdoc />
-        public async Task InitializeAsync()
+        public async void Initialize()
         {
             var fileName = @$"{Environment.CurrentDirectory}\acc\{UserType}.acc";
             if (!File.Exists(fileName)) return;
@@ -79,7 +79,7 @@ namespace ASMC.Devices.IEEE.Keysight.Multimeter
             {
                 _device.StringConnection = value;
 #pragma warning disable 4014
-                InitializeAsync();
+                Initialize();
 #pragma warning restore 4014
             }
         }

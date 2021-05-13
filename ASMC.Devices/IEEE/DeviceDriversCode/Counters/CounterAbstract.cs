@@ -19,7 +19,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public bool IsTestConnect { get; }
 
         /// <inheritdoc />
-        public abstract  Task InitializeAsync();
+        public abstract  void Initialize();
         
 
         public string StringConnection
@@ -28,7 +28,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             set
             {
                 DeviceIeeeBase.StringConnection = value;
-                InitializeAsync();
+                Initialize();
 
             }
         }

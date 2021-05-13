@@ -266,11 +266,11 @@ namespace Belvar_V7_40_1
         {
             Calibrator = (ICalibratorMultimeterFlukeBase)GetSelectedDevice<ICalibratorMultimeterFlukeBase>();
             Calibrator.StringConnection = GetStringConnect(Calibrator);
-            Calibrator.InitializeAsync();
+            Calibrator.Initialize();
 
             Multimetr = (ASMC.Devices.IEEE.Belvar_V7_40_1)GetSelectedDevice<ASMC.Devices.IEEE.Belvar_V7_40_1>();
             Multimetr.StringConnection = GetStringConnect(Multimetr);
-            Multimetr.InitializeAsync();
+            Multimetr.Initialize();
         }
 
         #endregion
