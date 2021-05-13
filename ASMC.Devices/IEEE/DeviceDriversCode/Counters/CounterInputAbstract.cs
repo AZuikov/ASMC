@@ -1,4 +1,5 @@
-﻿using AP.Utils.Data;
+﻿using System.CodeDom;
+using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
@@ -11,12 +12,16 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public int NameOfChanel { get; }
         public ICounterInputSlopeSetting SettingSlope { get; set; }
         public ICounterStandartMeasureOperation MeasureStandart { get; set; }
+
+        public CounterInputAbstract(int chanelName, IeeeBase deviceIeeeBase)
+        {
+            NameOfChanel = chanelName;
+            SettingSlope = new ChanelSlopeSetting();
+            MeasureStandart = new CNT90InputMeasureFunction(this, deviceIeeeBase);
+        }
     }
 
-    public abstract class CounterInputAbstractHF 
-    {
-       
-    }
+   
 
     public abstract class CounterDualChanelMeasureAbstract : ICounterInputDualChanelMeasure
     {
@@ -37,9 +42,38 @@ namespace ASMC.Devices.IEEE.PENDULUM
     }
 
     /// <summary>
+    /// Позволяет выбрать передний или задний фронт сигнала для синхронизации.
+    /// </summary>
+    public class ChanelSlopeSetting : ICounterInputSlopeSetting
+    {
+        private InputSlope Slope;
+
+        public ChanelSlopeSetting()
+        {
+            Slope = InputSlope.POS;
+        }
+
+        public void SetInputSlopePositive()
+        {
+            Slope = InputSlope.POS;
+        }
+
+        public void SetInputSlopeNegative()
+        {
+            Slope = InputSlope.NEG;
+        }
+
+        public string GetSlope()
+        {
+            return Slope.GetStringValue();
+        }
+    }
+
+    /// <summary>
     /// Настройка канала.
     /// </summary>
-    public class ChanelStandartSetting :  ITypicalCounterInputSettings
+    
+    public class ChanelStandartSetting : ChanelSlopeSetting,ITypicalCounterInputSettings
     {
         #region Fields
 
@@ -47,7 +81,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
         private InputCouple Couple;
         private InputImpedance Impedance;
         private Status InputFilter;
-        private InputSlope Slope;
+        
 
         #endregion
 
@@ -57,7 +91,6 @@ namespace ASMC.Devices.IEEE.PENDULUM
             Attenuator = InputAttenuator.ATT1;
             Impedance = InputImpedance.IMP50Ohm;
             Couple = InputCouple.DC;
-            Slope = InputSlope.POS;
             InputFilter = Status.OFF;
         }
 
@@ -122,20 +155,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
         }
 
 
-        public void SetInputSlopePositive()
-        {
-            Slope = InputSlope.POS;
-        }
-
-        public void SetInputSlopeNegative()
-        {
-            Slope = InputSlope.NEG;
-        }
-
-        public string GetSlope()
-        {
-            return Slope.GetStringValue();
-        }
+      
     }
 
    

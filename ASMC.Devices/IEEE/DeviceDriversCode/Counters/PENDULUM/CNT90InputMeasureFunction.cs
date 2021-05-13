@@ -1,24 +1,16 @@
 ﻿using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface;
+using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
-    public class CNT90InputMeasureFunction
+    public class CNT90InputMeasureFunction: ICounterStandartMeasureOperation
     {
-        public CNT90InputMeasureFunction()
+        public CNT90InputMeasureFunction(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase)
         {
-            //MeasFrequency = new MeasFreq(this, deviceIeeeBase);
-            //MeasFrequencyBURSt = new MeasFreqBurst(this, deviceIeeeBase);
-            //MeasNumberOfCyclesInBurst = new MeasCyclesInBurst(this, deviceIeeeBase);
-            //MeasPulseRepetitionFrequencyBurstSignal = new MeasFreqPRF(this, deviceIeeeBase);
-            //MeasPositiveDutyCycle = new MeasPositiveDUTycycle(this, deviceIeeeBase);
-            //MeasNegativeDutyCycle = new MeasNegativeDUTycycle(this, deviceIeeeBase);
-            //MeasMaximum = new MeasMaxVolt(this, deviceIeeeBase);
-            //MeasMinimum = new MeasMinVolt(this, deviceIeeeBase);
-            //MeasPeakToPeak = new MeasVpp(this, deviceIeeeBase);
-            //MeasPeriod = new MeasPeriodTime(this, deviceIeeeBase);
-            //MeasPeriodAver = new MeasAverPeriodTime(this, deviceIeeeBase);
-            //MeasPositivePulseWidth = new MeasPosPulseWidth(this, deviceIeeeBase);
-            //MeasNegativePulseWidth = new MeasNegPulseWidth(this, deviceIeeeBase);
+            MeasFrequency = new MeasFreq(counterAbstr, deviceIeeeBase);
+            MeasPeriod = new MeasPeriodTime(counterAbstr, deviceIeeeBase);
+            
         }
         /// <summary>
         /// Измерение частоты.
@@ -261,19 +253,19 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public MeasBase(CounterInputAbstract counterAbstr, IeeeBase devIeeeBase) : base(devIeeeBase)
             {
                 CounterAbstr = counterAbstr;
+                
             }
 
             /// <inheritdoc />
             public override void Setting()
             {
                 //todo проверить проинициализированно ли к этому моменту устройство? задана ли строка подключения?
-                CounterInput
-                   .WriteLine($"inp{CounterAbstr.NameOfChanel}:imp {CounterAbstr.InputSetting.GetImpedance()}");
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:att {CounterAbstr.InputSetting.GetAtt()}");
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:coup {CounterAbstr.InputSetting.GetCouple()}");
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:slop {CounterAbstr.InputSetting.GetSlope()}");
-                CounterInput
-                   .WriteLine($"inp{CounterAbstr.NameOfChanel}:filt {CounterAbstr.InputSetting.GetFilterStatus()}");
+                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:slop {CounterAbstr.SettingSlope.GetSlope()}");
+
+                //CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:imp {CounterAbstr.InputSetting.GetImpedance()}");
+                //CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:att {CounterAbstr.InputSetting.GetAtt()}");
+                //CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:coup {CounterAbstr.InputSetting.GetCouple()}");
+                //CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:filt {CounterAbstr.InputSetting.GetFilterStatus()}");
             }
 
             public override void Getting()
@@ -281,5 +273,8 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 throw new System.NotImplementedException();
             }
         }
+
+        public IMeterPhysicalQuantity<Frequency> MeasFrequency { get; set; }
+        public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
     }
 }

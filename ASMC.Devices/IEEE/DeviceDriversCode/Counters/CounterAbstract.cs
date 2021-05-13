@@ -7,7 +7,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
     public abstract class CounterAbstract : ICounter
     {
         
-        protected IeeeBase counter = new IeeeBase();
+        protected IeeeBase DeviceIeeeBase = new IeeeBase();
 
         public string UserType { get; protected set; }
 
@@ -24,10 +24,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public string StringConnection
         {
-            get => counter.StringConnection;
+            get => DeviceIeeeBase.StringConnection;
             set
             {
-                counter.StringConnection = value;
+                DeviceIeeeBase.StringConnection = value;
                 InitializeAsync();
 
             }
@@ -35,14 +35,14 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public virtual void SetExternalReferenceClock()
         {
-            counter.WriteLine($":ROSCillator:SOURce EXT");
-            counter.WaitingRemoteOperationComplete();
+            DeviceIeeeBase.WriteLine($":ROSCillator:SOURce EXT");
+            DeviceIeeeBase.WaitingRemoteOperationComplete();
         }
 
         public virtual void SetInternalReferenceClock()
         {
-            counter.WriteLine($":ROSCillator:SOURce INT");
-            counter.WaitingRemoteOperationComplete();
+            DeviceIeeeBase.WriteLine($":ROSCillator:SOURce INT");
+            DeviceIeeeBase.WaitingRemoteOperationComplete();
         }
 
         public ICounterInput InputA { get; set; }
