@@ -100,11 +100,9 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс генератора сигналов.
     /// </summary>
-    /// <typeparam name="TPhysicalQuantity"></typeparam>
-    /// <typeparam name="TPhysicalQuantity2"></typeparam>
-    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> : IProtocolStringLine, IReferenceClock
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
-        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    
+    public interface ISignalGenerator: IProtocolStringLine, IReferenceClock
+        
     {
         public IOutputSignalGenerator OUT1 { get; set; }
         public IOutputSignalGenerator OUT2 { get; set; }

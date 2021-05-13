@@ -39,6 +39,7 @@ namespace Appa107N
         {
             TestDevices = new IDeviceUi[]
                 {new Device { Devices = new IDeviceRemote[] { new MultAPPA107N()}, Description = "Цифровой портативный мультиметр"}};
+            
             var DcvMode = new Oper3DcvMeasureBaseMeasureAppa(this, Assembly.GetExecutingAssembly().GetName().Name);
             DcvMode.Nodes.Add(new DC_20mV_Measure(Mult107_109N.RangeAppaNominal.Range20mV, this));
             DcvMode.Nodes.Add(new DC_200mV_Measure(Mult107_109N.RangeAppaNominal.Range200mV, this));

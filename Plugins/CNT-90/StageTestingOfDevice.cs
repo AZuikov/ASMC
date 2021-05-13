@@ -15,14 +15,14 @@ namespace CNT_90
         {
             ControlDevices = new IDeviceUi[]
             {
-                new Device {Devices = new IUserType[] {new GeneratorOfSignals_81160A() }},
+                new Device {Devices = new IUserType[] {new GeneratorOfSignals_81160A()}},
                 //new Device {Devices = new IUserType[] {/*Указать список 2 устройств с помощью которых производится поверка*/}}
             };
             TestDevices = new IDeviceUi[]
             {
                 new Device
                 {
-                    Devices = new IUserType[] {new TTestDevices()}, IsCanStringConnect = false,
+                    Devices = new IUserType[] {new TTestDevices()},
                     Description = $@"{new TTestDevices().UserType}"
                 }
             };

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
-    public class GeneratorOfSignals_81160A : ISignalGenerator<Voltage, Frequency>
+    public class GeneratorOfSignals_81160A : ISignalGenerator
     {
         private IeeeBase generator = new IeeeBase();
 

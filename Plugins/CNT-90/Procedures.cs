@@ -7,6 +7,7 @@ using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Keysight.Generator;
 using System.Data;
 using System.Threading;
+using ASMC.Devices.IEEE.PENDULUM;
 using ASMC.Devices.Interface;
 using NLog;
 
@@ -16,9 +17,12 @@ namespace CNT_90
     ///     Предоставляет базовую реализацию для пунктов поверки.
     /// </summary>
     /// <typeparam name="TOperation"></typeparam>
+
     public abstract class OperationBase<TOperation> : ParagraphBase<TOperation>
     {
-        /// <inheritdoc />
+        protected ASMC.Devices.IEEE.PENDULUM.Pendulum_CNT_90 Counter { get; set; }
+        protected ISignalGenerator Generator { get; set; }
+
         protected OperationBase(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
         }
@@ -39,7 +43,27 @@ namespace CNT_90
             base.InitWork(token);
         }
 
+        protected override void ConnectionToDevice()
+        {
+            Generator = (ISignalGenerator)GetSelectedDevice<ISignalGenerator>();
+            Generator.StringConnection = GetStringConnect(Generator);
+            
+
+            Counter = (Pendulum_CNT_90)GetSelectedDevice<Pendulum_CNT_90>();
+            Counter.StringConnection = GetStringConnect(Counter);
+            
+        }
+
         #endregion Methods
+    }
+
+    public abstract class OperationDeviceBase<T1, T2> : OperationBase<MeasPoint<T1, T2>> 
+        where T1 : class, IPhysicalQuantity<T1>, new() 
+        where T2 : class, IPhysicalQuantity<T2>, new()
+    {
+        protected OperationDeviceBase(IUserItemOperation userItemOperation) : base(userItemOperation)
+        {
+        }
     }
 
     /// <summary>
@@ -128,7 +152,7 @@ namespace CNT_90
 
     public sealed class FrequencyMeasureCNT90 : OperationBase<Frequency>
     {
-        protected ISignalGenerator<Voltage, Frequency> Generator { get; set; }
+        
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public FrequencyMeasureCNT90(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
@@ -140,7 +164,8 @@ namespace CNT_90
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-           
+            ConnectionToDevice();
+
         }
         
     }
