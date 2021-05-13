@@ -7,11 +7,13 @@ using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Keysight.Generator;
 using System.Data;
 using System.Threading;
+using ASMC.Devices.Interface;
+using NLog;
 
 namespace CNT_90
 {
     /// <summary>
-    ///     Придоставляет базувую реализацию для пунктов поверки
+    ///     Предоставляет базовую реализацию для пунктов поверки.
     /// </summary>
     /// <typeparam name="TOperation"></typeparam>
     public abstract class OperationBase<TOperation> : ParagraphBase<TOperation>
@@ -41,7 +43,7 @@ namespace CNT_90
     }
 
     /// <summary>
-    ///     Предоставляет реализацию внешнего осномотра.
+    ///     Предоставляет реализацию внешнего осмотра.
     /// </summary>
     public sealed class VisualInspection : OperationBase<bool>
     {
@@ -78,13 +80,13 @@ namespace CNT_90
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
-            DataRow.Add(new DialogOperationHelp(this, "Внешний осмотр"));
+            DataRow.Add(new DialogOperationHelp(this, "VisualTest_CNT90"));
             GeneratorOfSignals_81160A generator = new GeneratorOfSignals_81160A();
         }
     }
 
     /// <summary>
-    ///     Предоставляет операцию опробывания.
+    ///     Предоставляет операцию опробования.
     /// </summary>
     public sealed class Testing : OperationBase<bool>
     {
@@ -126,10 +128,13 @@ namespace CNT_90
 
     public sealed class FrequencyMeasureCNT90 : OperationBase<Frequency>
     {
+        protected ISignalGenerator<Voltage, Frequency> Generator { get; set; }
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public FrequencyMeasureCNT90(IUserItemOperation userItemOperation) : base(userItemOperation)
         {
-            Name = "";
+            Name = "Определение диапазона измеряемых частот, чувствительности и относительной погрешности измерения частоты сигнала";
             //Sheme
+            
         }
 
         protected override void InitWork(CancellationTokenSource token)
@@ -137,5 +142,6 @@ namespace CNT_90
             base.InitWork(token);
            
         }
+        
     }
 }

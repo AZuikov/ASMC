@@ -19,18 +19,27 @@ namespace ASMC.Devices.Interface
     public interface ICounterInputTypicalParametr
     {
         public int NameOfChanel { get; }
-        public ITypicalCounterInputSettings InputSetting { get; set; }
+        
     }
 
     /// <summary>
     /// Интерфейс измерительного канал частотомера.
     /// </summary>
-    public interface ICounterInput : ICounterInputTypicalParametr, ICounterSingleChanelMeasureAorB,
-                                     ICounterSingleChanelMeasureABC
+    public interface ICounterInput : ICounterInputTypicalParametr
     {
+
+        ICounterInputSlopeSetting SettingSlope { get; set; }
+        ICounterStandartMeasureOperation MeasureStandart { get; set; }
+        
     }
 
-    public interface ICOunterInputHighFrequency : ICounterInput, ICounterInputPowerMeasure
+    public interface ICOunterInputHighFrequency :   ICounterInput
     {
+        //ICounterInputPowerMeasure MeasurePower { get; set; }
+    }
+
+    public interface ICounterStandartMeasureOperation: ICounterSingleChanelMeasure
+    {
+
     }
 }

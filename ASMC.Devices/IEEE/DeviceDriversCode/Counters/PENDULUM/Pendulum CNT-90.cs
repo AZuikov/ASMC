@@ -13,16 +13,16 @@ namespace ASMC.Devices.IEEE.PENDULUM
     /// </summary>
     public class Pendulum_CNT_90 : CounterAbstract
     {
-        private IeeeBase deviceIeeBase = new IeeeBase();
+        
         
         public Pendulum_CNT_90()
         {
             UserType = "CNT-90";
 
-            InputA = new CNT90Input(1, this, deviceIeeBase);
-            InputB = new CNT90Input(2, this, deviceIeeBase);
+            InputA = new CNT90Input(1, counter);
+            InputB = new CNT90Input(2, counter);
 
-            DualChanelMeasure = new CNT90DualChanelMeasure(this, deviceIeeBase);
+            DualChanelMeasure = new CNT90DualChanelMeasure(InputA, InputB,counter);
         }
 
         #region Enums
@@ -58,292 +58,60 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public override async Task InitializeAsync()
         {
             var options = counter.GetOption();
-            //todo инициализация опций
-            
-            InputC_HighFrequency = new CNT90InputC_HighFreq(3, this);
+            //если опция на второй позиции есть, значит точно есть третий выход
+            if (!options[1].Equals(InstallPrescalerOption.NullOption.GetStringValue()))
+            {
+                InputC_HighFrequency = new CNT90InputC_HighFreq(3, counter);
+            }
         }
     }
 
     public class CNT90Input : CounterInputAbstract
     {
-        public CNT90Input(int chanelName, CounterAbstract counter, IeeeBase deviceIeeeBase) : base(chanelName, counter)
+        public CNT90Input(int chanelName,  IeeeBase deviceIeeeBase) : base(chanelName)
         {
-            MeasFrequency = new MeasFreq(this, deviceIeeeBase);
-            MeasFrequencyBURSt = new MeasFreqBurst(this, deviceIeeeBase);
-            MeasNumberOfCyclesInBurst = new MeasCyclesInBurst(this, deviceIeeeBase);
-            MeasPulseRepetitionFrequencyBurstSignal = new MeasFreqPRF(this, deviceIeeeBase);
-            MeasPositiveDutyCycle = new MeasPositiveDUTycycle(this, deviceIeeeBase);
-            MeasNegativeDutyCycle = new MeasNegativeDUTycycle(this, deviceIeeeBase);
-            MeasMaximum = new MeasMaxVolt(this, deviceIeeeBase);
-            MeasMinimum = new MeasMinVolt(this, deviceIeeeBase);
-            MeasPeakToPeak = new MeasVpp(this, deviceIeeeBase);
-            MeasPeriod = new MeasPeriodTime(this, deviceIeeeBase);
-            MeasPeriodAver = new MeasAverPeriodTime(this, deviceIeeeBase);
-            MeasPositivePulseWidth = new MeasPosPulseWidth(this, deviceIeeeBase);
-            MeasNegativePulseWidth = new MeasNegPulseWidth(this, deviceIeeeBase);
-        }
-
-        /// <summary>
-        /// Измерение частоты.
-        /// </summary>
-        public class MeasFreq : MeasBase<Frequency>
-        {
-            public MeasFreq(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:FREQ (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasFreqBurst : MeasBase<Frequency>
-        {
-            public MeasFreqBurst(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:FREQ:BURSt (@{CounterAbstr.NameOfChanel})");
-            }
-        }
-
-        public class MeasCyclesInBurst : MeasBase<NoUnits>
-        {
-            public MeasCyclesInBurst(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEASure:VOLT:NCYCles (@{CounterAbstr.NameOfChanel})");
-            }
-        }
-
-        public class MeasFreqPRF : MeasBase<Frequency>
-        {
-            public MeasFreqPRF(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:FREQ:PRF (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasPositiveDUTycycle : MeasBase<Percent>
-        {
-            public MeasPositiveDUTycycle(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PDUTycycle (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasNegativeDUTycycle : MeasBase<Percent>
-        {
-            public MeasNegativeDUTycycle(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:NDUTycycle (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasMaxVolt : MeasBase<Voltage>
-        {
-            public MeasMaxVolt(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:VOLT:MAXimum (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasMinVolt : MeasBase<Voltage>
-        {
-            public MeasMinVolt(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:VOLT:MINimum (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasVpp : MeasBase<Voltage>
-        {
-            public MeasVpp(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:VOLT:PTPeak (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasPeriodTime : MeasBase<Time>
-        {
-            public MeasPeriodTime(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PERiod (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasAverPeriodTime : MeasBase<Time>
-        {
-            public MeasAverPeriodTime(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PERiod:AVERage (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasPosPulseWidth : MeasBase<Time>
-        {
-            public MeasPosPulseWidth(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public  void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PWIDth (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public class MeasNegPulseWidth : MeasBase<Time>
-        {
-            public MeasNegPulseWidth(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) : base(counterAbstr, deviceIeeeBase)
-            {
-            }
-
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:NWIDth (@{CounterAbstr.NameOfChanel})");
-            }
-
-            #endregion Methods
-        }
-
-        public abstract class MeasBase<TPhysicalQuantity> : MeasReadValue<TPhysicalQuantity>
-            where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
-        {
-            #region Fields
-
-            protected CounterInputAbstract CounterAbstr;
-
-            #endregion Fields
-
-            public MeasBase(CounterInputAbstract counterAbstr, IeeeBase devIeeeBase) : base(devIeeeBase)
-            {
-                CounterAbstr = counterAbstr;
-            }
-
-            /// <inheritdoc />
-            public override void Setting()
-            {
-                //todo проверить проинициализированно ли к этому моменту устройство? задана ли строка подключения?
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:imp {CounterAbstr.InputSetting.GetImpedance()}");
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:att {CounterAbstr.InputSetting.GetAtt()}");
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:coup {CounterAbstr.InputSetting.GetCouple()}");
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:slop {CounterAbstr.InputSetting.GetSlope()}");
-                CounterInput.WriteLine($"inp{CounterAbstr.NameOfChanel}:filt {CounterAbstr.InputSetting.GetFilterStatus()}");
-            }
-
-            public override void Getting()
-            {
-                throw new System.NotImplementedException();
-            }
+            MeasFrequency = new CNT90InputMeasureFunction.MeasFreq(this, deviceIeeeBase);
+            MeasFrequencyBURSt = new CNT90InputMeasureFunction.MeasFreqBurst(this, deviceIeeeBase);
+            MeasNumberOfCyclesInBurst = new CNT90InputMeasureFunction.MeasCyclesInBurst(this, deviceIeeeBase);
+            MeasPulseRepetitionFrequencyBurstSignal = new CNT90InputMeasureFunction.MeasFreqPRF(this, deviceIeeeBase);
+            MeasPositiveDutyCycle = new CNT90InputMeasureFunction.MeasPositiveDUTycycle(this, deviceIeeeBase);
+            MeasNegativeDutyCycle = new CNT90InputMeasureFunction.MeasNegativeDUTycycle(this, deviceIeeeBase);
+            MeasMaximum = new CNT90InputMeasureFunction.MeasMaxVolt(this, deviceIeeeBase);
+            MeasMinimum = new CNT90InputMeasureFunction.MeasMinVolt(this, deviceIeeeBase);
+            MeasPeakToPeak = new CNT90InputMeasureFunction.MeasVpp(this, deviceIeeeBase);
+            MeasPeriod = new CNT90InputMeasureFunction.MeasPeriodTime(this, deviceIeeeBase);
+            MeasPeriodAver = new CNT90InputMeasureFunction.MeasAverPeriodTime(this, deviceIeeeBase);
+            MeasPositivePulseWidth = new CNT90InputMeasureFunction.MeasPosPulseWidth(this, deviceIeeeBase);
+            MeasNegativePulseWidth = new CNT90InputMeasureFunction.MeasNegPulseWidth(this, deviceIeeeBase);
         }
     }
 
     public class CNT90InputC_HighFreq : CounterInputAbstractHF
     {
-        public CNT90InputC_HighFreq(int chanelName, CounterAbstract counter) : base(chanelName, counter)
+        public CNT90InputC_HighFreq(int chanelName, IeeeBase deviceIeeeBase) : base(chanelName)
         {
+            MeasFrequency = new CNT90InputMeasureFunction.MeasFreq(this, deviceIeeeBase);
+            MeasFrequencyBURSt = new CNT90InputMeasureFunction.MeasFreqBurst(this, deviceIeeeBase);
+            MeasNumberOfCyclesInBurst = new CNT90InputMeasureFunction.MeasCyclesInBurst(this, deviceIeeeBase);
+            MeasPulseRepetitionFrequencyBurstSignal = new CNT90InputMeasureFunction.MeasFreqPRF(this, deviceIeeeBase);
+            MeasPositiveDutyCycle = new CNT90InputMeasureFunction.MeasPositiveDUTycycle(this, deviceIeeeBase);
+            MeasNegativeDutyCycle = new CNT90InputMeasureFunction.MeasNegativeDUTycycle(this, deviceIeeeBase);
+            MeasMaximum = new CNT90InputMeasureFunction.MeasMaxVolt(this, deviceIeeeBase);
+            MeasMinimum = new CNT90InputMeasureFunction.MeasMinVolt(this, deviceIeeeBase);
+            MeasPeakToPeak = new CNT90InputMeasureFunction.MeasVpp(this, deviceIeeeBase);
+            MeasPeriod = new CNT90InputMeasureFunction.MeasPeriodTime(this, deviceIeeeBase);
+            MeasPeriodAver = new CNT90InputMeasureFunction.MeasAverPeriodTime(this, deviceIeeeBase);
+            MeasPositivePulseWidth = new CNT90InputMeasureFunction.MeasPosPulseWidth(this, deviceIeeeBase);
+            MeasNegativePulseWidth = new CNT90InputMeasureFunction.MeasNegPulseWidth(this, deviceIeeeBase);
         }
     }
 
     public class CNT90DualChanelMeasure : CounterDualChanelMeasureAbstract
     {
-        public CNT90DualChanelMeasure(Pendulum_CNT_90 counter, IeeeBase deviceIeeeBase) : base(counter)
+        public CNT90DualChanelMeasure(ICounterInput chnA, ICounterInput chnB,IeeeBase deviceIeeeBase) 
         {
-            MeasFrequencyRatioAB = new FreqRatio(_counter.InputA, _counter.InputB,  deviceIeeeBase);
-            MeasFrequencyRatioBA = new FreqRatio(_counter.InputB, _counter.InputA,  deviceIeeeBase);
+            MeasFrequencyRatioAB = new FreqRatio(chnA, chnB,  deviceIeeeBase);
+            MeasFrequencyRatioBA = new FreqRatio(chnB, chnA,  deviceIeeeBase);
             MeasRatioAB = null;
             MeasRatioBA = null;
             MeasPhaseAB = null;

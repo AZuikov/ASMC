@@ -20,7 +20,7 @@ using Ivi.Visa;
 namespace Belvar_V7_40_1
 {
     /// <summary>
-    /// Придоставляет базувую реализацию для пунктов поверки
+    /// Предоставляет базовую реализацию для пунктов поверки
     /// </summary>
     /// <typeparam name = "TOperation"></typeparam>
     public abstract class OperationBase<TOperation> : ParagraphBase<TOperation>
@@ -69,7 +69,7 @@ namespace Belvar_V7_40_1
         /// <summary>
         ///     Создает схему
         /// </summary>
-        /// <param name="filename">Имя файла с разширением</param>
+        /// <param name="filename">Имя файла с расширением</param>
         /// <param name="number">Номер схемы</param>
         /// <returns></returns>
         protected SchemeImage ShemeGeneration(string filename, int number)
@@ -111,10 +111,11 @@ namespace Belvar_V7_40_1
         /// <param name="rangeToSetOnDmm">Диапазон, который нужно установить у мультиметра.</param>
         /// <param name="testingMeasureValue">Значение, которое должен воспроизвести калибратор.</param>
         /// <returns></returns>
+        
         protected bool CheckAndSetPhisicalValuesIsSuccess<T>(IRangePhysicalQuantity<T> multRangeStorage, IRangePhysicalQuantity<T> calibrRangeStorage,
             MeasPoint<T> rangeToSetOnDmm, MeasPoint<T> testingMeasureValue, BasicOperationVerefication<MeasPoint<T>> operation) where T : class, IPhysicalQuantity<T>, new()
         {
-            //установим пределы измерения мултиметра и воспроизведения калибратора
+            //установим пределы измерения мультиметра и воспроизведения калибратора
             multRangeStorage.SetRange(rangeToSetOnDmm);
             calibrRangeStorage.SetRange(testingMeasureValue);
             //если у какого-то из устройств нет подходящего диапазона?
@@ -144,33 +145,37 @@ namespace Belvar_V7_40_1
         }
 
         /// <summary>
-        /// Формирует и выводи тсообщение со значениями, которые нельзя воспроизвести или измерить.
+        /// Формирует и выводи сообщение со значениями, которые нельзя воспроизвести или измерить.
         /// </summary>
-        /// <param name="multRangeStorage">Диапазоны измерения физю величин мультиметра.</param>
-        /// <param name="calibrRangeStorage">Диапазоны воспроизведения физю величин калибратора.</param>
+        /// <param name="deviceToTestingRangeStorage">Диапазоны измерения физ. величин мультиметра.</param>
+        /// <param name="standartDeviceRangeStorage">Диапазоны воспроизведения физ. величин калибратора.</param>
         /// <param name="rangeToSetOnMetr">Диапазон измерения, который нужно установить на мультиметре.</param>
         /// <param name="testingMeasureValue">Значение физической величины, которое нужно воспроизвести на эталоне.</param>
-        protected void ShowNotSupportedMeasurePointMeessage<T>(IRangePhysicalQuantity<T> multRangeStorage,
-            IRangePhysicalQuantity<T> calibrRangeStorage, MeasPoint<T> rangeToSetOnMetr, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
+        //todo эту функцию нужно отсюда вытащить!!!
+        protected void ShowNotSupportedMeasurePointMeessage<T>(IRangePhysicalQuantity<T> deviceToTestingRangeStorage,
+            IRangePhysicalQuantity<T> standartDeviceRangeStorage, MeasPoint<T> rangeToSetOnMetr, MeasPoint<T> testingMeasureValue) where T : class, IPhysicalQuantity<T>, new()
         {
             string message = "!!!ВНИМАНИЕ!!!\n\n";
             string endStr = ", согласно характеристикам в его файле точности.\n\n";
             //разберемся, у кого нет диапазона?
-            if (!IsSetRange<T>(multRangeStorage))
+            if (!IsSetRange<T>(deviceToTestingRangeStorage))
             {
                 message = message + $"Предел {rangeToSetOnMetr.Description} нельзя измерить на {Multimetr.UserType}{endStr}";
             }
-            if (!IsSetRange<T>(calibrRangeStorage))
+            if (!IsSetRange<T>(standartDeviceRangeStorage))
             {
                 message = message + $"Значение {testingMeasureValue.Description} нельзя воспроизвести с помощью {Calibrator.UserType}{endStr}";
             }
 
             message = message + $"\n\n!!!Данное значение не будет добавлено в протокол!!!";
-
+            message = message;
+           
             UserItemOperation.ServicePack.MessageBox()
                              .Show(message,
                                    "Значение физической величины вне технических характеристик оборудования",
                                    MessageButton.OK, MessageIcon.Information, MessageResult.Yes);
+
+
         }
 
 

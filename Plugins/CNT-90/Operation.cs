@@ -5,6 +5,7 @@ using ASMC.Devices.IEEE.Keysight.Generator;
 using System;
 using System.IO;
 using System.Reflection;
+using ASMC.Devices.IEEE;
 
 namespace CNT_90
 {
@@ -29,6 +30,7 @@ namespace CNT_90
             {
                 new VisualInspection(this),
                 new Testing(this),
+                new FrequencyMeasureCNT90(this)
                 /*Остальная часть методики*/
             };
             DocumentName = documentName;
@@ -39,13 +41,13 @@ namespace CNT_90
             string path = Directory.GetCurrentDirectory() + "\\Plugins\\" + Assembly.GetExecutingAssembly().GetName().Name + "\\Resources\\points_CNT-90.asmc";
             //todo пользователь должен иметь возможность выбрать файл с поверяемыми точками
 
-            OperationExtension.FillTestPoint(this, path);
+            //OperationExtension.FillTestPoint(this, path);
         }
 
         /// <inheritdoc />
         public override async void RefreshDevice()
         {
-            throw new NotImplementedException();
+            AddresDevice = IeeeBase.AllStringConnect;
         }
 
         /// <inheritdoc />

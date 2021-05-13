@@ -106,6 +106,7 @@
     <Compile Include="ConceptualCode\ProgrammDeviceInterface\ICounter\ICounterInputSetting.cs" />
     <Compile Include="DeviceInfo.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="IEEE\DeviceDriversCode\Counters\PENDULUM\CNT90InputMeasureFunction.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Multimeter\BELVAR\Belvar_V7_40_1.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Calibrator\Fluke\ElectricCalibrator\Calibr_9100.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Calibrator\Fluke\ElectricCalibrator\Calib_5522A.cs" />

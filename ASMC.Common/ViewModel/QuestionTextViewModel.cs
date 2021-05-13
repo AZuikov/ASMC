@@ -62,7 +62,7 @@ namespace ASMC.Common.ViewModel
                 return;
             var docPath = Directory.GetFiles(path, FileNameDescription+".rtf", SearchOption.AllDirectories).FirstOrDefault();
             if (docPath == null) return;
-            using (var fs = File.Open(docPath, FileMode.Open))
+            using (var fs = File.OpenRead(docPath))
             {
                 Description = fs.ReadString();
             }
