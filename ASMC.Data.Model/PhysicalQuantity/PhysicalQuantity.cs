@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AP.Utils.Data;
 using ASMC.Data.Model.Interface;
+using DevExpress.Xpf.Core.HandleDecorator;
 
 namespace ASMC.Data.Model.PhysicalQuantity
 {
@@ -20,12 +21,12 @@ namespace ASMC.Data.Model.PhysicalQuantity
         ///  <returns></returns>
         IPhysicalQuantity ChangeMultiplier(UnitMultiplier multiplier);
         /// <summary>
-        /// Возвращает еденицы измерения с множителем.
+        /// Возвращает единицы измерения с множителем.
         /// </summary>
         /// <returns></returns>
         string GetMultiplierUnit();
         /// <summary>
-        /// возращает численное занчение в системи СИ.
+        /// Возвращает численное значение в системе СИ.
         /// </summary>
         /// <returns></returns>
         decimal GetNoramalizeValueToSi();
@@ -196,7 +197,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
         /// <inheritdoc />
         public string GetMultiplierUnit()
         {
-            //нужно выцеплять верный множитель с учетом культуры
+            //todo нужно выцеплять верный множитель с учетом культуры
             
             return Multiplier.GetStringValue() + Unit.GetStringValue();
         }
@@ -385,7 +386,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
         public Pressure Convert(MeasureUnits u)
         {
             if (CheckedAttachmentUnits(u))
-                throw new InvalidCastException("Нвозможно преобразовать в другой тип физической величины");
+                throw new InvalidCastException("Невозможно преобразовать в другой тип физической величины");
             if (Unit == u) return this;
           var pq=  ThisConvetToSi();
             switch (u)
@@ -399,6 +400,8 @@ namespace ASMC.Data.Model.PhysicalQuantity
             return null;
         }
     }
+
+
     /// <summary>
     /// Реализует физическую величину масса.
     /// </summary>
@@ -444,7 +447,7 @@ namespace ASMC.Data.Model.PhysicalQuantity
     /// <summary>
     /// Реализует физическую величину мощности.
     /// </summary>
-    public sealed class Power : PhysicalQuantity<Power>
+    public sealed class Power : PhysicalQuantity<Power>, IConvertPhysicalQuantity<Power>
     {
         /// <inheritdoc />
         public Power(decimal value) : base(value)
@@ -462,8 +465,53 @@ namespace ASMC.Data.Model.PhysicalQuantity
 
         public Power()
         {
-            Units = new[] { MeasureUnits.Watt, MeasureUnits.dBm };
+            Units = new[] { MeasureUnits.Watt, MeasureUnits.dBm, MeasureUnits.V };
             Unit = MeasureUnits.Watt;
+        }
+
+        public Power Convert(MeasureUnits u)
+        {
+            if (CheckedAttachmentUnits(u))
+                throw new InvalidCastException("Невозможно преобразовать в другой тип физической величины");
+            if (Unit == u) return this;
+            var currentPhysicalQuantity = ThisConvetToSi();
+            //варианты конвертации
+            
+            if (Unit == MeasureUnits.Watt && u == MeasureUnits.dBm)
+            {
+                //формула для тракта с нагрузкой 50 Ом
+                return  new Power{Unit = u, Value = 10 *(decimal)Math.Log10((double)currentPhysicalQuantity.Value / 0.001) };
+            }
+            if (Unit == MeasureUnits.dBm && u == MeasureUnits.Watt)
+            {
+                return new Power { Unit = u, Value = (decimal)Math.Pow(10, (double)currentPhysicalQuantity.Value / 10.0) * 0.001M };
+            }
+            
+            //Ваты  в вольты
+            if (Unit == MeasureUnits.Watt && u == MeasureUnits.V)
+            {
+                return new Power { Unit = u, Value = (decimal)Math.Sqrt((double)currentPhysicalQuantity.Value*50) };
+            }
+            //вольты в Ваты 
+            if (Unit == MeasureUnits.V && u == MeasureUnits.Watt)
+            {
+                return new Power { Unit = u, Value = (decimal)Math.Pow((double)currentPhysicalQuantity.Value,2)/50 };
+            }
+
+            // dBm в Вольты
+            if (Unit == MeasureUnits.dBm && u == MeasureUnits.V)
+            {
+                return new Power { Unit = u, Value = (decimal)Math.Sqrt(0.001*50*Math.Pow(10,(double)currentPhysicalQuantity.Value/10)) };
+            }
+            // Вольты в dBm
+            if (Unit == MeasureUnits.V && u == MeasureUnits.dBm)
+            {
+                return new Power { Unit = u, Value = 10* (decimal)Math.Log10(Math.Pow((double)currentPhysicalQuantity.Value,2) / (0.001*50))};
+            }
+
+            
+
+            return null;
         }
     }
 

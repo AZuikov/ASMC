@@ -25,15 +25,6 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 FunctionName = "FREQ";
             }
 
-            #region Methods
-
-            public override void Setting()
-            {
-                base.Setting();
-                
-            }
-
-            #endregion Methods
         }
 
         public class MeasFreqBurst : MeasBase<Frequency>
@@ -41,13 +32,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public MeasFreqBurst(CounterInputAbstract counterAbstr, IeeeBase deviceIeeeBase) :
                 base(counterAbstr, deviceIeeeBase)
             {
+                FunctionName = "FREQ:BURSt";
             }
 
-            public override void Setting()
-            {
-                base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:FREQ:BURSt (@{CounterAbstr.NameOfChanel})");
-            }
+            
         }
 
         public class MeasCyclesInBurst : MeasBase<NoUnits>

@@ -14,7 +14,7 @@ namespace ASMC.Devices.Interface
         public MeasPoint<TPhysicalQuantity> SignalOffset { get; set; }
 
         /// <summary>
-        /// Здержка сигнала (работает не для всех видов сигналов).
+        /// Задержка сигнала (работает не для всех видов сигналов).
         /// </summary>
         public MeasPoint<Time> Delay { get; set; }
 

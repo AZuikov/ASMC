@@ -49,11 +49,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             throw new NotImplementedException();
         }
+        
 
         public virtual void Setting()
         {
             Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
-            //одной командой  устанавливает частоту, амплитуду и смещение
+            //todo модной командой  устанавливает частоту, амплитуду и смещение
             Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {Value.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, " +
                              $"{Value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, " +
                              $"{SignalOffset.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
@@ -116,7 +117,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             INV
         }
 
-        public string NameOfOutput { get; protected set; }
+        
     }
 
     #region SignalsForm

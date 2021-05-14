@@ -43,8 +43,15 @@ namespace ASMC.Devices.Interface.SourceAndMeter
     public interface IMeterPhysicalQuantityBase<TPhysicalQuantity> : IDeviceSettingsControl
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
+        /// <summary>
+        /// Считывает измеренное значение с устройства и обновляет значение <see cref="Value"/>.
+        /// </summary>
+        /// <returns>A MeasPoint.</returns>
         public MeasPoint<TPhysicalQuantity> GetValue();
-
+      
+        /// <summary>
+        /// Позволяет получать последнее измеренное значение.
+        /// </summary>
         public MeasPoint<TPhysicalQuantity> Value { get; }
     }
 
