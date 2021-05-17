@@ -198,7 +198,7 @@ namespace ASMC.Core.Model
                     source.Cancel(true);
                 }
                 Logger.Debug($@"Была показана схема №{sheme.Number}");
-            } while (!await sheme.ChekShemAsync());
+            } while (!await sheme.CheckShemAsync());
         }
 
         #endregion

@@ -219,12 +219,12 @@ namespace ProgramFor34461A
 
         protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
         {
-            if (operation.IsGood == null || operation.IsGood())
-                return Task.FromResult(operation.IsGood == null || operation.IsGood());
+            if (operation.IsGood == null || operation.IsGood(operation.Getting))
+                return Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
 
             return ShowQuestionMessage(operation.ToString()) == MessageResult.No
                 ? Task.FromResult(true)
-                : Task.FromResult(operation.IsGood == null || operation.IsGood());
+                : Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
 
             MessageResult ShowQuestionMessage(string message)
             {

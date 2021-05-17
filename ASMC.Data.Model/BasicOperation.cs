@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using ASMC.Data.Model.Interface;
-using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 
 namespace ASMC.Data.Model
 {
     /// <summary>
-    /// Предоставляет реализацию базоовой операции.
+    /// Предоставляет реализацию базовой операции.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>, ICloneable
@@ -62,6 +58,9 @@ namespace ASMC.Data.Model
             }
             set => _bodyWork = value;
         }
+
+        /// <inheritdoc />
+        public Predicate<T> IsGood { get; set; }
 
         /// <inheritdoc />
         public async Task WorkAsync(CancellationTokenSource token)
@@ -120,8 +119,7 @@ namespace ASMC.Data.Model
         public T Expected{ get; set; }
         /// <inheritdoc />
         public string Comment { get; set; }
-        /// <inheritdoc />
-        public Func<bool> IsGood { get; set; }
+      
 
         public virtual object Clone()
         {
@@ -143,7 +141,6 @@ namespace ASMC.Data.Model
             get
             {
                 return ErrorCalculation.Select(err => err(Getting, Expected)).ToArray();
-                //return ErrorCalculation.Select(ec => ec(Getting, Expected)).ToArray();
             }
         }
 
@@ -179,10 +176,10 @@ namespace ASMC.Data.Model
         }
     }
     /// <summary>
-    /// Педоставляет реализации операцию с нижней и верхней границей.
+    /// Предоставляет реализации операцию с нижней и верхней границей.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Obsolete("Небходимо отказаться от использование Error в виде расчета погрешности, посклюку это своейство является файктической погрешностью.")]
+    [Obsolete("Необходимо отказаться от использование Error в виде расчета погрешности, поскольку это свойство является фактической погрешностью.")]
     public class BasicOperationVerefication<T> : MeasuringOperation<T>, IBasicOperationVerefication<T>
     {
         /// <summary>
@@ -208,7 +205,7 @@ namespace ASMC.Data.Model
             var @base = (MeasuringOperation<T>)base.Clone();
             return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
-        [Obsolete("Небходимо от казаться от использование Error в текущем контексте")]
+        [Obsolete("Необходимо от казаться от использование Error в текущем контексте")]
         public override string ToString()
         {
             return $"Текущая точка {this.Expected} не проходит по допуску:\n" +

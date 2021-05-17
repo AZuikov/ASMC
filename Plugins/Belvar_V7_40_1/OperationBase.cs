@@ -69,7 +69,7 @@ namespace Belvar_V7_40_1
         /// <summary>
         ///     Создает схему
         /// </summary>
-        /// <param name="filename">Имя файла с разширением</param>
+        /// <param name="filename">Имя файла с разрешением</param>
         /// <param name="number">Номер схемы</param>
         /// <returns></returns>
         protected SchemeImage ShemeGeneration(string filename, int number)
@@ -114,7 +114,7 @@ namespace Belvar_V7_40_1
         protected bool CheckAndSetPhisicalValuesIsSuccess<T>(IRangePhysicalQuantity<T> multRangeStorage, IRangePhysicalQuantity<T> calibrRangeStorage,
             MeasPoint<T> rangeToSetOnDmm, MeasPoint<T> testingMeasureValue, BasicOperationVerefication<MeasPoint<T>> operation) where T : class, IPhysicalQuantity<T>, new()
         {
-            //установим пределы измерения мултиметра и воспроизведения калибратора
+            //установим пределы измерения мультиметра и воспроизведения калибратора
             multRangeStorage.SetRange(rangeToSetOnDmm);
             calibrRangeStorage.SetRange(testingMeasureValue);
             //если у какого-то из устройств нет подходящего диапазона?
@@ -144,10 +144,10 @@ namespace Belvar_V7_40_1
         }
 
         /// <summary>
-        /// Формирует и выводи тсообщение со значениями, которые нельзя воспроизвести или измерить.
+        /// Формирует и выводит сообщение со значениями, которые нельзя воспроизвести или измерить.
         /// </summary>
-        /// <param name="multRangeStorage">Диапазоны измерения физю величин мультиметра.</param>
-        /// <param name="calibrRangeStorage">Диапазоны воспроизведения физю величин калибратора.</param>
+        /// <param name="multRangeStorage">Диапазоны измерения физ. величин мультиметра.</param>
+        /// <param name="calibrRangeStorage">Диапазоны воспроизведения физ. величин калибратора.</param>
         /// <param name="rangeToSetOnMetr">Диапазон измерения, который нужно установить на мультиметре.</param>
         /// <param name="testingMeasureValue">Значение физической величины, которое нужно воспроизвести на эталоне.</param>
         protected void ShowNotSupportedMeasurePointMeessage<T>(IRangePhysicalQuantity<T> multRangeStorage,
@@ -212,10 +212,10 @@ namespace Belvar_V7_40_1
         }
 
         /// <summary>
-        ///     Позволяет получить погрешность для указаной точки.
+        ///     Позволяет получить погрешность для указанной точки.
         /// </summary>
         /// <typeparam name="T">
-        ///     Физическая велечина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
+        ///     Физическая величина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
         /// </typeparam>
         /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
@@ -232,12 +232,12 @@ namespace Belvar_V7_40_1
 
         protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
         {
-            if (operation.IsGood == null || operation.IsGood())
-                return Task.FromResult(operation.IsGood == null || operation.IsGood());
+            if (operation.IsGood == null || operation.IsGood(operation.Getting))
+                return Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
 
             return ShowQuestionMessage(operation.ToString()) == MessageResult.No
                 ? Task.FromResult(true)
-                : Task.FromResult(operation.IsGood == null || operation.IsGood());
+                : Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
 
             MessageResult ShowQuestionMessage(string message)
             {
@@ -338,7 +338,7 @@ namespace Belvar_V7_40_1
             MeasPoint<T1, T2> rangeToSetOnDmm, MeasPoint<T1, T2> testingMeasureValue,
             BasicOperationVerefication<MeasPoint<T1,T2>> operation)
         {
-            //установим пределы измерения мултиметра и воспроизведения калибратора
+            //установим пределы измерения мультиметра и воспроизведения калибратора
             multRangeStorage.SetRange(rangeToSetOnDmm);
             calibrRangeStorage.SetRange(testingMeasureValue);
             //если у какого-то из устройств нет подходящего диапазона?
@@ -363,10 +363,10 @@ namespace Belvar_V7_40_1
         }
 
         /// <summary>
-        /// Формирует и выводи тсообщение со значениями, которые нельзя воспроизвести или измерить.
+        /// Формирует и выводит сообщение со значениями, которые нельзя воспроизвести или измерить.
         /// </summary>
-        /// <param name="multRangeStorage">Диапазоны измерения физю величин мультиметра.</param>
-        /// <param name="calibrRangeStorage">Диапазоны воспроизведения физю величин калибратора.</param>
+        /// <param name="multRangeStorage">Диапазоны измерения физ. величин мультиметра.</param>
+        /// <param name="calibrRangeStorage">Диапазоны воспроизведения физ. величин калибратора.</param>
         /// <param name="rangeToSetOnMetr">Диапазон измерения, который нужно установить на мультиметре.</param>
         /// <param name="testingMeasureValue">Значение физической величины, которое нужно воспроизвести на эталоне.</param>
         protected void ShowNotSupportedMeasurePointMeessage(IRangePhysicalQuantity<T1, T2> multRangeStorage,
@@ -445,10 +445,10 @@ namespace Belvar_V7_40_1
         }
 
         /// <summary>
-        ///     Позволяет получить погрешность для указаной точки.
+        ///     Позволяет получить погрешность для указанной точки.
         /// </summary>
         /// <typeparam name="T">
-        ///     Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
+        ///     Физическая величина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
         /// </typeparam>
         /// <typeparam name="T2"></typeparam>
         /// <typeparam name="T1"></typeparam>

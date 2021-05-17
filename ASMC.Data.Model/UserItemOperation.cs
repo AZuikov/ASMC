@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ASMC.Data.Model.Interface;
-using DevExpress.Mvvm.UI;
 
 namespace ASMC.Data.Model
 {
@@ -15,7 +14,7 @@ namespace ASMC.Data.Model
     {
         #region Property
         /// <summary>
-        ///Массив пар: Предел измерения - проверямая на этом пределе величина
+        ///Массив пар: Предел измерения - проверяемая на этом пределе величина
         /// </summary>
          T[,] TestMeasPoints { get; set; }
         List<IBasicOperation<T>> DataRow { get; set; }
@@ -24,7 +23,7 @@ namespace ASMC.Data.Model
     }
 
     /// <summary>
-    /// Интерфейст описывающий подключаемые настройки утроств, необходимыех для выполнения операций.
+    /// Интерфейс описывающий подключаемые настройки устройств, необходимых для выполнения операций.
     /// </summary>
     public interface IDeviceUi
     {
@@ -89,11 +88,11 @@ namespace ASMC.Data.Model
     public interface IControlPannelDevice : IUserType
     {
         /// <summary>
-        /// Предстваление управления прибором
+        /// Представление управления прибором
         /// </summary>
         string DocumentType { get; }
         /// <summary>
-        /// ВМ интерфеса управления прибором
+        /// ВМ интерфейса управления прибором
         /// </summary>
         INotifyPropertyChanged ViewModel { get; }
         /// <summary>
@@ -105,7 +104,7 @@ namespace ASMC.Data.Model
 
     }
     /// <summary>
-    /// Предоставляет интерфес пункта(параграфа) операции
+    /// Предоставляет интерфейс пункта(параграфа) операции
     /// </summary>
     public interface IUserItemOperationBase
     {
@@ -157,7 +156,7 @@ namespace ASMC.Data.Model
         #region Methods
 
         /// <summary>
-        /// Запускает выполнение операций с указаном Гуидом.
+        /// Запускает выполнение операций с указном Гуидом.
         /// </summary>
         Task StartSinglWorkAsync(CancellationTokenSource token, Guid guid);
 
@@ -170,7 +169,7 @@ namespace ASMC.Data.Model
     }
 
     /// <summary>
-    /// предоставляет реализицию отборажаемые схемы.
+    /// предоставляет реализацию отображаемой схемы.
     /// </summary>
     public class SchemeImage
     {
@@ -191,20 +190,13 @@ namespace ASMC.Data.Model
         /// </summary>
         public string AssemblyLocalName { get; set; }
         /// <summary>
-        /// Функция выполняемая для проверки правельности собранной схемы.
+        /// Функция выполняемая для проверки правильности собранной схемы.
         /// </summary>
-        public Func<Task<bool>> ChekShemAsync
+        public Func<Task<bool>> CheckShemAsync
         {
             get
             {
-                if (_chekShem == null)
-                {
-#pragma warning disable 1998
-                    return async () => true;
-#pragma warning restore 1998
-                }
-
-                return _chekShem;
+                return _chekShem ?? (async () => true);
             }
             set => _chekShem = value;
         }
@@ -215,7 +207,7 @@ namespace ASMC.Data.Model
         public string Description { get; set; }
 
         /// <summary>
-        /// Позволяет задать или получить разширенное описание.
+        /// Позволяет задать или получить расширенное описание.
         /// </summary>
         public string ExtendedDescription
         {
@@ -237,13 +229,13 @@ namespace ASMC.Data.Model
             {
                 var format = Path.GetExtension(value);
                 if ("".Equals(format) && !string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentNullException(@"Раcширение файла не обнаружино");
+                    throw new ArgumentNullException(@"Расширение файла не обнаружено");
                 _fileName = value;
             }
         }
 
         /// <summary>
-        /// Позволяет получать или задавать имя файла раcширеного описания.
+        /// Позволяет получать или задавать имя файла расширенного описания.
         /// </summary>
         public string FileNameDescription
         {
@@ -252,7 +244,7 @@ namespace ASMC.Data.Model
             {
                 var format = Path.GetExtension(value);
                 if ("".Equals(format) && !string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentNullException(@"Раcширение файла не обнаружино");
+                    throw new ArgumentNullException(@"Расширение файла не обнаружено");
 
                 if (!string.IsNullOrWhiteSpace(value) && format != null &&
                     !format.Equals(".rtf", StringComparison.CurrentCultureIgnoreCase))
