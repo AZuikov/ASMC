@@ -116,6 +116,17 @@ namespace ASMC.Data.Model
         [StringValue("%"), StringValue("%", "en-US")] Percent
     }
 
+    /// <summary>
+    /// Единицы измерения амплитуды сигналов.
+    /// </summary>
+    public enum MeasureUnitsAmplitude
+    {
+        [StringValue("В пик-пик"), StringValue("Vpp", "en-US")] Vpp,
+        [StringValue("В ск"), StringValue("Vrms", "en-US")] Vrms,
+        [StringValue("А пик-пик"), StringValue("App", "en-US")] App,
+        [StringValue("A ск"), StringValue("Arms", "en-US")] Arms,
+    }
+
 
     /// <summary>
     /// Содержит доступные множители и их обозначения.
@@ -143,7 +154,7 @@ namespace ASMC.Data.Model
         [DoubleValue(1E-9)] Nano,
 
         /// <summary>
-        /// Множетель микро 1Е-6.
+        /// Множитель микро 1Е-6.
         /// </summary>
         [StringValue("мк")]
         [StringValue("u", "en-US")]

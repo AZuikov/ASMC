@@ -16,7 +16,7 @@ using DevExpress.Mvvm.DataAnnotations;
 namespace Belvar_V7_40_1
 {
     /// <summary>
-    /// Предоставляет реализацию внешнего осномотра.
+    /// Предоставляет реализацию внешнего осмотра.
     /// </summary>
     public sealed class VisualTest : OperationBase<bool>
     {
@@ -62,7 +62,7 @@ namespace Belvar_V7_40_1
     }
 
     /// <summary>
-    /// Предоставляет операцию опробывания.
+    /// Предоставляет операцию опробования.
     /// </summary>
     public sealed class Oprobovanie : OperationBase<bool>
     {

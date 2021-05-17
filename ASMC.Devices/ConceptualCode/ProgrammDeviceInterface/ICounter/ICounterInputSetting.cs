@@ -1,7 +1,7 @@
 ﻿namespace ASMC.Devices.Interface
 {
     /// <summary>
-    /// Интрефейс содержащий типовые настройки входа частотомера.
+    /// Интерфейс содержащий типовые настройки входа частотомера.
     /// </summary>
     public interface ITypicalCounterInputSettings : ICounterInputSlopeSetting
     {
@@ -59,7 +59,7 @@
     }
 
     /// <summary>
-    /// Интерфейс выбора условий запуска измерений частотомера (по признакас формы сигнала).
+    /// Интерфейс выбора условий запуска измерений частотомера (по признакам формы сигнала).
     /// </summary>
     public interface ICounterInputSlopeSetting
     {

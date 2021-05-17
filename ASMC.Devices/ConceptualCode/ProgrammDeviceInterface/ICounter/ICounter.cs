@@ -14,23 +14,32 @@ namespace ASMC.Devices.Interface
     }
 
     /// <summary>
-    /// Бозовые парамертры любого канала частотомера.
+    /// Базовые параметры любого канала частотомера.
     /// </summary>
-    public interface ICounterInputTypicalParametr : IProtocolStringLine
+    public interface ICounterInputTypicalParametr
     {
-        public string NameOfChanel { get; }
-        public ITypicalCounterInputSettings InputSetting { get; set; }
+        public int NameOfChanel { get; }
+        
     }
 
     /// <summary>
-    /// Интефейс измерительного канал частотомера.
+    /// Интерфейс измерительного канал частотомера.
     /// </summary>
-    public interface ICounterInput : ICounterInputTypicalParametr, ICounterSingleChanelMeasureAorB,
-                                     ICounterSingleChanelMeasureABC
+    public interface ICounterInput : ICounterInputTypicalParametr
     {
+
+        ICounterInputSlopeSetting SettingSlope { get; set; }
+        ICounterStandartMeasureOperation MeasureStandart { get; set; }
+        
     }
 
-    public interface ICOunterInputHighFrequency : ICounterInput, ICounterInputPowerMeasure
+    public interface ICOunterInputHighFrequency :   ICounterInput
     {
+        //ICounterInputPowerMeasure MeasurePower { get; set; }
+    }
+
+    public interface ICounterStandartMeasureOperation: ICounterSingleChanelMeasure
+    {
+
     }
 }

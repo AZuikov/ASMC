@@ -9,7 +9,7 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс получения и записи всех настроек прибора.
     /// </summary>
-    public interface IDevice
+    public interface IDeviceSettingsControl
     {
         /// <summary>
         /// Получить параметры (настройки) устройства.

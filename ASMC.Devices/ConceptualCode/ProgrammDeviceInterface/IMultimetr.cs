@@ -137,7 +137,7 @@ namespace ASMC.Devices.Interface.Multimetr.Mode
 
 namespace ASMC.Devices.Interface.Multimetr
 {
-    public interface IMultimetr : IResistanceGroup, IVoltageGroup, ICurrentGroup, IUserType, IDevice
+    public interface IMultimetr : IResistanceGroup, IVoltageGroup, ICurrentGroup, IUserType, IDeviceSettingsControl
     {
     }
 }

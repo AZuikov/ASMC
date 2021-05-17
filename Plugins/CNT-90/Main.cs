@@ -16,9 +16,9 @@ namespace CNT_90
 
     public class Program_CNT_90 : OperationMetrControlBase
     {
-        public Program_CNT_90(ServicePack servicePac)
+        public Program_CNT_90(ServicePack servicePack)
         {
-            UserItemOperationPrimaryVerf = new OperationPrimary<Pendulum_CNT_90>("CNT-90_protocol", servicePac);
+            UserItemOperationPrimaryVerf = new OperationPrimary<Pendulum_CNT_90>("CNT-90_protocol", servicePack);
         }
     }
 }

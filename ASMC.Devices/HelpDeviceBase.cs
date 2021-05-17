@@ -7,6 +7,9 @@ using MathNet.Numerics.Statistics;
 
 namespace ASMC.Devices
 {
+    /// <summary>
+    /// вспомогательные функции для работы с множителями.
+    /// </summary>
     public abstract class HelpDeviceBase
     {
         private ICommand[] _multipliers;
@@ -22,7 +25,7 @@ namespace ASMC.Devices
         }
 
         /// <summary>
-        /// Преобразут строку в double, может принимать строку с перечисленными значениями через запятую.
+        /// Преобразует строку в double, может принимать строку с перечисленными значениями через запятую.
         /// </summary>
         /// <param name = "date">Одно значение или перечисление значений через запятую. Разделитель целой и дробной части точка.</param>
         /// <param name = "mult">Множитель единицы измерения, в которую нужно преобразовать входные данные (милли, кило и т.д.). </param>
@@ -38,7 +41,7 @@ namespace ASMC.Devices
         }
 
         /// <summary>
-        /// Принимает число inDouble и переводит его согласно множителю едииц mult.
+        /// Принимает число inDouble и переводит его согласно множителю единиц mult.
         /// </summary>
         /// <param name="inDouble">Числовое значение для перевода</param>
         /// <param name="mult">множитель единицы измерения (милли, кило и т.д.).</param>
@@ -65,14 +68,14 @@ namespace ASMC.Devices
         {
             var res = Multipliers.FirstOrDefault(q => Equals(q.Value, mult.GetDoubleValue()));
             if(res == null)
-                throw new ArgumentOutOfRangeException($@"Даппозон {mult} не найден.");
+                throw new ArgumentOutOfRangeException($@"Диапазон {mult} не найден.");
             return res;
 
         }
 
 
         /// <summary>
-        /// Преобразует строкове значение в double. Принимает так же числа в виде "2.345E-5".
+        /// Преобразует строковое значение в double. Принимает так же числа в виде "2.345E-5".
         /// </summary>
         /// <param name="date">Число для преобразования в виде строки.</param>
         /// <param name="mult">Не задействован. Множитель единицы измерения (милли, кило и т.д.).</param>
@@ -98,9 +101,9 @@ namespace ASMC.Devices
             return JoinValueMult((decimal)value, mult);
         }
         /// <summary>
-        /// Преобразует числовое значени в строку с указанными единицами измерения.
+        /// Преобразует числовое значение в строку с указанными единицами измерения.
         /// </summary>
-        /// <param name="value">Числовое значение которео нужно преобразовать.</param>
+        /// <param name="value">Числовое значение которое нужно преобразовать.</param>
         /// <param name="mult"> Множитель единицы измерения (млии, кило и т.д.).</param>
         /// <returns></returns>
         public string JoinValueMult(decimal value, UnitMultiplier mult)

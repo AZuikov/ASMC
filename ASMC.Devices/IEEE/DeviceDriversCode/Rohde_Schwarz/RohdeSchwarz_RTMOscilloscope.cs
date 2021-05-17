@@ -187,15 +187,12 @@ namespace ASMC.Devices.Rohde_Schwarz
         /// Считываем настройки каналов осциллографа.
         /// </summary>
         /// <returns></returns>
-        public override Task InitializeAsync()
+        public override void Initialize()
         {
-            return Task.Factory.StartNew(() =>
-             {
                  foreach (IOscillChanel chanel in Chanels)
                  {
                      chanel.Getting();
                  }
-             });
         }
 
         public class TriggerEdge : BaseEdgeTrigger

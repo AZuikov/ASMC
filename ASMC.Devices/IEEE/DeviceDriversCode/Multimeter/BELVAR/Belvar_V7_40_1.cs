@@ -50,7 +50,7 @@ namespace ASMC.Devices.IEEE
 
         public bool IsTestConnect { get; }
 
-        public async Task InitializeAsync()
+        public async void Initialize()
         {
             string deviceName = (string)UserType.Clone();
             var invalidChars = Path.GetInvalidFileNameChars();
@@ -84,7 +84,7 @@ namespace ASMC.Devices.IEEE
                 new Command("20 В","3",20),
                 new Command("2 В","4",2),
                 new Command("200 мВ","5",0.200),
-                new Command("автовыбор предела","7",0)
+                new Command("авто выбор предела","7",0)
             };
         }
 
@@ -240,7 +240,7 @@ namespace ASMC.Devices.IEEE
         public void Setting()
         {
             string firstCommandPart = $"{BeginCommand}{(int)FunctionCodes}B";
-            var rangeNumb = new Command("автовыбор предела", "7", 0);//на всякий случай устанавливаем автоматический выбор предела измерения, если не удасться выбрать подходящий ниже.
+            var rangeNumb = new Command("авто выбор предела", "7", 0);//на всякий случай устанавливаем автоматический выбор предела измерения, если не удасться выбрать подходящий ниже.
 
             if (RangeStorage.SelectRange != null)// если null значит при выборе предела измерения в файле точности ничего подходящего не нашлось
             {

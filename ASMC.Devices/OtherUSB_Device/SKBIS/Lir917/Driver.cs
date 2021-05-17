@@ -177,7 +177,7 @@ namespace ASMC.Devices.USB_Device.SKBIS.Lir917
             }
         }
 
-        public Task InitializeAsync()
+        public void Initialize()
         {
             throw new NotImplementedException();
         }

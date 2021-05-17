@@ -14,7 +14,7 @@ namespace ASMC.Devices.Interface
         public MeasPoint<TPhysicalQuantity> SignalOffset { get; set; }
 
         /// <summary>
-        /// Здержка сигнала (работает не для всех видов сигналов).
+        /// Задержка сигнала (работает не для всех видов сигналов).
         /// </summary>
         public MeasPoint<Time> Delay { get; set; }
 
@@ -24,6 +24,13 @@ namespace ASMC.Devices.Interface
         public bool IsPositivePolarity { get; set; }
 
         public string SignalFormName { get; }
+    }
+
+    public interface ISineSignal<TPhysicalQuantity, TPhysicalQuantity2>  : ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> 
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    {
+
     }
 
     /// <summary>
@@ -81,10 +88,10 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс выхода генератора сигналов.
     /// </summary>
-    public interface IOutputSignalGenerator: IProtocolStringLine
+    public interface IOutputSignalGenerator
     {
         public string NameOfOutput { get; set; }
-        public ISignalStandartSetParametrs<Voltage, Frequency> SineSignal { get; set; }
+        public ISineSignal<Voltage, Frequency> SineSignal { get; set; }
         public IImpulseSignal<Voltage, Frequency> ImpulseSignal { get; set; }
         public ISquareSignal<Voltage, Frequency> SquareSignal { get; set; }
         public IRampSignal<Voltage, Frequency> RampSignal { get; set; }
@@ -93,11 +100,9 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс генератора сигналов.
     /// </summary>
-    /// <typeparam name="TPhysicalQuantity"></typeparam>
-    /// <typeparam name="TPhysicalQuantity2"></typeparam>
-    public interface ISignalGenerator<TPhysicalQuantity, TPhysicalQuantity2> : IReferenceClock 
-        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
-        where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    
+    public interface ISignalGenerator: IProtocolStringLine, IReferenceClock
+        
     {
         public IOutputSignalGenerator OUT1 { get; set; }
         public IOutputSignalGenerator OUT2 { get; set; }

@@ -22,7 +22,7 @@ namespace ASMC.Data.Model
         /// <summary>
         /// Инициализация прибора.
         /// </summary>
-        Task InitializeAsync();
+        void Initialize();
     }
 
     public interface IUserType

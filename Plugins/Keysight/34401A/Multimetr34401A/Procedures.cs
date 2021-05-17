@@ -167,10 +167,10 @@ namespace Multimetr34401A
         {
             Clalibrator = (ICalibratorMultimeterFlukeBase) GetSelectedDevice<ICalibratorMultimeterFlukeBase>();
             Clalibrator.StringConnection = GetStringConnect(Clalibrator);
-            Clalibrator.InitializeAsync();
+            Clalibrator.Initialize();
             Multimetr = (Keysight34401A) GetSelectedDevice<Keysight34401A>();
             Multimetr.StringConnection = GetStringConnect(Multimetr);
-            Multimetr.InitializeAsync();
+            Multimetr.Initialize();
         }
 
         /// <inheritdoc />

@@ -10,10 +10,10 @@ namespace AP.Extension
         #region Methods
 
         /// <summary>
-        /// Формирует последовательность состающую из точек указаных в процентах.
+        /// Формирует последовательность состоящую из точек указанных в процентах.
         /// </summary>
-        /// <param name = "rangeEndValue">Максимальноен значение диапазона.</param>
-        /// <param name = "pointParcent">одно или несколько знаечние в процентах. Может принимать значение от 0 до 100</param>
+        /// <param name = "rangeEndValue">Максимальное значение диапазона.</param>
+        /// <param name = "pointParcent">одно или несколько значение в процентах. Может принимать значение от 0 до 100</param>
         /// <returns></returns>
         public static IEnumerable<IMeasPoint<T>> GetArayMeasPointsInParcent<T>(this IMeasPoint<T> rangeEndValue,
             params double[] pointParcent) where T : class, IPhysicalQuantity<T>, new()

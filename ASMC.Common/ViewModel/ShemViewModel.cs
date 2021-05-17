@@ -53,7 +53,8 @@ namespace ASMC.Common.ViewModel
             if (Shema.FileNameDescription == null) return;
             var docPath = Directory.GetFiles(path, Shema.FileNameDescription, SearchOption.AllDirectories).FirstOrDefault();
             if (docPath == null) return;
-            using (var fs = File.Open(docPath, FileMode.Open))
+            using (var fs = File.OpenRead(docPath))
+                
             {
                 Text = fs.ReadString();
             }

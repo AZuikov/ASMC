@@ -6,8 +6,8 @@ namespace ASMC.Devices.IEEE.PENDULUM
 {
     public abstract class CounterAbstract : ICounter
     {
-        /// этот объект нужен только для установки параметров внешнего/внутреннего источника частоты (опорного стандарта).
-        private IeeeBase deviceForReferenceClock = new IeeeBase();
+        
+        protected IeeeBase DeviceIeeeBase = new IeeeBase();
 
         public string UserType { get; protected set; }
 
@@ -18,33 +18,31 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public bool IsTestConnect { get; }
 
-        public virtual async Task InitializeAsync()
-        {
-            throw new NotImplementedException();
-        }
+        /// <inheritdoc />
+        public abstract  void Initialize();
+        
 
         public string StringConnection
         {
-            get => deviceForReferenceClock.StringConnection;
+            get => DeviceIeeeBase.StringConnection;
             set
             {
-                deviceForReferenceClock.StringConnection = value;
-                InputA.StringConnection = value;
-                InputB.StringConnection = value;
-                InputC_HighFrequency.StringConnection = value;
+                DeviceIeeeBase.StringConnection = value;
+                Initialize();
+
             }
         }
 
         public virtual void SetExternalReferenceClock()
         {
-            deviceForReferenceClock.WriteLine($":ROSCillator:SOURce EXT");
-            deviceForReferenceClock.WaitingRemoteOperationComplete();
+            DeviceIeeeBase.WriteLine($":ROSCillator:SOURce EXT");
+            DeviceIeeeBase.WaitingRemoteOperationComplete();
         }
 
         public virtual void SetInternalReferenceClock()
         {
-            deviceForReferenceClock.WriteLine($":ROSCillator:SOURce INT");
-            deviceForReferenceClock.WaitingRemoteOperationComplete();
+            DeviceIeeeBase.WriteLine($":ROSCillator:SOURce INT");
+            DeviceIeeeBase.WaitingRemoteOperationComplete();
         }
 
         public ICounterInput InputA { get; set; }
