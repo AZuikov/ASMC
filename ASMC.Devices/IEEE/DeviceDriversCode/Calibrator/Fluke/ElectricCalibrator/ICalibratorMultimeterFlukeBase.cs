@@ -7,7 +7,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.Fluke.Calibrator
 {
-    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, ICapacity, ITemperature, IProtocolStringLine, IFrequency
+    public interface ICalibratorMultimeterFlukeBase : IVoltageGroupForCalibrator, ICurrnetGroupForCalibrator, IResistance2W, ICapacity, ITemperature, IProtocolStringLine, IFrequency, ISourceOutputControl
     {
 
     }

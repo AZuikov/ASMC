@@ -3,42 +3,64 @@ using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.Interface.SourceAndMeter
 {
-    public interface ISourcePhysicalQuantityBase<T> : IDeviceSettingsControl
+    public interface ISourceOutputControl: IDeviceSettingsControl
     {
-        T Value { get; }
+    
+    bool IsEnableOutput { get; }
+
+    void OutputOn();
+
+    void OutputOff();
+
+    }
+
+    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : IDeviceSettingsControl
+
+        where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+
+    {
+        MeasPoint< TPhysicalQuantity, TPhysicalQuantity2> Value { get; }
 
         /// <summary>
         /// Установить значение величины.
         /// </summary>
-        void SetValue(T value);
-
-        bool IsEnableOutput { get; }
-
-        void OutputOn();
-
-        void OutputOff();
+        void SetValue(MeasPoint< TPhysicalQuantity, TPhysicalQuantity2> value);
+        /// <summary>
+        /// Диапазон воспроизведения и погрешность.
+        /// </summary>
+        IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
     }
+    public interface ISourcePhysicalQuantity<T> :  ISourcePhysicalQuantityRange<T> where T : class, IPhysicalQuantity<T>, new()
+    {
+        MeasPoint<T> Value { get; }
 
+        /// <summary>
+        /// Установить значение величины.
+        /// </summary>
+        void SetValue(MeasPoint<T> value);
+        /// <summary>
+        /// Диапазон воспроизведения и погрешность.
+        /// </summary>
+        IRangePhysicalQuantity<T> RangeStorage { get; }
+    }
     /// <summary>
     /// Интерфейс источника одной физической величины.
     /// </summary>
     /// <typeparam name="TPhysicalQuantity">Физическая величина.</typeparam>
-    public interface ISourcePhysicalQuantity<TPhysicalQuantity> : ISourcePhysicalQuantityBase<MeasPoint<TPhysicalQuantity>> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
+    public interface ISourcePhysicalQuantityRange<T> where T : class, IPhysicalQuantity<T>, new()
     {
-        IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
+        IRangePhysicalQuantity<T> RangeStorage { get; }
     }
 
     /// <summary>
     /// Интерфейс источника составной физической величины.
     /// </summary>
     /// <typeparam name="TPhysicalQuantity">Физическая величина.</typeparam>
-    /// /// <typeparam name="TPhysicalQuantity2">Физическая величина.</typeparam>
-    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> :
-        ISourcePhysicalQuantityBase<MeasPoint<TPhysicalQuantity, TPhysicalQuantity2>> where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
-                                                                                      where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
-    {
-        IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
-    }
+    /// /// <typeparam name="TPhysicalQuantity2">Физическая величина.</typeparam> 
+    //public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2>  where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
+    //{
+    //    IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; }
+    //}
 
     public interface IMeterPhysicalQuantityBase<TPhysicalQuantity> : IDeviceSettingsControl
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()

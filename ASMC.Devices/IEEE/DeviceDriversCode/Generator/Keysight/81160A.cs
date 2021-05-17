@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ASMC.Data.Model;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
     public class GeneratorOfSignals_81160A : ISignalGenerator
     {
-        private IeeeBase generator = new IeeeBase();
+        private IeeeBase deviceIeeeBase = new IeeeBase();
 
         private enum Option
         {
@@ -25,19 +26,20 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public GeneratorOfSignals_81160A()
         {
             UserType = "81160A";
+            
 
         }
 
         public void SetExternalReferenceClock()
         {
-            generator.WriteLine(":ROSC:SOUR EXT");
-            generator.WaitingRemoteOperationComplete();
+            deviceIeeeBase.WriteLine(":ROSC:SOUR EXT");
+            deviceIeeeBase.WaitingRemoteOperationComplete();
         }
 
         public void SetInternalReferenceClock()
         {
-            generator.WriteLine(":ROSC:SOUR INT");
-            generator.WaitingRemoteOperationComplete();
+            deviceIeeeBase.WriteLine(":ROSC:SOUR INT");
+            deviceIeeeBase.WaitingRemoteOperationComplete();
         }
 
         public string UserType { get; }
@@ -51,49 +53,54 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public  void Initialize()
         {
-            OUT1 = new GeneratorOutput_81160A(1, generator);
-            if (generator.GetOption().Any(q => Equals(q, Option.Opt002.GetStringValue())))
+            OUT1 = new GeneratorOutput_81160A(1, deviceIeeeBase);
+            //для инициализации второго канала нужно проверить, есть ли такая опция.
+            if (deviceIeeeBase.GetOption().Any(q => Equals(q, Option.Opt002.GetStringValue())))
             {
-                OUT2 = new GeneratorOutput_81160A(2, generator);
+                OUT2 = new GeneratorOutput_81160A(2, deviceIeeeBase);
 
             }
-
-            //для инициализации второго канала нужно проверить, есть ли такая опция.
-            //это наверное должно происходить в методе InitializeAsync
         }
 
        
 
         public string StringConnection
         {
-            get => generator.StringConnection;
+            get => deviceIeeeBase.StringConnection;
             set
             {
-                generator.StringConnection = value;
+                deviceIeeeBase.StringConnection = value;
                 Initialize();
             }
         }
 
-        public IOutputSignalGenerator OUT1 { get; set; }
-        public IOutputSignalGenerator OUT2 { get; set; }
+        public IOutputGenerator OUT1 { get; set; }
+        public IOutputGenerator OUT2 { get; set; }
     }
 
     /// <summary>
     /// Выход генератора сигналов.
     /// </summary>
-    public class GeneratorOutput_81160A : IOutputSignalGenerator
+    public class GeneratorOutput_81160A : IOutputGenerator
     {
-        public GeneratorOutput_81160A(int chanelNumber, IeeeBase generator)
+        public GeneratorOutput_81160A(int chanelNumber, IeeeBase deviceIeeeBase)
         {
-            StringConnection = generator.StringConnection;
+            StringConnection = deviceIeeeBase.StringConnection;
             NameOfOutput = chanelNumber.ToString();
-            SineSignal = new SineFormSignal(NameOfOutput, generator);
+            
+            OutputSetting = new OutputSetting();
+            OutputSetting.OutputImpedance = new MeasPoint<Resistance>(50);
+            OutputSetting.OutputLoad = new MeasPoint<Resistance>(50);
+            
+            SineSignal = new SineFormSignal(NameOfOutput, deviceIeeeBase);
             //ImpulseSignal = new ImpulseFormSignal(ChanelNumber, generator);
             //SquareSignal = new SquareFormSignal(ChanelNumber, generator);
             //RampSignal = new RampFormSignal(ChanelNumber, generator);
         }
 
         public string NameOfOutput { get; set; }
+        public IOutputSettingGenerator OutputSetting { get; set; }
+        public ISignalStandartSetParametrs<Voltage, Frequency> currentSignal { get; }
         public ISineSignal<Voltage, Frequency> SineSignal { get; set; }
         public IImpulseSignal<Voltage, Frequency> ImpulseSignal { get; set; }
         public ISquareSignal<Voltage, Frequency> SquareSignal { get; set; }
@@ -107,11 +114,38 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public bool IsTestConnect { get; }
         public async Task InitializeAsync()
         {
-            throw new NotImplementedException();
+            
         }
 
         public string StringConnection { get; set; }
+        public void Getting()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Setting()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEnableOutput { get; }
+        public void OutputOn()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OutputOff()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-   
+    public class OutputSetting : IOutputSettingGenerator
+    {
+        public MeasPoint<Resistance> OutputImpedance { get; set; }
+        public MeasPoint<Resistance> OutputLoad { get; set; }
+    }
+
+
+
 }

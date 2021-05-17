@@ -498,11 +498,11 @@ namespace OWEN_TRM202
                         try
                         {
                             Calibrator.DcVoltage.SetValue(new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity));
-                            Calibrator.DcVoltage.OutputOn();
+                            Calibrator.OutputOn();
                             Thread.Sleep(3000);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
 
-                            Calibrator.DcVoltage.OutputOff();
+                            Calibrator.OutputOff();
 
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
@@ -520,7 +520,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.DcVoltage.OutputOff();
+                            Calibrator.OutputOff();
                         }
 
                         operation.IsGood = () =>
@@ -1003,10 +1003,10 @@ namespace OWEN_TRM202
                             var setPoint =
                                 new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
                             Calibrator.DcVoltage.SetValue(setPoint);
-                            Calibrator.DcVoltage.OutputOn();
+                            Calibrator.OutputOn();
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            Calibrator.DcVoltage.OutputOff();
+                            Calibrator.OutputOff();
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Percent>(measPoint);
                         }
@@ -1023,7 +1023,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.DcVoltage.OutputOff();
+                            Calibrator.OutputOff();
                         }
 
                         operation.IsGood = () =>
@@ -1362,10 +1362,10 @@ namespace OWEN_TRM202
                         {
                             Calibrator.Resistance2W.SetValue(setPoint);
                             Calibrator.Resistance2W.SetCompensation(Compensation.CompNone);
-                            Calibrator.Resistance2W.OutputOn();
+                            Calibrator.OutputOn();
                             Thread.Sleep(1900);
                             var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            Calibrator.Resistance2W.OutputOff();
+                            Calibrator.OutputOff();
                             MathStatistics.Round(ref measPoint, 1);
                             operation.Getting = new MeasPoint<Temperature>(measPoint);
                         }
@@ -1382,7 +1382,7 @@ namespace OWEN_TRM202
                         }
                         finally
                         {
-                            Calibrator.Resistance2W.OutputOff();
+                            Calibrator.OutputOff();
                         }
 
                         operation.IsGood = () =>

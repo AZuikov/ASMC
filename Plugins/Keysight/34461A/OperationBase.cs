@@ -176,7 +176,7 @@ namespace ProgramFor34461A
         }
 
         protected (MeasPoint<TPhysicalQuantity>, IOTimeoutException) BodyWork<TPhysicalQuantity>(
-            IMeterPhysicalQuantity<TPhysicalQuantity> multimetr, ISourcePhysicalQuantity<TPhysicalQuantity> sourse,
+            IMeterPhysicalQuantity<TPhysicalQuantity> multimetr, ISourceOutputControl sourse,
             Logger logger, CancellationTokenSource _token, int timeOut=0)
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
@@ -391,7 +391,7 @@ namespace ProgramFor34461A
         }
 
         protected (MeasPoint<T1>, IOTimeoutException) BodyWork(
-            IMeterPhysicalQuantity<T1, T2> mult, ISourcePhysicalQuantity<T1, T2> sourse,
+            IMeterPhysicalQuantity<T1, T2> mult, ISourceOutputControl sourse,
             Logger logger, CancellationTokenSource _token)
 
         {

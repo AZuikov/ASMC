@@ -118,7 +118,7 @@ namespace ASMC.Data.Model
     }
 
     /// <summary>
-    /// Единицы измерения амплитуды сигналов.
+    /// Способ представления амплитуды сигналов.
     /// </summary>
     public enum MeasureUnitsAmplitude
     {

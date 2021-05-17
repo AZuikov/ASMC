@@ -165,14 +165,19 @@ namespace CNT_90
         {
             //base.InitWork(token);
             ConnectionToDevice();
+            
+            Generator.OUT1.SineSignal.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
+            Generator.OUT1.SineSignal.AmplitudeUnitValue = MeasureUnitsAmplitude.Vpp;
+            //Generator.OUT1.OutputSetting.OutputLoad
+            //Generator.OUT1.OutputSetting.OutputImpedance
+            Generator.OUT1.SineSignal.Setting();
+            Generator.OUT1.OutputOn();
+            //todo предварительно настроенный сигнала 
+            Generator.OUT1.Setting();
 
             Counter.InputA.SettingSlope.SetInputSlopePositive();
-
-            Generator.OUT1.SineSignal.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
-            Generator.OUT1.SineSignal.Setting();
-            Generator.OUT1.SineSignal.OutputOn();
-
             var value = Counter.InputA.MeasureStandart.MeasFrequency.GetValue();
+            Generator.OUT1.OutputOff();
 
         }
         

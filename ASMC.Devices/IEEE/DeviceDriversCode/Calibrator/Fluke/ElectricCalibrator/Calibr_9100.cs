@@ -23,14 +23,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
             UserType = "Fluke 9100";
             Device = new IeeeBase();
-            DcVoltage = new DcVolt(this);
-            AcVoltage = new AcVolt(this);
-            DcCurrent = new DcCurr(this);
-            AcCurrent = new AcCurr(this);
-            Resistance2W = new Resist2W(this);
-            Resistance4W = new Resist4W(this);
-            Temperature = new Temp(this);
-            Capacity = new Cap(this);
+            DcVoltage = new DcVolt(Device);
+            AcVoltage = new AcVolt(Device);
+            DcCurrent = new DcCurr(Device);
+            AcCurrent = new AcCurr(Device);
+            Resistance2W = new Resist2W(Device);
+            Resistance4W = new Resist4W(Device);
+            Temperature = new Temp(Device);
+            Capacity = new Cap(Device);
         }
 
 
@@ -68,7 +68,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
-            public DcVolt(Calibr_9100 device) : base(device)
+            public DcVolt(IeeeBase device) : base(device)
             {
                 functionName = "DC";
                 sourceName = "VOLT";
@@ -88,7 +88,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class DcCurr : SimplyPhysicalQuantity<Current>
         {
-            public DcCurr(Calibr_9100 device) : base(device)
+            public DcCurr(IeeeBase device) : base(device)
             {
                 functionName = "DC";
                 sourceName = "CURRent";
@@ -108,7 +108,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class AcCurr : ComplexPhysicalQuantity<Current, Frequency>
         {
-            public AcCurr(Calibr_9100 device) : base(device)
+            public AcCurr(IeeeBase device) : base(device)
             {
                 functionName = "sin";
                 mainSourceName = "CURRent";
@@ -143,7 +143,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class AcVolt : ComplexPhysicalQuantity<Voltage, Frequency>
         {
-            public AcVolt(Calibr_9100 device) : base(device)
+            public AcVolt(IeeeBase device) : base(device)
             {
                 functionName = "sin";
                 mainSourceName = "VOLT";
@@ -178,7 +178,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class Cap : SimplyPhysicalQuantity<Capacity>
         {
-            public Cap(Calibr_9100 device) : base(device)
+            public Cap(IeeeBase device) : base(device)
             {
                 functionName = "DC";
                 sourceName = "CAPacitance";
@@ -198,7 +198,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class Resist2W : Resist
         {
-            public Resist2W(Calibr_9100 device) : base(device)
+            public Resist2W(IeeeBase device) : base(device)
             {
                 CompensationMode = new[] {new Command("outp:comp off", "компенсация отключена", 0)};
                 RangeStorage = new RangeDevice();
@@ -217,7 +217,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public class Resist4W : Resist
         {
-            public Resist4W(Calibr_9100 device) : base(device)
+            public Resist4W(IeeeBase device) : base(device)
             {
                 CompensationMode = new[] { new Command("outp:comp on", "компенсация отключена", 0) };
                 RangeStorage = new RangeDevice();
@@ -236,7 +236,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
         public abstract class Resist : SimplyPhysicalQuantity<Resistance>, IResistance
         {
-            public Resist(Calibr_9100 device) : base(device)
+            public Resist(IeeeBase device) : base(device)
             {
                 functionName = "DC";
                 sourceName = "RESistance";
@@ -246,14 +246,14 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public ICommand[] CompensationMode { get; set; }
             public void SetCompensation(Compensation compMode)
             {
-                Calibr.Device.WriteLine(CompensationMode[0].StrCommand);
+                _deviceCalibrator.WriteLine(CompensationMode[0].StrCommand);
             }
         }
 
         public class Temp: SimplyPhysicalQuantity<Temperature>, ITermocoupleType
         {
             private ICommand typeSetTermocouple;
-            public Temp(Calibr_9100 device) : base(device)
+            public Temp(IeeeBase device) : base(device)
             {
                 functionName = "DC";
                 sourceName = "TEMPerature";
@@ -279,11 +279,11 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public override void SetValue(MeasPoint<Temperature> value)
             {
                 Value = value;
-                Calibr.Device.WriteLine($"Source:func {functionName}");
-                Calibr.Device.WriteLine($"Source:{sourceName}:THERmocouple:TYPE {typeSetTermocouple.StrCommand}");
-                Calibr.Device.WriteLine($"Source:TEMPerature:UNITs C"); //пока единицы только цельсии
-                Calibr.Device.WriteLine($"Source:TEMPerature:THERmocouple {value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-                Calibr.Device.WaitingRemoteOperationComplete();
+                _deviceCalibrator.WriteLine($"Source:func {functionName}");
+                _deviceCalibrator.WriteLine($"Source:{sourceName}:THERmocouple:TYPE {typeSetTermocouple.StrCommand}");
+                _deviceCalibrator.WriteLine($"Source:TEMPerature:UNITs C"); //пока единицы только цельсии
+                _deviceCalibrator.WriteLine($"Source:TEMPerature:THERmocouple {value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+                _deviceCalibrator.WaitingRemoteOperationComplete();
 
             }
 
@@ -293,8 +293,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             }
         }
 
-        public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> :
-            OutputControl, ISourcePhysicalQuantity<TPhysicalQuantity>
+        public abstract class SimplyPhysicalQuantity<TPhysicalQuantity> : FunctionBaseClass,
+             ISourcePhysicalQuantity<TPhysicalQuantity>
             where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         {
             #region Property
@@ -303,8 +303,9 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             #endregion
 
-            protected SimplyPhysicalQuantity(Calibr_9100 device) : base(device)
+            protected SimplyPhysicalQuantity(IeeeBase device) : base(device)
             {
+                
             }
 
             #region Methods
@@ -333,17 +334,17 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public virtual void SetValue(MeasPoint<TPhysicalQuantity> value)
             {
                 Value = value;
-                Calibr.Device.WriteLine($"Source:func {functionName}");
-                Calibr.Device.WriteLine($"Source:{sourceName} {ConvetrMeasPointToCommand(value)}");
-                Calibr.Device.WriteLine("SOUR:RES:UUT_I SUP");
-                Calibr.Device.WaitingRemoteOperationComplete();
+                _deviceCalibrator.WriteLine($"Source:func {functionName}");
+                _deviceCalibrator.WriteLine($"Source:{sourceName} {ConvetrMeasPointToCommand(value)}");
+                _deviceCalibrator.WriteLine("SOUR:RES:UUT_I SUP");
+                _deviceCalibrator.WaitingRemoteOperationComplete();
                 //todo проверка на ошибки после отправки команды
             }
 
             public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; protected set; }
         }
 
-        public abstract class ComplexPhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : OutputControl,
+        public abstract class ComplexPhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : FunctionBaseClass,
                                                                                                ISourcePhysicalQuantity<
                                                                                                    TPhysicalQuantity,
                                                                                                    TPhysicalQuantity2>
@@ -357,7 +358,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
 
             #endregion
 
-            protected ComplexPhysicalQuantity(Calibr_9100 device) : base(device)
+            protected ComplexPhysicalQuantity(IeeeBase device) :base(device)
             {
             }
 
@@ -401,65 +402,70 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             {
                 Value = value;
                 var arr = ConvetrMeasPointToCommand(value);
-                Calibr.Device.WriteLine($"Source:func {functionName}");
-                Calibr.Device.WriteLine($"Source:{mainSourceName} {arr[0]}");
-                Calibr.Device.WriteLine($"Source:{additionalSourceName} {arr[1]}");
-                Calibr.Device.WaitingRemoteOperationComplete();
+                _deviceCalibrator.WriteLine($"Source:func {functionName}");
+                _deviceCalibrator.WriteLine($"Source:{mainSourceName} {arr[0]}");
+                _deviceCalibrator.WriteLine($"Source:{additionalSourceName} {arr[1]}");
+                _deviceCalibrator.WaitingRemoteOperationComplete();
                 //todo проверка на ошибки после отправки команды
             }
 
             public IRangePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> RangeStorage { get; protected set; }
         }
 
-        public abstract class OutputControl
+        public abstract class FunctionBaseClass
         {
-            #region Property
+            protected string functionName { get;  set; }
+            protected IeeeBase _deviceCalibrator { get; }
 
-            public bool IsEnableOutput { get; }
-            protected Calibr_9100 Calibr { get; }
-
-            protected string functionName { get; set; }
-
-            #endregion
-
-            protected OutputControl(Calibr_9100 device)
+            public FunctionBaseClass(IeeeBase deviceIeeeBase)
             {
-                Calibr = device;
-            }
-
-            #region Methods
-
-            public void OutputOff()
-            {
-                Calibr.Device.WriteLine(State.Off.GetStringValue());
-                Calibr.Device.WaitingRemoteOperationComplete();
-                //todo проверка на ошибки после отправки команды
-            }
-
-            public void OutputOn()
-            {
-                Calibr.Device.WriteLine(State.On.GetStringValue());
-                Calibr.Device.WaitingRemoteOperationComplete();
-                //todo проверка на ошибки после отправки команды
-            }
-
-            #endregion
-
-            private enum State
-            {
-                /// <summary>
-                /// Включить выход
-                /// </summary>
-                [StringValue("outp:stat on")] On,
-
-                /// <summary>
-                /// Выключить выход
-                /// </summary>
-                [StringValue("outp:stat off")] Off
+                _deviceCalibrator = deviceIeeeBase;
             }
         }
+       
 
         public ISourcePhysicalQuantity<Frequency, Voltage> Frequency { get; }
+        public void Getting()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Setting()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEnableOutput { get; private set; }
+        public void OutputOff()
+        {
+            Device.WriteLine(State.Off.GetStringValue());
+            Device.WaitingRemoteOperationComplete();
+            IsEnableOutput = false;
+            //todo проверка на ошибки после отправки команды
+        }
+
+        public void OutputOn()
+        {
+            Device.WriteLine(State.On.GetStringValue());
+            Device.WaitingRemoteOperationComplete();
+            IsEnableOutput = true;
+            //todo проверка на ошибки после отправки команды
+        }
+
+        
+
+        private enum State
+        {
+            /// <summary>
+            /// Включить выход
+            /// </summary>
+            [StringValue("outp:stat on")] On,
+
+            /// <summary>
+            /// Выключить выход
+            /// </summary>
+            [StringValue("outp:stat off")] Off
+        }
     }
 }
 

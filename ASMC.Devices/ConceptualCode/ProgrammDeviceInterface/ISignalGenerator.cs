@@ -19,6 +19,13 @@ namespace ASMC.Devices.Interface
         public MeasPoint<Time> Delay { get; set; }
 
         /// <summary>
+        /// Позволяет задать значение амплитуды сигнала и с указанием способа представления амплитуды.
+        /// </summary>
+        /// <param name="amplitude"></param>
+        /// <param name="amplitudeUnit"></param>
+        public MeasureUnitsAmplitude AmplitudeUnitValue { get; set; }
+
+        /// <summary>
         /// Полярность сигнала.
         /// </summary>
         public bool IsPositivePolarity { get; set; }
@@ -88,13 +95,28 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Интерфейс выхода генератора сигналов.
     /// </summary>
-    public interface IOutputSignalGenerator
+    public interface IOutputGenerator: ISourceOutputControl
     {
         public string NameOfOutput { get; set; }
+
+        public IOutputSettingGenerator OutputSetting { get; set; }
+        public ISignalStandartSetParametrs<Voltage, Frequency> currentSignal { get; }
+
         public ISineSignal<Voltage, Frequency> SineSignal { get; set; }
         public IImpulseSignal<Voltage, Frequency> ImpulseSignal { get; set; }
         public ISquareSignal<Voltage, Frequency> SquareSignal { get; set; }
         public IRampSignal<Voltage, Frequency> RampSignal { get; set; }
+    }
+
+    
+
+    /// <summary>
+    /// Типовые настройки выхода генератора.
+    /// </summary>
+    public interface IOutputSettingGenerator
+    {
+        public MeasPoint<Resistance> OutputImpedance { get; set; }
+        public MeasPoint<Resistance> OutputLoad { get; set; }
     }
 
     /// <summary>
@@ -104,7 +126,7 @@ namespace ASMC.Devices.Interface
     public interface ISignalGenerator: IProtocolStringLine, IReferenceClock
         
     {
-        public IOutputSignalGenerator OUT1 { get; set; }
-        public IOutputSignalGenerator OUT2 { get; set; }
+        public IOutputGenerator OUT1 { get; set; }
+        public IOutputGenerator OUT2 { get; set; }
     }
 }

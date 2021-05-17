@@ -17,7 +17,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public Calib_5522A()
         {
             UserType = "Fluke 5522A";
-            Resistance4W = new Resist4W(this);
+            Resistance4W = new Resist4W(Device,this);
 
         }
 
@@ -71,7 +71,7 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         {
 
 
-            public Resist4W(CalibrMain device) : base(device)
+            public Resist4W(IeeeBase deviceCalibr,CalibrMain calibrMain) : base(deviceCalibr,calibrMain)
             {
                 RangeStorage = new RangeDevice();
                 CompensationMode = new ICommand[]
@@ -92,8 +92,8 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
             public override void SetValue(MeasPoint<Resistance> value)
             {
                     base.SetValue(value);
-                Calibrator.Device.WriteLine(CompensationMode.First().StrCommand);
-                Calibrator.CheckErrors();
+                calibrator.WriteLine(CompensationMode.First().StrCommand);
+                //todo проверка на ошибки
             }
 
 

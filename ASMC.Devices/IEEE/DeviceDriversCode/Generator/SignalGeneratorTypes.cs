@@ -1,18 +1,25 @@
-﻿using ASMC.Data.Model;
+﻿using System;
+using AP.Utils.Data;
+using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
 using ASMC.Devices.Interface.SourceAndMeter;
-using System;
 
 namespace ASMC.Devices.IEEE.Keysight.Generator
 {
     /// <summary>
     /// Типовой сигнал генератора, с минимальным набором характеристик.
     /// </summary>
-    public abstract class AbstractSignalForm :ISignalStandartSetParametrs<Voltage, Frequency>
+    public abstract class AbstractSignalForm : ISignalStandartSetParametrs<Voltage, Frequency>
     {
+        #region Fields
+
+        private readonly string ChanelNumber = "";
         protected IeeeBase Device;
-        private string ChanelNumber = "";
+       
+
+        #endregion
+
         protected AbstractSignalForm(string chanelNumber, IeeeBase output)
 
         {
@@ -21,7 +28,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             Delay = new MeasPoint<Time>(0);
             SignalOffset = new MeasPoint<Voltage>(0);
             IsPositivePolarity = true;
+            AmplitudeUnitValue = MeasureUnitsAmplitude.Vrms;
+            //значение по умолчанию
+            Value = new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 200);
         }
+
+        public MeasureUnitsAmplitude AmplitudeUnitValue { get; set; }
 
         public MeasPoint<Voltage> SignalOffset { get; set; }
         public MeasPoint<Time> Delay { get; set; }
@@ -49,15 +61,19 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         {
             throw new NotImplementedException();
         }
-        
 
         public virtual void Setting()
         {
+         
+            //устанавливаем форму сигнала
             Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
-            //todo модной командой  устанавливает частоту, амплитуду и смещение
-            Device.WriteLine($":APPL{ChanelNumber}:{SignalFormName} {Value.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, " +
-                             $"{Value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}, " +
-                             $"{SignalOffset.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            // устанавливает единицы представления амплитуды сигнала (пик-пик, рмс, и т.д.)
+            Device.WriteLine($":VOLT{ChanelNumber}:UNIT {AmplitudeUnitValue.GetStringValue()}");
+            //ставим амплитуду
+            Device.WriteLine($":VOLT{ChanelNumber}:AMPL {Value.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            //ставим смещение
+            Device.WriteLine($":VOLT{ChanelNumber}:OFFSet {Value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+
             Device.WaitingRemoteOperationComplete();
         }
 
@@ -84,7 +100,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             //теперь проверим, что выход включился.
             var answer = Device.QueryLine($"OUTP{ChanelNumber}?");
             var resultAnswerNumb = -1;
-            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int)ChanelStatus.ON;
+            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int) ChanelStatus.ON;
         }
 
         public void OutputOff()
@@ -94,7 +110,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             //теперь проверим, что выход включился.
             var answer = Device.QueryLine($"OUTP{ChanelNumber}?");
             var resultAnswerNumb = -1;
-            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int)ChanelStatus.ON;
+            if (int.TryParse(answer, out resultAnswerNumb)) IsEnableOutput = resultAnswerNumb == (int) ChanelStatus.ON;
         }
 
         public IRangePhysicalQuantity<Voltage, Frequency> RangeStorage { get; }
@@ -117,32 +133,24 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             INV
         }
 
-        
+       
     }
 
     #region SignalsForm
 
     public class SineFormSignal : AbstractSignalForm, ISineSignal<Voltage, Frequency>
     {
-        #region Property
-
-        public new MeasPoint<Voltage, Frequency> Value { get; }
-
-        #endregion Property
-
         public SineFormSignal(string chanelNumber, IeeeBase output) : base(chanelNumber, output)
         {
             SignalFormName = "SINusoid";
         }
 
-        #region Methods
+        public new MeasPoint<Voltage, Frequency> Value { get; }
 
         public new void Getting()
         {
             throw new NotImplementedException();
         }
-
-        #endregion Methods
     }
 
     /// <summary>
@@ -150,6 +158,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public class ImpulseFormSignal : AbstractSignalForm, IImpulseSignal<Voltage, Frequency>
     {
+        #region Property
+
+        public string NameOfOutput { get; set; }
+
+        #endregion
+
         public ImpulseFormSignal(string chanelNumber, IeeeBase output) :
             base(chanelNumber, output)
         {
@@ -171,10 +185,10 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public new void Setting()
         {
             base.Setting();
-            
+
             //ставим единицы измерения фронтов в секундах
             Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}:tran:unit SEC");
-            Device.WriteLine($"{NameOfOutput}:del{SignalFormName}:unit SEC");
+            Device.WriteLine($"FUNC{NameOfOutput}:del{SignalFormName}:unit SEC");
             //ставим длительность импульса
             Device.WriteLine($"FUNC{NameOfOutput}:{SignalFormName}WIDT {Width.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
             //фронт импульса
@@ -185,8 +199,6 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         }
 
         public new MeasPoint<Voltage, Frequency> Value { get; }
-
-        public string NameOfOutput { get; set; }
     }
 
     /// <summary>
@@ -198,13 +210,13 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         private MeasPoint<Percent> dutyCilcle;
 
-        #endregion Fields
+        #endregion
 
         #region Property
 
         public string NameOfOutput { get; set; }
 
-        #endregion Property
+        #endregion
 
         public SquareFormSignal(string chanelNumber, IeeeBase output) :
             base(chanelNumber, output)
@@ -254,13 +266,13 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         /// </summary>
         private MeasPoint<Percent> symmetry;
 
-        #endregion Fields
+        #endregion
 
         #region Property
 
         public string NameOfOutput { get; set; }
 
-        #endregion Property
+        #endregion
 
         public RampFormSignal(string chanelNumber, IeeeBase output) : base(chanelNumber, output)
         {
