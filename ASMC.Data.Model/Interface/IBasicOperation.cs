@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace ASMC.Data.Model.Interface
 {
     /// <summary>
-    ///     Предоставляет инерфейс базовой операции.
+    ///     Предоставляет интерфейс базовой операции.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IBasicOperation<T>
@@ -13,21 +13,21 @@ namespace ASMC.Data.Model.Interface
         #region Property
 
         /// <summary>
-        ///     Выполняет иннициализацию устройств, данных пере выполнением основной работы <see cref="BodyWorkAsync" /> .
+        ///     Выполняет инициализацию устройств, данных пере выполнением основной работы <see cref="BodyWork" /> .
         /// </summary>
         Func<Task> InitWorkAsync { get; set; }
 
         /// <summary>
-        ///     Выполняет основную работку в асинхронном режиме. После чего вызыается метод проверки и завершения работы
+        ///     Выполняет основную работку в асинхронном режиме. После чего вызывается метод проверки и завершения работы
         ///     <see cref="CompliteWorkAsync" />.
         /// </summary>
-        Action BodyWorkAsync { get; set; }
+        Action BodyWork { get; set; }
 
         /// <summary>
-        ///     Вызывает окончательный метод работы, после основного тела <see cref="BodyWorkAsync" />
+        ///     Вызывает окончательный метод работы, после основного тела <see cref="BodyWork" />
         /// </summary>
         /// <remarks>
-        ///     В случае если возвращает <see cref="false" /> перезапускает выполнение операций загого начиная с инициализации
+        ///     В случае если возвращает <see cref="false" /> перетаскает выполнение операций заново начиная с инициализации
         ///     <see cref="InitWorkAsync" />.
         /// </remarks>
         Func<Task<bool>> CompliteWorkAsync { get; set; }
@@ -35,7 +35,7 @@ namespace ASMC.Data.Model.Interface
         /// Имя операции.
         /// </summary>
         /// <remarks>
-        /// Может использоватся для обознаечния измерения, указание придела, номера измерения и т.д.
+        /// Может использоваться для обозначения измерения, указание придела, номера измерения и т.д.
         /// </remarks>
         object Name { get; set; }
         /// <summary>
@@ -54,14 +54,14 @@ namespace ASMC.Data.Model.Interface
         T Expected { get; set; }
 
         /// <summary>
-        ///     Позволяет задавать или получать коментарий.
+        ///     Позволяет задавать или получать комментарий.
         /// </summary>
         string Comment { get; set; }
 
         /// <summary>
-        ///     Позволяет задать функцию условия проверки соответствия полученого знаечния ожидаемому.
+        ///     Позволяет задать функцию условия проверки соответствия полученного значения ожидаемому.
         /// </summary>
-        Func<bool> IsGood { get; set; }
+        Predicate<T> IsGood { get; set; }
 
         #endregion
 
@@ -82,7 +82,7 @@ namespace ASMC.Data.Model.Interface
         T[] Error { get; }
 
         /// <summary>
-        ///     Позваляет задать функции расчета погрешности.
+        ///     Поваляет задать функции расчета погрешности.
         /// </summary>
         Func<T, T, T>[] ErrorCalculation { set; }
 
@@ -103,15 +103,14 @@ namespace ASMC.Data.Model.Interface
         T Error { get; }
 
         /// <summary>
-        ///     Позваляет задать функцию расчета погрешности.
+        ///     Позволяет задать функцию расчета погрешности.
         /// </summary>
         Func<T, T, T> ErrorCalculation { set; }
 
         #endregion
     }
 
-    /// <inheritdoc />
-    /// <summary>
+   /// <summary>
     ///     Предоставляет интерфейс операции измерения.
     /// </summary>
     /// <typeparam name="T"></typeparam>

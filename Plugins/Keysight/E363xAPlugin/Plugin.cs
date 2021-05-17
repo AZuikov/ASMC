@@ -205,7 +205,7 @@ namespace E363xAPlugin
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
-            operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+            operation.IsGood = (getting) => Equals(getting, operation.Expected);
             operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
@@ -215,7 +215,7 @@ namespace E363xAPlugin
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
                 operation.Name = res.Item1;
-                operation.IsGood = () => operation.Getting;
+                operation.IsGood = (getting) => getting;
 
                 return Task.CompletedTask;
             };
@@ -282,8 +282,8 @@ namespace E363xAPlugin
                 operation.Getting = powerSupply.SelfTest();
             };
 
-            operation.IsGood = () => operation.Getting;
-            operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood()); };
+            operation.IsGood = (getting) => getting;
+            operation.CompliteWorkAsync = () => Task.FromResult(operation.IsGood(operation.Getting));
             DataRow.Add(operation);
         }
 
@@ -361,7 +361,7 @@ namespace E363xAPlugin
 
                     operation.Name = powerSupply.GetVoltageRange().Description;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -402,7 +402,7 @@ namespace E363xAPlugin
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood())
+                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -419,7 +419,7 @@ namespace E363xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(operation);
             }
@@ -545,7 +545,7 @@ namespace E363xAPlugin
                 
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood())
+                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -562,7 +562,7 @@ namespace E363xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(operation);
             }
@@ -652,7 +652,7 @@ namespace E363xAPlugin
                         vm.Data.Cells.Select(cell => new MeasPoint<Time>(ObjectToDecimal(cell.Value),
                                                                          UnitMultiplier.Micro)).ToArray();
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     var averTime = new MeasPoint<Time>(0);
                     foreach (var point in arrGetting)
@@ -675,9 +675,9 @@ namespace E363xAPlugin
                     }
                 };
                 operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
-                operation.IsGood = () => operation.Expected < operation.Error;
+                operation.IsGood = (getting) => operation.Expected < operation.Error;
 
-                operation.CompliteWorkAsync = () => Task.FromResult(operation.IsGood());
+                operation.CompliteWorkAsync = () => Task.FromResult(operation.IsGood(operation.Getting));
 
                 DataRow.Add(operation);
             }
@@ -780,7 +780,7 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -829,7 +829,7 @@ namespace E363xAPlugin
                     };
                     operation.UpperCalculation = expected => ErrorCalc(operation.Expected);
                     operation.LowerCalculation = expected => operation.UpperTolerance * -1;
-                    operation.IsGood = () =>
+                    operation.IsGood = (getting) =>
                     {
                         if (operation.Getting == null || operation.Expected == null ||
                             operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
@@ -842,7 +842,7 @@ namespace E363xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood())
+                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -860,7 +860,7 @@ namespace E363xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood());
+                        return Task.FromResult(operation.IsGood(operation.Getting));
                     };
                     DataRow.Add(operation);
                 }
@@ -942,7 +942,7 @@ namespace E363xAPlugin
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -974,7 +974,7 @@ namespace E363xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood())
+                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -994,7 +994,7 @@ namespace E363xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood());
+                        return Task.FromResult(operation.IsGood(operation.Getting));
                     };
                     DataRow.Add(operation);
                 }
@@ -1078,7 +1078,7 @@ namespace E363xAPlugin
                         operation.Name =
                             $"Предел {powerSupply.GetVoltageRange().Description}, напряжение выхода {setPoint.Description}";
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -1112,7 +1112,7 @@ namespace E363xAPlugin
 
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood())
+                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1132,7 +1132,7 @@ namespace E363xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood());
+                        return Task.FromResult(operation.IsGood(operation.Getting));
                     };
                     DataRow.Add(operation);
                 }
@@ -1212,7 +1212,7 @@ namespace E363xAPlugin
                         throw;
                     }
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -1250,7 +1250,7 @@ namespace E363xAPlugin
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood())
+                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -1268,7 +1268,7 @@ namespace E363xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(operation);
             }
@@ -1388,7 +1388,7 @@ namespace E363xAPlugin
                 
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood())
+                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -1406,7 +1406,7 @@ namespace E363xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(operation);
             }
@@ -1489,7 +1489,7 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -1518,7 +1518,7 @@ namespace E363xAPlugin
                             operation.UpperCalculation = expected => ErrorCalc(expected);
                             operation.LowerCalculation = expected => operation.UpperTolerance * -1;
 
-                            operation.IsGood = () =>
+                            operation.IsGood = (getting) =>
                             {
                                 if (operation.Getting == null || operation.Expected == null ||
                                     operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
@@ -1544,7 +1544,7 @@ namespace E363xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood())
+                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1561,7 +1561,7 @@ namespace E363xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood());
+                        return Task.FromResult(operation.IsGood(operation.Getting));
                     };
                     DataRow.Add(operation);
                 }
@@ -1649,7 +1649,7 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -1678,7 +1678,7 @@ namespace E363xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood())
+                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1697,7 +1697,7 @@ namespace E363xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood());
+                        return Task.FromResult(operation.IsGood(operation.Getting));
                     };
                     DataRow.Add(operation);
                 }
@@ -1793,7 +1793,7 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -1832,7 +1832,7 @@ namespace E363xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood())
+                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1851,7 +1851,7 @@ namespace E363xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood());
+                        return Task.FromResult(operation.IsGood(operation.Getting));
                     };
                     DataRow.Add(operation);
                 }

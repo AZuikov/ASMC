@@ -115,7 +115,7 @@ namespace ASMC.ViewModel
         }
 
         /// <summary>
-        ///     Режим проверки(Ускроренные операции).
+        ///     Режим проверки(Ускоренные операции).
         /// </summary>
         public bool IsCheckWork
         {
@@ -138,7 +138,7 @@ namespace ASMC.ViewModel
         public bool[] ModeWork { get; set; } = { true, false };
 
         /// <summary>
-        ///     Предоставляет команжу смены режима работы <see cref="IsManual" />
+        ///     Предоставляет команду смены режима работы <see cref="IsManual" />
         /// </summary>
         public ICommand ChangeModeKeyCommand { get; }
 
@@ -200,7 +200,7 @@ namespace ASMC.ViewModel
             set => SetProperty(ref _typeOpertion, value, nameof(TypeOpertion), () =>
             {
                 ChangeProgram();
-                Logger.Info($@"Выбранна операция {TypeOpertion}");
+                Logger.Info($@"Выбрана операция {TypeOpertion}");
             });
         }
 
@@ -236,6 +236,9 @@ namespace ASMC.ViewModel
 
         #endregion Field
 
+        /// <summary>
+        /// Инициализирует и создает экземпляр <see cref="WizardViewModel"/> класса.
+        /// </summary>
         public WizardViewModel()
         {
             StartCommand = new DelegateCommand(OnStartCommand, () => StateWorkFlag != StateWork.Start);
@@ -323,7 +326,7 @@ namespace ASMC.ViewModel
                     if (!FillDoc(tree)) res = false;
                 }
 
-                report.FindStringAndReplace("Result", res ? "Пригодным к применению" : "Непригоденым к применению");
+                report.FindStringAndReplace("Result", res ? "Пригодным к применению" : "Непригодным к применению");
                 path = GetUniqueFileName(".docx");
                 report.SaveAs(path);
                 Logger.Info($@"Протокол сформирован по пути {path}");
@@ -409,11 +412,11 @@ namespace ASMC.ViewModel
             }
             catch (DirectoryNotFoundException e)
             {
-                Logger.Debug(e, $"Дериректория {path} не найдена.");
+                Logger.Debug(e, $"Директория {path} не найдена.");
             }
             catch (IOException e)
             {
-                Logger.Debug(e, "Очистить деректорию не получить по причиние, используются файлы.");
+                Logger.Debug(e, "Очистить директорию не получить по причине, используются файлы.");
             }
             finally
             {
@@ -576,18 +579,25 @@ namespace ASMC.ViewModel
         #endregion Methods
 
         #region Command
-
+        /// <summary>
+        /// Предоставляет команду остановки операций.
+        /// </summary>
         public ICommand StopCommand { get; }
 
         public ICommand RefreshCommand { get; }
 
+        /// <summary>
+        /// Предоставляет команду переключения на предыдущую страницу.
+        /// </summary>
         public ICommand BackCommand { get; }
 
         /// <summary>
-        ///     Комманда запуска режима МК.
+        ///     Команда запуска режима МК.
         /// </summary>
         public ICommand StartCommand { get; }
-
+        /// <summary>
+        /// Предоставляет команду переключения на следующую страницу.
+        /// </summary>
         public ICommand NextCommand { get; }
 
         #endregion Command

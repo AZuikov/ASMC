@@ -210,7 +210,7 @@ namespace OWEN_TRM202
                 base.InitWork(token);
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
-                operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+                operation.IsGood= (getting) => Equals(operation.Getting, operation.Expected);
                 operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
@@ -220,7 +220,7 @@ namespace OWEN_TRM202
                     var res = service.Entity as Tuple<string, bool>;
                     operation.Getting = res.Item2;
                     operation.Comment = res.Item1;
-                    operation.IsGood = () => operation.Getting;
+                    operation.IsGood= (getting) => operation.Getting;
 
                     return Task.CompletedTask;
                 };
@@ -278,7 +278,7 @@ namespace OWEN_TRM202
                 base.InitWork(token);
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
-                operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+                operation.IsGood= (getting) => Equals(operation.Getting, operation.Expected);
                 operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
@@ -288,7 +288,7 @@ namespace OWEN_TRM202
                     var res = service.Entity as Tuple<string, bool>;
                     operation.Getting = res.Item2;
                     operation.Comment = res.Item1;
-                    operation.IsGood = () => operation.Getting;
+                    operation.IsGood= (getting) => operation.Getting;
 
                     return Task.CompletedTask;
                 };
@@ -391,8 +391,8 @@ namespace OWEN_TRM202
                             throw;
                         }
                     };
-                    operation.IsGood = () => true;
-                    operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood()); };
+                    operation.IsGood= (getting) => true;
+                    operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood(operation.Getting)); };
                     DataRow.Add(operation);
                 }
             }
@@ -481,7 +481,7 @@ namespace OWEN_TRM202
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
 
@@ -523,7 +523,7 @@ namespace OWEN_TRM202
                             Calibrator.OutputOff();
                         }
 
-                        operation.IsGood = () =>
+                        operation.IsGood= (getting) =>
                             operation.Getting >= operation.LowerTolerance &&
                             operation.Getting <= operation.UpperTolerance;
                         ;
@@ -986,7 +986,7 @@ namespace OWEN_TRM202
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -1026,7 +1026,7 @@ namespace OWEN_TRM202
                             Calibrator.OutputOff();
                         }
 
-                        operation.IsGood = () =>
+                        operation.IsGood= (getting) =>
                             operation.Getting >= operation.LowerTolerance &&
                             operation.Getting <= operation.UpperTolerance;
                         ;
@@ -1343,7 +1343,7 @@ namespace OWEN_TRM202
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
 
@@ -1385,7 +1385,7 @@ namespace OWEN_TRM202
                             Calibrator.OutputOff();
                         }
 
-                        operation.IsGood = () =>
+                        operation.IsGood= (getting) =>
                             operation.Getting >= operation.LowerTolerance &&
                             operation.Getting <= operation.UpperTolerance;
                         ;

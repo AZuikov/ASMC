@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using ASMC.Data.Model.Interface;
-using ASMC.Data.Model.PhysicalQuantity;
 using NLog;
 
 namespace ASMC.Data.Model
 {
     /// <summary>
-    /// Предоставляет реализацию базоовой операции.
+    /// Предоставляет реализацию базовой операции.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BasicOperation<T>  : IBasicOperation<T>, ICloneable
@@ -27,8 +23,7 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (_initWork == null) return () =>  Task.CompletedTask;
-                return _initWork;
+                return _initWork ?? (() =>  Task.CompletedTask);
             }
             set => _initWork = value;
         }
@@ -38,30 +33,27 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (_compliteWork == null)
-#pragma warning disable 1998
-                return async () => true;
-#pragma warning restore 1998
-                return _compliteWork;
+                return _compliteWork ??  (async () => true);
             }
 
-            set { _compliteWork = value; }
+            set => _compliteWork = value;
         }
 
         /// <inheritdoc />
         public object Name { get; set; }
 
         /// <inheritdoc />
-        public Action BodyWorkAsync
+        public Action BodyWork
         {
             get
             {
-                if(_bodyWork == null)
-                    return () => { };
-                return _bodyWork;
+                return _bodyWork ?? (() => { });
             }
             set => _bodyWork = value;
         }
+
+        /// <inheritdoc />
+        public Predicate<T> IsGood { get; set; }
 
         /// <inheritdoc />
         public async Task WorkAsync(CancellationTokenSource token)
@@ -78,12 +70,12 @@ namespace ASMC.Data.Model
                 await InitWorkAsync();
                 Logger.Debug("Закончено выполнение инициализации");
                 Logger.Debug("Начато выполнение тела");
-                var task = Task.Run(BodyWorkAsync, token.Token);
+                var task = Task.Run(BodyWork, token.Token);
                 try
                 {
                     await task;
                 }
-                catch (Exception)
+                catch
                 {
                     if (task.Status == TaskStatus.Faulted)
                     {
@@ -120,12 +112,11 @@ namespace ASMC.Data.Model
         public T Expected{ get; set; }
         /// <inheritdoc />
         public string Comment { get; set; }
-        /// <inheritdoc />
-        public Func<bool> IsGood { get; set; }
+      
 
         public virtual object Clone()
         {
-            return new BasicOperation<T> { InitWorkAsync = InitWorkAsync, BodyWorkAsync = BodyWorkAsync, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWorkAsync = CompliteWorkAsync };
+            return new BasicOperation<T> { InitWorkAsync = InitWorkAsync, BodyWork = BodyWork, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWorkAsync = CompliteWorkAsync };
         }
 
         /// <inheritdoc />
@@ -143,7 +134,6 @@ namespace ASMC.Data.Model
             get
             {
                 return ErrorCalculation.Select(err => err(Getting, Expected)).ToArray();
-                //return ErrorCalculation.Select(ec => ec(Getting, Expected)).ToArray();
             }
         }
 
@@ -152,7 +142,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
+            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
 
     }
@@ -170,7 +160,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
+            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
         /// <inheritdoc />
         public override string ToString()
@@ -179,10 +169,10 @@ namespace ASMC.Data.Model
         }
     }
     /// <summary>
-    /// Педоставляет реализации операцию с нижней и верхней границей.
+    /// Предоставляет реализации операцию с нижней и верхней границей.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Obsolete("Небходимо отказаться от использование Error в виде расчета погрешности, посклюку это своейство является файктической погрешностью.")]
+    [Obsolete("Необходимо отказаться от использование Error в виде расчета погрешности, поскольку это свойство является фактической погрешностью.")]
     public class BasicOperationVerefication<T> : MeasuringOperation<T>, IBasicOperationVerefication<T>
     {
         /// <summary>
@@ -206,9 +196,9 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (MeasuringOperation<T>)base.Clone();
-            return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
+            return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
-        [Obsolete("Небходимо от казаться от использование Error в текущем контексте")]
+        [Obsolete("Необходимо от казаться от использование Error в текущем контексте")]
         public override string ToString()
         {
             return $"Текущая точка {this.Expected} не проходит по допуску:\n" +

@@ -27,7 +27,7 @@ namespace TDS_BasePlugin
         public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
-            if (operation.IsGood != null && !operation.IsGood())
+            if (operation.IsGood != null && !operation.IsGood(operation.Getting))
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
@@ -47,7 +47,7 @@ namespace TDS_BasePlugin
 
             if (operation.IsGood == null)
                 return Task.FromResult(true);
-            return Task.FromResult(operation.IsGood());
+            return Task.FromResult(operation.IsGood(operation.Getting));
         }
 
         #endregion
@@ -144,7 +144,7 @@ namespace TDS_BasePlugin
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
-            operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+            operation.IsGood = (getting) => Equals(operation.Getting, operation.Expected);
             operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
@@ -154,7 +154,7 @@ namespace TDS_BasePlugin
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
                 operation.Comment = res.Item1;
-                operation.IsGood = () => operation.Getting;
+                operation.IsGood = (getting) => operation.Getting;
 
                 return Task.CompletedTask;
             };
@@ -209,7 +209,7 @@ namespace TDS_BasePlugin
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
-            operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+            operation.IsGood = (getting) => Equals(operation.Getting, operation.Expected);
             operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
@@ -219,7 +219,7 @@ namespace TDS_BasePlugin
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
                 operation.Comment = res.Item1;
-                operation.IsGood = () => operation.Getting;
+                operation.IsGood = (getting) => operation.Getting;
 
                 return Task.CompletedTask;
             };
@@ -320,7 +320,7 @@ namespace TDS_BasePlugin
                 if (dds.IsGood == null)
                     dataRow[3] = "не выполнено";
                 else
-                    dataRow[3] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[3] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -373,7 +373,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -457,7 +457,7 @@ namespace TDS_BasePlugin
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
 
-                        operation.IsGood = () =>
+                        operation.IsGood = (getting) =>
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
@@ -553,7 +553,7 @@ namespace TDS_BasePlugin
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
                 else
-                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[4] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -605,7 +605,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -663,7 +663,7 @@ namespace TDS_BasePlugin
                         operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
                         operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
 
-                        operation.IsGood = () =>
+                        operation.IsGood = (getting) =>
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
@@ -815,7 +815,7 @@ namespace TDS_BasePlugin
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
                 else
-                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[4] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -872,7 +872,7 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -923,7 +923,7 @@ namespace TDS_BasePlugin
                         operation.ErrorCalculation = (point, measPoint) => RiseTimeTol;
 
 
-                        operation.IsGood = () =>
+                        operation.IsGood = (getting) =>
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null) return false;

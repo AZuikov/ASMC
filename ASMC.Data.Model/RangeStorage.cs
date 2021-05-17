@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using AP.Math;
 using ASMC.Data.Model.PhysicalQuantity;

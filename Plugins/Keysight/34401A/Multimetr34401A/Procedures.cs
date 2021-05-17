@@ -24,7 +24,7 @@ using Current = ASMC.Data.Model.PhysicalQuantity.Current;
 namespace Multimetr34401A
 {
     /// <summary>
-    ///     Придоставляет базувую реализацию для пунктов поверки
+    ///     Предоставляет базовую реализацию для пунктов поверки
     /// </summary>
     /// <typeparam name="TOperation"></typeparam>
     public abstract class OperationBase<TOperation> : ParagraphBase<TOperation>
@@ -81,12 +81,12 @@ namespace Multimetr34401A
 
         protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
         {
-            if (operation.IsGood == null || operation.IsGood())
-                return Task.FromResult(operation.IsGood == null || operation.IsGood());
+            if (operation.IsGood == null || operation.IsGood(operation.Getting))
+                return Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
 
             return ShowQuestionMessage(operation.ToString()) == MessageResult.No
                 ? Task.FromResult(true)
-                : Task.FromResult(operation.IsGood == null || operation.IsGood());
+                : Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
 
             MessageResult ShowQuestionMessage(string message)
             {
@@ -108,10 +108,10 @@ namespace Multimetr34401A
         }
 
         /// <summary>
-        ///     Позволяет получить погрешность для указаной точки.
+        ///     Позволяет получить погрешность для указанной точки.
         /// </summary>
         /// <typeparam name="T">
-        ///     Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
+        ///     Физическая величина <see cref="IPhysicalQuantity" /> для которой необходима получить погрешность.
         /// </typeparam>
         /// <param name="rangeStorage">Диапазон на котором определяется погрешность.</param>
         /// <param name="expected">Точка на диапазоне для которой определяется погрешность.</param>
@@ -142,7 +142,7 @@ namespace Multimetr34401A
         /// <summary>
         ///     Создает схему
         /// </summary>
-        /// <param name="filename">Имя файла с разширением</param>
+        /// <param name="filename">Имя файла с расширением</param>
         /// <param name="number">Номер схемы</param>
         /// <returns></returns>
         protected SchemeImage ShemeGeneration(string filename, int number)
@@ -189,7 +189,7 @@ namespace Multimetr34401A
                 dataRow[2] = dds.Getting?.ToString();
                 dataRow[3] = dds.LowerTolerance?.ToString();
                 dataRow[4] = dds.UpperTolerance?.ToString();
-                dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
+                dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood(dds.Getting) ? ConstGood : ConstBad : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -290,10 +290,10 @@ namespace Multimetr34401A
         }
       
         /// <summary>
-        ///     Позволяет получить погрешность для указаной точки.
+        ///     Позволяет получить погрешность для указанной точки.
         /// </summary>
         /// <typeparam name="T">
-        ///     Физическая фелечина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
+        ///     Физическая величина для которой необходима получить погрешность <see cref="IPhysicalQuantity" />
         /// </typeparam>
         /// <typeparam name="T2"></typeparam>
         /// <typeparam name="T1"></typeparam>
@@ -325,7 +325,7 @@ namespace Multimetr34401A
     }
 
     /// <summary>
-    ///     Предоставляет реализацию внешнего осномотра.
+    ///     Предоставляет реализацию внешнего осмотра.
     /// </summary>
     public sealed class VisualInspection : OperationBase<bool>
     {
@@ -373,7 +373,7 @@ namespace Multimetr34401A
     }
 
     /// <summary>
-    ///     Предоставляет операцию опробывания.
+    ///     Предоставляет операцию опробования.
     /// </summary>
     public sealed class Testing : OperationBase<bool>
     {
@@ -453,7 +453,7 @@ namespace Multimetr34401A
             };
             foreach (var setPoint in voltRef)
             {
-                var operation = new BasicOperationVerefication<MeasPoint<Voltage>>();
+                var operation = new ASMC.Data.Model.BasicOperationVerefication<MeasPoint<Voltage>>();
 
                 operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
@@ -462,7 +462,7 @@ namespace Multimetr34401A
                     operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator, Logger, token).Item1;
                 };
@@ -473,7 +473,7 @@ namespace Multimetr34401A
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -501,9 +501,8 @@ namespace Multimetr34401A
             };
             foreach (var setPoint in voltRef)
             {
-                var operation = new BasicOperationVerefication<MeasPoint<Frequency, Voltage>>();
+                var operation = new BasicOperationVerefication<MeasPoint<Frequency, Voltage>> {Expected = setPoint};
 
-                operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
                    var range=  InitWork(Multimetr.Frequency, Clalibrator.Frequency, setPoint, Logger, token, true);
@@ -511,7 +510,7 @@ namespace Multimetr34401A
                     return Task.CompletedTask;
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     var result = BodyWork(Multimetr.Frequency, Clalibrator, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
@@ -522,7 +521,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.Frequency.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -548,16 +547,15 @@ namespace Multimetr34401A
             };
             foreach (var setPoint in voltRef)
             {
-                var operation = new BasicOperationVerefication<MeasPoint<Current>>();
+                var operation = new BasicOperationVerefication<MeasPoint<Current>> {Expected = setPoint};
 
-                operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
                     var range= InitWork(Multimetr.DcCurrent, Clalibrator.DcCurrent, setPoint, Logger, token);
                     operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcCurrent, Clalibrator, Logger, token).Item1;
                 };
@@ -570,7 +568,7 @@ namespace Multimetr34401A
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -599,9 +597,8 @@ namespace Multimetr34401A
             };
             foreach (var setPoint in voltRef)
             {
-                var operation = new BasicOperationVerefication<MeasPoint<Resistance>>();
+                var operation = new BasicOperationVerefication<MeasPoint<Resistance>> {Expected = setPoint};
 
-                operation.Expected = setPoint;
                 operation.InitWorkAsync = () =>
                 {
                     var range= InitWork(Multimetr.Resistance4W, cal4W.Resistance4W, setPoint, Logger, token);
@@ -609,7 +606,7 @@ namespace Multimetr34401A
                     return Task.CompletedTask;
                 };
                 operation.ErrorCalculation = (point, measPoint) => null;
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.Resistance4W, Clalibrator, Logger, token).Item1;
                 };
@@ -620,7 +617,7 @@ namespace Multimetr34401A
                     expected + AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -638,6 +635,7 @@ namespace Multimetr34401A
             Sheme = ShemeGeneration("34401A_Cal_Volt.jpg", 0);
         }
 
+        /// <inheritdoc />
         protected override void InitWork(CancellationTokenSource token)
         {
             base.InitWork(token);
@@ -656,7 +654,7 @@ namespace Multimetr34401A
                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.Resistance2W, Clalibrator, Logger, token)
                         .Item1;
@@ -666,7 +664,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood = (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -713,7 +711,7 @@ namespace Multimetr34401A
                     return Task.CompletedTask;
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     var result = BodyWork(Multimetr.AcVoltage, Clalibrator, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
@@ -724,7 +722,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -760,7 +758,7 @@ namespace Multimetr34401A
                     operation.Name = range.End.MainPhysicalQuantity.ToString();
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     var result = BodyWork(Multimetr.AcCurrent, Clalibrator, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
@@ -772,7 +770,7 @@ namespace Multimetr34401A
                     expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
