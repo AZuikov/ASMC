@@ -134,7 +134,7 @@ namespace ProgramFor34461A
                     return Task.CompletedTask;
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -164,7 +164,7 @@ namespace ProgramFor34461A
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood = getting => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -210,7 +210,7 @@ namespace ProgramFor34461A
                     InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -240,7 +240,7 @@ namespace ProgramFor34461A
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood = (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -283,7 +283,7 @@ namespace ProgramFor34461A
 
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
                     int timeOut = 700;//таймаут для измерения
@@ -336,7 +336,7 @@ namespace ProgramFor34461A
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood = (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -379,7 +379,7 @@ namespace ProgramFor34461A
 
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -408,7 +408,7 @@ namespace ProgramFor34461A
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood = (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -450,7 +450,7 @@ namespace ProgramFor34461A
                     InitWork(Multimetr.AcCurrent, Calibrator.AcCurrent, rangeToSetOnDmm, testingMeasureValue, Logger, token);
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -481,7 +481,7 @@ namespace ProgramFor34461A
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood = (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }

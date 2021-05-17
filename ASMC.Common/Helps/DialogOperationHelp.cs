@@ -24,7 +24,7 @@ namespace ASMC.Common.Helps
         {
             Logger.Debug($@"Указан файл для загрузки {nameFile} и будет поиск в папке сборке {findProjectFile?? Assembly.GetExecutingAssembly()}");
             Expected = true;
-            IsGood = () => Equals(Expected,Getting);
+            IsGood = (getting) => Equals(Expected, getting);
             InitWorkAsync = () =>
             {
                 var accessor = TypeAccessor.Create(operation.GetType());
@@ -58,7 +58,7 @@ namespace ASMC.Common.Helps
         {
             Logger.Debug($@"Указан файл для загрузки {nameFile} и будет поиск в папке сборке {findProjectFile ?? Assembly.GetExecutingAssembly()}");
             Expected = true;
-            IsGood = () => Equals(Expected, Getting);
+            IsGood = (getting) => Equals(Expected, getting);
             InitWorkAsync = async () =>
             {
                 var accessor = TypeAccessor.Create(operation.GetType());

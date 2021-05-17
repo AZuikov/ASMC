@@ -189,7 +189,7 @@ namespace Multimetr34401A
                 dataRow[2] = dds.Getting?.ToString();
                 dataRow[3] = dds.LowerTolerance?.ToString();
                 dataRow[4] = dds.UpperTolerance?.ToString();
-                dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
+                dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood(dds.Getting) ? ConstGood : ConstBad : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -462,7 +462,7 @@ namespace Multimetr34401A
                     operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcVoltage, Clalibrator.DcVoltage, Logger, token).Item1;
                 };
@@ -473,7 +473,7 @@ namespace Multimetr34401A
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -510,7 +510,7 @@ namespace Multimetr34401A
                     return Task.CompletedTask;
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     var result = BodyWork(Multimetr.Frequency, Clalibrator.Frequency, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
@@ -521,7 +521,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.Frequency.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -555,7 +555,7 @@ namespace Multimetr34401A
                     operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.DcCurrent, Clalibrator.DcCurrent, Logger, token).Item1;
                 };
@@ -568,7 +568,7 @@ namespace Multimetr34401A
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -606,7 +606,7 @@ namespace Multimetr34401A
                     return Task.CompletedTask;
                 };
                 operation.ErrorCalculation = (point, measPoint) => null;
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.Resistance4W, cal4W.Resistance4W, Logger, token).Item1;
                 };
@@ -617,7 +617,7 @@ namespace Multimetr34401A
                     expected + AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -654,7 +654,7 @@ namespace Multimetr34401A
                    operation.Name = range.End.Description;
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     operation.Getting = BodyWork(Multimetr.Resistance2W, Clalibrator.Resistance2W, Logger, token)
                         .Item1;
@@ -664,7 +664,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood = (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -711,7 +711,7 @@ namespace Multimetr34401A
                     return Task.CompletedTask;
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     var result = BodyWork(Multimetr.AcVoltage, Clalibrator.AcVoltage, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
@@ -722,7 +722,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -758,7 +758,7 @@ namespace Multimetr34401A
                     operation.Name = range.End.MainPhysicalQuantity.ToString();
                     return Task.CompletedTask;
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     var result = BodyWork(Multimetr.AcCurrent, Clalibrator.AcCurrent, Logger, token).Item1;
                     operation.Getting = ConvertMeasPoint(result, operation.Expected);
@@ -770,7 +770,7 @@ namespace Multimetr34401A
                     expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = () => ChekedOperation(operation);
+                operation.IsGood= (getting) => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }

@@ -13,7 +13,7 @@ namespace ASMC.Data.Model.Interface
         #region Property
 
         /// <summary>
-        ///     Выполняет инициализацию устройств, данных пере выполнением основной работы <see cref="BodyWorkAsync" /> .
+        ///     Выполняет инициализацию устройств, данных пере выполнением основной работы <see cref="BodyWork" /> .
         /// </summary>
         Func<Task> InitWorkAsync { get; set; }
 
@@ -21,10 +21,10 @@ namespace ASMC.Data.Model.Interface
         ///     Выполняет основную работку в асинхронном режиме. После чего вызывается метод проверки и завершения работы
         ///     <see cref="CompliteWorkAsync" />.
         /// </summary>
-        Action BodyWorkAsync { get; set; }
+        Action BodyWork { get; set; }
 
         /// <summary>
-        ///     Вызывает окончательный метод работы, после основного тела <see cref="BodyWorkAsync" />
+        ///     Вызывает окончательный метод работы, после основного тела <see cref="BodyWork" />
         /// </summary>
         /// <remarks>
         ///     В случае если возвращает <see cref="false" /> перетаскает выполнение операций заново начиная с инициализации

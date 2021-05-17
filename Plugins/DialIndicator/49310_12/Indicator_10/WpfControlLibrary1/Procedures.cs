@@ -290,7 +290,7 @@ namespace mp2192_92.DialIndicator
 
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < fullPoints.Length; i++)
                 {
@@ -300,7 +300,7 @@ namespace mp2192_92.DialIndicator
                     Logger.Debug($@"Ожидаемое:{((IMeasPoint<Length>)operation.Expected).Description} измеренное {((IMeasPoint<Weight>)operation.Getting).Description}");
                     if (i==0)
                     {
-                        operation.IsGood = () =>
+                         operation.IsGood = (getting) =>
                         {
                             Logger.Debug($@"Максимальное усилие {(operation?.Error?.Take(1).First() as MeasPoint<Force>).Description }");
                             Logger.Debug($@"Прямой/обратный ход {(operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force>).Description }");
@@ -453,7 +453,7 @@ namespace mp2192_92.DialIndicator
                 arrGetting = vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).ToArray();
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < arrGetting.Length; i++)
                 {
@@ -464,7 +464,7 @@ namespace mp2192_92.DialIndicator
                     if (i > 0) DataRow.Add(operation);
                     if (i == 0)
                     {
-                        operation.IsGood = () =>
+                         operation.IsGood = (getting) =>
                         {
                             Logger.Debug($@"Максимальное усиле {operation?.Error}");
                             return operation.Error <= IchBase.PerpendicularPressureMax;
@@ -569,7 +569,7 @@ namespace mp2192_92.DialIndicator
                     .ToArray();
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < 3; i++)
                 {
@@ -591,7 +591,7 @@ namespace mp2192_92.DialIndicator
                         res
                     };
                 };
-            operation.IsGood = () =>  operation.Error.FirstOrDefault() <=
+             operation.IsGood = (getting) =>  operation.Error.FirstOrDefault() <=
                                      IchBase.Arresting;
 
             DataRow.Add(operation);
@@ -701,7 +701,7 @@ namespace mp2192_92.DialIndicator
                     .ToArray();
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < 9; i++)
                 {
@@ -711,7 +711,7 @@ namespace mp2192_92.DialIndicator
                     if (i > 0) DataRow.Add(operation);
                 }
             };
-            operation.IsGood = () => operation.Error.First() <= IchBase.Variation;
+             operation.IsGood = (getting) => operation.Error.First() <= IchBase.Variation;
             operation.ErrorCalculation =
                 (expected, getting) =>
                 {
@@ -786,7 +786,7 @@ namespace mp2192_92.DialIndicator
                 arrPoints = viewModel.Content.Cells
                     .Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
             };
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
                 {
@@ -816,7 +816,7 @@ namespace mp2192_92.DialIndicator
                 var res = (a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
                 return new[] { new MeasPoint<Length>((Length) res) };
             };
-            operation.IsGood = () =>
+             operation.IsGood = (getting) =>
             {
                 var full = (DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]) -
                             DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]));
@@ -903,7 +903,7 @@ namespace mp2192_92.DialIndicator
                 arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < arrGettin.Length; i++)
                 {
@@ -914,7 +914,7 @@ namespace mp2192_92.DialIndicator
                     if (i > 0) DataRow.Add(operation);
                     if (i == 0)
                     {
-                        operation.IsGood = () =>
+                         operation.IsGood = (getting) =>
                         {
                             Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
                             return operation.Error as MeasPoint<Length> <= IchBase.ConnectDiametr.MaxDelta &&  DataRow.All(q=> IchBase.ConnectDiametr.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
@@ -961,7 +961,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[5] = ConstNotUsed;
                 else
-                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[5] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -969,7 +969,7 @@ namespace mp2192_92.DialIndicator
         }
     } //todo готово
     /// <summary>
-    /// Предотсавляет реализацию проерку  шероховатости наружной поверхности гильзы.
+    /// Предоставляет реализацию проверку  шероховатости наружной поверхности гильзы.
     /// </summary>
     public sealed class LinerRoughness : MainIchProcedur<bool>
     {
@@ -1070,7 +1070,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[2] = ConstNotUsed;
                 else
-                    dataRow[2] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[2] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1112,7 +1112,7 @@ namespace mp2192_92.DialIndicator
                 arrGetting = new MeasPoint<Length>(vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).First(), UnitMultiplier.Mili);
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
               
                     operation.Getting = arrGetting;
@@ -1120,7 +1120,7 @@ namespace mp2192_92.DialIndicator
                  
 
             };
-            operation.IsGood = () => IchBase.ArrowWidch.IsPointBelong(operation.Getting);
+             operation.IsGood = (getting) => IchBase.ArrowWidch.IsPointBelong(operation.Getting);
 
             DataRow.Add(operation);
         }
@@ -1162,7 +1162,7 @@ namespace mp2192_92.DialIndicator
                 arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < arrGettin.Length; i++)
                 {
@@ -1173,7 +1173,7 @@ namespace mp2192_92.DialIndicator
                     if (i > 0) DataRow.Add(operation);
                     if (i == 0)
                     {
-                        operation.IsGood = () =>
+                         operation.IsGood = (getting) =>
                         {
                             Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
                             return operation.Error as MeasPoint<Length> <= IchBase.StrokeWidch.MaxDelta && DataRow.All(q => IchBase.StrokeWidch.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
@@ -1219,7 +1219,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[5] = ConstNotUsed;
                 else
-                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[5] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1227,7 +1227,7 @@ namespace mp2192_92.DialIndicator
         }
     }//todo готово
     /// <summary>
-    /// Предотсавляет реализацию определения длинны штриха.
+    /// Предоставляет реализацию определения длинны штриха.
     /// </summary>
     public sealed class StrokeLength : MainIchProcedur<MeasPoint<Length>>
     {
@@ -1254,7 +1254,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[2] = ConstNotUsed;
                 else
-                    dataRow[2] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[2] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1296,7 +1296,7 @@ namespace mp2192_92.DialIndicator
                 arrGetting = new MeasPoint<Length>(vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).First(), UnitMultiplier.Mili);
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
 
                 operation.Getting = arrGetting;
@@ -1304,7 +1304,7 @@ namespace mp2192_92.DialIndicator
 
 
             };
-            operation.IsGood = () => IchBase.StrokeLength<=operation.Getting;
+             operation.IsGood = (getting) => IchBase.StrokeLength<=operation.Getting;
 
             DataRow.Add(operation);
         }
@@ -1312,7 +1312,7 @@ namespace mp2192_92.DialIndicator
         #endregion
     } //todo готово
     /// <summary>
-    /// Предотсавляет реализацию определения расстояния между концом стрелки и циферблатом.
+    /// Предоставляет реализацию определения расстояния между концом стрелки и циферблатом.
     /// </summary>
     public sealed class BetweenArrowDial : MainIchProcedur<object>
     {
@@ -1345,7 +1345,7 @@ namespace mp2192_92.DialIndicator
                 arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < arrGettin.Length; i++)
                 {
@@ -1356,7 +1356,7 @@ namespace mp2192_92.DialIndicator
                     if (i > 0) DataRow.Add(operation);
                     if (i == 0)
                     {
-                        operation.IsGood = () =>
+                         operation.IsGood = (getting) =>
                         {
                             Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
                             return operation.Error as MeasPoint<Length> <= IchBase.BetweenArrowDial;
@@ -1397,7 +1397,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[4] = ConstNotUsed;
                 else
-                    dataRow[4] = dds.IsGood() ? ConstGood : ConstBad;
+                    dataRow[4] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1473,7 +1473,7 @@ namespace mp2192_92.DialIndicator
                 arrPoints = viewModel.Content.Cells
                     .Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
             };
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
                 {

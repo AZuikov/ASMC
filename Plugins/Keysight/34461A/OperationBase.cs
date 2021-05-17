@@ -52,7 +52,7 @@ namespace ProgramFor34461A
                     dataRow["Максимальное допустимое значение"] = rowFromDataRow.UpperTolerance;
                 if (rowFromDataRow.Getting != null)
                 {
-                    dataRow["Результат"] = rowFromDataRow.IsGood() ? ConstGood : ConstBad;
+                    dataRow["Результат"] = rowFromDataRow.IsGood(rowFromDataRow.Getting) ? ConstGood : ConstBad;
                 }
                 else
                 {
@@ -299,7 +299,7 @@ namespace ProgramFor34461A
                     dataRow["Максимальное допустимое значение"] = rowFromDataRow.UpperTolerance.MainPhysicalQuantity.ToString(); 
                 if ( rowFromDataRow.Getting != null)
                 {
-                    dataRow["Результат"] = rowFromDataRow.IsGood() ? ConstGood : ConstBad;
+                    dataRow["Результат"] = rowFromDataRow.IsGood(rowFromDataRow.Getting) ? ConstGood : ConstBad;
                 }
                 else
                 {

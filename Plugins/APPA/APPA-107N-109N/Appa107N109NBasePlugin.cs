@@ -55,7 +55,7 @@ namespace APPA_107N_109N
         public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
-            if (operation.IsGood != null && !operation.IsGood())
+            if (operation.IsGood != null && !operation.IsGood(operation.Getting))
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
@@ -73,14 +73,14 @@ namespace APPA_107N_109N
 
             if (operation.IsGood == null)
                 return Task.FromResult(true);
-            return Task.FromResult(operation.IsGood());
+            return Task.FromResult(operation.IsGood(operation.Getting));
         }
 
         public static Task<bool> HelpsCompliteWork<T, T1>(BasicOperationVerefication<MeasPoint<T, T1>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
                                                   where T1 : class, IPhysicalQuantity<T1>, new()
         {
-            if (operation.IsGood != null && !operation.IsGood())
+            if (operation.IsGood != null && !operation.IsGood(operation.Getting))
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
@@ -98,7 +98,7 @@ namespace APPA_107N_109N
 
             if (operation.IsGood == null)
                 return Task.FromResult(true);
-            return Task.FromResult(operation.IsGood());
+            return Task.FromResult(operation.IsGood(operation.Getting));
         }
 
         #endregion
@@ -185,7 +185,7 @@ namespace APPA_107N_109N
                 base.InitWork(token);
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
-                operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+                operation.IsGood = getting => Equals(getting, operation.Expected);
                 operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
@@ -195,7 +195,7 @@ namespace APPA_107N_109N
                     var res = service.Entity as Tuple<string, bool>;
                     operation.Getting = res.Item2;
                     operation.Comment = res.Item1;
-                    operation.IsGood = () => operation.Getting;
+                    operation.IsGood = (getting) => getting;
 
                     return Task.CompletedTask;
                 };
@@ -248,7 +248,7 @@ namespace APPA_107N_109N
                 base.InitWork(token);
                 var operation = new BasicOperation<bool>();
                 operation.Expected = true;
-                operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+                operation.IsGood = (getting) => Equals(getting, operation.Expected);
                 operation.InitWorkAsync = () =>
                 {
                     var service = UserItemOperation.ServicePack.QuestionText();
@@ -258,7 +258,7 @@ namespace APPA_107N_109N
                     var res = service.Entity as Tuple<string, bool>;
                     operation.Getting = res.Item2;
                     operation.Comment = res.Item1;
-                    operation.IsGood = () => operation.Getting;
+                    operation.IsGood = (getting) => operation.Getting;
 
                     return Task.CompletedTask;
                 };
@@ -341,7 +341,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[5] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -443,7 +443,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -836,7 +836,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[5] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -940,7 +940,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -1473,7 +1473,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[5] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -1575,7 +1575,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -1947,7 +1947,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[5] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -2054,7 +2054,7 @@ namespace APPA_107N_109N
                         }
                     };
 
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -2446,7 +2446,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[5] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -2509,7 +2509,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -3158,7 +3158,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[5] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -3260,7 +3260,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -3392,7 +3392,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[5] = "не выполнено";
                     else
-                        dataRow[5] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[5] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -3477,7 +3477,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {
@@ -3913,7 +3913,7 @@ namespace APPA_107N_109N
                     if (dds?.IsGood == null)
                         dataRow[4] = "не выполнено";
                     else
-                        dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                        dataRow[4] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                     dataTable.Rows.Add(dataRow);
                 }
 
@@ -4009,7 +4009,7 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWorkAsync = () =>
+                    operation.BodyWork = () =>
                     {
                         try
                         {

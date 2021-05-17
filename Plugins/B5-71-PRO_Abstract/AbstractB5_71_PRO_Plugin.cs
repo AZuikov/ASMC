@@ -132,7 +132,7 @@ namespace B5_71_PRO_Abstract
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
-            operation.IsGood = () => Equals(operation.Getting, operation.Expected);
+            operation.IsGood = (getting) => Equals(getting, operation.Expected);
             operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
@@ -142,7 +142,7 @@ namespace B5_71_PRO_Abstract
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
                 operation.Comment = res.Item1;
-                operation.IsGood = () => operation.Getting;
+                operation.IsGood = (getting) => operation.Getting;
 
                 return Task.CompletedTask;
             };
@@ -204,7 +204,7 @@ namespace B5_71_PRO_Abstract
                 else if (dds.IsGood == null)
                     dataRow[0] = "не выполнено";
                 else
-                    dataRow[0] = dds.IsGood() ? "Соответствует" : dds.Comment;
+                    dataRow[0] = dds.IsGood(dds.Getting) ? "Соответствует" : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -239,7 +239,7 @@ namespace B5_71_PRO_Abstract
                     throw;
                 }
             };
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 try
                 {
@@ -263,9 +263,9 @@ namespace B5_71_PRO_Abstract
 
                         var measVolt = Math.Abs(Load.VoltageLoad.MeasureVolt);
 
-                        operation.IsGood = () => { return Bp.VoltMax / measVolt >= 0.7M; };
+                        operation.IsGood = (getting) => { return Bp.VoltMax / measVolt >= 0.7M; };
 
-                        if (!operation.IsGood())
+                        if (!operation.IsGood(operation.Getting))
                         {
                             Logger.Error($"Операция опробования не прошла по напряжению в точке {setPoint} В, измерено {operation.Getting} В");
                             return;
@@ -284,9 +284,9 @@ namespace B5_71_PRO_Abstract
                         //измеряем напряжение
 
                         var measCurr = Math.Abs(Load.CurrentLoad.MeasureCurrent);
-                        operation.IsGood = () => { return Bp.CurrMax / measCurr >= 0.7M; };
+                        operation.IsGood = (getting) => { return Bp.CurrMax / measCurr >= 0.7M; };
 
-                        if (!operation.IsGood())
+                        if (!operation.IsGood(operation.Getting))
                         {
                             Logger.Error($"Операция опробования не прошла по току в точке {setPoint} А, измерено {operation.Getting} А");
                             return;
@@ -317,7 +317,7 @@ namespace B5_71_PRO_Abstract
 
                 if (answer == MessageResult.No)
                 {
-                    operation.IsGood = () => { return false; };
+                    operation.IsGood = (getting) => { return false; };
                     Logger.Error("режим CC: Не горит индикация стабилизации тока на источнике питания.");
                     return Task.FromResult(true);
                 }
@@ -332,7 +332,7 @@ namespace B5_71_PRO_Abstract
 
                 if (answer == MessageResult.No)
                 {
-                    operation.IsGood = () => { return false; };
+                    operation.IsGood = (getting) => { return false; };
                     Logger.Error("режим CV: На источнике питания индикатор стабилизации тока должен не должен гореть.");
                     return Task.FromResult(true);
                 }
@@ -340,7 +340,7 @@ namespace B5_71_PRO_Abstract
                 Load.SetOutputState(MainN3300.State.Off);
                 Bp.OffOutput();
 
-                operation.IsGood = () => { return true; };
+                operation.IsGood = (getting) => true;
                 return Task.FromResult(true);
             };
             DataRow.Add(operation);
@@ -409,7 +409,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
                 else
-                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[4] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -454,7 +454,7 @@ namespace B5_71_PRO_Abstract
                         throw;
                     }
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -499,7 +499,7 @@ namespace B5_71_PRO_Abstract
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (!operation.IsGood())
+                    if (!operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox().Show(operation +
@@ -512,7 +512,7 @@ namespace B5_71_PRO_Abstract
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
 
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
@@ -585,7 +585,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
                 else
-                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[4] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -634,7 +634,7 @@ namespace B5_71_PRO_Abstract
                         throw;
                     }
                 };
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -683,7 +683,7 @@ namespace B5_71_PRO_Abstract
 
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (!operation.IsGood())
+                    if (!operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox().Show(operation +
@@ -696,7 +696,7 @@ namespace B5_71_PRO_Abstract
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
 
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
@@ -779,7 +779,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[2] = "не выполнено";
                 else
-                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[2] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -823,7 +823,7 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 try
                 {
@@ -886,20 +886,18 @@ namespace B5_71_PRO_Abstract
             };
             operation.CompliteWorkAsync = () =>
             {
-                if (!operation.IsGood())
-                {
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox().Show(operation +
-                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                      "Повторить измерение этой точки?",
-                                                                      "Информация по текущему измерению",
-                                                                      MessageButton.YesNo, MessageIcon.Question,
-                                                                      MessageResult.Yes);
+                if (operation.IsGood(operation.Getting)) return Task.FromResult(operation.IsGood(operation.Getting));
+                var answer =
+                    UserItemOperation.ServicePack.MessageBox().Show(operation +
+                                                                    $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                    "Повторить измерение этой точки?",
+                        "Информация по текущему измерению",
+                        MessageButton.YesNo, MessageIcon.Question,
+                        MessageResult.Yes);
 
-                    if (answer == MessageResult.No) return Task.FromResult(true);
-                }
+                if (answer == MessageResult.No) return Task.FromResult(true);
 
-                return Task.FromResult(operation.IsGood());
+                return Task.FromResult(operation.IsGood(operation.Getting));
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                             ? operation
@@ -912,7 +910,7 @@ namespace B5_71_PRO_Abstract
     }
 
     /// <summary>
-    /// Опрделение уровня пульсаций
+    /// Определение уровня пульсаций
     /// </summary>
     public abstract class Oper5VoltPulsation : BaseOperationPowerSupplyAndElectronicLoad
     {
@@ -977,7 +975,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[2] = "не выполнено";
                 else
-                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[2] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1082,7 +1080,7 @@ namespace B5_71_PRO_Abstract
             operation.CompliteWorkAsync = () =>
             {
                 if (operation.IsGood == null) return Task.FromResult(false);
-                if (!operation.IsGood())
+                if (!operation.IsGood(operation.Getting))
                 {
                     var answer =
                         UserItemOperation.ServicePack.MessageBox().Show(operation +
@@ -1095,7 +1093,7 @@ namespace B5_71_PRO_Abstract
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
 
-                return Task.FromResult(operation.IsGood());
+                return Task.FromResult(operation.IsGood(operation.Getting));
             };
             DataRow.Add(operation);
         }
@@ -1173,7 +1171,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
                 else
-                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[4] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1211,7 +1209,7 @@ namespace B5_71_PRO_Abstract
                     }
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -1258,7 +1256,7 @@ namespace B5_71_PRO_Abstract
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (!operation.IsGood())
+                    if (!operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox().Show(operation +
@@ -1271,7 +1269,7 @@ namespace B5_71_PRO_Abstract
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
 
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
@@ -1348,7 +1346,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[4] = "не выполнено";
                 else
-                    dataRow[4] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[4] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1386,7 +1384,7 @@ namespace B5_71_PRO_Abstract
                     }
                 };
 
-                operation.BodyWorkAsync = () =>
+                operation.BodyWork = () =>
                 {
                     try
                     {
@@ -1430,7 +1428,7 @@ namespace B5_71_PRO_Abstract
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (!operation.IsGood())
+                    if (!operation.IsGood(operation.Getting))
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox().Show(operation +
@@ -1443,7 +1441,7 @@ namespace B5_71_PRO_Abstract
                         if (answer == MessageResult.No) return Task.FromResult(true);
                     }
 
-                    return Task.FromResult(operation.IsGood());
+                    return Task.FromResult(operation.IsGood(operation.Getting));
                 };
                 DataRow.Add(DataRow.IndexOf(operation) == -1
                                 ? operation
@@ -1528,7 +1526,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[2] = "не выполнено";
                 else
-                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[2] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1561,7 +1559,7 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWorkAsync = () =>
+            operation.BodyWork = () =>
             {
                 try
                 {
@@ -1615,20 +1613,18 @@ namespace B5_71_PRO_Abstract
             };
             operation.CompliteWorkAsync = () =>
             {
-                if (!operation.IsGood())
-                {
-                    var answer =
-                        UserItemOperation.ServicePack.MessageBox().Show(operation +
-                                                                      $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
-                                                                      "Повторить измерение этой точки?",
-                                                                      "Информация по текущему измерению",
-                                                                      MessageButton.YesNo, MessageIcon.Question,
-                                                                      MessageResult.Yes);
+                if (operation.IsGood(operation.Getting)) return Task.FromResult(operation.IsGood(operation.Getting));
+                var answer =
+                    UserItemOperation.ServicePack.MessageBox().Show(operation +
+                                                                    $"\nФАКТИЧЕСКАЯ погрешность {operation.Expected - operation.Getting}\n\n" +
+                                                                    "Повторить измерение этой точки?",
+                        "Информация по текущему измерению",
+                        MessageButton.YesNo, MessageIcon.Question,
+                        MessageResult.Yes);
 
-                    if (answer == MessageResult.No) return Task.FromResult(true);
-                }
+                if (answer == MessageResult.No) return Task.FromResult(true);
 
-                return Task.FromResult(operation.IsGood());
+                return Task.FromResult(operation.IsGood(operation.Getting));
             };
             DataRow.Add(DataRow.IndexOf(operation) == -1
                             ? operation
@@ -1707,7 +1703,7 @@ namespace B5_71_PRO_Abstract
                 if (dds.IsGood == null)
                     dataRow[2] = "не выполнено";
                 else
-                    dataRow[2] = dds.IsGood() ? "Годен" : "Брак";
+                    dataRow[2] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
 
                 dataTable.Rows.Add(dataRow);
             }
@@ -1844,7 +1840,7 @@ namespace B5_71_PRO_Abstract
 
             operation.CompliteWorkAsync = () =>
             {
-                if (!operation.IsGood())
+                if (!operation.IsGood(operation.Getting))
                 {
                     var answer =
                         UserItemOperation.ServicePack.MessageBox().Show(operation +
@@ -1857,7 +1853,7 @@ namespace B5_71_PRO_Abstract
                     if (answer == MessageResult.No) return Task.FromResult(true);
                 }
 
-                return Task.FromResult(operation.IsGood());
+                return Task.FromResult(operation.IsGood(operation.Getting));
             };
             DataRow.Add(operation);
         }

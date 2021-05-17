@@ -23,8 +23,7 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (_initWork == null) return () =>  Task.CompletedTask;
-                return _initWork;
+                return _initWork ?? (() =>  Task.CompletedTask);
             }
             set => _initWork = value;
         }
@@ -34,27 +33,21 @@ namespace ASMC.Data.Model
         {
             get
             {
-                if (_compliteWork == null)
-#pragma warning disable 1998
-                return async () => true;
-#pragma warning restore 1998
-                return _compliteWork;
+                return _compliteWork ??  (async () => true);
             }
 
-            set { _compliteWork = value; }
+            set => _compliteWork = value;
         }
 
         /// <inheritdoc />
         public object Name { get; set; }
 
         /// <inheritdoc />
-        public Action BodyWorkAsync
+        public Action BodyWork
         {
             get
             {
-                if(_bodyWork == null)
-                    return () => { };
-                return _bodyWork;
+                return _bodyWork ?? (() => { });
             }
             set => _bodyWork = value;
         }
@@ -77,12 +70,12 @@ namespace ASMC.Data.Model
                 await InitWorkAsync();
                 Logger.Debug("Закончено выполнение инициализации");
                 Logger.Debug("Начато выполнение тела");
-                var task = Task.Run(BodyWorkAsync, token.Token);
+                var task = Task.Run(BodyWork, token.Token);
                 try
                 {
                     await task;
                 }
-                catch (Exception)
+                catch
                 {
                     if (task.Status == TaskStatus.Faulted)
                     {
@@ -123,7 +116,7 @@ namespace ASMC.Data.Model
 
         public virtual object Clone()
         {
-            return new BasicOperation<T> { InitWorkAsync = InitWorkAsync, BodyWorkAsync = BodyWorkAsync, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWorkAsync = CompliteWorkAsync };
+            return new BasicOperation<T> { InitWorkAsync = InitWorkAsync, BodyWork = BodyWork, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWorkAsync = CompliteWorkAsync };
         }
 
         /// <inheritdoc />
@@ -149,7 +142,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
+            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
 
     }
@@ -167,7 +160,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
+            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
         /// <inheritdoc />
         public override string ToString()
@@ -203,7 +196,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (MeasuringOperation<T>)base.Clone();
-            return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
+            return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
         }
         [Obsolete("Необходимо от казаться от использование Error в текущем контексте")]
         public override string ToString()
