@@ -373,108 +373,112 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        //1.нужно знать канал
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.ON);
-                        //теперь нужно понять с каким каналом мы будем работать на калибраторе
-                        var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
-                        calibr9500B.Route.Chanel.SetChanel(chnael);
-                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
-                        //2.установить развертку по вертикали
-                        someTdsOscilloscope.Chanel.SetProbe(_testingChanel, TDS_Oscilloscope.Probe.Att_1);
-                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingChanel, currScale);
-                        //смещение для номального отображения
-                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, -3);
-                        //триггер
-                        someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
-                        someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingChanel);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
-
-                        //3.установить развертку по времени
-                        someTdsOscilloscope.Horizontal.SetHorizontalScale(TDS_Oscilloscope
-                                                                         .HorizontalSCAle.Scal_500mkSec);
-
-                        //4.установить усреднение
-                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope
-                                                                     .MiscellaneousMode.SAMple); //так быстрее будет
-                        //5.подать сигнал: меандр 1 кГц
-                        //это разверктка
-                        ChanelVerticalRange =
-                            new MeasPoint<Voltage>((decimal)currScale.GetDoubleValue(),
-                                                   currScale.GetUnitMultipliersValue());
-                        // это подаваемая амплитуда
-                        operation.Expected =
-                            new MeasPoint<Voltage>(6 * (decimal)currScale.GetDoubleValue(),
-                                                   currScale.GetUnitMultipliersValue());
-                        calibr9500B.Source.SetFunc(Calibr9500B.Shap.SQU).Source
-                                   .SetVoltage(operation.Expected).Source
-                                   .SetFreq(1, UnitMultiplier.Kilo);
-                        calibr9500B.Source.Output(Calibr9500B.State.On);
-                        //6.снять показания с осциллографа
-
-                        someTdsOscilloscope.Measurement.SetMeas(_testingChanel, TDS_Oscilloscope.TypeMeas.PK2);
-                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
-                        someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
-                        Thread.Sleep(2500);
-                        someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
-                        var measResult = someTdsOscilloscope.Measurement.MeasureValue() /
-                                         (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round(ref measResult, 2);
-
-                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
-
-                        operation.Getting =
-                            new MeasPoint<Voltage>(measResult, currScale.GetUnitMultipliersValue());
-                        operation.ErrorCalculation = (point, measPoint) =>
+                        try
                         {
-                            var nominalPoint = ChanelVerticalRange.MainPhysicalQuantity.Value *
-                                               (decimal)ChanelVerticalRange
-                                                        .MainPhysicalQuantity.Multiplier.GetDoubleValue();
-                            MeasPoint<Voltage> resultError;
-                            if (nominalPoint == 2M || nominalPoint == 5)
-                            {
-                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 4 / 100,
-                                                                 currScale.GetUnitMultipliersValue());
+                            //1.нужно знать канал
+                            someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.ON);
+                            //теперь нужно понять с каким каналом мы будем работать на калибраторе
+                            var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
+                            calibr9500B.Route.Chanel.SetChanel(chnael);
+                            calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
+                            //2.установить развертку по вертикали
+                            someTdsOscilloscope.Chanel.SetProbe(_testingChanel, TDS_Oscilloscope.Probe.Att_1);
+                            someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingChanel, currScale);
+                            //смещение для номального отображения
+                            someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, -3);
+                            //триггер
+                            someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
+                            someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
+                            someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingChanel);
+                            someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
 
-                            }
-                            else
+                            //3.установить развертку по времени
+                            someTdsOscilloscope.Horizontal.SetHorizontalScale(TDS_Oscilloscope
+                                                                             .HorizontalSCAle.Scal_500mkSec);
+
+                            //4.установить усреднение
+                            someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope
+                                                                         .MiscellaneousMode.SAMple); //так быстрее будет
+                                                                                                     //5.подать сигнал: меандр 1 кГц
+                                                                                                     //это разверктка
+                            ChanelVerticalRange =
+                                new MeasPoint<Voltage>((decimal)currScale.GetDoubleValue(),
+                                                       currScale.GetUnitMultipliersValue());
+                            // это подаваемая амплитуда
+                            operation.Expected =
+                                new MeasPoint<Voltage>(6 * (decimal)currScale.GetDoubleValue(),
+                                                       currScale.GetUnitMultipliersValue());
+                            calibr9500B.Source.SetFunc(Calibr9500B.Shap.SQU).Source
+                                       .SetVoltage(operation.Expected).Source
+                                       .SetFreq(1, UnitMultiplier.Kilo);
+                            calibr9500B.Source.Output(Calibr9500B.State.On);
+                            //6.снять показания с осциллографа
+
+                            someTdsOscilloscope.Measurement.SetMeas(_testingChanel, TDS_Oscilloscope.TypeMeas.PK2);
+                            someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.AVErage);
+                            someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
+                            Thread.Sleep(2500);
+                            someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
+                            var measResult = someTdsOscilloscope.Measurement.MeasureValue() /
+                                             (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
+                            MathStatistics.Round(ref measResult, 2);
+
+                            someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
+
+                            operation.Getting =
+                                new MeasPoint<Voltage>(measResult, currScale.GetUnitMultipliersValue());
+                            operation.ErrorCalculation = (point, measPoint) =>
                             {
-                                resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
+                                var nominalPoint = ChanelVerticalRange.MainPhysicalQuantity.Value *
+                                                   (decimal)ChanelVerticalRange
+                                                            .MainPhysicalQuantity.Multiplier.GetDoubleValue();
+                                MeasPoint<Voltage> resultError;
+                                if (nominalPoint == 2M || nominalPoint == 5)
+                                {
+                                    resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 4 / 100,
                                                                      currScale.GetUnitMultipliersValue());
-                            }
 
-                            resultError.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
-                            return resultError;
+                                }
+                                else
+                                {
+                                    resultError = new MeasPoint<Voltage>(operation.Expected.MainPhysicalQuantity.Value * 3 / 100,
+                                                                         currScale.GetUnitMultipliersValue());
+                                }
 
-                        };
+                                resultError.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+                                return resultError;
 
-                        operation.UpperCalculation = (expected) => { return expected + operation.Error; };
-                        operation.LowerCalculation = (expected) => { return expected - operation.Error; };
-                        operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
-                        operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+                            };
 
-                        operation.IsGood = (getting) =>
+                            operation.UpperCalculation = (expected) => { return expected + operation.Error; };
+                            operation.LowerCalculation = (expected) => { return expected - operation.Error; };
+                            operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+                            operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+
+                            operation.IsGood = (getting) =>
+                            {
+                                if (operation.Getting == null || operation.Expected == null ||
+                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                                return (operation.Getting <= operation.UpperTolerance) &
+                                       (operation.Getting >= operation.LowerTolerance);
+                            };
+                        }
+                        catch (Exception e)
                         {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            return (operation.Getting <= operation.UpperTolerance) &
-                                   (operation.Getting >= operation.LowerTolerance);
-                        };
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        calibr9500B.Source.Output(Calibr9500B.State.Off);
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
-                    }
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            calibr9500B.Source.Output(Calibr9500B.State.Off);
+                            someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF);
+                        }
+                    }, cancellationToken);
+                
                 };
                 operation.CompliteWorkAsync = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
                 DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -605,82 +609,86 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        //1.нужно знать канал
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingOscillosocopeChanel, TDS_Oscilloscope.State.ON);
-                        //теперь нужно понять с каким каналом мы будем работать на калибраторе
-                        var calibratorHeadChnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
-                        calibr9500B.Route.Chanel.SetChanel(calibratorHeadChnael);
-                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
-                        //2.установить развертку по вертикали
-                        someTdsOscilloscope.Chanel.SetProbe(_testingOscillosocopeChanel, TDS_Oscilloscope.Probe.Att_1);
-                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingOscillosocopeChanel,
-                                                                     TDS_Oscilloscope.VerticalScale.Scale_200mV);
-                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingOscillosocopeChanel, 0);
-
-                        someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
-                        calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
-                        calibr9500B.Source.Parametr.MARKER.SetWaveForm(Calibr9500B.MarkerWaveForm.SQU);
-                        calibr9500B.Source.Parametr.MARKER.SetAmplitude(Calibr9500B.MarkerAmplitude.ampl1V);
-                        ChanelHorizontalRange =
-                            new MeasPoint<Time>((decimal)currScale.GetDoubleValue(),
-                                                currScale.GetUnitMultipliersValue());
-                        var ExpectedPoin = new MeasPoint<Time>((decimal)(currScale.GetDoubleValue() * 2),
-                                                               currScale.GetUnitMultipliersValue());
-                        calibr9500B.Source.Parametr.MARKER.SetPeriod(ExpectedPoin);
-                        operation.Expected = ExpectedPoin;
-
-                        calibr9500B.Source.Output(Calibr9500B.State.On);
-
-                        //триггер
-                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
-                        someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
-                        someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingOscillosocopeChanel);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
-                        someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
-                        someTdsOscilloscope.Measurement.SetMeas(_testingOscillosocopeChanel, TDS_Oscilloscope.TypeMeas.PERI,
-                                                                2);
-                        Thread.Sleep(1000);
-                        var measResult = someTdsOscilloscope.Measurement.MeasureValue(2) /
-                                         (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round(ref measResult, 2);
-
-                        operation.Getting =
-                            new MeasPoint<Time>(measResult, currScale.GetUnitMultipliersValue());
-
-                        operation.ErrorCalculation = (point, measPoint) => ScaleTolDict[currScale];
-
-
-                        operation.Expected =
-                            new MeasPoint<Time>((decimal)currScale.GetDoubleValue() * 2,
-                                                currScale.GetUnitMultipliersValue());
-                        operation.UpperCalculation = (expected) => { return expected + operation.Error; };
-                        operation.LowerCalculation = (expected) => { return expected - operation.Error; };
-                        operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
-                        operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
-
-                        operation.IsGood = (getting) =>
+                        try
                         {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                            return (operation.Getting <= operation.UpperTolerance) &
-                                   (operation.Getting >= operation.LowerTolerance);
-                        };
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        calibr9500B.Source.Output(Calibr9500B.State.Off);
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingOscillosocopeChanel, TDS_Oscilloscope.State.OFF);
-                    }
+                            //1.нужно знать канал
+                            someTdsOscilloscope.Chanel.SetChanelState(_testingOscillosocopeChanel, TDS_Oscilloscope.State.ON);
+                            //теперь нужно понять с каким каналом мы будем работать на калибраторе
+                            var calibratorHeadChnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
+                            calibr9500B.Route.Chanel.SetChanel(calibratorHeadChnael);
+                            calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
+                            //2.установить развертку по вертикали
+                            someTdsOscilloscope.Chanel.SetProbe(_testingOscillosocopeChanel, TDS_Oscilloscope.Probe.Att_1);
+                            someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingOscillosocopeChanel,
+                                                                         TDS_Oscilloscope.VerticalScale.Scale_200mV);
+                            someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingOscillosocopeChanel, 0);
+
+                            someTdsOscilloscope.Horizontal.SetHorizontalScale(currScale);
+                            calibr9500B.Source.SetFunc(Calibr9500B.Shap.MARK);
+                            calibr9500B.Source.Parametr.MARKER.SetWaveForm(Calibr9500B.MarkerWaveForm.SQU);
+                            calibr9500B.Source.Parametr.MARKER.SetAmplitude(Calibr9500B.MarkerAmplitude.ampl1V);
+                            ChanelHorizontalRange =
+                                new MeasPoint<Time>((decimal)currScale.GetDoubleValue(),
+                                                    currScale.GetUnitMultipliersValue());
+                            var ExpectedPoin = new MeasPoint<Time>((decimal)(currScale.GetDoubleValue() * 2),
+                                                                   currScale.GetUnitMultipliersValue());
+                            calibr9500B.Source.Parametr.MARKER.SetPeriod(ExpectedPoin);
+                            operation.Expected = ExpectedPoin;
+
+                            calibr9500B.Source.Output(Calibr9500B.State.On);
+
+                            //триггер
+                            someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
+                            someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
+                            someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
+                            someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingOscillosocopeChanel);
+                            someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
+                            someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
+                            someTdsOscilloscope.Measurement.SetMeas(_testingOscillosocopeChanel, TDS_Oscilloscope.TypeMeas.PERI,
+                                                                    2);
+                            Thread.Sleep(1000);
+                            var measResult = someTdsOscilloscope.Measurement.MeasureValue(2) /
+                                             (decimal)currScale.GetUnitMultipliersValue().GetDoubleValue();
+                            MathStatistics.Round(ref measResult, 2);
+
+                            operation.Getting =
+                                new MeasPoint<Time>(measResult, currScale.GetUnitMultipliersValue());
+
+                            operation.ErrorCalculation = (point, measPoint) => ScaleTolDict[currScale];
+
+
+                            operation.Expected =
+                                new MeasPoint<Time>((decimal)currScale.GetDoubleValue() * 2,
+                                                    currScale.GetUnitMultipliersValue());
+                            operation.UpperCalculation = (expected) => { return expected + operation.Error; };
+                            operation.LowerCalculation = (expected) => { return expected - operation.Error; };
+                            operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+                            operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(currScale.GetUnitMultipliersValue());
+
+                            operation.IsGood = (getting) =>
+                            {
+                                if (operation.Getting == null || operation.Expected == null ||
+                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                                return (operation.Getting <= operation.UpperTolerance) &
+                                       (operation.Getting >= operation.LowerTolerance);
+                            };
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            calibr9500B.Source.Output(Calibr9500B.State.Off);
+                            someTdsOscilloscope.Chanel.SetChanelState(_testingOscillosocopeChanel, TDS_Oscilloscope.State.OFF);
+                        }
+                    }, cancellationToken);
+                   
                 };
 
                 operation.CompliteWorkAsync = () => HelpsTds.HelpsCompliteWork(operation, UserItemOperation);
@@ -872,75 +880,80 @@ namespace TDS_BasePlugin
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        //1.нужно знать канал
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.ON);
-                        //теперь нужно понять с каким каналом мы будем работать на калибраторе
-                        var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
-                        calibr9500B.Route.Chanel.SetChanel(chnael);
-                        calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
-                        //2.установить развертку по вертикали
-                        someTdsOscilloscope.Chanel.SetProbe(_testingChanel, TDS_Oscilloscope.Probe.Att_1);
-                        someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingChanel, verticalScale);
-                        someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, 1);
-                        someTdsOscilloscope.Horizontal.SetHorizontalScale(horizontalScAleForTest);
-
-                        calibr9500B.Source.SetFunc(Calibr9500B.Shap.EDG);
-                        calibr9500B.Source.Parametr.EDGE.SetEdgeDirection(Calibr9500B.Direction.RIS);
-                        calibr9500B.Source.Parametr.EDGE.SetEdgeSpeed(Calibr9500B.SpeedEdge.Mid_500p);
-                        operation.Expected = new MeasPoint<Voltage>((decimal)(3 * verticalScale.GetDoubleValue()),
-                                                                    verticalScale.GetUnitMultipliersValue());
-                        calibr9500B.Source.SetVoltage((MeasPoint<Voltage>)operation.Expected);
-
-                        calibr9500B.Source.Output(Calibr9500B.State.On);
-
-                        //триггер
-                        someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
-                        someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
-                        someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingChanel);
-                        someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
-                        someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
-
-                        if (verticalScale == TDS_Oscilloscope.VerticalScale.Scale_5V)
+                        try
                         {
-                            someTdsOscilloscope.Acquire.SetSingleOrRunStopMode(TDS_Oscilloscope.AcquireMode.RUNSTOP);
-                            someTdsOscilloscope.Acquire.StartAcquire();
-                            someTdsOscilloscope.WriteLine("acq:state off");
+                            //1.нужно знать канал
+                            someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.ON);
+                            //теперь нужно понять с каким каналом мы будем работать на калибраторе
+                            var chnael = calibr9500B.FindActiveHeadOnChanel(new ActiveHead9510()).FirstOrDefault();
+                            calibr9500B.Route.Chanel.SetChanel(chnael);
+                            calibr9500B.Route.Chanel.SetImpedans(Calibr9500B.Impedans.Res_1M);
+                            //2.установить развертку по вертикали
+                            someTdsOscilloscope.Chanel.SetProbe(_testingChanel, TDS_Oscilloscope.Probe.Att_1);
+                            someTdsOscilloscope.Chanel.Vertical.SetSCAle(_testingChanel, verticalScale);
+                            someTdsOscilloscope.Chanel.Vertical.SetPosition(_testingChanel, 1);
+                            someTdsOscilloscope.Horizontal.SetHorizontalScale(horizontalScAleForTest);
+
+                            calibr9500B.Source.SetFunc(Calibr9500B.Shap.EDG);
+                            calibr9500B.Source.Parametr.EDGE.SetEdgeDirection(Calibr9500B.Direction.RIS);
+                            calibr9500B.Source.Parametr.EDGE.SetEdgeSpeed(Calibr9500B.SpeedEdge.Mid_500p);
+                            operation.Expected = new MeasPoint<Voltage>((decimal)(3 * verticalScale.GetDoubleValue()),
+                                                                        verticalScale.GetUnitMultipliersValue());
+                            calibr9500B.Source.SetVoltage((MeasPoint<Voltage>)operation.Expected);
+
+                            calibr9500B.Source.Output(Calibr9500B.State.On);
+
+                            //триггер
+                            someTdsOscilloscope.Acquire.SetDataCollection(TDS_Oscilloscope.MiscellaneousMode.SAMple);
+                            someTdsOscilloscope.Trigger.SetTriggerMode(TDS_Oscilloscope.CTrigger.Mode.AUTO);
+                            someTdsOscilloscope.Trigger.SetTriggerType(TDS_Oscilloscope.CTrigger.Type.EDGE);
+                            someTdsOscilloscope.Trigger.SetTriggerEdgeSource(_testingChanel);
+                            someTdsOscilloscope.Trigger.SetTriggerEdgeSlope(TDS_Oscilloscope.CTrigger.Slope.RIS);
+                            someTdsOscilloscope.Trigger.SetTriggerLevelOn50Percent();
+
+                            if (verticalScale == TDS_Oscilloscope.VerticalScale.Scale_5V)
+                            {
+                                someTdsOscilloscope.Acquire.SetSingleOrRunStopMode(TDS_Oscilloscope.AcquireMode.RUNSTOP);
+                                someTdsOscilloscope.Acquire.StartAcquire();
+                                someTdsOscilloscope.WriteLine("acq:state off");
+                            }
+
+                            someTdsOscilloscope.Measurement.SetMeas(_testingChanel, TDS_Oscilloscope.TypeMeas.RIS, 3);
+                            Thread.Sleep(1000);
+                            var measResult = someTdsOscilloscope.Measurement.MeasureValue(3) /
+                                             (decimal)horizontalScAleForTest.GetUnitMultipliersValue().GetDoubleValue();
+                            MathStatistics.Round(ref measResult, 2);
+
+                            operation.Getting =
+                                new MeasPoint<Time>(measResult, horizontalScAleForTest.GetUnitMultipliersValue());
+                            operation.ErrorCalculation = (point, measPoint) => RiseTimeTol;
+
+
+                            operation.IsGood = (getting) =>
+                            {
+                                if (operation.Getting == null || operation.Expected == null ||
+                                    operation.UpperTolerance == null) return false;
+                                return (MeasPoint<Time>)operation.Getting <= (MeasPoint<Time>)operation.UpperTolerance;
+                            };
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            calibr9500B.Source.Output(Calibr9500B.State.Off);
+                            someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF)
+                                               .ResetDevice();
                         }
 
-                        someTdsOscilloscope.Measurement.SetMeas(_testingChanel, TDS_Oscilloscope.TypeMeas.RIS, 3);
-                        Thread.Sleep(1000);
-                        var measResult = someTdsOscilloscope.Measurement.MeasureValue(3) /
-                                         (decimal)horizontalScAleForTest.GetUnitMultipliersValue().GetDoubleValue();
-                        MathStatistics.Round(ref measResult, 2);
-
-                        operation.Getting =
-                            new MeasPoint<Time>(measResult, horizontalScAleForTest.GetUnitMultipliersValue());
-                        operation.ErrorCalculation = (point, measPoint) => RiseTimeTol;
-
-
-                        operation.IsGood = (getting) =>
-                        {
-                            if (operation.Getting == null || operation.Expected == null ||
-                                operation.UpperTolerance == null) return false;
-                            return (MeasPoint<Time>)operation.Getting <= (MeasPoint<Time>)operation.UpperTolerance;
-                        };
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        calibr9500B.Source.Output(Calibr9500B.State.Off);
-                        someTdsOscilloscope.Chanel.SetChanelState(_testingChanel, TDS_Oscilloscope.State.OFF)
-                                           .ResetDevice();
-                    }
+                    }, cancellationToken);
+                   
                 };
 
                 operation.CompliteWorkAsync = () => Task.FromResult(true);

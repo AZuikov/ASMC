@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Accord.Video.DirectShow;
 using AP.Extension;
 using AP.Math;
@@ -287,35 +288,38 @@ namespace mp2192_92.DialIndicator
                 fullGettingPoints = vm.Content.Aggregate(fullGettingPoints,
                     (current, item) => current.Concat(Fill(item)).ToArray());
 
-
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < fullPoints.Length; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MultiErrorMeasuringOperation<object>)operation.Clone();
-                    operation.Expected = fullPoints[i].Clone();
-                    operation.Getting = fullGettingPoints[i].Clone();
-                    Logger.Debug($@"Ожидаемое:{((IMeasPoint<Length>)operation.Expected).Description} измеренное {((IMeasPoint<Weight>)operation.Getting).Description}");
-                    if (i==0)
+                    for (var i = 0; i < fullPoints.Length; i++)
                     {
-                         operation.IsGood = (getting) =>
+                        if (i > 0) operation = (MultiErrorMeasuringOperation<object>)operation.Clone();
+                        operation.Expected = fullPoints[i].Clone();
+                        operation.Getting = fullGettingPoints[i].Clone();
+                        Logger.Debug($@"Ожидаемое:{((IMeasPoint<Length>)operation.Expected).Description} измеренное {((IMeasPoint<Weight>)operation.Getting).Description}");
+                        if (i == 0)
                         {
-                            Logger.Debug($@"Максимальное усилие {(operation?.Error?.Take(1).First() as MeasPoint<Force>).Description }");
-                            Logger.Debug($@"Прямой/обратный ход {(operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force>).Description }");
-                            Logger.Debug($@"Изменение хода{(operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force>).Description }");
-                            return operation?.Error?.Take(1).First() as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
-                                   &&
-                                   operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force> <=
-                                   IchBase.MeasuringForce.Oscillatons
-                                   &&
-                                   operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force> <=
-                                   IchBase.MeasuringForce.ChangeCourse;
-                        };
+                            operation.IsGood = (getting) =>
+                            {
+                                Logger.Debug($@"Максимальное усилие {(operation?.Error?.Take(1).First() as MeasPoint<Force>).Description }");
+                                Logger.Debug($@"Прямой/обратный ход {(operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force>).Description }");
+                                Logger.Debug($@"Изменение хода{(operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force>).Description }");
+                                return operation?.Error?.Take(1).First() as MeasPoint<Force> <= IchBase.MeasuringForce.StraightRun
+                                       &&
+                                       operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force> <=
+                                       IchBase.MeasuringForce.Oscillatons
+                                       &&
+                                       operation?.Error?.Skip(2).Take(1).First() as MeasPoint<Force> <=
+                                       IchBase.MeasuringForce.ChangeCourse;
+                            };
+                        }
+                        if (i > 0) DataRow.Add(operation);
                     }
-                    if (i > 0) DataRow.Add(operation);
-                }
+                }, cancellationToken);
+              
             };
             operation.ErrorCalculation = new Func<object, object, object>[]
             {
@@ -453,24 +457,29 @@ namespace mp2192_92.DialIndicator
                 arrGetting = vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).ToArray();
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < arrGetting.Length; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<decimal>)operation.Clone();
-                    operation.Expected = arrPoints[i].MainPhysicalQuantity.Value;
-                    operation.Getting = arrGetting[i];
-                    Logger.Debug($@"Ожидаемое:{(operation.Expected)} измеренное {operation.Getting}");
-                    if (i > 0) DataRow.Add(operation);
-                    if (i == 0)
+                    for (var i = 0; i < arrGetting.Length; i++)
                     {
-                         operation.IsGood = (getting) =>
+                        if (i > 0) operation = (MeasuringOperation<decimal>)operation.Clone();
+                        operation.Expected = arrPoints[i].MainPhysicalQuantity.Value;
+                        operation.Getting = arrGetting[i];
+                        Logger.Debug($@"Ожидаемое:{(operation.Expected)} измеренное {operation.Getting}");
+                        if (i > 0) DataRow.Add(operation);
+                        if (i == 0)
                         {
-                            Logger.Debug($@"Максимальное усиле {operation?.Error}");
-                            return operation.Error <= IchBase.PerpendicularPressureMax;
-                        };
+                            operation.IsGood = (getting) =>
+                            {
+                                Logger.Debug($@"Максимальное усиле {operation?.Error}");
+                                return operation.Error <= IchBase.PerpendicularPressureMax;
+                            };
+                        }
                     }
-                }
+
+                }, cancellationToken);
+             
 
             };
             operation.ErrorCalculation = (expected, getting) => DataRow.Max(q => q.Getting);
@@ -569,15 +578,19 @@ namespace mp2192_92.DialIndicator
                     .ToArray();
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < 3; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    operation.Expected = new[] {(MeasPoint<Length>) arrPoints[i * 5].Clone()}  ;
-                    operation.Getting = arrGetting.Skip(i * 5).Take(5).ToArray();
-                    if (i > 0) DataRow.Add(operation);
-                }
+                    for (var i = 0; i < 3; i++)
+                    {
+                        if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                        operation.Expected = new[] { (MeasPoint<Length>)arrPoints[i * 5].Clone() };
+                        operation.Getting = arrGetting.Skip(i * 5).Take(5).ToArray();
+                        if (i > 0) DataRow.Add(operation);
+                    }
+                }, cancellationToken);
+              
             };
 
             operation.ErrorCalculation =
@@ -701,15 +714,19 @@ namespace mp2192_92.DialIndicator
                     .ToArray();
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < 9; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    operation.Expected =  new []{(MeasPoint<Length>)arrPoints[i * 2].Clone()};
-                    operation.Getting = arrGetting.Skip(i * 2).Take(2).ToArray();
-                    if (i > 0) DataRow.Add(operation);
-                }
+                    for (var i = 0; i < 9; i++)
+                    {
+                        if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                        operation.Expected = new[] { (MeasPoint<Length>)arrPoints[i * 2].Clone() };
+                        operation.Getting = arrGetting.Skip(i * 2).Take(2).ToArray();
+                        if (i > 0) DataRow.Add(operation);
+                    }
+                }, cancellationToken);
+               
             };
              operation.IsGood = (getting) => operation.Error.First() <= IchBase.Variation;
             operation.ErrorCalculation =
@@ -786,28 +803,32 @@ namespace mp2192_92.DialIndicator
                 arrPoints = viewModel.Content.Cells
                     .Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
             };
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
-                    if (i == 0)
+                    for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
                     {
-                        operation.Expected = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
-                            .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
-                        operation.Getting = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
-                            .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
-                    }
-                    else
-                    {
-                        operation.Expected = new[] { measpoint.Skip(i * 5 - 1).Take(1).First() }
-                            .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
-                        operation.Getting = new[] { arrPoints.Skip(i * 5 - 1).Take(1).First() }
+                        if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                        if (i == 0)
+                        {
+                            operation.Expected = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
+                                .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
+                            operation.Getting = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
                                 .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
-                    }
+                        }
+                        else
+                        {
+                            operation.Expected = new[] { measpoint.Skip(i * 5 - 1).Take(1).First() }
+                                .Concat(measpoint.Skip(i * 5).Take(5)).ToArray();
+                            operation.Getting = new[] { arrPoints.Skip(i * 5 - 1).Take(1).First() }
+                                .Concat(arrPoints.Skip(i * 5).Take(5)).ToArray();
+                        }
 
-                    if (i > 0) DataRow.Add(operation);
-                }
+                        if (i > 0) DataRow.Add(operation);
+                    }
+                }, cancellationToken);
+              
             };
             operation.ErrorCalculation = (expected, getting) =>
             {
@@ -903,24 +924,28 @@ namespace mp2192_92.DialIndicator
                 arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < arrGettin.Length; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
-                    operation.Expected = arrPoints[i];
-                    operation.Getting = arrGettin[i];
-                    Logger.Debug($@"Измеренное {operation.Getting}");
-                    if (i > 0) DataRow.Add(operation);
-                    if (i == 0)
+                    for (var i = 0; i < arrGettin.Length; i++)
                     {
-                         operation.IsGood = (getting) =>
+                        if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
+                        operation.Expected = arrPoints[i];
+                        operation.Getting = arrGettin[i];
+                        Logger.Debug($@"Измеренное {operation.Getting}");
+                        if (i > 0) DataRow.Add(operation);
+                        if (i == 0)
                         {
-                            Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
-                            return operation.Error as MeasPoint<Length> <= IchBase.ConnectDiametr.MaxDelta &&  DataRow.All(q=> IchBase.ConnectDiametr.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
-                        };
+                            operation.IsGood = (getting) =>
+                            {
+                                Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
+                                return operation.Error as MeasPoint<Length> <= IchBase.ConnectDiametr.MaxDelta && DataRow.All(q => IchBase.ConnectDiametr.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
+                            };
+                        }
                     }
-                }
+                }, cancellationToken);
+             
             };
             operation.ErrorCalculation = (exped, getting) =>
             {
@@ -1112,11 +1137,14 @@ namespace mp2192_92.DialIndicator
                 arrGetting = new MeasPoint<Length>(vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).First(), UnitMultiplier.Mili);
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-              
+                return Task.Factory.StartNew(() =>
+                {
                     operation.Getting = arrGetting;
                     Logger.Debug($@"Измеренное {operation.Getting}");
+                }, cancellationToken);
+               
                  
 
             };
@@ -1162,24 +1190,28 @@ namespace mp2192_92.DialIndicator
                 arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < arrGettin.Length; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
-                    operation.Expected = arrPoints[i];
-                    operation.Getting = arrGettin[i];
-                    Logger.Debug($@"Измеренное {operation.Getting}");
-                    if (i > 0) DataRow.Add(operation);
-                    if (i == 0)
+                    for (var i = 0; i < arrGettin.Length; i++)
                     {
-                         operation.IsGood = (getting) =>
+                        if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
+                        operation.Expected = arrPoints[i];
+                        operation.Getting = arrGettin[i];
+                        Logger.Debug($@"Измеренное {operation.Getting}");
+                        if (i > 0) DataRow.Add(operation);
+                        if (i == 0)
                         {
-                            Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
-                            return operation.Error as MeasPoint<Length> <= IchBase.StrokeWidch.MaxDelta && DataRow.All(q => IchBase.StrokeWidch.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
-                        };
+                            operation.IsGood = (getting) =>
+                            {
+                                Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
+                                return operation.Error as MeasPoint<Length> <= IchBase.StrokeWidch.MaxDelta && DataRow.All(q => IchBase.StrokeWidch.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
+                            };
+                        }
                     }
-                }
+                }, cancellationToken);
+               
             };
             operation.ErrorCalculation = (exped, getting) =>
             {
@@ -1296,12 +1328,13 @@ namespace mp2192_92.DialIndicator
                 arrGetting = new MeasPoint<Length>(vm.Data.Cells.Select(cell => ObjectToDecimal(cell.Value)).First(), UnitMultiplier.Mili);
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-
-                operation.Getting = arrGetting;
-                Logger.Debug($@"Измеренное {operation.Getting}");
-
+                return Task.Factory.StartNew(() =>
+                {
+                    operation.Getting = arrGetting;
+                    Logger.Debug($@"Измеренное {operation.Getting}");
+                }, cancellationToken);
 
             };
              operation.IsGood = (getting) => IchBase.StrokeLength<=operation.Getting;
@@ -1345,24 +1378,28 @@ namespace mp2192_92.DialIndicator
                 arrGettin = vm.Data.Cells.Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro))
                     .ToArray();
             };
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < arrGettin.Length; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
-                    operation.Expected = arrPoints[i];
-                    operation.Getting = arrGettin[i];
-                    Logger.Debug($@"Измеренное {operation.Getting}");
-                    if (i > 0) DataRow.Add(operation);
-                    if (i == 0)
+                    for (var i = 0; i < arrGettin.Length; i++)
                     {
-                         operation.IsGood = (getting) =>
+                        if (i > 0) operation = (MeasuringOperation<object>)operation.Clone();
+                        operation.Expected = arrPoints[i];
+                        operation.Getting = arrGettin[i];
+                        Logger.Debug($@"Измеренное {operation.Getting}");
+                        if (i > 0) DataRow.Add(operation);
+                        if (i == 0)
                         {
-                            Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
-                            return operation.Error as MeasPoint<Length> <= IchBase.BetweenArrowDial;
-                        };
+                            operation.IsGood = (getting) =>
+                            {
+                                Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
+                                return operation.Error as MeasPoint<Length> <= IchBase.BetweenArrowDial;
+                            };
+                        }
                     }
-                }
+                }, cancellationToken);
+               
             };
             operation.ErrorCalculation = (exped, getting) =>
             {
@@ -1473,17 +1510,21 @@ namespace mp2192_92.DialIndicator
                 arrPoints = viewModel.Content.Cells
                     .Select(cell => new MeasPoint<Length>(ObjectToDecimal(cell.Value), UnitMultiplier.Micro)).ToArray();
             };
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
+                return Task.Factory.StartNew(() =>
                 {
-                    if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
+                    for (var i = 0; i < EndRange.MainPhysicalQuantity.Value; i++)
+                    {
+                        if (i > 0) operation = (MeasuringOperation<MeasPoint<Length>[]>)operation.Clone();
                         operation.Expected = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
                             .Concat(arrPoints.Skip(i * 6).Take(6)).ToArray();
                         operation.Getting = new[] { new MeasPoint<Length>(0, UnitMultiplier.Mili) }
                             .Concat(measpointarr.Skip(i * 6).Take(6)).ToArray();
                         if (i > 0) DataRow.Add(operation);
-                }
+                    }
+                }, cancellationToken);
+                
             };
             operation.ErrorCalculation = (expected, getting) =>
             {

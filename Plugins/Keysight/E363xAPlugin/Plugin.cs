@@ -361,44 +361,48 @@ namespace E363xAPlugin
 
                     operation.Name = powerSupply.GetVoltageRange().Description;
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        powerSupply.OutputOn();
+                        try
+                        {
+                            powerSupply.OutputOn();
 
-                        ElectonicLoad.OutputOn();
-                        Thread.Sleep(3000);
-                        digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
-                        digitalMult.DcVoltage.Setting();
-                        var U1 = digitalMult.DcVoltage.GetValue();
-                        operation.Expected = U1;
-                        operation.Expected.Round(4);
-                        //разрываем цепь
-                        ElectonicLoad.OutputOff();
-                        Thread.Sleep(3000);
-                        digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
-                        digitalMult.DcVoltage.Setting();
-                        var U2 = digitalMult.DcVoltage.GetValue();
+                            ElectonicLoad.OutputOn();
+                            Thread.Sleep(3000);
+                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                            var U1 = digitalMult.DcVoltage.GetValue();
+                            operation.Expected = U1;
+                            operation.Expected.Round(4);
+                            //разрываем цепь
+                            ElectonicLoad.OutputOff();
+                            Thread.Sleep(3000);
+                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
+                            digitalMult.DcVoltage.Setting();
+                            var U2 = digitalMult.DcVoltage.GetValue();
 
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
 
-                        operation.Getting = U2;
-                        operation.Getting.Round(4);
+                            operation.Getting = U2;
+                            operation.Getting.Round(4);
 
-                        SetErrorCalculationUpperLowerCalcAndIsGood(operation);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
-                    }
+                            SetErrorCalculationUpperLowerCalcAndIsGood(operation);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
+                        }
+                    }, cancellationToken);
+                   
                 };
                 operation.CompliteWorkAsync = () =>
                 {
@@ -652,27 +656,31 @@ namespace E363xAPlugin
                         vm.Data.Cells.Select(cell => new MeasPoint<Time>(ObjectToDecimal(cell.Value),
                                                                          UnitMultiplier.Micro)).ToArray();
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    var averTime = new MeasPoint<Time>(0);
-                    foreach (var point in arrGetting)
+                    return Task.Factory.StartNew(() =>
                     {
-                        averTime = averTime + point;
-                        averTime.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity.Multiplier);
-                    }
+                        var averTime = new MeasPoint<Time>(0);
+                        foreach (var point in arrGetting)
+                        {
+                            averTime = averTime + point;
+                            averTime.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity.Multiplier);
+                        }
 
-                    averTime = averTime / arrGetting.Length;
-                    averTime.Round(2);
+                        averTime = averTime / arrGetting.Length;
+                        averTime.Round(2);
 
-                    for (var i = 0; i < arrPoints.Length; i++)
-                    {
-                        if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>) operation.Clone();
-                        operation.Name = arrPoints[i];
-                        operation.Expected = averTime;
-                        operation.Getting = arrGetting[i];
+                        for (var i = 0; i < arrPoints.Length; i++)
+                        {
+                            if (i > 0) operation = (BasicOperationVerefication<MeasPoint<Time>>)operation.Clone();
+                            operation.Name = arrPoints[i];
+                            operation.Expected = averTime;
+                            operation.Getting = arrGetting[i];
 
-                        if (i > 0) DataRow.Add(operation);
-                    }
+                            if (i > 0) DataRow.Add(operation);
+                        }
+                    }, cancellationToken);
+                   
                 };
                 operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
                 operation.IsGood = (getting) => operation.Expected < operation.Error;
@@ -780,46 +788,50 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
+                            try
                             {
-                                U1 = digitalMult.DcVoltage.GetValue();
-                                operation.Expected = U1;
-                                operation.Expected.Round(4);
-                                operation.Getting = U1 - U1;
-                            }
-                            else
-                            {
-                                if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
-                                    Thread.Sleep(15000);
+                                if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
+                                {
+                                    U1 = digitalMult.DcVoltage.GetValue();
+                                    operation.Expected = U1;
+                                    operation.Expected.Round(4);
+                                    operation.Getting = U1 - U1;
+                                }
                                 else
-                                    Thread.Sleep(108000); //30 минут в нормальном режиме поверки
-                                digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
-                                digitalMult.DcVoltage.Setting();
-                                var Un = digitalMult.DcVoltage.GetValue();
-                                operation.Expected = Un;
-                                operation.Expected.Round(4);
+                                {
+                                    if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
+                                        Thread.Sleep(15000);
+                                    else
+                                        Thread.Sleep(108000); //30 минут в нормальном режиме поверки
+                                    digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
+                                    digitalMult.DcVoltage.Setting();
+                                    var Un = digitalMult.DcVoltage.GetValue();
+                                    operation.Expected = Un;
+                                    operation.Expected.Round(4);
 
-                                operation.Getting = U1 - Un;
-                                operation.Getting.Round(4);
+                                    operation.Getting = U1 - Un;
+                                    operation.Getting.Round(4);
+                                }
+
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
                             }
-
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
+                            }
+                        }, cancellationToken);
+                  
                     };
                     operation.ErrorCalculation = (point, measPoint) =>
                     {
@@ -942,33 +954,37 @@ namespace E363xAPlugin
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            powerSupply.OutputOn();
-                            ElectonicLoad.OutputOn();
-                            Thread.Sleep(1000);
+                            try
+                            {
+                                powerSupply.OutputOn();
+                                ElectonicLoad.OutputOn();
+                                Thread.Sleep(1000);
 
-                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
-                            digitalMult.DcVoltage.Setting();
-                            var MeasVolts = digitalMult.DcVoltage.GetValue();
-                            operation.Getting = MeasVolts;
-                            operation.Getting.Round(4);
+                                digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
+                                digitalMult.DcVoltage.Setting();
+                                var MeasVolts = digitalMult.DcVoltage.GetValue();
+                                operation.Getting = MeasVolts;
+                                operation.Getting.Round(4);
 
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
+                            }
+                        }, cancellationToken);
+                      
 
                         SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                     };
@@ -1078,34 +1094,38 @@ namespace E363xAPlugin
                         operation.Name =
                             $"Предел {powerSupply.GetVoltageRange().Description}, напряжение выхода {setPoint.Description}";
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            powerSupply.OutputOn();
-                            ElectonicLoad.OutputOn();
-                            Thread.Sleep(1000);
+                            try
+                            {
+                                powerSupply.OutputOn();
+                                ElectonicLoad.OutputOn();
+                                Thread.Sleep(1000);
 
-                            var StdCurr = ElectonicLoad.GetMeasureCurrent();
-                            operation.Expected = StdCurr;
-                            operation.Expected.Round(4);
-                            var MeasPowerSupplyCurr = powerSupply.MEAS.GetMeasureCurrent();
-                            operation.Getting = MeasPowerSupplyCurr;
-                            operation.Getting.Round(4);
+                                var StdCurr = ElectonicLoad.GetMeasureCurrent();
+                                operation.Expected = StdCurr;
+                                operation.Expected.Round(4);
+                                var MeasPowerSupplyCurr = powerSupply.MEAS.GetMeasureCurrent();
+                                operation.Getting = MeasPowerSupplyCurr;
+                                operation.Getting.Round(4);
 
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
+                            }
+                        }, cancellationToken);
+                        
                     };
 
                     SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
@@ -1212,39 +1232,43 @@ namespace E363xAPlugin
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        powerSupply.OutputOn();
+                        try
+                        {
+                            powerSupply.OutputOn();
 
-                        ElectonicLoad.OutputOn();
-                        Thread.Sleep(3000);
+                            ElectonicLoad.OutputOn();
+                            Thread.Sleep(3000);
 
-                        var i1 = ElectonicLoad.GetMeasureCurrent();
-                        operation.Expected = i1;
-                        operation.Expected.Round(4);
-                        //подключаем второе сопротивление т.е. уменьшаем текущее в 2 раза
-                        var resistance = ElectonicLoad.GetResistnceLevel();
-                        ElectonicLoad.SetResistanceLevel(resistance / 2);
-                        Thread.Sleep(1000);
-                        var i2 = ElectonicLoad.GetMeasureCurrent();
-                        operation.Getting = i2;
-                        operation.Getting.Round(4);
+                            var i1 = ElectonicLoad.GetMeasureCurrent();
+                            operation.Expected = i1;
+                            operation.Expected.Round(4);
+                            //подключаем второе сопротивление т.е. уменьшаем текущее в 2 раза
+                            var resistance = ElectonicLoad.GetResistnceLevel();
+                            ElectonicLoad.SetResistanceLevel(resistance / 2);
+                            Thread.Sleep(1000);
+                            var i2 = ElectonicLoad.GetMeasureCurrent();
+                            operation.Getting = i2;
+                            operation.Getting.Round(4);
 
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        powerSupply.OutputOff();
-                        ElectonicLoad.OutputOff();
-                    }
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            powerSupply.OutputOff();
+                            ElectonicLoad.OutputOff();
+                        }
+                    }, cancellationToken);
+                   
 
                     SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
                 };
@@ -1489,58 +1513,62 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
-                                Thread.Sleep(15000);
-                            else
-                                Thread.Sleep(108000); // нормальная поверка по МП, между измерениями 30 минут
-
-                            if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
+                            try
                             {
-                                I1 = ElectonicLoad.GetMeasureCurrent();
-                                operation.Expected = I1;
-                                operation.Expected.Round(4);
-                                operation.Getting = I1 - I1;
+                                if (isSpeedOperation) //если выбран режим ПОВЕРКА - ускоренная поверка
+                                    Thread.Sleep(15000);
+                                else
+                                    Thread.Sleep(108000); // нормальная поверка по МП, между измерениями 30 минут
+
+                                if (DataRow.IndexOf(operation) == 0 || DataRow.IndexOf(operation) == 17)
+                                {
+                                    I1 = ElectonicLoad.GetMeasureCurrent();
+                                    operation.Expected = I1;
+                                    operation.Expected.Round(4);
+                                    operation.Getting = I1 - I1;
+                                }
+                                else
+                                {
+                                    var In = ElectonicLoad.GetMeasureCurrent();
+                                    operation.Expected = In;
+                                    operation.Expected.Round(4);
+
+                                    operation.Getting = I1 - In;
+                                    operation.Getting.Round(4);
+                                }
+
+                                operation.UpperCalculation = expected => ErrorCalc(expected);
+                                operation.LowerCalculation = expected => operation.UpperTolerance * -1;
+
+                                operation.IsGood = (getting) =>
+                                {
+                                    if (operation.Getting == null || operation.Expected == null ||
+                                        operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
+                                    // в Expected записан измеренный ток,а погрешность посчитана для первого тока
+                                    // и края посчитаны тоже для первого тока.
+                                    // Фактически первый измеренный ток определяет границы допуска.
+                                    // В Getting записана разность первого тока и текущего измеренного.
+                                    //поэтому ниже сравнивается Getting с краями допуска
+                                    return (operation.Getting < operation.UpperTolerance) &
+                                           (operation.Getting > operation.LowerTolerance);
+                                };
                             }
-                            else
+                            catch (Exception e)
                             {
-                                var In = ElectonicLoad.GetMeasureCurrent();
-                                operation.Expected = In;
-                                operation.Expected.Round(4);
-
-                                operation.Getting = I1 - In;
-                                operation.Getting.Round(4);
+                                Logger.Error(e);
+                                throw;
                             }
-
-                            operation.UpperCalculation = expected => ErrorCalc(expected);
-                            operation.LowerCalculation = expected => operation.UpperTolerance * -1;
-
-                            operation.IsGood = (getting) =>
+                            finally
                             {
-                                if (operation.Getting == null || operation.Expected == null ||
-                                    operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
-                                // в Expected записан измеренный ток,а погрешность посчитана для первого тока
-                                // и края посчитаны тоже для первого тока.
-                                // Фактически первый измеренный ток определяет границы допуска.
-                                // В Getting записана разность первого тока и текущего измеренного.
-                                //поэтому ниже сравнивается Getting с краями допуска
-                                return (operation.Getting < operation.UpperTolerance) &
-                                       (operation.Getting > operation.LowerTolerance);
-                            };
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
+                            }
+                        }, cancellationToken);
+                   
                     };
                     operation.CompliteWorkAsync = () =>
                     {
@@ -1649,32 +1677,36 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            powerSupply.OutputOn();
-                            ElectonicLoad.OutputOn();
-                            Thread.Sleep(1000);
-                            var MeasStdCurr = ElectonicLoad.GetMeasureCurrent();
-                            operation.Getting = MeasStdCurr;
-                            operation.Getting.Round(4);
+                            try
+                            {
+                                powerSupply.OutputOn();
+                                ElectonicLoad.OutputOn();
+                                Thread.Sleep(1000);
+                                var MeasStdCurr = ElectonicLoad.GetMeasureCurrent();
+                                operation.Getting = MeasStdCurr;
+                                operation.Getting.Round(4);
 
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
 
-                            SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
-                        }
+                                SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
+                            }
+                        }, cancellationToken);
+                      
                     };
                     operation.CompliteWorkAsync = () =>
                     {
@@ -1793,42 +1825,47 @@ namespace E363xAPlugin
 
                         operation.Name = powerSupply.GetVoltageRange().Description;
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            powerSupply.OutputOn();
-                            ElectonicLoad.OutputOn();
-                            var volt = powerSupply.Ranges[(int) rangePowerSupply];
-                            var current = powerSupply.Ranges[(int) rangePowerSupply].AdditionalPhysicalQuantity;
-                            var resistance =
-                                new MeasPoint<Resistance>(0.50M *
-                                                          setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi() /
-                                                          current.GetNoramalizeValueToSi());
-                            resistance.Round(4);
-                            ElectonicLoad.SetResistanceLevel(resistance);
-                            Thread.Sleep(1000);
+                            try
+                            {
+                                powerSupply.OutputOn();
+                                ElectonicLoad.OutputOn();
+                                var volt = powerSupply.Ranges[(int)rangePowerSupply];
+                                var current = powerSupply.Ranges[(int)rangePowerSupply].AdditionalPhysicalQuantity;
+                                var resistance =
+                                    new MeasPoint<Resistance>(0.50M *
+                                                              setPoint.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                                              current.GetNoramalizeValueToSi());
+                                resistance.Round(4);
+                                ElectonicLoad.SetResistanceLevel(resistance);
+                                Thread.Sleep(1000);
 
-                            digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
-                            digitalMult.DcVoltage.Setting();
-                            var StdVolts = digitalMult.DcVoltage.GetValue();
-                            operation.Expected = StdVolts;
-                            operation.Expected.Round(4);
+                                digitalMult.DcVoltage.RangeStorage.IsAutoRange = true;
+                                digitalMult.DcVoltage.Setting();
+                                var StdVolts = digitalMult.DcVoltage.GetValue();
+                                operation.Expected = StdVolts;
+                                operation.Expected.Round(4);
 
-                            var MesVolt = powerSupply.GetMeasureVoltage();
-                            operation.Getting = MesVolt;
-                            operation.Getting.Round(4);
+                                var MesVolt = powerSupply.GetMeasureVoltage();
+                                operation.Getting = MesVolt;
+                                operation.Getting.Round(4);
 
-                            powerSupply.OutputOff();
-                            ElectonicLoad.OutputOff();
+                                powerSupply.OutputOff();
+                                ElectonicLoad.OutputOff();
 
-                            SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
+                                SetDefaultErrorCalculationUpperLowerCalcAndIsGood(operation);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+
+                        }, cancellationToken);
+                      
                     };
                     operation.CompliteWorkAsync = () =>
                     {

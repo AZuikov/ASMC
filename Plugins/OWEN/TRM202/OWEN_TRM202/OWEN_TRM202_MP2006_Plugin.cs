@@ -259,7 +259,7 @@ using NLog;
 //                        throw;
 //                    }
 //                };
-//                operation.BodyWork = () =>
+//                operation.BodyWorkAsync = () =>
 //                {
 //                    try
 //                    {
@@ -424,7 +424,7 @@ using NLog;
 //                        throw;
 //                    }
 //                };
-//                operation.BodyWork = () =>
+//                operation.BodyWorkAsync = () =>
 //                {
 //                    try
 //                    {
@@ -586,7 +586,7 @@ using NLog;
 //                        throw;
 //                    }
 //                };
-//                operation.BodyWork = () =>
+//                operation.BodyWorkAsync = () =>
 //                {
 //                    try
 //                    {
