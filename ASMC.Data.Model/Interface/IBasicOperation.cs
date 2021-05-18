@@ -61,12 +61,12 @@ namespace ASMC.Data.Model.Interface
         /// <summary>
         ///     Позволяет задать функцию условия проверки соответствия полученного значения ожидаемому.
         /// </summary>
-        Predicate<T> IsGood { get; set; }
+        Func<bool> IsGood { get; set; }
 
         #endregion
 
         /// <summary>
-        ///     Предоставляет метод который при вызове заполняет <see cref="IBasicOperation{T}" />.
+        ///     Предоставляет метод который при вызове заполняет <see cref="IBasicOperPredicate<T>ation{T}" />.
         /// </summary>
         Task WorkAsync(CancellationTokenSource token);
     }

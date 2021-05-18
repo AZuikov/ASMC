@@ -166,7 +166,11 @@ namespace ASMC.Data.Model
         Task StartWork(CancellationTokenSource token);
 
         #endregion
+         event EndOperationHandler EndOperationEvent;
+
     }
+
+    public delegate void EndOperationHandler(object sender);
 
     /// <summary>
     /// предоставляет реализацию отображаемой схемы.

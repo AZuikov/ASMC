@@ -122,7 +122,7 @@ namespace E363xAPlugin
                 if (dds.IsGood == null)
                     dataRow[dataTable.Columns.Count - 1] = ConstNotUsed;
                 else
-                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
+                    dataRow[dataTable.Columns.Count - 1] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -151,7 +151,7 @@ namespace E363xAPlugin
             inOperation.UpperCalculation = (expected) => { return ErrorCalc(expected); };
             inOperation.LowerCalculation = (expected) => ErrorCalc(expected) * -1;
 
-            inOperation.IsGood = (getting) =>
+            inOperation.IsGood = () =>
             {
                 if (inOperation.Getting == null || inOperation.Expected == null ||
                     inOperation.UpperTolerance == null || inOperation.LowerTolerance == null) return false;
@@ -183,7 +183,7 @@ namespace E363xAPlugin
                 return result;
             };
 
-            inOperation.IsGood = (getting) =>
+            inOperation.IsGood = () =>
             {
                 if (inOperation.Getting == null || inOperation.Expected == null ||
                     inOperation.UpperTolerance == null || inOperation.LowerTolerance == null) return false;

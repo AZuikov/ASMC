@@ -84,7 +84,7 @@ namespace OWEN_TRM202
                 if (dds?.IsGood == null)
                     dataRow[dataRow.Table.Columns.Count - 1] = "не выполнено";
                 else
-                    dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood(dds.Getting) ? "Годен" : "Брак";
+                    dataRow[dataRow.Table.Columns.Count - 1] = dds.IsGood() ? "Годен" : "Брак";
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -110,7 +110,7 @@ namespace OWEN_TRM202
         public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
-            if (operation.Getting !=null && operation.IsGood != null && !operation.IsGood(operation.Getting))
+            if (operation.Getting !=null && operation.IsGood != null && !operation.IsGood())
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
@@ -130,7 +130,7 @@ namespace OWEN_TRM202
                 return Task.FromResult(true);
             }
             
-            return Task.FromResult(operation.IsGood(operation.Getting));
+            return Task.FromResult(operation.IsGood());
         }
 
         public static MeasPoint<Percent> CalculateBasicRedundanceTol<T>(MeasPoint<T> measPoint, MeasPoint<T> StdPoint, PhysicalRange<T> range)  where T : PhysicalQuantity<T>, new()

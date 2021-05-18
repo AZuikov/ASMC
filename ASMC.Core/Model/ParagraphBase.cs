@@ -55,6 +55,8 @@ namespace ASMC.Core.Model
             _treeNode = new TreeNode();
         }
 
+        public event EndOperationHandler EndOperationEvent;
+
         #region Methods
 
         /// <summary>
@@ -267,7 +269,7 @@ namespace ASMC.Core.Model
         }
 
         /// <inheritdoc />
-        public virtual async Task StartSinglWorkAsync(CancellationTokenSource token, Guid guid)
+        public async Task StartSinglWorkAsync(CancellationTokenSource token, Guid guid)
         {
             Logger.Info($@"Начато выполнение пункта {Name}");
             InitWork(token);
@@ -290,8 +292,11 @@ namespace ASMC.Core.Model
             }
         }
 
+        
+
+
         /// <inheritdoc />
-        public  virtual async Task StartWork(CancellationTokenSource token)
+        public  async Task StartWork(CancellationTokenSource token)
         {
             Logger.Info($@"Выполняется пункт {Name}");
             InitWork(token);
@@ -314,6 +319,7 @@ namespace ASMC.Core.Model
                     if (metod != null) await (Task)metod.Invoke(row, new object[] { token });
                     checkResult.Add((Func<bool>) row.GetType().GetProperty(nameof(IBasicOperation<object>.IsGood))
                                                     .GetValue(row));
+                    EndOperationEvent.Invoke(row);
                 }
 
             }
@@ -360,4 +366,6 @@ namespace ASMC.Core.Model
         /// <inheritdoc />
         public List<IBasicOperation<T>> DataRow { get; set; }
     }
+
+   
 }

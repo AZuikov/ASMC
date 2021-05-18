@@ -250,7 +250,7 @@ namespace E364xAPlugin
             base.InitWork(token);
             var operation = new BasicOperation<bool>();
             operation.Expected = true;
-            operation.IsGood = (getting) => Equals(operation.Getting, operation.Expected);
+            operation.IsGood = () => Equals(operation.Getting, operation.Expected);
             operation.InitWorkAsync = () =>
             {
                 var service = UserItemOperation.ServicePack.QuestionText();
@@ -260,7 +260,7 @@ namespace E364xAPlugin
                 var res = service.Entity as Tuple<string, bool>;
                 operation.Getting = res.Item2;
                 operation.Comment = res.Item1;
-                operation.IsGood = (getting) => operation.Getting;
+                operation.IsGood = () => operation.Getting;
 
                 return Task.CompletedTask;
             };
@@ -327,8 +327,8 @@ namespace E364xAPlugin
                 operation.Getting = powerSupply.SelfTest();
             };
 
-            operation.IsGood = (getting) => operation.Getting;
-            operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood(operation.Getting)); };
+            operation.IsGood = () => operation.Getting;
+            operation.CompliteWorkAsync = () => { return Task.FromResult(operation.IsGood()); };
             DataRow.Add(operation);
         }
 
@@ -452,7 +452,7 @@ namespace E364xAPlugin
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                    if (operation.IsGood != null && !operation.IsGood())
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -469,7 +469,7 @@ namespace E364xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood(operation.Getting));
+                    return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(operation);
             }
@@ -598,7 +598,7 @@ namespace E364xAPlugin
                 
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                    if (operation.IsGood != null && !operation.IsGood())
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -615,7 +615,7 @@ namespace E364xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood(operation.Getting));
+                    return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(operation);
             }
@@ -732,9 +732,9 @@ namespace E364xAPlugin
                    
                 };
                 operation.ErrorCalculation = (point, measPoint) => new MeasPoint<Time>(50, UnitMultiplier.Micro);
-                operation.IsGood = (getting) => operation.Expected < operation.Error;
+                operation.IsGood = () => operation.Expected < operation.Error;
 
-                operation.CompliteWorkAsync = () => Task.FromResult(operation.IsGood(operation.Getting));
+                operation.CompliteWorkAsync = () => Task.FromResult(operation.IsGood());
 
                 DataRow.Add(operation);
             }
@@ -898,7 +898,7 @@ namespace E364xAPlugin
                         }, cancellationToken);
                    
                     };
-                    operation.IsGood = (getting) =>
+                    operation.IsGood = () =>
                     {
                         if (operation.Getting == null || operation.Expected == null ||
                             operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
@@ -911,7 +911,7 @@ namespace E364xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                        if (operation.IsGood != null && !operation.IsGood())
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -929,7 +929,7 @@ namespace E364xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood(operation.Getting));
+                        return Task.FromResult(operation.IsGood());
                     };
                     DataRow.Add(operation);
                 }
@@ -1059,7 +1059,7 @@ namespace E364xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                        if (operation.IsGood != null && !operation.IsGood())
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1079,7 +1079,7 @@ namespace E364xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood(operation.Getting));
+                        return Task.FromResult(operation.IsGood());
                     };
                     DataRow.Add(operation);
                 }
@@ -1209,7 +1209,7 @@ namespace E364xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                        if (operation.IsGood != null && !operation.IsGood())
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1229,7 +1229,7 @@ namespace E364xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood(operation.Getting));
+                        return Task.FromResult(operation.IsGood());
                     };
                     DataRow.Add(operation);
                 }
@@ -1354,7 +1354,7 @@ namespace E364xAPlugin
                 };
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                    if (operation.IsGood != null && !operation.IsGood())
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -1372,7 +1372,7 @@ namespace E364xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood(operation.Getting));
+                    return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(operation);
             }
@@ -1494,7 +1494,7 @@ namespace E364xAPlugin
                 
                 operation.CompliteWorkAsync = () =>
                 {
-                    if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                    if (operation.IsGood != null && !operation.IsGood())
                     {
                         var answer =
                             UserItemOperation.ServicePack.MessageBox()
@@ -1512,7 +1512,7 @@ namespace E364xAPlugin
 
                     if (operation.IsGood == null)
                         return Task.FromResult(true);
-                    return Task.FromResult(operation.IsGood(operation.Getting));
+                    return Task.FromResult(operation.IsGood());
                 };
                 DataRow.Add(operation);
             }
@@ -1643,7 +1643,7 @@ namespace E364xAPlugin
                             operation.UpperCalculation = expected => { return ErrorCalc(expected); };
                             operation.LowerCalculation = expected => ErrorCalc(expected) * -1;
 
-                            operation.IsGood = (getting) =>
+                            operation.IsGood = () =>
                             {
                                 if (operation.Getting == null || operation.Expected == null ||
                                     operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
@@ -1660,7 +1660,7 @@ namespace E364xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                        if (operation.IsGood != null && !operation.IsGood())
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1677,7 +1677,7 @@ namespace E364xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood(operation.Getting));
+                        return Task.FromResult(operation.IsGood());
                     };
                     DataRow.Add(operation);
                 }
@@ -1800,7 +1800,7 @@ namespace E364xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                        if (operation.IsGood != null && !operation.IsGood())
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1818,7 +1818,7 @@ namespace E364xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood(operation.Getting));
+                        return Task.FromResult(operation.IsGood());
                     };
                     DataRow.Add(operation);
                 }
@@ -1962,7 +1962,7 @@ namespace E364xAPlugin
                     };
                     operation.CompliteWorkAsync = () =>
                     {
-                        if (operation.IsGood != null && !operation.IsGood(operation.Getting))
+                        if (operation.IsGood != null && !operation.IsGood())
                         {
                             var answer =
                                 UserItemOperation.ServicePack.MessageBox()
@@ -1982,7 +1982,7 @@ namespace E364xAPlugin
 
                         if (operation.IsGood == null)
                             return Task.FromResult(true);
-                        return Task.FromResult(operation.IsGood(operation.Getting));
+                        return Task.FromResult(operation.IsGood());
                     };
                     DataRow.Add(operation);
                 }

@@ -55,7 +55,7 @@ namespace ASMC.Data.Model
         }
 
         /// <inheritdoc />
-        public Predicate<T> IsGood { get; set; }
+        public Func<bool> IsGood { get; set; }
 
         /// <inheritdoc />
         public async Task WorkAsync(CancellationTokenSource token)

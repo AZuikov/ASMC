@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -7,17 +8,18 @@ using System.Windows;
 using ASMC.Data.Model;
 using DevExpress.Mvvm.UI;
 using DevExpress.Xpf.Bars;
+using Newtonsoft.Json;
 using NLog;
 
 namespace ASMC.Core.Model
 {
     /// <summary>
-    /// Содержит доступныйе виды Метрологического контроля.
+    /// Содержит доступные виды Метрологического контроля.
     /// </summary>
     public class OperationMetrControlBase
     {
         /// <summary>
-        /// Содержит перечесления типов операции.
+        /// Содержит перечисления типов операции.
         /// </summary>
         [Flags]
         public enum TypeOpeation
@@ -150,13 +152,13 @@ namespace ASMC.Core.Model
                 }
 
                 var tree = (ITreeNode)userItemOperationBase;
-                foreach (var node in tree.Nodes)
-                    cou+=CountNode((IUserItemOperationBase)node);
+                cou += tree.Nodes.Sum(node => CountNode((IUserItemOperationBase) node));
                 return cou;
             }
 
             async Task ClrNodeAsync(IUserItemOperationBase userItemOperationBase)
             {
+                userItemOperationBase.EndOperationEvent += UserItemOperationBase_EndOperationEvent;
                 try
                 {
                     if (userItemOperationBase.IsCheked || !IsManual)
@@ -176,6 +178,19 @@ namespace ASMC.Core.Model
                 foreach (var node in tree.Nodes) 
                    await  ClrNodeAsync((IUserItemOperationBase) node);
             }
+        }
+
+        private void UserItemOperationBase_EndOperationEvent(object sender)
+        {
+            //var ser = new JsonSerializer();
+            //var a = JsonConvert.SerializeObject(SelectedOperation.UserItemOperation., Formatting.Indented, new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All,  });
+
+
+            //using (var sw = new StreamWriter(@"D:\Новый текстовый документ.txt"))
+            //{
+            //    sw.Write(a);
+            //} 
+          
         }
 
         private async void ShowShemAsync(SchemeImage sheme, CancellationTokenSource source)
