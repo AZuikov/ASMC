@@ -14,7 +14,7 @@ namespace ASMC.Devices.Interface.SourceAndMeter
 
     }
 
-    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> : IDeviceSettingsControl
+    public interface ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2> /*: IDeviceSettingsControl*/
 
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new() where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
 
