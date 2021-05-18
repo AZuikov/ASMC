@@ -139,7 +139,7 @@ namespace N8957APlugin
                var res = service.Entity as Tuple<string, bool>;
                operation.Getting = res.Item2;
                operation.Comment = res.Item1;
-               operation.IsGood = (getting) => operation.Getting;
+               operation.IsGood = () => operation.Getting;
 
                try
                {
@@ -385,7 +385,7 @@ namespace N8957APlugin
                         operation.UpperCalculation = (expected)=> operation.Expected + operation.Error;
                         operation.LowerCalculation = (expected) => operation.Expected - operation.Error;
 
-                        operation.IsGood = (getting) =>
+                        operation.IsGood = () =>
                         {
                             if (operation.Getting == null || operation.Expected == null ||
                                 operation.UpperTolerance == null || operation.LowerTolerance == null) return false;
@@ -422,7 +422,7 @@ namespace N8957APlugin
         public static Task<bool> HelpsCompliteWork<T>(BasicOperationVerefication<MeasPoint<T>> operation,
             IUserItemOperation UserItemOperation) where T : class, IPhysicalQuantity<T>, new()
         {
-            if (!operation.IsGood(operation.Getting))
+            if (!operation.IsGood())
             {
                 var answer =
                     UserItemOperation.ServicePack.MessageBox()
@@ -440,7 +440,7 @@ namespace N8957APlugin
                 if (answer == MessageResult.No) return Task.FromResult(true);
             }
 
-            return Task.FromResult(operation.IsGood(operation.Getting));
+            return Task.FromResult(operation.IsGood());
         }
 
         #endregion Methods

@@ -81,12 +81,12 @@ namespace Multimetr34401A
 
         protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
         {
-            if (operation.IsGood == null || operation.IsGood(operation.Getting))
-                return Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
+            if (operation.IsGood == null || operation.IsGood())
+                return Task.FromResult(operation.IsGood == null || operation.IsGood());
 
             return ShowQuestionMessage(operation.ToString()) == MessageResult.No
                 ? Task.FromResult(true)
-                : Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
+                : Task.FromResult(operation.IsGood == null || operation.IsGood());
 
             MessageResult ShowQuestionMessage(string message)
             {
@@ -189,7 +189,7 @@ namespace Multimetr34401A
                 dataRow[2] = dds.Getting?.ToString();
                 dataRow[3] = dds.LowerTolerance?.ToString();
                 dataRow[4] = dds.UpperTolerance?.ToString();
-                dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood(dds.Getting) ? ConstGood : ConstBad : dds.Comment;
+                dataRow[5] = string.IsNullOrWhiteSpace(dds.Comment) ? dds.IsGood() ? ConstGood : ConstBad : dds.Comment;
                 data.Rows.Add(dataRow);
             }
 
@@ -477,7 +477,7 @@ namespace Multimetr34401A
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
-                operation.IsGood= (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -529,7 +529,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.Frequency.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood= (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -580,7 +580,7 @@ namespace Multimetr34401A
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
 
-                operation.IsGood= (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -633,7 +633,7 @@ namespace Multimetr34401A
                     expected + AllowableError(Multimetr.Resistance4W.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood= (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }
@@ -684,7 +684,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.Resistance2W.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -746,7 +746,7 @@ namespace Multimetr34401A
                 operation.UpperCalculation = expected =>
                     expected + AllowableError(Multimetr.AcVoltage.RangeStorage, expected);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood= (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }
@@ -798,7 +798,7 @@ namespace Multimetr34401A
                     expected + AllowableError(Multimetr.AcCurrent.RangeStorage, expected);
 
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood= (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
                 DataRow.Add(operation);
             }
         }

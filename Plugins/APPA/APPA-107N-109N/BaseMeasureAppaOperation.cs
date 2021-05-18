@@ -88,7 +88,7 @@ namespace APPA_107N_109N
                                                                           .Expected.MainPhysicalQuantity
                                                                           .Multiplier);
 
-            inOperation.IsGood = (getting) =>
+            inOperation.IsGood = () =>
             {
                 if (inOperation.Getting == null || inOperation.Expected == null ||
                     inOperation.UpperTolerance == null || inOperation.LowerTolerance == null) return false;
@@ -174,7 +174,7 @@ namespace APPA_107N_109N
                                                                            .Expected.MainPhysicalQuantity
                                                                            .Multiplier);
 
-           inOperation.IsGood = (getting) =>
+           inOperation.IsGood = () =>
            {
                if (inOperation.Getting == null || inOperation.Expected == null ||
                    inOperation.UpperTolerance == null || inOperation.LowerTolerance == null) return false;

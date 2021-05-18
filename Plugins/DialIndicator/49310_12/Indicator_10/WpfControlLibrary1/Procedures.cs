@@ -302,7 +302,7 @@ namespace mp2192_92.DialIndicator
                         Logger.Debug($@"Ожидаемое:{((IMeasPoint<Length>)operation.Expected).Description} измеренное {((IMeasPoint<Weight>)operation.Getting).Description}");
                         if (i == 0)
                         {
-                            operation.IsGood = (getting) =>
+                            operation.IsGood = () =>
                             {
                                 Logger.Debug($@"Максимальное усилие {(operation?.Error?.Take(1).First() as MeasPoint<Force>).Description }");
                                 Logger.Debug($@"Прямой/обратный ход {(operation?.Error?.Skip(1).Take(1).First() as MeasPoint<Force>).Description }");
@@ -470,7 +470,7 @@ namespace mp2192_92.DialIndicator
                         if (i > 0) DataRow.Add(operation);
                         if (i == 0)
                         {
-                            operation.IsGood = (getting) =>
+                            operation.IsGood = () =>
                             {
                                 Logger.Debug($@"Максимальное усиле {operation?.Error}");
                                 return operation.Error <= IchBase.PerpendicularPressureMax;
@@ -604,7 +604,7 @@ namespace mp2192_92.DialIndicator
                         res
                     };
                 };
-             operation.IsGood = (getting) =>  operation.Error.FirstOrDefault() <=
+             operation.IsGood = () =>  operation.Error.FirstOrDefault() <=
                                      IchBase.Arresting;
 
             DataRow.Add(operation);
@@ -728,7 +728,7 @@ namespace mp2192_92.DialIndicator
                 }, cancellationToken);
                
             };
-             operation.IsGood = (getting) => operation.Error.First() <= IchBase.Variation;
+             operation.IsGood = () => operation.Error.First() <= IchBase.Variation;
             operation.ErrorCalculation =
                 (expected, getting) =>
                 {
@@ -837,7 +837,7 @@ namespace mp2192_92.DialIndicator
                 var res = (a.Max() - a.Min()).MainPhysicalQuantity.ChangeMultiplier(UnitMultiplier.Micro);
                 return new[] { new MeasPoint<Length>((Length) res) };
             };
-             operation.IsGood = (getting) =>
+             operation.IsGood = () =>
             {
                 var full = (DataRow.Max(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]) -
                             DataRow.Min(q => (q as MeasuringOperation<MeasPoint<Length>[]>)?.Error[0]));
@@ -937,7 +937,7 @@ namespace mp2192_92.DialIndicator
                         if (i > 0) DataRow.Add(operation);
                         if (i == 0)
                         {
-                            operation.IsGood = (getting) =>
+                            operation.IsGood = () =>
                             {
                                 Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
                                 return operation.Error as MeasPoint<Length> <= IchBase.ConnectDiametr.MaxDelta && DataRow.All(q => IchBase.ConnectDiametr.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
@@ -986,7 +986,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[5] = ConstNotUsed;
                 else
-                    dataRow[5] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
+                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1095,7 +1095,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[2] = ConstNotUsed;
                 else
-                    dataRow[2] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
+                    dataRow[2] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1148,7 +1148,7 @@ namespace mp2192_92.DialIndicator
                  
 
             };
-             operation.IsGood = (getting) => IchBase.ArrowWidch.IsPointBelong(operation.Getting);
+             operation.IsGood = () => IchBase.ArrowWidch.IsPointBelong(operation.Getting);
 
             DataRow.Add(operation);
         }
@@ -1203,7 +1203,7 @@ namespace mp2192_92.DialIndicator
                         if (i > 0) DataRow.Add(operation);
                         if (i == 0)
                         {
-                            operation.IsGood = (getting) =>
+                            operation.IsGood = () =>
                             {
                                 Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
                                 return operation.Error as MeasPoint<Length> <= IchBase.StrokeWidch.MaxDelta && DataRow.All(q => IchBase.StrokeWidch.Range.IsPointBelong(q.Getting as MeasPoint<Length>));
@@ -1251,7 +1251,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[5] = ConstNotUsed;
                 else
-                    dataRow[5] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
+                    dataRow[5] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1286,7 +1286,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[2] = ConstNotUsed;
                 else
-                    dataRow[2] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
+                    dataRow[2] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -1337,7 +1337,7 @@ namespace mp2192_92.DialIndicator
                 }, cancellationToken);
 
             };
-             operation.IsGood = (getting) => IchBase.StrokeLength<=operation.Getting;
+             operation.IsGood = () => IchBase.StrokeLength<=operation.Getting;
 
             DataRow.Add(operation);
         }
@@ -1391,7 +1391,7 @@ namespace mp2192_92.DialIndicator
                         if (i > 0) DataRow.Add(operation);
                         if (i == 0)
                         {
-                            operation.IsGood = (getting) =>
+                            operation.IsGood = () =>
                             {
                                 Logger.Debug($@"Отклонение от цилендричности{operation?.Error}");
                                 return operation.Error as MeasPoint<Length> <= IchBase.BetweenArrowDial;
@@ -1434,7 +1434,7 @@ namespace mp2192_92.DialIndicator
                 if (dds.IsGood == null)
                     dataRow[4] = ConstNotUsed;
                 else
-                    dataRow[4] = dds.IsGood(dds.Getting) ? ConstGood : ConstBad;
+                    dataRow[4] = dds.IsGood() ? ConstGood : ConstBad;
                 dataTable.Rows.Add(dataRow);
             }
 

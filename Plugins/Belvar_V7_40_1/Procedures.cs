@@ -234,7 +234,7 @@ namespace Belvar_V7_40_1
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
                 if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.DcVoltage.RangeStorage,
@@ -321,7 +321,7 @@ namespace Belvar_V7_40_1
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
                 //если  калибратор и вольтметр имеют подходящие диапазоны, то можно произвести измерение
@@ -404,7 +404,7 @@ namespace Belvar_V7_40_1
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
                 if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.Resistance2W.RangeStorage, Calibrator.Resistance2W.RangeStorage, rangeToSetOnDmm, testingMeasureValue, operation))
@@ -506,7 +506,7 @@ namespace Belvar_V7_40_1
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
                 if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.DcCurrent.RangeStorage, Calibrator.DcCurrent.RangeStorage, rangeToSetOnDmm, testingMeasureValue, operation))
@@ -584,7 +584,7 @@ namespace Belvar_V7_40_1
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 //Проверяем можем ли мы установить подходящий предел измерения на мультиметре и воспроизвести значение физ. величины на эталоне.
                 if (!CheckAndSetPhisicalValuesIsSuccess(Multimetr.AcCurrent.RangeStorage, Calibrator.AcCurrent.RangeStorage, rangeToSetOnDmm, testingMeasureValue, operation))
@@ -800,7 +800,7 @@ namespace Belvar_V7_40_1
                 operation.Getting.MainPhysicalQuantity.Value =
                     Math.Round(operation.Getting.MainPhysicalQuantity.Value, mantissa);
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = (getting) => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
             return operation;
         }
     }
@@ -948,7 +948,7 @@ namespace Belvar_V7_40_1
            operation.Getting.MainPhysicalQuantity.Value =
                Math.Round(operation.Getting.MainPhysicalQuantity.Value, mantissa);
            operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-           operation.IsGood = (getting) => ChekedOperation(operation);
+           operation.IsGood = () => ChekedOperation(operation);
            return operation;
        }
 

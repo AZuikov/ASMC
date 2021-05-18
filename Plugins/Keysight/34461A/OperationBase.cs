@@ -52,7 +52,7 @@ namespace ProgramFor34461A
                     dataRow["Максимальное допустимое значение"] = rowFromDataRow.UpperTolerance;
                 if (rowFromDataRow.Getting != null)
                 {
-                    dataRow["Результат"] = rowFromDataRow.IsGood(rowFromDataRow.Getting) ? ConstGood : ConstBad;
+                    dataRow["Результат"] = rowFromDataRow.IsGood() ? ConstGood : ConstBad;
                 }
                 else
                 {
@@ -219,12 +219,12 @@ namespace ProgramFor34461A
 
         protected Task<bool> CompliteWorkAsync<T>(IMeasuringOperation<T> operation)
         {
-            if (operation.IsGood == null || operation.IsGood(operation.Getting))
-                return Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
+            if (operation.IsGood == null || operation.IsGood())
+                return Task.FromResult(operation.IsGood == null || operation.IsGood());
 
             return ShowQuestionMessage(operation.ToString()) == MessageResult.No
                 ? Task.FromResult(true)
-                : Task.FromResult(operation.IsGood == null || operation.IsGood(operation.Getting));
+                : Task.FromResult(operation.IsGood == null || operation.IsGood());
 
             MessageResult ShowQuestionMessage(string message)
             {
@@ -299,7 +299,7 @@ namespace ProgramFor34461A
                     dataRow["Максимальное допустимое значение"] = rowFromDataRow.UpperTolerance.MainPhysicalQuantity.ToString(); 
                 if ( rowFromDataRow.Getting != null)
                 {
-                    dataRow["Результат"] = rowFromDataRow.IsGood(rowFromDataRow.Getting) ? ConstGood : ConstBad;
+                    dataRow["Результат"] = rowFromDataRow.IsGood() ? ConstGood : ConstBad;
                 }
                 else
                 {
