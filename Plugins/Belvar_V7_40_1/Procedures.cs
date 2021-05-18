@@ -258,7 +258,7 @@ namespace Belvar_V7_40_1
                     {
                         try
                         {
-                            operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token, 2000).Item1;
+                            operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator, Logger, token, 2000).Item1;
                             operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
                                 .Multiplier);
                         }
@@ -343,7 +343,7 @@ namespace Belvar_V7_40_1
                     {
                         try
                         {
-                            var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
+                            var result = BodyWork(Multimetr.AcVoltage, Calibrator, Logger, token).Item1;
                             operation.Getting = ConvertMeasPoint(result, operation.Expected);
                             operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
                                 .Multiplier);
@@ -430,7 +430,7 @@ namespace Belvar_V7_40_1
                             {
                                 //зададим 0 Ом и считвем сопротивление проводов
                                 InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, nullPointResistance, Logger, token);
-                                nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
+                                nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token).Item1;
                                 nullPointResistance.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
                             }
                             else
@@ -439,7 +439,7 @@ namespace Belvar_V7_40_1
                             }
                             InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
 
-                            operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token, timeOut).Item1;
+                            operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token, timeOut).Item1;
                             operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
                             //если сопротивление проводов измерено, то его нужно учесть
                             if (nullPointResistance.MainPhysicalQuantity.GetNoramalizeValueToSi() > 0)
@@ -525,7 +525,7 @@ namespace Belvar_V7_40_1
                     {
                         try
                         {
-                            operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator.DcCurrent, Logger, token).Item1;
+                            operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator, Logger, token).Item1;
                             operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
                             operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
                         }
@@ -610,7 +610,7 @@ namespace Belvar_V7_40_1
                     {
                         try
                         {
-                            var result = BodyWork(Multimetr.AcCurrent, Calibrator.AcCurrent, Logger, token).Item1;
+                            var result = BodyWork(Multimetr.AcCurrent, Calibrator, Logger, token).Item1;
                             result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
                             operation.Getting = ConvertMeasPoint(result, operation.Expected);
                             operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity

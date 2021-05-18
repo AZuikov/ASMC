@@ -171,9 +171,10 @@ namespace CNT_90
             //Generator.OUT1.OutputSetting.OutputLoad
             //Generator.OUT1.OutputSetting.OutputImpedance
             Generator.OUT1.SineSignal.Setting();
-            Generator.OUT1.OutputOn();
+            
             //todo предварительно настроенный сигнала 
             Generator.OUT1.Setting();
+            Generator.OUT1.OutputOn();
 
             Counter.InputA.SettingSlope.SetInputSlopePositive();
             var value = Counter.InputA.MeasureStandart.MeasFrequency.GetValue();
