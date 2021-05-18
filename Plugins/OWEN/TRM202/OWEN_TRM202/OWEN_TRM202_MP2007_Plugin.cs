@@ -481,52 +481,56 @@ namespace OWEN_TRM202
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-
-                        operation.UpperCalculation =
-                            expected => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
-                        operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                            .Multiplier);
-
-                        operation.LowerCalculation =
-                            expected => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
-                        operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                            .Multiplier);
-
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            Calibrator.DcVoltage.SetValue(new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity));
-                            Calibrator.OutputOn();
-                            Thread.Sleep(3000);
-                            var measPoint = trm202.GetMeasValChanel(_chanelNumber);
+                            operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
 
-                            Calibrator.OutputOff();
+                            operation.UpperCalculation =
+                                expected => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
+                            operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                .Multiplier);
 
-                            MathStatistics.Round(ref measPoint, 1);
-                            operation.Getting = new MeasPoint<Temperature>(measPoint);
-                        }
-                        catch (TrmException e)
-                        {
-                            var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
-                            operation.Comment = err;
-                            Logger.Error(err);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            Calibrator.OutputOff();
-                        }
+                            operation.LowerCalculation =
+                                expected => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
+                            operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                .Multiplier);
 
-                        operation.IsGood= (getting) =>
-                            operation.Getting >= operation.LowerTolerance &&
-                            operation.Getting <= operation.UpperTolerance;
-                        ;
+                            try
+                            {
+                                Calibrator.DcVoltage.SetValue(new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity));
+                                Calibrator.DcVoltage.OutputOn();
+                                Thread.Sleep(3000);
+                                var measPoint = trm202.GetMeasValChanel(_chanelNumber);
+
+                                Calibrator.DcVoltage.OutputOff();
+
+                                MathStatistics.Round(ref measPoint, 1);
+                                operation.Getting = new MeasPoint<Temperature>(measPoint);
+                            }
+                            catch (TrmException e)
+                            {
+                                var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
+                                operation.Comment = err;
+                                Logger.Error(err);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                Calibrator.DcVoltage.OutputOff();
+                            }
+
+                            operation.IsGood = (getting) =>
+                                 operation.Getting >= operation.LowerTolerance &&
+                                 operation.Getting <= operation.UpperTolerance;
+                        }, cancellationToken);
+                       
+                        
                     };
                     operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
@@ -986,50 +990,54 @@ namespace OWEN_TRM202
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            operation.Expected = new MeasPoint<Percent>(point.MainPhysicalQuantity);
-                            operation.UpperCalculation = expected =>
-                                expected + MeasureRanges.GetReducerTolMeasPoint(expected);
-                            operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                                .Multiplier);
+                            try
+                            {
+                                operation.Expected = new MeasPoint<Percent>(point.MainPhysicalQuantity);
+                                operation.UpperCalculation = expected =>
+                                    expected + MeasureRanges.GetReducerTolMeasPoint(expected);
+                                operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                    .Multiplier);
 
-                            operation.LowerCalculation = expected =>
-                                expected - MeasureRanges.GetReducerTolMeasPoint(expected);
-                            operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                                .Multiplier);
-                            var setPoint =
-                                new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
-                            Calibrator.DcVoltage.SetValue(setPoint);
-                            Calibrator.OutputOn();
-                            Thread.Sleep(1900);
-                            var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            Calibrator.OutputOff();
-                            MathStatistics.Round(ref measPoint, 1);
-                            operation.Getting = new MeasPoint<Percent>(measPoint);
-                        }
-                        catch (TrmException e)
-                        {
-                            var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
-                            operation.Comment = err;
-                            Logger.Error(err);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            Calibrator.OutputOff();
-                        }
+                                operation.LowerCalculation = expected =>
+                                    expected - MeasureRanges.GetReducerTolMeasPoint(expected);
+                                operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                    .Multiplier);
+                                var setPoint =
+                                    new MeasPoint<Voltage>(point.AdditionalPhysicalQuantity.Value, UnitMultiplier.Mili);
+                                Calibrator.DcVoltage.SetValue(setPoint);
+                                Calibrator.DcVoltage.OutputOn();
+                                Thread.Sleep(1900);
+                                var measPoint = trm202.GetMeasValChanel(_chanelNumber);
+                                Calibrator.DcVoltage.OutputOff();
+                                MathStatistics.Round(ref measPoint, 1);
+                                operation.Getting = new MeasPoint<Percent>(measPoint);
+                            }
+                            catch (TrmException e)
+                            {
+                                var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
+                                operation.Comment = err;
+                                Logger.Error(err);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                Calibrator.DcVoltage.OutputOff();
+                            }
 
-                        operation.IsGood= (getting) =>
-                            operation.Getting >= operation.LowerTolerance &&
-                            operation.Getting <= operation.UpperTolerance;
-                        ;
+                            operation.IsGood = (getting) =>
+                                 operation.Getting >= operation.LowerTolerance &&
+                                 operation.Getting <= operation.UpperTolerance;
+                        }, cancellationToken);
+                      
+                        
                     };
                     operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 
@@ -1343,52 +1351,55 @@ namespace OWEN_TRM202
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
-
-                        operation.UpperCalculation =
-                            expected => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
-                        operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                            .Multiplier);
-
-                        operation.LowerCalculation =
-                            expected => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
-                        operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
-                                                                                            .Multiplier);
-
-                        var setPoint = new MeasPoint<Resistance>(point.AdditionalPhysicalQuantity);
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            Calibrator.Resistance2W.SetValue(setPoint);
-                            Calibrator.Resistance2W.SetCompensation(Compensation.CompNone);
-                            Calibrator.OutputOn();
-                            Thread.Sleep(1900);
-                            var measPoint = trm202.GetMeasValChanel(_chanelNumber);
-                            Calibrator.OutputOff();
-                            MathStatistics.Round(ref measPoint, 1);
-                            operation.Getting = new MeasPoint<Temperature>(measPoint);
-                        }
-                        catch (TrmException e)
-                        {
-                            var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
-                            operation.Comment = err;
-                            Logger.Error(err);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            Calibrator.OutputOff();
-                        }
+                            operation.Expected = new MeasPoint<Temperature>(point.MainPhysicalQuantity);
 
-                        operation.IsGood= (getting) =>
-                            operation.Getting >= operation.LowerTolerance &&
-                            operation.Getting <= operation.UpperTolerance;
-                        ;
+                            operation.UpperCalculation =
+                                expected => expected + MeasureRanges.GetReducerTolMeasPoint(expected);
+                            operation.UpperTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                .Multiplier);
+
+                            operation.LowerCalculation =
+                                expected => expected - MeasureRanges.GetReducerTolMeasPoint(expected);
+                            operation.LowerTolerance.MainPhysicalQuantity.ChangeMultiplier(point.MainPhysicalQuantity
+                                                                                                .Multiplier);
+
+                            var setPoint = new MeasPoint<Resistance>(point.AdditionalPhysicalQuantity);
+                            try
+                            {
+                                Calibrator.Resistance2W.SetValue(setPoint);
+                                Calibrator.Resistance2W.SetCompensation(Compensation.CompNone);
+                                Calibrator.Resistance2W.OutputOn();
+                                Thread.Sleep(1900);
+                                var measPoint = trm202.GetMeasValChanel(_chanelNumber);
+                                Calibrator.Resistance2W.OutputOff();
+                                MathStatistics.Round(ref measPoint, 1);
+                                operation.Getting = new MeasPoint<Temperature>(measPoint);
+                            }
+                            catch (TrmException e)
+                            {
+                                var err = $"ТРМ-202 не произвел измерение. Код ошибки: {e}";
+                                operation.Comment = err;
+                                Logger.Error(err);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                Calibrator.Resistance2W.OutputOff();
+                            }
+
+                            operation.IsGood = (getting) =>
+                                 operation.Getting >= operation.LowerTolerance &&
+                                 operation.Getting <= operation.UpperTolerance;
+                        }, cancellationToken);
+                      
                     };
                     operation.CompliteWorkAsync = () => Helps.HelpsCompliteWork(operation, UserItemOperation);
 

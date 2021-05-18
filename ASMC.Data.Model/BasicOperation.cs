@@ -16,7 +16,7 @@ namespace ASMC.Data.Model
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private Func<Task<bool>> _compliteWork;
         private Func<Task> _initWork;
-        private Action _bodyWork;
+        private Func<CancellationToken, Task> _bodyWork;
 
         /// <inheritdoc />
         public Func<Task> InitWorkAsync
@@ -33,7 +33,9 @@ namespace ASMC.Data.Model
         {
             get
             {
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
                 return _compliteWork ??  (async () => true);
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
             }
 
             set => _compliteWork = value;
@@ -43,11 +45,11 @@ namespace ASMC.Data.Model
         public object Name { get; set; }
 
         /// <inheritdoc />
-        public Action BodyWork
+        public Func<CancellationToken, Task> BodyWorkAsync
         {
             get
             {
-                return _bodyWork ?? (() => { });
+                return _bodyWork ?? (cancellationToken => Task.CompletedTask);
             }
             set => _bodyWork = value;
         }
@@ -59,6 +61,9 @@ namespace ASMC.Data.Model
         public async Task WorkAsync(CancellationTokenSource token)
         {
             Task<bool> taskColmplit = null;
+
+           
+
             do
             {
                 if(token.IsCancellationRequested)
@@ -67,10 +72,28 @@ namespace ASMC.Data.Model
                 }
 
                 Logger.Debug("Начата инициализация");
-                await InitWorkAsync();
+                await Cheked(InitWorkAsync());
                 Logger.Debug("Закончено выполнение инициализации");
                 Logger.Debug("Начато выполнение тела");
-                var task = Task.Run(BodyWork, token.Token);
+                await Cheked(BodyWorkAsync(token.Token));
+                Logger.Debug("Закончено выполнение тела");
+                taskColmplit = CompliteWorkAsync();
+                try
+                {
+                    await taskColmplit;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(taskColmplit.Exception != null ? taskColmplit.Exception.InnerException : e);
+                }
+
+            } while (!taskColmplit.Result);
+            Logger.Debug("Закончено точка");
+
+            #region Inner Methods
+
+            async Task Cheked(Task task)
+            {
                 try
                 {
                     await task;
@@ -89,19 +112,10 @@ namespace ASMC.Data.Model
                         }
                     }
                 }
-                Logger.Debug("Закончено выполнение тела");
-                taskColmplit = CompliteWorkAsync();
-                try
-                {
-                    await taskColmplit;
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(taskColmplit.Exception != null ? taskColmplit.Exception.InnerException : e);
-                }
+            }
 
-            } while (!taskColmplit.Result);
-            Logger.Debug("Закончено точка");
+            #endregion
+
         }
 
         /// <inheritdoc />
@@ -116,7 +130,7 @@ namespace ASMC.Data.Model
 
         public virtual object Clone()
         {
-            return new BasicOperation<T> { InitWorkAsync = InitWorkAsync, BodyWork = BodyWork, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWorkAsync = CompliteWorkAsync };
+            return new BasicOperation<T> { InitWorkAsync = InitWorkAsync, BodyWorkAsync = BodyWorkAsync, IsGood = IsGood, Comment = Comment, Expected = Expected, Getting = Getting, CompliteWorkAsync = CompliteWorkAsync };
         }
 
         /// <inheritdoc />
@@ -126,7 +140,7 @@ namespace ASMC.Data.Model
         }
     }
 
-    public class MultiErrorMeasuringOperation<T> :  BasicOperation<T>, ICloneable, IMultiErrorMeasuringOperation<T>
+    public class MultiErrorMeasuringOperation<T> :  BasicOperation<T>,  IMultiErrorMeasuringOperation<T>
     {
         /// <inheritdoc />
         public T[] Error 
@@ -139,10 +153,12 @@ namespace ASMC.Data.Model
 
         /// <inheritdoc />
         public Func<T, T, T>[] ErrorCalculation { get; set; }
+
+        /// <inheritdoc />
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
+            return new MultiErrorMeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
 
     }
@@ -160,7 +176,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (BasicOperation<T>)base.Clone();
-            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
+            return new MeasuringOperation<T> { ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
         /// <inheritdoc />
         public override string ToString()
@@ -196,7 +212,7 @@ namespace ASMC.Data.Model
         public override object Clone()
         {
             var @base = (MeasuringOperation<T>)base.Clone();
-            return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWork = @base.BodyWork, Comment = @base.Comment };
+            return new BasicOperationVerefication<T> { LowerCalculation = LowerCalculation, UpperCalculation = UpperCalculation, ErrorCalculation = ErrorCalculation, CompliteWorkAsync = @base.CompliteWorkAsync, IsGood = @base.IsGood, Getting = @base.Getting, Expected = @base.Expected, InitWorkAsync = @base.InitWorkAsync, BodyWorkAsync = @base.BodyWorkAsync, Comment = @base.Comment };
         }
         [Obsolete("Необходимо от казаться от использование Error в текущем контексте")]
         public override string ToString()

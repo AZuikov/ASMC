@@ -134,18 +134,22 @@ namespace ProgramFor34461A
                     return Task.CompletedTask;
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator, Logger, token).Item1;
-                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                         .Multiplier);
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        Logger.Error($"Не удалось получить измеренное значение с В7-40/1 в точке {testingMeasureValue}");
-                    }
+                        try
+                        {
+                            operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator.DcVoltage, Logger, token).Item1;
+                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                .Multiplier);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Logger.Error($"Не удалось получить измеренное значение с В7-40/1 в точке {testingMeasureValue}");
+                        }
+                    }, cancellationToken);
+                   
                 };
 
                 operation.ErrorCalculation = (expected, getting) => null;
@@ -210,19 +214,23 @@ namespace ProgramFor34461A
                     InitWork(Multimetr.AcVoltage, Calibrator.AcVoltage, rangeToSetOnDmm, testingMeasureValue, Logger, token);
                     return Task.CompletedTask;
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        var result = BodyWork(Multimetr.AcVoltage, Calibrator, Logger, token).Item1;
-                        operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                         .Multiplier);
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        Logger.Error($"Не удалось получить значение с В7-40/1 в точке {testingMeasureValue}");
-                    }
+                        try
+                        {
+                            var result = BodyWork(Multimetr.AcVoltage, Calibrator.AcVoltage, Logger, token).Item1;
+                            operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                .Multiplier);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Logger.Error($"Не удалось получить значение с В7-40/1 в точке {testingMeasureValue}");
+                        }
+                    }, cancellationToken);
+                  
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
@@ -283,42 +291,46 @@ namespace ProgramFor34461A
 
                     return Task.CompletedTask;
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
-                    int timeOut = 700;//таймаут для измерения
-
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        
-                        if (Multimetr.Resistance2W.RangeStorage.SelectRange.End.MainPhysicalQuantity
-                                     .GetNoramalizeValueToSi() <= 100) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
-                        {
-                            //зададим 0 Ом и считвем сопротивление проводов
-                            InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, nullPointResistance, Logger, token);
-                            nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token).Item1;
-                            
-                        }
-                        else
-                        {
-                            timeOut = 4000;//на других пределах нужно дольше измерять и не учитывать провода
-                        }
-                        InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
-                        operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token, timeOut).Item1;
-                        
-                        //если сопротивление проводов измерено, то его нужно учесть
-                        if (nullPointResistance.MainPhysicalQuantity.GetNoramalizeValueToSi() > 0)
-                        {
-                            operation.Getting = operation.Getting - nullPointResistance;
-                        }
+                        MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
+                        int timeOut = 700;//таймаут для измерения
 
-                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                         .Multiplier);
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
-                    }
+                        try
+                        {
+
+                            if (Multimetr.Resistance2W.RangeStorage.SelectRange.End.MainPhysicalQuantity
+                                         .GetNoramalizeValueToSi() <= 100) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
+                            {
+                                //зададим 0 Ом и считвем сопротивление проводов
+                                InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, nullPointResistance, Logger, token);
+                                nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token).Item1;
+
+                            }
+                            else
+                            {
+                                timeOut = 4000;//на других пределах нужно дольше измерять и не учитывать провода
+                            }
+                            InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+                            operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator.Resistance2W, Logger, token, timeOut).Item1;
+
+                            //если сопротивление проводов измерено, то его нужно учесть
+                            if (nullPointResistance.MainPhysicalQuantity.GetNoramalizeValueToSi() > 0)
+                            {
+                                operation.Getting = operation.Getting - nullPointResistance;
+                            }
+
+                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                             .Multiplier);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
+                        }
+                    }, cancellationToken);
+               
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>
@@ -379,17 +391,21 @@ namespace ProgramFor34461A
 
                     return Task.CompletedTask;
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator, Logger, token).Item1;
-                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
-                    }
+                        try
+                        {
+                            operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator.DcCurrent, Logger, token).Item1;
+                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
+                        }
+                    }, cancellationToken);
+                    
                 };
 
                 operation.ErrorCalculation = (expected, getting) => null;
@@ -450,20 +466,24 @@ namespace ProgramFor34461A
                     InitWork(Multimetr.AcCurrent, Calibrator.AcCurrent, rangeToSetOnDmm, testingMeasureValue, Logger, token);
                     return Task.CompletedTask;
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        var result = BodyWork(Multimetr.AcCurrent, Calibrator, Logger, token).Item1;
-                        result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
-                        operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                         .Multiplier);
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
-                    }
+                        try
+                        {
+                            var result = BodyWork(Multimetr.AcCurrent, Calibrator.AcCurrent, Logger, token).Item1;
+                            result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
+                            operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                .Multiplier);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
+                        }
+                    }, cancellationToken);
+                   
                 };
                 operation.ErrorCalculation = (expected, getting) => null;
                 operation.LowerCalculation = (expected) =>

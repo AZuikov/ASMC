@@ -386,7 +386,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.DcVoltage.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN
@@ -443,42 +443,47 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            flkCalib5522A.DcVoltage.SetValue(currPoint);
-                            flkCalib5522A.OutputOn();
-                            if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili)
-                                Thread.Sleep(5000);
-                            else
-                                Thread.Sleep(2000);
-                            //измеряем
-                            var measurePoint = (decimal) appa10XN.GetValue();
-                            flkCalib5522A.OutputOff();
+                            try
+                            {
+                                flkCalib5522A.DcVoltage.SetValue(currPoint);
+                                flkCalib5522A.DcVoltage.OutputOn();
+                                Thread.Sleep(currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili
+                                    ? 5000
+                                    : 2000);
+                                //измеряем
+                                var measurePoint = (decimal) appa10XN.GetValue();
+                                flkCalib5522A.DcVoltage.OutputOff();
 
-                            var mantisa =
-                                MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                true);
-                            //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                                var mantisa =
+                                    MathStatistics
+                                        .GetMantissa(
+                                            RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() /
+                                            (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                            true);
+                                //округляем измерения
+                                MathStatistics.Round(ref measurePoint, mantisa);
 
-                            operation.Getting =
-                                new MeasPoint<Voltage>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
+                                operation.Getting =
+                                    new MeasPoint<Voltage>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
 
-                            //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected, getting) => expected - getting;
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOn();
-                        }
+                                //расчет погрешности для конкретной точки предела измерения
+                                operation.ErrorCalculation = (expected, getting) => expected - getting;
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.DcVoltage.OutputOn();
+                            }
+                        }, cancellationToken);
+
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -884,7 +889,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.AcVoltage.OutputOff(); });
 
                             var testMeasureModde = appa10XN.GetMeasureMode;
                             while (OperMeasureMode !=
@@ -940,54 +945,58 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            decimal measurePoint = 0;
-
-                            var isRealPoint = flkCalib5522A.AcVoltage.RangeStorage.Ranges.IsPointBelong(currPoint);
-                            if (isRealPoint)
+                            try
                             {
-                                flkCalib5522A.AcVoltage.SetValue(currPoint);
-                                flkCalib5522A.OutputOn();
-                                Thread.Sleep(2000);
-                                //измеряем
-                                measurePoint = (decimal) appa10XN.GetValue();
-                                flkCalib5522A.OutputOff();
+                                decimal measurePoint = 0;
+
+                                var isRealPoint = flkCalib5522A.AcVoltage.RangeStorage.Ranges.IsPointBelong(currPoint);
+                                if (isRealPoint)
+                                {
+                                    flkCalib5522A.AcVoltage.SetValue(currPoint);
+                                    flkCalib5522A.AcVoltage.OutputOn();
+                                    Thread.Sleep(2000);
+                                    //измеряем
+                                    measurePoint = (decimal)appa10XN.GetValue();
+                                    flkCalib5522A.AcVoltage.OutputOff();
+                                }
+
+                                //вычисляе на сколько знаков округлять
+                                var mantisa =
+                                    MathStatistics
+                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                                    true);
+
+                                //расчет погрешности для конкретной точки предела измерения
+                                operation.ErrorCalculation = (expected, getting) => null;
+
+                                if (!isRealPoint)
+                                    measurePoint =
+                                        MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
+                                                                     operation.UpperTolerance.MainPhysicalQuantity.Value);
+
+                                //округляем измерения
+                                MathStatistics.Round(ref measurePoint, mantisa);
+
+                                operation.Getting =
+                                    new MeasPoint<Voltage, Frequency>(measurePoint,
+                                                                      currPoint.MainPhysicalQuantity.Multiplier,
+                                                                      currPoint.AdditionalPhysicalQuantity);
                             }
-
-                            //вычисляе на сколько знаков округлять
-                            var mantisa =
-                                MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                true);
-
-                            //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected, getting) => null;
-
-                            if (!isRealPoint)
-                                measurePoint =
-                                    MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
-                                                                 operation.UpperTolerance.MainPhysicalQuantity.Value);
-
-                            //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
-
-                            operation.Getting =
-                                new MeasPoint<Voltage, Frequency>(measurePoint,
-                                                                  currPoint.MainPhysicalQuantity.Multiplier,
-                                                                  currPoint.AdditionalPhysicalQuantity);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOff();
-                        }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.AcVoltage.OutputOff();
+                            }
+                        }, cancellationToken);
+                      
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -1518,7 +1527,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.DcCurrent.OutputOff(); });
 
                             var testMode = appa10XN.GetMeasureMode;
                             while (OperMeasureMode !=
@@ -1575,40 +1584,44 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            flkCalib5522A.DcCurrent.SetValue(currPoint);
-                            flkCalib5522A.OutputOn();
-                            Thread.Sleep(2000);
-                            //измеряем
-                            var measurePoint = (decimal) appa10XN.GetValue();
+                            try
+                            {
+                                flkCalib5522A.DcCurrent.SetValue(currPoint);
+                                flkCalib5522A.DcCurrent.OutputOn();
+                                Thread.Sleep(2000);
+                                //измеряем
+                                var measurePoint = (decimal)appa10XN.GetValue();
 
-                            flkCalib5522A.OutputOff();
+                                flkCalib5522A.DcCurrent.OutputOff();
 
-                            var mantisa =
-                                MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                true);
-                            //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                                var mantisa =
+                                    MathStatistics
+                                        .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                            true);
+                                //округляем измерения
+                                MathStatistics.Round(ref measurePoint, mantisa);
 
-                            operation.Getting =
-                                new MeasPoint<Current>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
+                                operation.Getting =
+                                    new MeasPoint<Current>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
 
-                            //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected, getting) => null;
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOff();
-                        }
+                                //расчет погрешности для конкретной точки предела измерения
+                                operation.ErrorCalculation = (expected, getting) => null;
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.DcCurrent.OutputOff();
+                            }
+                        }, cancellationToken);
+                       
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -1996,7 +2009,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.AcCurrent.OutputOff(); });
 
                             var testMode = appa10XN.GetMeasureMode;
                             while (OperMeasureMode !=
@@ -2054,50 +2067,54 @@ namespace APPA_107N_109N
                         }
                     };
 
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            decimal measurePoint = 0;
-                            var isRealPoint = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
-                            
-                            if (isRealPoint)
+                            try
                             {
-                                flkCalib5522A.AcCurrent.SetValue(curr);
-                                flkCalib5522A.OutputOn();
-                                Thread.Sleep(2000);
-                                //измеряем
-                                measurePoint = (decimal) appa10XN.GetValue();
-                                flkCalib5522A.OutputOff();
+                                decimal measurePoint = 0;
+                                var isRealPoint = flkCalib5522A.AcCurrent.RangeStorage.Ranges.IsPointBelong(curr);
+
+                                if (isRealPoint)
+                                {
+                                    flkCalib5522A.AcCurrent.SetValue(curr);
+                                    flkCalib5522A.AcCurrent.OutputOn();
+                                    Thread.Sleep(2000);
+                                    //измеряем
+                                    measurePoint = (decimal)appa10XN.GetValue();
+                                    flkCalib5522A.AcCurrent.OutputOff();
+                                }
+
+                                var mantisa =
+                                    MathStatistics
+                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)curr.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                                    true);
+
+                                operation.ErrorCalculation = (expected, getting) => null;
+
+                                if (!isRealPoint)
+                                    measurePoint =
+                                        MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
+                                                                     operation.UpperTolerance.MainPhysicalQuantity.Value);
+                                //округляем измерения
+                                MathStatistics.Round(ref measurePoint, mantisa);
+
+                                operation.Getting =
+                                    new MeasPoint<Current, Frequency>(measurePoint, curr.MainPhysicalQuantity.Multiplier,
+                                                                      curr.AdditionalPhysicalQuantity);
                             }
-
-                            var mantisa =
-                                MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) curr.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                true);
-
-                            operation.ErrorCalculation = (expected, getting) => null;
-
-                            if (!isRealPoint)
-                                measurePoint =
-                                    MathStatistics.RandomToRange(operation.LowerTolerance.MainPhysicalQuantity.Value,
-                                                                 operation.UpperTolerance.MainPhysicalQuantity.Value);
-                            //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
-
-                            operation.Getting =
-                                new MeasPoint<Current, Frequency>(measurePoint, curr.MainPhysicalQuantity.Multiplier,
-                                                                  curr.AdditionalPhysicalQuantity);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOff();
-                        }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.AcCurrent.OutputOff();
+                            }
+                        }, cancellationToken);
+                      
                     };
 
                     operation.CompliteWorkAsync = () =>
@@ -2487,7 +2504,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.AcCurrent.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -2509,43 +2526,47 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            var setPoint =
-                                new MeasPoint<Voltage, Frequency>(0.5M,
-                                                                  new Frequency
-                                                                  {
-                                                                      Value = freqPoint.MainPhysicalQuantity.Value,
-                                                                      Multiplier = freqPoint
-                                                                                  .MainPhysicalQuantity.Multiplier
-                                                                  });
-                            flkCalib5522A.AcVoltage.SetValue(setPoint);
-                            flkCalib5522A.OutputOn();
-                            Thread.Sleep(100);
-                            //измеряем
-                            var measurePoint = (decimal) appa10XN.GetValue();
+                            try
+                            {
+                                var setPoint =
+                                    new MeasPoint<Voltage, Frequency>(0.5M,
+                                        new Frequency
+                                        {
+                                            Value = freqPoint.MainPhysicalQuantity.Value,
+                                            Multiplier = freqPoint
+                                                .MainPhysicalQuantity.Multiplier
+                                        });
+                                flkCalib5522A.AcVoltage.SetValue(setPoint);
+                                flkCalib5522A.AcVoltage.OutputOn();
+                                Thread.Sleep(100);
+                                //измеряем
+                                var measurePoint = (decimal)appa10XN.GetValue();
 
-                            flkCalib5522A.OutputOff();
+                                flkCalib5522A.AcVoltage.OutputOff();
 
-                            operation.Getting =
-                                new MeasPoint<Frequency>(measurePoint, freqPoint.MainPhysicalQuantity.Multiplier);
-                            operation.Expected = freqPoint;
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(operation.Expected);
+                                operation.Getting =
+                                    new MeasPoint<Frequency>(measurePoint, freqPoint.MainPhysicalQuantity.Multiplier);
+                                operation.Expected = freqPoint;
+                                PhysicalRangeAppa =
+                                    Appa107N_109NAccuracyBock.FrequencyRangeStorage.GetRangePointBelong(operation.Expected);
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOff();
-                        }
+                                SetUpperAndLowerToleranceAndIsGood(operation);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.AcVoltage.OutputOff();
+                            }
+                        }, cancellationToken);
+                    
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -3205,7 +3226,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.Resistance2W.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -3260,59 +3281,63 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            // компенсаци проводов на младших пределах
-                            decimal refValue = 0;
-                            if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
+                            try
                             {
-                                flkCalib5522A.Resistance2W.SetValue(new MeasPoint<Resistance>(0));
-                                flkCalib5522A.Resistance2W.SetCompensation(Compensation.CompNone);
-                                flkCalib5522A.OutputOn();
-                                Thread.Sleep(3000);
+                                // компенсаци проводов на младших пределах
+                                decimal refValue = 0;
+                                if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.None)
+                                {
+                                    flkCalib5522A.Resistance2W.SetValue(new MeasPoint<Resistance>(0));
+                                    flkCalib5522A.Resistance2W.SetCompensation(Compensation.CompNone);
+                                    flkCalib5522A.Resistance2W.OutputOn();
+                                    Thread.Sleep(3000);
+                                    //измеряем
+                                    refValue = (decimal)appa10XN.GetValue();
+                                }
+
+                                flkCalib5522A.Resistance2W.SetValue(currPoint);
+                                flkCalib5522A.Resistance2W.OutputOn();
+
+                                if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mega) Thread.Sleep(9000);
+                                else if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Giga)
+                                    Thread.Sleep(12000);
+                                else
+                                    Thread.Sleep(3000);
                                 //измеряем
-                                refValue = (decimal) appa10XN.GetValue();
+                                var measurePoint = (decimal)appa10XN.GetValue() - refValue;
+
+                                flkCalib5522A.Resistance2W.OutputOff();
+
+                                var mantisa =
+                                    MathStatistics
+                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                                    true);
+
+                                //округляем измерения
+                                MathStatistics.Round(ref measurePoint, mantisa);
+
+                                operation.Getting =
+                                    new MeasPoint<Resistance>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
+
+                                //расчет погрешности для конкретной точки предела измерения
+
+                                operation.ErrorCalculation = (expected, getting) => null;
                             }
-
-                            flkCalib5522A.Resistance2W.SetValue(currPoint);
-                            flkCalib5522A.OutputOn();
-
-                            if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mega) Thread.Sleep(9000);
-                            else if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Giga)
-                                Thread.Sleep(12000);
-                            else
-                                Thread.Sleep(3000);
-                            //измеряем
-                            var measurePoint = (decimal) appa10XN.GetValue() - refValue;
-
-                            flkCalib5522A.OutputOff();
-
-                            var mantisa =
-                                MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                true);
-
-                            //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
-
-                            operation.Getting =
-                                new MeasPoint<Resistance>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
-
-                            //расчет погрешности для конкретной точки предела измерения
-
-                            operation.ErrorCalculation = (expected, getting) => null;
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOff();
-                        }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.Resistance2W.OutputOff();
+                            }
+                        }, cancellationToken);
+                     
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -3438,7 +3463,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.Capacity.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -3477,47 +3502,51 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            flkCalib5522A.Capacity.SetValue(currPoint);
-                            flkCalib5522A.OutputOn();
-                            if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili &&
-                                appa10XN.GetRangeAppaNominal == Mult107_109N.RangeAppaNominal.Range40mF)
-                                Thread.Sleep(90000);
-                            else if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili &&
-                                     appa10XN.GetRangeAppaNominal == Mult107_109N.RangeAppaNominal.Range4mF)
-                                Thread.Sleep(12000);
-                            else
-                                Thread.Sleep(4000);
+                            try
+                            {
+                                flkCalib5522A.Capacity.SetValue(currPoint);
+                                flkCalib5522A.Capacity.OutputOn();
+                                if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili &&
+                                    appa10XN.GetRangeAppaNominal == Mult107_109N.RangeAppaNominal.Range40mF)
+                                    Thread.Sleep(90000);
+                                else if (currPoint.MainPhysicalQuantity.Multiplier == UnitMultiplier.Mili &&
+                                         appa10XN.GetRangeAppaNominal == Mult107_109N.RangeAppaNominal.Range4mF)
+                                    Thread.Sleep(12000);
+                                else
+                                    Thread.Sleep(4000);
 
-                            //измеряем
-                            var measurePoint = (decimal) appa10XN.GetSingleValue();
-                            flkCalib5522A.OutputOff();
+                                //измеряем
+                                var measurePoint = (decimal)appa10XN.GetSingleValue();
+                                flkCalib5522A.Capacity.OutputOff();
 
-                            var mantisa =
-                                MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                true);
-                            //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
+                                var mantisa =
+                                    MathStatistics
+                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                                    true);
+                                //округляем измерения
+                                MathStatistics.Round(ref measurePoint, mantisa);
 
-                            operation.Getting =
-                                new MeasPoint<Capacity>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
+                                operation.Getting =
+                                    new MeasPoint<Capacity>(measurePoint, currPoint.MainPhysicalQuantity.Multiplier);
 
-                            //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (expected, getting) => null;
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOff();
-                        }
+                                //расчет погрешности для конкретной точки предела измерения
+                                operation.ErrorCalculation = (expected, getting) => null;
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.Capacity.OutputOff();
+                            }
+                        }, cancellationToken);
+                  
                     };
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);
                     DataRow.Add(DataRow.IndexOf(operation) == -1
@@ -3953,7 +3982,7 @@ namespace APPA_107N_109N
                                 appa10XN.StringConnection = GetStringConnect(appa10XN);
                             flkCalib5522A.StringConnection ??= GetStringConnect(flkCalib5522A);
 
-                            await Task.Run(() => { flkCalib5522A.OutputOff(); });
+                            await Task.Run(() => { flkCalib5522A.Temperature.OutputOff(); });
 
                             while (OperMeasureMode !=
                                    await Task<Mult107_109N.MeasureMode>.Factory.StartNew(() => appa10XN.GetMeasureMode))
@@ -4009,57 +4038,62 @@ namespace APPA_107N_109N
                             throw;
                         }
                     };
-                    operation.BodyWork = () =>
+                    operation.BodyWorkAsync = (cancellationToken) =>
                     {
-                        try
+                        return Task.Factory.StartNew(() =>
                         {
-                            flkCalib5522A.Temperature.SetTermoCoupleType(FlukeTypeTermocouple.K);
-                            flkCalib5522A.Temperature.SetValue(currPoint);
-                            flkCalib5522A.OutputOn();
-                            Thread.Sleep(3000);
-                            //измеряем
-                            var measurePoint = (decimal) appa10XN.GetValue();
-
-                            flkCalib5522A.OutputOff();
-
-                            var mantisa =
-                                MathStatistics
-                                   .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal) currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
-                                                true);
-                            //округляем измерения
-                            MathStatistics.Round(ref measurePoint, mantisa);
-
-                            operation.Getting =
-                                new MeasPoint<Temperature>(measurePoint);
-                            operation.Expected = currPoint;
-                            PhysicalRangeAppa =
-                                Appa107N_109NAccuracyBock
-                                   .GetCelsiumRangeStorage.GetRangePointBelong(operation.Expected);
-                            //расчет погрешности для конкретной точки предела измерения
-                            operation.ErrorCalculation = (inA, inB) =>
+                            try
                             {
-                                var result = BaseTolCoeff * operation.Expected.MainPhysicalQuantity.Value + EdMlRaz *
-                                    RangeResolution.MainPhysicalQuantity.Value *
-                                    (decimal) (RangeResolution
-                                              .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
-                                               currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue()
-                                    );
+                                flkCalib5522A.Temperature.SetTermoCoupleType(FlukeTypeTermocouple.K);
+                                flkCalib5522A.Temperature.SetValue(currPoint);
+                                flkCalib5522A.Temperature.OutputOn();
+                                Thread.Sleep(3000);
+                                //измеряем
+                                var measurePoint = (decimal)appa10XN.GetValue();
 
-                                MathStatistics.Round(ref result, mantisa);
-                                return new MeasPoint<Temperature>(result, currPoint.MainPhysicalQuantity.Multiplier);
-                            };
+                                flkCalib5522A.Temperature.OutputOff();
 
-                            SetUpperAndLowerToleranceAndIsGood(operation);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(e);
-                            throw;
-                        }
-                        finally
-                        {
-                            flkCalib5522A.OutputOff();
-                        }
+                                var mantisa =
+                                    MathStatistics
+                                       .GetMantissa(RangeResolution.MainPhysicalQuantity.GetNoramalizeValueToSi() / (decimal)currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue(),
+                                                    true);
+                                //округляем измерения
+                                MathStatistics.Round(ref measurePoint, mantisa);
+
+                                operation.Getting =
+                                    new MeasPoint<Temperature>(measurePoint);
+                                operation.Expected = currPoint;
+                                PhysicalRangeAppa =
+                                    Appa107N_109NAccuracyBock
+                                       .GetCelsiumRangeStorage.GetRangePointBelong(operation.Expected);
+                                //расчет погрешности для конкретной точки предела измерения
+                                operation.ErrorCalculation = (inA, inB) =>
+                                {
+                                    var result = BaseTolCoeff * operation.Expected.MainPhysicalQuantity.Value + EdMlRaz *
+                                        RangeResolution.MainPhysicalQuantity.Value *
+                                        (decimal)(RangeResolution
+                                                  .MainPhysicalQuantity.Multiplier.GetDoubleValue() /
+                                                   currPoint.MainPhysicalQuantity.Multiplier.GetDoubleValue()
+                                        );
+
+                                    MathStatistics.Round(ref result, mantisa);
+                                    return new MeasPoint<Temperature>(result, currPoint.MainPhysicalQuantity.Multiplier);
+                                };
+
+                                SetUpperAndLowerToleranceAndIsGood(operation);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                flkCalib5522A.Temperature.OutputOff();
+                            }
+
+                        }, cancellationToken);
+                     
                     };
 
                     operation.CompliteWorkAsync = () => Hepls.HelpsCompliteWork(operation, UserItemOperation);

@@ -239,70 +239,74 @@ namespace B5_71_PRO_Abstract
                     throw;
                 }
             };
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                try
+                return Task.Factory.StartNew(() =>
                 {
-                    Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
-                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                    var resist = Bp.VoltMax / Bp.CurrMax + 3;
-                    Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
-                    Load.SetOutputState(MainN3300.State.On);
-
-                    Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax).OnOutput();
-                    foreach (var pointMult in MyPoint)
+                    try
                     {
-                        var setPoint = pointMult * Bp.VoltMax;
+                        Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
+                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                        var resist = Bp.VoltMax / Bp.CurrMax + 3;
+                        Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
+                        Load.SetOutputState(MainN3300.State.On);
 
-                        //ставим точку напряжения
-                        Bp.SetStateVolt(setPoint);
-                        Thread.Sleep(500);
-
-                        //измеряем напряжение
-
-                        var measVolt = Math.Abs(Load.VoltageLoad.MeasureVolt);
-
-                        operation.IsGood = (getting) => { return Bp.VoltMax / measVolt >= 0.7M; };
-
-                        if (!operation.IsGood(operation.Getting))
+                        Bp.InitDevice();
+                        Bp.SetStateCurr(Bp.CurrMax).OnOutput();
+                        foreach (var pointMult in MyPoint)
                         {
-                            Logger.Error($"Операция опробования не прошла по напряжению в точке {setPoint} В, измерено {operation.Getting} В");
-                            return;
+                            var setPoint = pointMult * Bp.VoltMax;
+
+                            //ставим точку напряжения
+                            Bp.SetStateVolt(setPoint);
+                            Thread.Sleep(500);
+
+                            //измеряем напряжение
+
+                            var measVolt = Math.Abs(Load.VoltageLoad.MeasureVolt);
+
+                            operation.IsGood = (getting) => { return Bp.VoltMax / measVolt >= 0.7M; };
+
+                            if (!operation.IsGood(operation.Getting))
+                            {
+                                Logger.Error($"Операция опробования не прошла по напряжению в точке {setPoint} В, измерено {operation.Getting} В");
+                                return;
+                            }
+                        }
+
+                        resist = Bp.VoltMax / Bp.CurrMax - 3;
+                        Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
+                        Bp.SetStateVolt(Bp.VoltMax);
+                        foreach (var pointMult in MyPoint)
+                        {
+                            var setPoint = pointMult * Bp.CurrMax;
+                            //ставим точку напряжения
+                            Bp.SetStateCurr(setPoint);
+                            Thread.Sleep(500);
+                            //измеряем напряжение
+
+                            var measCurr = Math.Abs(Load.CurrentLoad.MeasureCurrent);
+                            operation.IsGood = (getting) => { return Bp.CurrMax / measCurr >= 0.7M; };
+
+                            if (!operation.IsGood(operation.Getting))
+                            {
+                                Logger.Error($"Операция опробования не прошла по току в точке {setPoint} А, измерено {operation.Getting} А");
+                                return;
+                            }
                         }
                     }
-
-                    resist = Bp.VoltMax / Bp.CurrMax - 3;
-                    Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    foreach (var pointMult in MyPoint)
+                    catch (Exception e)
                     {
-                        var setPoint = pointMult * Bp.CurrMax;
-                        //ставим точку напряжения
-                        Bp.SetStateCurr(setPoint);
-                        Thread.Sleep(500);
-                        //измеряем напряжение
-
-                        var measCurr = Math.Abs(Load.CurrentLoad.MeasureCurrent);
-                        operation.IsGood = (getting) => { return Bp.CurrMax / measCurr >= 0.7M; };
-
-                        if (!operation.IsGood(operation.Getting))
-                        {
-                            Logger.Error($"Операция опробования не прошла по току в точке {setPoint} А, измерено {operation.Getting} А");
-                            return;
-                        }
+                        Logger.Error(e);
+                        throw;
                     }
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                    throw;
-                }
-                finally
-                {
-                    Load.SetOutputState(MainN3300.State.Off);
-                    Bp.OffOutput();
-                }
+                    finally
+                    {
+                        Load.SetOutputState(MainN3300.State.Off);
+                        Bp.OffOutput();
+                    }
+                }, cancellationToken);
+               
             };
             operation.CompliteWorkAsync = () =>
             {
@@ -454,48 +458,52 @@ namespace B5_71_PRO_Abstract
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
-                        Bp.InitDevice();
+                        try
+                        {
+                            Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
+                            Bp.InitDevice();
 
-                        var setPoint = point * Bp.VoltMax;
+                            var setPoint = point * Bp.VoltMax;
 
-                        //ставим точку напряжения
-                        Bp.SetStateCurr(Bp.CurrMax).SetStateVolt(setPoint);
-                        Bp.OnOutput();
-                        Thread.Sleep(1300);
+                            //ставим точку напряжения
+                            Bp.SetStateCurr(Bp.CurrMax).SetStateVolt(setPoint);
+                            Bp.OnOutput();
+                            Thread.Sleep(1300);
 
-                        //измеряем напряжение
-                        
-                        Mult.DcVoltage.RangeStorage.SetRange(new MeasPoint<Voltage>(setPoint));
-                        Mult.DcVoltage.RangeStorage.IsAutoRange = true;
-                        Mult.DcVoltage.Setting();
-                        var result = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
-                        MathStatistics.Round(ref result, 3);
+                            //измеряем напряжение
 
-                        //забиваем результаты конкретного измерения для последующей передачи их в протокол
+                            Mult.DcVoltage.RangeStorage.SetRange(new MeasPoint<Voltage>(setPoint));
+                            Mult.DcVoltage.RangeStorage.IsAutoRange = true;
+                            Mult.DcVoltage.Setting();
+                            var result = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
+                            MathStatistics.Round(ref result, 3);
 
-                        operation.Expected = setPoint;
-                        operation.Getting = result;
+                            //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
-                        SetLowAndUppToleranceAndIsGood_Volt(operation);
+                            operation.Expected = setPoint;
+                            operation.Getting = result;
 
-                        Bp.OffOutput();
-                        Load.SetOutputState(MainN3300.State.Off);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        Load.SetOutputState(MainN3300.State.Off);
-                        Bp.OffOutput();
-                    }
+                            SetLowAndUppToleranceAndIsGood_Volt(operation);
+
+                            Bp.OffOutput();
+                            Load.SetOutputState(MainN3300.State.Off);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            Load.SetOutputState(MainN3300.State.Off);
+                            Bp.OffOutput();
+                        }
+                    }, cancellationToken);
+                  
                 };
                 operation.CompliteWorkAsync = () =>
                 {
@@ -634,51 +642,55 @@ namespace B5_71_PRO_Abstract
                         throw;
                     }
                 };
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
+                        try
+                        {
+                            Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
 
-                        Bp.InitDevice();
+                            Bp.InitDevice();
 
-                        var setPoint = point * Bp.VoltMax;
-                        //ставим точку напряжения
-                        Bp.SetStateCurr(Bp.CurrMax).SetStateVolt(setPoint);
-                        Bp.OnOutput();
-                        Thread.Sleep(1300);
+                            var setPoint = point * Bp.VoltMax;
+                            //ставим точку напряжения
+                            Bp.SetStateCurr(Bp.CurrMax).SetStateVolt(setPoint);
+                            Bp.OnOutput();
+                            Thread.Sleep(1300);
 
-                        //измеряем напряжение
-                        Mult.DcVoltage.RangeStorage.SetRange(new MeasPoint<Voltage>(setPoint));
-                        Mult.DcVoltage.RangeStorage.IsAutoRange = true;
-                        Mult.DcVoltage.Setting();
-                        var resultMult = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
-                        var resultBp = Bp.GetMeasureVolt();
+                            //измеряем напряжение
+                            Mult.DcVoltage.RangeStorage.SetRange(new MeasPoint<Voltage>(setPoint));
+                            Mult.DcVoltage.RangeStorage.IsAutoRange = true;
+                            Mult.DcVoltage.Setting();
+                            var resultMult = Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value;
+                            var resultBp = Bp.GetMeasureVolt();
 
-                        MathStatistics.Round(ref resultMult, 3);
-                        MathStatistics.Round(ref resultBp, 3);
+                            MathStatistics.Round(ref resultMult, 3);
+                            MathStatistics.Round(ref resultBp, 3);
 
-                        //забиваем результаты конкретного измерения для последующей передачи их в протокол
+                            //забиваем результаты конкретного измерения для последующей передачи их в протокол
 
-                        operation.Expected = (decimal)resultMult;
-                        operation.Getting = resultBp;
+                            operation.Expected = (decimal)resultMult;
+                            operation.Getting = resultBp;
 
-                        SetLowAndUppToleranceAndIsGood_Volt(operation);
+                            SetLowAndUppToleranceAndIsGood_Volt(operation);
 
 
 
-                        Bp.OffOutput();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        Load.SetOutputState(MainN3300.State.Off);
-                        Bp.OffOutput();
-                    }
+                            Bp.OffOutput();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            Load.SetOutputState(MainN3300.State.Off);
+                            Bp.OffOutput();
+                        }
+                    }, cancellationToken);
+                   
                 };
 
                 operation.CompliteWorkAsync = () =>
@@ -823,66 +835,70 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                try
+                return Task.Factory.StartNew(() =>
                 {
-                    Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
-                    Bp.InitDevice();
-                    Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax);
-
-                    // ------ настроим нагрузку
-                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-
-                    var pointResistance = Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]);
-                    MathStatistics.Round(ref pointResistance, 3);
-
-                    Load.ResistanceLoad.SetResistanceRange(pointResistance).ResistanceLoad.Set(pointResistance)
-                        .SetOutputState(MainN3300.State.On);
-
-                    //сюда запишем результаты
-                    var voltUnstableList = new List<decimal>();
-
-                    Bp.OnOutput();
-
-                    foreach (var coef in ArrСoefVoltUnstable)
+                    try
                     {
-                        var resistance = Bp.VoltMax / (coef * Bp.CurrMax);
-                        Load.ResistanceLoad.SetResistanceRange(resistance).ResistanceLoad
-                            .Set(resistance); //ставим сопротивление
+                        Load.SetWorkingChanel().SetOutputState(MainN3300.State.Off);
+                        Bp.InitDevice();
+                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax);
 
-                        // время выдержки
-                        Thread.Sleep(1000);
-                        // записываем результаты
-                        
-                        voltUnstableList.Add(Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value);
+                        // ------ настроим нагрузку
+                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+
+                        var pointResistance = Bp.VoltMax / (Bp.CurrMax * ArrСoefVoltUnstable[2]);
+                        MathStatistics.Round(ref pointResistance, 3);
+
+                        Load.ResistanceLoad.SetResistanceRange(pointResistance).ResistanceLoad.Set(pointResistance)
+                            .SetOutputState(MainN3300.State.On);
+
+                        //сюда запишем результаты
+                        var voltUnstableList = new List<decimal>();
+
+                        Bp.OnOutput();
+
+                        foreach (var coef in ArrСoefVoltUnstable)
+                        {
+                            var resistance = Bp.VoltMax / (coef * Bp.CurrMax);
+                            Load.ResistanceLoad.SetResistanceRange(resistance).ResistanceLoad
+                                .Set(resistance); //ставим сопротивление
+
+                            // время выдержки
+                            Thread.Sleep(1000);
+                            // записываем результаты
+
+                            voltUnstableList.Add(Mult.DcVoltage.GetValue().MainPhysicalQuantity.Value);
+                        }
+
+                        Bp.OffOutput();
+
+                        //считаем
+                        var resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
+                        MathStatistics.Round(ref resultVoltUnstable, 3);
+
+                        //забиваем результаты конкретного измерения для последующей передачи их в протокол
+
+                        operation.Expected = 0;
+                        operation.Getting = resultVoltUnstable;
+
+                        SetLowAndUppToleranceAndIsGood_VoltUnstable(operation);
+
+                        Load.SetOutputState(MainN3300.State.Off);
                     }
-
-                    Bp.OffOutput();
-
-                    //считаем
-                    var resultVoltUnstable = (voltUnstableList.Max() - voltUnstableList.Min()) / 2;
-                    MathStatistics.Round(ref resultVoltUnstable, 3);
-
-                    //забиваем результаты конкретного измерения для последующей передачи их в протокол
-
-                    operation.Expected = 0;
-                    operation.Getting = resultVoltUnstable;
-
-                    SetLowAndUppToleranceAndIsGood_VoltUnstable(operation);
-
-                    Load.SetOutputState(MainN3300.State.Off);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                    throw;
-                }
-                finally
-                {
-                    Load.SetOutputState(MainN3300.State.Off);
-                    Bp.OffOutput();
-                }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                    finally
+                    {
+                        Load.SetOutputState(MainN3300.State.Off);
+                        Bp.OffOutput();
+                    }
+                }, cancellationToken);
+            
             };
             operation.CompliteWorkAsync = () =>
             {
@@ -1209,50 +1225,54 @@ namespace B5_71_PRO_Abstract
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                        var resist = Bp.VoltMax / Bp.CurrMax - 3;
-                        Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
-                        Load.SetOutputState(MainN3300.State.On);
+                        try
+                        {
+                            Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                            var resist = Bp.VoltMax / Bp.CurrMax - 3;
+                            Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
+                            Load.SetOutputState(MainN3300.State.On);
 
-                        Bp.InitDevice();
-                        Bp.SetStateVolt(Bp.VoltMax);
-                        Bp.OnOutput();
+                            Bp.InitDevice();
+                            Bp.SetStateVolt(Bp.VoltMax);
+                            Bp.OnOutput();
 
-                        var setPoint = coef * Bp.CurrMax;
-                        //ставим значение тока
-                        //плавно подходим, что бы не было перегрузки.
-                        Bp.SetStateCurr(setPoint * (decimal)0.9M);
-                        Bp.SetStateCurr(setPoint);
-                        Bp.OffOutput();
-                        Bp.OnOutput();
-                        Thread.Sleep(1000);
-                        //измеряем ток
+                            var setPoint = coef * Bp.CurrMax;
+                            //ставим значение тока
+                            //плавно подходим, что бы не было перегрузки.
+                            Bp.SetStateCurr(setPoint * (decimal)0.9M);
+                            Bp.SetStateCurr(setPoint);
+                            Bp.OffOutput();
+                            Bp.OnOutput();
+                            Thread.Sleep(1000);
+                            //измеряем ток
 
-                        var result = Load.CurrentLoad.MeasureCurrent;
+                            var result = Load.CurrentLoad.MeasureCurrent;
 
-                        MathStatistics.Round(ref result, 3);
+                            MathStatistics.Round(ref result, 3);
 
-                        operation.Expected = setPoint;
-                        operation.Getting = result;
+                            operation.Expected = setPoint;
+                            operation.Getting = result;
 
-                        SetLowAndUppToleranceAndIsGood_Curr(operation);
+                            SetLowAndUppToleranceAndIsGood_Curr(operation);
 
-                        Bp.OffOutput();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        Load.SetOutputState(MainN3300.State.Off);
-                        Bp.OffOutput();
-                    }
+                            Bp.OffOutput();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            Load.SetOutputState(MainN3300.State.Off);
+                            Bp.OffOutput();
+                        }
+                    }, cancellationToken);
+                   
                 };
                 operation.CompliteWorkAsync = () =>
                 {
@@ -1384,47 +1404,51 @@ namespace B5_71_PRO_Abstract
                     }
                 };
 
-                operation.BodyWork = () =>
+                operation.BodyWorkAsync = (cancellationToken) =>
                 {
-                    try
+                    return Task.Factory.StartNew(() =>
                     {
-                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                        var resist = Bp.VoltMax / Bp.CurrMax - 3;
-                        Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
-                        Load.SetOutputState(MainN3300.State.On);
+                        try
+                        {
+                            Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                            var resist = Bp.VoltMax / Bp.CurrMax - 3;
+                            Load.ResistanceLoad.SetResistanceRange(resist).ResistanceLoad.Set(resist);
+                            Load.SetOutputState(MainN3300.State.On);
 
-                        Bp.InitDevice();
-                        Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax * (decimal)0.7M);
-                        Bp.OnOutput();
+                            Bp.InitDevice();
+                            Bp.SetStateVolt(Bp.VoltMax).SetStateCurr(Bp.CurrMax * (decimal)0.7M);
+                            Bp.OnOutput();
 
-                        var setPoint = coef * Bp.CurrMax;
-                        //ставим точку напряжения
-                        Bp.SetStateCurr(setPoint);
-                        Thread.Sleep(1000);
-                        //измеряем ток
-                        var resultN3300 = Load.CurrentLoad.MeasureCurrent;
-                        MathStatistics.Round(ref resultN3300, 3);
+                            var setPoint = coef * Bp.CurrMax;
+                            //ставим точку напряжения
+                            Bp.SetStateCurr(setPoint);
+                            Thread.Sleep(1000);
+                            //измеряем ток
+                            var resultN3300 = Load.CurrentLoad.MeasureCurrent;
+                            MathStatistics.Round(ref resultN3300, 3);
 
-                        var resultBpCurr = Bp.GetMeasureCurr();
-                        MathStatistics.Round(ref resultBpCurr, 3);
+                            var resultBpCurr = Bp.GetMeasureCurr();
+                            MathStatistics.Round(ref resultBpCurr, 3);
 
-                        operation.Expected = resultN3300;
-                        operation.Getting = resultBpCurr;
+                            operation.Expected = resultN3300;
+                            operation.Getting = resultBpCurr;
 
-                        SetLowAndUppToleranceAndIsGood_Curr(operation);
+                            SetLowAndUppToleranceAndIsGood_Curr(operation);
 
-                        Bp.OffOutput();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        Load.SetOutputState(MainN3300.State.Off);
-                        Bp.OffOutput();
-                    }
+                            Bp.OffOutput();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e);
+                            throw;
+                        }
+                        finally
+                        {
+                            Load.SetOutputState(MainN3300.State.Off);
+                            Bp.OffOutput();
+                        }
+                    }, cancellationToken);
+                   
                 };
                 operation.CompliteWorkAsync = () =>
                 {
@@ -1559,57 +1583,61 @@ namespace B5_71_PRO_Abstract
                 }
             };
 
-            operation.BodyWork = () =>
+            operation.BodyWorkAsync = (cancellationToken) =>
             {
-                try
+                return Task.Factory.StartNew(() =>
                 {
-                    Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
-                    var point = Bp.VoltMax * MyPoint[2] / Bp.CurrMax;
-                    Load.ResistanceLoad.SetResistanceRange(point).ResistanceLoad.Set(point);
-                    Load.SetOutputState(MainN3300.State.On);
-
-                    ////инициализация блока питания
-                    Bp.InitDevice();
-                    Bp.SetStateCurr(Bp.CurrMax * (decimal)0.7M);
-                    Bp.SetStateVolt(Bp.VoltMax);
-                    Bp.OnOutput();
-
-                    Bp.SetStateCurr(Bp.CurrMax * (decimal)0.8M);
-                    Bp.SetStateCurr(Bp.CurrMax * (decimal)0.9M);
-                    Bp.SetStateCurr(Bp.CurrMax);
-
-                    //это нужно для нормальной работы источника
-                    Bp.OffOutput();
-                    Bp.OnOutput();
-
-                    var currUnstableList = new List<decimal>();
-
-                    foreach (var coef in MyPoint)
+                    try
                     {
-                        var resistance = coef * Bp.VoltMax / Bp.CurrMax;
-                        Load.ResistanceLoad.SetResistanceRange(resistance).ResistanceLoad.Set(resistance);
-                        Thread.Sleep(3500);
-                        currUnstableList.Add(Load.CurrentLoad.MeasureCurrent);
+                        Load.SetWorkingChanel().SetModeWork(MainN3300.ModeWorks.Resistance);
+                        var point = Bp.VoltMax * MyPoint[2] / Bp.CurrMax;
+                        Load.ResistanceLoad.SetResistanceRange(point).ResistanceLoad.Set(point);
+                        Load.SetOutputState(MainN3300.State.On);
+
+                        ////инициализация блока питания
+                        Bp.InitDevice();
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.7M);
+                        Bp.SetStateVolt(Bp.VoltMax);
+                        Bp.OnOutput();
+
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.8M);
+                        Bp.SetStateCurr(Bp.CurrMax * (decimal)0.9M);
+                        Bp.SetStateCurr(Bp.CurrMax);
+
+                        //это нужно для нормальной работы источника
+                        Bp.OffOutput();
+                        Bp.OnOutput();
+
+                        var currUnstableList = new List<decimal>();
+
+                        foreach (var coef in MyPoint)
+                        {
+                            var resistance = coef * Bp.VoltMax / Bp.CurrMax;
+                            Load.ResistanceLoad.SetResistanceRange(resistance).ResistanceLoad.Set(resistance);
+                            Thread.Sleep(3500);
+                            currUnstableList.Add(Load.CurrentLoad.MeasureCurrent);
+                        }
+
+                        Bp.OffOutput();
+
+                        var resultCurrUnstable = (currUnstableList.Max() - currUnstableList.Min()) / 2;
+                        MathStatistics.Round(ref resultCurrUnstable, 3);
+
+                        operation.Expected = 0;
+                        SetLowAndUppToleranceAndIsGood_CurrUnstable(operation);
                     }
-
-                    Bp.OffOutput();
-
-                    var resultCurrUnstable = (currUnstableList.Max() - currUnstableList.Min()) / 2;
-                    MathStatistics.Round(ref resultCurrUnstable, 3);
-
-                    operation.Expected = 0;
-                    SetLowAndUppToleranceAndIsGood_CurrUnstable(operation);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                    throw;
-                }
-                finally
-                {
-                    Load.SetOutputState(MainN3300.State.Off);
-                    Bp.OffOutput();
-                }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e);
+                        throw;
+                    }
+                    finally
+                    {
+                        Load.SetOutputState(MainN3300.State.Off);
+                        Bp.OffOutput();
+                    }
+                }, cancellationToken);
+               
             };
             operation.CompliteWorkAsync = () =>
             {
