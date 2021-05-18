@@ -256,17 +256,10 @@ namespace Belvar_V7_40_1
                 {
                     return Task.Factory.StartNew(() =>
                     {
-                        try
-                        {
-                            operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator, Logger, token, 2000).Item1;
-                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                        operation.Getting = BodyWork(Multimetr.DcVoltage, Calibrator, Logger, token, 2000).Item1;
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
                                 .Multiplier);
-                        }
-                        catch (NullReferenceException e)
-                        {
-                            Logger.Error($"Не удалось получить измеренное значение с В7-40/1 в точке {testingMeasureValue}");
-                        }
-
+                        
                     }, cancellationToken);
                   
                 };
@@ -341,17 +334,10 @@ namespace Belvar_V7_40_1
                 {
                     return Task.Factory.StartNew(() =>
                     {
-                        try
-                        {
-                            var result = BodyWork(Multimetr.AcVoltage, Calibrator, Logger, token).Item1;
-                            operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                .Multiplier);
-                        }
-                        catch (NullReferenceException e)
-                        {
-                            Logger.Error($"Не удалось получить значение с В7-40/1 в точке {testingMeasureValue}");
-                        }
+                        var result = BodyWork(Multimetr.AcVoltage, Calibrator, Logger, token).Item1;
+                        operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                         .Multiplier);
                     }, cancellationToken);
                    
                 };
@@ -421,39 +407,33 @@ namespace Belvar_V7_40_1
                 {
                     return Task.Factory.StartNew(() =>
                     {
-                        try
+                        MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
+                        int timeOut = 700;//таймаут для измерения
+                        if (Multimetr.Resistance2W.RangeStorage.SelectRange.End.MainPhysicalQuantity
+                                     .GetNoramalizeValueToSi() == 199.999M) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
                         {
-                            MeasPoint<Resistance> nullPointResistance = new MeasPoint<Resistance>(0); // сопротивление проводов
-                            int timeOut = 700;//таймаут для измерения
-                            if (Multimetr.Resistance2W.RangeStorage.SelectRange.End.MainPhysicalQuantity
-                                         .GetNoramalizeValueToSi() == 199.999M) //если предел измерения 200 Ом, то нужно учитывать сопротивление проводов
-                            {
-                                //зададим 0 Ом и считвем сопротивление проводов
-                                InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, nullPointResistance, Logger, token);
-                                nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token).Item1;
-                                nullPointResistance.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
-                            }
-                            else
-                            {
-                                timeOut = 4000;//на других пределах нужно дольше измерять и не учитывать провода
-                            }
-                            InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
-
-                            operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token, timeOut).Item1;
-                            operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
-                            //если сопротивление проводов измерено, то его нужно учесть
-                            if (nullPointResistance.MainPhysicalQuantity.GetNoramalizeValueToSi() > 0)
-                            {
-                                operation.Getting = operation.Getting - nullPointResistance;
-                            }
-
-                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                                                                             .Multiplier);
+                            //зададим 0 Ом и считвем сопротивление проводов
+                            InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, nullPointResistance, Logger, token);
+                            nullPointResistance = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token).Item1;
+                            nullPointResistance.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
                         }
-                        catch (NullReferenceException e)
+                        else
                         {
-                            Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
+                            timeOut = 4000;//на других пределах нужно дольше измерять и не учитывать провода
                         }
+                        InitWork(Multimetr.Resistance2W, Calibrator.Resistance2W, rangeToSetOnDmm, testingMeasureValue, Logger, token);
+
+                        operation.Getting = BodyWork(Multimetr.Resistance2W, Calibrator, Logger, token, timeOut).Item1;
+                        operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Kilo;
+                        //если сопротивление проводов измерено, то его нужно учесть
+                        if (nullPointResistance.MainPhysicalQuantity.GetNoramalizeValueToSi() > 0)
+                        {
+                            operation.Getting = operation.Getting - nullPointResistance;
+                        }
+
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                         .Multiplier);
+
                     }, cancellationToken);
                    
                 };
@@ -523,16 +503,10 @@ namespace Belvar_V7_40_1
                 {
                     return Task.Factory.StartNew(() =>
                     {
-                        try
-                        {
-                            operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator, Logger, token).Item1;
-                            operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
-                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
-                        }
-                        catch (NullReferenceException e)
-                        {
-                            Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
-                        }
+                        operation.Getting = BodyWork(Multimetr.DcCurrent, Calibrator, Logger, token).Item1;
+                        operation.Getting.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity.Multiplier);
+
                     }, cancellationToken);
                    
                 };
@@ -608,18 +582,11 @@ namespace Belvar_V7_40_1
                 {
                     return Task.Factory.StartNew(() =>
                     {
-                        try
-                        {
-                            var result = BodyWork(Multimetr.AcCurrent, Calibrator, Logger, token).Item1;
-                            result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
-                            operation.Getting = ConvertMeasPoint(result, operation.Expected);
-                            operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
-                                .Multiplier);
-                        }
-                        catch (NullReferenceException e)
-                        {
-                            Logger.Error($"Не удалось считать показания с {Multimetr.UserType} в точке {testingMeasureValue}");
-                        }
+                        var result = BodyWork(Multimetr.AcCurrent, Calibrator, Logger, token).Item1;
+                        result.MainPhysicalQuantity.Multiplier = UnitMultiplier.Mili;
+                        operation.Getting = ConvertMeasPoint(result, operation.Expected);
+                        operation.Getting.MainPhysicalQuantity.ChangeMultiplier(operation.Expected.MainPhysicalQuantity
+                                                                                         .Multiplier);
 
                     }, cancellationToken);
                    

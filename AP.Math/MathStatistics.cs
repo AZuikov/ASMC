@@ -328,9 +328,9 @@ namespace AP.Math
             return reduceZeros ? value.ToString(@"G17", CultureInfo.CurrentCulture) : AddInsignificantZeros(value, number);
         }
         /// <summary>
-        /// Добавляет незначищие нули
+        /// Добавляет незначащие нули
         /// </summary>
-        /// <param name="value">Численное знаечние</param>
+        /// <param name="value">Численное значение</param>
         /// <param name="number"></param>
         /// <returns></returns>
         private static string AddInsignificantZeros(object value, int number)

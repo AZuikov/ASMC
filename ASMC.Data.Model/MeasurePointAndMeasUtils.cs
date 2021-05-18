@@ -141,6 +141,12 @@ namespace ASMC.Data.Model
 
         #endregion Arifmetic
 
+        #region Logic
+
+        
+
+        
+
         public static bool operator <(MeasPoint<TPhysicalQuantity> a,
             MeasPoint<TPhysicalQuantity> b)
         {
@@ -194,6 +200,8 @@ namespace ASMC.Data.Model
             return a?.MainPhysicalQuantity?.GetNoramalizeValueToSi() !=
                    b?.MainPhysicalQuantity?.GetNoramalizeValueToSi();
         }
+
+        #endregion
 
         #endregion Operators
 
@@ -486,7 +494,7 @@ namespace ASMC.Data.Model
     }
 
     /// <summary>
-    /// Предоставляет реализацию допустимых диапазнов (пределов) воспроизведения/измерения физических величин.
+    /// Предоставляет реализацию допустимых диапазонов (пределов) воспроизведения/измерения физических величин.
     /// </summary>
     public class PhysicalRange<T> : IPhysicalRange<T> where T : class, IPhysicalQuantity<T>, new()
     {
@@ -660,7 +668,7 @@ namespace ASMC.Data.Model
         #region Property
 
         /// <summary>
-        /// позвляет получить харатеристику точности диапазона.
+        /// позволяет получить характеристику точности диапазона.
         /// </summary>
         AccuracyChatacteristic AccuracyChatacteristic { get; set; }
 
