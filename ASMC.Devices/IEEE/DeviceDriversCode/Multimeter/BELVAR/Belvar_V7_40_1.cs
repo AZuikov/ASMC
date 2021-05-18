@@ -67,7 +67,11 @@ namespace ASMC.Devices.IEEE
         public string StringConnection
         {
             get => _device.StringConnection;
-            set => _device.StringConnection = value;
+            set
+            {
+                _device.StringConnection = value;
+                Initialize();
+            }
         }
     }
 

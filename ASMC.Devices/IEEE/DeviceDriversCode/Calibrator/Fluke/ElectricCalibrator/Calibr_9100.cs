@@ -61,10 +61,13 @@ namespace ASMC.Devices.IEEE.Fluke.Calibrator
         public string StringConnection
         {
             get => Device.StringConnection;
-            set => Device.StringConnection = value;
+            set
+            {
+                Device.StringConnection = value;
+                Initialize();
+            }
         }
 
-        
 
         public class DcVolt : SimplyPhysicalQuantity<Voltage>
         {
