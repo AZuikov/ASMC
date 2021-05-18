@@ -4,7 +4,7 @@ using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.Interface
 {
-    public interface ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> : ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2>
+    public interface ISignalStandartSetParametrs<TPhysicalQuantity, TPhysicalQuantity2> : IDeviceSettingsControl, ISourcePhysicalQuantity<TPhysicalQuantity, TPhysicalQuantity2>
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
         where TPhysicalQuantity2 : class, IPhysicalQuantity<TPhysicalQuantity2>, new()
     {
@@ -19,7 +19,7 @@ namespace ASMC.Devices.Interface
         public MeasPoint<Time> Delay { get; set; }
 
         /// <summary>
-        /// Позволяет задать значение амплитуды сигнала и с указанием способа представления амплитуды.
+        /// Позволяет указать способ представления амплитуды.
         /// </summary>
         /// <param name="amplitude"></param>
         /// <param name="amplitudeUnit"></param>
@@ -100,7 +100,9 @@ namespace ASMC.Devices.Interface
         public string NameOfOutput { get; set; }
 
         public IOutputSettingGenerator OutputSetting { get; set; }
-        public ISignalStandartSetParametrs<Voltage, Frequency> currentSignal { get; }
+        public ISignalStandartSetParametrs<Voltage, Frequency> CurrentSignal { get; }
+
+        public void SetSignal(ISignalStandartSetParametrs<Voltage, Frequency> currentSignal);
 
         public ISineSignal<Voltage, Frequency> SineSignal { get; set; }
         public IImpulseSignal<Voltage, Frequency> ImpulseSignal { get; set; }
@@ -126,7 +128,7 @@ namespace ASMC.Devices.Interface
     public interface ISignalGenerator: IProtocolStringLine, IReferenceClock
         
     {
-        public IOutputGenerator OUT1 { get; set; }
-        public IOutputGenerator OUT2 { get; set; }
+        public IOutputGenerator [] OUT { get; }
+        
     }
 }

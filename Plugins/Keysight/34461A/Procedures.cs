@@ -168,7 +168,7 @@ namespace ProgramFor34461A
                     return result;
                 };
                 operation.CompliteWorkAsync = () => CompliteWorkAsync(operation);
-                operation.IsGood = getting => ChekedOperation(operation);
+                operation.IsGood = () => ChekedOperation(operation);
 
                 DataRow.Add(operation);
             }

@@ -38,8 +38,8 @@ namespace B5_71_PRO_Abstract
         {
             inOperation.LowerCalculation = (expected) => ErrorCalculationVolt(expected);
             inOperation.UpperCalculation = (expected) => ErrorCalculationVolt(expected, true);
-            inOperation.IsGood = () => (getting < inOperation.UpperTolerance) &
-                                     (getting > inOperation.LowerTolerance);
+            inOperation.IsGood = () => (inOperation.Getting  < inOperation.UpperTolerance) &
+                                     (inOperation.Getting  > inOperation.LowerTolerance);
         }
         //-----------------------------------------------------------------------------------
         protected decimal ErrorCalculationVoltUnstable(decimal inExpected, bool isSumm = false)
@@ -55,8 +55,8 @@ namespace B5_71_PRO_Abstract
         {
             inOperation.LowerCalculation = (expected) => ErrorCalculationVoltUnstable(expected);
             inOperation.UpperCalculation = (expected) => ErrorCalculationVoltUnstable(expected, true);
-            inOperation.IsGood = () => (getting < inOperation.UpperTolerance) &
-                                              (getting > inOperation.LowerTolerance);
+            inOperation.IsGood = () => (inOperation.Getting  < inOperation.UpperTolerance) &
+                                              (inOperation.Getting  > inOperation.LowerTolerance);
         }
         //----------------------------------------------------------------------------------
         protected decimal ErrorCalculationCurr(decimal inExpected, bool isSumm = false)
@@ -72,8 +72,8 @@ namespace B5_71_PRO_Abstract
         {
             inOperation.LowerCalculation = (expected) => ErrorCalculationCurr(expected);
             inOperation.UpperCalculation = (expected) => ErrorCalculationCurr(expected, true);
-            inOperation.IsGood = () => (getting < inOperation.UpperTolerance) &
-                                              (getting > inOperation.LowerTolerance);
+            inOperation.IsGood = () => (inOperation.Getting  < inOperation.UpperTolerance) &
+                                              (inOperation.Getting  > inOperation.LowerTolerance);
         }
         //----------------------------------------------------------------------------------
         protected decimal ErrorCalculationCurrUnstable(decimal inExpected, bool isSumm = false)
@@ -89,8 +89,8 @@ namespace B5_71_PRO_Abstract
         {
             inOperation.LowerCalculation = (expected) => ErrorCalculationCurrUnstable(expected);
             inOperation.UpperCalculation = (expected) => ErrorCalculationCurrUnstable(expected, true);
-            inOperation.IsGood = () => (getting < inOperation.UpperTolerance) &
-                                              (getting > inOperation.LowerTolerance);
+            inOperation.IsGood = () => (inOperation.Getting  < inOperation.UpperTolerance) &
+                                              (inOperation.Getting  > inOperation.LowerTolerance);
         }
         //----------------------------------------------------------------------------------
         protected decimal ErrorCalculationVoltPuls(decimal inExpected, bool isSumm = false)
@@ -106,8 +106,8 @@ namespace B5_71_PRO_Abstract
         {
             inOperation.LowerCalculation = (expected) => ErrorCalculationVoltPuls(expected);
             inOperation.UpperCalculation = (expected) => ErrorCalculationVoltPuls(expected, true);
-            inOperation.IsGood = () => (getting < inOperation.UpperTolerance) &
-                                              (getting > inOperation.LowerTolerance);
+            inOperation.IsGood = () => (inOperation.Getting  < inOperation.UpperTolerance) &
+                                              (inOperation.Getting  > inOperation.LowerTolerance);
         }
         //----------------------------------------------------------------------------------
         protected decimal ErrorCalculationCurrPuls(decimal inExpected, bool isSumm = false)
@@ -123,8 +123,8 @@ namespace B5_71_PRO_Abstract
         {
             inOperation.LowerCalculation = (expected) => ErrorCalculationCurrPuls(expected);
             inOperation.UpperCalculation = (expected) => ErrorCalculationCurrPuls(expected, true);
-            inOperation.IsGood = () => (getting < inOperation.UpperTolerance) &
-                                              (getting > inOperation.LowerTolerance);
+            inOperation.IsGood = () => (inOperation.Getting  < inOperation.UpperTolerance) &
+                                              (inOperation.Getting  > inOperation.LowerTolerance);
         }
     }
 

@@ -53,13 +53,16 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public  void Initialize()
         {
-            OUT1 = new GeneratorOutput_81160A(1, deviceIeeeBase);
+            var outs = new List<IOutputGenerator>();
+            outs.Add(new GeneratorOutput_81160A(1, deviceIeeeBase));
             //для инициализации второго канала нужно проверить, есть ли такая опция.
             if (deviceIeeeBase.GetOption().Any(q => Equals(q, Option.Opt002.GetStringValue())))
             {
-                OUT2 = new GeneratorOutput_81160A(2, deviceIeeeBase);
+                outs.Add(new GeneratorOutput_81160A(2, deviceIeeeBase));
 
             }
+
+            OUT = outs.ToArray();
         }
 
        
@@ -74,8 +77,9 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             }
         }
 
-        public IOutputGenerator OUT1 { get; set; }
-        public IOutputGenerator OUT2 { get; set; }
+        
+        
+        public IOutputGenerator[] OUT { get; protected set; }
     }
 
     /// <summary>
@@ -83,11 +87,11 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public class GeneratorOutput_81160A : IOutputGenerator
     {
+        protected IeeeBase deviceGeneratorOutput { get; }
         public GeneratorOutput_81160A(int chanelNumber, IeeeBase deviceIeeeBase)
         {
-            StringConnection = deviceIeeeBase.StringConnection;
-            NameOfOutput = chanelNumber.ToString();
-            
+           NameOfOutput = chanelNumber.ToString();
+           deviceGeneratorOutput = deviceIeeeBase;
             OutputSetting = new OutputSetting();
             OutputSetting.OutputImpedance = new MeasPoint<Resistance>(50);
             OutputSetting.OutputLoad = new MeasPoint<Resistance>(50);
@@ -100,43 +104,38 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
         public string NameOfOutput { get; set; }
         public IOutputSettingGenerator OutputSetting { get; set; }
-        public ISignalStandartSetParametrs<Voltage, Frequency> currentSignal { get; }
+        public ISignalStandartSetParametrs<Voltage, Frequency> CurrentSignal { get; protected set; }
+        public void SetSignal(ISignalStandartSetParametrs<Voltage, Frequency> currentSignal)
+        {
+            CurrentSignal = currentSignal;
+        }
+
         public ISineSignal<Voltage, Frequency> SineSignal { get; set; }
         public IImpulseSignal<Voltage, Frequency> ImpulseSignal { get; set; }
         public ISquareSignal<Voltage, Frequency> SquareSignal { get; set; }
         public IRampSignal<Voltage, Frequency> RampSignal { get; set; }
         public string UserType { get; }
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+       
 
-        public bool IsTestConnect { get; }
-        public async Task InitializeAsync()
+       public void Getting()
         {
-            
-        }
-
-        public string StringConnection { get; set; }
-        public void Getting()
-        {
-            throw new NotImplementedException();
+            CurrentSignal?.Getting();
         }
 
         public void Setting()
         {
-            throw new NotImplementedException();
+           CurrentSignal?.Setting();
         }
 
         public bool IsEnableOutput { get; }
         public void OutputOn()
         {
-            throw new NotImplementedException();
+            deviceGeneratorOutput.WriteLine($":OUTput{NameOfOutput} ON");
         }
 
         public void OutputOff()
         {
-            throw new NotImplementedException();
+            deviceGeneratorOutput.WriteLine($":OUTput{NameOfOutput} OFF");
         }
     }
 

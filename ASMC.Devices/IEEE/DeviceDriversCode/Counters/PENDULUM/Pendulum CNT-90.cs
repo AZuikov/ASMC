@@ -13,7 +13,6 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public Pendulum_CNT_90()
         {
             UserType = "CNT-90";
-
             InputA = new CNT90Input(1, DeviceIeeeBase);
             InputB = new CNT90Input(2, DeviceIeeeBase);
 

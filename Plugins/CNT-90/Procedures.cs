@@ -6,6 +6,7 @@ using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.IEEE.Keysight.Generator;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using ASMC.Devices.IEEE.PENDULUM;
 using ASMC.Devices.Interface;
@@ -165,22 +166,28 @@ namespace CNT_90
         {
             //base.InitWork(token);
             ConnectionToDevice();
+            var output = Generator.OUT.First();
+            var sin= output.SineSignal;
+            sin.AmplitudeUnitValue = MeasureUnitsAmplitude.RMS; 
+            sin.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
+            sin.SignalOffset = new MeasPoint<Voltage>(0);
+
+            //Generator.OUT.SineSignal.Setting();//просто залить настройки сигнала, без активации этой функции
+
+            //делаем функцию активной
+            output.SetSignal(sin);
+
+            //настройки выхода
+            output.OutputSetting.OutputLoad = new MeasPoint<Resistance>(50);
+            output.OutputSetting.OutputImpedance = new MeasPoint<Resistance>(50);
+            //заливаем все настройки в устройство (по каналу и сигналу)
+            output.Setting();
+            output.OutputOn();
             
-            Generator.OUT1.SineSignal.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
-            Generator.OUT1.SineSignal.AmplitudeUnitValue = MeasureUnitsAmplitude.Vpp;
-            //Generator.OUT1.OutputSetting.OutputLoad
-            //Generator.OUT1.OutputSetting.OutputImpedance
-            //Generator.OUT1.SineSignal.
-
-            //Generator.OUT1.SineSignal.
-
-            //todo предварительно настроенный сигнала 
-            Generator.OUT1.Setting();
-            Generator.OUT1.OutputOn();
 
             Counter.InputA.SettingSlope.SetInputSlopePositive();
             var value = Counter.InputA.MeasureStandart.MeasFrequency.GetValue();
-            Generator.OUT1.OutputOff();
+            Generator.OUT.First().OutputOff();
 
         }
         

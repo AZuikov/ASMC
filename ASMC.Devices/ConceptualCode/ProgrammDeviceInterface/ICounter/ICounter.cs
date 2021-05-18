@@ -29,7 +29,7 @@ namespace ASMC.Devices.Interface
     {
 
         ICounterInputSlopeSetting SettingSlope { get; set; }
-        ICounterStandartMeasureOperation MeasureStandart { get; set; }
+        ICounterStandartMeasureOperation MeasureFunctionStandart { get; set; }
         
     }
 

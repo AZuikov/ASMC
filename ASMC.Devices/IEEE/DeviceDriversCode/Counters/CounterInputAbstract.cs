@@ -11,13 +11,13 @@ namespace ASMC.Devices.IEEE.PENDULUM
     {
         public int NameOfChanel { get; }
         public ICounterInputSlopeSetting SettingSlope { get; set; }
-        public ICounterStandartMeasureOperation MeasureStandart { get; set; }
+        public ICounterStandartMeasureOperation MeasureFunctionStandart { get; set; }
 
         public CounterInputAbstract(int chanelName, IeeeBase deviceIeeeBase)
         {
             NameOfChanel = chanelName;
             SettingSlope = new ChanelSlopeSetting();
-            MeasureStandart = new CNT90InputMeasureFunction(this, deviceIeeeBase);
+            MeasureFunctionStandart = new CNT90InputMeasureFunction(this, deviceIeeeBase);
         }
     }
 

@@ -121,10 +121,9 @@ namespace ASMC.Data.Model
     /// </summary>
     public enum MeasureUnitsAmplitude
     {
-        [StringValue("В пик-пик"), StringValue("Vpp", "en-US")] Vpp,
-        [StringValue("В ск"), StringValue("Vrms", "en-US")] Vrms,
-        [StringValue("А пик-пик"), StringValue("App", "en-US")] App,
-        [StringValue("A ск"), StringValue("Arms", "en-US")] Arms,
+        [StringValue("пик-пик"), StringValue("pp", "en-US")] PeakPeak,
+        [StringValue("ск"), StringValue("rms", "en-US")] RMS
+        
     }
 
 
