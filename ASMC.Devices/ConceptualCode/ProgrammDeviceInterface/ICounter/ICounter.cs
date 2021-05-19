@@ -1,4 +1,5 @@
 ﻿using ASMC.Data.Model;
+using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.Interface
 {
@@ -18,8 +19,27 @@ namespace ASMC.Devices.Interface
     /// </summary>
     public interface ICounterInputTypicalParametr
     {
+        /// <summary>
+        /// Номер или наименование канала частотомера.
+        /// </summary>
         public int NameOfChanel { get; }
-        
+
+        /// <summary>
+        /// Позволяет узнать сопротивление входа частотомера.
+        /// </summary>
+        public MeasPoint<Resistance> InputImpedance { get; }
+        /// <summary>
+        /// Устанавливаем сопротивление входа частотомера 50 Ом.
+        /// </summary>
+        public void Set50OhmInput();
+
+        /// <summary>
+        /// Устанавливаем сопротивление входа частотомера 1 МОм.
+        /// </summary>
+        public void Set1MOhmInput();
+
+        //на будущее
+        //public void Set75OhmInput();
     }
 
     /// <summary>

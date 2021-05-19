@@ -168,6 +168,7 @@ namespace CNT_90
             ConnectionToDevice();
             var output = Generator.OUT.First();
             var sin= output.SineSignal;
+            var counterUnput = Counter.InputA;
             sin.AmplitudeUnitValue = MeasureUnitsAmplitude.RMS; 
             sin.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
             sin.SignalOffset = new MeasPoint<Voltage>(0);
@@ -184,9 +185,17 @@ namespace CNT_90
             output.Setting();
             output.OutputOn();
             
+            counterUnput.SettingSlope.SetInputSlopePositive();
+            //входное сопротивление 50 Ом;
+            
+            //уровень запуска ручной;
+            //уровень запуска 0 В;
+            //связь входа DC:
+            //измерение по переднему фронту импульса;
+            //фильтр выключен;
+            //Время измерения 1 секунда.
 
-            Counter.InputA.SettingSlope.SetInputSlopePositive();
-            var value = Counter.InputA.MeasureStandart.MeasFrequency.GetValue();
+            var value = Counter.InputA.MeasureFunctionStandart.MeasFrequency.GetValue();
             Generator.OUT.First().OutputOff();
 
         }

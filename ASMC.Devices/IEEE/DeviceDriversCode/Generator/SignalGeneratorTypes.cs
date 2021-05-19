@@ -28,7 +28,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             Delay = new MeasPoint<Time>(0);
             SignalOffset = new MeasPoint<Voltage>(0);
             IsPositivePolarity = true;
-            AmplitudeUnitValue = MeasureUnitsAmplitude.Vrms;
+            AmplitudeUnitValue = MeasureUnitsAmplitude.RMS;
             //значение по умолчанию
             Value = new MeasPoint<Voltage, Frequency>(100, UnitMultiplier.Mili, 200);
         }

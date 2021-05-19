@@ -56,6 +56,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             //если опция на второй позиции есть, значит точно есть третий выход
             if (!options[1].Equals(InstallPrescalerOption.NullOption.GetStringValue()))
             {
+                //todo сделать класс высокочастотного входа частотомера
                 //InputC_HighFrequency = new CNT90InputC_HighFreq(3, DeviceIeeeBase);
             }
         }

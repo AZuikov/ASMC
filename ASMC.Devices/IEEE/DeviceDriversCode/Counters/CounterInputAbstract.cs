@@ -1,15 +1,25 @@
-﻿using System.CodeDom;
-using AP.Utils.Data;
+﻿using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 using ASMC.Devices.Interface;
-using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.IEEE.PENDULUM
 {
     public abstract class CounterInputAbstract : ICounterInput
     {
         public int NameOfChanel { get; }
+        public MeasPoint<Resistance> InputImpedance { get; private set; }
+
+        public void Set50OhmInput()
+        {
+            InputImpedance = new MeasPoint<Resistance>(50);
+        }
+
+        public void Set1MOhmInput()
+        {
+            InputImpedance = new MeasPoint<Resistance>(1, UnitMultiplier.Mega);
+        }
+
         public ICounterInputSlopeSetting SettingSlope { get; set; }
         public ICounterStandartMeasureOperation MeasureFunctionStandart { get; set; }
 
@@ -18,10 +28,9 @@ namespace ASMC.Devices.IEEE.PENDULUM
             NameOfChanel = chanelName;
             SettingSlope = new ChanelSlopeSetting();
             MeasureFunctionStandart = new CNT90InputMeasureFunction(this, deviceIeeeBase);
+            Set50OhmInput();
         }
     }
-
-   
 
     public abstract class CounterDualChanelMeasureAbstract : ICounterInputDualChanelMeasure
     {
@@ -72,8 +81,8 @@ namespace ASMC.Devices.IEEE.PENDULUM
     /// <summary>
     /// Настройка канала.
     /// </summary>
-    
-    public class ChanelStandartSetting : ChanelSlopeSetting,ITypicalCounterInputSettings
+
+    public class ChanelStandartSetting : ChanelSlopeSetting, ITypicalCounterInputSettings
     {
         #region Fields
 
@@ -81,9 +90,8 @@ namespace ASMC.Devices.IEEE.PENDULUM
         private InputCouple Couple;
         private InputImpedance Impedance;
         private Status InputFilter;
-        
 
-        #endregion
+        #endregion Fields
 
         public ChanelStandartSetting()
         {
@@ -153,12 +161,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
         {
             return InputFilter.ToString();
         }
-
-
-      
     }
-
-   
 
     #region Enums
 
