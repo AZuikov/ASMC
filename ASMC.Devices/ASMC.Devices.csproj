@@ -120,7 +120,7 @@
     <Compile Include="IEEE\DeviceDriversCode\PowerSupplyes\Keysight\E36XXa\E364xADevices.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Calibrator\Fluke\ElectricCalibrator\ICalibratorMultimeterFlukeBase.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Counters\CounterAbstract.cs" />
-    <Compile Include="IEEE\DeviceDriversCode\Counters\CounterInputAbstract.cs" />
+    <Compile Include="IEEE\DeviceDriversCode\Counters\CNT90Input.cs" />
     <Compile Include="IEEE\DeviceDriversCode\Counters\PENDULUM\Pendulum CNT-90.cs" />
     <Compile Include="ConceptualCode\ProgrammDeviceInterface\ICounter\ICounter.cs" />
     <Compile Include="ConceptualCode\ProgrammDeviceInterface\IDeviceSettingsControl.cs" />

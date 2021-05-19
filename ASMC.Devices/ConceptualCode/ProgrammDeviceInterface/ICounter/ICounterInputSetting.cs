@@ -73,6 +73,6 @@
         /// </summary>
         public void SetInputSlopeNegative();
 
-        public string GetSlope();
+        public InputSlope Slope { get; }
     }
 }

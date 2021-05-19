@@ -1,4 +1,5 @@
-﻿using ASMC.Data.Model;
+﻿using AP.Utils.Data;
+using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
 
 namespace ASMC.Devices.Interface
@@ -17,7 +18,7 @@ namespace ASMC.Devices.Interface
     /// <summary>
     /// Базовые параметры любого канала частотомера.
     /// </summary>
-    public interface ICounterInputTypicalParametr
+    public interface ICounterInputTypicalParametr: ICounterInputFilter, IDeviceSettingsControl
     {
         /// <summary>
         /// Номер или наименование канала частотомера.
@@ -38,8 +39,44 @@ namespace ASMC.Devices.Interface
         /// </summary>
         public void Set1MOhmInput();
 
+        
+        public MeasPoint<Voltage> TriggerLeve { get; set; }
+
+        /// <summary>
+        /// Диапазон напряжения триггера.
+        /// </summary>
+        public PhysicalRange<Voltage> TriggerRange { get; }
+
+        /// <summary>
+        /// Значение аттенюатора входа.
+        /// </summary>
+        public CounterAttenuator Attenuator { get; set; }
+
+        public CounterCoupling Coupling { get; set; }
+
         //на будущее
         //public void Set75OhmInput();
+
+        /// <summary>
+        /// Время измерения канала.
+        /// </summary>
+        public MeasPoint<Time> MeasureTime { get; set; }
+        /// <summary>
+        /// Возможный диапазон времени измерения на канале.
+        /// </summary>
+        public PhysicalRange<Time> MeasureTimeRange { get; }
+
+
+    }
+
+    
+
+    /// <summary>
+    /// Фильтр входа частотомера.
+    /// </summary>
+    public interface ICounterInputFilter
+    {
+        public CounterOnOffState CounterOnOffState { get; set; }
     }
 
     /// <summary>
@@ -49,8 +86,11 @@ namespace ASMC.Devices.Interface
     {
 
         ICounterInputSlopeSetting SettingSlope { get; set; }
-        ICounterStandartMeasureOperation MeasureFunctionStandart { get; set; }
-        
+        /// <summary>
+        /// Доступные измерительные функции.
+        /// </summary>
+        ICounterSingleChanelMeasure Measure { get; set; }
+
     }
 
     public interface ICOunterInputHighFrequency :   ICounterInput
@@ -58,8 +98,38 @@ namespace ASMC.Devices.Interface
         //ICounterInputPowerMeasure MeasurePower { get; set; }
     }
 
-    public interface ICounterStandartMeasureOperation: ICounterSingleChanelMeasure
+    public interface ICounterStandartMeasureOperation: ICounterSingleChanelMeasure, IDeviceSettingsControl
     {
 
     }
+
+    #region Enums
+
+    public enum CounterAttenuator
+    {
+        Att1 = 1,
+        Att10 = 10
+    }
+
+    public enum CounterCoupling
+    {
+        AC,
+        DC
+    }
+
+    /// <summary>
+    /// Статусы работы фильтра.
+    /// </summary>
+    public enum CounterOnOffState
+    {
+        ON,
+        OFF
+    }
+
+    public enum InputSlope
+    {
+        POS,
+        NEG
+    }
+    #endregion
 }

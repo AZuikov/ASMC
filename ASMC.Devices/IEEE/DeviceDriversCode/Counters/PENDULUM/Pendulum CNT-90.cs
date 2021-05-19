@@ -62,12 +62,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
         }
     }
 
-    public class CNT90Input : CounterInputAbstract
-    {
-        public CNT90Input(int chanelName,  IeeeBase deviceIeeeBase) : base(chanelName, deviceIeeeBase)
-        {
-        }
-    }
+   
     
    
 }

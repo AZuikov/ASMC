@@ -166,9 +166,9 @@ namespace CNT_90
         {
             //base.InitWork(token);
             ConnectionToDevice();
-            var output = Generator.OUT.First();
-            var sin= output.SineSignal;
-            var counterUnput = Counter.InputA;
+            var outputGenerator = Generator.OUT.First();
+            var sin= outputGenerator.SineSignal;
+            var inputCounter = Counter.InputA;
             sin.AmplitudeUnitValue = MeasureUnitsAmplitude.RMS; 
             sin.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
             sin.SignalOffset = new MeasPoint<Voltage>(0);
@@ -176,26 +176,34 @@ namespace CNT_90
             //Generator.OUT.SineSignal.Setting();//просто залить настройки сигнала, без активации этой функции
 
             //делаем функцию активной
-            output.SetSignal(sin);
+            outputGenerator.SetSignal(sin);
 
             //настройки выхода
-            output.OutputSetting.OutputLoad = new MeasPoint<Resistance>(50);
-            output.OutputSetting.OutputImpedance = new MeasPoint<Resistance>(50);
+            outputGenerator.OutputSetting.OutputLoad = new MeasPoint<Resistance>(50);
+            outputGenerator.OutputSetting.OutputImpedance = new MeasPoint<Resistance>(50);
             //заливаем все настройки в устройство (по каналу и сигналу)
-            output.Setting();
-            output.OutputOn();
+            outputGenerator.Setting();
+            outputGenerator.OutputOn();
             
-            counterUnput.SettingSlope.SetInputSlopePositive();
+            //Настройка частотомера.
             //входное сопротивление 50 Ом;
-            
-            //уровень запуска ручной;
+            inputCounter.Set50OhmInput();
             //уровень запуска 0 В;
+            inputCounter.TriggerLeve = new MeasPoint<Voltage>(0);
             //связь входа DC:
+            inputCounter.Coupling = CounterCoupling.DC;
             //измерение по переднему фронту импульса;
+            inputCounter.SettingSlope.SetInputSlopePositive();
             //фильтр выключен;
+            inputCounter.FilterState = FilterState.OFF;
             //Время измерения 1 секунда.
-
-            var value = Counter.InputA.MeasureFunctionStandart.MeasFrequency.GetValue();
+            inputCounter.MeasureTime  = new MeasPoint<Time>(1);
+            inputCounter.Setting();
+            
+            var freqMeas = inputCounter.Measure.MeasFrequency;
+            //активируем измерительную функцию на частотомере
+            freqMeas.Setting();
+            var value = inputCounter.Measure.MeasFrequency.GetValue();
             Generator.OUT.First().OutputOff();
 
         }
