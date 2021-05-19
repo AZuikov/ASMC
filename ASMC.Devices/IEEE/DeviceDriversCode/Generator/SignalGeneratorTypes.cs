@@ -68,11 +68,19 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             //устанавливаем форму сигнала
             Device.WriteLine($":FUNC{ChanelNumber} {SignalFormName}");
             // устанавливает единицы представления амплитуды сигнала (пик-пик, рмс, и т.д.)
-            Device.WriteLine($":VOLT{ChanelNumber}:UNIT {AmplitudeUnitValue.GetStringValue()}");
+            if (AmplitudeUnitValue == MeasureUnitsAmplitude.RMS)
+            {
+                Device.WriteLine($":VOLT{ChanelNumber}:UNIT VRMS");
+            }
+            else if (AmplitudeUnitValue == MeasureUnitsAmplitude.PeakPeak)
+            {
+                Device.WriteLine($":VOLT{ChanelNumber}:UNIT VPP");
+            }
+            
             //ставим амплитуду
-            Device.WriteLine($":VOLT{ChanelNumber}:AMPL {Value.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            Device.WriteLine($":VOLT{ChanelNumber}:AMPL {Value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
             //ставим смещение
-            Device.WriteLine($":VOLT{ChanelNumber}:OFFSet {Value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            Device.WriteLine($":VOLT{ChanelNumber}:OFFSet {SignalOffset.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
 
             Device.WaitingRemoteOperationComplete();
         }

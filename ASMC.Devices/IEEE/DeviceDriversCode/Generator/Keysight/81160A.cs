@@ -87,13 +87,12 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
     /// </summary>
     public class GeneratorOutput_81160A : IOutputGenerator
     {
-        protected IeeeBase deviceGeneratorOutput { get; }
+        protected IeeeBase device { get; }
         public GeneratorOutput_81160A(int chanelNumber, IeeeBase deviceIeeeBase)
         {
            NameOfOutput = chanelNumber.ToString();
-           deviceGeneratorOutput = deviceIeeeBase;
+           device = deviceIeeeBase;
             OutputSetting = new OutputSetting();
-            OutputSetting.OutputImpedance = new MeasPoint<Resistance>(50);
             OutputSetting.OutputLoad = new MeasPoint<Resistance>(50);
             
             SineSignal = new SineFormSignal(NameOfOutput, deviceIeeeBase);
@@ -105,6 +104,7 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
         public string NameOfOutput { get; set; }
         public IOutputSettingGenerator OutputSetting { get; set; }
         public ISignalStandartSetParametrs<Voltage, Frequency> CurrentSignal { get; protected set; }
+        
         public void SetSignal(ISignalStandartSetParametrs<Voltage, Frequency> currentSignal)
         {
             CurrentSignal = currentSignal;
@@ -119,29 +119,43 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
 
        public void Getting()
         {
+
             CurrentSignal?.Getting();
         }
 
         public void Setting()
         {
+            /*
+             :OUTPut[1|2]:IMPedance[:INTernal][?]
+             * There are only two settings available. If you try to program any other value, it will be rounded to one of the specified values, either 50 Ohm or 5 Ohm.
+             */
+            device.WriteLine($":OUTP{NameOfOutput}:IMP:INTernal MAX");
+            /*
+             * You can set the load to any value from 0.3 to 1M. MIN selects from 0.3 Ohm MAX selects 1 MOhm.  The default is 50 Ohm.
+             * как я понял, делают одно и то же 
+             * :OUTP[1|2]:IMP:EXT[?] 
+             * :OUTP[1|2] :LOAD[?]
+             */
+            device.WriteLine($":OUTP{NameOfOutput}:LOAD {OutputSetting.OutputLoad.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',','.')}");
+            
            CurrentSignal?.Setting();
         }
 
         public bool IsEnableOutput { get; }
         public void OutputOn()
         {
-            deviceGeneratorOutput.WriteLine($":OUTput{NameOfOutput} ON");
+            device.WriteLine($":OUTput{NameOfOutput} ON");
         }
 
         public void OutputOff()
         {
-            deviceGeneratorOutput.WriteLine($":OUTput{NameOfOutput} OFF");
+            device.WriteLine($":OUTput{NameOfOutput} OFF");
         }
     }
 
     public class OutputSetting : IOutputSettingGenerator
     {
-        public MeasPoint<Resistance> OutputImpedance { get; set; }
+        
         public MeasPoint<Resistance> OutputLoad { get; set; }
     }
 

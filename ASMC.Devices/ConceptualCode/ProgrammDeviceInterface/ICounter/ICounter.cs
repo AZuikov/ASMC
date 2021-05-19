@@ -1,6 +1,7 @@
 ﻿using AP.Utils.Data;
 using ASMC.Data.Model;
 using ASMC.Data.Model.PhysicalQuantity;
+using ASMC.Devices.Interface.SourceAndMeter;
 
 namespace ASMC.Devices.Interface
 {
@@ -90,6 +91,11 @@ namespace ASMC.Devices.Interface
         /// Доступные измерительные функции.
         /// </summary>
         ICounterSingleChanelMeasure Measure { get; set; }
+        public IDeviceSettingsControl CurrentSignal { get; }
+
+        public void SetSignal(IDeviceSettingsControl currentSignal);
+
+
 
     }
 

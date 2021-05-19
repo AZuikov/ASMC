@@ -117,7 +117,6 @@ namespace ASMC.Devices.Interface
     /// </summary>
     public interface IOutputSettingGenerator
     {
-        public MeasPoint<Resistance> OutputImpedance { get; set; }
         public MeasPoint<Resistance> OutputLoad { get; set; }
     }
 

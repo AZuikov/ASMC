@@ -13,8 +13,8 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public Pendulum_CNT_90()
         {
             UserType = "CNT-90";
-            InputA = new CNT90Input(1, DeviceIeeeBase);
-            InputB = new CNT90Input(2, DeviceIeeeBase);
+            InputA = new CNT90Input(1, device);
+            InputB = new CNT90Input(2, device);
 
            // DualChanelMeasure = new CNT90DualChanelMeasure(InputA, InputB,DeviceIeeeBase);
         }
@@ -51,7 +51,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public override async void Initialize()
         {
-            var options = DeviceIeeeBase.GetOption();
+            var options = device.GetOption();
 
             //если опция на второй позиции есть, значит точно есть третий выход
             if (!options[1].Equals(InstallPrescalerOption.NullOption.GetStringValue()))

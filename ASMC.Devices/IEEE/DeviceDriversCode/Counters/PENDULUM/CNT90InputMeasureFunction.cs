@@ -26,6 +26,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 FunctionName = "FREQ";
             }
 
+            public override void Setting()
+            {
+                
+            }
         }
 
         public class MeasFreqBurst : MeasReadValue<Frequency>
@@ -49,7 +53,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEASure:VOLT:NCYCles (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEASure:VOLT:NCYCles (@{Cnt90Abstr.NameOfChanel})");
             }
         }
 
@@ -65,7 +69,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:FREQ:PRF (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:FREQ:PRF (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -83,7 +87,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PDUTycycle (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:PDUTycycle (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -101,7 +105,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:NDUTycycle (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:NDUTycycle (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -119,7 +123,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:VOLT:MAXimum (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:VOLT:MAXimum (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -137,7 +141,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:VOLT:MINimum (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:VOLT:MINimum (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -155,7 +159,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:VOLT:PTPeak (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:VOLT:PTPeak (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -173,7 +177,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PERiod (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:PERiod (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -191,7 +195,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PERiod:AVERage (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:PERiod:AVERage (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -209,7 +213,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:PWIDth (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:PWIDth (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -227,7 +231,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             public override void Setting()
             {
                 base.Setting();
-                CounterInput.WriteLine($":CONF:MEAS:NWIDth (@{Cnt90Abstr.NameOfChanel})");
+                device.WriteLine($":CONF:MEAS:NWIDth (@{Cnt90Abstr.NameOfChanel})");
             }
 
             #endregion Methods
@@ -239,12 +243,12 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public IMeterPhysicalQuantity<Time> MeasPeriod { get; set; }
 
 
-        public void Getting()
+        public virtual void Getting()
         {
             throw new NotImplementedException();
         }
 
-        public void Setting()
+        public virtual void Setting()
         {
             throw new NotImplementedException();
         }
@@ -253,23 +257,23 @@ namespace ASMC.Devices.IEEE.PENDULUM
     public abstract class MeasReadValue<TPhysicalQuantity> :  IMeterPhysicalQuantity<TPhysicalQuantity>
         where TPhysicalQuantity : class, IPhysicalQuantity<TPhysicalQuantity>, new()
     {
-        protected IeeeBase CounterInput;
+        protected IeeeBase device;
         protected string FunctionName { get; set; }
         protected CNT90Input Cnt90Abstr { get; }
 
         public MeasReadValue(CNT90Input cnt90Abstr, int chanelNumb, IeeeBase inDevice)
         {
-            CounterInput = inDevice;
+            device = inDevice;
             Cnt90Abstr = cnt90Abstr;
         }
         public MeasPoint<TPhysicalQuantity> GetValue()
         {
             //считывание измеренного значения, сработает при условии, что перед этим был запущен метод Setting
-            CounterInput.WriteLine(":FORMat ASCii"); //формат получаемых от прибора данных
-            CounterInput.WriteLine(":INITiate:CONTinuous 0"); //выключаем многократный запуск
+            device.WriteLine(":FORMat ASCii"); //формат получаемых от прибора данных
+            device.WriteLine(":INITiate:CONTinuous 0"); //выключаем многократный запуск
             //CounterInput.WriteLine(":INITiate"); //взводим триггер
             //var answer = CounterInput.QueryLine(":FETCh?"); //считываем ответ
-            var answer = CounterInput.QueryLine($":Measure:{FunctionName}?"); //считываем ответ
+            var answer = device.QueryLine($":Measure:{FunctionName}?"); //считываем ответ
             var value = (decimal)StrToDouble(answer);
             Value = new MeasPoint<TPhysicalQuantity>(value);
             return Value;
@@ -283,13 +287,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
         }
         public virtual void Setting()
         {
-            //todo проверить проинициализированно ли к этому моменту устройство? задана ли строка подключения?
-            CounterInput.WriteLine($":CONF:MEAS:{FunctionName} (@{Cnt90Abstr.NameOfChanel})");
-            CounterInput.WriteLine($"inp{Cnt90Abstr.NameOfChanel}:slop {Cnt90Abstr.SettingSlope.GetSlope()}");
-            CounterInput.WriteLine($"inp{Cnt90Abstr.NameOfChanel}:imp {Cnt90Abstr.InputImpedance.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
-            CounterInput.WriteLine($"inp{Cnt90Abstr.NameOfChanel}:att {Cnt90Abstr.Attenuator.ToString()}");
-            CounterInput.WriteLine($"inp{Cnt90Abstr.NameOfChanel}:coup {Cnt90Abstr.Coupling.ToString()}");
-            CounterInput.WriteLine($"inp{Cnt90Abstr.NameOfChanel}:filt {Cnt90Abstr.FilterState.ToString()}");
+            device.WriteLine($":CONF:MEAS:{FunctionName} (@{Cnt90Abstr.NameOfChanel})");
         }
         public IRangePhysicalQuantity<TPhysicalQuantity> RangeStorage { get; }
     }

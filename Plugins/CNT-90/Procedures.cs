@@ -180,7 +180,6 @@ namespace CNT_90
 
             //настройки выхода
             outputGenerator.OutputSetting.OutputLoad = new MeasPoint<Resistance>(50);
-            outputGenerator.OutputSetting.OutputImpedance = new MeasPoint<Resistance>(50);
             //заливаем все настройки в устройство (по каналу и сигналу)
             outputGenerator.Setting();
             outputGenerator.OutputOn();
@@ -195,11 +194,12 @@ namespace CNT_90
             //измерение по переднему фронту импульса;
             inputCounter.SettingSlope.SetInputSlopePositive();
             //фильтр выключен;
-            inputCounter.FilterState = FilterState.OFF;
+            inputCounter.CounterOnOffState = CounterOnOffState.OFF;
             //Время измерения 1 секунда.
             inputCounter.MeasureTime  = new MeasPoint<Time>(1);
+            inputCounter.SetSignal(inputCounter.Measure.MeasFrequency);
             inputCounter.Setting();
-            
+
             var freqMeas = inputCounter.Measure.MeasFrequency;
             //активируем измерительную функцию на частотомере
             freqMeas.Setting();
