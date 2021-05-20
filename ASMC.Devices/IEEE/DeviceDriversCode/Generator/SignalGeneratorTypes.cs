@@ -79,6 +79,8 @@ namespace ASMC.Devices.IEEE.Keysight.Generator
             
             //ставим амплитуду
             Device.WriteLine($":VOLT{ChanelNumber}:AMPL {Value.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
+            //ставим частоту
+            Device.WriteLine($":FREQuency{ChanelNumber} {Value.AdditionalPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
             //ставим смещение
             Device.WriteLine($":VOLT{ChanelNumber}:OFFSet {SignalOffset.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
 

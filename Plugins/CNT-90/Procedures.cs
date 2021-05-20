@@ -173,8 +173,7 @@ namespace CNT_90
             sin.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
             sin.SignalOffset = new MeasPoint<Voltage>(0);
 
-            //Generator.OUT.SineSignal.Setting();//просто залить настройки сигнала, без активации этой функции
-
+            
             //делаем функцию активной
             outputGenerator.SetSignal(sin);
 
@@ -197,14 +196,12 @@ namespace CNT_90
             inputCounter.CounterOnOffState = CounterOnOffState.OFF;
             //Время измерения 1 секунда.
             inputCounter.MeasureTime  = new MeasPoint<Time>(1);
-            inputCounter.SetSignal(inputCounter.Measure.MeasFrequency);
+            inputCounter.SetCurrentMeasFunction(inputCounter.Measure.MeasFrequency);
             inputCounter.Setting();
-
-            var freqMeas = inputCounter.Measure.MeasFrequency;
-            //активируем измерительную функцию на частотомере
-            freqMeas.Setting();
-            var value = inputCounter.Measure.MeasFrequency.GetValue();
-            Generator.OUT.First().OutputOff();
+            
+            MeasPoint<Frequency> value = inputCounter.Measure.MeasFrequency.GetValue();
+            value.MainPhysicalQuantity.AutoSelectMultiplier();
+            outputGenerator.OutputOff();
 
         }
         

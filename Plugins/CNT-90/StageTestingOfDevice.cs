@@ -28,8 +28,8 @@ namespace CNT_90
             };
             UserItemOperation = new IUserItemOperationBase[]
             {
-                new VisualInspection(this),
-                new Testing(this),
+                //new VisualInspection(this),
+                //new Testing(this),
                 new FrequencyMeasureCNT90(this)
                 /*Остальная часть методики*/
             };

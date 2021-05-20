@@ -91,9 +91,9 @@ namespace ASMC.Devices.Interface
         /// Доступные измерительные функции.
         /// </summary>
         ICounterSingleChanelMeasure Measure { get; set; }
-        public IDeviceSettingsControl CurrentSignal { get; }
+        public IDeviceSettingsControl CurrentMeasFunction { get; }
 
-        public void SetSignal(IDeviceSettingsControl currentSignal);
+        public void SetCurrentMeasFunction(IDeviceSettingsControl currentSignal);
 
 
 

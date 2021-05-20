@@ -26,10 +26,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
                 FunctionName = "FREQ";
             }
 
-            public override void Setting()
-            {
-                
-            }
+            
         }
 
         public class MeasFreqBurst : MeasReadValue<Frequency>
@@ -271,9 +268,9 @@ namespace ASMC.Devices.IEEE.PENDULUM
             //считывание измеренного значения, сработает при условии, что перед этим был запущен метод Setting
             device.WriteLine(":FORMat ASCii"); //формат получаемых от прибора данных
             device.WriteLine(":INITiate:CONTinuous 0"); //выключаем многократный запуск
-            //CounterInput.WriteLine(":INITiate"); //взводим триггер
-            //var answer = CounterInput.QueryLine(":FETCh?"); //считываем ответ
-            var answer = device.QueryLine($":Measure:{FunctionName}?"); //считываем ответ
+            device.WriteLine(":INITiate"); //взводим триггер
+            var answer = device.QueryLine(":FETCh?"); //считываем ответ
+            //var answer = device.QueryLine($":Measure:{FunctionName}?"); //считываем ответ
             var value = (decimal)StrToDouble(answer);
             Value = new MeasPoint<TPhysicalQuantity>(value);
             return Value;
