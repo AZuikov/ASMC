@@ -269,7 +269,8 @@ namespace ASMC.Devices.IEEE.PENDULUM
             device.WriteLine(":FORMat ASCii"); //формат получаемых от прибора данных
             device.WriteLine(":INITiate:CONTinuous 0"); //выключаем многократный запуск
             device.WriteLine(":INITiate"); //взводим триггер
-            var answer = device.QueryLine(":FETCh?"); //считываем ответ
+            var answer = device.QueryLine(":CALC:DATA?"); //считываем ответ (через усреденение)
+            //var answer = device.QueryLine(":FETCh?"); //считываем ответ
             //var answer = device.QueryLine($":Measure:{FunctionName}?"); //считываем ответ
             var value = (decimal)StrToDouble(answer);
             Value = new MeasPoint<TPhysicalQuantity>(value);

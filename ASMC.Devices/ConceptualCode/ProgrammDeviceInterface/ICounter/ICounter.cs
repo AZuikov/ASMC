@@ -14,6 +14,21 @@ namespace ASMC.Devices.Interface
         public ICounterInput InputB { get; set; }
         public ICOunterInputHighFrequency InputC_HighFrequency { get; set; }
         public ICounterInputDualChanelMeasure DualChanelMeasure { get; set; }
+
+        public ICounterAverageMeasure AverageMeasure { get; }
+    }
+
+    public interface ICounterAverageMeasure
+    {
+        /// <summary>
+        /// Позволяет задать число для усреднения.
+        /// </summary>
+        public  decimal averageCount { get; set; }
+        /// <summary>
+        /// Включает или выключает измерение усреднение.
+        /// </summary>
+        public bool isAverageOn { get; set; }
+
     }
 
     /// <summary>

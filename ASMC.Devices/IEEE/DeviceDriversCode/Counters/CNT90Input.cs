@@ -57,9 +57,10 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public ICounterInputSlopeSetting SettingSlope { get; set; }
         public ICounterSingleChanelMeasure Measure { get; set; }
         public IDeviceSettingsControl CurrentMeasFunction { get; protected set; }
+        private ICounterAverageMeasure _average { get; }
         #endregion
 
-        public CNT90Input(int chanelName, IeeeBase deviceIeeeBase)
+        public CNT90Input(int chanelName, IeeeBase deviceIeeeBase, ICounterAverageMeasure average)
         {
             device = deviceIeeeBase;
             NameOfChanel = chanelName;
@@ -70,7 +71,7 @@ namespace ASMC.Devices.IEEE.PENDULUM
             Coupling = CounterCoupling.DC;
             Attenuator = CounterAttenuator.Att1;
             CounterOnOffState = CounterOnOffState.OFF;
-            
+            _average = average;
         }
 
        public void SetCurrentMeasFunction(IDeviceSettingsControl currentSignal)
@@ -130,6 +131,11 @@ namespace ASMC.Devices.IEEE.PENDULUM
 
         public void Setting()
         {
+            //усреднение
+            device.WriteLine($":CALCulate:AVERage:STATe {(_average.isAverageOn? CounterOnOffState.ON: CounterOnOffState.OFF)}");
+            device.WriteLine($":CALCulate:AVERage:COUNt {_average.averageCount}");
+            device.WriteLine($":CALCulate:AVERage:TYPE MEAN");//будем считывать среднее значение
+
             device.WriteLine($"inp{NameOfChanel}:slop {SettingSlope.Slope}");
             device.WriteLine($"inp{NameOfChanel}:imp {InputImpedance.MainPhysicalQuantity.GetNoramalizeValueToSi().ToString().Replace(',', '.')}");
             device.WriteLine($"inp{NameOfChanel}:att {(int)Attenuator}");

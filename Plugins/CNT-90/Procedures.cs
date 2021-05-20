@@ -168,12 +168,9 @@ namespace CNT_90
             ConnectionToDevice();
             var outputGenerator = Generator.OUT.First();
             var sin= outputGenerator.SineSignal;
-            var inputCounter = Counter.InputA;
             sin.AmplitudeUnitValue = MeasureUnitsAmplitude.RMS; 
-            sin.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 500));
+            sin.SetValue(new MeasPoint<Voltage, Frequency>(0.1M, 777));
             sin.SignalOffset = new MeasPoint<Voltage>(0);
-
-            
             //делаем функцию активной
             outputGenerator.SetSignal(sin);
 
@@ -182,8 +179,9 @@ namespace CNT_90
             //заливаем все настройки в устройство (по каналу и сигналу)
             outputGenerator.Setting();
             outputGenerator.OutputOn();
-            
+
             //Настройка частотомера.
+            var inputCounter = Counter.InputA;
             //входное сопротивление 50 Ом;
             inputCounter.Set50OhmInput();
             //уровень запуска 0 В;
@@ -196,7 +194,11 @@ namespace CNT_90
             inputCounter.CounterOnOffState = CounterOnOffState.OFF;
             //Время измерения 1 секунда.
             inputCounter.MeasureTime  = new MeasPoint<Time>(1);
+            //установим усреднение
+            Counter.AverageMeasure.averageCount = 10;
+            Counter.AverageMeasure.isAverageOn = true;
             inputCounter.SetCurrentMeasFunction(inputCounter.Measure.MeasFrequency);
+
             inputCounter.Setting();
             
             MeasPoint<Frequency> value = inputCounter.Measure.MeasFrequency.GetValue();

@@ -13,10 +13,13 @@ namespace ASMC.Devices.IEEE.PENDULUM
         public Pendulum_CNT_90()
         {
             UserType = "CNT-90";
-            InputA = new CNT90Input(1, device);
-            InputB = new CNT90Input(2, device);
+            AverageMeasure = new CounterAverageMeasure(2, 2000000000);//is an integer in the range 2 to 2*10^9
 
-           // DualChanelMeasure = new CNT90DualChanelMeasure(InputA, InputB,DeviceIeeeBase);
+            InputA = new CNT90Input(1, device,AverageMeasure);
+            InputB = new CNT90Input(2, device, AverageMeasure);
+            
+
+            // DualChanelMeasure = new CNT90DualChanelMeasure(InputA, InputB,DeviceIeeeBase);
         }
 
         #region Enums
